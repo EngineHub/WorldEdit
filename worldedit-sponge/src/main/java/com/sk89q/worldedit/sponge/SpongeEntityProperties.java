@@ -152,6 +152,6 @@ public class SpongeEntityProperties implements EntityProperties {
 
     @Override
     public boolean isWaterCreature() {
-        return false;  // Sponge doesn't support this
+        return false;  // TODO api8
     }
 }

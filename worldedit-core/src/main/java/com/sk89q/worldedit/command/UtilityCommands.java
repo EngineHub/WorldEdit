@@ -422,7 +422,7 @@ public class UtilityCommands {
                            boolean killFriendly,
                        @Switch(name = 'r', desc = "Also destroy armor stands")
                            boolean killArmorStands,
-                       @Switch(name = 'w', desc = "Also destroy water mobs")
+                       @Switch(name = 'w', desc = "Also kill water mobs")
                            boolean killWater) throws WorldEditException {
         LocalConfiguration config = we.getConfiguration();
 
