@@ -248,7 +248,7 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
         if (!region.getCenter().equals(Vector3.ZERO)) {
             Vector3 center = region.getCenter();
             lines.add(TranslatableComponent.of("worldedit.selection.cylinder.info.center", TextComponent.of(center.toString())
-                    .clickEvent(ClickEvent.of(ClickEvent.Action.COPY_TO_CLIPBOARD, center.getX() + "," + center.getY() + "," + center.getZ()))
+                    .clickEvent(ClickEvent.of(ClickEvent.Action.COPY_TO_CLIPBOARD, center.toParserString()))
                     .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to copy")))));
         }
         if (!region.getRadius().equals(Vector2.ZERO)) {

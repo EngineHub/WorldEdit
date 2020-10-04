@@ -228,7 +228,7 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
         final Vector3 center = region.getCenter();
         if (center.lengthSq() > 0) {
             lines.add(TranslatableComponent.of("worldedit.selection.ellipsoid.info.center", TextComponent.of(center.toString())
-                    .clickEvent(ClickEvent.of(ClickEvent.Action.COPY_TO_CLIPBOARD, center.getX() + "," + center.getY() + "," + center.getZ()))
+                    .clickEvent(ClickEvent.of(ClickEvent.Action.COPY_TO_CLIPBOARD, center.toParserString()))
                     .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to copy")))));
         }
 

@@ -258,13 +258,13 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
 
         if (position1 != null) {
             lines.add(TranslatableComponent.of("worldedit.selection.cuboid.info.pos1", TextComponent.of(position1.toString())
-                    .clickEvent(ClickEvent.of(ClickEvent.Action.COPY_TO_CLIPBOARD, position1.toCopyableString()))
+                    .clickEvent(ClickEvent.of(ClickEvent.Action.COPY_TO_CLIPBOARD, position1.toParserString()))
                     .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to copy")))));
         }
 
         if (position2 != null) {
             lines.add(TranslatableComponent.of("worldedit.selection.cuboid.info.pos2", TextComponent.of(position2.toString())
-                    .clickEvent(ClickEvent.of(ClickEvent.Action.COPY_TO_CLIPBOARD, position2.toCopyableString()))
+                    .clickEvent(ClickEvent.of(ClickEvent.Action.COPY_TO_CLIPBOARD, position2.toParserString()))
                     .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to copy")))));
         }
 

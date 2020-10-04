@@ -706,10 +706,10 @@ public final class BlockVector3 {
     }
 
     /**
-     * Returns a string representation specifically for copying.
+     * Returns a string representation that is supported by the parser.
      * @return string
      */
-    public String toCopyableString() {
+    public String toParserString() {
         return x + "," + y + "," + z;
     }
 }
