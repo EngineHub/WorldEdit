@@ -300,7 +300,9 @@ public class BrushCommands {
                              @Switch(name = 'f', desc = "Also kill all friendly mobs (Applies the flags `-abgnpt`)")
                                  boolean killFriendly,
                              @Switch(name = 'r', desc = "Also destroy armor stands")
-                                 boolean killArmorStands) throws WorldEditException {
+                                 boolean killArmorStands,
+                             @Switch(name = 'w', desc = "Also kill water mobs")
+                                 boolean killWater) throws WorldEditException {
         LocalConfiguration config = worldEdit.getConfiguration();
 
         double maxRadius = config.maxBrushRadius;
@@ -324,6 +326,7 @@ public class BrushCommands {
         flags.or(CreatureButcher.Flags.AMBIENT, killAmbient, "worldedit.butcher.ambient");
         flags.or(CreatureButcher.Flags.TAGGED, killWithName, "worldedit.butcher.tagged");
         flags.or(CreatureButcher.Flags.ARMOR_STAND, killArmorStands, "worldedit.butcher.armorstands");
+        flags.or(CreatureButcher.Flags.WATER, killWater, "worldedit.butcher.water");
 
         BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
         tool.setSize(radius);

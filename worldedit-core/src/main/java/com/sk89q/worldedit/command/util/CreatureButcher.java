@@ -36,8 +36,9 @@ public class CreatureButcher {
         public static final int GOLEMS = 1 << 3;
         public static final int AMBIENT = 1 << 4;
         public static final int TAGGED = 1 << 5;
-        public static final int FRIENDLY = PETS | NPCS | ANIMALS | GOLEMS | AMBIENT | TAGGED;
         public static final int ARMOR_STAND = 1 << 6;
+        public static final int WATER = 1 << 7;
+        public static final int FRIENDLY = PETS | NPCS | ANIMALS | GOLEMS | AMBIENT | TAGGED | WATER;
 
         private Flags() {
         }
@@ -73,6 +74,7 @@ public class CreatureButcher {
             boolean killAmbient = (flags & Flags.AMBIENT) != 0;
             boolean killTagged = (flags & Flags.TAGGED) != 0;
             boolean killArmorStands = (flags & Flags.ARMOR_STAND) != 0;
+            boolean killWaterCreatures = (flags & Flags.WATER) != 0;
 
             EntityProperties type = entity.getFacet(EntityProperties.class);
 
@@ -113,6 +115,10 @@ public class CreatureButcher {
             }
 
             if (!killArmorStands && type.isArmorStand()) {
+                return false;
+            }
+
+            if (!killWaterCreatures && type.isWaterCreature()) {
                 return false;
             }
 
