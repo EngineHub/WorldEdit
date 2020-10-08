@@ -46,7 +46,7 @@ public class ArchiveUnpacker {
         try {
             TEMP_DIR = Paths.get(
                 System.getProperty("java.io.tmpdir"),
-                "worldedit-unpack-dir-for" + System.getProperty("user.name")
+                "worldedit-unpack-dir-for-" + System.getProperty("user.name")
             );
             Files.createDirectories(TEMP_DIR);
         } catch (IOException e) {
