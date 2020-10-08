@@ -191,8 +191,8 @@ public class TranslationManager {
             }
         } catch (Exception t) {
             LOGGER.warn(
-                "Failed to load translations" +
-                    ", locale=" + locale,
+                "Failed to load translations"
+                    + ", locale=" + locale,
                 t
             );
         } finally {

@@ -108,4 +108,7 @@ public class ArchiveUnpacker {
         }
     }
 
+    private ArchiveUnpacker() {
+    }
+
 }
