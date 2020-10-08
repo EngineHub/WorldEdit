@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -94,24 +95,46 @@ public class TranslationManager {
     private final Lock loadLock = new ReentrantLock();
     private Locale defaultLocale = Locale.ENGLISH;
 
+    private final ResourceLoader resourceLoader;
     private final Path userProvidedFlatRoot;
     private final Path internalZipRoot;
     @Nullable
-    private final Path userProvidedZipRoot;
+    private Path userProvidedZipRoot;
 
     public TranslationManager(ResourceLoader resourceLoader) throws IOException {
+        this.resourceLoader = resourceLoader;
         checkNotNull(resourceLoader);
         this.userProvidedFlatRoot = resourceLoader.getLocalResource("lang");
         this.internalZipRoot = ArchiveUnpacker.unpackArchive(checkNotNull(
             resourceLoader.getRootResource("lang/i18n.zip"),
             "Missing internal i18n.zip!"
         ));
+    }
+
+    private void load() throws IOException {
         Path userZip = resourceLoader.getLocalResource("lang/i18n.zip");
         Path result = null;
         if (Files.exists(userZip)) {
             result = ArchiveUnpacker.unpackArchive(userZip.toUri().toURL());
         }
         this.userProvidedZipRoot = result;
+    }
+
+    public void reload() {
+        loadLock.lock();
+        try {
+            loadedLocales.clear();
+            for (Future<Void> future : loadFutures.values()) {
+                Futures.getUnchecked(future);
+            }
+            loadFutures.clear();
+            translationTable.clear();
+            load();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        } finally {
+            loadLock.unlock();
+        }
     }
 
     public Component convertText(Component component, Locale locale) {

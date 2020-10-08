@@ -70,4 +70,10 @@ public abstract class AbstractPlatform implements Platform {
     public DataFixer getDataFixer() {
         return null;
     }
+
+    @Override
+    public void reload() {
+        getTranslationManager().reload();
+    }
+
 }
