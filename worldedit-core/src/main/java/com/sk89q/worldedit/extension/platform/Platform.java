@@ -23,6 +23,7 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.io.ResourceLoader;
+import com.sk89q.worldedit.util.translation.TranslationManager;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.Registries;
@@ -47,6 +48,8 @@ public interface Platform {
      * @return The resource loader
      */
     ResourceLoader getResourceLoader();
+
+    TranslationManager getTranslationManager();
 
     /**
      * Gets the registry holder.

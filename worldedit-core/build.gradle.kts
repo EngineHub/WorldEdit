@@ -1,5 +1,3 @@
-import com.mendhak.gradlecrowdin.DownloadTranslationsTask
-import com.mendhak.gradlecrowdin.UploadSourceFileTask
 import net.minecrell.gradle.licenser.LicenseExtension
 import org.gradle.plugins.ide.idea.model.IdeaModel
 
@@ -13,10 +11,24 @@ plugins {
 
 applyPlatformAndCoreConfiguration()
 
-configurations.all {
-    resolutionStrategy {
-        force("com.google.guava:guava:21.0")
+repositories {
+    ivy {
+        url = uri("https://repo.enginehub.org/language-files/")
+        name = "EngineHub Language Files"
+        patternLayout {
+            artifact("[organisation]/[module]/[revision]/[artifact]-[revision](+[classifier])(.[ext])")
+            setM2compatible(true)
+        }
     }
+}
+
+configurations {
+    all {
+        resolutionStrategy {
+            force("com.google.guava:guava:21.0")
+        }
+    }
+    register("languageFiles")
 }
 
 dependencies {
@@ -41,6 +53,9 @@ dependencies {
     "annotationProcessor"("com.google.guava:guava:21.0")
     "compileOnly"("com.google.auto.value:auto-value-annotations:${Versions.AUTO_VALUE}")
     "annotationProcessor"("com.google.auto.value:auto-value:${Versions.AUTO_VALUE}")
+
+    "languageFiles"("${project.group}:worldedit-lang:${project.version}:10@zip")
+
     "testImplementation"("ch.qos.logback:logback-core:${Versions.LOGBACK}")
     "testImplementation"("ch.qos.logback:logback-classic:${Versions.LOGBACK}")
 }
@@ -93,48 +108,13 @@ sourceSets.named("main") {
     }
 }
 
-val i18nSource = file("src/main/resources/lang/strings.json")
-val processResources = tasks.named<Copy>("processResources")
-
-val crowdinApiKey = "crowdin_apikey"
-if (project.hasProperty(crowdinApiKey) && !gradle.startParameter.isOffline) {
-    tasks.named<UploadSourceFileTask>("crowdinUpload") {
-        apiKey = "${project.property(crowdinApiKey)}"
-        projectId = "worldedit-core"
-        files = arrayOf(
-            object {
-                var name = "strings.json"
-                var source = "$i18nSource"
-            }
-        )
-    }
-
-    val dlTranslationsTask = tasks.named<DownloadTranslationsTask>("crowdinDownload") {
-        apiKey = "${project.property(crowdinApiKey)}"
-        destination = "${buildDir.resolve("crowdin-i18n")}"
-        projectId = "worldedit-core"
-    }
-
-    processResources.configure {
-        dependsOn(dlTranslationsTask)
-        from(dlTranslationsTask.map { it.destination }) {
-            into("lang")
+tasks.named<Copy>("processResources") {
+    // it's in the zip too
+    exclude("**/lang/strings.json")
+    from(configurations.named("languageFiles")) {
+        rename {
+            "i18n.zip"
         }
+        into("lang")
     }
-
-    tasks.named("classes") {
-        dependsOn("crowdinDownload")
-    }
-}
-
-// allow checking of the source file even without the API key
-val checkTranslationFiles by tasks.registering(TranslationFileCheck::class) {
-    dependsOn(processResources)
-    sourceFile.set(i18nSource)
-    translationFiles.from(fileTree(processResources.map { it.destinationDir }) {
-        include("**/lang/**/*.json")
-    })
-}
-tasks.named("check") {
-    dependsOn(checkTranslationFiles)
 }
