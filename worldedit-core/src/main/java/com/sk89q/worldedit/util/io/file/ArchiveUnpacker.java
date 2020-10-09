@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.util.io.file;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 import com.google.common.io.ByteProcessor;
@@ -33,10 +32,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.FileAttribute;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
-import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.zip.ZipEntry;
@@ -45,14 +40,6 @@ import java.util.zip.ZipInputStream;
 public class ArchiveUnpacker {
 
     private static final String UNPACK_FINISHED = ".unpack_finished";
-    private static final FileAttribute<Set<PosixFilePermission>> PRIVATE_FILE_ATTR =
-        PosixFilePermissions.asFileAttribute(
-            ImmutableSet.of(
-                PosixFilePermission.OWNER_READ,
-                PosixFilePermission.OWNER_WRITE,
-                PosixFilePermission.OWNER_EXECUTE
-            )
-        );
     private static final Path TEMP_DIR;
 
     static {
@@ -61,7 +48,10 @@ public class ArchiveUnpacker {
                 System.getProperty("java.io.tmpdir"),
                 "worldedit-unpack-dir-for-" + System.getProperty("user.name")
             );
-            Files.createDirectories(TEMP_DIR, PRIVATE_FILE_ATTR);
+            Files.createDirectories(
+                TEMP_DIR,
+                SafeFiles.getOwnerOnlyFileAttributes(AttributeTarget.DIRECTORY)
+            );
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -76,7 +66,7 @@ public class ArchiveUnpacker {
                 private final Hasher hasher = Hashing.crc32c().newHasher();
 
                 @Override
-                public boolean processBytes(byte[] buf, int off, int len) throws IOException {
+                public boolean processBytes(byte[] buf, int off, int len) {
                     hasher.putBytes(buf, off, len);
                     return true;
                 }
@@ -108,9 +98,15 @@ public class ArchiveUnpacker {
                         continue;
                     }
                     if (next.isDirectory()) {
-                        Files.createDirectories(resolved, PRIVATE_FILE_ATTR);
+                        Files.createDirectories(
+                            resolved,
+                            SafeFiles.getOwnerOnlyFileAttributes(AttributeTarget.DIRECTORY)
+                        );
                     } else {
-                        Files.createFile(resolved, PRIVATE_FILE_ATTR);
+                        Files.createFile(
+                            resolved,
+                            SafeFiles.getOwnerOnlyFileAttributes(AttributeTarget.FILE)
+                        );
                         Files.copy(zipReader, resolved, StandardCopyOption.REPLACE_EXISTING);
                     }
                 }
