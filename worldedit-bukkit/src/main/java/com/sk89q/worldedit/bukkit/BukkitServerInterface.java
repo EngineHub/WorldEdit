@@ -119,6 +119,7 @@ public class BukkitServerInterface extends AbstractPlatform implements MultiUser
     @Override
     public void reload() {
         plugin.loadConfiguration();
+        super.reload();
     }
 
     @Override

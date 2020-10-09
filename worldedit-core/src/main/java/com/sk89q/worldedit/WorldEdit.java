@@ -123,10 +123,6 @@ public final class WorldEdit {
     private final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(
             EvenMoreExecutors.newBoundedCachedThreadPool(0, 1, 20, "WorldEdit Task Executor - %s"));
     private final Supervisor supervisor = new SimpleSupervisor();
-    private final LazyReference<TranslationManager> translationManager =
-            LazyReference.from(() -> new TranslationManager(
-                    WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.CONFIGURATION).getResourceLoader()
-            ));
     private final AssetLoaders assetLoaders = new AssetLoaders(this);
 
     private final BlockFactory blockFactory = new BlockFactory(this);
@@ -250,7 +246,8 @@ public final class WorldEdit {
      * @return the translation manager
      */
     public TranslationManager getTranslationManager() {
-        return translationManager.getValue();
+        return getPlatformManager().queryCapability(Capability.CONFIGURATION)
+            .getTranslationManager();
     }
 
     /**

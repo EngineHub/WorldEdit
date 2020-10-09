@@ -80,6 +80,7 @@ class CLIPlatform extends AbstractPlatform {
     @Override
     public void reload() {
         getConfiguration().load();
+        super.reload();
     }
 
     @Override

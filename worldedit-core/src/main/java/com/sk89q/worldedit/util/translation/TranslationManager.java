@@ -19,33 +19,42 @@
 
 package com.sk89q.worldedit.util.translation;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.common.collect.Table;
+import com.google.common.collect.Tables;
+import com.google.common.util.concurrent.Futures;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.renderer.TranslatableComponentRenderer;
 import com.sk89q.worldedit.util.io.ResourceLoader;
+import com.sk89q.worldedit.util.io.file.ArchiveUnpacker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Type;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static java.util.stream.Collectors.toMap;
 
 /**
  * Handles translations for the plugin.
@@ -65,126 +74,182 @@ import static java.util.stream.Collectors.toMap;
  */
 public class TranslationManager {
 
-    private static final Gson gson = new GsonBuilder().create();
-    private static final Type STRING_MAP_TYPE = new TypeToken<Map<String, String>>() {}.getType();
+    private static final Logger LOGGER = LoggerFactory.getLogger(TranslationManager.class);
+    private static final Gson GSON = new GsonBuilder().create();
+    private static final Type STRING_MAP_TYPE = new TypeToken<Map<String, String>>() {
+    }.getType();
 
     public static String makeTranslationKey(String type, String id) {
         String[] parts = id.split(":", 2);
         return type + '.' + parts[0] + '.' + parts[1].replace('/', '.');
     }
 
-    private final Map<Locale, Map<String, String>> translationMap = new ConcurrentHashMap<>();
     private final TranslatableComponentRenderer<Locale> friendlyComponentRenderer = TranslatableComponentRenderer.from(
-        (locale, key) -> {
-            String translation = getTranslationMap(locale).get(key);
-            if (translation == null) {
-                // let it pass through (for e.g. MC messages)
-                return null;
-            }
-            return new MessageFormat(translation, locale);
-        }
+        this::getTranslation
     );
+    private final Table<Locale, String, MessageFormat> translationTable = Tables.newCustomTable(
+        new ConcurrentHashMap<>(), ConcurrentHashMap::new
+    );
+    private final Map<Locale, Future<Void>> loadFutures = new HashMap<>();
+    private final Set<Locale> loadedLocales = Sets.newConcurrentHashSet();
+    private final Lock loadLock = new ReentrantLock();
     private Locale defaultLocale = Locale.ENGLISH;
 
     private final ResourceLoader resourceLoader;
+    private final Path userProvidedFlatRoot;
+    private final Path internalZipRoot;
+    @Nullable
+    private Path userProvidedZipRoot;
 
-    private final Set<Locale> checkedLocales = new HashSet<>();
-
-    public TranslationManager(ResourceLoader resourceLoader) {
-        checkNotNull(resourceLoader);
+    public TranslationManager(ResourceLoader resourceLoader) throws IOException {
         this.resourceLoader = resourceLoader;
+        checkNotNull(resourceLoader);
+        this.userProvidedFlatRoot = resourceLoader.getLocalResource("lang");
+        this.internalZipRoot = ArchiveUnpacker.unpackArchive(checkNotNull(
+            resourceLoader.getRootResource("lang/i18n.zip"),
+            "Missing internal i18n.zip!"
+        ));
+    }
+
+    private void load() throws IOException {
+        Path userZip = resourceLoader.getLocalResource("lang/i18n.zip");
+        Path result = null;
+        if (Files.exists(userZip)) {
+            result = ArchiveUnpacker.unpackArchive(userZip.toUri().toURL());
+        }
+        this.userProvidedZipRoot = result;
+    }
+
+    public void reload() {
+        loadLock.lock();
+        try {
+            loadedLocales.clear();
+            for (Future<Void> future : loadFutures.values()) {
+                Futures.getUnchecked(future);
+            }
+            loadFutures.clear();
+            translationTable.clear();
+            load();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        } finally {
+            loadLock.unlock();
+        }
+    }
+
+    public Component convertText(Component component, Locale locale) {
+        return friendlyComponentRenderer.render(component, locale);
     }
 
     public void setDefaultLocale(Locale defaultLocale) {
         this.defaultLocale = defaultLocale;
     }
 
-    private Map<String, String> filterTranslations(Map<String, String> translations) {
-        return translations.entrySet().stream()
-            .filter(e -> !e.getValue().isEmpty())
-            .map(e -> Maps.immutableEntry(e.getKey(), e.getValue().replace("'", "''")))
-            .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-
-    private Map<String, String> parseTranslationFile(InputStream inputStream) throws IOException {
-        try (Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
-            return filterTranslations(gson.fromJson(reader, STRING_MAP_TYPE));
+    private MessageFormat getTranslation(Locale locale, String key) {
+        if (!loadedLocales.contains(locale)) {
+            loadLocale(locale);
         }
+
+        MessageFormat format = translationTable.get(locale, key);
+        if (format == null && !defaultLocale.equals(locale)) {
+            // Recurse into other options if not already at the base condition (defaultLocale)
+            if (!locale.getCountry().isEmpty()) {
+                // try without country modifier
+                return getTranslation(new Locale(locale.getLanguage()), key);
+            }
+            // otherwise, try the default locale
+            return getTranslation(defaultLocale, key);
+        }
+        // note that this may be null in the case of the defaultLocale
+        return format;
     }
 
-    private Optional<Map<String, String>> loadTranslationFile(String filename) {
-        Map<String, String> baseTranslations = new ConcurrentHashMap<>();
+    private void loadLocale(Locale locale) {
+        CompletableFuture<Void> ourFuture;
+        loadLock.lock();
+        try {
+            Future<Void> ftr = loadFutures.get(locale);
+            if (ftr == null) {
+                // no existing future, enter ourselves as the loader
+                ourFuture = new CompletableFuture<>();
+                loadFutures.put(locale, ourFuture);
+            } else {
+                // existing loader, await their completion first
+                Futures.getUnchecked(ftr);
+                return;
+            }
+        } finally {
+            loadLock.unlock();
+        }
 
         try {
-            URL resource = resourceLoader.getRootResource("lang/" + filename);
-            if (resource != null) {
-                try (InputStream stream = resource.openStream()) {
-                    baseTranslations = parseTranslationFile(stream);
+            String localePath = getLocalePath(locale);
+            Map<String, String> entries = new HashMap<>();
+
+            // From lowest priority to highest
+            putTranslationData(entries, this.internalZipRoot.resolve(localePath));
+            if (this.userProvidedZipRoot != null) {
+                putTranslationData(entries, this.userProvidedZipRoot.resolve(localePath));
+            }
+            putTranslationData(entries, this.userProvidedFlatRoot.resolve(localePath));
+
+            // Load message formats
+            for (Map.Entry<String, String> entry : entries.entrySet()) {
+                MessageFormat format;
+                try {
+                    format = new MessageFormat(entry.getValue().replace("'", "''"), locale);
+                } catch (IllegalArgumentException e) {
+                    LOGGER.warn(
+                        "Failed to load translation"
+                            + ", locale=" + locale
+                            + ", key=" + entry.getKey()
+                            + ", value=" + entry.getValue(),
+                        e
+                    );
+                    continue;
                 }
+                translationTable.put(
+                    locale, entry.getKey(), format
+                );
             }
-        } catch (IOException e) {
-            // Seem to be missing base. If the user has provided a file use that.
+        } catch (Exception t) {
+            LOGGER.warn(
+                "Failed to load translations"
+                    + ", locale=" + locale,
+                t
+            );
+        } finally {
+            ourFuture.complete(null);
+            loadedLocales.add(locale);
         }
-
-        Path localFile = resourceLoader.getLocalResource("lang/" + filename);
-        if (Files.exists(localFile)) {
-            try (InputStream stream = Files.newInputStream(localFile)) {
-                baseTranslations.putAll(parseTranslationFile(stream));
-            } catch (IOException e) {
-                // Failed to parse custom language file. Worth printing.
-                e.printStackTrace();
-            }
-        }
-
-        return baseTranslations.size() == 0 ? Optional.empty() : Optional.of(baseTranslations);
     }
 
-    private boolean tryLoadTranslations(Locale locale) {
-        if (checkedLocales.contains(locale)) {
-            return false;
+    private String getLocalePath(Locale locale) {
+        if (defaultLocale.equals(locale)) {
+            return "strings.json";
         }
-        checkedLocales.add(locale);
-        // Make a copy of the default language file
-        Map<String, String> baseTranslations = new ConcurrentHashMap<>();
-        if (!locale.equals(defaultLocale)) {
-            baseTranslations.putAll(getTranslationMap(defaultLocale));
-        }
-        Optional<Map<String, String>> langData = Optional.empty();
-        if (!locale.getCountry().isEmpty()) {
-            langData = loadTranslationFile(locale.getLanguage() + "-" + locale.getCountry() + "/strings.json");
-        }
-        if (!langData.isPresent()) {
-            langData = loadTranslationFile(locale.getLanguage() + "/strings.json");
-        }
-        if (langData.isPresent()) {
-            baseTranslations.putAll(langData.get());
-            translationMap.put(locale, baseTranslations);
-            return true;
-        }
-        if (locale.equals(defaultLocale)) {
-            translationMap.put(Locale.ENGLISH, loadTranslationFile("strings.json").orElseThrow(
-                () -> new RuntimeException("Failed to load WorldEdit strings!")
-            ));
-            return true;
-        }
-        return false;
+        String country = locale.getCountry().isEmpty() ? "" : "-" + locale.getCountry();
+        return locale.getLanguage() + country + "/strings.json";
     }
 
-    private Map<String, String> getTranslationMap(Locale locale) {
-        Map<String, String> translations = translationMap.get(locale);
-        if (translations == null) {
-            if (tryLoadTranslations(locale)) {
-                return getTranslationMap(locale);
-            }
-            if (!locale.equals(defaultLocale)) {
-                translations = getTranslationMap(defaultLocale);
-            }
+    private void putTranslationData(Map<String, String> data, Path source) throws IOException {
+        if (!Files.exists(source)) {
+            return;
         }
-
-        return translations;
+        try (InputStream in = Files.newInputStream(source)) {
+            putTranslationData(data, in);
+        }
     }
 
-    public Component convertText(Component component, Locale locale) {
-        return friendlyComponentRenderer.render(component, locale);
+    private void putTranslationData(Map<String, String> data, InputStream inputStream) throws IOException {
+        try (Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
+            Map<String, String> map = GSON.fromJson(reader, STRING_MAP_TYPE);
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                if (entry.getValue().isEmpty()) {
+                    continue;
+                }
+                data.put(entry.getKey(), entry.getValue());
+            }
+        }
     }
 }

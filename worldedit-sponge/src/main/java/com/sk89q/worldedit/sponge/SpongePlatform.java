@@ -88,6 +88,7 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
     @Override
     public void reload() {
         getConfiguration().load();
+        super.reload();
     }
 
     @Override

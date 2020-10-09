@@ -20,11 +20,15 @@
 package com.sk89q.worldedit.extension.platform;
 
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.io.ResourceLoader;
 import com.sk89q.worldedit.util.io.WorldEditResourceLoader;
+import com.sk89q.worldedit.util.translation.TranslationManager;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.World;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,10 +38,22 @@ import java.util.List;
 public abstract class AbstractPlatform implements Platform {
 
     private final ResourceLoader resourceLoader = new WorldEditResourceLoader(WorldEdit.getInstance());
+    private final LazyReference<TranslationManager> translationManager = LazyReference.from(() -> {
+        try {
+            return new TranslationManager(getResourceLoader());
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    });
 
     @Override
     public ResourceLoader getResourceLoader() {
         return resourceLoader;
+    }
+
+    @Override
+    public TranslationManager getTranslationManager() {
+        return translationManager.getValue();
     }
 
     @Override
@@ -54,4 +70,10 @@ public abstract class AbstractPlatform implements Platform {
     public DataFixer getDataFixer() {
         return null;
     }
+
+    @Override
+    public void reload() {
+        getTranslationManager().reload();
+    }
+
 }
