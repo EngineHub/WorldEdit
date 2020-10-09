@@ -148,6 +148,7 @@ public class SafeFiles {
 
     private static final FileAttribute<?>[] OWNER_ONLY_FILE_ATTRS;
     private static final FileAttribute<?>[] OWNER_ONLY_DIR_ATTRS;
+
     static {
         if (FileSystems.getDefault().supportedFileAttributeViews().contains("posix")) {
             OWNER_ONLY_FILE_ATTRS = new FileAttribute<?>[] {
