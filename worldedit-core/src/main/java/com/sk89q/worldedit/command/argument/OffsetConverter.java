@@ -35,6 +35,7 @@ import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
 import org.enginehub.piston.converter.ConversionResult;
+import org.enginehub.piston.converter.FailedConversion;
 import org.enginehub.piston.inject.InjectedValueAccess;
 import org.enginehub.piston.inject.Key;
 
@@ -111,21 +112,25 @@ public class OffsetConverter implements ArgumentConverter<BlockVector3> {
     @Override
     public ConversionResult<BlockVector3> convert(String input, InjectedValueAccess context) {
         if (input.startsWith("^")) {
-            // Looking at a relative vector.
-            Actor actor = context.injectedValue(Key.of(Actor.class))
-                .orElseThrow(() -> new IllegalStateException("An actor is required to use relative offsets"));
+            try {
+                // Looking at a relative vector.
+                Actor actor = context.injectedValue(Key.of(Actor.class))
+                    .orElseThrow(() -> new IllegalStateException("An actor is required to use relative offsets"));
 
-            if (!(actor instanceof Locatable)) {
-                throw new IllegalStateException("Only a locatable actor may use relative offsets");
+                if (!(actor instanceof Locatable)) {
+                    throw new IllegalStateException("Only a locatable actor may use relative offsets");
+                }
+
+                Location location = ((Locatable) actor).getLocation();
+
+                return vectorConverter.convert(input.substring(1), context).map(blockVector3s ->
+                    blockVector3s.stream()
+                        .map(vector -> rotateToRelative(location, vector))
+                        .collect(Collectors.toList())
+                );
+            } catch (IllegalStateException e) {
+                return FailedConversion.from(e);
             }
-
-            Location location = ((Locatable) actor).getLocation();
-
-            return vectorConverter.convert(input.substring(1), context).map(blockVector3s ->
-                blockVector3s.stream()
-                    .map(vector -> rotateToRelative(location, vector))
-                    .collect(Collectors.toList())
-            );
         } else {
             return directionVectorConverter.convert(input, context)
                 .orElse(vectorConverter.convert(input, context));
