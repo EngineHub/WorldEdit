@@ -19,9 +19,15 @@
 
 package com.sk89q.worldedit.util.io.file;
 
+import com.google.common.collect.ImmutableSet;
+
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -137,6 +143,54 @@ public class SafeFiles {
             return null;
         } catch (IOException e) {
             return e;
+        }
+    }
+
+    private static final FileAttribute<?>[] OWNER_ONLY_FILE_ATTRS;
+    private static final FileAttribute<?>[] OWNER_ONLY_DIR_ATTRS;
+
+    static {
+        if (FileSystems.getDefault().supportedFileAttributeViews().contains("posix")) {
+            OWNER_ONLY_FILE_ATTRS = new FileAttribute<?>[] {
+                PosixFilePermissions.asFileAttribute(
+                    ImmutableSet.of(
+                        PosixFilePermission.OWNER_READ,
+                        PosixFilePermission.OWNER_WRITE
+                    )
+                )
+            };
+            OWNER_ONLY_DIR_ATTRS = new FileAttribute<?>[] {
+                PosixFilePermissions.asFileAttribute(
+                    ImmutableSet.of(
+                        PosixFilePermission.OWNER_READ,
+                        PosixFilePermission.OWNER_WRITE,
+                        PosixFilePermission.OWNER_EXECUTE
+                    )
+                )
+            };
+        } else {
+            OWNER_ONLY_FILE_ATTRS = new FileAttribute<?>[0];
+            OWNER_ONLY_DIR_ATTRS = new FileAttribute<?>[0];
+        }
+    }
+
+    /**
+     * Get a set of file attributes for file creation with owner-only access, if possible.
+     *
+     * <p>
+     * On POSIX, this returns o+rw (and o+x if directory), on Windows it returns nothing.
+     * </p>
+     *
+     * @return the owner-only file attributes
+     */
+    public static FileAttribute<?>[] getOwnerOnlyFileAttributes(AttributeTarget attributeTarget) {
+        switch (attributeTarget) {
+            case FILE:
+                return OWNER_ONLY_FILE_ATTRS;
+            case DIRECTORY:
+                return OWNER_ONLY_DIR_ATTRS;
+            default:
+                throw new IllegalStateException("Unknown attribute target " + attributeTarget);
         }
     }
 
