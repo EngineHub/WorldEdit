@@ -20,9 +20,16 @@
 - Added -c mode to //deform, and fixed -o mode
 - Added a Biome brush
 - Added an #air mask, that matches all types of air blocks
+- Added a #surface mask, that matches any blocks that are next to air
+- Added the ability to stack by block units using -r with //stack
+- Added an image heightmap brush
+- Added the ability to copy block positions on click to //size
+- Added -w flag to butcher for water mobs
+- Added relative offset support to offset parsing (^x,y,z)
 - Improved ES6 support for craftscripts
 - Improved //watchdog to also tick get* calls to fix issues with slow chunk loads
 - Improved error messages for invalid schematics
+- Improved the way translations are bundled and loaded
 - Fixed an issue with edges of polygonal regions
 - Fixed multiple of the same flag being applied to commands not providing a friendly error
 - Fixed potential issues with direction name parsing in commands
@@ -67,6 +74,12 @@
 - Fixed entity detection being slightly incorrect around the maximum point of regions on Forge and Fabric
 - Fixed loading snapshot files with odd slashes
 - Fixed an issue where the output text of //chunk was broken
+- Prevent schematics being saved on Bukkit when using an incompatible WorldEdit version
+- Fixed variable argument functions in expressions failing, such as min and max
+- Fixed an issue where plugins using the deprecated face generation function would fail
+- Fixed copy and cut not applying block change limit when creating clipboard
+- Fixed uppercase biomes failing in biome commands
+- Fixed //snow not perfectly obeying vanilla rules for snow placement
 
 7.1.0
 - Improve the expression parser by compiling expressions for performance
