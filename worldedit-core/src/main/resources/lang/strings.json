@@ -36,6 +36,7 @@
     "worldedit.brush.operation.equip": "Set brush to {0}.",
     "worldedit.brush.heightmap.equip": "Heightmap brush equipped ({0}).",
     "worldedit.brush.heightmap.unknown": "Unknown heightmap brush: {0}.",
+    "worldedit.brush.erode.equip": "Erosion brush shape equipped: {0}.",
     "worldedit.brush.none.equip": "Brush unbound from your current item.",
 
     "worldedit.setbiome.changed": "Biomes were changed for approximately {0} blocks.",
