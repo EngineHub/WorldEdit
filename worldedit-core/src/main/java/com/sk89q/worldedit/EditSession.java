@@ -2689,6 +2689,153 @@ public class EditSession implements Extent, AutoCloseable {
         return changed;
     }
 
+    public int erode(BlockVector3 position, double brushSize, int minFillFaces, int numFillIterations, int minErodeFaces, int numErodeIterations) throws MaxChangedBlocksException {
+        int ceilBrushSize = (int) Math.ceil(brushSize);
+        int bufferSize = ceilBrushSize * 2 + 3;  // + 1 due to checking the adjacent blocks, plus the 0th block
+        // Store block states in a 3d array so we can do multiple mutations then commit.
+        // Two are required as for each iteration, one is "current" and the other is "new"
+        BlockState[][][] currentBuffer = new BlockState[bufferSize][bufferSize][bufferSize];
+        BlockState[][][] nextBuffer = new BlockState[bufferSize][bufferSize][bufferSize];
+
+        // Simply used for swapping the two
+        BlockState[][][] tmp;
+
+
+        // Load into buffer
+        for (int x = 0; x < bufferSize; x++) {
+            for (int y = 0; y < bufferSize; y++) {
+                for (int z = 0; z < bufferSize; z++) {
+                    BlockState blockState = getBlock(position.add(x - ceilBrushSize - 1, y - ceilBrushSize - 1, z - ceilBrushSize - 1));
+                    currentBuffer[x][y][z] = blockState;
+                    nextBuffer[x][y][z] = blockState;
+                }
+            }
+        }
+
+        double brushSizeSq = brushSize * brushSize;
+        Map<BlockState, Integer> blockStateFrequency = new HashMap<>();
+        int totalFaces;
+        int highestFreq;
+        BlockState highestState;
+        for (int i = 0; i < numErodeIterations; i++) {
+            for (int x = 0; x <= ceilBrushSize * 2; x++) {
+                for (int y = 0; y <= ceilBrushSize * 2; y++) {
+                    for (int z = 0; z <= ceilBrushSize * 2; z++) {
+                        int realX = x - ceilBrushSize;
+                        int realY = y - ceilBrushSize;
+                        int realZ = z - ceilBrushSize;
+                        if (lengthSq(realX, realY, realZ) > brushSizeSq) {
+                            continue;
+                        }
+
+                        // Copy across changes
+                        nextBuffer[x + 1][y + 1][z + 1] = currentBuffer[x + 1][y + 1][z + 1];
+
+                        BlockState blockState = currentBuffer[x + 1][y + 1][z + 1];
+
+                        if (blockState.getBlockType().getMaterial().isLiquid() || blockState.getBlockType().getMaterial().isAir()) {
+                            continue;
+                        }
+
+                        blockStateFrequency.clear();
+                        totalFaces = 0;
+                        highestFreq = 0;
+                        highestState = blockState;
+                        for (BlockVector3 vec3 : recurseDirections) {
+                            BlockState adj = currentBuffer[x + 1 + vec3.getX()][y + 1 + vec3.getY()][z + 1 + vec3.getZ()];
+
+                            if (!adj.getBlockType().getMaterial().isLiquid() && !adj.getBlockType().getMaterial().isAir()) {
+                                continue;
+                            }
+
+                            totalFaces++;
+                            int newFreq = blockStateFrequency.getOrDefault(adj, 0) + 1;
+                            blockStateFrequency.put(adj, newFreq);
+
+                            if (newFreq > highestFreq) {
+                                highestFreq = newFreq;
+                                highestState = adj;
+                            }
+                        }
+
+                        if (totalFaces >= minErodeFaces) {
+                            nextBuffer[x + 1][y + 1][z + 1] = highestState;
+                        }
+                    }
+                }
+            }
+            // Swap current and next
+            tmp = currentBuffer;
+            currentBuffer = nextBuffer;
+            nextBuffer = tmp;
+        }
+
+        for (int i = 0; i < numFillIterations; i++) {
+            for (int x = 0; x <= ceilBrushSize * 2; x++) {
+                for (int y = 0; y <= ceilBrushSize * 2; y++) {
+                    for (int z = 0; z <= ceilBrushSize * 2; z++) {
+                        int realX = x - ceilBrushSize;
+                        int realY = y - ceilBrushSize;
+                        int realZ = z - ceilBrushSize;
+                        if (lengthSq(realX, realY, realZ) > brushSizeSq) {
+                            continue;
+                        }
+
+                        // Copy across changes
+                        nextBuffer[x + 1][y + 1][z + 1] = currentBuffer[x + 1][y + 1][z + 1];
+
+                        BlockState blockState = currentBuffer[x + 1][y + 1][z + 1];
+                        // Needs to be empty
+                        if (!blockState.getBlockType().getMaterial().isLiquid() && !blockState.getBlockType().getMaterial().isAir()) {
+                            continue;
+                        }
+
+                        blockStateFrequency.clear();
+                        totalFaces = 0;
+                        highestFreq = 0;
+                        highestState = blockState;
+                        for (BlockVector3 vec3 : recurseDirections) {
+                            BlockState adj = currentBuffer[x + 1 + vec3.getX()][y + 1 + vec3.getY()][z + 1 + vec3.getZ()];
+                            if (adj.getBlockType().getMaterial().isLiquid() || adj.getBlockType().getMaterial().isAir()) {
+                                continue;
+                            }
+
+                            totalFaces++;
+                            int newFreq = blockStateFrequency.getOrDefault(adj, 0) + 1;
+                            blockStateFrequency.put(adj, newFreq);
+
+                            if (newFreq > highestFreq) {
+                                highestFreq = newFreq;
+                                highestState = adj;
+                            }
+                        }
+
+                        if (totalFaces >= minFillFaces) {
+                            nextBuffer[x + 1][y + 1][z + 1] = highestState;
+                        }
+                    }
+                }
+            }
+            // Swap current and next
+            tmp = currentBuffer;
+            currentBuffer = nextBuffer;
+            nextBuffer = tmp;
+        }
+
+        // Commit to world
+        int changed = 0;
+        for (int x = 0; x < bufferSize; x++) {
+            for (int y = 0; y < bufferSize; y++) {
+                for (int z = 0; z < bufferSize; z++) {
+                    setBlock(position.add(x - ceilBrushSize - 1, y - ceilBrushSize - 1, z - ceilBrushSize - 1), currentBuffer[x][y][z]);
+                    changed++;
+                }
+            }
+        }
+
+        return changed;
+    }
+
     private static final BlockVector3[] recurseDirections = {
             Direction.NORTH.toBlockVector(),
             Direction.EAST.toBlockVector(),

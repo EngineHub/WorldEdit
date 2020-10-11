@@ -30,6 +30,7 @@ import com.sk89q.worldedit.command.tool.BrushTool;
 import com.sk89q.worldedit.command.tool.brush.ButcherBrush;
 import com.sk89q.worldedit.command.tool.brush.ClipboardBrush;
 import com.sk89q.worldedit.command.tool.brush.CylinderBrush;
+import com.sk89q.worldedit.command.tool.brush.ErodeBrush;
 import com.sk89q.worldedit.command.tool.brush.GravityBrush;
 import com.sk89q.worldedit.command.tool.brush.HollowCylinderBrush;
 import com.sk89q.worldedit.command.tool.brush.HollowSphereBrush;
@@ -501,6 +502,30 @@ public class BrushCommands {
         setOperationBasedBrush(player, localSession, radius,
             new ApplyRegion(new BiomeFactory(biomeType)), shape, "worldedit.brush.biome");
         player.printInfo(TranslatableComponent.of("worldedit.setbiome.warning"));
+    }
+
+    @Command(
+        name = "erode",
+        desc = "Erode brush, erodes blocks in the area"
+    )
+    @CommandPermissions("worldedit.brush.erode")
+    public void erode(Player player, LocalSession session,
+                      @Arg(desc = "The size of the brush", def = "5")
+                          double brushSize,
+                      @Arg(desc = "Minimum number of faces for erosion", def = "2")
+                          int minErodeFaces,
+                      @Arg(desc = "Erode iterations", def = "1")
+                          int numErodeIterations,
+                      @Arg(desc = "Minimum number of faces for erosion", def = "5")
+                          int minFillFaces,
+                      @Arg(desc = "Fill iterations", def = "1")
+                          int numFillIterations) throws WorldEditException {
+        worldEdit.checkMaxBrushRadius(brushSize);
+        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+        tool.setSize(brushSize);
+        tool.setBrush(new ErodeBrush(minFillFaces, numFillIterations, minErodeFaces, numErodeIterations), "worldedit.brush.erode");
+
+        player.printInfo(TranslatableComponent.of("worldedit.brush.erode.equip", TextComponent.of((int) brushSize)));
     }
 
     static void setOperationBasedBrush(Player player, LocalSession session, double radius,
