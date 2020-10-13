@@ -24,13 +24,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Handles incoming WorldEditCui init message.
  */
 public class CUIChannelListener implements PluginMessageListener {
 
-    public static final Charset UTF_8_CHARSET = Charset.forName("UTF-8");
+    public static final Charset UTF_8_CHARSET = StandardCharsets.UTF_8;
     private final WorldEditPlugin plugin;
 
     public CUIChannelListener(WorldEditPlugin plugin) {
