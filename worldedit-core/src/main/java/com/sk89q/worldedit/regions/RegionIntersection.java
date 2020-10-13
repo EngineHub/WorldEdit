@@ -134,7 +134,7 @@ public class RegionIntersection extends AbstractRegion {
 
     @Override
     public Iterator<BlockVector3> iterator() {
-        return Iterators.concat(Iterators.transform(regions.iterator(), r -> r.iterator()));
+        return Iterators.concat(Iterators.transform(regions.iterator(), Iterable::iterator));
     }
 
 }
