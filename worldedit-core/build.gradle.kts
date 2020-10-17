@@ -109,8 +109,6 @@ sourceSets.named("main") {
 }
 
 tasks.named<Copy>("processResources") {
-    // it's in the zip too
-    exclude("**/lang/strings.json")
     from(configurations.named("languageFiles")) {
         rename {
             "i18n.zip"

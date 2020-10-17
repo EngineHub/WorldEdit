@@ -39,6 +39,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.lang.reflect.Type;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -183,35 +184,7 @@ public class TranslationManager {
         }
 
         try {
-            String localePath = getLocalePath(locale);
-            Map<String, String> entries = new HashMap<>();
-
-            // From lowest priority to highest
-            putTranslationData(entries, this.internalZipRoot.resolve(localePath));
-            if (this.userProvidedZipRoot != null) {
-                putTranslationData(entries, this.userProvidedZipRoot.resolve(localePath));
-            }
-            putTranslationData(entries, this.userProvidedFlatRoot.resolve(localePath));
-
-            // Load message formats
-            for (Map.Entry<String, String> entry : entries.entrySet()) {
-                MessageFormat format;
-                try {
-                    format = new MessageFormat(entry.getValue().replace("'", "''"), locale);
-                } catch (IllegalArgumentException e) {
-                    LOGGER.warn(
-                        "Failed to load translation"
-                            + ", locale=" + locale
-                            + ", key=" + entry.getKey()
-                            + ", value=" + entry.getValue(),
-                        e
-                    );
-                    continue;
-                }
-                translationTable.put(
-                    locale, entry.getKey(), format
-                );
-            }
+            loadTranslations(locale);
         } catch (Exception t) {
             LOGGER.warn(
                 "Failed to load translations"
@@ -221,6 +194,49 @@ public class TranslationManager {
         } finally {
             ourFuture.complete(null);
             loadedLocales.add(locale);
+        }
+    }
+
+    private void loadTranslations(Locale locale) throws IOException {
+        Map<String, String> entries = new HashMap<>();
+
+        // If needed, load the dev strings as an OVERRIDE!
+        // In dev, reading lang/strings.json from either i18n.zip or the config folder
+        // WILL NOT OCCUR!
+        URL devStrings;
+        if (locale == defaultLocale
+            && (devStrings = resourceLoader.getRootResource("lang/strings.json")) != null) {
+            try (InputStream in = devStrings.openStream()) {
+                putTranslationData(entries, in);
+            }
+        } else {
+            String localePath = getLocalePath(locale);
+            // From lowest priority to highest
+            putTranslationData(entries, this.internalZipRoot.resolve(localePath));
+            if (this.userProvidedZipRoot != null) {
+                putTranslationData(entries, this.userProvidedZipRoot.resolve(localePath));
+            }
+            putTranslationData(entries, this.userProvidedFlatRoot.resolve(localePath));
+        }
+
+        // Load message formats
+        for (Map.Entry<String, String> entry : entries.entrySet()) {
+            MessageFormat format;
+            try {
+                format = new MessageFormat(entry.getValue().replace("'", "''"), locale);
+            } catch (IllegalArgumentException e) {
+                LOGGER.warn(
+                    "Failed to load translation"
+                        + ", locale=" + locale
+                        + ", key=" + entry.getKey()
+                        + ", value=" + entry.getValue(),
+                    e
+                );
+                continue;
+            }
+            translationTable.put(
+                locale, entry.getKey(), format
+            );
         }
     }
 
