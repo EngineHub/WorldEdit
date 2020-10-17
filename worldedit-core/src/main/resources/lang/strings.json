@@ -121,6 +121,7 @@
     "worldedit.wand.invalid": "Wand item is mis-configured or disabled.",
     "worldedit.wand.selwand.info": "Left click: select pos #1; Right click: select pos #2",
     "worldedit.wand.navwand.info": "Left click: jump to location; Right click: pass through walls",
+    "worldedit.wand.selwand.now.tool": "The selection wand is now a normal tool. You can disable it with {0} and rebind it to any item with {1} or get a new wand with {2}.",
     "worldedit.contract.contracted": "Region contracted {0} blocks.",
     "worldedit.shift.shifted": "Region shifted.",
     "worldedit.outset.outset": "Region outset.",

@@ -315,15 +315,17 @@ public class SelectionCommands {
     )
     @CommandPermissions("worldedit.wand.toggle")
     public void toggleWand(Player player) {
-        player.printInfo(TextComponent.of("The selection wand is now a normal tool. You can disable it with ")
-                .append(TextComponent.of("/tool none", TextColor.AQUA).clickEvent(
-                        ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/tool none")))
-                .append(TextComponent.of(" and rebind it to any item with "))
-                .append(TextComponent.of("/tool selwand", TextColor.AQUA).clickEvent(
-                        ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/tool selwand")))
-                .append(TextComponent.of(" or get a new wand with "))
-                .append(TextComponent.of("//wand", TextColor.AQUA).clickEvent(
-                        ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "//wand"))));
+        player.printInfo(
+            TranslatableComponent.of(
+                "worldedit.wand.selwand.now.tool",
+                TextComponent.of("/tool none", TextColor.AQUA).clickEvent(
+                    ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/tool none")),
+                TextComponent.of("/tool selwand", TextColor.AQUA).clickEvent(
+                    ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/tool selwand")),
+                TextComponent.of("//wand", TextColor.AQUA).clickEvent(
+                    ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "//wand"))
+            )
+        );
     }
 
     @Command(
