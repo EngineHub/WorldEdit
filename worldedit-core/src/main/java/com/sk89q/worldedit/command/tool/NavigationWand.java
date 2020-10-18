@@ -28,9 +28,13 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 
 public class NavigationWand implements DoubleActionTraceTool {
+
+    private static final String PRIMARY_PERMISSION = "worldedit.navigation.thru.tool";
+    private static final String SECONDARY_PERMISSION = "worldedit.navigation.jumpto.tool";
+
     @Override
     public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session) {
-        if (!player.hasPermission("worldedit.navigation.jumpto.tool")) {
+        if (!player.hasPermission(SECONDARY_PERMISSION)) {
             return false;
         }
         final int maxDist = config.navigationWandMaxDistance;
@@ -48,7 +52,7 @@ public class NavigationWand implements DoubleActionTraceTool {
 
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session) {
-        if (!player.hasPermission("worldedit.navigation.thru.tool")) {
+        if (!player.hasPermission(PRIMARY_PERMISSION)) {
             return false;
         }
         final int maxDist = config.navigationWandMaxDistance;
@@ -64,6 +68,6 @@ public class NavigationWand implements DoubleActionTraceTool {
 
     @Override
     public boolean canUse(Actor actor) {
-        return true; // skip check here - checked separately for primary/secondary
+        return actor.hasPermission(PRIMARY_PERMISSION) || actor.hasPermission(SECONDARY_PERMISSION);
     }
 }
