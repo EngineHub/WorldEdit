@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.util.io.file;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 import com.google.common.io.ByteProcessor;
@@ -28,10 +29,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.zip.ZipEntry;
@@ -103,11 +106,20 @@ public class ArchiveUnpacker {
                             SafeFiles.getOwnerOnlyFileAttributes(AttributeTarget.DIRECTORY)
                         );
                     } else {
-                        Files.createFile(
+                        try (SeekableByteChannel channel = Files.newByteChannel(
                             resolved,
+                            ImmutableSet.of(
+                                StandardOpenOption.CREATE,
+                                StandardOpenOption.WRITE,
+                                StandardOpenOption.TRUNCATE_EXISTING
+                            ),
                             SafeFiles.getOwnerOnlyFileAttributes(AttributeTarget.FILE)
-                        );
-                        Files.copy(zipReader, resolved, StandardCopyOption.REPLACE_EXISTING);
+                        )) {
+                            ByteStreams.copy(
+                                Channels.newChannel(zipReader),
+                                channel
+                            );
+                        }
                     }
                 }
             }
