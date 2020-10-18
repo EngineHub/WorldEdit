@@ -286,7 +286,7 @@ public class SelectionCommands {
 
     @Command(
         name = "/wand",
-        desc = "Get the wand object",
+        desc = "Get the wand item",
         descFooter = "You must have also have permission to use at least one of the" +
             " features of the requested wand."
     )
