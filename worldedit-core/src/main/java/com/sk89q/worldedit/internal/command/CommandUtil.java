@@ -57,7 +57,7 @@ public class CommandUtil {
             .append(DEPRECATION_MARKER)
             .append(" " + reason + ".")
             .append(TextComponent.newline())
-            .append(replacement.color(TextColor.GOLD).decoration(TextDecoration.ITALIC, true))
+            .append(replacement.color(TextColor.GOLD))
             .build();
     }
 
