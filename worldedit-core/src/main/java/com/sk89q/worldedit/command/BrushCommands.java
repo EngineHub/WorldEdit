@@ -182,7 +182,10 @@ public class BrushCommands {
                                   int decay) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(radius);
 
-        decay = Math.max(Math.min(decay, 10), 0);
+        if (decay < 0 || decay > 10) {
+            player.printError(TranslatableComponent.of("worldedit.brush.splatter.decay-out-of-range", TextComponent.of(decay)));
+            return;
+        }
 
         BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
         tool.setFill(pattern);

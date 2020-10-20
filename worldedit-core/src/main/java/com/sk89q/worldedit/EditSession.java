@@ -1740,15 +1740,15 @@ public class EditSession implements Extent, AutoCloseable {
      *
      * @param pos Center of the splatter
      * @param block The block pattern to use
-     * @param radius The cylinder's radius
+     * @param radius The sphere's radius
      * @param decay The higher the number the more decay, between 0 and 10
      * @return number of blocks changed
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int makeSplatter(BlockVector3 pos, Pattern block, double radius, int decay) throws MaxChangedBlocksException {
         //  decay is 0 - 10, 0 should be a circle.
-        checkArgument(decay >= 0, "decay >= 0");
-        checkArgument(decay <= 10, "decay <= 10");
+        checkArgument(decay >= 0, "decay must be >= 0");
+        checkArgument(decay <= 10, "decay must be <= 10");
         radius += 0.5;
 
         int affected = 0;
