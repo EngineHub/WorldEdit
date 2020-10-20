@@ -54,7 +54,7 @@ dependencies {
     "compileOnly"("com.google.auto.value:auto-value-annotations:${Versions.AUTO_VALUE}")
     "annotationProcessor"("com.google.auto.value:auto-value:${Versions.AUTO_VALUE}")
 
-    "languageFiles"("${project.group}:worldedit-lang:${project.version}:10@zip")
+    "languageFiles"("${project.group}:worldedit-lang:7.2.0:26@zip")
 
     "testImplementation"("ch.qos.logback:logback-core:${Versions.LOGBACK}")
     "testImplementation"("ch.qos.logback:logback-classic:${Versions.LOGBACK}")
