@@ -80,6 +80,7 @@
 - Fixed copy and cut not applying block change limit when creating clipboard
 - Fixed uppercase biomes failing in biome commands
 - Fixed //snow not perfectly obeying vanilla rules for snow placement
+- Require permissions for selection (or navigation) when using //wand (or //wand -n).
 
 7.1.0
 - Improve the expression parser by compiling expressions for performance
