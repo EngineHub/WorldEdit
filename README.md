@@ -1,5 +1,6 @@
-![WorldEdit](worldedit-logo.svg)
-=========
+<h1>
+    <img src="worldedit-logo.svg" alt="WorldEdit" width="400" /> 
+</h1>
 
 **A Minecraft Map Editor... that runs in-game!**
 
