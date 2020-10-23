@@ -1,4 +1,4 @@
-![WorldEdit](worldedit-logo.png)
+![WorldEdit](worldedit-logo.svg)
 =========
 
 **A Minecraft Map Editor... that runs in-game!**
