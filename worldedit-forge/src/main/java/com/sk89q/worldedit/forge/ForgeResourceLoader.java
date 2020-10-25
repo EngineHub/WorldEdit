@@ -33,7 +33,14 @@ public class ForgeResourceLoader extends WorldEditResourceLoader  {
 
     private static URL getResourceForgeHack(String location) throws IOException {
         try {
-            return new URL("modjar://worldedit/" + location);
+            URL url = new URL("modjar://worldedit/" + location);
+            try {
+                url.openStream();
+            } catch (IOException e) {
+                // doesn't actually exist
+                return null;
+            }
+            return url;
         } catch (Exception e) {
             throw new IOException("Could not find " + location);
         }
