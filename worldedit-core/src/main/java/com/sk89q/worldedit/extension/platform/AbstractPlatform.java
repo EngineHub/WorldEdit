@@ -23,6 +23,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.io.ResourceLoader;
 import com.sk89q.worldedit.util.io.WorldEditResourceLoader;
+import com.sk89q.worldedit.util.io.file.ArchiveUnpacker;
 import com.sk89q.worldedit.util.translation.TranslationManager;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.World;
@@ -38,9 +39,16 @@ import java.util.List;
 public abstract class AbstractPlatform implements Platform {
 
     private final ResourceLoader resourceLoader = new WorldEditResourceLoader(WorldEdit.getInstance());
+    private final LazyReference<ArchiveUnpacker> archiveUnpacker = LazyReference.from(() -> {
+        try {
+            return new ArchiveUnpacker(getConfiguration().getWorkingDirectoryPath().resolve(".archive-unpack"));
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    });
     private final LazyReference<TranslationManager> translationManager = LazyReference.from(() -> {
         try {
-            return new TranslationManager(getResourceLoader());
+            return new TranslationManager(archiveUnpacker.getValue(), getResourceLoader());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

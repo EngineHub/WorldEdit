@@ -96,17 +96,19 @@ public class TranslationManager {
     private final Lock loadLock = new ReentrantLock();
     private Locale defaultLocale = Locale.ENGLISH;
 
+    private final ArchiveUnpacker archiveUnpacker;
     private final ResourceLoader resourceLoader;
     private final Path userProvidedFlatRoot;
     private final Path internalZipRoot;
     @Nullable
     private Path userProvidedZipRoot;
 
-    public TranslationManager(ResourceLoader resourceLoader) throws IOException {
+    public TranslationManager(ArchiveUnpacker archiveUnpacker, ResourceLoader resourceLoader) throws IOException {
+        this.archiveUnpacker = archiveUnpacker;
         this.resourceLoader = resourceLoader;
         checkNotNull(resourceLoader);
         this.userProvidedFlatRoot = resourceLoader.getLocalResource("lang");
-        this.internalZipRoot = ArchiveUnpacker.unpackArchive(checkNotNull(
+        this.internalZipRoot = archiveUnpacker.unpackArchive(checkNotNull(
             resourceLoader.getRootResource("lang/i18n.zip"),
             "Missing internal i18n.zip!"
         ));
@@ -116,7 +118,7 @@ public class TranslationManager {
         Path userZip = resourceLoader.getLocalResource("lang/i18n.zip");
         Path result = null;
         if (Files.exists(userZip)) {
-            result = ArchiveUnpacker.unpackArchive(userZip.toUri().toURL());
+            result = archiveUnpacker.unpackArchive(userZip.toUri().toURL());
         }
         this.userProvidedZipRoot = result;
     }

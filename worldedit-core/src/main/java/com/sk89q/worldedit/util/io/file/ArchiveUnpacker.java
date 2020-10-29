@@ -27,42 +27,31 @@ import com.google.common.io.ByteStreams;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class ArchiveUnpacker {
+public final class ArchiveUnpacker {
 
     private static final String UNPACK_FINISHED = ".unpack_finished";
-    private static final Path TEMP_DIR;
-
-    static {
-        try {
-            TEMP_DIR = Paths.get(
-                System.getProperty("java.io.tmpdir"),
-                "worldedit-unpack-dir-for-" + System.getProperty("user.name")
-            );
-            Files.createDirectories(
-                TEMP_DIR,
-                SafeFiles.getOwnerOnlyFileAttributes(AttributeTarget.DIRECTORY)
-            );
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
 
     private static final Lock lock = new ReentrantLock();
 
-    public static Path unpackArchive(URL archiveUrl) throws IOException {
+    private final Path unpackDir;
+
+    public ArchiveUnpacker(Path unpackDir) throws IOException {
+        this.unpackDir = unpackDir;
+        Files.createDirectories(unpackDir);
+    }
+
+    public Path unpackArchive(URL archiveUrl) throws IOException {
         String hash;
         try (InputStream data = archiveUrl.openStream()) {
             hash = ByteStreams.readBytes(data, new ByteProcessor<String>() {
@@ -80,7 +69,7 @@ public class ArchiveUnpacker {
                 }
             });
         }
-        Path dest = TEMP_DIR.resolve(hash);
+        Path dest = unpackDir.resolve(hash);
         if (Files.exists(dest.resolve(UNPACK_FINISHED))) {
             // trust this, no other option :)
             return dest;
@@ -128,9 +117,6 @@ public class ArchiveUnpacker {
         } finally {
             lock.unlock();
         }
-    }
-
-    private ArchiveUnpacker() {
     }
 
 }
