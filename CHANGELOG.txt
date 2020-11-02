@@ -14,7 +14,7 @@
 - Optimize polygon regions
 - Improved performance of the deform brush
 - Update to a newer Rhino release for craftscripts
-- Added support for 1.16.1, 1.16.2, and 1.16.3
+- Added support for 1.16.1, 1.16.2, 1.16.3, and 1.16.4
 - Added support for regenerating biomes with //regen
 - Added support for full offsets to //stack and //move
 - Added -c mode to //deform, and fixed -o mode
