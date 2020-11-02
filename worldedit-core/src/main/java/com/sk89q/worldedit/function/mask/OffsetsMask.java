@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Direction;
+import com.sk89q.worldedit.util.Direction.Flag;
 
 import javax.annotation.Nullable;
 
@@ -36,7 +37,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class OffsetsMask extends AbstractMask {
 
     private static final ImmutableSet<BlockVector3> OFFSET_LIST =
-        Direction.valuesOf(Direction.Flag.CARDINAL | Direction.Flag.UPRIGHT)
+        Direction.valuesOf(Flag.CARDINAL | Flag.UPRIGHT)
             .stream()
             .map(Direction::toBlockVector)
             .collect(ImmutableSet.toImmutableSet());
@@ -122,8 +123,8 @@ public class OffsetsMask extends AbstractMask {
         }
 
         /**
-         * Set the offsets to test. Defaults to all {@linkplain Direction.Flag#CARDINAL cardinal}
-         * and {@linkplain Direction.Flag#UPRIGHT upright} directions.
+         * Set the offsets to test. Defaults to all {@linkplain Flag#CARDINAL cardinal}
+         * and {@linkplain Flag#UPRIGHT upright} directions.
          *
          * @param offsets the offsets to test
          * @return this builder, for chaining

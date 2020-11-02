@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Direction;
+import com.sk89q.worldedit.util.Direction.Flag;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -34,7 +35,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class OffsetsMask2D extends AbstractMask2D {
 
     private static final ImmutableSet<BlockVector2> OFFSET_LIST =
-        Direction.valuesOf(Direction.Flag.CARDINAL)
+        Direction.valuesOf(Flag.CARDINAL)
             .stream()
             .map(Direction::toBlockVector)
             .map(BlockVector3::toBlockVector2)
@@ -121,7 +122,7 @@ public class OffsetsMask2D extends AbstractMask2D {
         }
 
         /**
-         * Set the offsets to test. Defaults to all {@linkplain Direction.Flag#CARDINAL cardinal}
+         * Set the offsets to test. Defaults to all {@linkplain Flag#CARDINAL cardinal}
          * directions.
          *
          * @param offsets the offsets to test
