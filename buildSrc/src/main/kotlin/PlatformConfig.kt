@@ -138,8 +138,10 @@ private val CLASSPATH = listOf("truezip", "truevfs", "js")
 
 fun Project.addJarManifest(includeClasspath: Boolean = false) {
     tasks.named<Jar>("jar") {
+        val version = project(":worldedit-core").version
+        inputs.property("version", version)
         val attributes = mutableMapOf(
-            "WorldEdit-Version" to project(":worldedit-core").version
+            "WorldEdit-Version" to version
         )
         if (includeClasspath) {
             attributes["Class-Path"] = CLASSPATH

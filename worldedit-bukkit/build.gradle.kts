@@ -36,8 +36,10 @@ dependencies {
 }
 
 tasks.named<Copy>("processResources") {
+    val internalVersion = project.ext["internalVersion"]
+    inputs.property("internalVersion", internalVersion)
     filesMatching("plugin.yml") {
-        expand("internalVersion" to project.ext["internalVersion"])
+        expand("internalVersion" to internalVersion)
     }
     // exclude adapters entirely from this JAR, they should only be in the shadow JAR
     exclude("**/worldedit-adapters.jar")
