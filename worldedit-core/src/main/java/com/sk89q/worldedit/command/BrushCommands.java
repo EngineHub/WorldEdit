@@ -36,6 +36,7 @@ import com.sk89q.worldedit.command.tool.brush.HollowSphereBrush;
 import com.sk89q.worldedit.command.tool.brush.ImageHeightmapBrush;
 import com.sk89q.worldedit.command.tool.brush.OperationFactoryBrush;
 import com.sk89q.worldedit.command.tool.brush.SmoothBrush;
+import com.sk89q.worldedit.command.tool.brush.SnowSmoothBrush;
 import com.sk89q.worldedit.command.tool.brush.SphereBrush;
 import com.sk89q.worldedit.command.tool.brush.SplatterBrush;
 import com.sk89q.worldedit.command.util.AsyncCommandBuilder;
@@ -270,6 +271,36 @@ public class BrushCommands {
                 TextComponent.of(mask == null ? "any block" : "filter")
         ));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
+    }
+
+    @Command(
+        name = "snowsmooth",
+        desc = "Choos the snow terrain softener brush",
+        descFooter = "Example: '/brush snowsmooth 5 "
+    )
+    @CommandPermissions("worldedit.brush.snowsmooth")
+    public void snowSmoothBrush(Player player, LocalSession session,
+                                @Arg(desc = "The radius to sample for softening", def = "2")
+                                    double radius,
+                                @Arg(desc = "The number of iterations to perform", def = "4")
+                                    int iterations,
+                                @Arg(desc = "The number of blocks under snow layers", def = "1")
+                                    int numOfSnow,
+                                @Arg(desc = "The mask of blocks to use for the heightmap", def = "")
+                                    Mask mask) throws WorldEditException {
+        worldEdit.checkMaxBrushRadius(radius);
+
+        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+        tool.setSize(radius);
+        tool.setBrush(new SnowSmoothBrush(iterations, numOfSnow, mask), "worldedit.brush.snowsmooth");
+
+        player.printInfo(TranslatableComponent.of(
+                "worldedit.brush.snowsmooth.equip",
+                TextComponent.of((int) radius),
+                TextComponent.of(iterations),
+                TextComponent.of(mask == null ? "any block" : "filter"),
+                TextComponent.of(numOfSnow)
+        ));
     }
 
     @Command(
