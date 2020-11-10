@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Locale;
 
 public class ConfigurateConfiguration extends LocalConfiguration {
 
@@ -59,7 +60,7 @@ public class ConfigurateConfiguration extends LocalConfiguration {
 
         profile = node.getNode("debug").getBoolean(profile);
         traceUnflushedSessions = node.getNode("debugging", "trace-unflushed-sessions").getBoolean(traceUnflushedSessions);
-        wandItem = node.getNode("wand-item").getString(wandItem);
+        wandItem = node.getNode("wand-item").getString(wandItem).toLowerCase(Locale.ROOT);
         try {
             wandItem = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(wandItem)).getId();
         } catch (Throwable ignored) {
@@ -103,7 +104,7 @@ public class ConfigurateConfiguration extends LocalConfiguration {
         useInventoryOverride = node.getNode("use-inventory", "allow-override").getBoolean(useInventoryOverride);
         useInventoryCreativeOverride = node.getNode("use-inventory", "creative-mode-overrides").getBoolean(useInventoryCreativeOverride);
 
-        navigationWand = node.getNode("navigation-wand", "item").getString(navigationWand);
+        navigationWand = node.getNode("navigation-wand", "item").getString(navigationWand).toLowerCase(Locale.ROOT);
         try {
             navigationWand = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(navigationWand)).getId();
         } catch (Throwable ignored) {
