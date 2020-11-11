@@ -32,6 +32,11 @@ import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * Allows applications of Kernels onto the region's height map for snow layers
+ *
+ * <p>Currently only used for snow layer smoothing (with a GaussianKernel)</p>.
+ */
 public class SnowHeightMap {
     private final float[] data;
     private final int width;
@@ -42,6 +47,13 @@ public class SnowHeightMap {
 
     private final Property<Object> layers;
 
+    /**
+     * Constructs the SnowHeightMap.
+     *
+     * @param session an edit session
+     * @param region the region
+     * @param mask optional mask for the height map
+     */
     public SnowHeightMap(EditSession session, Region region, @Nullable Mask mask) {
         checkNotNull(session);
         checkNotNull(region);
@@ -80,6 +92,13 @@ public class SnowHeightMap {
         }
     }
 
+    /**
+     * Compute the new heightmap with the filter 'iterations' amount times.
+     *
+     * @param filter the filter
+     * @param iterations the number of iterations
+     * @return new generated heightmap of the terrain
+     */
     public float[] applyFilter(HeightMapFilter filter, int iterations) {
         checkNotNull(filter);
 

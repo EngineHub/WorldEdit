@@ -50,6 +50,7 @@ public class HeightMap {
      *
      * @param session an edit session
      * @param region the region
+     * @param mask optional mask for the height map
      */
     public HeightMap(EditSession session, Region region, @Nullable Mask mask) {
         checkNotNull(session);
