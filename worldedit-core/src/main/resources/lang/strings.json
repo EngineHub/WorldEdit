@@ -231,7 +231,7 @@
     "worldedit.pumpkins.created": "{0} pumpkin patches created.",
     "worldedit.pyramid.created": "{0} blocks have been created.",
     "worldedit.generate.created": "{0} blocks have been created.",
-    "worldedit.generate.changed": "{0} columns affected.",
+    "worldedit.generatebiome.changed": "{0} biomes affected.",
 
     "worldedit.reload.config": "Configuration reloaded!",
     "worldedit.report.written": "WorldEdit report written to {0}",
