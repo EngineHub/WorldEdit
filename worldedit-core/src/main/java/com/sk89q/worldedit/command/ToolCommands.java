@@ -71,8 +71,8 @@ import java.util.stream.Collectors;
 @CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class ToolCommands {
 
-    private static final Component UNBIND_COMMAND_COMPONENT = TextComponent.builder("/tool none", TextColor.AQUA)
-                                                                   .clickEvent(ClickEvent.suggestCommand("/tool none"))
+    private static final Component UNBIND_COMMAND_COMPONENT = TextComponent.builder("/tool unbind", TextColor.AQUA)
+                                                                   .clickEvent(ClickEvent.suggestCommand("/tool unbind"))
                                                                    .build();
 
     public static void register(CommandRegistrationHandler registration,

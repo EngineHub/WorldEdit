@@ -91,8 +91,8 @@ public class BrushCommands {
 
     private final WorldEdit worldEdit;
 
-    private static final Component UNBIND_COMMAND_COMPONENT = TextComponent.builder("/brush none", TextColor.AQUA)
-                                                                   .clickEvent(ClickEvent.suggestCommand("/brush none"))
+    private static final Component UNBIND_COMMAND_COMPONENT = TextComponent.builder("/brush unbind", TextColor.AQUA)
+                                                                   .clickEvent(ClickEvent.suggestCommand("/brush unbind"))
                                                                    .build();
 
     /**
