@@ -71,7 +71,7 @@ import java.util.stream.Collectors;
 @CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class ToolCommands {
 
-    private static Component unbindCommandComponent = TextComponent.builder("/tool none", TextColor.AQUA)
+    private static final Component UNBIND_COMMAND_COMPONENT = TextComponent.builder("/tool none", TextColor.AQUA)
                                                                    .clickEvent(ClickEvent.suggestCommand("/tool none"))
                                                                    .build();
 
@@ -163,7 +163,7 @@ public class ToolCommands {
         BaseItemStack itemStack = player.getItemInHand(HandSide.MAIN_HAND);
         session.setTool(itemStack.getType(), tool);
         player.printInfo(TranslatableComponent.of(translationKey, itemStack.getRichName()));
-        sendUnbindInstruction(player, unbindCommandComponent);
+        sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
     }
 
     private final WorldEdit we;
