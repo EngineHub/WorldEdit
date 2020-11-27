@@ -72,7 +72,7 @@ import java.util.stream.Collectors;
 public class ToolCommands {
 
     private static Component unbindCommandComponent = TextComponent.builder("/tool none", TextColor.AQUA)
-                                                                   .clickEvent(ClickEvent.runCommand("/tool none"))
+                                                                   .clickEvent(ClickEvent.suggestCommand("/tool none"))
                                                                    .build();
 
     public static void register(CommandRegistrationHandler registration,

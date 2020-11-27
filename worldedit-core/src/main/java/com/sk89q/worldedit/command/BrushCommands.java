@@ -92,7 +92,7 @@ public class BrushCommands {
     private final WorldEdit worldEdit;
 
     private static Component unbindCommandComponent = TextComponent.builder("/brush none", TextColor.AQUA)
-                                                                   .clickEvent(ClickEvent.runCommand("/brush none"))
+                                                                   .clickEvent(ClickEvent.suggestCommand("/brush none"))
                                                                    .build();
 
     /**
