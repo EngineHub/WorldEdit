@@ -291,6 +291,8 @@
     "worldedit.tool.lrbuild.set": "Left-click set to {0}; right-click set to {1}.",
     "worldedit.tool.stack.equip": "Stack tool bound to {0}.",
 
+    "worldedit.tool.unbind-instruction": "Run {0} while holding the item to unbind it.",
+
     "worldedit.tool.superpickaxe.mode.single": "Mode is now single. Left click with a pickaxe. // to disable.",
     "worldedit.tool.superpickaxe.mode.area": "Mode is now area. Left click with a pickaxe. // to disable.",
     "worldedit.tool.superpickaxe.mode.recursive": "Mode is now recursive. Left click with a pickaxe. // to disable.",
