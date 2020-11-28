@@ -202,24 +202,25 @@ public class TranslationManager {
     private void loadTranslations(Locale locale) throws IOException {
         Map<String, String> entries = new HashMap<>();
 
-        // If needed, load the dev strings as an OVERRIDE!
-        // In dev, reading lang/strings.json from either i18n.zip or the config folder
-        // WILL NOT OCCUR!
-        URL devStrings;
-        if (defaultLocale.equals(locale)
-            && (devStrings = resourceLoader.getRootResource("lang/strings.json")) != null) {
-            try (InputStream in = devStrings.openStream()) {
+        String localePath = getLocalePath(locale);
+        // From lowest priority to highest
+        if (defaultLocale.equals(locale)) {
+            // load internal strings, not i18n.zip
+            // we need this for development and to ensure translations are at least minimally
+            // working in the case of no i18n.zip update
+            URL internalStrings = resourceLoader.getRootResource("lang/strings.json");
+            checkNotNull(internalStrings, "Failed to load internal strings.json");
+            try (InputStream in = internalStrings.openStream()) {
                 putTranslationData(entries, in);
             }
         } else {
-            String localePath = getLocalePath(locale);
-            // From lowest priority to highest
+            // load from the internal zip for all other locales
             putTranslationData(entries, this.internalZipRoot.resolve(localePath));
-            if (this.userProvidedZipRoot != null) {
-                putTranslationData(entries, this.userProvidedZipRoot.resolve(localePath));
-            }
-            putTranslationData(entries, this.userProvidedFlatRoot.resolve(localePath));
         }
+        if (this.userProvidedZipRoot != null) {
+            putTranslationData(entries, this.userProvidedZipRoot.resolve(localePath));
+        }
+        putTranslationData(entries, this.userProvidedFlatRoot.resolve(localePath));
 
         // Load message formats
         for (Map.Entry<String, String> entry : entries.entrySet()) {
