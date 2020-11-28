@@ -79,6 +79,20 @@ public class HeightMapFilter {
      *
      * @return the modified height map
      */
+    public int[] filter(int[] inData, int width, int height) {
+        return filter(inData, width, height, 0.5F);
+    }
+
+    /**
+     * Filter with a 2D kernel.
+     *
+     * @param inData the data
+     * @param width the width
+     * @param height the height
+     * @param offset the offset added to the height
+     *
+     * @return the modified height map
+     */
     public int[] filter(int[] inData, int width, int height, float offset) {
         checkNotNull(inData);
 
