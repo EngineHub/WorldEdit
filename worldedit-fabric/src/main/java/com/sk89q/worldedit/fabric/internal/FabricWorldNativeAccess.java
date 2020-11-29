@@ -22,6 +22,8 @@ package com.sk89q.worldedit.fabric.internal;
 import com.sk89q.worldedit.fabric.FabricAdapter;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
+import com.sk89q.worldedit.util.SideEffect;
+import com.sk89q.worldedit.util.SideEffectSet;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -41,6 +43,7 @@ public class FabricWorldNativeAccess implements WorldNativeAccess<WorldChunk, Bl
     private static final int NOTIFY = 2;
 
     private final WeakReference<World> world;
+    private SideEffectSet sideEffectSet;
 
     public FabricWorldNativeAccess(WeakReference<World> world) {
         this.world = world;
@@ -48,6 +51,11 @@ public class FabricWorldNativeAccess implements WorldNativeAccess<WorldChunk, Bl
 
     private World getWorld() {
         return Objects.requireNonNull(world.get(), "The reference to the world was lost");
+    }
+
+    @Override
+    public void setCurrentSideEffectSet(SideEffectSet sideEffectSet) {
+        this.sideEffectSet = sideEffectSet;
     }
 
     @Override
@@ -71,6 +79,11 @@ public class FabricWorldNativeAccess implements WorldNativeAccess<WorldChunk, Bl
     @Nullable
     @Override
     public BlockState setBlockState(WorldChunk chunk, BlockPos position, BlockState state) {
+        if (chunk instanceof ExtendedChunk) {
+            return ((ExtendedChunk) chunk).setBlockState(
+                position, state, false, sideEffectSet.shouldApply(SideEffect.UPDATE)
+            );
+        }
         return chunk.setBlockState(position, state, false);
     }
 
