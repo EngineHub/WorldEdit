@@ -192,7 +192,7 @@ public class SessionManager {
         } else {
             if (session.isWandItemDefault()) {
                 try {
-                    setDefaultWand(session.getWandItem(), config.wandItem, session, new SelectionWand());
+                    setDefaultWand(config.wandItem, config.wandItem, session, new SelectionWand());
                 } catch (InvalidToolBindException e) {
                     if (warnedInvalidTool.add("selwand")) {
                         log.warn("Invalid selection wand tool set in config. Tool will not be assigned: " + e.getItemType());
@@ -201,7 +201,7 @@ public class SessionManager {
             }
             if (session.isNavWandItemDefault()) {
                 try {
-                    setDefaultWand(session.getNavWandItem(), config.navigationWand, session, new NavigationWand());
+                    setDefaultWand(config.navigationWand, config.navigationWand, session, new NavigationWand());
                 } catch (InvalidToolBindException e) {
                     if (warnedInvalidTool.add("navwand")) {
                         log.warn("Invalid navigation wand tool set in config. Tool will not be assigned: " + e.getItemType());
