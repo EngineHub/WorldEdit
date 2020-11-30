@@ -65,6 +65,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -116,7 +117,9 @@ public class LocalSession {
     private RegionSelectorType defaultSelector;
     private boolean useServerCUI = false; // Save this to not annoy players.
     private String wandItem;
+    private Boolean wandItemDefault;
     private String navWandItem;
+    private Boolean navWandItemDefault;
 
     /**
      * Construct the object.
@@ -677,9 +680,19 @@ public class LocalSession {
             throw new InvalidToolBindException(item, TranslatableComponent.of("worldedit.tool.error.item-only"));
         }
         if (tool instanceof SelectionWand) {
-            setSingleItemTool(id -> this.wandItem = id, this.wandItem, item);
+            setSingleItemTool(id -> {
+                if (!Objects.equals(this.wandItem, id)) {
+                    wandItemDefault = false;
+                }
+                this.wandItem = id;
+            }, this.wandItem, item);
         } else if (tool instanceof NavigationWand) {
-            setSingleItemTool(id -> this.navWandItem = id, this.navWandItem, item);
+            setSingleItemTool(id -> {
+                if (!Objects.equals(this.navWandItem, id)) {
+                    navWandItemDefault = false;
+                }
+                this.navWandItem = id;
+            }, this.navWandItem, item);
         } else if (tool == null) {
             // Check if un-setting sel/nav
             String id = item.getId();
@@ -1107,11 +1120,35 @@ public class LocalSession {
     }
 
     /**
+     * Get if the selection wand item should use the default, or null if unknown.
+     *
+     * @return if it should use the default
+     */
+    public boolean isWandItemDefault() {
+        if (wandItemDefault == null) {
+            wandItemDefault = Objects.equals(wandItem, config.wandItem);
+        }
+        return wandItemDefault;
+    }
+
+    /**
      * Get the preferred navigation wand item for this user, or {@code null} to use the default.
      * @return item id of nav wand item, or {@code null}
      */
     public String getNavWandItem() {
         return navWandItem;
+    }
+
+    /**
+     * Get if the navigation wand item should use the default, or null if unknown.
+     *
+     * @return if it should use the default
+     */
+    public boolean isNavWandItemDefault() {
+        if (navWandItemDefault == null) {
+            navWandItemDefault = Objects.equals(navWandItem, config.navigationWand);
+        }
+        return navWandItemDefault;
     }
 
     /**

@@ -189,6 +189,26 @@ public class SessionManager {
             // Remember the session regardless of if it's currently active or not.
             // And have the SessionTracker FLUSH inactive sessions.
             sessions.put(getKey(owner), new SessionHolder(sessionKey, session));
+        } else {
+            if (session.isWandItemDefault()) {
+                try {
+                    setDefaultWand(session.getWandItem(), config.wandItem, session, new SelectionWand());
+                } catch (InvalidToolBindException e) {
+                    if (warnedInvalidTool.add("selwand")) {
+                        log.warn("Invalid selection wand tool set in config. Tool will not be assigned: " + e.getItemType());
+                    }
+                }
+            }
+            if (session.isNavWandItemDefault()) {
+                try {
+                    setDefaultWand(session.getNavWandItem(), config.navigationWand, session, new NavigationWand());
+                } catch (InvalidToolBindException e) {
+                    if (warnedInvalidTool.add("navwand")) {
+                        log.warn("Invalid navigation wand tool set in config. Tool will not be assigned: " + e.getItemType());
+                    }
+                }
+            }
+            session.compareAndResetDirty();
         }
 
         if (shouldBoundLimit(owner, "worldedit.limit.unrestricted", session.getBlockChangeLimit(), config.maxChangeLimit)) {
