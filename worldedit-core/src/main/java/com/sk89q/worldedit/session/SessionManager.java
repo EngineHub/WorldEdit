@@ -171,14 +171,22 @@ public class SessionManager {
             session.setBlockChangeLimit(config.defaultChangeLimit);
             session.setTimeout(config.calculationTimeout);
             try {
-                setDefaultWand(session.getWandItem(), config.wandItem, session, new SelectionWand());
+                if (session.isWandItemDefault()) {
+                    setDefaultWand(config.wandItem, config.wandItem, session, new SelectionWand());
+                } else {
+                    setDefaultWand(session.getWandItem(), config.wandItem, session, new SelectionWand());
+                }
             } catch (InvalidToolBindException e) {
                 if (warnedInvalidTool.add("selwand")) {
                     log.warn("Invalid selection wand tool set in config. Tool will not be assigned: " + e.getItemType());
                 }
             }
             try {
-                setDefaultWand(session.getNavWandItem(), config.navigationWand, session, new NavigationWand());
+                if (session.isNavWandItemDefault()) {
+                    setDefaultWand(config.navigationWand, config.navigationWand, session, new NavigationWand());
+                } else {
+                    setDefaultWand(session.getNavWandItem(), config.navigationWand, session, new NavigationWand());
+                }
             } catch (InvalidToolBindException e) {
                 if (warnedInvalidTool.add("navwand")) {
                     log.warn("Invalid navigation wand tool set in config. Tool will not be assigned: " + e.getItemType());
@@ -189,31 +197,6 @@ public class SessionManager {
             // Remember the session regardless of if it's currently active or not.
             // And have the SessionTracker FLUSH inactive sessions.
             sessions.put(getKey(owner), new SessionHolder(sessionKey, session));
-        } else {
-            if (session.isWandItemDefault()) {
-                try {
-                    ItemType item = ItemTypes.get(config.wandItem);
-                    if (item != null) {
-                        session.setTool(item, new SelectionWand());
-                    }
-                } catch (InvalidToolBindException e) {
-                    if (warnedInvalidTool.add("selwand")) {
-                        log.warn("Invalid selection wand tool set in config. Tool will not be assigned: " + e.getItemType());
-                    }
-                }
-            }
-            if (session.isNavWandItemDefault()) {
-                try {
-                    ItemType item = ItemTypes.get(config.navigationWand);
-                    if (item != null) {
-                        session.setTool(item, new NavigationWand());
-                    }
-                } catch (InvalidToolBindException e) {
-                    if (warnedInvalidTool.add("navwand")) {
-                        log.warn("Invalid navigation wand tool set in config. Tool will not be assigned: " + e.getItemType());
-                    }
-                }
-            }
         }
 
         if (shouldBoundLimit(owner, "worldedit.limit.unrestricted", session.getBlockChangeLimit(), config.maxChangeLimit)) {
