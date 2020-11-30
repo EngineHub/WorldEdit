@@ -208,7 +208,6 @@ public class SessionManager {
                     }
                 }
             }
-            session.compareAndResetDirty();
         }
 
         if (shouldBoundLimit(owner, "worldedit.limit.unrestricted", session.getBlockChangeLimit(), config.maxChangeLimit)) {

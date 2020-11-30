@@ -681,17 +681,17 @@ public class LocalSession {
         }
         if (tool instanceof SelectionWand) {
             setSingleItemTool(id -> {
-                if (!Objects.equals(this.wandItem, id)) {
+                this.wandItem = id;
+                if (!Objects.equals(this.wandItem, config.wandItem)) {
                     wandItemDefault = false;
                 }
-                this.wandItem = id;
             }, this.wandItem, item);
         } else if (tool instanceof NavigationWand) {
             setSingleItemTool(id -> {
-                if (!Objects.equals(this.navWandItem, id)) {
+                this.navWandItem = id;
+                if (!Objects.equals(this.navWandItem, config.navigationWand)) {
                     navWandItemDefault = false;
                 }
-                this.navWandItem = id;
             }, this.navWandItem, item);
         } else if (tool == null) {
             // Check if un-setting sel/nav
@@ -1127,6 +1127,7 @@ public class LocalSession {
     public boolean isWandItemDefault() {
         if (wandItemDefault == null) {
             wandItemDefault = Objects.equals(wandItem, config.wandItem);
+            setDirty();
         }
         return wandItemDefault;
     }
@@ -1147,6 +1148,7 @@ public class LocalSession {
     public boolean isNavWandItemDefault() {
         if (navWandItemDefault == null) {
             navWandItemDefault = Objects.equals(navWandItem, config.navigationWand);
+            setDirty();
         }
         return navWandItemDefault;
     }
