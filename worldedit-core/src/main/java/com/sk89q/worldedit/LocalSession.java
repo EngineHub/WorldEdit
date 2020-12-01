@@ -682,16 +682,12 @@ public class LocalSession {
         if (tool instanceof SelectionWand) {
             setSingleItemTool(id -> {
                 this.wandItem = id;
-                if (!Objects.equals(this.wandItem, config.wandItem)) {
-                    wandItemDefault = false;
-                }
+                this.wandItemDefault = id.equals(config.wandItem);
             }, this.wandItem, item);
         } else if (tool instanceof NavigationWand) {
             setSingleItemTool(id -> {
                 this.navWandItem = id;
-                if (!Objects.equals(this.navWandItem, config.navigationWand)) {
-                    navWandItemDefault = false;
-                }
+                this.navWandItemDefault = id.equals(config.navigationWand);
             }, this.navWandItem, item);
         } else if (tool == null) {
             // Check if un-setting sel/nav
