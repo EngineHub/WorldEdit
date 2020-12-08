@@ -171,22 +171,16 @@ public class SessionManager {
             session.setBlockChangeLimit(config.defaultChangeLimit);
             session.setTimeout(config.calculationTimeout);
             try {
-                if (session.isWandItemDefault()) {
-                    setDefaultWand(config.wandItem, config.wandItem, session, new SelectionWand());
-                } else {
-                    setDefaultWand(session.getWandItem(), config.wandItem, session, new SelectionWand());
-                }
+                String sessionItem = session.isWandItemDefault() ? null : session.getWandItem();
+                setDefaultWand(sessionItem, config.wandItem, session, new SelectionWand());
             } catch (InvalidToolBindException e) {
                 if (warnedInvalidTool.add("selwand")) {
                     log.warn("Invalid selection wand tool set in config. Tool will not be assigned: " + e.getItemType());
                 }
             }
             try {
-                if (session.isNavWandItemDefault()) {
-                    setDefaultWand(config.navigationWand, config.navigationWand, session, new NavigationWand());
-                } else {
-                    setDefaultWand(session.getNavWandItem(), config.navigationWand, session, new NavigationWand());
-                }
+                String sessionItem = session.isNavWandItemDefault() ? null : session.getNavWandItem();
+                setDefaultWand(sessionItem, config.navigationWand, session, new NavigationWand());
             } catch (InvalidToolBindException e) {
                 if (warnedInvalidTool.add("navwand")) {
                     log.warn("Invalid navigation wand tool set in config. Tool will not be assigned: " + e.getItemType());
