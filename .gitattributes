@@ -1,6 +1,6 @@
-* text=lf
+* text=auto
 # Force Batch files to CRLF
-*.bat text=crlf
+*.bat eol=crlf -text
 
 # Java sources
 *.java          text diff=java
