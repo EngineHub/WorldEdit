@@ -1,3 +1,12 @@
+7.2.1
+- Fix some usability issues with the default wand tools and session-persisted
+tools conflicting. Wands will now only be saved per-session if they differ
+from the default.
+- Implement the UPDATE side-effect on Fabric.
+- Allow //genbiome to use the y variable for 3D biomes.
+- Add a tip to brush/tool commands on how to unbind them.
+- Update language bundle and minor language loading fixes/improvements.
+
 7.2.0
 - Greatly improve WorldEdit performance on servers with many plugins (See more: https://matthewmiller.dev/talk/optimizing-your-application/)
 - Improve general WorldEdit performance
