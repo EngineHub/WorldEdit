@@ -31,6 +31,13 @@ ask that you make note of the following guidelines.
   complicated algorithms.
 
 
+Additional Notes
+----------------
+If you're submitting a feature, base your code on `master` and PR against the
+`master` branch. If you're submitting a bugfix, base your code on the newest
+`version/*` branch, and PR against that same branch.
+
+
 Checklist
 ---------
 
