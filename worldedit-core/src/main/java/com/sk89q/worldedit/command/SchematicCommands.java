@@ -218,7 +218,9 @@ public class SchematicCommands {
     @CommandPermissions({ "worldedit.clipboard.share", "worldedit.schematic.share" })
     public void share(Actor actor, LocalSession session,
                      @Arg(desc = "Format name.", def = "sponge")
-                         String formatName) throws WorldEditException {
+                         String formatName,
+                     @ArgFlag(name = 'n', desc = "Schematic name.")
+                         String schematicName) throws WorldEditException {
         if (worldEdit.getPlatformManager().queryCapability(Capability.GAME_HOOKS).getDataVersion() == -1) {
             actor.printError(TranslatableComponent.of("worldedit.schematic.unsupported-minecraft-version"));
             return;
@@ -232,7 +234,7 @@ public class SchematicCommands {
 
         ClipboardHolder holder = session.getClipboard();
 
-        SchematicShareTask task = new SchematicShareTask(actor, format, holder);
+        SchematicShareTask task = new SchematicShareTask(actor, format, holder, schematicName);
         AsyncCommandBuilder.wrap(task, actor)
             .registerWithSupervisor(worldEdit.getSupervisor(), "Sharing schematic")
             .setDelayMessage(TranslatableComponent.of("worldedit.schematic.save.saving"))
@@ -413,11 +415,13 @@ public class SchematicCommands {
         private final Actor actor;
         private final ClipboardFormat format;
         private final ClipboardHolder holder;
+        private final String name;
 
-        SchematicShareTask(Actor actor, ClipboardFormat format, ClipboardHolder holder) {
+        SchematicShareTask(Actor actor, ClipboardFormat format, ClipboardHolder holder, String name) {
             this.actor = actor;
             this.format = format;
             this.holder = holder;
+            this.name = name;
         }
 
         @Override
@@ -451,6 +455,7 @@ public class SchematicCommands {
             PasteMetadata metadata = new PasteMetadata();
             metadata.author = this.actor.getName();
             metadata.extension = "schem";
+            metadata.name = name == null ? actor.getName() + "-" + System.currentTimeMillis() : name;
             return pasteService.paste(new String(Base64.getEncoder().encode(baos.toByteArray()), StandardCharsets.UTF_8), metadata).call();
         }
     }
