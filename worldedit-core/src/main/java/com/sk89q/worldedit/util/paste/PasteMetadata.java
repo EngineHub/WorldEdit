@@ -19,15 +19,11 @@
 
 package com.sk89q.worldedit.util.paste;
 
-import java.net.URL;
-import java.util.concurrent.Callable;
-
-public interface Paster {
-
-    default Callable<URL> paste(String content) {
-        return paste(content, new PasteMetadata());
+public class PasteMetadata {
+    public PasteMetadata() {
     }
 
-    Callable<URL> paste(String content, PasteMetadata metadata);
-
+    public String name;
+    public String extension;
+    public String author;
 }

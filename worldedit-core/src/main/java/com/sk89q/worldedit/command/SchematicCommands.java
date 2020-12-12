@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.command;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.MoreFiles;
 import com.sk89q.worldedit.LocalConfiguration;
@@ -56,6 +55,7 @@ import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldedit.util.io.file.MorePaths;
 import com.sk89q.worldedit.util.paste.EngineHubPaste;
+import com.sk89q.worldedit.util.paste.PasteMetadata;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
@@ -74,6 +74,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -447,7 +448,10 @@ public class SchematicCommands {
             }
 
             EngineHubPaste pasteService = new EngineHubPaste();
-            return pasteService.paste(new String(Base64.getEncoder().encode(baos.toByteArray()), Charsets.UTF_8)).call();
+            PasteMetadata metadata = new PasteMetadata();
+            metadata.author = this.actor.getName();
+            metadata.extension = "schem";
+            return pasteService.paste(new String(Base64.getEncoder().encode(baos.toByteArray()), StandardCharsets.UTF_8), metadata).call();
         }
     }
 
