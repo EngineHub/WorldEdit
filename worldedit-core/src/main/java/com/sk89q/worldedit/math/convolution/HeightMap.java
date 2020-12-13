@@ -139,7 +139,7 @@ public class HeightMap {
                     BlockState existing = session.getBlock(BlockVector3.at(xr, curHeight, zr));
 
                     // Skip water/lava
-                    if (existing.getBlockType() != BlockTypes.WATER && existing.getBlockType() != BlockTypes.LAVA) {
+                    if (!existing.getBlockType().getMaterial().isLiquid()) {
                         session.setBlock(BlockVector3.at(xr, newHeight, zr), existing);
                         ++blocksChanged;
 

@@ -82,7 +82,7 @@ public class SnowHeightMap {
                     data[z * width + x] = (highestBlockY + 1 + (((float) amountLayers - 1) / 8));
                 } else {
                     BlockState block = session.getBlock(BlockVector3.at(x + minX, highestBlockY, z + minZ));
-                    if (block.getBlockType() == BlockTypes.AIR) {
+                    if (block.getBlockType().getMaterial().isAir()) {
                         data[z * width + x] = highestBlockY;
                     } else {
                         data[z * width + x] = highestBlockY + 1;
@@ -161,7 +161,7 @@ public class SnowHeightMap {
                     BlockState existing = session.getBlock(BlockVector3.at(xr, curHeight, zr));
 
                     // Skip water/lava
-                    if (existing.getBlockType() != BlockTypes.WATER && existing.getBlockType() != BlockTypes.LAVA) {
+                    if (!existing.getBlockType().getMaterial().isLiquid()) {
                         setSnowLayer(xr, zr, newHeight, layers);
                         ++blocksChanged;
 
