@@ -226,7 +226,7 @@ See https://matthewmiller.dev/blog/introducing-worldedit-7/ for a friendlier exp
 - Added //drawsel, a Server-Side WorldEditCUI for small cuboid selections (< 32x32x32)
 - Rewrote the block parser, now properly handles Minecraft 1.13 names (See this blog post for more information)
 - Switched to the Sponge Schematic format, as the MCEdit Schematic Format does not work in 1.13
-    - Old schematics will be loaded and converted as best as possible
+    - Old schematics will be loaded and converted as good as possible
 - Major improvements to the API (See this blog post for more information)
 - Removal of all old deprecated code
 - Added /tracemask, to set masks used for brush tracing
@@ -365,7 +365,7 @@ mostly contain bug fixes and minor changes.
 - Added names for new items.
 
 5.5.2
-- Update to MineCraft 1.5.
+- Update to Minecraft 1.5.
 - Fixed //flip going the wrong direction in certain cases.
 - Fixed 4096 block id support in schematics and snapshots.
 - Fixed max-blocks-changed not being used.
@@ -373,10 +373,10 @@ mostly contain bug fixes and minor changes.
 5.5.1
 - Added support for multiple versions of Minecraft. A folder will be created in
     plugins/WorldEdit/nmsblocks which contains different class files which will be
-    dynamically checked for compatibility with the current minecraft version.
+    dynamically checked for compatibility with the current Minecraft version.
 - Added -d flags to //count and //distr, which allow separating blocks by data values.
 - Added a butcher brush (//brush butcher) which works like the command in a brush. The flags
-    for the command can be passed an an argument for the brush.
+    for the command can be passed an argument for the brush.
 - Fixed an issue with use-inventory where container blocks will spill when being removed.
 - Added a setting to allow creative mode players to override use-inventory.
 
@@ -471,7 +471,7 @@ Thank you for the contributions from Ammar Askar (ammaraskar), aumgn,
 Jim Nordb� (Silentspy), snaxson, Socolin, and Zhuowei Zhang (zhuowei).
 
 5.3:
-- Made #region mask keep the region selected when the pask was added, and
+- Made #region mask keep the region selected when the mask was added, and
     added #dregion mask that always uses the player's current 
 selection
 - Allow inverted and under/overlay masks to affect masks, making them more
@@ -512,7 +512,7 @@ schematics do not yet store entities
 - Allow annotation-free registering of commands with other plugins
     (for developers!)
 - Added default radius setting for butcher and added permissions for killing
-    pets, npcs, and non hostile animals.
+    pets, npcs, and non-hostile animals.
 - Added support for new Anvil saving format, fixed old chunk saving format.
 - Clean up some stray 128 values and update the fallbacks to 256
 - Add support for 1.2.4 and newer
