@@ -165,7 +165,7 @@ public class ClipboardCommands {
                       @ClipboardMask
                           Mask sourceMask,
                       @ArgFlag(name = 'p', desc = "Paste at a specific position (x,y,z)")
-                          BlockVector3 atLocation) throws WorldEditException {
+                          BlockVector3 atPosition) throws WorldEditException {
 
         ClipboardHolder holder = session.getClipboard();
         Clipboard clipboard = holder.getClipboard();
@@ -175,8 +175,8 @@ public class ClipboardCommands {
         BlockVector3 to;
         if (atOrigin) {
             to = clipboard.getOrigin();
-        } else if (atLocation != null) {
-            to = atLocation;
+        } else if (atPosition != null) {
+            to = atPosition;
         } else {
             to = session.getPlacementPosition(actor);
         }
@@ -209,7 +209,6 @@ public class ClipboardCommands {
         } else {
             actor.printInfo(TranslatableComponent.of("worldedit.paste.pasted", TextComponent.of(to.toString())));
         }
-
         messages.forEach(actor::print);
     }
 
