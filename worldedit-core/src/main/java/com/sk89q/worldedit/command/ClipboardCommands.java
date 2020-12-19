@@ -163,14 +163,24 @@ public class ClipboardCommands {
                           boolean pasteBiomes,
                       @ArgFlag(name = 'm', desc = "Only paste blocks matching this mask")
                       @ClipboardMask
-                          Mask sourceMask) throws WorldEditException {
+                          Mask sourceMask,
+                      @ArgFlag(name = 'p', desc = "Paste at a specific position (x,y,z)")
+                          BlockVector3 atLocation) throws WorldEditException {
 
         ClipboardHolder holder = session.getClipboard();
         Clipboard clipboard = holder.getClipboard();
         Region region = clipboard.getRegion();
         List<Component> messages = Lists.newArrayList();
 
-        BlockVector3 to = atOrigin ? clipboard.getOrigin() : session.getPlacementPosition(actor);
+        BlockVector3 to;
+        if (atOrigin) {
+            to = clipboard.getOrigin();
+        } else if (atLocation != null) {
+            to = atLocation;
+        } else {
+            to = session.getPlacementPosition(actor);
+        }
+
         if (!onlySelect) {
             Operation operation = holder
                     .createPaste(editSession)
@@ -199,6 +209,7 @@ public class ClipboardCommands {
         } else {
             actor.printInfo(TranslatableComponent.of("worldedit.paste.pasted", TextComponent.of(to.toString())));
         }
+
         messages.forEach(actor::print);
     }
 
