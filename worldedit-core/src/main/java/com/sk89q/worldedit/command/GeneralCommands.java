@@ -32,13 +32,11 @@ import com.sk89q.worldedit.command.util.WorldEditAsyncCommandBuilder;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
-import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.visitor.RegionVisitor;
 import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.internal.command.CommandUtil;
-import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
@@ -293,11 +291,9 @@ public class GeneralCommands {
             + " Do not depend on the exact format of this command yet."
     )
     @CommandPermissions("worldedit.perf")
-    void perfApply(Actor actor, LocalSession session,
-                   World injectedWorld,
-              @Arg(desc = "The side effect", def = "")
-                  SideEffect sideEffect
-              ) throws WorldEditException {
+    void perfApply(Actor actor, LocalSession session, World injectedWorld,
+                   @Arg(desc = "The side effect", def = "")
+                       SideEffect sideEffect) throws WorldEditException {
         SideEffectSet sideEffectSet = sideEffect == null ? SideEffectSet.defaults() : SideEffectSet.none().with(sideEffect, SideEffect.State.ON);
 
         RegionVisitor visitor = new RegionVisitor(session.getSelection(injectedWorld), position -> {
