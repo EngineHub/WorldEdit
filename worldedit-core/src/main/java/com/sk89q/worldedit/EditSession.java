@@ -135,6 +135,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
@@ -2640,23 +2641,21 @@ public class EditSession implements Extent, AutoCloseable {
     }
 
     public int makeBiomeShape(final Region region, final Vector3 zero, final Vector3 unit, final BiomeType biomeType,
-                              final String expressionString, final boolean hollow)
-            throws ExpressionException, MaxChangedBlocksException {
+                              final String expressionString, final boolean hollow) throws ExpressionException {
         return makeBiomeShape(region, zero, unit, biomeType, expressionString, hollow, WorldEdit.getInstance().getConfiguration().calculationTimeout);
     }
 
     public int makeBiomeShape(final Region region, final Vector3 zero, final Vector3 unit, final BiomeType biomeType,
-                              final String expressionString, final boolean hollow, final int timeout)
-            throws ExpressionException, MaxChangedBlocksException {
+                              final String expressionString, final boolean hollow, final int timeout) throws ExpressionException {
 
-        final Expression expression = Expression.compile(expressionString, "x", "z");
+        final Expression expression = Expression.compile(expressionString, "x", "y", "z");
         expression.optimize();
 
         final EditSession editSession = this;
         final WorldEditExpressionEnvironment environment = new WorldEditExpressionEnvironment(editSession, unit, zero);
         expression.setEnvironment(environment);
 
-        final int[] timedOut = {0};
+        AtomicInteger timedOut = new AtomicInteger();
         final ArbitraryBiomeShape shape = new ArbitraryBiomeShape(region) {
             @Override
             protected BiomeType getBiome(int x, int y, int z, BiomeType defaultBiomeType) {
@@ -2672,7 +2671,7 @@ public class EditSession implements Extent, AutoCloseable {
                     // TODO: Allow biome setting via a script variable (needs BiomeType<->int mapping)
                     return defaultBiomeType;
                 } catch (ExpressionTimeoutException e) {
-                    timedOut[0] = timedOut[0] + 1;
+                    timedOut.getAndIncrement();
                     return null;
                 } catch (Exception e) {
                     log.warn("Failed to create shape", e);
@@ -2681,10 +2680,10 @@ public class EditSession implements Extent, AutoCloseable {
             }
         };
         int changed = shape.generate(this, biomeType, hollow);
-        if (timedOut[0] > 0) {
+        if (timedOut.get() > 0) {
             throw new ExpressionTimeoutException(
-                    String.format("%d blocks changed. %d blocks took too long to evaluate (increase time with //timeout)",
-                            changed, timedOut[0]));
+                    String.format("%d biomes changed. %d biomes took too long to evaluate (increase time with //timeout)",
+                            changed, timedOut.get()));
         }
         return changed;
     }

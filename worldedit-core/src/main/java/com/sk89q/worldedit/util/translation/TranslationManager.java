@@ -206,7 +206,7 @@ public class TranslationManager {
         // In dev, reading lang/strings.json from either i18n.zip or the config folder
         // WILL NOT OCCUR!
         URL devStrings;
-        if (locale == defaultLocale
+        if (defaultLocale.equals(locale)
             && (devStrings = resourceLoader.getRootResource("lang/strings.json")) != null) {
             try (InputStream in = devStrings.openStream()) {
                 putTranslationData(entries, in);
