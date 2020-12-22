@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.util;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
 import java.util.Arrays;
@@ -30,7 +29,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class SideEffectSet {
-    private static final SideEffectSet DEFAULT = new SideEffectSet();
+    private static final SideEffectSet DEFAULT = new SideEffectSet(Maps.newEnumMap(SideEffect.class));
     private static final SideEffectSet NONE = new SideEffectSet(
         Arrays.stream(SideEffect.values()).collect(Collectors.toMap(Function.identity(), state -> SideEffect.State.OFF))
     );
@@ -38,10 +37,6 @@ public class SideEffectSet {
     private final Map<SideEffect, SideEffect.State> sideEffects;
     private final Set<SideEffect> appliedSideEffects;
     private final boolean appliesAny;
-
-    private SideEffectSet() {
-        this(ImmutableMap.of());
-    }
 
     public SideEffectSet(Map<SideEffect, SideEffect.State> sideEffects) {
         this.sideEffects = Maps.immutableEnumMap(sideEffects);
