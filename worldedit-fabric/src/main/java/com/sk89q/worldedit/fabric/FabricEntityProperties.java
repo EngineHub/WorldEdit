@@ -41,7 +41,7 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.village.Trader;
+import net.minecraft.village.Merchant;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -121,7 +121,7 @@ public class FabricEntityProperties implements EntityProperties {
 
     @Override
     public boolean isNPC() {
-        return entity instanceof Npc || entity instanceof Trader;
+        return entity instanceof Npc || entity instanceof Merchant;
     }
 
     @Override
