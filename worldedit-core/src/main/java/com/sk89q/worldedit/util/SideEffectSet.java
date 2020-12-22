@@ -30,18 +30,14 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class SideEffectSet {
-    private static final SideEffectSet DEFAULT = new SideEffectSet(
-            Arrays.stream(SideEffect.values()).collect(Collectors.toMap(Function.identity(), SideEffect::getDefaultValue))
+    private static final SideEffectSet DEFAULT = new SideEffectSet(ImmutableMap.of());
+    private static final SideEffectSet NONE = new SideEffectSet(
+        Arrays.stream(SideEffect.values()).collect(Collectors.toMap(Function.identity(), state -> SideEffect.State.OFF))
     );
-    private static final SideEffectSet NONE = new SideEffectSet();
 
     private final Map<SideEffect, SideEffect.State> sideEffects;
     private final Set<SideEffect> appliedSideEffects;
     private final boolean appliesAny;
-
-    private SideEffectSet() {
-        this(ImmutableMap.of());
-    }
 
     public SideEffectSet(Map<SideEffect, SideEffect.State> sideEffects) {
         this.sideEffects = Maps.immutableEnumMap(sideEffects);
