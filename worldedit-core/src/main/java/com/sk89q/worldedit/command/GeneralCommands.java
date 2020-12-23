@@ -285,13 +285,13 @@ public class GeneralCommands {
     }
 
     @Command(
-        name = "/perf-apply",
+        name = "/update",
         desc = "Apply a side effect",
         descFooter = "Note that this command is GOING to change in the future."
             + " Do not depend on the exact format of this command yet."
     )
-    @CommandPermissions("worldedit.perf")
-    void perfApply(Actor actor, LocalSession session, World injectedWorld,
+    @CommandPermissions("worldedit.update")
+    void update(Actor actor, LocalSession session, World injectedWorld,
                    @Arg(desc = "The side effect", def = "")
                        SideEffect sideEffect) throws WorldEditException {
         SideEffectSet sideEffectSet = sideEffect == null ? SideEffectSet.defaults() : SideEffectSet.none().with(sideEffect, SideEffect.State.ON);
@@ -301,6 +301,12 @@ public class GeneralCommands {
             return true;
         });
         Operations.complete(visitor);
+
+        if (sideEffect != null) {
+            actor.printInfo(TranslatableComponent.of("worldedit.update.single", TranslatableComponent.of(sideEffect.getDisplayName())));
+        } else {
+            actor.printInfo(TranslatableComponent.of("worldedit.update"));
+        }
     }
 
     @Command(

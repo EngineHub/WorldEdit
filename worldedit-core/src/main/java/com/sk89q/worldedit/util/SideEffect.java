@@ -29,6 +29,7 @@ public enum SideEffect {
     ENTITY_AI(State.OFF),
     EVENTS(State.OFF);
 
+    // TODO Make these components in WE8
     private final String displayName;
     private final String description;
     private final State defaultValue;
@@ -56,6 +57,7 @@ public enum SideEffect {
         ON,
         DELAYED;
 
+        // TODO Make this a component in WE8
         private final String displayName;
 
         State() {
