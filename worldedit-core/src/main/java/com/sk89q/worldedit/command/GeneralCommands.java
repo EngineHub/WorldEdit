@@ -286,9 +286,7 @@ public class GeneralCommands {
 
     @Command(
         name = "/update",
-        desc = "Apply a side effect",
-        descFooter = "Note that this command is GOING to change in the future."
-            + " Do not depend on the exact format of this command yet."
+        desc = "Apply a side effect"
     )
     @CommandPermissions("worldedit.update")
     void update(Actor actor, LocalSession session, World injectedWorld,
