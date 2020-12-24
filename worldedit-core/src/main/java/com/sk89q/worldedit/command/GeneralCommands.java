@@ -32,6 +32,9 @@ import com.sk89q.worldedit.command.util.WorldEditAsyncCommandBuilder;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.function.RegionFunction;
+import com.sk89q.worldedit.function.RegionMaskingFilter;
+import com.sk89q.worldedit.function.block.ApplySideEffect;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.visitor.RegionVisitor;
@@ -294,10 +297,12 @@ public class GeneralCommands {
                        SideEffect sideEffect) throws WorldEditException {
         SideEffectSet sideEffectSet = sideEffect == null ? SideEffectSet.defaults() : SideEffectSet.none().with(sideEffect, SideEffect.State.ON);
 
-        RegionVisitor visitor = new RegionVisitor(session.getSelection(injectedWorld), position -> {
-            injectedWorld.applySideEffects(position, injectedWorld.getBlock(position), sideEffectSet);
-            return true;
-        });
+        RegionFunction apply = new ApplySideEffect(injectedWorld, sideEffectSet);
+        if (session.getMask() != null) {
+            apply = new RegionMaskingFilter(session.getMask(), apply);
+        }
+
+        RegionVisitor visitor = new RegionVisitor(session.getSelection(injectedWorld), apply);
         Operations.complete(visitor);
 
         if (sideEffect != null) {
