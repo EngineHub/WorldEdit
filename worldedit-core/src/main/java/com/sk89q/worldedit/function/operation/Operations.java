@@ -20,7 +20,11 @@
 package com.sk89q.worldedit.function.operation;
 
 import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Operation helper methods.
@@ -78,4 +82,25 @@ public final class Operations {
         }
     }
 
+    private static Callable<Void> getTask(Operation operation, RunContext context, CompletableFuture<Void> future) {
+        return () -> {
+            Operation operation1 = operation.resume(context);
+            if (operation1 == null) {
+                future.complete(null);
+            } else {
+                WorldEdit.getInstance().getTaskQueue().addTask(getTask(operation1, context, future));
+            }
+
+            return null;
+        };
+    }
+
+    public static CompletableFuture<Void> completeFuture(Operation op) {
+        final RunContext context = new RunContext();
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
+        WorldEdit.getInstance().getTaskQueue().addTask(getTask(op, context, future));
+
+        return future;
+    }
 }

@@ -301,6 +301,7 @@ public class PlatformManager {
         if (initialized.compareAndSet(false, true)) {
             worldEdit.getEventBus().post(new PlatformInitializeEvent());
         }
+        queryCapability(Capability.USER_COMMANDS).schedule(1, 1, () -> worldEdit.getTaskQueue().tick());
     }
 
     @Subscribe

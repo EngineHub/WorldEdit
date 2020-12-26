@@ -51,6 +51,7 @@ import com.sk89q.worldedit.scripting.CraftScriptContext;
 import com.sk89q.worldedit.scripting.CraftScriptEngine;
 import com.sk89q.worldedit.scripting.RhinoCraftScriptEngine;
 import com.sk89q.worldedit.session.SessionManager;
+import com.sk89q.worldedit.task.TaskQueue;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.asset.AssetLoaders;
@@ -124,6 +125,7 @@ public final class WorldEdit {
             EvenMoreExecutors.newBoundedCachedThreadPool(0, 1, 20, "WorldEdit Task Executor - %s"));
     private final Supervisor supervisor = new SimpleSupervisor();
     private final AssetLoaders assetLoaders = new AssetLoaders(this);
+    private final TaskQueue taskQueue = new TaskQueue();
 
     private final BlockFactory blockFactory = new BlockFactory(this);
     private final ItemFactory itemFactory = new ItemFactory(this);
@@ -257,6 +259,10 @@ public final class WorldEdit {
      */
     public AssetLoaders getAssetLoaders() {
         return assetLoaders;
+    }
+
+    public TaskQueue getTaskQueue() {
+        return taskQueue;
     }
 
     /**

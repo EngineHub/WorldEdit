@@ -180,7 +180,7 @@ public class ClipboardCommands {
                     .copyEntities(pasteEntities)
                     .maskSource(sourceMask)
                     .build();
-            Operations.completeLegacy(operation);
+            Operations.completeFuture(operation);
             messages.addAll(Lists.newArrayList(operation.getStatusMessages()));
         }
 

@@ -267,7 +267,7 @@ public class EditSession implements Extent, AutoCloseable {
 
             // This extent can be skipped by calling rawSetBlock()
             extent = traceIfNeeded(reorderExtent = new MultiStageReorder(extent, false));
-            extent = traceIfNeeded(chunkBatchingExtent = new ChunkBatchingExtent(extent));
+//            extent = traceIfNeeded(chunkBatchingExtent = new ChunkBatchingExtent(extent));
             extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_REORDER);
             if (watchdog != null) {
                 // reset before buffering extents, since they may buffer all changes

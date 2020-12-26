@@ -31,6 +31,8 @@ import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
+import java.util.Iterator;
+
 /**
  * Utility class to apply region functions to {@link com.sk89q.worldedit.regions.Region}.
  */
@@ -40,9 +42,13 @@ public class RegionVisitor implements Operation {
     private final RegionFunction function;
     private int affected = 0;
 
+    private final Iterator<BlockVector3> regionIterator;
+
     public RegionVisitor(Region region, RegionFunction function) {
         this.region = region;
         this.function = function;
+
+        this.regionIterator = this.region.iterator();
     }
 
     /**
@@ -56,13 +62,16 @@ public class RegionVisitor implements Operation {
 
     @Override
     public Operation resume(RunContext run) throws WorldEditException {
-        for (BlockVector3 pt : region) {
+        int done = 0;
+        while (done < 500000 && regionIterator.hasNext()) {
+            done++;
+            BlockVector3 pt = regionIterator.next();
             if (function.apply(pt)) {
                 affected++;
             }
         }
 
-        return null;
+        return regionIterator.hasNext() ? this : null;
     }
 
     @Override

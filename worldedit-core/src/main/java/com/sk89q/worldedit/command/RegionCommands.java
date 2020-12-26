@@ -103,13 +103,14 @@ public class RegionCommands {
         RegionFunction set = new BlockReplace(editSession, pattern);
         RegionVisitor visitor = new RegionVisitor(region, set);
 
-        Operations.completeBlindly(visitor);
-        List<Component> messages = Lists.newArrayList(visitor.getStatusMessages());
-        if (messages.isEmpty()) {
-            actor.printInfo(TranslatableComponent.of("worldedit.set.done"));
-        } else {
-            actor.printInfo(TranslatableComponent.of("worldedit.set.done.verbose", TextUtils.join(messages, TextComponent.of(", "))));
-        }
+        Operations.completeFuture(visitor).thenAccept(v -> {
+            List<Component> messages = Lists.newArrayList(visitor.getStatusMessages());
+            if (messages.isEmpty()) {
+                actor.printInfo(TranslatableComponent.of("worldedit.set.done"));
+            } else {
+                actor.printInfo(TranslatableComponent.of("worldedit.set.done.verbose", TextUtils.join(messages, TextComponent.of(", "))));
+            }
+        });
 
         return visitor.getAffected();
     }
