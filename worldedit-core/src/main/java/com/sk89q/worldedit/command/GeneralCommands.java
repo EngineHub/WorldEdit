@@ -295,7 +295,9 @@ public class GeneralCommands {
     void update(Actor actor, LocalSession session, World injectedWorld,
                    @Arg(desc = "The side effect", def = "")
                        SideEffect sideEffect) throws WorldEditException {
-        SideEffectSet sideEffectSet = sideEffect == null ? SideEffectSet.defaults() : SideEffectSet.none().with(sideEffect, SideEffect.State.ON);
+        SideEffectSet sideEffectSet = sideEffect == null
+            ? session.getSideEffectSet()
+            : SideEffectSet.none().with(sideEffect, SideEffect.State.ON);
 
         RegionFunction apply = new ApplySideEffect(injectedWorld, sideEffectSet);
         if (session.getMask() != null) {
