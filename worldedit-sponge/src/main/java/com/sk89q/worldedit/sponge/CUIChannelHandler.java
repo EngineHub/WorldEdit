@@ -53,14 +53,9 @@ public class CUIChannelHandler implements RawDataListener {
 
             LocalSession session = SpongeWorldEdit.inst().getSession(player);
 
-            if (session.hasCUISupport()) {
-                return;
-            }
-
             final SpongePlayer actor = SpongeWorldEdit.inst().wrapPlayer(player);
             session.handleCUIInitializationMessage(new String(data.readBytes(data.available()), StandardCharsets.UTF_8),
                     actor);
-            session.describeCUI(actor);
         }
     }
 }

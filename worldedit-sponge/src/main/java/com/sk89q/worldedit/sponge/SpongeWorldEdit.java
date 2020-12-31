@@ -24,6 +24,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
+import com.sk89q.worldedit.event.platform.SessionIdleEvent;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
@@ -51,6 +52,7 @@ import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
+import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.plugin.Plugin;
@@ -292,6 +294,12 @@ public class SpongeWorldEdit {
                 event.setCancelled(true);
             }
         }
+    }
+
+    @Listener
+    public void onPlayerQuit(ClientConnectionEvent.Disconnect event) {
+        WorldEdit.getInstance().getEventBus()
+                .post(new SessionIdleEvent(new SpongePlayer.SessionKeyImpl(event.getTargetEntity())));
     }
 
     public static ItemStack toSpongeItemStack(BaseItemStack item) {

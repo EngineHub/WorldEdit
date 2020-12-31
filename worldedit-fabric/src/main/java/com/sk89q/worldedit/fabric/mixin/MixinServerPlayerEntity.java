@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.fabric.mixin;
 
+import com.sk89q.worldedit.fabric.FabricWorldEdit;
 import com.sk89q.worldedit.fabric.internal.ExtendedPlayerEntity;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -36,6 +37,11 @@ public abstract class MixinServerPlayerEntity implements ExtendedPlayerEntity {
     public void setClientSettings(ClientSettingsC2SPacket clientSettingsC2SPacket,
                                   CallbackInfo callbackInfo) {
         this.language = ((AccessorClientSettingsC2SPacket) clientSettingsC2SPacket).getLanguage();
+    }
+
+    @Inject(method = "onDisconnect", at = @At(value = "HEAD"))
+    public void callDisconnect(final CallbackInfo ci) {
+        FabricWorldEdit.inst.onPlayerDisconnect((ServerPlayerEntity) (Object) this);
     }
 
     @Override

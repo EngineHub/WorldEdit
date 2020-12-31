@@ -23,6 +23,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
+import com.sk89q.worldedit.event.platform.SessionIdleEvent;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
@@ -302,6 +303,12 @@ public class FabricWorldEdit implements ModInitializer {
     }
 
     // TODO Pass empty left click to server
+
+    // TODO: Use the fabric-networking-api-v1 event when updating
+    public void onPlayerDisconnect(ServerPlayerEntity player) {
+        WorldEdit.getInstance().getEventBus()
+                .post(new SessionIdleEvent(new FabricPlayer.SessionKeyImpl(player)));
+    }
 
     /**
      * Get the configuration.

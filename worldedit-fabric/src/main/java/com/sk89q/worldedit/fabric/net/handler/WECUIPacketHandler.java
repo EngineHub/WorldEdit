@@ -34,22 +34,15 @@ public final class WECUIPacketHandler {
     private WECUIPacketHandler() {
     }
 
-    public static final Charset UTF_8_CHARSET = StandardCharsets.UTF_8;
     private static final Identifier CUI_IDENTIFIER = new Identifier(FabricWorldEdit.MOD_ID, FabricWorldEdit.CUI_PLUGIN_CHANNEL);
 
     public static void init() {
         ServerSidePacketRegistry.INSTANCE.register(CUI_IDENTIFIER, (packetContext, packetByteBuf) -> {
             ServerPlayerEntity player = (ServerPlayerEntity) packetContext.getPlayer();
             LocalSession session = FabricWorldEdit.inst.getSession(player);
-
-            if (session.hasCUISupport()) {
-                return;
-            }
-
-            String text = packetByteBuf.toString(UTF_8_CHARSET);
+            String text = packetByteBuf.toString(StandardCharsets.UTF_8);
             final FabricPlayer actor = FabricAdapter.adaptPlayer(player);
             session.handleCUIInitializationMessage(text, actor);
-            session.describeCUI(actor);
         });
     }
 }

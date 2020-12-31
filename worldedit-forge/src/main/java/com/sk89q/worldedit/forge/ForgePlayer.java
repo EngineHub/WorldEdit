@@ -59,6 +59,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.UUID;
 import javax.annotation.Nullable;
@@ -128,7 +129,7 @@ public class ForgePlayer extends AbstractPlayerActor {
         if (params.length > 0) {
             send = send + "|" + StringUtil.joinString(params, "|");
         }
-        PacketBuffer buffer = new PacketBuffer(Unpooled.copiedBuffer(send.getBytes(WECUIPacketHandler.UTF_8_CHARSET)));
+        PacketBuffer buffer = new PacketBuffer(Unpooled.wrappedBuffer(send.getBytes(StandardCharsets.UTF_8)));
         SCustomPayloadPlayPacket packet = new SCustomPayloadPlayPacket(new ResourceLocation(ForgeWorldEdit.MOD_ID, ForgeWorldEdit.CUI_PLUGIN_CHANNEL), buffer);
         this.player.connection.sendPacket(packet);
     }
@@ -258,18 +259,18 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public SessionKey getSessionKey() {
-        return new SessionKeyImpl(player.getUniqueID(), player.getName().getString());
+        return new SessionKeyImpl(player);
     }
 
-    private static class SessionKeyImpl implements SessionKey {
+    static class SessionKeyImpl implements SessionKey {
         // If not static, this will leak a reference
 
         private final UUID uuid;
         private final String name;
 
-        private SessionKeyImpl(UUID uuid, String name) {
-            this.uuid = uuid;
-            this.name = name;
+        SessionKeyImpl(ServerPlayerEntity player) {
+            this.uuid = player.getUniqueID();
+            this.name = player.getName().getString();
         }
 
         @Override
