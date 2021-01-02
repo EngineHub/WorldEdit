@@ -84,4 +84,8 @@ public abstract class AbstractPlatform implements Platform {
         getTranslationManager().reload();
     }
 
+    @Override
+    public String getId() {
+        return "unknown:unknown";
+    }
 }

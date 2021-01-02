@@ -21,6 +21,7 @@ package com.sk89q.worldedit.extension.platform;
 
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.io.ResourceLoader;
 import com.sk89q.worldedit.util.translation.TranslationManager;
@@ -40,7 +41,7 @@ import javax.annotation.Nullable;
  * <p>It is strongly recommended that implementations extend from
  * {@link AbstractPlatform}.</p>
  */
-public interface Platform {
+public interface Platform extends Keyed {
 
     /**
      * Return the resource loader.

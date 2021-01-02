@@ -34,6 +34,7 @@ import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -113,8 +114,19 @@ public class SpongeSchematicWriter implements ClipboardWriter {
         metadata.put("WEOffsetX", new IntTag(offset.getBlockX()));
         metadata.put("WEOffsetY", new IntTag(offset.getBlockY()));
         metadata.put("WEOffsetZ", new IntTag(offset.getBlockZ()));
-        metadata.put("WEVersion", new StringTag(WorldEdit.getVersion()));
-        metadata.put("WEPlatform", new StringTag(WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getPlatformName()));
+
+        Map<String, Tag> worldEditSection = new HashMap<>();
+        worldEditSection.put("Version", new StringTag(WorldEdit.getVersion()));
+        worldEditSection.put("EditingPlatform", new StringTag(WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getId()));
+        worldEditSection.put("Offset", new IntArrayTag(new int[]{offset.getBlockX(), offset.getBlockY(), offset.getBlockZ()}));
+
+        Map<String, Tag> platformsSection = new HashMap<>();
+        for (Platform platform : WorldEdit.getInstance().getPlatformManager().getPlatforms()) {
+            platformsSection.put(platform.getId(), new StringTag(platform.getPlatformVersion()));
+        }
+        worldEditSection.put("Platforms", new CompoundTag(platformsSection));
+
+        metadata.put("WorldEdit", new CompoundTag(worldEditSection));
 
         schematic.put("Metadata", new CompoundTag(metadata));
 

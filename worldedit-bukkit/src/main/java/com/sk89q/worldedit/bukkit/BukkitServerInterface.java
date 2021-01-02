@@ -215,6 +215,11 @@ public class BukkitServerInterface extends AbstractPlatform implements MultiUser
     }
 
     @Override
+    public String getId() {
+        return "enginehub:bukkit";
+    }
+
+    @Override
     public Map<Capability, Preference> getCapabilities() {
         Map<Capability, Preference> capabilities = new EnumMap<>(Capability.class);
         capabilities.put(Capability.CONFIGURATION, Preference.NORMAL);
