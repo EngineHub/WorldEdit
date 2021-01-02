@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * An abstract implementation of {@link Platform}.
@@ -84,4 +83,5 @@ public abstract class AbstractPlatform implements Platform {
     public void reload() {
         getTranslationManager().reload();
     }
+
 }
