@@ -21,6 +21,7 @@ package com.sk89q.worldedit.extension.platform;
 
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
 import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.io.ResourceLoader;
@@ -31,6 +32,7 @@ import com.sk89q.worldedit.world.registry.Registries;
 import org.enginehub.piston.CommandManager;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -178,6 +180,12 @@ public interface Platform extends Keyed {
      * @return the platform version
      */
     String getPlatformVersion();
+
+    @NonAbstractForCompatibility(delegateName = "getPlatformName", delegateParams = {})
+    @Override
+    default String getId() {
+        return "legacy:" + getPlatformName().toLowerCase(Locale.ROOT).replaceAll("[^a-z_.-]", "_");
+    }
 
     /**
      * Get a map of advertised capabilities of this platform, where each key
