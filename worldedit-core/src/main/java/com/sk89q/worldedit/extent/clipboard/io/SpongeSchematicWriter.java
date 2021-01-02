@@ -113,6 +113,8 @@ public class SpongeSchematicWriter implements ClipboardWriter {
         metadata.put("WEOffsetX", new IntTag(offset.getBlockX()));
         metadata.put("WEOffsetY", new IntTag(offset.getBlockY()));
         metadata.put("WEOffsetZ", new IntTag(offset.getBlockZ()));
+        metadata.put("WEVersion", new StringTag(WorldEdit.getVersion()));
+        metadata.put("WEPlatform", new StringTag(WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getPlatformName()));
 
         schematic.put("Metadata", new CompoundTag(metadata));
 
