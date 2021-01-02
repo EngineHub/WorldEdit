@@ -39,6 +39,8 @@ class DocumentationPlatform : AbstractPlatform() {
         return props.getProperty("version") ?: "No version property in `gradle.properties`"
     }
 
+    override fun getId() = "enginehub:documentation"
+
     override fun getConfiguration() = DocumentationConfiguration
 
     override fun getPlatformVersion() = version
