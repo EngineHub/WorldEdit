@@ -122,7 +122,11 @@ public class SpongeSchematicWriter implements ClipboardWriter {
 
         Map<String, Tag> platformsSection = new HashMap<>();
         for (Platform platform : WorldEdit.getInstance().getPlatformManager().getPlatforms()) {
-            platformsSection.put(platform.getId(), new StringTag(platform.getPlatformVersion()));
+            Map<String, Tag> platformSection = new HashMap<>();
+            platformSection.put("Name", new StringTag(platform.getPlatformName()));
+            platformSection.put("Version", new StringTag(platform.getPlatformVersion()));
+
+            platformsSection.put(platform.getId(), new CompoundTag(platformSection));
         }
         worldEditSection.put("Platforms", new CompoundTag(platformsSection));
 
