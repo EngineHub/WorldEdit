@@ -182,8 +182,7 @@ public interface Platform extends Keyed {
     String getPlatformVersion();
 
     /**
-     * The id of this object in the registry. Must be unique, and lowercase. Certain registries (e.g Namespaced ones) may have additional restrictions.
-     * @return an id
+     * {@inheritDoc}
      * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
      *          for details
      */
