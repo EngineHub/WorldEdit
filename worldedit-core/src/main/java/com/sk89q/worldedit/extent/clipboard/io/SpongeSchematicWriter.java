@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.extent.clipboard.io;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.sk89q.jnbt.ByteArrayTag;
 import com.sk89q.jnbt.CompoundTag;
@@ -122,11 +123,10 @@ public class SpongeSchematicWriter implements ClipboardWriter {
 
         Map<String, Tag> platformsSection = new HashMap<>();
         for (Platform platform : WorldEdit.getInstance().getPlatformManager().getPlatforms()) {
-            Map<String, Tag> platformSection = new HashMap<>();
-            platformSection.put("Name", new StringTag(platform.getPlatformName()));
-            platformSection.put("Version", new StringTag(platform.getPlatformVersion()));
-
-            platformsSection.put(platform.getId(), new CompoundTag(platformSection));
+            platformsSection.put(platform.getId(), new CompoundTag(ImmutableMap.of(
+                "Name", new StringTag(platform.getPlatformName()),
+                "Version", new StringTag(platform.getPlatformVersion())
+            )));
         }
         worldEditSection.put("Platforms", new CompoundTag(platformsSection));
 

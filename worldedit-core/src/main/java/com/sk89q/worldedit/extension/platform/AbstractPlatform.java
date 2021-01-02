@@ -87,6 +87,6 @@ public abstract class AbstractPlatform implements Platform {
 
     @Override
     public String getId() {
-        return "legacy:" + getPlatformName().toLowerCase(Locale.ROOT).replace(" ", "_");
+        return "legacy:" + getPlatformName().toLowerCase(Locale.ROOT).replaceAll("[^a-z_.-]", "_");
     }
 }
