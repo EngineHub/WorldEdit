@@ -146,6 +146,11 @@ class CLIPlatform extends AbstractPlatform {
     }
 
     @Override
+    public String getId() {
+        return "enginehub:cli";
+    }
+
+    @Override
     public Map<Capability, Preference> getCapabilities() {
         Map<Capability, Preference> capabilities = new EnumMap<>(Capability.class);
         capabilities.put(Capability.CONFIGURATION, Preference.PREFER_OTHERS);
