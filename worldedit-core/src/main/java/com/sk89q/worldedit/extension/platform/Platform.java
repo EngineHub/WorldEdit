@@ -183,6 +183,7 @@ public interface Platform extends Keyed {
 
     /**
      * {@inheritDoc}
+     * @return an id
      * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
      *          for details
      */
