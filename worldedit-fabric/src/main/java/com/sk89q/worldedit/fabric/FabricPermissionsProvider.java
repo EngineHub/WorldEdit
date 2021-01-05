@@ -58,7 +58,8 @@ public interface FabricPermissionsProvider {
 
         @Override
         public boolean hasPermission(ServerPlayerEntity player, String permission) {
-            return Permissions.check(player, permission) || super.hasPermission(player, permission);
+            return Permissions.getPermissionValue(player, permission)
+                .orElseGet(() -> super.hasPermission(player, permission));
         }
 
         @Override
