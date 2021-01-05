@@ -32,7 +32,12 @@ import com.sk89q.worldedit.command.util.WorldEditAsyncCommandBuilder;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.function.RegionFunction;
+import com.sk89q.worldedit.function.RegionMaskingFilter;
+import com.sk89q.worldedit.function.block.ApplySideEffect;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.operation.Operations;
+import com.sk89q.worldedit.function.visitor.RegionVisitor;
 import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.util.SideEffect;
@@ -76,7 +81,7 @@ public class GeneralCommands {
                                 CommandManager commandManager,
                                 CommandManagerService commandManagerService,
                                 WorldEdit worldEdit) {
-        // Collect the tool commands
+        // Collect the commands
         CommandManager collect = commandManagerService.newCommandManager();
 
         registration.register(
@@ -280,6 +285,29 @@ public class GeneralCommands {
             SideEffectBox sideEffectBox = new SideEffectBox(session.getSideEffectSet());
             actor.print(sideEffectBox.create(1));
         }
+    }
+
+    @Command(
+        name = "/update",
+        desc = "Apply side effects to your selection"
+    )
+    @CommandPermissions("worldedit.update")
+    void update(Actor actor, LocalSession session, World injectedWorld,
+                @Arg(desc = "The side effects", def = "")
+                    SideEffectSet sideEffectSet) throws WorldEditException {
+        if (sideEffectSet == null) {
+            // Use defaults if none supplied.
+            sideEffectSet = SideEffectSet.defaults();
+        }
+        RegionFunction apply = new ApplySideEffect(injectedWorld, sideEffectSet);
+        if (session.getMask() != null) {
+            apply = new RegionMaskingFilter(session.getMask(), apply);
+        }
+
+        RegionVisitor visitor = new RegionVisitor(session.getSelection(injectedWorld), apply);
+        Operations.complete(visitor);
+
+        actor.printInfo(TranslatableComponent.of("worldedit.update"));
     }
 
     @Command(

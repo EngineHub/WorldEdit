@@ -81,6 +81,7 @@ import com.sk89q.worldedit.command.argument.OffsetConverter;
 import com.sk89q.worldedit.command.argument.RegionFactoryConverter;
 import com.sk89q.worldedit.command.argument.RegistryConverter;
 import com.sk89q.worldedit.command.argument.SideEffectConverter;
+import com.sk89q.worldedit.command.argument.SideEffectSetConverter;
 import com.sk89q.worldedit.command.argument.VectorConverter;
 import com.sk89q.worldedit.command.argument.WorldConverter;
 import com.sk89q.worldedit.command.argument.ZonedDateTimeConverter;
@@ -221,6 +222,7 @@ public final class PlatformCommandManager {
         RegionFactoryConverter.register(commandManager);
         WorldConverter.register(commandManager);
         SideEffectConverter.register(commandManager);
+        SideEffectSetConverter.register(commandManager);
         HeightConverter.register(commandManager);
         OffsetConverter.register(worldEdit, commandManager);
     }
