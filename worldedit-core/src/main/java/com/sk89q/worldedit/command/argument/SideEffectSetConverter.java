@@ -36,8 +36,8 @@ import java.util.List;
 public class SideEffectSetConverter implements ArgumentConverter<SideEffectSet> {
 
     public static void register(CommandManager commandManager) {
-        ArgumentConverter<SideEffect> sideEffectConverter = commandManager.getConverter(Key.of(SideEffect.class)).orElseThrow(()
-            -> new IllegalStateException("SideEffectSetConverter must be registered after SideEffectConverter"));
+        ArgumentConverter<SideEffect> sideEffectConverter = commandManager.getConverter(Key.of(SideEffect.class))
+            .orElseThrow(() -> new IllegalStateException("SideEffectSetConverter must be registered after SideEffectConverter"));
         commandManager.registerConverter(
             Key.of(SideEffectSet.class),
             new SideEffectSetConverter(CommaSeparatedValuesConverter.wrapNoRepeats(sideEffectConverter))
