@@ -32,16 +32,15 @@ import org.enginehub.piston.inject.InjectedValueAccess;
 import org.enginehub.piston.inject.Key;
 
 import java.util.List;
-import java.util.Optional;
 
 public class SideEffectSetConverter implements ArgumentConverter<SideEffectSet> {
 
     public static void register(CommandManager commandManager) {
-        Optional<ArgumentConverter<SideEffect>> sideEffectConverter = commandManager.getConverter(Key.of(SideEffect.class));
+        ArgumentConverter<SideEffect> sideEffectConverter = commandManager.getConverter(Key.of(SideEffect.class)).orElseThrow(()
+            -> new IllegalStateException("SideEffectSetConverter must be registered after SideEffectConverter"));
         commandManager.registerConverter(
             Key.of(SideEffectSet.class),
-            new SideEffectSetConverter(CommaSeparatedValuesConverter.wrapNoRepeats(sideEffectConverter
-                .orElseThrow(() -> new IllegalStateException("SideEffectSetConverter must be registered after SideEffectConverter"))))
+            new SideEffectSetConverter(CommaSeparatedValuesConverter.wrapNoRepeats(sideEffectConverter))
         );
     }
 
