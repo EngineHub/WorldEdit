@@ -33,22 +33,37 @@ public class EngineHubPaste implements Paster {
     private static final Gson GSON = new Gson();
 
     @Override
-    public Callable<URL> paste(String content) {
-        return new PasteTask(content);
+    public Callable<URL> paste(String content, PasteMetadata metadata) {
+        return new PasteTask(content, metadata);
     }
 
     private static final class PasteTask implements Callable<URL> {
         private final String content;
+        private final PasteMetadata metadata;
 
-        private PasteTask(String content) {
+        private PasteTask(String content, PasteMetadata metadata) {
             this.content = content;
+            this.metadata = metadata;
         }
 
         @Override
         public URL call() throws IOException, InterruptedException {
             URL initialUrl = HttpRequest.url("https://paste.enginehub.org/signed_paste");
 
-            SignedPasteResponse response = GSON.fromJson(HttpRequest.get(initialUrl)
+            HttpRequest requestBuilder = HttpRequest.get(initialUrl);
+
+            requestBuilder.header("x-paste-meta-from", "EngineHub");
+            if (metadata.name != null) {
+                requestBuilder.header("x-paste-meta-name", metadata.name);
+            }
+            if (metadata.author != null) {
+                requestBuilder.header("x-paste-meta-author", metadata.author);
+            }
+            if (metadata.extension != null) {
+                requestBuilder.header("x-paste-meta-extension", metadata.extension);
+            }
+
+            SignedPasteResponse response = GSON.fromJson(requestBuilder
                 .execute()
                 .expectResponseCode(200)
                 .returnContent()

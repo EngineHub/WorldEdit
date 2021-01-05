@@ -54,6 +54,8 @@ import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldedit.util.io.file.MorePaths;
+import com.sk89q.worldedit.util.paste.EngineHubPaste;
+import com.sk89q.worldedit.util.paste.PasteMetadata;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
@@ -66,14 +68,19 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -146,7 +153,7 @@ public class SchematicCommands {
 
     @Command(
         name = "save",
-        desc = "Save a schematic into your clipboard"
+        desc = "Save your clipboard into a schematic file"
     )
     @CommandPermissions({ "worldedit.clipboard.save", "worldedit.schematic.save" })
     public void save(Actor actor, LocalSession session,
@@ -203,6 +210,39 @@ public class SchematicCommands {
                 .onSuccess(filename + " saved" + (overwrite ? " (overwriting previous file)." : "."), null)
                 .onFailure("Failed to save schematic", worldEdit.getPlatformManager().getPlatformCommandManager().getExceptionConverter())
                 .buildAndExec(worldEdit.getExecutorService());
+    }
+
+    @Command(
+        name = "share",
+        desc = "Share your clipboard as a schematic online"
+    )
+    @CommandPermissions({ "worldedit.clipboard.share", "worldedit.schematic.share" })
+    public void share(Actor actor, LocalSession session,
+                      @Arg(desc = "Schematic name. Defaults to name-millis", def = "")
+                          String schematicName,
+                      @Arg(desc = "Format name.", def = "sponge")
+                          String formatName) throws WorldEditException {
+        if (worldEdit.getPlatformManager().queryCapability(Capability.GAME_HOOKS).getDataVersion() == -1) {
+            actor.printError(TranslatableComponent.of("worldedit.schematic.unsupported-minecraft-version"));
+            return;
+        }
+
+        ClipboardFormat format = ClipboardFormats.findByAlias(formatName);
+        if (format == null) {
+            actor.printError(TranslatableComponent.of("worldedit.schematic.unknown-format", TextComponent.of(formatName)));
+            return;
+        }
+
+        ClipboardHolder holder = session.getClipboard();
+
+        SchematicShareTask task = new SchematicShareTask(actor, format, holder, schematicName);
+        AsyncCommandBuilder.wrap(task, actor)
+            .registerWithSupervisor(worldEdit.getSupervisor(), "Sharing schematic")
+            .setDelayMessage(TranslatableComponent.of("worldedit.schematic.save.saving"))
+            .setWorkingMessage(TranslatableComponent.of("worldedit.schematic.save.still-saving"))
+            .onSuccess("Shared", (url -> actor.printInfo(TextComponent.of(url.toExternalForm() + ".schem").clickEvent(ClickEvent.openUrl(url.toExternalForm() + ".schem")))))
+            .onFailure("Failed to share schematic", worldEdit.getPlatformManager().getPlatformCommandManager().getExceptionConverter())
+            .buildAndExec(worldEdit.getExecutorService());
     }
 
     @Command(
@@ -326,23 +366,18 @@ public class SchematicCommands {
         }
     }
 
-    private static class SchematicSaveTask implements Callable<Void> {
-        private final Actor actor;
-        private final File file;
+    private abstract static class SchematicOutputTask<T> implements Callable<T> {
+        protected final Actor actor;
         private final ClipboardFormat format;
         private final ClipboardHolder holder;
-        private final boolean overwrite;
 
-        SchematicSaveTask(Actor actor, File file, ClipboardFormat format, ClipboardHolder holder, boolean overwrite) {
+        SchematicOutputTask(Actor actor, ClipboardFormat format, ClipboardHolder holder) {
             this.actor = actor;
-            this.file = file;
             this.format = format;
             this.holder = holder;
-            this.overwrite = overwrite;
         }
 
-        @Override
-        public Void call() throws Exception {
+        protected void writeToOutputStream(OutputStream outputStream) throws Exception {
             Clipboard clipboard = holder.getClipboard();
             Transform transform = holder.getTransform();
             Clipboard target;
@@ -358,17 +393,60 @@ public class SchematicCommands {
             }
 
             try (Closer closer = Closer.create()) {
-                FileOutputStream fos = closer.register(new FileOutputStream(file));
-                BufferedOutputStream bos = closer.register(new BufferedOutputStream(fos));
+                OutputStream stream = closer.register(outputStream);
+                BufferedOutputStream bos = closer.register(new BufferedOutputStream(stream));
                 ClipboardWriter writer = closer.register(format.getWriter(bos));
                 writer.write(target);
+            }
+        }
+    }
 
+    private static class SchematicSaveTask extends SchematicOutputTask<Void> {
+        private final File file;
+        private final boolean overwrite;
+
+        SchematicSaveTask(Actor actor, File file, ClipboardFormat format, ClipboardHolder holder, boolean overwrite) {
+            super(actor, format, holder);
+            this.file = file;
+            this.overwrite = overwrite;
+        }
+
+        @Override
+        public Void call() throws Exception {
+            try {
+                writeToOutputStream(new FileOutputStream(file));
                 log.info(actor.getName() + " saved " + file.getCanonicalPath() + (overwrite ? " (overwriting previous file)" : ""));
             } catch (IOException e) {
                 file.delete();
                 throw new CommandException(TextComponent.of(e.getMessage()), e, ImmutableList.of());
             }
             return null;
+        }
+    }
+
+    private static class SchematicShareTask extends SchematicOutputTask<URL> {
+        private final String name;
+
+        SchematicShareTask(Actor actor, ClipboardFormat format, ClipboardHolder holder, String name) {
+            super(actor, format, holder);
+            this.name = name;
+        }
+
+        @Override
+        public URL call() throws Exception {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            try {
+                writeToOutputStream(baos);
+            } catch (Exception e) {
+                throw new CommandException(TextComponent.of(e.getMessage()), e, ImmutableList.of());
+            }
+
+            EngineHubPaste pasteService = new EngineHubPaste();
+            PasteMetadata metadata = new PasteMetadata();
+            metadata.author = this.actor.getName();
+            metadata.extension = "schem";
+            metadata.name = name == null ? actor.getName() + "-" + System.currentTimeMillis() : name;
+            return pasteService.paste(new String(Base64.getEncoder().encode(baos.toByteArray()), StandardCharsets.UTF_8), metadata).call();
         }
     }
 

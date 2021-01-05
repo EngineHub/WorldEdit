@@ -77,4 +77,26 @@ public final class ActorCallbackPaste {
                 .buildAndExec(Pasters.getExecutor());
     }
 
+
+    /**
+     * Submit data to a pastebin service and inform the sender of
+     * success or failure.
+     *
+     * @param supervisor The supervisor instance
+     * @param sender The sender
+     * @param content The content
+     * @param pasteMetadata The paste metadata
+     * @param successMessage The message builder, given the URL as an arg
+     */
+    public static void pastebin(Supervisor supervisor, final Actor sender, String content, PasteMetadata pasteMetadata, final TranslatableComponent.Builder successMessage) {
+        Callable<URL> task = paster.paste(content, pasteMetadata);
+
+        AsyncCommandBuilder.wrap(task, sender)
+            .registerWithSupervisor(supervisor, "Submitting content to a pastebin service.")
+            .setDelayMessage(TranslatableComponent.of("worldedit.pastebin.uploading"))
+            .onSuccess((String) null, url -> sender.printInfo(successMessage.args(TextComponent.of(url.toString())).build()))
+            .onFailure("Failed to submit paste", null)
+            .buildAndExec(Pasters.getExecutor());
+    }
+
 }
