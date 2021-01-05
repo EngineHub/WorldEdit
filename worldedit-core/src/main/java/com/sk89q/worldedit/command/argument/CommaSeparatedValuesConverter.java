@@ -87,7 +87,7 @@ public class CommaSeparatedValuesConverter<T> implements ArgumentConverter<T> {
         String lastInput = Iterables.getLast(COMMA.split(input), "");
         assert lastInput != null;
         List<String> suggestions = delegate.getSuggestions(lastInput, context);
-        if (input.length() > lastInput.length()) {
+        if (input.contains(",")) {
             String prefix = input.substring(0, input.length() - lastInput.length());
             Set<String> entries = ImmutableSet.copyOf(COMMA.split(input));
             suggestions = suggestions
