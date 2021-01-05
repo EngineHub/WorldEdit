@@ -289,7 +289,7 @@ public class GeneralCommands {
 
     @Command(
         name = "/update",
-        desc = "Apply a side effect"
+        desc = "Apply side effects to your selection"
     )
     @CommandPermissions("worldedit.update")
     void update(Actor actor, LocalSession session, World injectedWorld,
