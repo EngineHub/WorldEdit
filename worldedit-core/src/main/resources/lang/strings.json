@@ -53,7 +53,6 @@
     "worldedit.perf.sideeffect.already-set": "Side effect \"{0}\" is already {1}",
     "worldedit.perf.sideeffect.set-all": "All side effects set to {0}",
     "worldedit.update": "Applied side effects to the selection.",
-    "worldedit.update.single": "Applied side effect \"{0}\" to the selection.",
     "worldedit.reorder.current": "The reorder mode is {0}",
     "worldedit.reorder.set": "The reorder mode is now {0}",
     "worldedit.gmask.disabled": "Global mask disabled.",

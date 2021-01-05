@@ -21,6 +21,7 @@ package com.sk89q.worldedit.command.argument;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
@@ -30,6 +31,8 @@ import org.enginehub.piston.converter.SuccessfulConversion;
 import org.enginehub.piston.inject.InjectedValueAccess;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.sk89q.worldedit.util.formatting.text.TextComponent.space;
@@ -40,20 +43,30 @@ public class CommaSeparatedValuesConverter<T> implements ArgumentConverter<T> {
         return wrapAndLimit(delegate, -1);
     }
 
+    public static <T> CommaSeparatedValuesConverter<T> wrapNoRepeats(ArgumentConverter<T> delegate) {
+        return wrapAndLimitNoRepeats(delegate, -1);
+    }
+
     public static <T> CommaSeparatedValuesConverter<T> wrapAndLimit(ArgumentConverter<T> delegate, int maximum) {
-        return new CommaSeparatedValuesConverter<>(delegate, maximum);
+        return new CommaSeparatedValuesConverter<>(delegate, maximum, true);
+    }
+
+    public static <T> CommaSeparatedValuesConverter<T> wrapAndLimitNoRepeats(ArgumentConverter<T> delegate, int maximum) {
+        return new CommaSeparatedValuesConverter<>(delegate, maximum, false);
     }
 
     private static final Splitter COMMA = Splitter.on(',');
 
     private final ArgumentConverter<T> delegate;
     private final int maximum;
+    private final boolean repeats;
 
-    private CommaSeparatedValuesConverter(ArgumentConverter<T> delegate, int maximum) {
+    private CommaSeparatedValuesConverter(ArgumentConverter<T> delegate, int maximum, boolean repeats) {
         checkArgument(maximum == -1 || maximum > 1,
             "Maximum must be bigger than 1, or exactly -1");
         this.delegate = delegate;
         this.maximum = maximum;
+        this.repeats = repeats;
     }
 
     @Override
@@ -73,7 +86,17 @@ public class CommaSeparatedValuesConverter<T> implements ArgumentConverter<T> {
     public List<String> getSuggestions(String input, InjectedValueAccess context) {
         String lastInput = Iterables.getLast(COMMA.split(input), "");
         assert lastInput != null;
-        return delegate.getSuggestions(lastInput, context);
+        List<String> suggestions = delegate.getSuggestions(lastInput, context);
+        if (input.length() > lastInput.length()) {
+            String prefix = input.substring(0, input.length() - lastInput.length());
+            Set<String> entries = ImmutableSet.copyOf(COMMA.split(input));
+            suggestions = suggestions
+                .stream()
+                .filter(suggestion -> repeats || !entries.contains(suggestion))
+                .map(suggestion -> prefix + suggestion)
+                .collect(Collectors.toList());
+        }
+        return suggestions;
     }
 
     @Override

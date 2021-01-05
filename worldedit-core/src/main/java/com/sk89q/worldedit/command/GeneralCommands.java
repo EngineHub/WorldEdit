@@ -293,12 +293,8 @@ public class GeneralCommands {
     )
     @CommandPermissions("worldedit.update")
     void update(Actor actor, LocalSession session, World injectedWorld,
-                   @Arg(desc = "The side effect", def = "")
-                       SideEffect sideEffect) throws WorldEditException {
-        SideEffectSet sideEffectSet = sideEffect == null
-            ? session.getSideEffectSet()
-            : SideEffectSet.none().with(sideEffect, SideEffect.State.ON);
-
+               @Arg(desc = "The side effects", def = "")
+                   SideEffectSet sideEffectSet) throws WorldEditException {
         RegionFunction apply = new ApplySideEffect(injectedWorld, sideEffectSet);
         if (session.getMask() != null) {
             apply = new RegionMaskingFilter(session.getMask(), apply);
@@ -307,11 +303,7 @@ public class GeneralCommands {
         RegionVisitor visitor = new RegionVisitor(session.getSelection(injectedWorld), apply);
         Operations.complete(visitor);
 
-        if (sideEffect != null) {
-            actor.printInfo(TranslatableComponent.of("worldedit.update.single", TranslatableComponent.of(sideEffect.getDisplayName())));
-        } else {
-            actor.printInfo(TranslatableComponent.of("worldedit.update"));
-        }
+        actor.printInfo(TranslatableComponent.of("worldedit.update"));
     }
 
     @Command(
