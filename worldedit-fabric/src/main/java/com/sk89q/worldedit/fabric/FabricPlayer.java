@@ -128,7 +128,7 @@ public class FabricPlayer extends AbstractPlayerActor {
         if (params.length > 0) {
             send = send + "|" + StringUtil.joinString(params, "|");
         }
-        PacketByteBuf buffer = new PacketByteBuf(Unpooled.wrappedBuffer(send.getBytes(StandardCharsets.UTF_8)));
+        PacketByteBuf buffer = new PacketByteBuf(Unpooled.copiedBuffer(send, StandardCharsets.UTF_8));
         CustomPayloadS2CPacket packet = new CustomPayloadS2CPacket(new Identifier(FabricWorldEdit.MOD_ID, FabricWorldEdit.CUI_PLUGIN_CHANNEL), buffer);
         this.player.networkHandler.sendPacket(packet);
     }

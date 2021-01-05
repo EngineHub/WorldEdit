@@ -138,8 +138,8 @@ public class SessionManager {
         checkNotNull(owner);
         SessionHolder stored = sessions.get(getKey(owner));
         if (stored != null) {
-            if (stored.hasBecomeIdle && stored.key.isActive()) {
-                stored.hasBecomeIdle = false;
+            if (stored.sessionIdle && stored.key.isActive()) {
+                stored.sessionIdle = false;
             }
             return stored.session;
         } else {
@@ -363,12 +363,12 @@ public class SessionManager {
     @Subscribe
     public void onSessionIdle(final SessionIdleEvent event) {
         SessionHolder holder = this.sessions.get(getKey(event.getKey()));
-        if (holder != null && !holder.hasBecomeIdle) {
-            holder.hasBecomeIdle = true;
+        if (holder != null && !holder.sessionIdle) {
+            holder.sessionIdle = true;
             LocalSession session = holder.session;
 
             // Perform any session cleanup for data that should not be persisted.
-            session.didBecomeIdle();
+            session.onIdle();
         }
     }
 
@@ -379,7 +379,7 @@ public class SessionManager {
         private final SessionKey key;
         private final LocalSession session;
         private long lastActive = System.currentTimeMillis();
-        private boolean hasBecomeIdle = false;
+        private boolean sessionIdle = false;
 
         private SessionHolder(SessionKey key, LocalSession session) {
             this.key = key;

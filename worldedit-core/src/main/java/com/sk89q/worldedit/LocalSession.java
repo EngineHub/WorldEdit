@@ -973,6 +973,10 @@ public class LocalSession {
      * @param cuiVersion the CUI version
      */
     public void setCUIVersion(int cuiVersion) {
+        if (cuiVersion < 0) {
+            throw new IllegalArgumentException("CUI protocol version must be non-negative, but '" + cuiVersion + "' was received.");
+        }
+
         this.cuiVersion = cuiVersion;
     }
 
@@ -1178,7 +1182,7 @@ public class LocalSession {
      *
      * <p>This is for internal use only.</p>
      */
-    public void didBecomeIdle() {
+    public void onIdle() {
         this.cuiVersion = CUI_VERSION_UNINITIALIZED;
         this.hasCUISupport = false;
         this.failedCuiAttempts = 0;

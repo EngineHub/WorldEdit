@@ -26,7 +26,6 @@ import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.forge.internal.NBTConverter;
-import com.sk89q.worldedit.forge.net.handler.WECUIPacketHandler;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -129,7 +128,7 @@ public class ForgePlayer extends AbstractPlayerActor {
         if (params.length > 0) {
             send = send + "|" + StringUtil.joinString(params, "|");
         }
-        PacketBuffer buffer = new PacketBuffer(Unpooled.wrappedBuffer(send.getBytes(StandardCharsets.UTF_8)));
+        PacketBuffer buffer = new PacketBuffer(Unpooled.copiedBuffer(send, StandardCharsets.UTF_8));
         SCustomPayloadPlayPacket packet = new SCustomPayloadPlayPacket(new ResourceLocation(ForgeWorldEdit.MOD_ID, ForgeWorldEdit.CUI_PLUGIN_CHANNEL), buffer);
         this.player.connection.sendPacket(packet);
     }

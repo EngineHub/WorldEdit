@@ -23,9 +23,9 @@ import com.sk89q.worldedit.event.Event;
 import com.sk89q.worldedit.session.SessionKey;
 
 /**
- * An event called when a session becomes idle.
+ * An event fired when a session becomes idle.
  *
- * <p>This can happen when a player leaves the server.
+ * <p>This can happen when a player leaves the server.</p>
  */
 public final class SessionIdleEvent extends Event {
     private final SessionKey key;
