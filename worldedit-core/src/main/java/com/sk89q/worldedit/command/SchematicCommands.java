@@ -220,7 +220,7 @@ public class SchematicCommands {
     public void share(Actor actor, LocalSession session,
                       @Arg(desc = "Format name.", def = "sponge")
                           String formatName,
-                      @ArgFlag(name = 'n', desc = "Schematic name. Defaults to username-millis", def = "")
+                      @ArgFlag(name = 'n', desc = "Schematic name. Defaults to name-millis", def = "")
                           String schematicName) throws WorldEditException {
         if (worldEdit.getPlatformManager().queryCapability(Capability.GAME_HOOKS).getDataVersion() == -1) {
             actor.printError(TranslatableComponent.of("worldedit.schematic.unsupported-minecraft-version"));
