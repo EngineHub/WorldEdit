@@ -99,6 +99,9 @@ dependencies {
         "modImplementation"(it)
     }
 
+    // No need for this at runtime
+    "modCompileOnly"("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
+
     // Hook these up manually, because Fabric doesn't seem to quite do it properly.
     "compileOnly"("net.fabricmc:sponge-mixin:${project.versions.mixin}")
     "annotationProcessor"("net.fabricmc:sponge-mixin:${project.versions.mixin}")

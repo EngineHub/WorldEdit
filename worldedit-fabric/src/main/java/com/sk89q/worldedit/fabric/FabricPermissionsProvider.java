@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.fabric;
 
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.GameMode;
 
@@ -42,6 +43,22 @@ public interface FabricPermissionsProvider {
             return configuration.cheatMode
                 || player.server.getPlayerManager().isOperator(player.getGameProfile())
                 || (configuration.creativeEnable && player.interactionManager.getGameMode() == GameMode.CREATIVE);
+        }
+
+        @Override
+        public void registerPermission(String permission) {
+        }
+    }
+
+    class LuckoFabricPermissionsProvider extends VanillaPermissionsProvider {
+
+        public LuckoFabricPermissionsProvider(FabricPlatform platform) {
+            super(platform);
+        }
+
+        @Override
+        public boolean hasPermission(ServerPlayerEntity player, String permission) {
+            return Permissions.check(player, permission) || super.hasPermission(player, permission);
         }
 
         @Override

@@ -62,7 +62,6 @@ import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -145,7 +144,17 @@ public class FabricWorldEdit implements ModInitializer {
 
         WorldEdit.getInstance().getPlatformManager().register(platform);
 
-        this.provider = new FabricPermissionsProvider.VanillaPermissionsProvider(platform);
+        this.provider = getInitialPermissionsProvider();
+    }
+
+    private FabricPermissionsProvider getInitialPermissionsProvider() {
+        try {
+            Class.forName("me.lucko.fabric.api.permissions.v0.Permissions", false, getClass().getClassLoader());
+            return new FabricPermissionsProvider.LuckoFabricPermissionsProvider(platform);
+        } catch (ClassNotFoundException ignored) {
+            // fallback to vanilla
+        }
+        return new FabricPermissionsProvider.VanillaPermissionsProvider(platform);
     }
 
     private void setupRegistries(MinecraftServer server) {
