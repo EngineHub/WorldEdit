@@ -295,6 +295,10 @@ public class GeneralCommands {
     void update(Actor actor, LocalSession session, World injectedWorld,
                @Arg(desc = "The side effects", def = "")
                    SideEffectSet sideEffectSet) throws WorldEditException {
+        if (!sideEffectSet.doesApplyAny()) {
+            // Use defaults if none supplied.
+            sideEffectSet = SideEffectSet.defaults();
+        }
         RegionFunction apply = new ApplySideEffect(injectedWorld, sideEffectSet);
         if (session.getMask() != null) {
             apply = new RegionMaskingFilter(session.getMask(), apply);
