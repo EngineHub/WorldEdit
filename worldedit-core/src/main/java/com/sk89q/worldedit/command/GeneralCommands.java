@@ -295,7 +295,7 @@ public class GeneralCommands {
     void update(Actor actor, LocalSession session, World injectedWorld,
                @Arg(desc = "The side effects", def = "")
                    SideEffectSet sideEffectSet) throws WorldEditException {
-        if (!sideEffectSet.doesApplyAny()) {
+        if (sideEffectSet == null) {
             // Use defaults if none supplied.
             sideEffectSet = SideEffectSet.defaults();
         }
