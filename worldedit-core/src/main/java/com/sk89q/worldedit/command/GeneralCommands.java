@@ -293,8 +293,8 @@ public class GeneralCommands {
     )
     @CommandPermissions("worldedit.update")
     void update(Actor actor, LocalSession session, World injectedWorld,
-               @Arg(desc = "The side effects", def = "")
-                   SideEffectSet sideEffectSet) throws WorldEditException {
+                @Arg(desc = "The side effects", def = "")
+                    SideEffectSet sideEffectSet) throws WorldEditException {
         if (sideEffectSet == null) {
             // Use defaults if none supplied.
             sideEffectSet = SideEffectSet.defaults();
