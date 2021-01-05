@@ -43,12 +43,14 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
@@ -119,6 +121,7 @@ public class FabricWorldEdit implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTING.register(this::onStartingServer);
         ServerLifecycleEvents.SERVER_STARTED.register(this::onStartServer);
         ServerLifecycleEvents.SERVER_STOPPING.register(this::onStopServer);
+        ServerPlayConnectionEvents.DISCONNECT.register(this::onPlayerDisconnect);
         AttackBlockCallback.EVENT.register(this::onLeftClickBlock);
         UseBlockCallback.EVENT.register(this::onRightClickBlock);
         UseItemCallback.EVENT.register(this::onRightClickAir);
@@ -304,10 +307,9 @@ public class FabricWorldEdit implements ModInitializer {
 
     // TODO Pass empty left click to server
 
-    // TODO: Use the fabric-networking-api-v1 event when updating
-    public void onPlayerDisconnect(ServerPlayerEntity player) {
+    private void onPlayerDisconnect(ServerPlayNetworkHandler handler, MinecraftServer server) {
         WorldEdit.getInstance().getEventBus()
-                .post(new SessionIdleEvent(new FabricPlayer.SessionKeyImpl(player)));
+                .post(new SessionIdleEvent(new FabricPlayer.SessionKeyImpl(handler.player)));
     }
 
     /**

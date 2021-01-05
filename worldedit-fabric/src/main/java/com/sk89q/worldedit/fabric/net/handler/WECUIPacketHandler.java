@@ -23,25 +23,22 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.fabric.FabricAdapter;
 import com.sk89q.worldedit.fabric.FabricPlayer;
 import com.sk89q.worldedit.fabric.FabricWorldEdit;
-import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.util.Identifier;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 public final class WECUIPacketHandler {
     private WECUIPacketHandler() {
     }
 
-    private static final Identifier CUI_IDENTIFIER = new Identifier(FabricWorldEdit.MOD_ID, FabricWorldEdit.CUI_PLUGIN_CHANNEL);
+    public static final Identifier CUI_IDENTIFIER = new Identifier(FabricWorldEdit.MOD_ID, FabricWorldEdit.CUI_PLUGIN_CHANNEL);
 
     public static void init() {
-        ServerSidePacketRegistry.INSTANCE.register(CUI_IDENTIFIER, (packetContext, packetByteBuf) -> {
-            ServerPlayerEntity player = (ServerPlayerEntity) packetContext.getPlayer();
+        ServerPlayNetworking.registerGlobalReceiver(CUI_IDENTIFIER, (server, player, handler, buf, responder) -> {
             LocalSession session = FabricWorldEdit.inst.getSession(player);
-            String text = packetByteBuf.toString(StandardCharsets.UTF_8);
-            final FabricPlayer actor = FabricAdapter.adaptPlayer(player);
+            String text = buf.toString(StandardCharsets.UTF_8);
+            FabricPlayer actor = FabricAdapter.adaptPlayer(player);
             session.handleCUIInitializationMessage(text, actor);
         });
     }
