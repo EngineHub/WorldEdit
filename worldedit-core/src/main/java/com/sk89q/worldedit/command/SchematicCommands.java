@@ -73,6 +73,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
@@ -152,7 +153,7 @@ public class SchematicCommands {
 
     @Command(
         name = "save",
-        desc = "Save a schematic of your clipboard"
+        desc = "Save your clipboard into a schematic file"
     )
     @CommandPermissions({ "worldedit.clipboard.save", "worldedit.schematic.save" })
     public void save(Actor actor, LocalSession session,
@@ -213,7 +214,7 @@ public class SchematicCommands {
 
     @Command(
         name = "share",
-        desc = "Share a schematic into your clipboard"
+        desc = "Share your clipboard as a schematic online"
     )
     @CommandPermissions({ "worldedit.clipboard.share", "worldedit.schematic.share" })
     public void share(Actor actor, LocalSession session,
@@ -365,23 +366,18 @@ public class SchematicCommands {
         }
     }
 
-    private static class SchematicSaveTask implements Callable<Void> {
-        private final Actor actor;
-        private final File file;
+    private abstract static class SchematicOutputTask<T> implements Callable<T> {
+        protected final Actor actor;
         private final ClipboardFormat format;
         private final ClipboardHolder holder;
-        private final boolean overwrite;
 
-        SchematicSaveTask(Actor actor, File file, ClipboardFormat format, ClipboardHolder holder, boolean overwrite) {
+        SchematicOutputTask(Actor actor, ClipboardFormat format, ClipboardHolder holder) {
             this.actor = actor;
-            this.file = file;
             this.format = format;
             this.holder = holder;
-            this.overwrite = overwrite;
         }
 
-        @Override
-        public Void call() throws Exception {
+        protected void writeToOutputStream(OutputStream outputStream) throws Exception {
             Clipboard clipboard = holder.getClipboard();
             Transform transform = holder.getTransform();
             Clipboard target;
@@ -397,11 +393,28 @@ public class SchematicCommands {
             }
 
             try (Closer closer = Closer.create()) {
-                FileOutputStream fos = closer.register(new FileOutputStream(file));
-                BufferedOutputStream bos = closer.register(new BufferedOutputStream(fos));
+                OutputStream stream = closer.register(outputStream);
+                BufferedOutputStream bos = closer.register(new BufferedOutputStream(stream));
                 ClipboardWriter writer = closer.register(format.getWriter(bos));
                 writer.write(target);
+            }
+        }
+    }
 
+    private static class SchematicSaveTask extends SchematicOutputTask<Void> {
+        private final File file;
+        private final boolean overwrite;
+
+        SchematicSaveTask(Actor actor, File file, ClipboardFormat format, ClipboardHolder holder, boolean overwrite) {
+            super(actor, format, holder);
+            this.file = file;
+            this.overwrite = overwrite;
+        }
+
+        @Override
+        public Void call() throws Exception {
+            try {
+                writeToOutputStream(new FileOutputStream(file));
                 log.info(actor.getName() + " saved " + file.getCanonicalPath() + (overwrite ? " (overwriting previous file)" : ""));
             } catch (IOException e) {
                 file.delete();
@@ -411,43 +424,20 @@ public class SchematicCommands {
         }
     }
 
-    private static class SchematicShareTask implements Callable<URL> {
-        private final Actor actor;
-        private final ClipboardFormat format;
-        private final ClipboardHolder holder;
+    private static class SchematicShareTask extends SchematicOutputTask<URL> {
         private final String name;
 
         SchematicShareTask(Actor actor, ClipboardFormat format, ClipboardHolder holder, String name) {
-            this.actor = actor;
-            this.format = format;
-            this.holder = holder;
+            super(actor, format, holder);
             this.name = name;
         }
 
         @Override
         public URL call() throws Exception {
-            Clipboard clipboard = holder.getClipboard();
-            Transform transform = holder.getTransform();
-            Clipboard target;
-
-            // If we have a transform, bake it into the copy
-            if (transform.isIdentity()) {
-                target = clipboard;
-            } else {
-                FlattenedClipboardTransform result = FlattenedClipboardTransform.transform(clipboard, transform);
-                target = new BlockArrayClipboard(result.getTransformedRegion());
-                target.setOrigin(clipboard.getOrigin());
-                Operations.completeLegacy(result.copyTo(target));
-            }
-
-            ByteArrayOutputStream baos;
-
-            try (Closer closer = Closer.create()) {
-                baos = closer.register(new ByteArrayOutputStream());
-                BufferedOutputStream bos = closer.register(new BufferedOutputStream(baos));
-                ClipboardWriter writer = closer.register(format.getWriter(bos));
-                writer.write(target);
-            } catch (IOException e) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            try {
+                writeToOutputStream(baos);
+            } catch (Exception e) {
                 throw new CommandException(TextComponent.of(e.getMessage()), e, ImmutableList.of());
             }
 
