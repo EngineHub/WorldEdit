@@ -27,6 +27,7 @@ import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.fabric.net.handler.WECUIPacketHandler;
+import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
@@ -69,6 +70,7 @@ import java.nio.file.Path;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.fabric.FabricAdapter.adaptPlayer;
+import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAME;
 
 /**
  * The Fabric implementation of WorldEdit.
@@ -113,6 +115,7 @@ public class FabricWorldEdit implements ModInitializer {
 
         ServerTickEvents.END_SERVER_TICK.register(ThreadSafeCache.getInstance());
         CommandRegistrationCallback.EVENT.register(this::registerCommands);
+        ServerLifecycleEvents.SERVER_STARTING.register(this::onStartingServer);
         ServerLifecycleEvents.SERVER_STARTED.register(this::onStartServer);
         ServerLifecycleEvents.SERVER_STOPPING.register(this::onStopServer);
         AttackBlockCallback.EVENT.register(this::onLeftClickBlock);
@@ -193,6 +196,13 @@ public class FabricWorldEdit implements ModInitializer {
             if (ItemCategory.REGISTRY.get(name.toString()) == null) {
                 ItemCategory.REGISTRY.register(name.toString(), new ItemCategory(name.toString()));
             }
+        }
+    }
+
+    private void onStartingServer(MinecraftServer minecraftServer) {
+        final Path delChunks = workingDir.resolve(DELCHUNKS_FILE_NAME);
+        if (Files.exists(delChunks)) {
+            ChunkDeleter.runFromFile(delChunks, true);
         }
     }
 
