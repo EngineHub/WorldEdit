@@ -84,9 +84,9 @@ public class LocalSession {
     // Non-session related fields
     private transient LocalConfiguration config;
     private final transient AtomicBoolean dirty = new AtomicBoolean();
-    private transient int failedCuiAttempts = 0;
 
     // Single-connection lifetime fields
+    private transient int failedCuiAttempts = 0;
     private transient boolean hasCUISupport = false;
     private transient int cuiVersion = CUI_VERSION_UNINITIALIZED;
 
