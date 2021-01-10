@@ -79,6 +79,7 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
             final EllipsoidRegionSelector ellipsoidRegionSelector = (EllipsoidRegionSelector) oldSelector;
 
             region = new EllipsoidRegion(ellipsoidRegionSelector.getIncompleteRegion());
+            started = ellipsoidRegionSelector.started;
         } else {
             Region oldRegion;
             try {
@@ -93,6 +94,7 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
             BlockVector3 center = pos1.add(pos2).divide(2).floor();
             region.setCenter(center);
             region.setRadius(pos2.subtract(center).toVector3());
+            started = true;
         }
     }
 
