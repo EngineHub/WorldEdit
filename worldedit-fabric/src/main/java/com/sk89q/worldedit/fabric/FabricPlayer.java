@@ -43,12 +43,12 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -59,6 +59,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.UUID;
 import javax.annotation.Nullable;
@@ -128,9 +129,11 @@ public class FabricPlayer extends AbstractPlayerActor {
         if (params.length > 0) {
             send = send + "|" + StringUtil.joinString(params, "|");
         }
-        PacketByteBuf buffer = new PacketByteBuf(Unpooled.copiedBuffer(send.getBytes(WECUIPacketHandler.UTF_8_CHARSET)));
-        CustomPayloadS2CPacket packet = new CustomPayloadS2CPacket(new Identifier(FabricWorldEdit.MOD_ID, FabricWorldEdit.CUI_PLUGIN_CHANNEL), buffer);
-        this.player.networkHandler.sendPacket(packet);
+        ServerPlayNetworking.send(
+                this.player,
+                WECUIPacketHandler.CUI_IDENTIFIER,
+                new PacketByteBuf(Unpooled.copiedBuffer(send, StandardCharsets.UTF_8))
+        );
     }
 
     @Override
@@ -254,18 +257,18 @@ public class FabricPlayer extends AbstractPlayerActor {
 
     @Override
     public SessionKey getSessionKey() {
-        return new SessionKeyImpl(player.getUuid(), player.getName().getString());
+        return new SessionKeyImpl(player);
     }
 
-    private static class SessionKeyImpl implements SessionKey {
+    static class SessionKeyImpl implements SessionKey {
         // If not static, this will leak a reference
 
         private final UUID uuid;
         private final String name;
 
-        private SessionKeyImpl(UUID uuid, String name) {
-            this.uuid = uuid;
-            this.name = name;
+        SessionKeyImpl(ServerPlayerEntity player) {
+            this.uuid = player.getUuid();
+            this.name = player.getName().getString();
         }
 
         @Override

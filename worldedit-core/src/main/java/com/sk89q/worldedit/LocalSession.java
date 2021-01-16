@@ -78,12 +78,17 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class LocalSession {
 
+    private static final transient int CUI_VERSION_UNINITIALIZED = -1;
     public static transient int MAX_HISTORY_SIZE = 15;
 
     // Non-session related fields
     private transient LocalConfiguration config;
     private final transient AtomicBoolean dirty = new AtomicBoolean();
+
+    // Single-connection lifetime fields
     private transient int failedCuiAttempts = 0;
+    private transient boolean hasCUISupport = false;
+    private transient int cuiVersion = CUI_VERSION_UNINITIALIZED;
 
     // Session related
     private transient RegionSelector selector = new CuboidRegionSelector();
@@ -99,8 +104,6 @@ public class LocalSession {
     private transient boolean useInventory;
     private transient com.sk89q.worldedit.world.snapshot.Snapshot snapshot;
     private transient Snapshot snapshotExperimental;
-    private transient boolean hasCUISupport = false;
-    private transient int cuiVersion = -1;
     private transient SideEffectSet sideEffectSet = SideEffectSet.defaults();
     private transient Mask mask;
     private transient ZoneId timezone = ZoneId.systemDefault();
@@ -907,7 +910,12 @@ public class LocalSession {
      */
     public void handleCUIInitializationMessage(String text, Actor actor) {
         checkNotNull(text);
-        if (this.hasCUISupport || this.failedCuiAttempts > 3) {
+        if (this.hasCUISupport) {
+            // WECUI is a bit aggressive about re-initializing itself
+            // the last attempt to touch handshakes didn't go well, so this will do... for now
+            dispatchCUISelection(actor);
+            return;
+        } else if (this.failedCuiAttempts > 3) {
             return;
         }
 
@@ -965,6 +973,10 @@ public class LocalSession {
      * @param cuiVersion the CUI version
      */
     public void setCUIVersion(int cuiVersion) {
+        if (cuiVersion < 0) {
+            throw new IllegalArgumentException("CUI protocol version must be non-negative, but '" + cuiVersion + "' was received.");
+        }
+
         this.cuiVersion = cuiVersion;
     }
 
@@ -1163,5 +1175,16 @@ public class LocalSession {
      */
     public void setLastDistribution(List<Countable<BlockState>> dist) {
         lastDistribution = dist;
+    }
+
+    /**
+     * Call when this session has become inactive.
+     *
+     * <p>This is for internal use only.</p>
+     */
+    public void onIdle() {
+        this.cuiVersion = CUI_VERSION_UNINITIALIZED;
+        this.hasCUISupport = false;
+        this.failedCuiAttempts = 0;
     }
 }

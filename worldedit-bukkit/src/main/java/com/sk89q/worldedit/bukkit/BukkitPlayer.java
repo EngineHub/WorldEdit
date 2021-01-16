@@ -50,6 +50,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.UUID;
 import javax.annotation.Nullable;
@@ -186,7 +187,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
         if (params.length > 0) {
             send = send + "|" + StringUtil.joinString(params, "|");
         }
-        player.sendPluginMessage(plugin, WorldEditPlugin.CUI_PLUGIN_CHANNEL, send.getBytes(CUIChannelListener.UTF_8_CHARSET));
+        player.sendPluginMessage(plugin, WorldEditPlugin.CUI_PLUGIN_CHANNEL, send.getBytes(StandardCharsets.UTF_8));
     }
 
     public Player getPlayer() {
@@ -246,18 +247,18 @@ public class BukkitPlayer extends AbstractPlayerActor {
 
     @Override
     public SessionKey getSessionKey() {
-        return new SessionKeyImpl(this.player.getUniqueId(), player.getName());
+        return new SessionKeyImpl(this.player);
     }
 
-    private static class SessionKeyImpl implements SessionKey {
+    static class SessionKeyImpl implements SessionKey {
         // If not static, this will leak a reference
 
         private final UUID uuid;
         private final String name;
 
-        private SessionKeyImpl(UUID uuid, String name) {
-            this.uuid = uuid;
-            this.name = name;
+        SessionKeyImpl(Player player) {
+            this.uuid = player.getUniqueId();
+            this.name = player.getName();
         }
 
         @Override

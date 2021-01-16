@@ -27,6 +27,7 @@ import net.minecraftforge.fml.network.NetworkEvent.ClientCustomPayloadEvent;
 import net.minecraftforge.fml.network.event.EventNetworkChannel;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import static com.sk89q.worldedit.forge.ForgeAdapter.adaptPlayer;
 
@@ -34,7 +35,6 @@ public final class WECUIPacketHandler {
     private WECUIPacketHandler() {
     }
 
-    public static final Charset UTF_8_CHARSET = Charset.forName("UTF-8");
     private static final int PROTOCOL_VERSION = 1;
     private static final EventNetworkChannel HANDLER = PacketHandlerUtil
             .buildLenientHandler(ForgeWorldEdit.CUI_PLUGIN_CHANNEL, PROTOCOL_VERSION)
@@ -47,15 +47,9 @@ public final class WECUIPacketHandler {
     public static void onPacketData(ClientCustomPayloadEvent event) {
         ServerPlayerEntity player = event.getSource().get().getSender();
         LocalSession session = ForgeWorldEdit.inst.getSession(player);
-
-        if (session.hasCUISupport()) {
-            return;
-        }
-
-        String text = event.getPayload().toString(UTF_8_CHARSET);
+        String text = event.getPayload().toString(StandardCharsets.UTF_8);
         final ForgePlayer actor = adaptPlayer(player);
         session.handleCUIInitializationMessage(text, actor);
-        session.describeCUI(actor);
     }
 
 }
