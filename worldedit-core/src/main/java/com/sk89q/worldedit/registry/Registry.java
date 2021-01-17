@@ -58,6 +58,10 @@ public class Registry<V extends Keyed> implements Iterable<V> {
         return value;
     }
 
+    public void clear() {
+        this.map.clear();
+    }
+
     public Set<String> keySet() {
         return Collections.unmodifiableSet(this.map.keySet());
     }
