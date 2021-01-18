@@ -1,3 +1,12 @@
+7.2.2
+- [Bukkit] Add support for MC 1.16.5.
+- [Fabric] Add support for Lucko's Fabric Permissions API.
+- [Fabric] Fix the chunk deleter tool not running.
+- Fix repeating extent (e.g. clipboard pattern) direction being incorrect at negative coordinates.
+- Fix CUI having wrong selection when switching to an ellipsoid selector.
+- Fix some CUI lifecycle issues.
+- Fix SideEffectSet.none() using defaults (instead of off).
+
 7.2.1
 - Fix some usability issues with the default wand tools and session-persisted
 tools conflicting. Wands will now only be saved per-session if they differ
