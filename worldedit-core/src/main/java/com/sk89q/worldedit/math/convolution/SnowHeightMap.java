@@ -24,6 +24,7 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.registry.state.IntegerProperty;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockTypes;
@@ -45,7 +46,7 @@ public class SnowHeightMap {
     private final Region region;
     private final EditSession session;
 
-    private final Property<Object> layers;
+    private final IntegerProperty layers;
 
     /**
      * Constructs the SnowHeightMap.
@@ -64,7 +65,11 @@ public class SnowHeightMap {
         this.width = region.getWidth();
         this.height = region.getLength();
 
-        layers = BlockTypes.SNOW.getProperty("layers");
+        try {
+            layers = (IntegerProperty) (Property<?>) BlockTypes.SNOW.getProperty("layers");
+        } catch (NullPointerException | IllegalArgumentException | ClassCastException e) {
+            throw new RuntimeException("Unable to get the correct property.");
+        }
 
         int minX = region.getMinimumPoint().getBlockX();
         int minY = region.getMinimumPoint().getBlockY();
@@ -206,7 +211,7 @@ public class SnowHeightMap {
         return blocksChanged;
     }
 
-    private void setSnowLayer(int x, int z, float newHeight, Property<Object> property) throws MaxChangedBlocksException {
+    private void setSnowLayer(int x, int z, float newHeight, IntegerProperty property) throws MaxChangedBlocksException {
         int layers = (int) ((newHeight % 1) * 8) + 1;
         session.setBlock(BlockVector3.at(x, (int) newHeight, z), BlockTypes.SNOW.getDefaultState().with(property, layers));
     }
