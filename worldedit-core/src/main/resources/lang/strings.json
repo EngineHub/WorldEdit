@@ -209,7 +209,7 @@
     "worldedit.naturalize.naturalized": "{0} block(s) have been made to look more natural.",
     "worldedit.center.changed": "Center set. ({0} blocks changed)",
     "worldedit.smooth.changed": "Terrain's height map smoothed. {0} blocks changed.",
-    "worldedit.snowsmooth.changed": "Terrain's height map smoothed. {0} blocks changed.",
+    "worldedit.snowsmooth.changed": "Snow's height map smoothed. {0} blocks changed.",
     "worldedit.move.moved": "{0} blocks moved.",
     "worldedit.deform.deformed": "{0} blocks have been deformed.",
     "worldedit.hollow.changed": "{0} blocks have been changed.",
