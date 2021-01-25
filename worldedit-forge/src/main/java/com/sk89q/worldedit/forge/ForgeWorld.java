@@ -208,10 +208,12 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public boolean clearContainerBlockContents(BlockVector3 position) {
         checkNotNull(position);
-        TileEntity tile = getWorld().getTileEntity(ForgeAdapter.toBlockPos(position));
-        if (tile instanceof IClearable) {
-            ((IClearable) tile).clear();
-            return true;
+        if (getBlock(position).getBlockType().getMaterial().hasContainer()) {
+            TileEntity tile = getWorld().getTileEntity(ForgeAdapter.toBlockPos(position));
+            if (tile instanceof IClearable) {
+                ((IClearable) tile).clear();
+                return true;
+            }
         }
         return false;
     }
