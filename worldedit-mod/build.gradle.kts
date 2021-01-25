@@ -17,6 +17,7 @@ val mergeJarContents = tasks.register<Copy>("mergeJarContents") {
 }
 
 tasks.register<Jar>("jar") {
+    archiveClassifier.set("dist")
     from(mergeJarContents)
 }
 
