@@ -9,7 +9,6 @@ applyShadowConfiguration()
 
 repositories {
     maven { url = uri("https://hub.spigotmc.org/nexus/content/groups/public") }
-    maven { url = uri("https://repo.codemc.org/repository/maven-public") }
     maven { url = uri("https://papermc.io/repo/repository/maven-public/") }
 }
 
@@ -25,13 +24,13 @@ dependencies {
     "api"("org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT") {
         exclude("junit", "junit")
     }
-    "compileOnly"("org.jetbrains:annotations:19.0.0")
+    "compileOnly"("org.jetbrains:annotations:20.1.0")
     "compileOnly"("com.destroystokyo.paper:paper-api:1.16.1-R0.1-SNAPSHOT")
-    "implementation"("io.papermc:paperlib:1.0.2")
+    "implementation"("io.papermc:paperlib:1.0.6")
     "compileOnly"("com.sk89q:dummypermscompat:1.10")
-    "implementation"("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
-    "implementation"("org.bstats:bstats-bukkit:1.7")
-    "implementation"("it.unimi.dsi:fastutil:${Versions.FAST_UTIL}")
+    "implementation"("org.slf4j:slf4j-jdk14:${Versions.SLF4J}")
+    "implementation"("org.bstats:bstats-bukkit:2.1.0")
+    "implementation"("it.unimi.dsi:fastutil")
     "testImplementation"("org.mockito:mockito-core:1.9.0-rc1")
 }
 
@@ -60,10 +59,10 @@ tasks.named<ShadowJar>("shadowJar") {
         include(dependency("org.apache.logging.log4j:log4j-slf4j-impl"))
         include(dependency("org.antlr:antlr4-runtime"))
         relocate("org.bstats", "com.sk89q.worldedit.bukkit.bstats") {
-            include(dependency("org.bstats:bstats-bukkit:1.7"))
+            include(dependency("org.bstats:bstats-bukkit"))
         }
         relocate("io.papermc.lib", "com.sk89q.worldedit.bukkit.paperlib") {
-            include(dependency("io.papermc:paperlib:1.0.2"))
+            include(dependency("io.papermc:paperlib"))
         }
         relocate("it.unimi.dsi.fastutil", "com.sk89q.worldedit.bukkit.fastutil") {
             include(dependency("it.unimi.dsi:fastutil"))

@@ -120,6 +120,7 @@ fun Project.applyShadowConfiguration() {
             include(project(":worldedit-libs:core"))
             include(project(":worldedit-libs:${project.name.replace("worldedit-", "")}"))
             include(project(":worldedit-core"))
+            exclude("com.google.code.findbugs:jsr305")
         }
         exclude("GradleStart**")
         exclude(".cache")
