@@ -41,6 +41,7 @@ public class SideEffectBox extends PaginationBox {
     private static final LazyReference<List<SideEffect>> SIDE_EFFECTS = LazyReference.from(() ->
         WorldEdit.getInstance().getPlatformManager().getSupportedSideEffects()
             .stream()
+            .filter(SideEffect::isExposed)
             .sorted(Comparator.comparing(effect ->
                 WorldEditText.reduceToText(
                     TranslatableComponent.of(effect.getDisplayName()),
