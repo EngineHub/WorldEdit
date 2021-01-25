@@ -6,7 +6,7 @@ plugins {
 
 applyCommonConfiguration()
 
-val mergeJarContents = tasks.register<Copy>("mergeJarContents") {
+tasks.register<Jar>("jar") {
     val remapFabric = project(":worldedit-fabric").tasks.named<RemapJarTask>("remapShadowJar")
     dependsOn(
         remapFabric,
@@ -14,12 +14,9 @@ val mergeJarContents = tasks.register<Copy>("mergeJarContents") {
     )
     from(zipTree({remapFabric.get().archiveFile}))
     from(zipTree({project(":worldedit-forge").tasks.getByName("shadowJar").outputs.files.singleFile}))
-    into(project.layout.buildDirectory.dir("mergedFabricForgeJars"))
-}
 
-tasks.register<Jar>("jar") {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveClassifier.set("dist")
-    from(mergeJarContents)
 }
 
 tasks.named("assemble") {
