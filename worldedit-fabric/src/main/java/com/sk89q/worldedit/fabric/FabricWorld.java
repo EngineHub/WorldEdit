@@ -205,6 +205,10 @@ public class FabricWorld extends AbstractWorld {
     @Override
     public boolean clearContainerBlockContents(BlockVector3 position) {
         checkNotNull(position);
+        if (!getBlock(position).getBlockType().getMaterial().hasContainer()) {
+            return false;
+        }
+
         BlockEntity tile = getWorld().getBlockEntity(FabricAdapter.toBlockPos(position));
         if ((tile instanceof Clearable)) {
             ((Clearable) tile).clear();
