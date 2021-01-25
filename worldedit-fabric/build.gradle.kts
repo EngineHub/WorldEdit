@@ -46,7 +46,7 @@ repositories {
 
 dependencies {
     "api"(project(":worldedit-core"))
-    "implementation"(enforcedPlatform("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1") {
+    "implementation"(enforcedPlatform("org.apache.logging.log4j:log4j-bom:2.8.1") {
         because("Mojang provides Log4J")
     })
     "implementation"("org.apache.logging.log4j:log4j-slf4j-impl")
