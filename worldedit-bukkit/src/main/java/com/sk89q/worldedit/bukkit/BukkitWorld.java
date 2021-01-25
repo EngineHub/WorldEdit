@@ -246,21 +246,22 @@ public class BukkitWorld extends AbstractWorld {
     public boolean clearContainerBlockContents(BlockVector3 pt) {
         checkNotNull(pt);
         if (getBlock(pt).getBlockType().getMaterial().hasContainer()) {
-            Block block = getWorld().getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-            BlockState state = PaperLib.getBlockState(block, false).getState();
-            if (!(state instanceof InventoryHolder)) {
-                return false;
-            }
-
-            InventoryHolder chest = (InventoryHolder) state;
-            Inventory inven = chest.getInventory();
-            if (chest instanceof Chest) {
-                inven = getBlockInventory((Chest) chest);
-            }
-            inven.clear();
-            return true;
+            return false;
         }
-        return false;
+
+        Block block = getWorld().getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        BlockState state = PaperLib.getBlockState(block, false).getState();
+        if (!(state instanceof InventoryHolder)) {
+            return false;
+        }
+
+        InventoryHolder chest = (InventoryHolder) state;
+        Inventory inven = chest.getInventory();
+        if (chest instanceof Chest) {
+            inven = getBlockInventory((Chest) chest);
+        }
+        inven.clear();
+        return true;
     }
 
     /**
