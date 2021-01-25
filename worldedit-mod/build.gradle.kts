@@ -1,4 +1,4 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import net.fabricmc.loom.task.RemapJarTask
 
 plugins {
     base
@@ -7,11 +7,12 @@ plugins {
 applyCommonConfiguration()
 
 val mergeJarContents = tasks.register<Copy>("mergeJarContents") {
+    val remapFabric = project(":worldedit-fabric").tasks.named<RemapJarTask>("remapShadowJar")
     dependsOn(
-        project(":worldedit-fabric").tasks.named("remapShadowJar"),
+        remapFabric,
         project(":worldedit-forge").tasks.named("reobfShadowJar")
     )
-    from(zipTree({project(":worldedit-fabric").tasks.getByName("shadowJar").outputs.files.singleFile}))
+    from(zipTree({remapFabric.get().archiveFile}))
     from(zipTree({project(":worldedit-forge").tasks.getByName("shadowJar").outputs.files.singleFile}))
     into(project.layout.buildDirectory.dir("mergedFabricForgeJars"))
 }
