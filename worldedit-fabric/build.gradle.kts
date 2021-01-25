@@ -28,7 +28,7 @@ configure<LoomGradleExtension> {
 val minecraftVersion = "1.16.4"
 val yarnMappings = "1.16.4+build.7:v2"
 val loaderVersion = "0.10.8"
-val fabricApiVersion = "0.28.3+1.16"
+val fabricApiVersion = "0.29.3+1.16"
 
 configurations.all {
     resolutionStrategy {
@@ -99,6 +99,9 @@ dependencies {
         "include"(it)
         "modImplementation"(it)
     }
+
+    // No need for this at runtime
+    "modCompileOnly"("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
 
     // Hook these up manually, because Fabric doesn't seem to quite do it properly.
     "compileOnly"("net.fabricmc:sponge-mixin:${project.versions.mixin}")

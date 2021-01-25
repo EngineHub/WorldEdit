@@ -35,6 +35,9 @@
         "fabric-events-interaction-v0": "*",
         "fabric-networking-api-v1": "*"
     },
+    "suggests": {
+        "fabric-permissions-api-v0": "*"
+    },
     "mixins": [
         "worldedit.mixins.json"
     ],

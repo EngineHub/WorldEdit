@@ -65,6 +65,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -77,12 +78,17 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class LocalSession {
 
+    private static final transient int CUI_VERSION_UNINITIALIZED = -1;
     public static transient int MAX_HISTORY_SIZE = 15;
 
     // Non-session related fields
     private transient LocalConfiguration config;
     private final transient AtomicBoolean dirty = new AtomicBoolean();
+
+    // Single-connection lifetime fields
     private transient int failedCuiAttempts = 0;
+    private transient boolean hasCUISupport = false;
+    private transient int cuiVersion = CUI_VERSION_UNINITIALIZED;
 
     // Session related
     private transient RegionSelector selector = new CuboidRegionSelector();
@@ -98,8 +104,6 @@ public class LocalSession {
     private transient boolean useInventory;
     private transient com.sk89q.worldedit.world.snapshot.Snapshot snapshot;
     private transient Snapshot snapshotExperimental;
-    private transient boolean hasCUISupport = false;
-    private transient int cuiVersion = -1;
     private transient SideEffectSet sideEffectSet = SideEffectSet.defaults();
     private transient Mask mask;
     private transient ZoneId timezone = ZoneId.systemDefault();
@@ -116,7 +120,9 @@ public class LocalSession {
     private RegionSelectorType defaultSelector;
     private boolean useServerCUI = false; // Save this to not annoy players.
     private String wandItem;
+    private Boolean wandItemDefault;
     private String navWandItem;
+    private Boolean navWandItemDefault;
 
     /**
      * Construct the object.
@@ -677,9 +683,15 @@ public class LocalSession {
             throw new InvalidToolBindException(item, TranslatableComponent.of("worldedit.tool.error.item-only"));
         }
         if (tool instanceof SelectionWand) {
-            setSingleItemTool(id -> this.wandItem = id, this.wandItem, item);
+            setSingleItemTool(id -> {
+                this.wandItem = id;
+                this.wandItemDefault = id.equals(config.wandItem);
+            }, this.wandItem, item);
         } else if (tool instanceof NavigationWand) {
-            setSingleItemTool(id -> this.navWandItem = id, this.navWandItem, item);
+            setSingleItemTool(id -> {
+                this.navWandItem = id;
+                this.navWandItemDefault = id.equals(config.navigationWand);
+            }, this.navWandItem, item);
         } else if (tool == null) {
             // Check if un-setting sel/nav
             String id = item.getId();
@@ -898,7 +910,12 @@ public class LocalSession {
      */
     public void handleCUIInitializationMessage(String text, Actor actor) {
         checkNotNull(text);
-        if (this.hasCUISupport || this.failedCuiAttempts > 3) {
+        if (this.hasCUISupport) {
+            // WECUI is a bit aggressive about re-initializing itself
+            // the last attempt to touch handshakes didn't go well, so this will do... for now
+            dispatchCUISelection(actor);
+            return;
+        } else if (this.failedCuiAttempts > 3) {
             return;
         }
 
@@ -956,6 +973,10 @@ public class LocalSession {
      * @param cuiVersion the CUI version
      */
     public void setCUIVersion(int cuiVersion) {
+        if (cuiVersion < 0) {
+            throw new IllegalArgumentException("CUI protocol version must be non-negative, but '" + cuiVersion + "' was received.");
+        }
+
         this.cuiVersion = cuiVersion;
     }
 
@@ -1107,11 +1128,37 @@ public class LocalSession {
     }
 
     /**
+     * Get if the selection wand item should use the default, or null if unknown.
+     *
+     * @return if it should use the default
+     */
+    public boolean isWandItemDefault() {
+        if (wandItemDefault == null) {
+            wandItemDefault = Objects.equals(wandItem, config.wandItem);
+            setDirty();
+        }
+        return wandItemDefault;
+    }
+
+    /**
      * Get the preferred navigation wand item for this user, or {@code null} to use the default.
      * @return item id of nav wand item, or {@code null}
      */
     public String getNavWandItem() {
         return navWandItem;
+    }
+
+    /**
+     * Get if the navigation wand item should use the default, or null if unknown.
+     *
+     * @return if it should use the default
+     */
+    public boolean isNavWandItemDefault() {
+        if (navWandItemDefault == null) {
+            navWandItemDefault = Objects.equals(navWandItem, config.navigationWand);
+            setDirty();
+        }
+        return navWandItemDefault;
     }
 
     /**
@@ -1128,5 +1175,16 @@ public class LocalSession {
      */
     public void setLastDistribution(List<Countable<BlockState>> dist) {
         lastDistribution = dist;
+    }
+
+    /**
+     * Call when this session has become inactive.
+     *
+     * <p>This is for internal use only.</p>
+     */
+    public void onIdle() {
+        this.cuiVersion = CUI_VERSION_UNINITIALIZED;
+        this.hasCUISupport = false;
+        this.failedCuiAttempts = 0;
     }
 }

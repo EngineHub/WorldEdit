@@ -239,18 +239,18 @@ public class SpongePlayer extends AbstractPlayerActor {
 
     @Override
     public SessionKey getSessionKey() {
-        return new SessionKeyImpl(player.getUniqueId(), player.getName());
+        return new SessionKeyImpl(player);
     }
 
-    private static class SessionKeyImpl implements SessionKey {
+    static class SessionKeyImpl implements SessionKey {
         // If not static, this will leak a reference
 
         private final UUID uuid;
         private final String name;
 
-        private SessionKeyImpl(UUID uuid, String name) {
-            this.uuid = uuid;
-            this.name = name;
+        SessionKeyImpl(Player player) {
+            this.uuid = player.getUniqueId();
+            this.name = player.getName();
         }
 
         @Override

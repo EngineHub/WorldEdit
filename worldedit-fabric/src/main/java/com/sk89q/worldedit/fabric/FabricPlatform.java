@@ -221,7 +221,8 @@ class FabricPlatform extends AbstractPlatform implements MultiUserPlatform {
             SideEffect.VALIDATION,
             SideEffect.ENTITY_AI,
             SideEffect.LIGHTING,
-            SideEffect.NEIGHBORS
+            SideEffect.NEIGHBORS,
+            SideEffect.UPDATE
     );
 
     @Override

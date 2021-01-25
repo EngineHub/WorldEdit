@@ -23,10 +23,12 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
+import com.sk89q.worldedit.event.platform.SessionIdleEvent;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.fabric.net.handler.WECUIPacketHandler;
+import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
@@ -41,12 +43,14 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
@@ -62,7 +66,6 @@ import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -70,6 +73,7 @@ import java.nio.file.Path;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.fabric.FabricAdapter.adaptPlayer;
+import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAME;
 
 /**
  * The Fabric implementation of WorldEdit.
@@ -114,8 +118,10 @@ public class FabricWorldEdit implements ModInitializer {
 
         ServerTickEvents.END_SERVER_TICK.register(ThreadSafeCache.getInstance());
         CommandRegistrationCallback.EVENT.register(this::registerCommands);
+        ServerLifecycleEvents.SERVER_STARTING.register(this::onStartingServer);
         ServerLifecycleEvents.SERVER_STARTED.register(this::onStartServer);
         ServerLifecycleEvents.SERVER_STOPPING.register(this::onStopServer);
+        ServerPlayConnectionEvents.DISCONNECT.register(this::onPlayerDisconnect);
         AttackBlockCallback.EVENT.register(this::onLeftClickBlock);
         UseBlockCallback.EVENT.register(this::onRightClickBlock);
         UseItemCallback.EVENT.register(this::onRightClickAir);
@@ -145,7 +151,17 @@ public class FabricWorldEdit implements ModInitializer {
 
         WorldEdit.getInstance().getPlatformManager().register(platform);
 
-        this.provider = new FabricPermissionsProvider.VanillaPermissionsProvider(platform);
+        this.provider = getInitialPermissionsProvider();
+    }
+
+    private FabricPermissionsProvider getInitialPermissionsProvider() {
+        try {
+            Class.forName("me.lucko.fabric.api.permissions.v0.Permissions", false, getClass().getClassLoader());
+            return new FabricPermissionsProvider.LuckoFabricPermissionsProvider(platform);
+        } catch (ClassNotFoundException ignored) {
+            // fallback to vanilla
+        }
+        return new FabricPermissionsProvider.VanillaPermissionsProvider(platform);
     }
 
     private void setupRegistries(MinecraftServer server) {
@@ -184,6 +200,13 @@ public class FabricWorldEdit implements ModInitializer {
             if (ItemCategory.REGISTRY.get(name.toString()) == null) {
                 ItemCategory.REGISTRY.register(name.toString(), new ItemCategory(name.toString()));
             }
+        }
+    }
+
+    private void onStartingServer(MinecraftServer minecraftServer) {
+        final Path delChunks = workingDir.resolve(DELCHUNKS_FILE_NAME);
+        if (Files.exists(delChunks)) {
+            ChunkDeleter.runFromFile(delChunks, true);
         }
     }
 
@@ -283,6 +306,11 @@ public class FabricWorldEdit implements ModInitializer {
     }
 
     // TODO Pass empty left click to server
+
+    private void onPlayerDisconnect(ServerPlayNetworkHandler handler, MinecraftServer server) {
+        WorldEdit.getInstance().getEventBus()
+                .post(new SessionIdleEvent(new FabricPlayer.SessionKeyImpl(handler.player)));
+    }
 
     /**
      * Get the configuration.
