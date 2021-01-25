@@ -30,11 +30,6 @@ fun Project.applyPlatformAndCoreConfiguration() {
 
     ext["internalVersion"] = "$version+${rootProject.ext["gitCommitHash"]}"
 
-    configure<JavaPluginConvention> {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
     tasks
         .withType<JavaCompile>()
         .matching { it.name == "compileJava" || it.name == "compileTestJava" }
