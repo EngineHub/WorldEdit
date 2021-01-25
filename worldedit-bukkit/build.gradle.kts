@@ -58,8 +58,8 @@ tasks.named<ShadowJar>("shadowJar") {
         include(dependency("org.slf4j:slf4j-api"))
         include(dependency("org.apache.logging.log4j:log4j-slf4j-impl"))
         include(dependency("org.antlr:antlr4-runtime"))
-        relocate("org.bstats", "com.sk89q.worldedit.bukkit.bstats") {
-            include(dependency("org.bstats:bstats-bukkit"))
+        relocate("org.bstats", "com.sk89q.worldedit.bstats") {
+            include(dependency("org.bstats:"))
         }
         relocate("io.papermc.lib", "com.sk89q.worldedit.bukkit.paperlib") {
             include(dependency("io.papermc:paperlib"))
