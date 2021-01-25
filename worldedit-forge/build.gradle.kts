@@ -27,7 +27,7 @@ configurations.all {
 
 dependencies {
     "api"(project(":worldedit-core"))
-    "implementation"(enforcedPlatform("org.apache.logging.log4j:log4j-slf4j-impl:2.11.2") {
+    "implementation"(enforcedPlatform("org.apache.logging.log4j:log4j-bom:2.11.2") {
         because("Forge provides Log4J (Mojang provides a lower version, but Forge bumps)")
     })
     "implementation"("org.apache.logging.log4j:log4j-slf4j-impl")
@@ -96,7 +96,7 @@ addJarManifest(includeClasspath = false)
 tasks.named<ShadowJar>("shadowJar") {
     dependencies {
         relocate("org.slf4j", "com.sk89q.worldedit.slf4j")
-        relocate("org.apache.logging.slf4j", "com.sk89q.worldedit.log4jbridge")
+        relocate("org.apache.logging.slf4j", "com.sk89q.worldedit.forge.l4j")
         relocate("org.antlr.v4", "com.sk89q.worldedit.antlr4")
 
         include(dependency("org.slf4j:slf4j-api"))
