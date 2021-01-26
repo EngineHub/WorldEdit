@@ -62,6 +62,11 @@ public enum SideEffect {
         return this.defaultValue;
     }
 
+    /**
+     * Determines if this side effect is considered API.
+     *
+     * @return if the side effect is exposed via API
+     */
     public boolean isExposed() {
         return exposed;
     }
