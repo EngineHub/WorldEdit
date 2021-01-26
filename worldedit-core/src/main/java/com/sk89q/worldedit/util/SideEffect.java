@@ -28,7 +28,13 @@ public enum SideEffect {
     VALIDATION(State.OFF, true),
     ENTITY_AI(State.OFF, true),
     EVENTS(State.OFF, true),
+    /**
+     * Internal use only.
+     */
     POI_UPDATE(State.ON, false),
+    /**
+     * Internal use only.
+     */
     NETWORK(State.ON, false);
 
     // TODO Make these components in WE8
