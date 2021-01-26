@@ -32,7 +32,9 @@ import java.util.stream.Collectors;
 public class SideEffectSet {
     private static final SideEffectSet DEFAULT = new SideEffectSet(ImmutableMap.of());
     private static final SideEffectSet NONE = new SideEffectSet(
-        Arrays.stream(SideEffect.values()).collect(Collectors.toMap(Function.identity(), state -> SideEffect.State.OFF))
+        Arrays.stream(SideEffect.values())
+            .filter(SideEffect::isExposed)
+            .collect(Collectors.toMap(Function.identity(), state -> SideEffect.State.OFF))
     );
 
     private final Map<SideEffect, SideEffect.State> sideEffects;

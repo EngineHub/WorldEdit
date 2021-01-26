@@ -213,7 +213,7 @@ public class EditSession implements Extent, AutoCloseable {
 
     private final @Nullable List<TracingExtent> tracingExtents;
 
-    private ReorderMode reorderMode = ReorderMode.MULTI_STAGE;
+    private ReorderMode reorderMode = ReorderMode.FAST;
 
     private Mask oldMask;
 

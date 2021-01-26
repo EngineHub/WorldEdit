@@ -32,10 +32,13 @@ import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -49,6 +52,11 @@ public class SideEffectExtent extends AbstractDelegateExtent {
     private final Set<BlockVector2> dirtyChunks = new HashSet<>();
     private SideEffectSet sideEffectSet = SideEffectSet.defaults();
     private boolean postEditSimulation;
+
+    private static final SideEffectSet INTERNAL_NONE = new SideEffectSet(
+        Arrays.stream(SideEffect.values())
+            .collect(Collectors.toMap(Function.identity(), state -> SideEffect.State.OFF))
+    );
 
     /**
      * Create a new instance.
@@ -86,7 +94,7 @@ public class SideEffectExtent extends AbstractDelegateExtent {
             positions.put(location, world.getBlock(location));
         }
 
-        return world.setBlock(location, block, postEditSimulation ? SideEffectSet.none() : sideEffectSet);
+        return world.setBlock(location, block, postEditSimulation ? INTERNAL_NONE : sideEffectSet);
     }
 
     public boolean commitRequired() {
