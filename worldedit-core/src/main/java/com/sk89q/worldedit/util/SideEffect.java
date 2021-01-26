@@ -22,22 +22,32 @@ package com.sk89q.worldedit.util;
 import java.util.Locale;
 
 public enum SideEffect {
-    LIGHTING(State.ON),
-    NEIGHBORS(State.ON),
-    UPDATE(State.ON),
-    VALIDATION(State.OFF),
-    ENTITY_AI(State.OFF),
-    EVENTS(State.OFF);
+    LIGHTING(State.ON, true),
+    NEIGHBORS(State.ON, true),
+    UPDATE(State.ON, true),
+    VALIDATION(State.OFF, true),
+    ENTITY_AI(State.OFF, true),
+    EVENTS(State.OFF, true),
+    /**
+     * Internal use only.
+     */
+    POI_UPDATE(State.ON, false),
+    /**
+     * Internal use only.
+     */
+    NETWORK(State.ON, false);
 
     // TODO Make these components in WE8
     private final String displayName;
     private final String description;
     private final State defaultValue;
+    private final boolean exposed;
 
-    SideEffect(State defaultValue) {
+    SideEffect(State defaultValue, boolean exposed) {
         this.displayName = "worldedit.sideeffect." + this.name().toLowerCase(Locale.US);
         this.description = "worldedit.sideeffect." + this.name().toLowerCase(Locale.US) + ".description";
         this.defaultValue = defaultValue;
+        this.exposed = exposed;
     }
 
     public String getDisplayName() {
@@ -50,6 +60,15 @@ public enum SideEffect {
 
     public State getDefaultValue() {
         return this.defaultValue;
+    }
+
+    /**
+     * Determines if this side effect is considered API.
+     *
+     * @return if the side effect is exposed via API
+     */
+    public boolean isExposed() {
+        return exposed;
     }
 
     public enum State {

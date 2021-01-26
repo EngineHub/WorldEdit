@@ -108,7 +108,7 @@ public class LocalSession {
     private transient Mask mask;
     private transient ZoneId timezone = ZoneId.systemDefault();
     private transient BlockVector3 cuiTemporaryBlock;
-    private transient EditSession.ReorderMode reorderMode = EditSession.ReorderMode.MULTI_STAGE;
+    private transient EditSession.ReorderMode reorderMode = EditSession.ReorderMode.FAST;
     private transient List<Countable<BlockState>> lastDistribution;
     private transient World worldOverride;
     private transient boolean tickingWatchdog = true;

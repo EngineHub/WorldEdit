@@ -59,7 +59,9 @@ public class SideEffectConverter implements ArgumentConverter<SideEffect> {
 
     @Override
     public List<String> getSuggestions(String input, InjectedValueAccess context) {
-        return limitByPrefix(getSideEffects().stream().map(sideEffect -> sideEffect.name().toLowerCase(Locale.US)), input);
+        return limitByPrefix(getSideEffects().stream()
+            .filter(SideEffect::isExposed)
+            .map(sideEffect -> sideEffect.name().toLowerCase(Locale.US)), input);
     }
 
     @Override
