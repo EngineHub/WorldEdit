@@ -55,7 +55,7 @@ public final class VariedVectors implements ArgumentsProvider, AnnotationConsume
 
         /**
          * If {@code true}, only provide vectors inside the range of Vanilla MC.
-         * This caps the Y value to 255.
+         * This sets the Y range [-2048, 2048).
          */
         boolean capToVanilla() default false;
 

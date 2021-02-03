@@ -109,8 +109,8 @@ public class FabricWorldNativeAccess implements WorldNativeAccess<WorldChunk, Bl
         if (tileEntity == null) {
             return false;
         }
-        tileEntity.setLocation(getWorld(), position);
-        tileEntity.fromTag(getWorld().getBlockState(position), nativeTag);
+        tileEntity.readNbt(nativeTag);
+        tileEntity.markDirty();
         return true;
     }
 

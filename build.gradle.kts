@@ -1,5 +1,18 @@
 import org.ajoberstar.grgit.Grgit
 
+// needed for fabric to know where FF executor is....
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            name = "Fabric"
+            url = uri("https://maven.fabricmc.net/")
+        }
+    }
+    dependencies {
+        classpath("net.fabricmc:fabric-loom:${versions.loom}")
+    }
+}
 plugins {
     id("org.enginehub.codecov")
     jacoco

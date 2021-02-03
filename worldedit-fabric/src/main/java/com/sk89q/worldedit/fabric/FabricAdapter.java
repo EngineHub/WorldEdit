@@ -213,7 +213,7 @@ public final class FabricAdapter {
     }
 
     public static BaseItemStack adapt(ItemStack itemStack) {
-        CompoundTag tag = NBTConverter.fromNative(itemStack.toTag(new net.minecraft.nbt.CompoundTag()));
+        CompoundTag tag = NBTConverter.fromNative(itemStack.writeNbt(new net.minecraft.nbt.CompoundTag()));
         if (tag.getValue().isEmpty()) {
             tag = null;
         } else {

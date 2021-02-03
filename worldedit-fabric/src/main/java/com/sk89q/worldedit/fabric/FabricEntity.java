@@ -52,7 +52,7 @@ class FabricEntity implements Entity {
         if (entity != null) {
             Identifier id = Registry.ENTITY_TYPE.getId(entity.getType());
             CompoundTag tag = new CompoundTag();
-            entity.toTag(tag);
+            entity.writeNbt(tag);
             return new BaseEntity(EntityTypes.get(id.toString()), NBTConverter.fromNative(tag));
         } else {
             return null;
@@ -93,7 +93,7 @@ class FabricEntity implements Entity {
     public boolean remove() {
         net.minecraft.entity.Entity entity = entityRef.get();
         if (entity != null) {
-            entity.remove();
+            entity.remove(net.minecraft.entity.Entity.RemovalReason.KILLED);
         }
         return true;
     }

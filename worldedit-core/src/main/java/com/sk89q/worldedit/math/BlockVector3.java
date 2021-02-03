@@ -68,7 +68,8 @@ public final class BlockVector3 {
     }
 
     private static final int WORLD_XZ_MINMAX = 30_000_000;
-    private static final int WORLD_Y_MAX = 4095;
+    private static final int WORLD_Y_MIN = -2048;
+    private static final int WORLD_Y_MAX = 2047;
 
     private static boolean isHorizontallyInBounds(int h) {
         return -WORLD_XZ_MINMAX <= h && h <= WORLD_XZ_MINMAX;
@@ -77,7 +78,7 @@ public final class BlockVector3 {
     public static boolean isLongPackable(BlockVector3 location) {
         return isHorizontallyInBounds(location.getX())
             && isHorizontallyInBounds(location.getZ())
-            && 0 <= location.getY() && location.getY() <= WORLD_Y_MAX;
+            && WORLD_Y_MIN <= location.getY() && location.getY() <= WORLD_Y_MAX;
     }
 
     public static void checkLongPackable(BlockVector3 location) {
