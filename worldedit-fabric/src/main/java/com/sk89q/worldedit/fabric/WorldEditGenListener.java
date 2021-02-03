@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.fabric;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -27,6 +29,11 @@ import javax.annotation.Nullable;
 
 // For now, this does nothing, but might be useful later for regen progress communication.
 class WorldEditGenListener implements WorldGenerationProgressListener {
+
+    @Environment(EnvType.CLIENT)
+    @Override
+    public void start() {
+    }
 
     @Override
     public void start(ChunkPos spawnPos) {

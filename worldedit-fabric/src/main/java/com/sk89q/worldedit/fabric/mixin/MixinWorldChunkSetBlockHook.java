@@ -34,7 +34,7 @@ import org.spongepowered.asm.mixin.injection.Slice;
 
 import javax.annotation.Nullable;
 
-@Mixin(value = WorldChunk.class)
+@Mixin(WorldChunk.class)
 public abstract class MixinWorldChunkSetBlockHook implements Chunk, ExtendedChunk {
     private boolean shouldUpdate = true;
 
@@ -54,7 +54,7 @@ public abstract class MixinWorldChunkSetBlockHook implements Chunk, ExtendedChun
     @Redirect(
         method = "setBlockState",
         slice = @Slice(
-            from = @At(value = "INVOKE", target = "Lnet/minecraft/block/entity/BlockEntity;resetBlock()V")
+            from = @At(value = "INVOKE", target = "Lnet/minecraft/block/AbstractBlock$AbstractBlockState;isOf(Lnet/minecraft/block/Block;)Z")
         ),
         at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;onBlockAdded(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Z)V", ordinal = 0)
     )
