@@ -28,6 +28,7 @@ import com.sk89q.worldedit.util.SideEffectSet;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -100,7 +101,13 @@ public class ForgeWorldNativeAccess implements WorldNativeAccess<Chunk, BlockSta
     @Override
     public boolean updateTileEntity(BlockPos position, CompoundTag tag) {
         CompoundNBT nativeTag = NBTConverter.toNative(tag);
-        return TileEntityUtils.setTileEntity(getWorld(), position, nativeTag);
+        TileEntity tileEntity = getWorld().getChunk(position).getTileEntity(position);
+        if (tileEntity == null) {
+            return false;
+        }
+        tileEntity.setWorldAndPos(getWorld(), position);
+        tileEntity.func_230337_a_(getWorld().getBlockState(position), nativeTag);
+        return true;
     }
 
     @Override

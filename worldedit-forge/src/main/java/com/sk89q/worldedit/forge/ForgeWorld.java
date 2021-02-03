@@ -39,7 +39,6 @@ import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.forge.internal.ForgeWorldNativeAccess;
 import com.sk89q.worldedit.forge.internal.NBTConverter;
-import com.sk89q.worldedit.forge.internal.TileEntityUtils;
 import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.internal.util.BiomeMath;
@@ -614,7 +613,9 @@ public class ForgeWorld extends AbstractWorld {
         TileEntity tile = getWorld().getChunk(pos).getTileEntity(pos);
 
         if (tile != null) {
-            return getBlock(position).toBaseBlock(NBTConverter.fromNative(TileEntityUtils.copyNbtData(tile)));
+            CompoundNBT tag = new CompoundNBT();
+            tile.write(tag);
+            return getBlock(position).toBaseBlock(NBTConverter.fromNative(tag));
         } else {
             return getBlock(position).toBaseBlock();
         }
