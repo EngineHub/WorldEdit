@@ -19,14 +19,19 @@
 
 package com.sk89q.jnbt;
 
+import com.sk89q.worldedit.util.nbt.ByteArrayBinaryTag;
+
 import java.util.Locale;
 
 /**
  * The {@code TAG_Byte_Array} tag.
+ *
+ * @deprecated Use {@link ByteArrayBinaryTag}.
  */
+@Deprecated
 public final class ByteArrayTag extends Tag {
 
-    private final byte[] value;
+    private final ByteArrayBinaryTag innerTag;
 
     /**
      * Creates the tag with an empty name.
@@ -35,25 +40,21 @@ public final class ByteArrayTag extends Tag {
      */
     public ByteArrayTag(byte[] value) {
         super();
-        this.value = value;
+        this.innerTag = ByteArrayBinaryTag.of(value);
+    }
+
+    ByteArrayTag(ByteArrayBinaryTag adventureTag) {
+        super();
+        this.innerTag = adventureTag;
     }
 
     @Override
     public byte[] getValue() {
-        return value;
+        return innerTag.value();
     }
 
     @Override
-    public String toString() {
-        StringBuilder hex = new StringBuilder();
-        for (byte b : value) {
-            String hexDigits = Integer.toHexString(b).toUpperCase(Locale.ROOT);
-            if (hexDigits.length() == 1) {
-                hex.append("0");
-            }
-            hex.append(hexDigits).append(" ");
-        }
-        return "TAG_Byte_Array(" + hex + ")";
+    public ByteArrayBinaryTag asBinaryTag() {
+        return innerTag;
     }
-
 }

@@ -38,7 +38,10 @@ import java.util.Map;
  * found at <a href="https://minecraft.gamepedia.com/NBT_format">
  * https://minecraft.gamepedia.com/NBT_format</a>.
  * </p>
+ *
+ * @deprecated JNBT is being removed for adventure-nbt in WorldEdit 8.
  */
+@Deprecated
 public final class NBTInputStream implements Closeable {
 
     private final DataInputStream is;

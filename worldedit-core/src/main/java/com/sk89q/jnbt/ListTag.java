@@ -19,6 +19,10 @@
 
 package com.sk89q.jnbt;
 
+import com.sk89q.worldedit.util.nbt.BinaryTag;
+import com.sk89q.worldedit.util.nbt.ListBinaryTag;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -27,7 +31,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * The {@code TAG_List} tag.
+ *
+ * @deprecated Use {@link com.sk89q.worldedit.util.nbt.ListBinaryTag}.
  */
+@Deprecated
 public final class ListTag extends Tag {
 
     private final Class<? extends Tag> type;
@@ -44,6 +51,33 @@ public final class ListTag extends Tag {
         checkNotNull(value);
         this.type = type;
         this.value = Collections.unmodifiableList(value);
+    }
+
+    ListTag(ListBinaryTag adventureTag) {
+        super();
+        List<Tag> list = new ArrayList<>();
+        Class<? extends Tag> listClass = StringTag.class;
+        int tags = adventureTag.size();
+        for (int i = 0; i < tags; i++) {
+            Tag child = AdventureNBTConverter.fromAdventure(adventureTag.get(0));
+            list.add(child);
+            listClass = child.getClass();
+        }
+
+        this.type = listClass;
+        this.value = Collections.unmodifiableList(list);
+    }
+
+    @Override
+    public ListBinaryTag asBinaryTag() {
+        ListBinaryTag.Builder<BinaryTag> builder = ListBinaryTag.builder();
+        for (Tag child : getValue()) {
+            if (child instanceof EndTag) {
+                continue;
+            }
+            builder.add(child.asBinaryTag());
+        }
+        return builder.build();
     }
 
     /**
@@ -413,17 +447,6 @@ public final class ListTag extends Tag {
         } else {
             return "";
         }
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder bldr = new StringBuilder();
-        bldr.append("TAG_List").append(": ").append(value.size()).append(" entries of type ").append(NBTUtils.getTypeName(type)).append("\r\n{\r\n");
-        for (Tag t : value) {
-            bldr.append("   ").append(t.toString().replaceAll("\r\n", "\r\n   ")).append("\r\n");
-        }
-        bldr.append("}");
-        return bldr.toString();
     }
 
 }

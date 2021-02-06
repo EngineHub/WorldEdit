@@ -23,6 +23,7 @@ import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.item.ItemType;
 
 /**
@@ -60,8 +61,22 @@ public class BaseItemStack extends BaseItem {
      * @param id The item type
      * @param tag Tag value
      * @param amount amount in the stack
+     * @deprecated Use {@link #BaseItemStack(ItemType, CompoundBinaryTag, int)}
      */
+    @Deprecated
     public BaseItemStack(ItemType id, CompoundTag tag, int amount) {
+        super(id, tag);
+        this.amount = amount;
+    }
+
+    /**
+     * Construct the object.
+     *
+     * @param id The item type
+     * @param tag Tag value
+     * @param amount amount in the stack
+     */
+    public BaseItemStack(ItemType id, CompoundBinaryTag tag, int amount) {
         super(id, tag);
         this.amount = amount;
     }

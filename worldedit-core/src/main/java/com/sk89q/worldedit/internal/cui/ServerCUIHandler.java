@@ -19,11 +19,6 @@
 
 package com.sk89q.worldedit.internal.cui;
 
-import com.sk89q.jnbt.ByteTag;
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.IntTag;
-import com.sk89q.jnbt.StringTag;
-import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -33,11 +28,13 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.nbt.ByteBinaryTag;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
+import com.sk89q.worldedit.util.nbt.IntBinaryTag;
+import com.sk89q.worldedit.util.nbt.StringBinaryTag;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
-import java.util.HashMap;
-import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
@@ -126,7 +123,7 @@ public class ServerCUIHandler {
         int z = (int) (location.getZ() - (xz * Math.cos(Math.toRadians(rotX))) * 12);
         int y = Math.max(0, Math.min(Math.min(255, posY + 32), posY + 3));
 
-        Map<String, Tag> structureTag = new HashMap<>();
+        CompoundBinaryTag.Builder structureTag = CompoundBinaryTag.builder();
 
         posX -= x;
         posY -= y;
@@ -137,25 +134,25 @@ public class ServerCUIHandler {
             return null;
         }
 
-        structureTag.put("name", new StringTag("worldedit:" + player.getName()));
-        structureTag.put("author", new StringTag(player.getName()));
-        structureTag.put("metadata", new StringTag(""));
-        structureTag.put("x", new IntTag(x));
-        structureTag.put("y", new IntTag(y));
-        structureTag.put("z", new IntTag(z));
-        structureTag.put("posX", new IntTag(posX));
-        structureTag.put("posY", new IntTag(posY));
-        structureTag.put("posZ", new IntTag(posZ));
-        structureTag.put("sizeX", new IntTag(width));
-        structureTag.put("sizeY", new IntTag(height));
-        structureTag.put("sizeZ", new IntTag(length));
-        structureTag.put("rotation", new StringTag("NONE"));
-        structureTag.put("mirror", new StringTag("NONE"));
-        structureTag.put("mode", new StringTag("SAVE"));
-        structureTag.put("ignoreEntities", new ByteTag((byte) 1));
-        structureTag.put("showboundingbox", new ByteTag((byte) 1));
-        structureTag.put("id", new StringTag(BlockTypes.STRUCTURE_BLOCK.getId()));
+        structureTag.put("name", StringBinaryTag.of("worldedit:" + player.getName()));
+        structureTag.put("author", StringBinaryTag.of(player.getName()));
+        structureTag.put("metadata", StringBinaryTag.of(""));
+        structureTag.put("x", IntBinaryTag.of(x));
+        structureTag.put("y", IntBinaryTag.of(y));
+        structureTag.put("z", IntBinaryTag.of(z));
+        structureTag.put("posX", IntBinaryTag.of(posX));
+        structureTag.put("posY", IntBinaryTag.of(posY));
+        structureTag.put("posZ", IntBinaryTag.of(posZ));
+        structureTag.put("sizeX", IntBinaryTag.of(width));
+        structureTag.put("sizeY", IntBinaryTag.of(height));
+        structureTag.put("sizeZ", IntBinaryTag.of(length));
+        structureTag.put("rotation", StringBinaryTag.of("NONE"));
+        structureTag.put("mirror", StringBinaryTag.of("NONE"));
+        structureTag.put("mode", StringBinaryTag.of("SAVE"));
+        structureTag.put("ignoreEntities", ByteBinaryTag.of((byte) 1));
+        structureTag.put("showboundingbox", ByteBinaryTag.of((byte) 1));
+        structureTag.put("id", StringBinaryTag.of(BlockTypes.STRUCTURE_BLOCK.getId()));
 
-        return BlockTypes.STRUCTURE_BLOCK.getDefaultState().toBaseBlock(new CompoundTag(structureTag));
+        return BlockTypes.STRUCTURE_BLOCK.getDefaultState().toBaseBlock(structureTag.build());
     }
 }

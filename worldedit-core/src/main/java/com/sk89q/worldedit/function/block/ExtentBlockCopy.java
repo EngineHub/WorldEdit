@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.function.block;
 
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.CompoundTagBuilder;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.RegionFunction;
@@ -30,6 +28,9 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Direction.Flag;
+import com.sk89q.worldedit.util.nbt.BinaryTag;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
+import com.sk89q.worldedit.util.nbt.IntBinaryTag;
 import com.sk89q.worldedit.world.block.BaseBlock;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -87,12 +88,13 @@ public class ExtentBlockCopy implements RegionFunction {
      * @return a new state or the existing one
      */
     private BaseBlock transformNbtData(BaseBlock state) {
-        CompoundTag tag = state.getNbtData();
+        CompoundBinaryTag tag = state.getNbt();
 
         if (tag != null) {
             // Handle blocks which store their rotation in NBT
-            if (tag.containsKey("Rot")) {
-                int rot = tag.asInt("Rot");
+            BinaryTag rotTag = tag.get("Rot");
+            if (rotTag instanceof IntBinaryTag) {
+                int rot = ((IntBinaryTag) rotTag).value();
 
                 Direction direction = MCDirections.fromRotation(rot);
 
@@ -101,11 +103,9 @@ public class ExtentBlockCopy implements RegionFunction {
                     Direction newDirection = Direction.findClosest(vector, Flag.CARDINAL | Flag.ORDINAL | Flag.SECONDARY_ORDINAL);
 
                     if (newDirection != null) {
-                        CompoundTagBuilder builder = tag.createBuilder();
-
-                        builder.putByte("Rot", (byte) MCDirections.toRotation(newDirection));
-
-                        return state.toBaseBlock(builder.build());
+                        return state.toBaseBlock(
+                            tag.putByte("Rot", (byte) MCDirections.toRotation(newDirection))
+                        );
                     }
                 }
             }

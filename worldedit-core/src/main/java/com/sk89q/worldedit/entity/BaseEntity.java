@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.entity;
 
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.NbtValued;
 import com.sk89q.worldedit.world.entity.EntityType;
 
@@ -43,7 +44,21 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class BaseEntity implements NbtValued {
 
     private final EntityType type;
-    private CompoundTag nbtData;
+    @Nullable
+    private CompoundBinaryTag nbtData;
+
+    /**
+     * Create a new base entity.
+     *
+     * @param type the entity type
+     * @param nbtData NBT data
+     * @deprecated Use {@link BaseEntity#BaseEntity(EntityType, CompoundBinaryTag)}
+     */
+    @Deprecated
+    public BaseEntity(EntityType type, CompoundTag nbtData) {
+        this(type);
+        setNbtData(nbtData);
+    }
 
     /**
      * Create a new base entity.
@@ -51,9 +66,9 @@ public class BaseEntity implements NbtValued {
      * @param type the entity type
      * @param nbtData NBT data
      */
-    public BaseEntity(EntityType type, CompoundTag nbtData) {
+    public BaseEntity(EntityType type, CompoundBinaryTag nbtData) {
         this(type);
-        setNbtData(nbtData);
+        setNbt(nbtData);
     }
 
     /**
@@ -73,22 +88,22 @@ public class BaseEntity implements NbtValued {
     public BaseEntity(BaseEntity other) {
         checkNotNull(other);
         this.type = other.getType();
-        setNbtData(other.getNbtData());
+        setNbt(other.getNbt());
     }
 
     @Override
-    public boolean hasNbtData() {
+    public boolean hasNbt() {
         return true;
     }
 
     @Nullable
     @Override
-    public CompoundTag getNbtData() {
+    public CompoundBinaryTag getNbt() {
         return nbtData;
     }
 
     @Override
-    public void setNbtData(@Nullable CompoundTag nbtData) {
+    public void setNbt(@Nullable CompoundBinaryTag nbtData) {
         this.nbtData = nbtData;
     }
 

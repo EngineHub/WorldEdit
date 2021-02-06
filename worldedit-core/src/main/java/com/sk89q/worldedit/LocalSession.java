@@ -23,8 +23,7 @@ import com.sk89q.jchronic.Chronic;
 import com.sk89q.jchronic.Options;
 import com.sk89q.jchronic.utils.Span;
 import com.sk89q.jchronic.utils.Time;
-import com.sk89q.jnbt.IntTag;
-import com.sk89q.jnbt.Tag;
+import com.sk89q.jnbt.AdventureNBTConverter;
 import com.sk89q.worldedit.command.tool.BlockTool;
 import com.sk89q.worldedit.command.tool.BrushTool;
 import com.sk89q.worldedit.command.tool.InvalidToolBindException;
@@ -51,6 +50,7 @@ import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -821,13 +821,13 @@ public class LocalSession {
         }
 
         BaseBlock block = ServerCUIHandler.createStructureBlock(player);
-        if (block != null) {
+        if (block != null && block.hasNbt()) {
             // If it's null, we don't need to do anything. The old was already removed.
-            Map<String, Tag> tags = block.getNbtData().getValue();
+            CompoundBinaryTag tags = block.getNbt();
             BlockVector3 tempCuiTemporaryBlock = BlockVector3.at(
-                    ((IntTag) tags.get("x")).getValue(),
-                    ((IntTag) tags.get("y")).getValue(),
-                    ((IntTag) tags.get("z")).getValue()
+                tags.getInt("x"),
+                tags.getInt("y"),
+                tags.getInt("z")
             );
             if (cuiTemporaryBlock != null && !tempCuiTemporaryBlock.equals(cuiTemporaryBlock)) {
                 // Update the existing block if it's the same location

@@ -37,7 +37,8 @@ fun Project.applyLibrariesConfiguration() {
 
     val relocations = mapOf(
         "net.kyori.text" to "com.sk89q.worldedit.util.formatting.text",
-        "net.kyori.minecraft" to "com.sk89q.worldedit.util.kyori"
+        "net.kyori.minecraft" to "com.sk89q.worldedit.util.kyori",
+        "net.kyori.adventure.nbt" to "com.sk89q.worldedit.util.nbt"
     )
 
     tasks.register<ShadowJar>("jar") {

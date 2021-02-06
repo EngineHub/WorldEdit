@@ -168,7 +168,7 @@ public abstract class SpongeWorld extends AbstractWorld {
         snapshot.restore(true, notifyAndLight ? BlockChangeFlags.ALL : BlockChangeFlags.NONE);
 
         // Create the TileEntity
-        if (block instanceof BaseBlock && ((BaseBlock) block).hasNbtData()) {
+        if (block instanceof BaseBlock && ((BaseBlock) block).hasNbt()) {
             // Kill the old TileEntity
             world.getTileEntity(pos).ifPresent(tileEntity -> applyTileEntityData(tileEntity, (BaseBlock) block));
         }
@@ -301,7 +301,7 @@ public abstract class SpongeWorld extends AbstractWorld {
         Vector3d pos = new Vector3d(location.getX(), location.getY(), location.getZ());
 
         org.spongepowered.api.entity.Entity newEnt = world.createEntity(entityType, pos);
-        if (entity.hasNbtData()) {
+        if (entity.hasNbt()) {
             applyEntityData(newEnt, entity);
         }
 

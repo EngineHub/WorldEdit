@@ -28,7 +28,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Helps create list tags.
+ *
+ * @deprecated Use {@link com.sk89q.worldedit.util.nbt.ListBinaryTag.Builder}.
  */
+@Deprecated
 public class ListTagBuilder {
 
     private final Class<? extends Tag> type;
