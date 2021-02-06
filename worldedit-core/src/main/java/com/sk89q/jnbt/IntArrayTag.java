@@ -19,16 +19,19 @@
 
 package com.sk89q.jnbt;
 
-import java.util.Locale;
+import com.sk89q.worldedit.util.nbt.IntArrayBinaryTag;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * The {@code TAG_Int_Array} tag.
+ *
+ * @deprecated Use {@link IntArrayBinaryTag}.
  */
+@Deprecated
 public final class IntArrayTag extends Tag {
 
-    private final int[] value;
+    private final IntArrayBinaryTag innerTag;
 
     /**
      * Creates the tag with an empty name.
@@ -38,25 +41,22 @@ public final class IntArrayTag extends Tag {
     public IntArrayTag(int[] value) {
         super();
         checkNotNull(value);
-        this.value = value;
+        this.innerTag = IntArrayBinaryTag.of(value);
+    }
+
+    IntArrayTag(IntArrayBinaryTag adventureTag) {
+        super();
+        this.innerTag = adventureTag;
+    }
+
+    @Override
+    public IntArrayBinaryTag asBinaryTag() {
+        return this.innerTag;
     }
 
     @Override
     public int[] getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder hex = new StringBuilder();
-        for (int b : value) {
-            String hexDigits = Integer.toHexString(b).toUpperCase(Locale.ROOT);
-            if (hexDigits.length() == 1) {
-                hex.append("0");
-            }
-            hex.append(hexDigits).append(" ");
-        }
-        return "TAG_Int_Array(" + hex + ")";
+        return innerTag.value();
     }
 
 }

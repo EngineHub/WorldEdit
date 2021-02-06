@@ -26,7 +26,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Helps create compound tags.
+ *
+ * @deprecated Use {@link com.sk89q.worldedit.util.nbt.CompoundBinaryTag.Builder}.
  */
+@Deprecated
 public class CompoundTagBuilder {
 
     private final Map<String, Tag> entries;

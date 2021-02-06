@@ -20,9 +20,13 @@
 package com.sk89q.worldedit.blocks;
 
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
+import com.sk89q.worldedit.util.nbt.TagStringIO;
 import com.sk89q.worldedit.world.NbtValued;
 import com.sk89q.worldedit.world.item.ItemType;
 
+import java.io.IOException;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -37,7 +41,7 @@ public class BaseItem implements NbtValued {
 
     private ItemType itemType;
     @Nullable
-    private CompoundTag nbtData;
+    private CompoundBinaryTag nbtData;
 
     /**
      * Construct the object.
@@ -53,9 +57,20 @@ public class BaseItem implements NbtValued {
      * Construct the object.
      *
      * @param itemType Type of the item
+     * @param nbtData NBT Compound tag
+     */
+    @Deprecated
+    public BaseItem(ItemType itemType, CompoundTag nbtData) {
+        this(itemType, checkNotNull(nbtData).asBinaryTag());
+    }
+
+    /**
+     * Construct the object.
+     *
+     * @param itemType Type of the item
      * @param tag NBT Compound tag
      */
-    public BaseItem(ItemType itemType, @Nullable CompoundTag tag) {
+    public BaseItem(ItemType itemType, @Nullable CompoundBinaryTag tag) {
         checkNotNull(itemType);
         this.itemType = itemType;
         this.nbtData = tag;
@@ -80,18 +95,32 @@ public class BaseItem implements NbtValued {
     }
 
     @Override
-    public boolean hasNbtData() {
+    public boolean hasNbt() {
         return this.nbtData != null;
     }
 
     @Nullable
     @Override
-    public CompoundTag getNbtData() {
+    public CompoundBinaryTag getNbt() {
         return this.nbtData;
     }
 
     @Override
-    public void setNbtData(@Nullable CompoundTag nbtData) {
+    public void setNbt(@Nullable CompoundBinaryTag nbtData) {
         this.nbtData = nbtData;
+    }
+
+    @Override
+    public String toString() {
+        String nbtString = "";
+        if (hasNbt()) {
+            try {
+                nbtString = TagStringIO.get().asString(nbtData);
+            } catch (IOException e) {
+                WorldEdit.logger.error("Failed to parse NBT of Item", e);
+            }
+        }
+
+        return getType().getId() + nbtString;
     }
 }

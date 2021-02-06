@@ -28,6 +28,7 @@ import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -210,8 +211,17 @@ public class BlockState implements BlockStateHolder<BlockState> {
         return this.emptyBaseBlock;
     }
 
+    @Deprecated
     @Override
     public BaseBlock toBaseBlock(CompoundTag compoundTag) {
+        if (compoundTag == null) {
+            return toBaseBlock();
+        }
+        return new BaseBlock(this, compoundTag);
+    }
+
+    @Override
+    public BaseBlock toBaseBlock(CompoundBinaryTag compoundTag) {
         if (compoundTag == null) {
             return toBaseBlock();
         }

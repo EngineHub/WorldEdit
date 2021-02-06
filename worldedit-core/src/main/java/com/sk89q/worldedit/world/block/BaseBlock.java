@@ -20,11 +20,13 @@
 package com.sk89q.worldedit.world.block;
 
 import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.StringTag;
-import com.sk89q.jnbt.Tag;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.TileEntityBlock;
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
+import com.sk89q.worldedit.util.nbt.TagStringIO;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Nullable;
@@ -44,7 +46,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
 
     private final BlockState blockState;
     @Nullable
-    private final CompoundTag nbtData;
+    private final CompoundBinaryTag nbtData;
 
     /**
      * Construct a block with a state.
@@ -62,7 +64,19 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
      * @param state The block state
      * @param nbtData NBT data, which must be provided
      */
+    @Deprecated
     protected BaseBlock(BlockState state, CompoundTag nbtData) {
+        this(state, checkNotNull(nbtData).asBinaryTag());
+    }
+
+
+    /**
+     * Construct a block with the given ID, data value and NBT data structure.
+     *
+     * @param state The block state
+     * @param nbtData NBT data, which must be provided
+     */
+    protected BaseBlock(BlockState state, CompoundBinaryTag nbtData) {
         checkNotNull(nbtData);
         this.blockState = state;
         this.nbtData = nbtData;
@@ -85,7 +99,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
 
     @Override
     public <V> BaseBlock with(Property<V> property, V value) {
-        return this.blockState.with(property, value).toBaseBlock(getNbtData());
+        return this.blockState.with(property, value).toBaseBlock(getNbt());
     }
 
     /**
@@ -100,32 +114,27 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
     }
 
     @Override
-    public boolean hasNbtData() {
-        return getNbtData() != null;
-    }
-
-    @Override
     public String getNbtId() {
-        CompoundTag nbtData = getNbtData();
+        CompoundBinaryTag nbtData = this.nbtData;
         if (nbtData == null) {
             return "";
         }
-        Tag idTag = nbtData.getValue().get("id");
-        if (idTag instanceof StringTag) {
-            return ((StringTag) idTag).getValue();
-        } else {
-            return "";
-        }
+        return nbtData.getString("id");
+    }
+
+    @Override
+    public boolean hasNbt() {
+        return this.nbtData != null;
     }
 
     @Nullable
     @Override
-    public CompoundTag getNbtData() {
+    public CompoundBinaryTag getNbt() {
         return this.nbtData;
     }
 
     @Override
-    public void setNbtData(@Nullable CompoundTag nbtData) {
+    public void setNbt(@Nullable CompoundBinaryTag nbtData) {
         throw new UnsupportedOperationException("This class is immutable.");
     }
 
@@ -135,7 +144,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof BaseBlock)) {
-            if (!hasNbtData() && o instanceof BlockStateHolder) {
+            if (!hasNbt() && o instanceof BlockStateHolder) {
                 return Objects.equals(toImmutableState(), ((BlockStateHolder<?>) o).toImmutableState());
             }
             return false;
@@ -143,7 +152,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
 
         final BaseBlock otherBlock = (BaseBlock) o;
 
-        return this.blockState.equalsFuzzy(otherBlock.blockState) && Objects.equals(getNbtData(), otherBlock.getNbtData());
+        return this.blockState.equalsFuzzy(otherBlock.blockState) && Objects.equals(getNbt(), otherBlock.getNbt());
     }
 
     /**
@@ -167,8 +176,22 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
         return this;
     }
 
+    @Deprecated
     @Override
     public BaseBlock toBaseBlock(CompoundTag compoundTag) {
+        if (compoundTag == null) {
+            return this.blockState.toBaseBlock();
+        } else if (compoundTag.asBinaryTag() == this.nbtData) {
+            // The above reference equality check is fine, as JNBT classes contain an internal
+            // Adventure reference.
+            return this;
+        } else {
+            return new BaseBlock(this.blockState, compoundTag);
+        }
+    }
+
+    @Override
+    public BaseBlock toBaseBlock(CompoundBinaryTag compoundTag) {
         if (compoundTag == null) {
             return this.blockState.toBaseBlock();
         } else if (compoundTag == this.nbtData) {
@@ -181,16 +204,24 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
     @Override
     public int hashCode() {
         int ret = toImmutableState().hashCode() << 3;
-        if (hasNbtData()) {
-            ret += getNbtData().hashCode();
+        if (hasNbt()) {
+            ret += getNbt().hashCode();
         }
         return ret;
     }
 
     @Override
     public String toString() {
-        // TODO use a json serializer for the NBT data
-        return blockState.getAsString() + (hasNbtData() ? "{hasNbt}" : "");
+        String nbtString = "";
+        if (hasNbt()) {
+            try {
+                nbtString = TagStringIO.get().asString(getNbt());
+            } catch (IOException e) {
+                WorldEdit.logger.error("Failed to parse NBT of Block", e);
+            }
+        }
+
+        return blockState.getAsString() + nbtString;
     }
 
 }

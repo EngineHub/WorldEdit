@@ -19,10 +19,12 @@
 
 package com.sk89q.worldedit.world.block;
 
+import com.sk89q.jnbt.AdventureNBTConverter;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 
 import java.util.Locale;
 import java.util.Map;
@@ -88,8 +90,20 @@ public interface BlockStateHolder<B extends BlockStateHolder<B>> extends Pattern
      *
      * @param compoundTag The NBT Data to apply
      * @return The BaseBlock
+     * @deprecated Use {@link BlockStateHolder#toBaseBlock(CompoundBinaryTag)}.
      */
+    @Deprecated
     BaseBlock toBaseBlock(CompoundTag compoundTag);
+
+    /**
+     * Gets a {@link BaseBlock} from this BlockStateHolder.
+     *
+     * @param compoundTag The NBT Data to apply
+     * @return The BaseBlock
+     */
+    default BaseBlock toBaseBlock(CompoundBinaryTag compoundTag) {
+        return toBaseBlock(AdventureNBTConverter.fromAdventure(compoundTag));
+    }
 
     @Override
     default BaseBlock applyBlock(BlockVector3 position) {

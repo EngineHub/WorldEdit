@@ -23,10 +23,11 @@ import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.util.gson.GsonUtil;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
+import com.sk89q.worldedit.util.nbt.StringBinaryTag;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -82,7 +83,7 @@ public class SignBlock extends BaseBlock {
     }
 
     @Override
-    public boolean hasNbtData() {
+    public boolean hasNbt() {
         return true;
     }
 
@@ -92,13 +93,13 @@ public class SignBlock extends BaseBlock {
     }
 
     @Override
-    public CompoundTag getNbtData() {
-        Map<String, Tag> values = new HashMap<>();
-        values.put("Text1", new StringTag(text[0]));
-        values.put("Text2", new StringTag(text[1]));
-        values.put("Text3", new StringTag(text[2]));
-        values.put("Text4", new StringTag(text[3]));
-        return new CompoundTag(values);
+    public CompoundBinaryTag getNbt() {
+        CompoundBinaryTag.Builder values = CompoundBinaryTag.builder();
+        values.put("Text1", StringBinaryTag.of(text[0]));
+        values.put("Text2", StringBinaryTag.of(text[1]));
+        values.put("Text3", StringBinaryTag.of(text[2]));
+        values.put("Text4", StringBinaryTag.of(text[3]));
+        return values.build();
     }
 
     @Override

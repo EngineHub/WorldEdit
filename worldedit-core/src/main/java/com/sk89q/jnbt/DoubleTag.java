@@ -19,12 +19,17 @@
 
 package com.sk89q.jnbt;
 
+import com.sk89q.worldedit.util.nbt.DoubleBinaryTag;
+
 /**
  * The {@code TAG_Double} tag.
+ *
+ * @deprecated Use {@link DoubleBinaryTag}.
  */
+@Deprecated
 public final class DoubleTag extends Tag {
 
-    private final double value;
+    private final DoubleBinaryTag innerTag;
 
     /**
      * Creates the tag with an empty name.
@@ -33,17 +38,22 @@ public final class DoubleTag extends Tag {
      */
     public DoubleTag(double value) {
         super();
-        this.value = value;
+        this.innerTag = DoubleBinaryTag.of(value);
+    }
+
+    DoubleTag(DoubleBinaryTag adventureTag) {
+        super();
+        this.innerTag = adventureTag;
+    }
+
+    @Override
+    public DoubleBinaryTag asBinaryTag() {
+        return this.innerTag;
     }
 
     @Override
     public Double getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return "TAG_Double(" + value + ")";
+        return innerTag.value();
     }
 
 }

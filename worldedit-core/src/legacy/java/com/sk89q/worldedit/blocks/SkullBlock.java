@@ -19,14 +19,16 @@
 
 package com.sk89q.worldedit.blocks;
 
+import com.google.common.collect.ImmutableMap;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.internal.util.DeprecationUtil;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
+import com.sk89q.worldedit.util.nbt.StringBinaryTag;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -81,7 +83,7 @@ public class SkullBlock extends BaseBlock {
     }
 
     @Override
-    public boolean hasNbtData() {
+    public boolean hasNbt() {
         return true;
     }
 
@@ -91,12 +93,12 @@ public class SkullBlock extends BaseBlock {
     }
 
     @Override
-    public CompoundTag getNbtData() {
-        Map<String, Tag> values = new HashMap<>();
-        Map<String, Tag> inner = new HashMap<>();
-        inner.put("Name", new StringTag(owner));
-        values.put(DeprecationUtil.getHeadOwnerKey(), new CompoundTag(inner));
-        return new CompoundTag(values);
+    public CompoundBinaryTag getNbt() {
+        CompoundBinaryTag.Builder values = CompoundBinaryTag.builder();
+        values.put(DeprecationUtil.getHeadOwnerKey(), CompoundBinaryTag.from(
+            ImmutableMap.of("Name", StringBinaryTag.of(owner))
+        ));
+        return values.build();
     }
 
     @Override

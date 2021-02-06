@@ -29,7 +29,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * A class which contains NBT-related utility methods.
  *
+ * @deprecated JNBT is being removed for adventure-nbt in WorldEdit 8.
  */
+@Deprecated
 public final class NBTUtils {
 
     /**
@@ -72,7 +74,7 @@ public final class NBTUtils {
         } else if (clazz.equals(LongArrayTag.class)) {
             return "TAG_Long_Array";
         } else {
-            throw new IllegalArgumentException("Invalid tag classs ("
+            throw new IllegalArgumentException("Invalid tag class ("
                     + clazz.getName() + ").");
         }
     }
