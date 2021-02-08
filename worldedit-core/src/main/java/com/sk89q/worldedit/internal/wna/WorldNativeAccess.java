@@ -19,11 +19,14 @@
 
 package com.sk89q.worldedit.internal.wna;
 
-import com.sk89q.jnbt.CompoundTag;
+import com.google.common.collect.ImmutableMap;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
+import com.sk89q.worldedit.util.nbt.IntBinaryTag;
+import com.sk89q.worldedit.util.nbt.StringBinaryTag;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -66,14 +69,15 @@ public interface WorldNativeAccess<NC, NBS, NP> {
         if (successful || old == newState) {
             if (block instanceof BaseBlock) {
                 BaseBlock baseBlock = (BaseBlock) block;
-                CompoundTag tag = baseBlock.getNbtData();
+                CompoundBinaryTag tag = baseBlock.getNbt();
                 if (tag != null) {
-                    tag = tag.createBuilder()
-                        .putString("id", baseBlock.getNbtId())
-                        .putInt("x", position.getX())
-                        .putInt("y", position.getY())
-                        .putInt("z", position.getZ())
-                        .build();
+                    tag = tag.put(ImmutableMap.of(
+                        "id", StringBinaryTag.of(baseBlock.getNbtId()),
+                        "x", IntBinaryTag.of(position.getX()),
+                        "y", IntBinaryTag.of(position.getY()),
+                        "z", IntBinaryTag.of(position.getZ())
+                    ));
+
                     // update if TE changed as well
                     successful = updateTileEntity(pos, tag);
                 }
@@ -136,7 +140,7 @@ public interface WorldNativeAccess<NC, NBS, NP> {
 
     void updateLightingForBlock(NP position);
 
-    boolean updateTileEntity(NP position, CompoundTag tag);
+    boolean updateTileEntity(NP position, CompoundBinaryTag tag);
 
     void notifyBlockUpdate(NP position, NBS oldState, NBS newState);
 

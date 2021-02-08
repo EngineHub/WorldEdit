@@ -29,7 +29,6 @@ import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Futures;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Dynamic;
-import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
@@ -53,6 +52,7 @@ import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.util.io.file.SafeFiles;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.RegenOptions;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -253,7 +253,7 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public boolean useItem(BlockVector3 position, BaseItem item, Direction face) {
-        ItemStack stack = ForgeAdapter.adapt(new BaseItemStack(item.getType(), item.getNbtData(), 1));
+        ItemStack stack = ForgeAdapter.adapt(new BaseItemStack(item.getType(), item.getNbt(), 1));
         ServerWorld world = (ServerWorld) getWorld();
         final WorldEditFakePlayer fakePlayer;
         try {
@@ -677,9 +677,9 @@ public class ForgeWorld extends AbstractWorld {
         }
         net.minecraft.entity.Entity createdEntity = entityType.get().create(world);
         if (createdEntity != null) {
-            CompoundTag nativeTag = entity.getNbtData();
+            CompoundBinaryTag nativeTag = entity.getNbt();
             if (nativeTag != null) {
-                CompoundNBT tag = NBTConverter.toNative(entity.getNbtData());
+                CompoundNBT tag = NBTConverter.toNative(nativeTag);
                 for (String name : Constants.NO_COPY_ENTITY_NBT_FIELDS) {
                     tag.remove(name);
                 }

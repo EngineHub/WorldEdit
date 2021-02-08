@@ -34,8 +34,8 @@ import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.DataFixerBuilder;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.serialization.Dynamic;
-import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.forge.internal.NBTConverter;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.FloatNBT;
@@ -94,11 +94,11 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
     @Override
     public <T> T fixUp(FixType<T> type, T original, int srcVer) {
         if (type == FixTypes.CHUNK) {
-            return (T) fixChunk((CompoundTag) original, srcVer);
+            return (T) fixChunk((CompoundBinaryTag) original, srcVer);
         } else if (type == FixTypes.BLOCK_ENTITY) {
-            return (T) fixBlockEntity((CompoundTag) original, srcVer);
+            return (T) fixBlockEntity((CompoundBinaryTag) original, srcVer);
         } else if (type == FixTypes.ENTITY) {
-            return (T) fixEntity((CompoundTag) original, srcVer);
+            return (T) fixEntity((CompoundBinaryTag) original, srcVer);
         } else if (type == FixTypes.BLOCK_STATE) {
             return (T) fixBlockState((String) original, srcVer);
         } else if (type == FixTypes.ITEM_TYPE) {
@@ -109,19 +109,19 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
         return original;
     }
 
-    private CompoundTag fixChunk(CompoundTag originalChunk, int srcVer) {
+    private CompoundBinaryTag fixChunk(CompoundBinaryTag originalChunk, int srcVer) {
         CompoundNBT tag = NBTConverter.toNative(originalChunk);
         CompoundNBT fixed = convert(LegacyType.CHUNK, tag, srcVer);
         return NBTConverter.fromNative(fixed);
     }
 
-    private CompoundTag fixBlockEntity(CompoundTag origTileEnt, int srcVer) {
+    private CompoundBinaryTag fixBlockEntity(CompoundBinaryTag origTileEnt, int srcVer) {
         CompoundNBT tag = NBTConverter.toNative(origTileEnt);
         CompoundNBT fixed = convert(LegacyType.BLOCK_ENTITY, tag, srcVer);
         return NBTConverter.fromNative(fixed);
     }
 
-    private CompoundTag fixEntity(CompoundTag origEnt, int srcVer) {
+    private CompoundBinaryTag fixEntity(CompoundBinaryTag origEnt, int srcVer) {
         CompoundNBT tag = NBTConverter.toNative(origEnt);
         CompoundNBT fixed = convert(LegacyType.ENTITY, tag, srcVer);
         return NBTConverter.fromNative(fixed);

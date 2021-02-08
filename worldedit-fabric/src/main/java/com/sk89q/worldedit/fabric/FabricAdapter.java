@@ -20,8 +20,6 @@
 package com.sk89q.worldedit.fabric;
 
 import com.google.common.collect.ImmutableList;
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -32,6 +30,8 @@ import com.sk89q.worldedit.registry.state.EnumProperty;
 import com.sk89q.worldedit.registry.state.IntegerProperty;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
+import com.sk89q.worldedit.util.nbt.BinaryTag;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.biome.BiomeTypes;
@@ -228,8 +228,8 @@ public final class FabricAdapter {
 
     public static ItemStack adapt(BaseItemStack baseItemStack) {
         net.minecraft.nbt.CompoundTag fabricCompound = null;
-        if (baseItemStack.getNbtData() != null) {
-            fabricCompound = NBTConverter.toNative(baseItemStack.getNbtData());
+        if (baseItemStack.getNbt() != null) {
+            fabricCompound = NBTConverter.toNative(baseItemStack.getNbt());
         }
         final ItemStack itemStack = new ItemStack(adapt(baseItemStack.getType()), baseItemStack.getAmount());
         itemStack.setTag(fabricCompound);
@@ -237,13 +237,13 @@ public final class FabricAdapter {
     }
 
     public static BaseItemStack adapt(ItemStack itemStack) {
-        CompoundTag tag = NBTConverter.fromNative(itemStack.toTag(new net.minecraft.nbt.CompoundTag()));
-        if (tag.getValue().isEmpty()) {
+        CompoundBinaryTag tag = NBTConverter.fromNative(itemStack.toTag(new net.minecraft.nbt.CompoundTag()));
+        if (tag.keySet().isEmpty()) {
             tag = null;
         } else {
-            final Tag tagTag = tag.getValue().get("tag");
-            if (tagTag instanceof CompoundTag) {
-                tag = ((CompoundTag) tagTag);
+            final BinaryTag tagTag = tag.get("tag");
+            if (tagTag instanceof CompoundBinaryTag) {
+                tag = ((CompoundBinaryTag) tagTag);
             } else {
                 tag = null;
             }
