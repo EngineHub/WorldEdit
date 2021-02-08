@@ -62,7 +62,8 @@ public interface NbtValued {
     @Deprecated
     @Nullable
     default CompoundTag getNbtData() {
-        return AdventureNBTConverter.fromAdventure(getNbt());
+        CompoundBinaryTag tag = getNbt();
+        return tag == null ? null : AdventureNBTConverter.fromAdventure(tag);
     }
 
     /**

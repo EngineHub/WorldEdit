@@ -60,8 +60,8 @@ public class BaseItem implements NbtValued {
      * @param nbtData NBT Compound tag
      */
     @Deprecated
-    public BaseItem(ItemType itemType, CompoundTag nbtData) {
-        this(itemType, checkNotNull(nbtData).asBinaryTag());
+    public BaseItem(ItemType itemType, @Nullable CompoundTag nbtData) {
+        this(itemType, nbtData == null ? null : nbtData.asBinaryTag());
     }
 
     /**

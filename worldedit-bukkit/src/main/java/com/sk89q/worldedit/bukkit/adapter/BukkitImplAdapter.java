@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.bukkit.adapter;
 
-import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
@@ -31,6 +30,7 @@ import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.RegenOptions;
 import com.sk89q.worldedit.world.block.BaseBlock;
@@ -151,7 +151,7 @@ public interface BukkitImplAdapter {
      * @param pos The position
      * @param nbtData The NBT Data
      */
-    void sendFakeNBT(Player player, BlockVector3 pos, CompoundTag nbtData);
+    void sendFakeNBT(Player player, BlockVector3 pos, CompoundBinaryTag nbtData);
 
     /**
      * Make the client think it has operator status.
