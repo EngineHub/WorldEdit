@@ -22,6 +22,8 @@ package com.sk89q.worldedit.world.block;
 import com.sk89q.jnbt.AdventureNBTConverter;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.internal.util.DeprecationUtil;
+import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
@@ -93,7 +95,9 @@ public interface BlockStateHolder<B extends BlockStateHolder<B>> extends Pattern
      * @deprecated Use {@link BlockStateHolder#toBaseBlock(CompoundBinaryTag)}.
      */
     @Deprecated
-    BaseBlock toBaseBlock(CompoundTag compoundTag);
+    default BaseBlock toBaseBlock(CompoundTag compoundTag) {
+        return toBaseBlock(compoundTag == null ? null : compoundTag.asBinaryTag());
+    }
 
     /**
      * Gets a {@link BaseBlock} from this BlockStateHolder.
@@ -101,8 +105,14 @@ public interface BlockStateHolder<B extends BlockStateHolder<B>> extends Pattern
      * @param compoundTag The NBT Data to apply
      * @return The BaseBlock
      */
+    @NonAbstractForCompatibility(
+        delegateName = "toBaseBlock",
+        delegateParams = { CompoundTag.class }
+    )
     default BaseBlock toBaseBlock(CompoundBinaryTag compoundTag) {
-        return toBaseBlock(AdventureNBTConverter.fromAdventure(compoundTag));
+        DeprecationUtil.checkDelegatingOverride(getClass());
+
+        return toBaseBlock(compoundTag == null ? null : AdventureNBTConverter.fromAdventure(compoundTag));
     }
 
     @Override
