@@ -13,5 +13,5 @@ dependencies {
     "shade"("org.enginehub.piston:core:${Versions.PISTON}")
     "shade"("org.enginehub.piston.core-ap:runtime:${Versions.PISTON}")
     "shade"("org.enginehub.piston:default-impl:${Versions.PISTON}")
-    "shade"("net.kyori:adventure-nbt:4.4.0")
+    "shade"("net.kyori:adventure-nbt:4.5.0")
 }
