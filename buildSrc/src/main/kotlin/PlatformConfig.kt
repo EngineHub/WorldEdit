@@ -30,11 +30,6 @@ fun Project.applyPlatformAndCoreConfiguration() {
 
     ext["internalVersion"] = "$version+${rootProject.ext["gitCommitHash"]}"
 
-    configure<JavaPluginConvention> {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
     tasks
         .withType<JavaCompile>()
         .matching { it.name == "compileJava" || it.name == "compileTestJava" }
@@ -120,6 +115,7 @@ fun Project.applyShadowConfiguration() {
             include(project(":worldedit-libs:core"))
             include(project(":worldedit-libs:${project.name.replace("worldedit-", "")}"))
             include(project(":worldedit-core"))
+            exclude("com.google.code.findbugs:jsr305")
         }
         exclude("GradleStart**")
         exclude(".cache")

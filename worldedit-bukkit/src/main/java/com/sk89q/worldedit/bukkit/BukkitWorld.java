@@ -44,6 +44,7 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
+import io.papermc.lib.PaperLib;
 import org.bukkit.Effect;
 import org.bukkit.TreeType;
 import org.bukkit.World;
@@ -243,8 +244,13 @@ public class BukkitWorld extends AbstractWorld {
 
     @Override
     public boolean clearContainerBlockContents(BlockVector3 pt) {
+        checkNotNull(pt);
+        if (getBlock(pt).getBlockType().getMaterial().hasContainer()) {
+            return false;
+        }
+
         Block block = getWorld().getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
-        BlockState state = block.getState();
+        BlockState state = PaperLib.getBlockState(block, false).getState();
         if (!(state instanceof InventoryHolder)) {
             return false;
         }

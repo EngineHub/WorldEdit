@@ -9,11 +9,12 @@ applyShadowConfiguration()
 
 dependencies {
     "api"(project(":worldedit-core"))
-    "implementation"("org.apache.logging.log4j:log4j-core:2.8.1")
-    "implementation"("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
+    "implementation"(platform("org.apache.logging.log4j:log4j-bom:2.14.0"))
+    "implementation"("org.apache.logging.log4j:log4j-core")
+    "implementation"("org.apache.logging.log4j:log4j-slf4j-impl")
     "implementation"("commons-cli:commons-cli:1.4")
-    "implementation"("com.google.guava:guava:${Versions.GUAVA}")
-    "implementation"("com.google.code.gson:gson:${Versions.GSON}")
+    "implementation"("com.google.guava:guava")
+    "implementation"("com.google.code.gson:gson")
 }
 
 tasks.named<Jar>("jar") {

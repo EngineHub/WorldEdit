@@ -26,6 +26,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.WorldChunk;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -33,8 +34,8 @@ import org.spongepowered.asm.mixin.injection.Slice;
 
 import javax.annotation.Nullable;
 
-@Mixin(WorldChunk.class)
-public abstract class MixinWorldChunk implements Chunk, ExtendedChunk {
+@Mixin(value = WorldChunk.class)
+public abstract class MixinWorldChunkSetBlockHook implements Chunk, ExtendedChunk {
     private boolean shouldUpdate = true;
 
     @Nullable
