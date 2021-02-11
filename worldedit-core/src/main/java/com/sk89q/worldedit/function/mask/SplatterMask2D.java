@@ -19,43 +19,34 @@
 
 package com.sk89q.worldedit.function.mask;
 
-import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.BlockVector2;
 
 import java.util.concurrent.ThreadLocalRandom;
-import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-public class SplatterMask extends AbstractMask {
+public class SplatterMask2D extends AbstractMask2D {
 
-    private final BlockVector3 position;
+    private final BlockVector2 position;
     private final double decay;
-    private final double size;
     private final double sizeSq;
 
-    public SplatterMask(BlockVector3 position, double decay, double size) {
+    public SplatterMask2D(BlockVector2 position, double decay, double size) {
         checkArgument(decay >= 0, "decay must be >= 0");
         checkArgument(decay <= 1, "decay must be <= 1");
 
         this.position = position;
         this.decay = decay;
-        this.size = size;
         this.sizeSq = size * size;
     }
 
     @Override
-    public boolean test(BlockVector3 vector) {
+    public boolean test(BlockVector2 vector) {
         double distSq = vector.distanceSq(position);
         double distRatio = distSq / sizeSq;
 
         double decayChance = distRatio * decay * 2;
 
         return ThreadLocalRandom.current().nextDouble() > decayChance;
-    }
-
-    @Nullable
-    @Override
-    public Mask2D toMask2D() {
-        return new SplatterMask2D(position.toBlockVector2(), decay, size);
     }
 }

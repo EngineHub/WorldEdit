@@ -203,6 +203,7 @@ public class BrushCommands {
         tool.setBrush(new SplatterBrush(decay), "worldedit.brush.splatter");
 
         player.printInfo(TranslatableComponent.of("worldedit.brush.splatter.equip", TextComponent.of((int) radius), TextComponent.of(decay)));
+        ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
     }
 
 
