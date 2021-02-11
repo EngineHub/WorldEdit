@@ -295,7 +295,7 @@ public class RegionCommands {
     @Command(
         name = "/snowsmooth",
         desc = "Smooth the elevation in the selection with snow layers",
-        descFooter = "Example '//snowsmooth 1 snow_block,snow' would only smooth snow terrain."
+        descFooter = "Example: '//snowsmooth 1 snow_block,snow' would only smooth snow terrain."
     )
     @CommandPermissions("worldedit.region.snowsmooth")
     @Logging(REGION)
