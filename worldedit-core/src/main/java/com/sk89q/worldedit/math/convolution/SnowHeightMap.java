@@ -66,11 +66,7 @@ public class SnowHeightMap {
         this.width = region.getWidth();
         this.height = region.getLength();
 
-        try {
-            layers = BlockTypes.SNOW.getProperty("layers");
-        } catch (NullPointerException | IllegalArgumentException | ClassCastException e) {
-            throw new RuntimeException("Unable to get the correct property.", e);
-        }
+        this.layers = BlockTypes.SNOW.getProperty("layers");
 
         int minX = region.getMinimumPoint().getBlockX();
         int minY = region.getMinimumPoint().getBlockY();
