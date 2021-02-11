@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.math.convolution;
 
+import com.google.common.collect.ImmutableMap;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.function.mask.Mask;
@@ -46,7 +47,7 @@ public class SnowHeightMap {
     private final Region region;
     private final EditSession session;
 
-    private final IntegerProperty layers;
+    private final Property<Integer> layers;
 
     /**
      * Constructs the SnowHeightMap.
@@ -66,9 +67,9 @@ public class SnowHeightMap {
         this.height = region.getLength();
 
         try {
-            layers = (IntegerProperty) (Property<?>) BlockTypes.SNOW.getProperty("layers");
+            layers = BlockTypes.SNOW.getProperty("layers");
         } catch (NullPointerException | IllegalArgumentException | ClassCastException e) {
-            throw new RuntimeException("Unable to get the correct property.");
+            throw new RuntimeException("Unable to get the correct property.", e);
         }
 
         int minX = region.getMinimumPoint().getBlockX();
@@ -83,7 +84,7 @@ public class SnowHeightMap {
                 int highestBlockY = session.getHighestTerrainBlock(x + minX, z + minZ, minY, maxY, mask);
                 BlockState upper = session.getBlock(BlockVector3.at(x + minX, highestBlockY + 1, z + minZ));
                 if (upper.getBlockType() == BlockTypes.SNOW) {
-                    Integer amountLayers = (Integer) upper.getState(layers);
+                    Integer amountLayers = upper.getState(layers);
                     data[z * width + x] = (highestBlockY + 1 + (((float) amountLayers - 1) / 8));
                 } else {
                     BlockState block = session.getBlock(BlockVector3.at(x + minX, highestBlockY, z + minZ));
@@ -107,8 +108,7 @@ public class SnowHeightMap {
     public float[] applyFilter(HeightMapFilter filter, int iterations) {
         checkNotNull(filter);
 
-        float[] newData = new float[data.length];
-        System.arraycopy(data, 0, newData, 0, data.length);
+        float[] newData = data.clone();
 
         for (int i = 0; i < iterations; ++i) {
             // add an offset from 0.0625F to the values (snowlayer half)
@@ -167,7 +167,7 @@ public class SnowHeightMap {
 
                     // Skip water/lava
                     if (!existing.getBlockType().getMaterial().isLiquid()) {
-                        setSnowLayer(xr, zr, newHeight, layers);
+                        setSnowLayer(xr, zr, newHeight);
                         ++blocksChanged;
 
                         // Grow -- start from 1 below top replacing airblocks
@@ -176,8 +176,8 @@ public class SnowHeightMap {
                                 session.setBlock(BlockVector3.at(xr, originY + y, zr), fillerSnow);
                             } else {
                                 int copyFrom = (int) (y * scale);
-                                session.setBlock(BlockVector3.at(xr, originY + y, zr),
-                                        session.getBlock(BlockVector3.at(xr, originY + copyFrom, zr)));
+                                BlockState block = session.getBlock(BlockVector3.at(xr, originY + copyFrom, zr));
+                                session.setBlock(BlockVector3.at(xr, originY + y, zr), block);
                             }
                             ++blocksChanged;
                         }
@@ -189,13 +189,13 @@ public class SnowHeightMap {
                             session.setBlock(BlockVector3.at(xr, originY + y, zr), fillerSnow);
                         } else {
                             int copyFrom = (int) (y * scale);
-                            session.setBlock(BlockVector3.at(xr, originY + y, zr),
-                                    session.getBlock(BlockVector3.at(xr, originY + copyFrom, zr)));
+                            BlockState block = session.getBlock(BlockVector3.at(xr, originY + copyFrom, zr));
+                            session.setBlock(BlockVector3.at(xr, originY + y, zr), block);
                         }
                         ++blocksChanged;
                     }
 
-                    setSnowLayer(xr, zr, newHeight, layers);
+                    setSnowLayer(xr, zr, newHeight);
                     ++blocksChanged;
 
                     // Fill rest with air
@@ -211,8 +211,8 @@ public class SnowHeightMap {
         return blocksChanged;
     }
 
-    private void setSnowLayer(int x, int z, float newHeight, IntegerProperty property) throws MaxChangedBlocksException {
-        int layers = (int) ((newHeight % 1) * 8) + 1;
-        session.setBlock(BlockVector3.at(x, (int) newHeight, z), BlockTypes.SNOW.getDefaultState().with(property, layers));
+    private void setSnowLayer(int x, int z, float newHeight) throws MaxChangedBlocksException {
+        int numOfLayers = (int) ((newHeight % 1) * 8) + 1;
+        session.setBlock(BlockVector3.at(x, (int) newHeight, z), BlockTypes.SNOW.getState(ImmutableMap.of(this.layers, numOfLayers)));
     }
 }

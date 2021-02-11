@@ -275,8 +275,8 @@ public class BrushCommands {
 
     @Command(
         name = "snowsmooth",
-        desc = "Choos the snow terrain softener brush",
-        descFooter = "Example: '/brush snowsmooth 5 "
+        desc = "Choose the snow terrain softener brush",
+        descFooter = "Example: '/brush snowsmooth 5 1 3'"
     )
     @CommandPermissions("worldedit.brush.snowsmooth")
     public void snowSmoothBrush(Player player, LocalSession session,
@@ -284,22 +284,22 @@ public class BrushCommands {
                                     double radius,
                                 @Arg(desc = "The number of iterations to perform", def = "4")
                                     int iterations,
-                                @Arg(desc = "The number of blocks under snow layers", def = "1")
-                                    int numOfSnow,
+                                @Arg(desc = "The number of snow blocks under snow", def = "1")
+                                    int snowBlockCount,
                                 @Arg(desc = "The mask of blocks to use for the heightmap", def = "")
                                     Mask mask) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(radius);
 
         BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
         tool.setSize(radius);
-        tool.setBrush(new SnowSmoothBrush(iterations, numOfSnow, mask), "worldedit.brush.snowsmooth");
+        tool.setBrush(new SnowSmoothBrush(iterations, snowBlockCount, mask), "worldedit.brush.snowsmooth");
 
         player.printInfo(TranslatableComponent.of(
                 "worldedit.brush.snowsmooth.equip",
                 TextComponent.of((int) radius),
                 TextComponent.of(iterations),
                 TextComponent.of(mask == null ? "any block" : "filter"),
-                TextComponent.of(numOfSnow)
+                TextComponent.of(snowBlockCount)
         ));
     }
 
