@@ -19,8 +19,10 @@
 
 package com.sk89q.jnbt;
 
-import java.util.HashMap;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
+
 import java.util.Map;
+import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -32,23 +34,24 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Deprecated
 public class CompoundTagBuilder {
 
-    private final Map<String, Tag> entries;
+    private final CompoundBinaryTag.Builder builder = CompoundBinaryTag.builder();
 
     /**
      * Create a new instance.
      */
     CompoundTagBuilder() {
-        this.entries = new HashMap<>();
     }
 
     /**
      * Create a new instance and use the given map (which will be modified).
      *
-     * @param value the value
+     * @param source the value
      */
-    CompoundTagBuilder(Map<String, Tag> value) {
-        checkNotNull(value);
-        this.entries = value;
+    CompoundTagBuilder(CompoundBinaryTag source) {
+        checkNotNull(source);
+        for (String key : source.keySet()) {
+            this.builder.put(key, Objects.requireNonNull(source.get(key)));
+        }
     }
 
     /**
@@ -61,7 +64,7 @@ public class CompoundTagBuilder {
     public CompoundTagBuilder put(String key, Tag value) {
         checkNotNull(key);
         checkNotNull(value);
-        entries.put(key, value);
+        this.builder.put(key, value.asBinaryTag());
         return this;
     }
 
@@ -74,7 +77,8 @@ public class CompoundTagBuilder {
      * @return this object
      */
     public CompoundTagBuilder putByteArray(String key, byte[] value) {
-        return put(key, new ByteArrayTag(value));
+        this.builder.putByteArray(key, value);
+        return this;
     }
 
     /**
@@ -86,7 +90,8 @@ public class CompoundTagBuilder {
      * @return this object
      */
     public CompoundTagBuilder putByte(String key, byte value) {
-        return put(key, new ByteTag(value));
+        this.builder.putByte(key, value);
+        return this;
     }
 
     /**
@@ -98,7 +103,8 @@ public class CompoundTagBuilder {
      * @return this object
      */
     public CompoundTagBuilder putDouble(String key, double value) {
-        return put(key, new DoubleTag(value));
+        this.builder.putDouble(key, value);
+        return this;
     }
 
     /**
@@ -110,7 +116,8 @@ public class CompoundTagBuilder {
      * @return this object
      */
     public CompoundTagBuilder putFloat(String key, float value) {
-        return put(key, new FloatTag(value));
+        this.builder.putFloat(key, value);
+        return this;
     }
 
     /**
@@ -122,7 +129,8 @@ public class CompoundTagBuilder {
      * @return this object
      */
     public CompoundTagBuilder putIntArray(String key, int[] value) {
-        return put(key, new IntArrayTag(value));
+        this.builder.putIntArray(key, value);
+        return this;
     }
 
     /**
@@ -133,7 +141,8 @@ public class CompoundTagBuilder {
      * @return this object
      */
     public CompoundTagBuilder putInt(String key, int value) {
-        return put(key, new IntTag(value));
+        this.builder.putInt(key, value);
+        return this;
     }
 
     /**
@@ -145,7 +154,8 @@ public class CompoundTagBuilder {
      * @return this object
      */
     public CompoundTagBuilder putLongArray(String key, long[] value) {
-        return put(key, new LongArrayTag(value));
+        this.builder.putLongArray(key, value);
+        return this;
     }
 
     /**
@@ -157,7 +167,8 @@ public class CompoundTagBuilder {
      * @return this object
      */
     public CompoundTagBuilder putLong(String key, long value) {
-        return put(key, new LongTag(value));
+        this.builder.putLong(key, value);
+        return this;
     }
 
     /**
@@ -169,7 +180,8 @@ public class CompoundTagBuilder {
      * @return this object
      */
     public CompoundTagBuilder putShort(String key, short value) {
-        return put(key, new ShortTag(value));
+        this.builder.putShort(key, value);
+        return this;
     }
 
     /**
@@ -181,7 +193,8 @@ public class CompoundTagBuilder {
      * @return this object
      */
     public CompoundTagBuilder putString(String key, String value) {
-        return put(key, new StringTag(value));
+        this.builder.putString(key, value);
+        return this;
     }
 
     /**
@@ -192,7 +205,7 @@ public class CompoundTagBuilder {
      */
     public CompoundTagBuilder remove(String key) {
         checkNotNull(key);
-        entries.remove(key);
+        this.builder.remove(key);
         return this;
     }
 
@@ -216,7 +229,7 @@ public class CompoundTagBuilder {
      * @return the new compound tag
      */
     public CompoundTag build() {
-        return new CompoundTag(new HashMap<>(entries));
+        return new CompoundTag(this.builder.build());
     }
 
     /**

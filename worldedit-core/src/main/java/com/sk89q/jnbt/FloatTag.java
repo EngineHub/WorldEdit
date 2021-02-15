@@ -41,7 +41,7 @@ public final class FloatTag extends Tag {
         this.innerTag = FloatBinaryTag.of(value);
     }
 
-    FloatTag(FloatBinaryTag adventureTag) {
+    public FloatTag(FloatBinaryTag adventureTag) {
         super();
         this.innerTag = adventureTag;
     }

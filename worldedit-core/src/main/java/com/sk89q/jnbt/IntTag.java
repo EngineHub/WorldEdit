@@ -41,7 +41,7 @@ public final class IntTag extends Tag {
         this.innerTag = IntBinaryTag.of(value);
     }
 
-    IntTag(IntBinaryTag adventureTag) {
+    public IntTag(IntBinaryTag adventureTag) {
         super();
         this.innerTag = adventureTag;
     }

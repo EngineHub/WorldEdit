@@ -63,7 +63,7 @@ public interface NbtValued {
     @Nullable
     default CompoundTag getNbtData() {
         CompoundBinaryTag tag = getNbt();
-        return tag == null ? null : AdventureNBTConverter.fromAdventure(tag);
+        return tag == null ? null : new CompoundTag(tag);
     }
 
     /**
@@ -78,10 +78,12 @@ public interface NbtValued {
     }
 
     /**
-     * Returns whether the block contains NBT data. {@link #getNbt()} ()}
+     * Returns whether the block contains NBT data. {@link #getNbt()}
      * must not return null if this method returns true.
      *
      * @return true if there is NBT data
+     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
+     *          for details
      */
     @NonAbstractForCompatibility(
         delegateName = "hasNbtData",
@@ -104,6 +106,8 @@ public interface NbtValued {
      * not return null.</p>
      *
      * @return compound tag, or null
+     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
+     *          for details
      */
     @NonAbstractForCompatibility(
         delegateName = "getNbtData",
@@ -121,6 +125,8 @@ public interface NbtValued {
      * Set the object's NBT data (tile entity data).
      *
      * @param nbtData NBT data, or null if no data
+     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
+     *          for details
      */
     @NonAbstractForCompatibility(
         delegateName = "setNbtData",
@@ -129,7 +135,7 @@ public interface NbtValued {
     default void setNbt(@Nullable CompoundBinaryTag nbtData) {
         DeprecationUtil.checkDelegatingOverride(getClass());
 
-        setNbtData(nbtData == null ? null : AdventureNBTConverter.fromAdventure(nbtData));
+        setNbtData(nbtData == null ? null : new CompoundTag(nbtData));
     }
 
 }

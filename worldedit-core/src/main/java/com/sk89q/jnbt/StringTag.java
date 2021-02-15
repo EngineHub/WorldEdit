@@ -44,7 +44,7 @@ public final class StringTag extends Tag {
         this.innerTag = StringBinaryTag.of(value);
     }
 
-    StringTag(StringBinaryTag adventureTag) {
+    public StringTag(StringBinaryTag adventureTag) {
         super();
         this.innerTag = adventureTag;
     }
