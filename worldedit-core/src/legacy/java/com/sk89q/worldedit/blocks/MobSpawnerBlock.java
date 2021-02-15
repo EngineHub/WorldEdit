@@ -21,21 +21,27 @@ package com.sk89q.worldedit.blocks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.sk89q.worldedit.util.NbtUtils;
-import com.sk89q.worldedit.util.nbt.BinaryTag;
-import com.sk89q.worldedit.util.nbt.BinaryTagTypes;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
-import com.sk89q.worldedit.util.nbt.IntBinaryTag;
-import com.sk89q.worldedit.util.nbt.ListBinaryTag;
-import com.sk89q.worldedit.util.nbt.ShortBinaryTag;
-import com.sk89q.worldedit.util.nbt.StringBinaryTag;
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.IntTag;
+import com.sk89q.jnbt.ListTag;
+import com.sk89q.jnbt.NBTUtils;
+import com.sk89q.jnbt.ShortTag;
+import com.sk89q.jnbt.StringTag;
+import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * A mob spawner block.
+ *
+ * @deprecated WorldEdit does not handle interpreting NBT,
+ *     deprecated for removal without replacement
  */
+@Deprecated
 public class MobSpawnerBlock extends BaseBlock {
 
     private String mobType;
@@ -44,8 +50,8 @@ public class MobSpawnerBlock extends BaseBlock {
     // advanced mob spawner features
     private short spawnCount = 4;
     private short spawnRange = 4;
-    private CompoundBinaryTag spawnData;
-    private ListBinaryTag spawnPotentials;
+    private CompoundTag spawnData;
+    private ListTag spawnPotentials;
     private short minSpawnDelay = 200;
     private short maxSpawnDelay = 800;
     private short maxNearbyEntities = 6;
@@ -108,7 +114,7 @@ public class MobSpawnerBlock extends BaseBlock {
     }
 
     @Override
-    public boolean hasNbt() {
+    public boolean hasNbtData() {
         return true;
     }
 
@@ -118,52 +124,50 @@ public class MobSpawnerBlock extends BaseBlock {
     }
 
     @Override
-    public CompoundBinaryTag getNbt() {
-        CompoundBinaryTag.Builder values = CompoundBinaryTag.builder();
-        values.put("Delay", ShortBinaryTag.of(delay));
-        values.put("SpawnCount", ShortBinaryTag.of(spawnCount));
-        values.put("SpawnRange", ShortBinaryTag.of(spawnRange));
-        values.put("MinSpawnDelay", ShortBinaryTag.of(minSpawnDelay));
-        values.put("MaxSpawnDelay", ShortBinaryTag.of(maxSpawnDelay));
-        values.put("MaxNearbyEntities", ShortBinaryTag.of(maxNearbyEntities));
-        values.put("RequiredPlayerRange", ShortBinaryTag.of(requiredPlayerRange));
+    public CompoundTag getNbtData() {
+        Map<String, Tag> values = new HashMap<>();
+        values.put("Delay", new ShortTag(delay));
+        values.put("SpawnCount", new ShortTag(spawnCount));
+        values.put("SpawnRange", new ShortTag(spawnRange));
+        values.put("MinSpawnDelay", new ShortTag(minSpawnDelay));
+        values.put("MaxSpawnDelay", new ShortTag(maxSpawnDelay));
+        values.put("MaxNearbyEntities", new ShortTag(maxNearbyEntities));
+        values.put("RequiredPlayerRange", new ShortTag(requiredPlayerRange));
         if (spawnData == null) {
-            values.put("SpawnData", CompoundBinaryTag.builder().put("id", StringBinaryTag.of(mobType)).build());
+            values.put("SpawnData", new CompoundTag(ImmutableMap.of("id", new StringTag(mobType))));
         } else {
-            values.put("SpawnData", spawnData);
+            values.put("SpawnData", new CompoundTag(spawnData.getValue()));
         }
         if (spawnPotentials == null) {
-            values.put("SpawnPotentials", ListBinaryTag.of(
-                BinaryTagTypes.COMPOUND,
-                ImmutableList.of(CompoundBinaryTag.from(ImmutableMap.of(
-                    "Weight", IntBinaryTag.of(1),
-                    "Entity", CompoundBinaryTag.from(ImmutableMap.of("id", StringBinaryTag.of(mobType)))
-                )))
-            ));
+            values.put("SpawnPotentials", new ListTag(CompoundTag.class, ImmutableList.of(
+                    new CompoundTag(ImmutableMap.of("Weight", new IntTag(1), "Entity",
+                            new CompoundTag(ImmutableMap.of("id", new StringTag(mobType))))))));
         } else {
-            values.put("SpawnPotentials", spawnPotentials);
+            values.put("SpawnPotentials", new ListTag(CompoundTag.class, spawnPotentials.getValue()));
         }
 
-        return values.build();
+        return new CompoundTag(values);
     }
 
     @Override
-    public void setNbt(CompoundBinaryTag rootTag) {
+    public void setNbtData(CompoundTag rootTag) {
         if (rootTag == null) {
             return;
         }
 
-        BinaryTag t = rootTag.get("id");
-        if (!(t instanceof StringBinaryTag) || !((StringBinaryTag) t).value().equals(getNbtId())) {
+        Map<String, Tag> values = rootTag.getValue();
+
+        Tag t = values.get("id");
+        if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals(getNbtId())) {
             throw new RuntimeException(String.format("'%s' tile entity expected", getNbtId()));
         }
 
-        CompoundBinaryTag spawnDataTag;
+        CompoundTag spawnDataTag;
         String mobType;
-        ShortBinaryTag delayTag;
+        ShortTag delayTag;
 
         try {
-            spawnDataTag = NbtUtils.getChildTag(rootTag, "SpawnData", CompoundBinaryTag.class);
+            spawnDataTag = NBTUtils.getChildTag(values, "SpawnData", CompoundTag.class);
             mobType = spawnDataTag.getString("id");
             if (mobType.equals("")) {
                 throw new InvalidFormatException("No spawn id.");
@@ -174,68 +178,68 @@ public class MobSpawnerBlock extends BaseBlock {
             throw new RuntimeException("Invalid mob spawner data: no SpawnData and/or no Delay");
         }
         try {
-            delayTag = NbtUtils.getChildTag(rootTag, "Delay", ShortBinaryTag.class);
-            this.delay = delayTag.value();
+            delayTag = NBTUtils.getChildTag(values, "Delay", ShortTag.class);
+            this.delay = delayTag.getValue();
         } catch (InvalidFormatException ignored) {
             this.delay = -1;
         }
 
-        ShortBinaryTag spawnCountTag = null;
-        ShortBinaryTag spawnRangeTag = null;
-        ShortBinaryTag minSpawnDelayTag = null;
-        ShortBinaryTag maxSpawnDelayTag = null;
-        ShortBinaryTag maxNearbyEntitiesTag = null;
-        ShortBinaryTag requiredPlayerRangeTag = null;
-        ListBinaryTag spawnPotentialsTag = null;
+        ShortTag spawnCountTag = null;
+        ShortTag spawnRangeTag = null;
+        ShortTag minSpawnDelayTag = null;
+        ShortTag maxSpawnDelayTag = null;
+        ShortTag maxNearbyEntitiesTag = null;
+        ShortTag requiredPlayerRangeTag = null;
+        ListTag spawnPotentialsTag = null;
         try {
-            spawnCountTag = NbtUtils.getChildTag(rootTag, "SpawnCount", ShortBinaryTag.class);
+            spawnCountTag = NBTUtils.getChildTag(values, "SpawnCount", ShortTag.class);
         } catch (InvalidFormatException ignored) {
         }
         try {
-            spawnRangeTag = NbtUtils.getChildTag(rootTag, "SpawnRange", ShortBinaryTag.class);
+            spawnRangeTag = NBTUtils.getChildTag(values, "SpawnRange", ShortTag.class);
         } catch (InvalidFormatException ignored) {
         }
         try {
-            minSpawnDelayTag = NbtUtils.getChildTag(rootTag, "MinSpawnDelay", ShortBinaryTag.class);
+            minSpawnDelayTag = NBTUtils.getChildTag(values, "MinSpawnDelay", ShortTag.class);
         } catch (InvalidFormatException ignored) {
         }
         try {
-            maxSpawnDelayTag = NbtUtils.getChildTag(rootTag, "MaxSpawnDelay", ShortBinaryTag.class);
+            maxSpawnDelayTag = NBTUtils.getChildTag(values, "MaxSpawnDelay", ShortTag.class);
         } catch (InvalidFormatException ignored) {
         }
         try {
-            maxNearbyEntitiesTag = NbtUtils.getChildTag(rootTag, "MaxNearbyEntities", ShortBinaryTag.class);
+            maxNearbyEntitiesTag = NBTUtils.getChildTag(values, "MaxNearbyEntities", ShortTag.class);
         } catch (InvalidFormatException ignored) {
         }
         try {
-            requiredPlayerRangeTag = NbtUtils.getChildTag(rootTag, "RequiredPlayerRange", ShortBinaryTag.class);
+            requiredPlayerRangeTag = NBTUtils.getChildTag(values, "RequiredPlayerRange", ShortTag.class);
         } catch (InvalidFormatException ignored) {
         }
         try {
-            spawnPotentialsTag = NbtUtils.getChildTag(rootTag, "SpawnPotentials", ListBinaryTag.class);
+            spawnPotentialsTag = NBTUtils.getChildTag(values, "SpawnPotentials", ListTag.class);
         } catch (InvalidFormatException ignored) {
         }
 
         if (spawnCountTag != null) {
-            this.spawnCount = spawnCountTag.value();
+            this.spawnCount = spawnCountTag.getValue();
         }
         if (spawnRangeTag != null) {
-            this.spawnRange = spawnRangeTag.value();
+            this.spawnRange = spawnRangeTag.getValue();
         }
         if (minSpawnDelayTag != null) {
-            this.minSpawnDelay = minSpawnDelayTag.value();
+            this.minSpawnDelay = minSpawnDelayTag.getValue();
         }
         if (maxSpawnDelayTag != null) {
-            this.maxSpawnDelay = maxSpawnDelayTag.value();
+            this.maxSpawnDelay = maxSpawnDelayTag.getValue();
         }
         if (maxNearbyEntitiesTag != null) {
-            this.maxNearbyEntities = maxNearbyEntitiesTag.value();
+            this.maxNearbyEntities = maxNearbyEntitiesTag.getValue();
         }
         if (requiredPlayerRangeTag != null) {
-            this.requiredPlayerRange = requiredPlayerRangeTag.value();
+            this.requiredPlayerRange = requiredPlayerRangeTag.getValue();
         }
         if (spawnPotentialsTag != null) {
-            this.spawnPotentials = spawnPotentialsTag;
+            this.spawnPotentials = new ListTag(CompoundTag.class, spawnPotentialsTag.getValue());
         }
     }
 
