@@ -30,7 +30,7 @@ import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Direction.Flag;
 import com.sk89q.worldedit.util.nbt.BinaryTag;
 import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
-import com.sk89q.worldedit.util.nbt.IntBinaryTag;
+import com.sk89q.worldedit.util.nbt.NumberBinaryTag;
 import com.sk89q.worldedit.world.block.BaseBlock;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -93,8 +93,8 @@ public class ExtentBlockCopy implements RegionFunction {
         if (tag != null) {
             // Handle blocks which store their rotation in NBT
             BinaryTag rotTag = tag.get("Rot");
-            if (rotTag instanceof IntBinaryTag) {
-                int rot = ((IntBinaryTag) rotTag).value();
+            if (rotTag instanceof NumberBinaryTag) {
+                int rot = ((NumberBinaryTag) rotTag).intValue();
 
                 Direction direction = MCDirections.fromRotation(rot);
 
