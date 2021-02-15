@@ -30,6 +30,7 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.util.HandSide;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
@@ -132,7 +133,7 @@ public class DefaultItemParser extends InputParser<BaseItem> {
                 }
             }
 
-            item = new BaseItem(itemType, itemNbtData);
+            item = new BaseItem(itemType, itemNbtData == null ? null : LazyReference.computed(itemNbtData));
         }
 
         return item;

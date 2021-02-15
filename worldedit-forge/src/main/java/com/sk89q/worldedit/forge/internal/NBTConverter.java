@@ -211,7 +211,7 @@ public final class NBTConverter {
 
     public static ListBinaryTag fromNative(ListNBT other) {
         other = other.copy();
-        ListBinaryTag.Builder list = ListBinaryTag.builder();
+        ListBinaryTag.Builder<BinaryTag> list = ListBinaryTag.builder();
         int tags = other.size();
         for (int i = 0; i < tags; i++) {
             BinaryTag child = fromNative(other.remove(0));

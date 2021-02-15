@@ -30,8 +30,7 @@ import com.sk89q.worldedit.registry.state.EnumProperty;
 import com.sk89q.worldedit.registry.state.IntegerProperty;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
-import com.sk89q.worldedit.util.nbt.BinaryTag;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.biome.BiomeTypes;
@@ -45,6 +44,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.util.IStringSerializable;
@@ -233,18 +233,23 @@ public final class ForgeAdapter {
     }
 
     public static BaseItemStack adapt(ItemStack itemStack) {
-        CompoundBinaryTag tag = NBTConverter.fromNative(itemStack.serializeNBT());
+        CompoundNBT tag = itemStack.serializeNBT();
         if (tag.keySet().isEmpty()) {
             tag = null;
         } else {
-            final BinaryTag tagTag = tag.get("tag");
-            if (tagTag instanceof CompoundBinaryTag) {
-                tag = ((CompoundBinaryTag) tagTag);
+            final INBT tagTag = tag.get("tag");
+            if (tagTag instanceof CompoundNBT) {
+                tag = ((CompoundNBT) tagTag);
             } else {
                 tag = null;
             }
         }
-        return new BaseItemStack(adapt(itemStack.getItem()), tag, itemStack.getCount());
+        CompoundNBT finalTag = tag;
+        return new BaseItemStack(
+            adapt(itemStack.getItem()),
+            finalTag == null ? null : LazyReference.from(() -> NBTConverter.fromNative(finalTag)),
+            itemStack.getCount()
+        );
     }
 
     /**

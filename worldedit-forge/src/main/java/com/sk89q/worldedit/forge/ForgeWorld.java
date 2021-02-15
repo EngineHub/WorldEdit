@@ -253,7 +253,7 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public boolean useItem(BlockVector3 position, BaseItem item, Direction face) {
-        ItemStack stack = ForgeAdapter.adapt(new BaseItemStack(item.getType(), item.getNbt(), 1));
+        ItemStack stack = ForgeAdapter.adapt(new BaseItemStack(item.getType(), item.getNbtReference(), 1));
         ServerWorld world = (ServerWorld) getWorld();
         final WorldEditFakePlayer fakePlayer;
         try {

@@ -26,6 +26,7 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.entity.EntityTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -53,7 +54,7 @@ class FabricEntity implements Entity {
             Identifier id = Registry.ENTITY_TYPE.getId(entity.getType());
             CompoundTag tag = new CompoundTag();
             entity.toTag(tag);
-            return new BaseEntity(EntityTypes.get(id.toString()), NBTConverter.fromNative(tag));
+            return new BaseEntity(EntityTypes.get(id.toString()), LazyReference.from(() -> NBTConverter.fromNative(tag)));
         } else {
             return null;
         }

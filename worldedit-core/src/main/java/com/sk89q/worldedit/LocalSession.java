@@ -48,6 +48,7 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.util.SideEffectSet;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.World;
@@ -802,14 +803,16 @@ public class LocalSession {
         }
 
         BaseBlock block = ServerCUIHandler.createStructureBlock(player);
-        if (block != null && block.hasNbt()) {
-            // If it's null, we don't need to do anything. The old was already removed.
-            CompoundBinaryTag tags = block.getNbt();
+        if (block != null) {
+            CompoundBinaryTag tags = Objects.requireNonNull(
+                block.getNbt(), "createStructureBlock should return nbt"
+            );
             BlockVector3 tempCuiTemporaryBlock = BlockVector3.at(
                 tags.getInt("x"),
                 tags.getInt("y"),
                 tags.getInt("z")
             );
+            // If it's null, we don't need to do anything. The old was already removed.
             if (cuiTemporaryBlock != null && !tempCuiTemporaryBlock.equals(cuiTemporaryBlock)) {
                 // Update the existing block if it's the same location
                 player.sendFakeBlock(cuiTemporaryBlock, null);

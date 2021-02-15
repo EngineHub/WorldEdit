@@ -22,14 +22,12 @@ package com.sk89q.worldedit.world.chunk;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
-import com.sk89q.worldedit.util.NbtUtils;
 import com.sk89q.worldedit.util.nbt.BinaryTag;
 import com.sk89q.worldedit.util.nbt.BinaryTagTypes;
-import com.sk89q.worldedit.util.nbt.ByteBinaryTag;
 import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.util.nbt.IntBinaryTag;
 import com.sk89q.worldedit.util.nbt.ListBinaryTag;
-import com.sk89q.worldedit.util.nbt.LongArrayBinaryTag;
+import com.sk89q.worldedit.util.nbt.NbtUtils;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -75,12 +73,12 @@ public class AnvilChunk13 implements Chunk {
     public AnvilChunk13(CompoundBinaryTag tag) throws DataException {
         rootTag = tag;
 
-        rootX = NbtUtils.getChildTag(rootTag, "xPos", IntBinaryTag.class).value();
-        rootZ = NbtUtils.getChildTag(rootTag, "zPos", IntBinaryTag.class).value();
+        rootX = NbtUtils.getChildTag(rootTag, "xPos", BinaryTagTypes.INT).value();
+        rootZ = NbtUtils.getChildTag(rootTag, "zPos", BinaryTagTypes.INT).value();
 
         blocks = new BlockState[16][];
 
-        ListBinaryTag sections = NbtUtils.getChildTag(rootTag, "Sections", ListBinaryTag.class);
+        ListBinaryTag sections = NbtUtils.getChildTag(rootTag, "Sections", BinaryTagTypes.LIST);
 
         for (BinaryTag rawSectionTag : sections) {
             if (!(rawSectionTag instanceof CompoundBinaryTag)) {
@@ -92,7 +90,7 @@ public class AnvilChunk13 implements Chunk {
                 continue; // Empty section.
             }
 
-            int y = NbtUtils.getChildTag(sectionTag, "Y", ByteBinaryTag.class).value();
+            int y = NbtUtils.getChildTag(sectionTag, "Y", BinaryTagTypes.BYTE).value();
             if (y < 0 || y >= 16) {
                 continue;
             }
@@ -112,7 +110,7 @@ public class AnvilChunk13 implements Chunk {
                 }
                 BlockState blockState = type.getDefaultState();
                 if (paletteEntry.get("Properties") != null) {
-                    CompoundBinaryTag properties = NbtUtils.getChildTag(paletteEntry, "Properties", CompoundBinaryTag.class);
+                    CompoundBinaryTag properties = NbtUtils.getChildTag(paletteEntry, "Properties", BinaryTagTypes.COMPOUND);
                     for (Property<?> property : blockState.getStates().keySet()) {
                         if (properties.get(property.getName()) != null) {
                             String value = properties.getString(property.getName());
@@ -128,7 +126,7 @@ public class AnvilChunk13 implements Chunk {
             }
 
             // parse block states
-            long[] blockStatesSerialized = NbtUtils.getChildTag(sectionTag, "BlockStates", LongArrayBinaryTag.class).value();
+            long[] blockStatesSerialized = NbtUtils.getChildTag(sectionTag, "BlockStates", BinaryTagTypes.LONG_ARRAY).value();
 
             BlockState[] chunkSectionBlocks = new BlockState[16 * 16 * 16];
             blocks[y] = chunkSectionBlocks;
@@ -183,7 +181,7 @@ public class AnvilChunk13 implements Chunk {
         if (rootTag.get("TileEntities") == null) {
             return;
         }
-        ListBinaryTag tags = NbtUtils.getChildTag(rootTag, "TileEntities", ListBinaryTag.class);
+        ListBinaryTag tags = NbtUtils.getChildTag(rootTag, "TileEntities", BinaryTagTypes.LIST);
 
         for (BinaryTag tag : tags) {
             if (!(tag instanceof CompoundBinaryTag)) {

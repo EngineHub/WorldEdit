@@ -32,6 +32,17 @@ public class LazyReference<T> {
         return new LazyReference<>(valueComputation);
     }
 
+    /**
+     * Pre-computed reference, for setting a lazy reference field with a known value.
+     *
+     * @param value the value of the reference
+     * @param <T> the type of the value
+     * @return the new reference
+     */
+    public static <T> LazyReference<T> computed(T value) {
+        return new LazyReference<>(value);
+    }
+
     // Memory saving technique: hold the computation info in the same reference field that we'll
     // put the value into, so the memory possibly retained by those parts is GC'able as soon as
     // it's no longer needed.
@@ -49,6 +60,10 @@ public class LazyReference<T> {
 
     private LazyReference(Supplier<T> valueComputation) {
         this.value = new RefInfo<>(valueComputation);
+    }
+
+    private LazyReference(T value) {
+        this.value = value;
     }
 
     // casts are safe, value is either RefInfo or T

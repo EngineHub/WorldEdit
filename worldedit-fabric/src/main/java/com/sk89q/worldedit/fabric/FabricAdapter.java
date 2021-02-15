@@ -30,6 +30,7 @@ import com.sk89q.worldedit.registry.state.EnumProperty;
 import com.sk89q.worldedit.registry.state.IntegerProperty;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.nbt.BinaryTag;
 import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.World;
@@ -43,6 +44,8 @@ import com.sk89q.worldedit.world.item.ItemTypes;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager;
@@ -237,18 +240,22 @@ public final class FabricAdapter {
     }
 
     public static BaseItemStack adapt(ItemStack itemStack) {
-        CompoundBinaryTag tag = NBTConverter.fromNative(itemStack.toTag(new net.minecraft.nbt.CompoundTag()));
-        if (tag.keySet().isEmpty()) {
+        CompoundTag tag = itemStack.toTag(new CompoundTag());
+        if (tag.isEmpty()) {
             tag = null;
         } else {
-            final BinaryTag tagTag = tag.get("tag");
-            if (tagTag instanceof CompoundBinaryTag) {
-                tag = ((CompoundBinaryTag) tagTag);
+            final Tag tagTag = tag.get("tag");
+            if (tagTag instanceof CompoundTag) {
+                tag = ((CompoundTag) tagTag);
             } else {
                 tag = null;
             }
         }
-        return new BaseItemStack(adapt(itemStack.getItem()), tag, itemStack.getCount());
+        CompoundTag finalTag = tag;
+        return new BaseItemStack(
+            adapt(itemStack.getItem()),
+            finalTag == null ? null : LazyReference.from(() -> NBTConverter.fromNative(finalTag)),
+            itemStack.getCount());
     }
 
     /**
