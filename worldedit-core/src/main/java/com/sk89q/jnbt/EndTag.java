@@ -19,9 +19,14 @@
 
 package com.sk89q.jnbt;
 
+import com.sk89q.worldedit.util.nbt.EndBinaryTag;
+
 /**
  * The {@code TAG_End} tag.
+ *
+ * @deprecated Use {@link com.sk89q.worldedit.util.nbt.EndBinaryTag}.
  */
+@Deprecated
 public final class EndTag extends Tag {
 
     @Override
@@ -30,8 +35,7 @@ public final class EndTag extends Tag {
     }
 
     @Override
-    public String toString() {
-        return "TAG_End";
+    public EndBinaryTag asBinaryTag() {
+        return EndBinaryTag.get();
     }
-
 }

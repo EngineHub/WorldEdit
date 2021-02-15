@@ -19,12 +19,12 @@
 
 package com.sk89q.worldedit.forge.internal;
 
-import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.forge.ForgeAdapter;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
@@ -98,7 +98,7 @@ public class ForgeWorldNativeAccess implements WorldNativeAccess<Chunk, BlockSta
     }
 
     @Override
-    public boolean updateTileEntity(BlockPos position, CompoundTag tag) {
+    public boolean updateTileEntity(BlockPos position, CompoundBinaryTag tag) {
         CompoundNBT nativeTag = NBTConverter.toNative(tag);
         return TileEntityUtils.setTileEntity(getWorld(), position, nativeTag);
     }

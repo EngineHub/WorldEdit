@@ -20,9 +20,14 @@
 package com.sk89q.worldedit.blocks;
 
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
+import com.sk89q.worldedit.util.nbt.TagStringIO;
 import com.sk89q.worldedit.world.NbtValued;
 import com.sk89q.worldedit.world.item.ItemType;
 
+import java.io.IOException;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -37,7 +42,7 @@ public class BaseItem implements NbtValued {
 
     private ItemType itemType;
     @Nullable
-    private CompoundTag nbtData;
+    private LazyReference<CompoundBinaryTag> nbtData;
 
     /**
      * Construct the object.
@@ -53,9 +58,20 @@ public class BaseItem implements NbtValued {
      * Construct the object.
      *
      * @param itemType Type of the item
+     * @param nbtData NBT Compound tag
+     */
+    @Deprecated
+    public BaseItem(ItemType itemType, @Nullable CompoundTag nbtData) {
+        this(itemType, nbtData == null ? null : LazyReference.from(nbtData::asBinaryTag));
+    }
+
+    /**
+     * Construct the object.
+     *
+     * @param itemType Type of the item
      * @param tag NBT Compound tag
      */
-    public BaseItem(ItemType itemType, @Nullable CompoundTag tag) {
+    public BaseItem(ItemType itemType, @Nullable LazyReference<CompoundBinaryTag> tag) {
         checkNotNull(itemType);
         this.itemType = itemType;
         this.nbtData = tag;
@@ -79,19 +95,29 @@ public class BaseItem implements NbtValued {
         this.itemType = itemType;
     }
 
-    @Override
-    public boolean hasNbtData() {
-        return this.nbtData != null;
-    }
-
     @Nullable
     @Override
-    public CompoundTag getNbtData() {
+    public LazyReference<CompoundBinaryTag> getNbtReference() {
         return this.nbtData;
     }
 
     @Override
-    public void setNbtData(@Nullable CompoundTag nbtData) {
+    public void setNbtReference(@Nullable LazyReference<CompoundBinaryTag> nbtData) {
         this.nbtData = nbtData;
+    }
+
+    @Override
+    public String toString() {
+        String nbtString = "";
+        LazyReference<CompoundBinaryTag> nbtData = this.nbtData;
+        if (nbtData != null) {
+            try {
+                nbtString = TagStringIO.get().asString(nbtData.getValue());
+            } catch (IOException e) {
+                WorldEdit.logger.error("Failed to serialize NBT of Item", e);
+            }
+        }
+
+        return getType().getId() + nbtString;
     }
 }

@@ -19,14 +19,13 @@
 
 package com.sk89q.jnbt;
 
-import java.nio.charset.Charset;
-
 /**
  * A class which holds constant values.
+ *
+ * @deprecated JNBT is being removed for adventure-nbt in WorldEdit 8.
  */
+@Deprecated
 public final class NBTConstants {
-
-    public static final Charset CHARSET = Charset.forName("UTF-8");
 
     public static final int TYPE_END = 0;
     public static final int TYPE_BYTE = 1;

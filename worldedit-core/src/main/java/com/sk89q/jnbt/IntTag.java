@@ -19,12 +19,17 @@
 
 package com.sk89q.jnbt;
 
+import com.sk89q.worldedit.util.nbt.IntBinaryTag;
+
 /**
  * The {@code TAG_Int} tag.
+ *
+ * @deprecated Use {@link IntBinaryTag}.
  */
+@Deprecated
 public final class IntTag extends Tag {
 
-    private final int value;
+    private final IntBinaryTag innerTag;
 
     /**
      * Creates the tag with an empty name.
@@ -33,17 +38,22 @@ public final class IntTag extends Tag {
      */
     public IntTag(int value) {
         super();
-        this.value = value;
+        this.innerTag = IntBinaryTag.of(value);
+    }
+
+    public IntTag(IntBinaryTag adventureTag) {
+        super();
+        this.innerTag = adventureTag;
+    }
+
+    @Override
+    public IntBinaryTag asBinaryTag() {
+        return this.innerTag;
     }
 
     @Override
     public Integer getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return "TAG_Int(" + value + ")";
+        return innerTag.value();
     }
 
 }
