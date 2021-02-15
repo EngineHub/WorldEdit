@@ -28,11 +28,7 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.concurrency.LazyReference;
-import com.sk89q.worldedit.util.nbt.ByteBinaryTag;
 import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
-import com.sk89q.worldedit.util.nbt.IntBinaryTag;
-import com.sk89q.worldedit.util.nbt.StringBinaryTag;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
@@ -135,24 +131,24 @@ public class ServerCUIHandler {
             return null;
         }
 
-        structureTag.put("name", StringBinaryTag.of("worldedit:" + player.getName()));
-        structureTag.put("author", StringBinaryTag.of(player.getName()));
-        structureTag.put("metadata", StringBinaryTag.of(""));
-        structureTag.put("x", IntBinaryTag.of(x));
-        structureTag.put("y", IntBinaryTag.of(y));
-        structureTag.put("z", IntBinaryTag.of(z));
-        structureTag.put("posX", IntBinaryTag.of(posX));
-        structureTag.put("posY", IntBinaryTag.of(posY));
-        structureTag.put("posZ", IntBinaryTag.of(posZ));
-        structureTag.put("sizeX", IntBinaryTag.of(width));
-        structureTag.put("sizeY", IntBinaryTag.of(height));
-        structureTag.put("sizeZ", IntBinaryTag.of(length));
-        structureTag.put("rotation", StringBinaryTag.of("NONE"));
-        structureTag.put("mirror", StringBinaryTag.of("NONE"));
-        structureTag.put("mode", StringBinaryTag.of("SAVE"));
-        structureTag.put("ignoreEntities", ByteBinaryTag.of((byte) 1));
-        structureTag.put("showboundingbox", ByteBinaryTag.of((byte) 1));
-        structureTag.put("id", StringBinaryTag.of(BlockTypes.STRUCTURE_BLOCK.getId()));
+        structureTag.putString("name", "worldedit:" + player.getName());
+        structureTag.putString("author", player.getName());
+        structureTag.putString("metadata", "");
+        structureTag.putInt("x", x);
+        structureTag.putInt("y", y);
+        structureTag.putInt("z", z);
+        structureTag.putInt("posX", posX);
+        structureTag.putInt("posY", posY);
+        structureTag.putInt("posZ", posZ);
+        structureTag.putInt("sizeX", width);
+        structureTag.putInt("sizeY", height);
+        structureTag.putInt("sizeZ", length);
+        structureTag.putString("rotation", "NONE");
+        structureTag.putString("mirror", "NONE");
+        structureTag.putString("mode", "SAVE");
+        structureTag.putByte("ignoreEntities", (byte) 1);
+        structureTag.putByte("showboundingbox", (byte) 1);
+        structureTag.putString("id", BlockTypes.STRUCTURE_BLOCK.getId());
 
         return BlockTypes.STRUCTURE_BLOCK.getDefaultState().toBaseBlock(structureTag.build());
     }
