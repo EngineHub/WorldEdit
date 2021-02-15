@@ -100,7 +100,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
 
     @Override
     public <V> BaseBlock with(Property<V> property, V value) {
-        return this.blockState.with(property, value).toBaseBlock(getNbt());
+        return this.blockState.with(property, value).toBaseBlock(getNbtReference());
     }
 
     /**

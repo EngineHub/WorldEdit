@@ -51,6 +51,7 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.io.file.SafeFiles;
 import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.AbstractWorld;
@@ -426,7 +427,7 @@ public class FabricWorld extends AbstractWorld {
             if (blockEntity != null) {
                 net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
                 blockEntity.toTag(tag);
-                state = state.toBaseBlock(NBTConverter.fromNative(tag));
+                state = state.toBaseBlock(LazyReference.from(() -> NBTConverter.fromNative(tag)));
             }
             extent.setBlock(vec, state.toBaseBlock());
 
@@ -602,7 +603,7 @@ public class FabricWorld extends AbstractWorld {
         if (tile != null) {
             net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
             tile.toTag(tag);
-            return getBlock(position).toBaseBlock(NBTConverter.fromNative(tag));
+            return getBlock(position).toBaseBlock(LazyReference.from(() -> NBTConverter.fromNative(tag)));
         } else {
             return getBlock(position).toBaseBlock();
         }
