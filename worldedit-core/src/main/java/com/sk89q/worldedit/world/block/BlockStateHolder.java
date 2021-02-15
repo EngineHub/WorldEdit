@@ -19,13 +19,13 @@
 
 package com.sk89q.worldedit.world.block;
 
-import com.sk89q.jnbt.AdventureNBTConverter;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.util.DeprecationUtil;
 import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 
 import java.util.Locale;
@@ -92,11 +92,11 @@ public interface BlockStateHolder<B extends BlockStateHolder<B>> extends Pattern
      *
      * @param compoundTag The NBT Data to apply
      * @return The BaseBlock
-     * @deprecated Use {@link BlockStateHolder#toBaseBlock(CompoundBinaryTag)}.
+     * @deprecated Use {@link BlockStateHolder#toBaseBlock(LazyReference)}.
      */
     @Deprecated
     default BaseBlock toBaseBlock(CompoundTag compoundTag) {
-        return toBaseBlock(compoundTag == null ? null : compoundTag.asBinaryTag());
+        return toBaseBlock(compoundTag == null ? null : LazyReference.from(compoundTag::asBinaryTag));
     }
 
     /**
@@ -111,10 +111,22 @@ public interface BlockStateHolder<B extends BlockStateHolder<B>> extends Pattern
         delegateName = "toBaseBlock",
         delegateParams = { CompoundTag.class }
     )
+    default BaseBlock toBaseBlock(LazyReference<CompoundBinaryTag> compoundTag) {
+        DeprecationUtil.checkDelegatingOverride(getClass());
+
+        return toBaseBlock(compoundTag == null ? null : new CompoundTag(compoundTag.getValue()));
+    }
+
+    /**
+     * Gets a {@link BaseBlock} from this BlockStateHolder.
+     *
+     * @param compoundTag The NBT Data to apply
+     * @return The BaseBlock
+     */
     default BaseBlock toBaseBlock(CompoundBinaryTag compoundTag) {
         DeprecationUtil.checkDelegatingOverride(getClass());
 
-        return toBaseBlock(compoundTag == null ? null : new CompoundTag(compoundTag));
+        return toBaseBlock(compoundTag == null ? null : LazyReference.computed(compoundTag));
     }
 
     @Override

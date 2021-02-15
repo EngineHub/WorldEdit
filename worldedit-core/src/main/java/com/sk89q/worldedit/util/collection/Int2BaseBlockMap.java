@@ -50,7 +50,7 @@ class Int2BaseBlockMap extends AbstractInt2ObjectMap<BaseBlock> {
      * @return the internal ID, or {@link BlockStateIdAccess#invalidId()} if not useful
      */
     private static int optimizedInternalId(BaseBlock block) {
-        if (block.hasNbt()) {
+        if (block.getNbtReference() != null) {
             return BlockStateIdAccess.invalidId();
         }
         return BlockStateIdAccess.getBlockStateId(block.toImmutableState());

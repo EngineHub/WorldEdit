@@ -21,7 +21,6 @@ package com.sk89q.worldedit.sponge;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
@@ -168,9 +167,12 @@ public abstract class SpongeWorld extends AbstractWorld {
         snapshot.restore(true, notifyAndLight ? BlockChangeFlags.ALL : BlockChangeFlags.NONE);
 
         // Create the TileEntity
-        if (block instanceof BaseBlock && ((BaseBlock) block).hasNbt()) {
-            // Kill the old TileEntity
-            world.getTileEntity(pos).ifPresent(tileEntity -> applyTileEntityData(tileEntity, (BaseBlock) block));
+        if (block instanceof BaseBlock) {
+            BaseBlock baseBlock = (BaseBlock) block;
+            if (baseBlock.getNbtReference() != null) {
+                // Kill the old TileEntity
+                world.getTileEntity(pos).ifPresent(tileEntity -> applyTileEntityData(tileEntity, baseBlock));
+            }
         }
 
         return true;
@@ -301,7 +303,7 @@ public abstract class SpongeWorld extends AbstractWorld {
         Vector3d pos = new Vector3d(location.getX(), location.getY(), location.getZ());
 
         org.spongepowered.api.entity.Entity newEnt = world.createEntity(entityType, pos);
-        if (entity.hasNbt()) {
+        if (entity.getNbtReference() != null) {
             applyEntityData(newEnt, entity);
         }
 

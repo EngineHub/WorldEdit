@@ -22,12 +22,12 @@ package com.sk89q.worldedit.world.chunk;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.util.NbtUtils;
 import com.sk89q.worldedit.util.nbt.BinaryTag;
-import com.sk89q.worldedit.util.nbt.ByteArrayBinaryTag;
+import com.sk89q.worldedit.util.nbt.BinaryTagTypes;
 import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.util.nbt.IntBinaryTag;
 import com.sk89q.worldedit.util.nbt.ListBinaryTag;
+import com.sk89q.worldedit.util.nbt.NbtUtils;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -73,10 +73,10 @@ public class OldChunk implements Chunk {
     public OldChunk(CompoundBinaryTag tag) throws DataException {
         rootTag = tag;
 
-        blocks = NbtUtils.getChildTag(rootTag, "Blocks", ByteArrayBinaryTag.class).value();
-        data = NbtUtils.getChildTag(rootTag, "Data", ByteArrayBinaryTag.class).value();
-        rootX = NbtUtils.getChildTag(rootTag, "xPos", IntBinaryTag.class).value();
-        rootZ = NbtUtils.getChildTag(rootTag, "zPos", IntBinaryTag.class).value();
+        blocks = NbtUtils.getChildTag(rootTag, "Blocks", BinaryTagTypes.BYTE_ARRAY).value();
+        data = NbtUtils.getChildTag(rootTag, "Data", BinaryTagTypes.BYTE_ARRAY).value();
+        rootX = NbtUtils.getChildTag(rootTag, "xPos", BinaryTagTypes.INT).value();
+        rootZ = NbtUtils.getChildTag(rootTag, "zPos", BinaryTagTypes.INT).value();
 
         int size = 16 * 16 * 128;
         if (blocks.length != size) {
@@ -96,7 +96,7 @@ public class OldChunk implements Chunk {
      * @throws DataException if there is an error getting the chunk data
      */
     private void populateTileEntities() throws DataException {
-        ListBinaryTag tags = NbtUtils.getChildTag(rootTag, "TileEntities", ListBinaryTag.class);
+        ListBinaryTag tags = NbtUtils.getChildTag(rootTag, "TileEntities", BinaryTagTypes.LIST);
 
         tileEntities = new HashMap<>();
 

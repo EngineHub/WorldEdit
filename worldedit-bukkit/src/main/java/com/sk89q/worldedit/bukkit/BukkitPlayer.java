@@ -39,6 +39,7 @@ import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -295,11 +296,12 @@ public class BukkitPlayer extends AbstractPlayerActor {
             player.sendBlockChange(loc, player.getWorld().getBlockAt(loc).getBlockData());
         } else {
             player.sendBlockChange(loc, BukkitAdapter.adapt(block));
-            if (block instanceof BaseBlock && ((BaseBlock) block).hasNbt()) {
-                BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
-                if (adapter != null) {
-                    if (block.getBlockType() == BlockTypes.STRUCTURE_BLOCK) {
-                        adapter.sendFakeNBT(player, pos, ((BaseBlock) block).getNbt());
+            BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+            if (adapter != null) {
+                if (block.getBlockType() == BlockTypes.STRUCTURE_BLOCK && block instanceof BaseBlock) {
+                    CompoundBinaryTag nbt = ((BaseBlock) block).getNbt();
+                    if (nbt != null) {
+                        adapter.sendFakeNBT(player, pos, nbt);
                         adapter.sendFakeOP(player);
                     }
                 }
