@@ -41,7 +41,7 @@ public final class ByteTag extends Tag {
         this.innerTag = ByteBinaryTag.of(value);
     }
 
-    ByteTag(ByteBinaryTag adventureTag) {
+    public ByteTag(ByteBinaryTag adventureTag) {
         super();
         this.innerTag = adventureTag;
     }

@@ -41,7 +41,7 @@ public final class ShortTag extends Tag {
         this.innerTag = ShortBinaryTag.of(value);
     }
 
-    ShortTag(ShortBinaryTag adventureTag) {
+    public ShortTag(ShortBinaryTag adventureTag) {
         super();
         this.innerTag = adventureTag;
     }

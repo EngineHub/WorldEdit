@@ -104,6 +104,8 @@ public interface BlockStateHolder<B extends BlockStateHolder<B>> extends Pattern
      *
      * @param compoundTag The NBT Data to apply
      * @return The BaseBlock
+     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
+     *          for details
      */
     @NonAbstractForCompatibility(
         delegateName = "toBaseBlock",
@@ -112,7 +114,7 @@ public interface BlockStateHolder<B extends BlockStateHolder<B>> extends Pattern
     default BaseBlock toBaseBlock(CompoundBinaryTag compoundTag) {
         DeprecationUtil.checkDelegatingOverride(getClass());
 
-        return toBaseBlock(compoundTag == null ? null : AdventureNBTConverter.fromAdventure(compoundTag));
+        return toBaseBlock(compoundTag == null ? null : new CompoundTag(compoundTag));
     }
 
     @Override

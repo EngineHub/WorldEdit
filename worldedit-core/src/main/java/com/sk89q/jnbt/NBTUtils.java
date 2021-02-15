@@ -87,36 +87,7 @@ public final class NBTUtils {
      * @throws IllegalArgumentException if the tag class is invalid.
      */
     public static int getTypeCode(Class<? extends Tag> clazz) {
-        if (clazz.equals(ByteArrayTag.class)) {
-            return NBTConstants.TYPE_BYTE_ARRAY;
-        } else if (clazz.equals(ByteTag.class)) {
-            return NBTConstants.TYPE_BYTE;
-        } else if (clazz.equals(CompoundTag.class)) {
-            return NBTConstants.TYPE_COMPOUND;
-        } else if (clazz.equals(DoubleTag.class)) {
-            return NBTConstants.TYPE_DOUBLE;
-        } else if (clazz.equals(EndTag.class)) {
-            return NBTConstants.TYPE_END;
-        } else if (clazz.equals(FloatTag.class)) {
-            return NBTConstants.TYPE_FLOAT;
-        } else if (clazz.equals(IntTag.class)) {
-            return NBTConstants.TYPE_INT;
-        } else if (clazz.equals(ListTag.class)) {
-            return NBTConstants.TYPE_LIST;
-        } else if (clazz.equals(LongTag.class)) {
-            return NBTConstants.TYPE_LONG;
-        } else if (clazz.equals(ShortTag.class)) {
-            return NBTConstants.TYPE_SHORT;
-        } else if (clazz.equals(StringTag.class)) {
-            return NBTConstants.TYPE_STRING;
-        } else if (clazz.equals(IntArrayTag.class)) {
-            return NBTConstants.TYPE_INT_ARRAY;
-        } else if (clazz.equals(LongArrayTag.class)) {
-            return NBTConstants.TYPE_LONG_ARRAY;
-        } else {
-            throw new IllegalArgumentException("Invalid tag classs ("
-                    + clazz.getName() + ").");
-        }
+        return AdventureNBTConverter.getAdventureType(clazz).id();
     }
 
     /**

@@ -41,7 +41,7 @@ public final class DoubleTag extends Tag {
         this.innerTag = DoubleBinaryTag.of(value);
     }
 
-    DoubleTag(DoubleBinaryTag adventureTag) {
+    public DoubleTag(DoubleBinaryTag adventureTag) {
         super();
         this.innerTag = adventureTag;
     }
