@@ -19,13 +19,15 @@
 
 package com.sk89q.worldedit.world.block;
 
-import com.google.common.collect.ArrayTable;
-import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.extension.platform.Watchdog;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.registry.state.Property;
 
@@ -78,7 +80,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
     }
 
     static Map<Map<Property<?>, Object>, BlockState> generateStateMap(BlockType blockType) {
-        Map<Map<Property<?>, Object>, BlockState> stateMap = new LinkedHashMap<>();
+        ImmutableMap.Builder<Map<Property<?>, Object>, BlockState> stateMapBuilder = ImmutableMap.builder();
         List<? extends Property<?>> properties = blockType.getProperties();
 
         if (!properties.isEmpty()) {
@@ -98,29 +100,38 @@ public class BlockState implements BlockStateHolder<BlockState> {
                     valueMap.put(property, value);
                     stateMaker.setState(property, value);
                 }
-                stateMap.put(valueMap, stateMaker);
+                stateMapBuilder.put(ImmutableMap.copyOf(valueMap), stateMaker);
             }
         }
 
+        ImmutableMap<Map<Property<?>, Object>, BlockState> stateMap = stateMapBuilder.build();
+
         if (stateMap.isEmpty()) {
             // No properties.
-            stateMap.put(new LinkedHashMap<>(), new BlockState(blockType));
+            stateMap = ImmutableMap.of(ImmutableMap.of(), new BlockState(blockType));
         }
 
         for (BlockState state : stateMap.values()) {
             state.populate(stateMap);
         }
 
+        // Sometimes loading can take a while. This is the perfect spot to let MC know we're working.
+        Watchdog watchdog = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
+            .getWatchdog();
+        if (watchdog != null) {
+            watchdog.tick();
+        }
+
         return stateMap;
     }
 
     private void populate(Map<Map<Property<?>, Object>, BlockState> stateMap) {
-        final Table<Property<?>, Object, BlockState> states = HashBasedTable.create();
+        final ImmutableTable.Builder<Property<?>, Object, BlockState> states = ImmutableTable.builder();
 
         for (final Map.Entry<Property<?>, Object> entry : this.values.entrySet()) {
             final Property<Object> property = (Property<Object>) entry.getKey();
 
-            property.getValues().forEach(value -> {
+            for (Object value : property.getValues()) {
                 if (value != entry.getValue()) {
                     BlockState modifiedState = stateMap.get(this.withValue(property, value));
                     if (modifiedState != null) {
@@ -130,16 +141,22 @@ public class BlockState implements BlockStateHolder<BlockState> {
                         WorldEdit.logger.warn("Found a null state at " + this.withValue(property, value));
                     }
                 }
-            });
+            }
         }
 
-        this.states = states.isEmpty() ? states : ArrayTable.create(states);
+        this.states = states.build();
     }
 
     private <V> Map<Property<?>, Object> withValue(final Property<V> property, final V value) {
-        final Map<Property<?>, Object> values = Maps.newHashMap(this.values);
-        values.put(property, value);
-        return values;
+        final ImmutableMap.Builder<Property<?>, Object> values = ImmutableMap.builder();
+        for (Map.Entry<Property<?>, Object> entry : this.values.entrySet()) {
+            if (entry.getKey().equals(property)) {
+                values.put(entry.getKey(), value);
+            } else {
+                values.put(entry);
+            }
+        }
+        return values.build();
     }
 
     @Override
