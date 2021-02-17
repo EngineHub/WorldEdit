@@ -142,6 +142,7 @@ public final class FabricAdapter {
     }
 
     /**
+     * Adapts property.
      * @deprecated without replacement, use the block adapter methods
      */
     @Deprecated
@@ -150,6 +151,7 @@ public final class FabricAdapter {
     }
 
     /**
+     * Adapts properties.
      * @deprecated without replacement, use the block adapter methods
      */
     @Deprecated

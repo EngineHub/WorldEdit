@@ -131,6 +131,7 @@ public final class ForgeAdapter {
     }
 
     /**
+     * Adapts property.
      * @deprecated without replacement, use the block adapter methods
      */
     @Deprecated
@@ -139,6 +140,7 @@ public final class ForgeAdapter {
     }
 
     /**
+     * Adapts properties.
      * @deprecated without replacement, use the block adapter methods
      */
     @Deprecated
