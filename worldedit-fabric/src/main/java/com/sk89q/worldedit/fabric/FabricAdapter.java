@@ -23,7 +23,9 @@ import com.google.common.collect.ImmutableList;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.fabric.internal.FabricTransmogrifier;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
+import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.registry.state.BooleanProperty;
@@ -45,7 +47,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
@@ -140,28 +141,18 @@ public final class FabricAdapter {
         return new BlockPos(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
     }
 
+    /**
+     * @deprecated without replacement, use the block adapter methods
+     */
+    @Deprecated
     public static Property<?> adaptProperty(net.minecraft.state.property.Property<?> property) {
-        if (property instanceof net.minecraft.state.property.BooleanProperty) {
-            return new BooleanProperty(property.getName(), ImmutableList.copyOf(((net.minecraft.state.property.BooleanProperty) property).getValues()));
-        }
-        if (property instanceof net.minecraft.state.property.IntProperty) {
-            return new IntegerProperty(property.getName(), ImmutableList.copyOf(((net.minecraft.state.property.IntProperty) property).getValues()));
-        }
-        if (property instanceof DirectionProperty) {
-            return new DirectionalProperty(property.getName(), ((DirectionProperty) property).getValues().stream()
-                    .map(FabricAdapter::adaptEnumFacing)
-                    .collect(Collectors.toList()));
-        }
-        if (property instanceof net.minecraft.state.property.EnumProperty) {
-            // Note: do not make x.asString a method reference.
-            // It will cause runtime bootstrap exceptions.
-            return new EnumProperty(property.getName(), ((net.minecraft.state.property.EnumProperty<?>) property).getValues().stream()
-                    .map(x -> x.asString())
-                    .collect(Collectors.toList()));
-        }
-        return new PropertyAdapter<>(property);
+        return FabricTransmogrifier.transmogToWorldEditProperty(property);
     }
 
+    /**
+     * @deprecated without replacement, use the block adapter methods
+     */
+    @Deprecated
     public static Map<Property<?>, Object> adaptProperties(BlockType block, Map<net.minecraft.state.property.Property<?>, Comparable<?>> mcProps) {
         Map<Property<?>, Object> props = new TreeMap<>(Comparator.comparing(Property::getName));
         for (Map.Entry<net.minecraft.state.property.Property<?>, Comparable<?>> prop : mcProps.entrySet()) {
@@ -176,38 +167,21 @@ public final class FabricAdapter {
         return props;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static net.minecraft.block.BlockState applyProperties(StateManager<Block, net.minecraft.block.BlockState> stateContainer,
-                                                                  net.minecraft.block.BlockState newState, Map<Property<?>, Object> states) {
-        for (Map.Entry<Property<?>, Object> state : states.entrySet()) {
-            net.minecraft.state.property.Property property = stateContainer.getProperty(state.getKey().getName());
-            Comparable value = (Comparable) state.getValue();
-            // we may need to adapt this value, depending on the source prop
-            if (property instanceof DirectionProperty) {
-                Direction dir = (Direction) value;
-                value = adapt(dir);
-            } else if (property instanceof net.minecraft.state.property.EnumProperty) {
-                String enumName = (String) value;
-                value = ((net.minecraft.state.property.EnumProperty<?>) property).parse((String) value).orElseGet(() -> {
-                    throw new IllegalStateException("Enum property " + property.getName() + " does not contain " + enumName);
-                });
-            }
-
-            newState = newState.with(property, value);
-        }
-        return newState;
-    }
-
     public static net.minecraft.block.BlockState adapt(BlockState blockState) {
-        Block mcBlock = adapt(blockState.getBlockType());
-        net.minecraft.block.BlockState newState = mcBlock.getDefaultState();
-        Map<Property<?>, Object> states = blockState.getStates();
-        return applyProperties(mcBlock.getStateManager(), newState, states);
+        int blockStateId = BlockStateIdAccess.getBlockStateId(blockState);
+        if (!BlockStateIdAccess.isValidInternalId(blockStateId)) {
+            return FabricTransmogrifier.transmogToMinecraft(blockState);
+        }
+        return Block.getStateFromRawId(blockStateId);
     }
 
     public static BlockState adapt(net.minecraft.block.BlockState blockState) {
-        BlockType blockType = adapt(blockState.getBlock());
-        return blockType.getState(adaptProperties(blockType, blockState.getEntries()));
+        int blockStateId = Block.getRawIdFromState(blockState);
+        BlockState worldEdit = BlockStateIdAccess.getBlockStateById(blockStateId);
+        if (worldEdit == null) {
+            return FabricTransmogrifier.transmogToWorldEdit(blockState);
+        }
+        return worldEdit;
     }
 
     public static Block adapt(BlockType blockType) {
