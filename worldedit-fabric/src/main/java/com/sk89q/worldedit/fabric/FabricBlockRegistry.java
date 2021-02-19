@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.fabric;
 
+import com.sk89q.worldedit.fabric.internal.FabricTransmogrifier;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
@@ -60,7 +61,7 @@ public class FabricBlockRegistry extends BundledBlockRegistry {
                 .getDefaultState()
                 .getProperties();
         for (net.minecraft.state.property.Property<?> key : propertyKeys) {
-            map.put(key.getName(), FabricAdapter.adaptProperty(key));
+            map.put(key.getName(), FabricTransmogrifier.transmogToWorldEditProperty(key));
         }
         return map;
     }

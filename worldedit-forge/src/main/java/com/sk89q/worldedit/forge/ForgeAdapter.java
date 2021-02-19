@@ -19,17 +19,14 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.google.common.collect.ImmutableList;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.forge.internal.ForgeTransmogrifier;
 import com.sk89q.worldedit.forge.internal.NBTConverter;
+import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
-import com.sk89q.worldedit.registry.state.BooleanProperty;
-import com.sk89q.worldedit.registry.state.DirectionalProperty;
-import com.sk89q.worldedit.registry.state.EnumProperty;
-import com.sk89q.worldedit.registry.state.IntegerProperty;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.world.World;
@@ -46,7 +43,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.DirectionProperty;
-import net.minecraft.state.StateContainer;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -60,7 +56,6 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -135,30 +130,20 @@ public final class ForgeAdapter {
         return new BlockPos(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
     }
 
+    /**
+     * Adapts property.
+     * @deprecated without replacement, use the block adapter methods
+     */
+    @Deprecated
     public static Property<?> adaptProperty(net.minecraft.state.Property<?> property) {
-        if (property instanceof net.minecraft.state.BooleanProperty) {
-            return new BooleanProperty(property.getName(), ImmutableList.copyOf(((net.minecraft.state.BooleanProperty) property).getAllowedValues()));
-        }
-        if (property instanceof net.minecraft.state.IntegerProperty) {
-            return new IntegerProperty(property.getName(), ImmutableList.copyOf(((net.minecraft.state.IntegerProperty) property).getAllowedValues()));
-        }
-        if (property instanceof DirectionProperty) {
-            return new DirectionalProperty(property.getName(), ((DirectionProperty) property).getAllowedValues().stream()
-                    .map(ForgeAdapter::adaptEnumFacing)
-                    .collect(Collectors.toList()));
-        }
-        if (property instanceof net.minecraft.state.EnumProperty) {
-            // Note: do not make x.getName a method reference.
-            // It will cause runtime bootstrap exceptions.
-            // Temporary: func_176610_l == getName
-            //noinspection Convert2MethodRef
-            return new EnumProperty(property.getName(), ((net.minecraft.state.EnumProperty<?>) property).getAllowedValues().stream()
-                    .map(x -> x.func_176610_l())
-                    .collect(Collectors.toList()));
-        }
-        return new IPropertyAdapter<>(property);
+        return ForgeTransmogrifier.transmogToWorldEditProperty(property);
     }
 
+    /**
+     * Adapts properties.
+     * @deprecated without replacement, use the block adapter methods
+     */
+    @Deprecated
     public static Map<Property<?>, Object> adaptProperties(BlockType block, Map<net.minecraft.state.Property<?>, Comparable<?>> mcProps) {
         Map<Property<?>, Object> props = new TreeMap<>(Comparator.comparing(Property::getName));
         for (Map.Entry<net.minecraft.state.Property<?>, Comparable<?>> prop : mcProps.entrySet()) {
@@ -173,37 +158,21 @@ public final class ForgeAdapter {
         return props;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static net.minecraft.block.BlockState applyProperties(StateContainer<Block, net.minecraft.block.BlockState> stateContainer, net.minecraft.block.BlockState newState, Map<Property<?>, Object> states) {
-        for (Map.Entry<Property<?>, Object> state : states.entrySet()) {
-            net.minecraft.state.Property property = stateContainer.getProperty(state.getKey().getName());
-            Comparable value = (Comparable) state.getValue();
-            // we may need to adapt this value, depending on the source prop
-            if (property instanceof DirectionProperty) {
-                Direction dir = (Direction) value;
-                value = adapt(dir);
-            } else if (property instanceof net.minecraft.state.EnumProperty) {
-                String enumName = (String) value;
-                value = ((net.minecraft.state.EnumProperty<?>) property).parseValue((String) value).orElseGet(() -> {
-                    throw new IllegalStateException("Enum property " + property.getName() + " does not contain " + enumName);
-                });
-            }
-
-            newState = newState.with(property, value);
-        }
-        return newState;
-    }
-
     public static net.minecraft.block.BlockState adapt(BlockState blockState) {
-        Block mcBlock = adapt(blockState.getBlockType());
-        net.minecraft.block.BlockState newState = mcBlock.getDefaultState();
-        Map<Property<?>, Object> states = blockState.getStates();
-        return applyProperties(mcBlock.getStateContainer(), newState, states);
+        int blockStateId = BlockStateIdAccess.getBlockStateId(blockState);
+        if (!BlockStateIdAccess.isValidInternalId(blockStateId)) {
+            return ForgeTransmogrifier.transmogToMinecraft(blockState);
+        }
+        return Block.getStateById(blockStateId);
     }
 
     public static BlockState adapt(net.minecraft.block.BlockState blockState) {
-        BlockType blockType = adapt(blockState.getBlock());
-        return blockType.getState(adaptProperties(blockType, blockState.getValues()));
+        int blockStateId = Block.getStateId(blockState);
+        BlockState worldEdit = BlockStateIdAccess.getBlockStateById(blockStateId);
+        if (worldEdit == null) {
+            return ForgeTransmogrifier.transmogToWorldEdit(blockState);
+        }
+        return worldEdit;
     }
 
     public static Block adapt(BlockType blockType) {
