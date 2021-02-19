@@ -1,3 +1,11 @@
+7.2.3
+- [Forge/Fabric] Added -mod jar file containing both Fabric and Forge
+- [Forge/Fabric] Speed up WorldEdit<->Native block translation layer in some cases
+- [Fabric] Disable support for the UPDATE side effect when Carpet or QuickCarpet are available, due to conflict
+- Improve performance when working with tile entities
+- [Bukkit] Further tile entity performance improvements when using Paper (not Spigot)
+- Speed up initialisation from registries at startup, especially when many mods are in use
+
 7.2.2
 - [Bukkit] Add support for MC 1.16.5.
 - [Fabric] Add support for Lucko's Fabric Permissions API.
