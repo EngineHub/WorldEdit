@@ -1,0 +1,24 @@
+{
+  "plugins": [
+    {
+      "loader": "java_plain",
+      "id": "worldedit",
+      "name": "WorldEdit",
+      "version": "7.2.0-SNAPSHOT",
+      "main-class": "com.sk89q.worldedit.sponge.SpongeWorldEdit",
+      "description": "WorldEdit",
+      "links": {
+        "homepage": "https://www.spongepowered.org",
+        "source": "https://www.spongepowered.org/source",
+        "issues": "https://www.spongepowered.org/issues"
+      },
+      "dependencies": [
+        {
+          "id": "spongeapi",
+          "version": "8.0.0"
+        }
+      ],
+      "extra": {}
+    }
+  ]
+}

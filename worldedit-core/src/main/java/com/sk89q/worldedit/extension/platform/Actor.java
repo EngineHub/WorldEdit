@@ -24,6 +24,7 @@ import com.sk89q.worldedit.session.SessionOwner;
 import com.sk89q.worldedit.util.Identifiable;
 import com.sk89q.worldedit.util.auth.Subject;
 import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
 import java.io.File;
@@ -57,7 +58,9 @@ public interface Actor extends Identifiable, SessionOwner, Subject {
      * @deprecated Use component-based functions (print)
      */
     @Deprecated
-    void printRaw(String msg);
+    default void printRaw(String msg) {
+        print(TextComponent.of(msg));
+    }
 
     /**
      * Print a WorldEdit message.
@@ -66,7 +69,9 @@ public interface Actor extends Identifiable, SessionOwner, Subject {
      * @deprecated Use component-based functions (printDebug)
      */
     @Deprecated
-    void printDebug(String msg);
+    default void printDebug(String msg) {
+        printDebug(TextComponent.of(msg));
+    }
 
     /**
      * Print a WorldEdit message.
@@ -75,7 +80,9 @@ public interface Actor extends Identifiable, SessionOwner, Subject {
      * @deprecated Use component-based functions (printInfo)
      */
     @Deprecated
-    void print(String msg);
+    default void print(String msg) {
+        printInfo(TextComponent.of(msg));
+    }
 
     /**
      * Print a WorldEdit error.
@@ -84,7 +91,9 @@ public interface Actor extends Identifiable, SessionOwner, Subject {
      * @deprecated Use component-based functions (printError)
      */
     @Deprecated
-    void printError(String msg);
+    default void printError(String msg) {
+        printError(TextComponent.of(msg));
+    }
 
     /**
      * Print a WorldEdit error.

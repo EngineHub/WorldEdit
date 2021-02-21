@@ -4,6 +4,10 @@ constrainDependenciesToLibsCore()
 repositories {
     maven {
         name = "Sponge"
+        url = uri("https://repo-new.spongepowered.org/maven")
+    }
+    maven {
+        name = "Sponge-Old"
         url = uri("https://repo.spongepowered.org/maven")
     }
 }

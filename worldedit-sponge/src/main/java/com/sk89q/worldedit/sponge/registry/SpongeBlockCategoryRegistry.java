@@ -17,21 +17,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.sponge;
+package com.sk89q.worldedit.sponge.registry;
 
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
+import com.google.common.collect.ImmutableSet;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
 
-public class SpongeTextAdapter {
+import java.util.Set;
 
-    public static net.kyori.adventure.text.Component convert(Component component) {
-        return net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson().deserialize(GsonComponentSerializer.INSTANCE.serialize(component));
-    }
+public class SpongeBlockCategoryRegistry implements BlockCategoryRegistry {
 
-    public static Component convert(net.kyori.adventure.text.Component component) {
-        return GsonComponentSerializer.INSTANCE.deserialize(net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson().serialize(component));
-    }
-
-    private SpongeTextAdapter() {
+    @Override
+    public Set<BlockType> getCategorisedByName(String category) {
+        // TODO Sponge doesn't yet support tags
+        return ImmutableSet.of();
     }
 }

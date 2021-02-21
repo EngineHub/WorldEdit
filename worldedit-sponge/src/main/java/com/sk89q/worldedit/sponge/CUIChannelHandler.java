@@ -20,36 +20,35 @@
 package com.sk89q.worldedit.sponge;
 
 import com.sk89q.worldedit.LocalSession;
-import org.spongepowered.api.Platform;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.network.ChannelBinding;
-import org.spongepowered.api.network.ChannelBuf;
-import org.spongepowered.api.network.PlayerConnection;
-import org.spongepowered.api.network.RawDataListener;
-import org.spongepowered.api.network.RemoteConnection;
+import org.spongepowered.api.ResourceKey;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+import org.spongepowered.api.event.lifecycle.RegisterChannelEvent;
+import org.spongepowered.api.network.EngineConnection;
+import org.spongepowered.api.network.ServerPlayerConnection;
+import org.spongepowered.api.network.channel.ChannelBuf;
+import org.spongepowered.api.network.channel.raw.RawDataChannel;
+import org.spongepowered.api.network.channel.raw.play.RawPlayDataHandler;
 
 import java.nio.charset.StandardCharsets;
 
-public class CUIChannelHandler implements RawDataListener {
-    public static final String CUI_PLUGIN_CHANNEL = "worldedit:cui";
+public class CUIChannelHandler implements RawPlayDataHandler<EngineConnection> {
+    public static final ResourceKey CUI_PLUGIN_CHANNEL = ResourceKey.of("worldedit", "cui");
 
-    private static ChannelBinding.RawDataChannel channel;
+    private static RawDataChannel channel;
 
-    public static void init() {
-        channel = Sponge.getChannelRegistrar().createRawChannel(SpongeWorldEdit.inst(), CUI_PLUGIN_CHANNEL);
-        channel.addListener(Platform.Type.SERVER, new CUIChannelHandler());
+    public static void init(RegisterChannelEvent event) {
+        channel = event.register(CUI_PLUGIN_CHANNEL, RawDataChannel.class);
+        channel.play().addHandler(new CUIChannelHandler());
     }
 
-
-    public static ChannelBinding.RawDataChannel getActiveChannel() {
+    public static RawDataChannel getActiveChannel() {
         return channel;
     }
 
     @Override
-    public void handlePayload(ChannelBuf data, RemoteConnection connection, Platform.Type side) {
-        if (connection instanceof PlayerConnection) {
-            Player player = ((PlayerConnection) connection).getPlayer();
+    public void handlePayload(ChannelBuf data, EngineConnection connection) {
+        if (connection instanceof ServerPlayerConnection) {
+            ServerPlayer player = ((ServerPlayerConnection) connection).getPlayer();
 
             LocalSession session = SpongeWorldEdit.inst().getSession(player);
 

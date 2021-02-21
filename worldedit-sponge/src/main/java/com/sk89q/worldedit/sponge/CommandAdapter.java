@@ -19,19 +19,22 @@
 
 package com.sk89q.worldedit.sponge;
 
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.util.PermissionCondition;
+import com.sk89q.worldedit.util.formatting.WorldEditText;
+import net.kyori.adventure.text.Component;
 import org.enginehub.piston.Command;
-import org.spongepowered.api.command.CommandCallable;
-import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.text.Text;
+import org.spongepowered.api.command.CommandCause;
+import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
 import static com.sk89q.worldedit.sponge.SpongeTextAdapter.convert;
 
-public abstract class CommandAdapter implements CommandCallable {
+public abstract class CommandAdapter implements org.spongepowered.api.command.Command.Raw {
     private final Command command;
 
     protected CommandAdapter(Command command) {
@@ -39,12 +42,12 @@ public abstract class CommandAdapter implements CommandCallable {
     }
 
     @Override
-    public boolean testPermission(CommandSource source) {
+    public boolean canExecute(CommandCause source) {
         Set<String> permissions = command.getCondition().as(PermissionCondition.class)
             .map(PermissionCondition::getPermissions)
             .orElseGet(Collections::emptySet);
         for (String perm : permissions) {
-            if (source.hasPermission(perm)) {
+            if (source.getSubject().hasPermission(perm)) {
                 return true;
             }
         }
@@ -52,19 +55,28 @@ public abstract class CommandAdapter implements CommandCallable {
     }
 
     @Override
-    public Optional<Text> getShortDescription(CommandSource source) {
+    public Optional<Component> getShortDescription(CommandCause source) {
+        Locale locale = source.getAudience() instanceof Player
+            ? ((Player) source.getAudience()).getLocale()
+            : WorldEdit.getInstance().getConfiguration().defaultLocale;
         return Optional.of(command.getDescription())
-            .map(desc -> SpongeTextAdapter.convert(desc, source.getLocale()));
+            .map(desc -> SpongeTextAdapter.convert(WorldEditText.format(desc, locale)));
     }
 
     @Override
-    public Optional<Text> getHelp(CommandSource source) {
+    public Optional<Component> getHelp(CommandCause source) {
+        Locale locale = source.getAudience() instanceof Player
+            ? ((Player) source.getAudience()).getLocale()
+            : WorldEdit.getInstance().getConfiguration().defaultLocale;
         return Optional.of(command.getFullHelp())
-            .map(help -> SpongeTextAdapter.convert(help, source.getLocale()));
+            .map(help -> SpongeTextAdapter.convert(WorldEditText.format(help, locale)));
     }
 
     @Override
-    public Text getUsage(CommandSource source) {
-        return convert(command.getUsage(), source.getLocale());
+    public Component getUsage(CommandCause source) {
+        Locale locale = source.getAudience() instanceof Player
+            ? ((Player) source.getAudience()).getLocale()
+            : WorldEdit.getInstance().getConfiguration().defaultLocale;
+        return convert(WorldEditText.format(command.getUsage(), locale));
     }
 }

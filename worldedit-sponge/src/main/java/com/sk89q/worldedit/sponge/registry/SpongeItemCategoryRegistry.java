@@ -17,31 +17,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.sponge;
+package com.sk89q.worldedit.sponge.registry;
 
-import com.sk89q.worldedit.world.registry.BiomeRegistry;
-import com.sk89q.worldedit.world.registry.BundledRegistries;
+import com.google.common.collect.ImmutableSet;
+import com.sk89q.worldedit.world.item.ItemType;
+import com.sk89q.worldedit.world.registry.ItemCategoryRegistry;
 
-/**
- * World data for the Sponge platform.
- */
-class SpongeRegistries extends BundledRegistries {
+import java.util.Set;
 
-    private static final SpongeRegistries INSTANCE = new SpongeRegistries();
-    private final BiomeRegistry biomeRegistry = new SpongeBiomeRegistry();
+public class SpongeItemCategoryRegistry implements ItemCategoryRegistry {
 
     @Override
-    public BiomeRegistry getBiomeRegistry() {
-        return biomeRegistry;
+    public Set<ItemType> getCategorisedByName(String category) {
+        // TODO Sponge doesn't yet support tags
+        return ImmutableSet.of();
     }
-
-    /**
-     * Get a static instance.
-     *
-     * @return an instance
-     */
-    public static SpongeRegistries getInstance() {
-        return INSTANCE;
-    }
-
 }

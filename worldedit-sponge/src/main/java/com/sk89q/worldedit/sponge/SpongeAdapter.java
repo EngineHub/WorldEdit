@@ -19,15 +19,50 @@
 
 package com.sk89q.worldedit.sponge;
 
-import com.flowpowered.math.vector.Vector3d;
+import com.google.common.collect.ImmutableList;
+import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
+import com.sk89q.worldedit.registry.state.BooleanProperty;
+import com.sk89q.worldedit.registry.state.DirectionalProperty;
+import com.sk89q.worldedit.registry.state.EnumProperty;
+import com.sk89q.worldedit.registry.state.IntegerProperty;
+import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.biome.BiomeTypes;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.item.ItemType;
+import com.sk89q.worldedit.world.item.ItemTypes;
+import com.sk89q.worldedit.world.weather.WeatherType;
+import com.sk89q.worldedit.world.weather.WeatherTypes;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.registry.RegistryHolder;
+import org.spongepowered.api.registry.RegistryTypes;
+import org.spongepowered.api.state.BooleanStateProperty;
+import org.spongepowered.api.state.EnumStateProperty;
+import org.spongepowered.api.state.IntegerStateProperty;
+import org.spongepowered.api.state.StateProperty;
+import org.spongepowered.api.util.Direction;
+import org.spongepowered.api.world.biome.Biome;
+import org.spongepowered.api.world.schematic.PaletteTypes;
+import org.spongepowered.api.world.server.ServerLocation;
+import org.spongepowered.api.world.server.ServerWorld;
+import org.spongepowered.math.vector.Vector3d;
+import org.spongepowered.math.vector.Vector3i;
+
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -40,29 +75,15 @@ public class SpongeAdapter {
     }
 
     /**
-     * Create a WorldEdit world from a Sponge extent.
-     *
-     * @param world the Sponge extent
-     * @return a WorldEdit world
-     */
-    public static World checkWorld(org.spongepowered.api.world.extent.Extent world) {
-        checkNotNull(world);
-        if (world instanceof org.spongepowered.api.world.World) {
-            return adapt((org.spongepowered.api.world.World) world);
-        } else {
-            throw new IllegalArgumentException("Extent type is not a world");
-        }
-    }
-
-    /**
      * Create a WorldEdit world from a Sponge world.
      *
      * @param world the Sponge world
      * @return a WorldEdit world
      */
-    public static World adapt(org.spongepowered.api.world.World world) {
+    public static World adapt(ServerWorld world) {
         checkNotNull(world);
-        return SpongeWorldEdit.inst().getWorld(world);
+
+        return new SpongeWorld(world);
     }
 
     /**
@@ -71,7 +92,7 @@ public class SpongeAdapter {
      * @param player The Sponge player
      * @return The WorldEdit player
      */
-    public static SpongePlayer adapt(Player player) {
+    public static SpongePlayer adapt(ServerPlayer player) {
         return SpongeWorldEdit.inst().wrapPlayer(player);
     }
 
@@ -91,12 +112,12 @@ public class SpongeAdapter {
      * @param world the WorldEdit world
      * @return a Sponge world
      */
-    public static org.spongepowered.api.world.World adapt(World world) {
+    public static ServerWorld adapt(World world) {
         checkNotNull(world);
         if (world instanceof SpongeWorld) {
             return ((SpongeWorld) world).getWorld();
         } else {
-            org.spongepowered.api.world.World match = Sponge.getServer().getWorld(world.getName()).orElse(null);
+            ServerWorld match = Sponge.getServer().getWorldManager().world(ResourceKey.resolve(world.getName())).orElse(null);
             if (match != null) {
                 return match;
             } else {
@@ -105,12 +126,40 @@ public class SpongeAdapter {
         }
     }
 
-    public static BiomeType adapt(org.spongepowered.api.world.biome.BiomeType biomeType) {
-        return BiomeTypes.get(biomeType.getId());
+    public static ItemStack adapt(BaseItemStack item) {
+        return SpongeWorldEdit.inst().getAdapter().makeSpongeStack(item);
     }
 
-    public static org.spongepowered.api.world.biome.BiomeType adapt(BiomeType biomeType) {
-        return Sponge.getRegistry().getType(org.spongepowered.api.world.biome.BiomeType.class, biomeType.getId()).orElse(null);
+    public static ItemType adapt(org.spongepowered.api.item.ItemType itemType) {
+        return ItemTypes.get(itemType.key(RegistryTypes.ITEM_TYPE).getFormatted());
+    }
+
+    public static org.spongepowered.api.item.ItemType adapt(ItemType itemType) {
+        return RegistryTypes.ITEM_TYPE.get().findValue(ResourceKey.resolve(itemType.getId())).orElse(null);
+    }
+
+    public static BlockType adapt(org.spongepowered.api.block.BlockType blockType) {
+        return BlockTypes.get(blockType.key(RegistryTypes.BLOCK_TYPE).getFormatted());
+    }
+
+    public static org.spongepowered.api.block.BlockType adapt(BlockType blockType) {
+        return RegistryTypes.BLOCK_TYPE.get().findValue(ResourceKey.resolve(blockType.getId())).orElse(null);
+    }
+
+    public static WeatherType adapt(org.spongepowered.api.world.weather.WeatherType weatherType) {
+        return WeatherTypes.get(weatherType.key(RegistryTypes.WEATHER_TYPE).getFormatted());
+    }
+
+    public static org.spongepowered.api.world.weather.WeatherType adapt(WeatherType weatherType) {
+        return RegistryTypes.WEATHER_TYPE.get().findValue(ResourceKey.resolve(weatherType.getId())).orElse(null);
+    }
+
+    public static BiomeType adapt(Biome biomeType, RegistryHolder registryHolder) {
+        return BiomeTypes.get(RegistryTypes.BIOME.keyFor(registryHolder, biomeType).getFormatted());
+    }
+
+    public static Biome adapt(BiomeType biomeType, RegistryHolder registryHolder) {
+        return RegistryTypes.BIOME.referenced(ResourceKey.resolve(biomeType.getId())).get(registryHolder);
     }
 
     /**
@@ -119,11 +168,11 @@ public class SpongeAdapter {
      * @param location the Sponge location
      * @return a WorldEdit location
      */
-    public static Location adapt(org.spongepowered.api.world.Location<org.spongepowered.api.world.World> location, Vector3d rotation) {
+    public static Location adapt(ServerLocation location, Vector3d rotation) {
         checkNotNull(location);
         Vector3 position = asVector(location);
         return new Location(
-                adapt(location.getExtent()),
+                adapt(location.getWorld()),
                 position,
                 (float) rotation.getX(),
                 (float) rotation.getY());
@@ -135,10 +184,10 @@ public class SpongeAdapter {
      * @param location the WorldEdit location
      * @return a Sponge location
      */
-    public static org.spongepowered.api.world.Location<org.spongepowered.api.world.World> adapt(Location location) {
+    public static ServerLocation adapt(Location location) {
         checkNotNull(location);
         Vector3 position = location.toVector();
-        return new org.spongepowered.api.world.Location<>(
+        return ServerLocation.of(
                 adapt((World) location.getExtent()),
                 position.getX(), position.getY(), position.getZ());
     }
@@ -160,7 +209,7 @@ public class SpongeAdapter {
      * @param location The Bukkit location
      * @return a WorldEdit vector
      */
-    public static Vector3 asVector(org.spongepowered.api.world.Location<org.spongepowered.api.world.World> location) {
+    public static Vector3 asVector(ServerLocation location) {
         checkNotNull(location);
         return Vector3.at(location.getX(), location.getY(), location.getZ());
     }
@@ -171,8 +220,99 @@ public class SpongeAdapter {
      * @param location The Bukkit location
      * @return a WorldEdit vector
      */
-    public static BlockVector3 asBlockVector(org.spongepowered.api.world.Location<org.spongepowered.api.world.World> location) {
+    public static BlockVector3 asBlockVector(ServerLocation location) {
         checkNotNull(location);
         return BlockVector3.at(location.getX(), location.getY(), location.getZ());
     }
+
+    /**
+     * Create a WorldEdit BlockVector3 from a Sponge Vector3i.
+     *
+     * @param vec The Sponge Vector3i
+     * @return The WorldEdit BlockVector3
+     */
+    public static BlockVector3 adapt(Vector3i vec) {
+        return BlockVector3.at(vec.getX(), vec.getY(), vec.getZ());
+    }
+
+    /**
+     * Create a Sponge Vector3i from a WorldEdit BlockVector3.
+     *
+     * @param vec The WorldEdit BlockVector3
+     * @return The Sponge Vector3i
+     */
+    public static Vector3i adapt(BlockVector3 vec) {
+        return new Vector3i(vec.getX(), vec.getY(), vec.getZ());
+    }
+
+    public static com.sk89q.worldedit.util.Direction adapt(Direction direction) {
+        if (direction == null) {
+            return null;
+        }
+        switch (direction) {
+            case NORTH: return com.sk89q.worldedit.util.Direction.NORTH;
+            case SOUTH: return com.sk89q.worldedit.util.Direction.SOUTH;
+            case WEST: return com.sk89q.worldedit.util.Direction.WEST;
+            case EAST: return com.sk89q.worldedit.util.Direction.EAST;
+            case DOWN: return com.sk89q.worldedit.util.Direction.DOWN;
+            case UP:
+            default:
+                return com.sk89q.worldedit.util.Direction.UP;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Property<?> adaptProperty(StateProperty<?> property) {
+        if (property instanceof BooleanStateProperty) {
+            return new BooleanProperty(property.getName(), ImmutableList.copyOf(((BooleanStateProperty) property).getPossibleValues()));
+        }
+        if (property instanceof IntegerStateProperty) {
+            return new IntegerProperty(property.getName(), ImmutableList.copyOf(((IntegerStateProperty) property).getPossibleValues()));
+        }
+        if (property instanceof EnumStateProperty) {
+            if (property.getPossibleValues().stream().anyMatch(ent -> ent instanceof Direction)) {
+                return new DirectionalProperty(property.getName(), ((EnumStateProperty<Direction>) property).getPossibleValues()
+                    .stream()
+                    .map(SpongeAdapter::adapt)
+                    .collect(Collectors.toList()));
+            } else {
+                return new EnumProperty(property.getName(), ((EnumStateProperty<?>) property).getPossibleValues().stream()
+                    .map(Enum::name)
+                    .collect(Collectors.toList()));
+            }
+        }
+        return new SpongePropertyAdapter<>(property);
+    }
+
+    /**
+     * Create a WorldEdit BlockState from a Sponge BlockState.
+     *
+     * @param blockState The Sponge BlockState
+     * @return The WorldEdit BlockState
+     */
+    public static BlockState adapt(org.spongepowered.api.block.BlockState blockState) {
+        checkNotNull(blockState);
+
+        return BlockStateIdAccess.getBlockStateById(PaletteTypes.BLOCK_STATE_PALETTE.get().create(Sponge.getGame().registries(), RegistryTypes.BLOCK_TYPE).get(blockState).getAsInt());
+    }
+
+    private static final Int2ObjectMap<org.spongepowered.api.block.BlockState> spongeBlockStateCache = new Int2ObjectOpenHashMap<>();
+
+    /**
+     * Create a Sponge BlockState from a WorldEdit BlockStateHolder.
+     *
+     * @param block The WorldEdit BlockStateHolder
+     * @return The Sponge BlockState
+     */
+    public static <B extends BlockStateHolder<B>> org.spongepowered.api.block.BlockState adapt(B block) {
+        checkNotNull(block);
+        // Should never not have an ID for this BlockState.
+        int cacheKey = BlockStateIdAccess.getBlockStateId(block.toImmutableState());
+        if (cacheKey == BlockStateIdAccess.invalidId()) {
+            cacheKey = block.hashCode();
+        }
+
+        return spongeBlockStateCache.computeIfAbsent(cacheKey, input -> PaletteTypes.BLOCK_STATE_PALETTE.get().create(Sponge.getGame().registries(), RegistryTypes.BLOCK_TYPE).get(input, Sponge.getGame().registries()).orElse(null));
+    }
+
 }

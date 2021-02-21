@@ -17,21 +17,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.sponge;
+package com.sk89q.worldedit.sponge.registry;
 
+import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.sponge.SpongeAdapter;
+import com.sk89q.worldedit.sponge.SpongeTextAdapter;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
+import com.sk89q.worldedit.world.item.ItemType;
+import com.sk89q.worldedit.world.registry.BundledItemRegistry;
+import org.spongepowered.api.data.Keys;
 
-public class SpongeTextAdapter {
+public class SpongeItemRegistry extends BundledItemRegistry {
 
-    public static net.kyori.adventure.text.Component convert(Component component) {
-        return net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson().deserialize(GsonComponentSerializer.INSTANCE.serialize(component));
+    @Override
+    public Component getRichName(ItemType itemType) {
+        return SpongeTextAdapter.convert(SpongeAdapter.adapt(itemType).asComponent());
     }
 
-    public static Component convert(net.kyori.adventure.text.Component component) {
-        return GsonComponentSerializer.INSTANCE.deserialize(net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson().serialize(component));
-    }
-
-    private SpongeTextAdapter() {
+    @Override
+    public Component getRichName(BaseItemStack itemStack) {
+        return SpongeAdapter.adapt(itemStack).get(Keys.DISPLAY_NAME)
+            .map(SpongeTextAdapter::convert)
+            .orElseGet(() -> getRichName(itemStack.getType()));
     }
 }

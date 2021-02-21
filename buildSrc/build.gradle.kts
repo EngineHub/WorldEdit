@@ -18,7 +18,7 @@ repositories {
     }
     maven {
         name = "sponge"
-        url = uri("https://repo.spongepowered.org/maven")
+        url = uri("https://repo.spongepowered.org/repository/maven-public/")
     }
     maven {
         name = "EngineHub Repository"
