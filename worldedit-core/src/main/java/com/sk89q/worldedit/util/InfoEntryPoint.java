@@ -40,9 +40,9 @@ public class InfoEntryPoint {
         WorldEditManifest manifest = WorldEditManifest.load();
 
         return "WorldEdit is not installed by running the jar file. Check out the install instructions here: "
-            + (hyperlinks ? "<a href=\"" + INSTALL_URL +"\">" + INSTALL_URL + "</a>" : INSTALL_URL)
+            + (hyperlinks ? "<a href=\"" + INSTALL_URL + "\">" + INSTALL_URL + "</a>" : INSTALL_URL)
             + "\nFor further help, check out our support Discord at "
-            + (hyperlinks ? "<a href=\"" + SUPPORT_URL +"\">" + SUPPORT_URL + "</a>" : SUPPORT_URL)
+            + (hyperlinks ? "<a href=\"" + SUPPORT_URL + "\">" + SUPPORT_URL + "</a>" : SUPPORT_URL)
             + "\n\nVersion: "
             + manifest.getWorldEditVersion();
     }
