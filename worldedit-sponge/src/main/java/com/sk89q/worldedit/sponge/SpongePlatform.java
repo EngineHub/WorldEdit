@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.sponge;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.CommandEvent;
@@ -244,9 +244,16 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
         return capabilities;
     }
 
+    private static final Set<SideEffect> SUPPORTED_SIDE_EFFECTS_NO_MIXIN = Sets.immutableEnumSet(
+        SideEffect.VALIDATION,
+        SideEffect.ENTITY_AI,
+        SideEffect.LIGHTING,
+        SideEffect.NEIGHBORS
+    );
+
     @Override
     public Set<SideEffect> getSupportedSideEffects() {
-        return ImmutableSet.of(SideEffect.UPDATE, SideEffect.NEIGHBORS, SideEffect.ENTITY_AI, SideEffect.LIGHTING);
+        return SUPPORTED_SIDE_EFFECTS_NO_MIXIN;
     }
 
     @Override

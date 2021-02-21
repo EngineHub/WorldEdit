@@ -47,7 +47,8 @@ class SpongeEntity implements Entity {
     public BaseEntity getState() {
         org.spongepowered.api.entity.Entity entity = entityRef.get();
         if (entity != null) {
-            return SpongeWorldEdit.inst().getAdapter().createBaseEntity(entity);
+            return null;
+            // TODO return SpongeWorldEdit.inst().getAdapter().createBaseEntity(entity);
         } else {
             return null;
         }

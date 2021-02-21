@@ -126,10 +126,6 @@ public class SpongeAdapter {
         }
     }
 
-    public static ItemStack adapt(BaseItemStack item) {
-        return SpongeWorldEdit.inst().getAdapter().makeSpongeStack(item);
-    }
-
     public static ItemType adapt(org.spongepowered.api.item.ItemType itemType) {
         return ItemTypes.get(itemType.key(RegistryTypes.ITEM_TYPE).getFormatted());
     }

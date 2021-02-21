@@ -25,12 +25,8 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.event.platform.SessionIdleEvent;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
-import com.sk89q.worldedit.sponge.adapter.AdapterLoadException;
-import com.sk89q.worldedit.sponge.adapter.SpongeImplAdapter;
-import com.sk89q.worldedit.sponge.adapter.SpongeImplLoader;
 import com.sk89q.worldedit.sponge.config.SpongeConfiguration;
 import net.kyori.adventure.audience.Audience;
 import org.slf4j.Logger;
@@ -60,7 +56,6 @@ import org.spongepowered.api.world.server.ServerLocation;
 import org.spongepowered.plugin.PluginContainer;
 import org.spongepowered.plugin.jvm.Plugin;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -98,7 +93,6 @@ public class SpongeWorldEdit {
     }
 
     private SpongePlatform platform;
-    private SpongeImplAdapter spongeAdapter;
 
     @Inject
     private SpongeConfiguration config;
@@ -173,8 +167,6 @@ public class SpongeWorldEdit {
     @Listener
     public void serverStarted(StartedEngineEvent<Server> event) {
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
-
-        // loadAdapter();
     }
 
     @Listener
@@ -189,48 +181,12 @@ public class SpongeWorldEdit {
         platform.setCommandRegisterEvent(null);
     }
 
-    private void loadAdapter() {
-        WorldEdit worldEdit = WorldEdit.getInstance();
-
-        // Attempt to load a Sponge adapter
-        SpongeImplLoader adapterLoader = new SpongeImplLoader();
-
-        try {
-            adapterLoader.addFromPath(getClass().getClassLoader());
-        } catch (IOException e) {
-            logger.warn("Failed to search path for Sponge adapters");
-        }
-
-        try {
-            adapterLoader.addFromJar(container.getPath().toFile());
-        } catch (IOException e) {
-            logger.warn("Failed to search " + container.getPath().toFile() + " for Sponge adapters", e);
-        }
-        try {
-            spongeAdapter = adapterLoader.loadAdapter();
-            logger.info("Using " + spongeAdapter.getClass().getCanonicalName() + " as the Sponge adapter");
-        } catch (AdapterLoadException e) {
-            Platform platform = worldEdit.getPlatformManager().queryCapability(Capability.WORLD_EDITING);
-            if (platform instanceof SpongePlatform) {
-                logger.warn(e.getMessage());
-            } else {
-                logger.info("WorldEdit could not find a Sponge adapter for this MC version, "
-                    + "but it seems that you have another implementation of WorldEdit installed (" + platform.getPlatformName() + ") "
-                    + "that handles the world editing.");
-            }
-        }
-    }
-
     public PluginContainer getContainer() {
         return this.container;
     }
 
     public Logger getLogger() {
         return this.logger;
-    }
-
-    public SpongeImplAdapter getAdapter() {
-        return this.spongeAdapter;
     }
 
     @Listener

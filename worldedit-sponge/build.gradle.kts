@@ -1,13 +1,13 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-//plugins {
-//    id("org.spongepowered.gradle.plugin")
-//}
+plugins {
+    `java-library`
+    id("org.spongepowered.gradle.plugin")
+    id("org.spongepowered.gradle.vanilla")
+}
 
 applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
-
-apply(plugin = "java-library")
 
 // I can't believe sponge sets this in a base plugin with no opt-out
 convention.getPlugin(JavaPluginConvention::class.java).apply {
@@ -28,6 +28,11 @@ dependencies {
     "implementation"("org.apache.logging.log4j:log4j-slf4j-impl:2.11.2")
     "implementation"("it.unimi.dsi:fastutil:${Versions.FAST_UTIL}")
     "testImplementation"("org.mockito:mockito-core:1.9.0-rc1")
+}
+
+minecraft {
+    version("1.16.5")
+    injectRepositories(false)
 }
 
 //sponge {
@@ -51,7 +56,7 @@ tasks.named<ShadowJar>("shadowJar") {
 //        relocate ("org.bstats", "com.sk89q.worldedit.sponge.bstats") {
 //            include(dependency("org.bstats:bstats-sponge:1.7"))
 //        }
-        relocate("it.unimi.dsi.fastutil", "com.sk89q.worldedit.bukkit.fastutil") {
+        relocate("it.unimi.dsi.fastutil", "com.sk89q.worldedit.sponge.fastutil") {
             include(dependency("it.unimi.dsi:fastutil"))
         }
     }

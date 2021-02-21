@@ -23,6 +23,7 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.sponge.SpongeAdapter;
 import com.sk89q.worldedit.sponge.SpongeTextAdapter;
 import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.BundledItemRegistry;
 import org.spongepowered.api.data.Keys;
@@ -36,8 +37,9 @@ public class SpongeItemRegistry extends BundledItemRegistry {
 
     @Override
     public Component getRichName(BaseItemStack itemStack) {
-        return SpongeAdapter.adapt(itemStack).get(Keys.DISPLAY_NAME)
-            .map(SpongeTextAdapter::convert)
-            .orElseGet(() -> getRichName(itemStack.getType()));
+        // return SpongeAdapter.adapt(itemStack).get(Keys.DISPLAY_NAME)
+        //     .map(SpongeTextAdapter::convert)
+        //     .orElseGet(() -> getRichName(itemStack.getType()));
+        return TextComponent.of("// TODO");
     }
 }

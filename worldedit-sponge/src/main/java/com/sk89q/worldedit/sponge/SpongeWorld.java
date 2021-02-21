@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.sponge;
 
+import com.google.common.collect.Sets;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEditException;
@@ -29,6 +30,7 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.sponge.internal.SpongeWorldNativeAccess;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
@@ -41,17 +43,15 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.weather.WeatherType;
+import net.minecraft.server.level.ServerLevel;
 import org.spongepowered.api.ResourceKey;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.entity.BlockEntity;
-import org.spongepowered.api.data.Keys;
+import org.spongepowered.api.block.entity.carrier.CarrierBlockEntity;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.registry.RegistryTypes;
 import org.spongepowered.api.util.AABB;
 import org.spongepowered.api.util.Ticks;
-import org.spongepowered.api.world.BlockChangeFlag;
 import org.spongepowered.api.world.server.ServerLocation;
 import org.spongepowered.api.world.server.ServerWorld;
 import org.spongepowered.api.world.server.WorldTemplate;
@@ -74,6 +74,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class SpongeWorld extends AbstractWorld {
 
     private final WeakReference<ServerWorld> worldRef;
+    private final WeakReference<ServerLevel> nativeWorldRef;
+    private final SpongeWorldNativeAccess worldNativeAccess;
 
     /**
      * Construct a new world.
@@ -83,6 +85,8 @@ public class SpongeWorld extends AbstractWorld {
     protected SpongeWorld(ServerWorld world) {
         checkNotNull(world);
         this.worldRef = new WeakReference<>(world);
+        this.nativeWorldRef = new WeakReference<>((ServerLevel) world);
+        this.worldNativeAccess = new SpongeWorldNativeAccess(nativeWorldRef);
     }
 
     /**
@@ -115,6 +119,15 @@ public class SpongeWorld extends AbstractWorld {
         }
     }
 
+    public ServerLevel getNativeWorld() {
+        ServerLevel world = nativeWorldRef.get();
+        if (world != null) {
+            return world;
+        } else {
+            throw new RuntimeException("The reference to the native world was lost (i.e. the world may have been unloaded)");
+        }
+    }
+
     @Override
     public String getName() {
         return getWorld().getKey().toString();
@@ -131,59 +144,16 @@ public class SpongeWorld extends AbstractWorld {
         return getWorld().getDirectory();
     }
 
-    @SuppressWarnings("WeakerAccess")
-    protected void applyTileEntityData(BlockEntity entity, BaseBlock block) {
-        // TODO Adapter
-    }
-
     @Override
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectSet sideEffects) throws WorldEditException {
-        checkNotNull(position);
-        checkNotNull(block);
-
         clearContainerBlockContents(position);
-
-        ServerWorld world = getWorldChecked();
-
-        // First set the block
-        Vector3i pos = new Vector3i(position.getX(), position.getY(), position.getZ());
-        BlockState newState = SpongeAdapter.adapt(block);
-
-        BlockChangeFlag flags = Sponge.getGame().getFactoryProvider().provide(BlockChangeFlag.Factory.class)
-            .empty();
-        if (sideEffects.shouldApply(SideEffect.UPDATE)) {
-            flags = flags.withPhysics(true);
-        }
-        if (sideEffects.shouldApply(SideEffect.NEIGHBORS)) {
-            flags = flags.withNotifyObservers(true).withUpdateNeighbors(true);
-        }
-        if (sideEffects.shouldApply(SideEffect.ENTITY_AI)) {
-            flags = flags.withPathfindingUpdates(true);
-        }
-        if (sideEffects.shouldApply(SideEffect.LIGHTING)) {
-            flags = flags.withLightingUpdates(true);
-        }
-        if (sideEffects.shouldApply(SideEffect.NETWORK)) {
-            flags = flags.withNotifyClients(true);
-        }
-
-        world.setBlock(pos, newState, flags);
-
-        // Create the TileEntity
-        if (block instanceof BaseBlock) {
-            BaseBlock baseBlock = (BaseBlock) block;
-            if (baseBlock.getNbtReference() != null) {
-                // Kill the old TileEntity
-                world.getBlockEntity(pos).ifPresent(tileEntity -> applyTileEntityData(tileEntity, baseBlock));
-            }
-        }
-
-        return true;
+        return worldNativeAccess.setBlock(position, block, sideEffects);
     }
 
     @Override
     public Set<SideEffect> applySideEffects(BlockVector3 position, com.sk89q.worldedit.world.block.BlockState previousType, SideEffectSet sideEffectSet) throws WorldEditException {
-        return null;
+        worldNativeAccess.applySideEffects(position, previousType, sideEffectSet);
+        return Sets.intersection(SpongeWorldEdit.inst().getPlatform().getSupportedSideEffects(), sideEffectSet.getSideEffectsToApply());
     }
 
     @Override
@@ -200,6 +170,16 @@ public class SpongeWorld extends AbstractWorld {
 
     @Override
     public boolean clearContainerBlockContents(BlockVector3 position) {
+        checkNotNull(position);
+        if (!getBlock(position).getBlockType().getMaterial().hasContainer()) {
+            return false;
+        }
+
+        BlockEntity tile = getWorld().getBlockEntity(SpongeAdapter.adapt(position)).orElse(null);
+        if (tile instanceof CarrierBlockEntity) {
+            ((CarrierBlockEntity) tile).getInventory().clear();
+            return true;
+        }
         return false;
     }
 
@@ -248,13 +228,14 @@ public class SpongeWorld extends AbstractWorld {
                 new Vector3d(position.getX(), position.getY(), position.getZ())
         );
 
-        entity.offer(Keys.ITEM_STACK_SNAPSHOT, SpongeAdapter.adapt(item).createSnapshot());
+        // TODO
+        // entity.offer(Keys.ITEM_STACK_SNAPSHOT, SpongeAdapter.adapt(item).createSnapshot());
         getWorld().spawnEntity(entity);
     }
 
     @Override
     public void simulateBlockMine(BlockVector3 position) {
-        // TODO
+        getWorld().destroyBlock(SpongeAdapter.adapt(position), true);
     }
 
     @Override

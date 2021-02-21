@@ -26,6 +26,8 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.registry.RegistryTypes;
 import org.spongepowered.api.state.StateProperty;
 import org.spongepowered.api.world.schematic.PaletteType;
 import org.spongepowered.api.world.schematic.PaletteTypes;
@@ -55,10 +57,8 @@ public class SpongeBlockRegistry extends BundledBlockRegistry {
 
     @Override
     public OptionalInt getInternalBlockStateId(BlockState state) {
-        PaletteType<org.spongepowered.api.block.BlockState> blockPalette = PaletteTypes.GLOBAL_BLOCK_PALETTE.get();
-
-        return blockPalette.getDecoder().apply(state.toString())
-            .map(blockPalette.create()::get)
-            .orElse(OptionalInt.empty());
+        return PaletteTypes.BLOCK_STATE_PALETTE.get()
+            .create(Sponge.getGame().registries(), RegistryTypes.BLOCK_TYPE)
+            .get(SpongeAdapter.adapt(state));
     }
 }
