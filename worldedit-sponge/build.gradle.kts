@@ -25,7 +25,7 @@ dependencies {
     testImplementation("org.mockito:mockito-core:1.9.0-rc1")
 }
 
-addJarManifest(includeClasspath = true)
+addJarManifest(includeClasspath = true, includeEntrypoint = true)
 
 tasks.named<ShadowJar>("shadowJar") {
     dependencies {

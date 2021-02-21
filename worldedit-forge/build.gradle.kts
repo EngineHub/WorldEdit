@@ -91,7 +91,7 @@ tasks.named<Copy>("processResources") {
     from(project(":worldedit-core").tasks.named("processResources"))
 }
 
-addJarManifest(includeClasspath = false)
+addJarManifest(includeClasspath = false, includeEntrypoint = true)
 
 tasks.named<ShadowJar>("shadowJar") {
     dependencies {

@@ -130,7 +130,7 @@ private val CLASSPATH = listOf("truezip", "truevfs", "js")
     .flatMap { listOf(it, "WorldEdit/$it") }
     .joinToString(separator = " ")
 
-fun Project.addJarManifest(includeClasspath: Boolean = false) {
+fun Project.addJarManifest(includeClasspath: Boolean = false, includeEntrypoint: Boolean = false) {
     tasks.named<Jar>("jar") {
         val version = project(":worldedit-core").version
         inputs.property("version", version)
@@ -139,6 +139,9 @@ fun Project.addJarManifest(includeClasspath: Boolean = false) {
         )
         if (includeClasspath) {
             attributes["Class-Path"] = CLASSPATH
+        }
+        if (includeEntrypoint) {
+            attributes["Main-Class"] = "com.sk89q.worldedit.util.InfoEntryPoint";
         }
         manifest.attributes(attributes)
     }

@@ -130,7 +130,7 @@ tasks.named<Copy>("processResources") {
     }
 }
 
-addJarManifest(includeClasspath = true)
+addJarManifest(includeClasspath = true, includeEntrypoint = true)
 
 tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("dist-dev")
