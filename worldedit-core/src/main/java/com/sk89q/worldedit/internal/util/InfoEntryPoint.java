@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util;
+package com.sk89q.worldedit.internal.util;
 
 import com.sk89q.worldedit.WorldEditManifest;
 
@@ -39,17 +39,22 @@ public class InfoEntryPoint {
     private static String getMessage(boolean hyperlinks) {
         WorldEditManifest manifest = WorldEditManifest.load();
 
-        return "WorldEdit is not installed by running the jar file. Check out the install instructions here: "
-            + (hyperlinks ? "<a href=\"" + INSTALL_URL + "\">" + INSTALL_URL + "</a>" : INSTALL_URL)
-            + "\nFor further help, check out our support Discord at "
-            + (hyperlinks ? "<a href=\"" + SUPPORT_URL + "\">" + SUPPORT_URL + "</a>" : SUPPORT_URL)
-            + "\n\nVersion: "
-            + manifest.getWorldEditVersion();
+        return "To install WorldEdit, place it in the "
+            + manifest.getWorldEditKind().folderName + " folder.\n"
+            + "For more detailed instructions, see " + formatLink(INSTALL_URL, hyperlinks) + "\n"
+            + "For further help, check out our support Discord at "
+            + formatLink(SUPPORT_URL, hyperlinks) + "\n"
+            + "\n"
+            + "Version: " + manifest.getWorldEditVersion() + "\n";
+    }
+
+    private static String formatLink(String url, boolean hyperlinks) {
+        return hyperlinks ? String.format("<a href=\"%1$s\">%1$s</a>", url) : url;
     }
 
     public static void main(String[] args) {
         if (System.console() != null) {
-            System.out.println(getMessage(false));
+            System.err.println(getMessage(false));
         } else {
             JOptionPane.showMessageDialog(
                 null,
@@ -58,6 +63,7 @@ public class InfoEntryPoint {
                 JOptionPane.INFORMATION_MESSAGE
             );
         }
+        System.exit(1);
     }
 
     private static class MessageWithLink extends JEditorPane {
@@ -83,12 +89,10 @@ public class InfoEntryPoint {
             Color color = label.getBackground();
 
             // create some css from the label's font
-            return new StringBuilder()
-                .append("font-family:").append(font.getFamily()).append(";")
-                .append("font-weight:").append(font.isBold() ? "bold" : "normal").append(";")
-                .append("font-size:").append(font.getSize()).append("pt;")
-                .append("background-color: rgb(").append(color.getRed()).append(",").append(color.getGreen()).append(",").append(color.getBlue()).append(");")
-                .toString();
+            return "font-family:" + font.getFamily() + ";" +
+                "font-weight:" + (font.isBold() ? "bold" : "normal") + ";" +
+                "font-size:" + font.getSize() + "pt;" +
+                "background-color: rgb(" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + ");";
         }
     }
 }
