@@ -22,7 +22,9 @@ package com.sk89q.worldedit.blocks;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
+import com.sk89q.worldedit.util.nbt.BinaryTag;
 import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
+import com.sk89q.worldedit.util.nbt.NbtUtils;
 import com.sk89q.worldedit.util.nbt.TagStringIO;
 import com.sk89q.worldedit.world.NbtValued;
 import com.sk89q.worldedit.world.item.ItemType;
@@ -104,6 +106,26 @@ public class BaseItem implements NbtValued {
     @Override
     public void setNbtReference(@Nullable LazyReference<CompoundBinaryTag> nbtData) {
         this.nbtData = nbtData;
+    }
+
+    /**
+     * Gets whether the current item matches the given mask.
+     *
+     * <p>
+     * See {@link NbtUtils#matches(BinaryTag, BinaryTag)} for specifics of NBT behavior.
+     * </p>
+     *
+     * @param mask The mask to test against
+     * @return if it matches the mask
+     */
+    public boolean matches(BaseItem mask) {
+        checkNotNull(mask);
+
+        if (!mask.getType().equals(getType())) {
+            return false;
+        }
+
+        return NbtUtils.matches(mask.getNbt(), getNbt());
     }
 
     @Override
