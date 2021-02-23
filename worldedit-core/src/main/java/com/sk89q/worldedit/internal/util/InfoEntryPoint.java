@@ -21,44 +21,45 @@ package com.sk89q.worldedit.internal.util;
 
 import com.sk89q.worldedit.WorldEditManifest;
 
-import java.awt.Color;
 import java.awt.Desktop;
-import java.awt.Font;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import javax.swing.JEditorPane;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTextPane;
+import javax.swing.UIManager;
 import javax.swing.event.HyperlinkEvent;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 
 public class InfoEntryPoint {
 
     private static final String INSTALL_URL = "https://worldedit.enginehub.org/en/latest/install/";
     private static final String SUPPORT_URL = "https://discord.gg/enginehub";
 
-    private static String getMessage(boolean hyperlinks) {
+    private static String getMessage(boolean html) {
         WorldEditManifest manifest = WorldEditManifest.load();
 
         return "To install WorldEdit, place it in the "
             + manifest.getWorldEditKind().folderName + " folder.\n"
-            + "For more detailed instructions, see " + formatLink(INSTALL_URL, hyperlinks) + "\n"
+            + "For more detailed instructions, see " + formatLink(INSTALL_URL, html) + "\n"
             + "For further help, check out our support Discord at "
-            + formatLink(SUPPORT_URL, hyperlinks) + "\n"
+            + formatLink(SUPPORT_URL, html) + "\n"
             + "\n"
             + "Version: " + manifest.getWorldEditVersion() + "\n";
     }
 
-    private static String formatLink(String url, boolean hyperlinks) {
-        return hyperlinks ? String.format("<a href=\"%1$s\">%1$s</a>", url) : url;
+    private static String formatLink(String url, boolean html) {
+        return html ? String.format("<a href=\"%1$s\">%1$s</a>", url) : url;
     }
 
     public static void main(String[] args) {
         if (System.console() != null) {
             System.err.println(getMessage(false));
         } else {
+            System.setProperty("awt.useSystemAAFontSettings", "lcd");
             JOptionPane.showMessageDialog(
                 null,
-                new MessageWithLink(getMessage(true)),
+                new NavigableEditorPane(getMessage(true)),
                 "WorldEdit",
                 JOptionPane.INFORMATION_MESSAGE
             );
@@ -66,33 +67,24 @@ public class InfoEntryPoint {
         System.exit(1);
     }
 
-    private static class MessageWithLink extends JEditorPane {
-        public MessageWithLink(String htmlBody) {
-            super("text/html", "<html><body style=\"" + getStyle() + "\">" + htmlBody.replace("\n", "<br />") + "</body></html>");
+    private static class NavigableEditorPane extends JTextPane {
+        public NavigableEditorPane(String htmlBody) {
+            super(new HTMLDocument());
+            setEditorKit(new HTMLEditorKit());
+            setText(htmlBody.replace("\n", "<br>"));
+            setBackground(UIManager.getColor("Panel.background"));
+
             addHyperlinkListener(e -> {
                 if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
                     try {
                         Desktop.getDesktop().browse(e.getURL().toURI());
-                    } catch (IOException | URISyntaxException ioException) {
-                        ioException.printStackTrace();
+                    } catch (IOException | URISyntaxException ex) {
+                        ex.printStackTrace();
                     }
                 }
             });
             setEditable(false);
             setBorder(null);
-        }
-
-        static String getStyle() {
-            // for copying style
-            JLabel label = new JLabel();
-            Font font = label.getFont();
-            Color color = label.getBackground();
-
-            // create some css from the label's font
-            return "font-family:" + font.getFamily() + ";" +
-                "font-weight:" + (font.isBold() ? "bold" : "normal") + ";" +
-                "font-size:" + font.getSize() + "pt;" +
-                "background-color: rgb(" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + ");";
         }
     }
 }
