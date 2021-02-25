@@ -245,7 +245,7 @@ public class BukkitWorld extends AbstractWorld {
     @Override
     public boolean clearContainerBlockContents(BlockVector3 pt) {
         checkNotNull(pt);
-        if (getBlock(pt).getBlockType().getMaterial().hasContainer()) {
+        if (!getBlock(pt).getBlockType().getMaterial().hasContainer()) {
             return false;
         }
 
