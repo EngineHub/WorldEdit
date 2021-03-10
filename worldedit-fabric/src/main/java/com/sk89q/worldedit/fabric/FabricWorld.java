@@ -590,11 +590,6 @@ public class FabricWorld extends AbstractWorld {
                 .getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4)
                 .getBlockState(FabricAdapter.toBlockPos(position));
 
-        BlockState matchingBlock = BlockStateIdAccess.getBlockStateById(Block.getRawIdFromState(mcState));
-        if (matchingBlock != null) {
-            return matchingBlock;
-        }
-
         return FabricAdapter.adapt(mcState);
     }
 

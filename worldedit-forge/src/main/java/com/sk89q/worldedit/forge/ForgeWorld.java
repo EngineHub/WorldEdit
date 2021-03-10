@@ -601,11 +601,6 @@ public class ForgeWorld extends AbstractWorld {
                 .getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4)
                 .getBlockState(ForgeAdapter.toBlockPos(position));
 
-        BlockState matchingBlock = BlockStateIdAccess.getBlockStateById(Block.getStateId(mcState));
-        if (matchingBlock != null) {
-            return matchingBlock;
-        }
-
         return ForgeAdapter.adapt(mcState);
     }
 

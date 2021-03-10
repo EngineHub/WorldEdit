@@ -20,15 +20,18 @@
 package com.sk89q.worldedit.fabric.internal;
 
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
 import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MixinConfigPlugin implements IMixinConfigPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(MixinConfigPlugin.class);
@@ -45,11 +48,18 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         if (mixinClassName.equals("com.sk89q.worldedit.fabric.mixin.MixinWorldChunkSetBlockHook")) {
-            boolean carpet = FabricLoader.getInstance().getModContainer("carpet").isPresent();
-            if (carpet) {
-                LOGGER.warn("Carpet detected, disabling UPDATE mixin " + mixinClassName);
+            List<ModContainer> conflictingContainers = Stream.of("carpet", "quickcarpet")
+                .map(FabricLoader.getInstance()::getModContainer)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+            if (!conflictingContainers.isEmpty()) {
+                List<String> conflictingIds = conflictingContainers.stream()
+                    .map(mc -> mc.getMetadata().getId())
+                    .collect(Collectors.toList());
+                LOGGER.warn("{} detected, disabling UPDATE mixin {}", conflictingIds, mixinClassName);
             }
-            return !carpet;
+            return conflictingContainers.isEmpty();
         }
         return true;
     }

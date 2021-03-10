@@ -131,7 +131,7 @@ tasks.named<Copy>("processResources") {
     }
 }
 
-addJarManifest(includeClasspath = true)
+addJarManifest(WorldEditKind.Mod, includeClasspath = true)
 
 tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("dist-dev")

@@ -108,7 +108,7 @@ class FileSystemSnapshotDatabaseTest {
             reader.close();
         }
 
-        TEMP_DIR = Files.createTempDirectory("worldedit-fs-snap-dbs");
+        TEMP_DIR = Files.createTempDirectory("worldedit-fs-snap-dbs").toRealPath();
     }
 
     @AfterAll
