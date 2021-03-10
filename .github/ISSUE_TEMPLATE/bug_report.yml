@@ -1,0 +1,60 @@
+name: Bug report
+description: Report a way in which WorldEdit is not working as intended
+title: ''
+labels: ['type:bug', 'status:pending']
+assignees: []
+issue_body: true
+
+body:
+- type: markdown
+  attributes:
+    value: |
+      Please note that this is only for bugs, help with installation or other types of support should
+      be taken to the Discord Guild instead.
+
+- type: input
+  attributes:
+    label: WorldEdit Version
+    description: The full version of WorldEdit, can be found by using `/we version`.
+    placeholder: e.g. 7.2.3 or 7.3.0-SNAPSHOT
+  validations:
+    required: true
+
+- type: input
+  attributes:
+    label: Platform Version
+    description: |
+      The version of the platform you are on, i.e. Spigot, Paper, Fabric, or Forge.
+      Please ensure you are running up to date software before making a bug report.
+      Old versions will receive little to no support.
+    placeholder: e.g. git-Spigot-21fe707-e1ebe52, git-Paper-463, Fabric 0.7.1, Forge 35.1.37
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: Bug Description
+    description: A clear and concise description of what the bug is.
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: Expected Behavior
+    description: The behavior that you expected, instead of the bugged behavior that occurs.
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: Reproduction Steps
+    description: Steps to reproduce the behavior.
+    value: |
+      1. ...
+      2. ...
+  validations:
+    required: true
+
+- type: markdown
+  attributes:
+    value: Add any additional context you can provide below.

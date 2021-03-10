@@ -1,0 +1,44 @@
+name: Feature request
+description: Suggest an idea for WorldEdit
+title: ''
+labels: ['type:feature-request', 'status:pending']
+assignees: []
+issue_body: true
+
+body:
+- type: markdown
+  attributes:
+    value: >
+      Please note: we are currently not accepting feature requests designed to make it
+      easier to give WorldEdit to all players on a server. WorldEdit is intended for
+      admin use only.
+
+- type: textarea
+  attributes:
+    label: The Problem
+    description: >
+      What is making your WorldEdit experience sub-optimal? This should be something that
+      cannot be easily solved by existing WorldEdit features.
+    placeholder: It's hard to ... ; I'm unable to ...
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: A Solution
+    description: What is your proposed solution to the above problem?
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: Alternatives
+    description: |
+      Alternative solutions or workarounds to the problem.
+      You should also describe why these are not preferable to the given solution.
+  validations:
+    required: false
+
+- type: markdown
+  attributes:
+    value: Add any additional context you can provide below.
