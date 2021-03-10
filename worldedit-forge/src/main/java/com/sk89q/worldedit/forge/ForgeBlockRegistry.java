@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.forge;
 
+import com.sk89q.worldedit.forge.internal.ForgeTransmogrifier;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
@@ -64,7 +65,7 @@ public class ForgeBlockRegistry extends BundledBlockRegistry {
             // func_235904_r_ == getProperties
             .func_235904_r_();
         for (net.minecraft.state.Property<?> key : propertyKeys) {
-            map.put(key.getName(), ForgeAdapter.adaptProperty(key));
+            map.put(key.getName(), ForgeTransmogrifier.transmogToWorldEditProperty(key));
         }
         return map;
     }

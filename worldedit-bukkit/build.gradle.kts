@@ -44,7 +44,7 @@ tasks.named<Copy>("processResources") {
     exclude("**/worldedit-adapters.jar")
 }
 
-addJarManifest(includeClasspath = true)
+addJarManifest(WorldEditKind.Plugin, includeClasspath = true)
 
 tasks.named<ShadowJar>("shadowJar") {
     from(zipTree("src/main/resources/worldedit-adapters.jar").matching {

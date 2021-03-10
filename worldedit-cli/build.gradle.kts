@@ -6,6 +6,7 @@ plugins {
 
 applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
+addJarManifest(WorldEditKind.Standalone("com.sk89q.worldedit.cli.CLIWorldEdit"))
 
 dependencies {
     "api"(project(":worldedit-core"))
@@ -15,15 +16,6 @@ dependencies {
     "implementation"("commons-cli:commons-cli:1.4")
     "implementation"("com.google.guava:guava")
     "implementation"("com.google.code.gson:gson")
-}
-
-tasks.named<Jar>("jar") {
-    manifest {
-        attributes(
-                "Implementation-Version" to project.version,
-                "Main-Class" to "com.sk89q.worldedit.cli.CLIWorldEdit"
-        )
-    }
 }
 
 tasks.named<ShadowJar>("shadowJar") {

@@ -1,8 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import net.minecrell.gradle.licenser.LicenseExtension
-import org.gradle.api.JavaVersion
 import org.gradle.api.Project
-import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.plugins.quality.CheckstyleExtension
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.compile.JavaCompile
@@ -40,6 +37,7 @@ fun Project.applyPlatformAndCoreConfiguration() {
             options.compilerArgs.addAll(listOf("-Xlint:all") + disabledLint.map { "-Xlint:-$it" })
             options.isDeprecation = true
             options.encoding = "UTF-8"
+            options.compilerArgs.add("-parameters")
         }
 
     configure<CheckstyleExtension> {
@@ -130,12 +128,24 @@ private val CLASSPATH = listOf("truezip", "truevfs", "js")
     .flatMap { listOf(it, "WorldEdit/$it") }
     .joinToString(separator = " ")
 
-fun Project.addJarManifest(includeClasspath: Boolean = false) {
+sealed class WorldEditKind(
+    val name: String,
+    val mainClass: String = "com.sk89q.worldedit.internal.util.InfoEntryPoint"
+) {
+    class Standalone(mainClass: String) : WorldEditKind("STANDALONE", mainClass)
+    object Mod : WorldEditKind("MOD")
+    object Plugin : WorldEditKind("PLUGIN")
+}
+
+fun Project.addJarManifest(kind: WorldEditKind, includeClasspath: Boolean = false) {
     tasks.named<Jar>("jar") {
         val version = project(":worldedit-core").version
         inputs.property("version", version)
         val attributes = mutableMapOf(
-            "WorldEdit-Version" to version
+            "Implementation-Version" to version,
+            "WorldEdit-Version" to version,
+            "WorldEdit-Kind" to kind.name,
+            "Main-Class" to kind.mainClass
         )
         if (includeClasspath) {
             attributes["Class-Path"] = CLASSPATH
