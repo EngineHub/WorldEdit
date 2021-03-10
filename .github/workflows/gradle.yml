@@ -2,9 +2,13 @@ name: Gradle Build
 on: [push, pull_request]
 
 jobs:
-  build-ubuntu:
-    name: Build WorldEdit on Ubuntu (Latest)
-    runs-on: ubuntu-latest
+  build:
+    name: Build WorldEdit on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
 
     steps:
     - uses: actions/checkout@v2
@@ -13,16 +17,10 @@ jobs:
       with:
         java-version: 1.8
     - name: Build with Gradle
-      run: ./gradlew build
-  build-windows:
-    name: Build WorldEdit on Windows (Latest)
-    runs-on: windows-latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 1.8
-      uses: actions/setup-java@v1
+      run: ./gradlew build -s
+    - uses: actions/upload-artifact@v2
+      name: Archive Reports
+      if: always()
       with:
-        java-version: 1.8
-    - name: Build with Gradle
-      run: ./gradlew build
+        name: reports for ${{ matrix.os }}
+        path: '**/build/reports/**'
