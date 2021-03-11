@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.world;
 
 import com.google.common.annotations.Beta;
-import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 
 /**
  * This entire class is subject to heavy changes. Do not use this as API.
@@ -37,9 +37,9 @@ public interface DataFixer {
         private FixTypes() {
         }
 
-        public static FixType<CompoundTag> CHUNK = new FixType<>();
-        public static FixType<CompoundTag> BLOCK_ENTITY = new FixType<>();
-        public static FixType<CompoundTag> ENTITY = new FixType<>();
+        public static FixType<CompoundBinaryTag> CHUNK = new FixType<>();
+        public static FixType<CompoundBinaryTag> BLOCK_ENTITY = new FixType<>();
+        public static FixType<CompoundBinaryTag> ENTITY = new FixType<>();
         public static FixType<String> BLOCK_STATE = new FixType<>();
         public static FixType<String> BIOME = new FixType<>();
         public static FixType<String> ITEM_TYPE = new FixType<>();
