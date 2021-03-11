@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.extent.clipboard.io;
 
 import com.google.common.collect.Maps;
+import com.sk89q.jnbt.AdventureNBTConverter;
 import com.sk89q.jnbt.ByteArrayTag;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.IntArrayTag;
@@ -247,7 +248,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
                 values.remove("Id");
                 values.remove("Pos");
                 if (fixer != null) {
-                    tileEntity = fixer.fixUp(DataFixer.FixTypes.BLOCK_ENTITY, new CompoundTag(values), dataVersion).getValue();
+                    tileEntity = ((CompoundTag) AdventureNBTConverter.fromAdventure(fixer.fixUp(DataFixer.FixTypes.BLOCK_ENTITY, new CompoundTag(values).asBinaryTag(), dataVersion))).getValue();
                 } else {
                     tileEntity = values;
                 }
@@ -385,7 +386,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
             entityTag = entityTag.createBuilder().putString("id", id).remove("Id").build();
 
             if (fixer != null) {
-                entityTag = fixer.fixUp(DataFixer.FixTypes.ENTITY, entityTag, dataVersion);
+                entityTag = (CompoundTag) AdventureNBTConverter.fromAdventure(fixer.fixUp(DataFixer.FixTypes.ENTITY, entityTag.asBinaryTag(), dataVersion));
             }
 
             EntityType entityType = EntityTypes.get(id);

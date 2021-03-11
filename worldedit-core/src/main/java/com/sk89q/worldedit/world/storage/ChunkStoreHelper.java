@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.world.storage;
 
+import com.sk89q.jnbt.AdventureNBTConverter;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.NBTInputStream;
 import com.sk89q.jnbt.Tag;
@@ -96,7 +97,7 @@ public class ChunkStoreHelper {
         if (tag.getValue().containsKey("Sections") && dataVersion < currentDataVersion) { // only fix up MCA format, DFU doesn't support MCR chunks
             final DataFixer dataFixer = platform.getDataFixer();
             if (dataFixer != null) {
-                tag = (CompoundTag) dataFixer.fixUp(DataFixer.FixTypes.CHUNK, rootTag, dataVersion).getValue().get("Level");
+                tag = (CompoundTag) ((CompoundTag) AdventureNBTConverter.fromAdventure(dataFixer.fixUp(DataFixer.FixTypes.CHUNK, rootTag.asBinaryTag(), dataVersion))).getValue().get("Level");
                 dataVersion = currentDataVersion;
             }
         }
