@@ -95,8 +95,8 @@ addJarManifest(WorldEditKind.Mod, includeClasspath = false)
 
 tasks.named<ShadowJar>("shadowJar") {
     dependencies {
-        relocate("org.slf4j", "com.sk89q.worldedit.slf4j")
-        relocate("org.apache.logging.slf4j", "com.sk89q.worldedit.l4j")
+        relocate("org.slf4j", "com.sk89q.worldedit-forge.slf4j")
+        relocate("org.apache.logging.slf4j", "com.sk89q.worldedit-forge.l4j")
         relocate("org.antlr.v4", "com.sk89q.worldedit.antlr4")
 
         include(dependency("org.slf4j:slf4j-api"))
