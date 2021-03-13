@@ -1,3 +1,10 @@
+7.2.4
+- [Bukkit] Fixed an issue where chest contents may not be erased
+- [Bukkit] Worked around a Spigot bug causing potential watchdog timeouts on startup
+- [Forge] Fixed some potential issues with the merged -mod file on Forge
+- Added a message with install instructions when incorrectly trying to run the jar file
+- Fixed a problem where capital characters in block properties could cause suggestion errors
+
 7.2.3
 - [Forge/Fabric] Added -mod jar file containing both Fabric and Forge
 - [Forge/Fabric] Speed up WorldEdit<->Native block translation layer in some cases
