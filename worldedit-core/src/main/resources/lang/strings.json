@@ -108,6 +108,7 @@
     "worldedit.schematic.save.failed-directory": "Could not create folder for schematics!",
     "worldedit.schematic.save.saving": "(Please wait... saving schematic.)",
     "worldedit.schematic.save.still-saving": "(Please wait... still saving schematic.)",
+    "worldedit.schematic.share.unsupported-format": "The schematic share destination \"{0}\" does not support \"{1}\" schematics.",
     "worldedit.schematic.delete.does-not-exist": "Schematic {0} does not exist!",
     "worldedit.schematic.delete.failed": "Deletion of {0} failed! Is it read-only?",
     "worldedit.schematic.delete.deleted": "{0} has been deleted.",

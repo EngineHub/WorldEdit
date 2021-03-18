@@ -17,10 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.command;
+package com.sk89q.worldedit.extent.clipboard;
 
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.transform.BlockTransformExtent;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
@@ -41,7 +40,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @see Clipboard
  * @see Transform
  */
-class FlattenedClipboardTransform {
+public class FlattenedClipboardTransform {
 
     private final Clipboard original;
     private final Transform transform;
