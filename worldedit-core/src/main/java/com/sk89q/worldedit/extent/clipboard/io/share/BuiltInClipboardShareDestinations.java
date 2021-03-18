@@ -22,7 +22,7 @@ package com.sk89q.worldedit.extent.clipboard.io.share;
 import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.extent.clipboard.FlattenedClipboardTransform;
+import com.sk89q.worldedit.extent.clipboard.ClipboardTransformFuser;
 import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
@@ -65,7 +65,7 @@ public enum BuiltInClipboardShareDestinations implements ClipboardShareDestinati
             if (transform.isIdentity()) {
                 target = clipboard;
             } else {
-                FlattenedClipboardTransform result = FlattenedClipboardTransform.transform(clipboard, transform);
+                ClipboardTransformFuser result = ClipboardTransformFuser.transform(clipboard, transform);
                 target = new BlockArrayClipboard(result.getTransformedRegion());
                 target.setOrigin(clipboard.getOrigin());
                 Operations.completeLegacy(result.copyTo(target));

@@ -40,7 +40,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @see Clipboard
  * @see Transform
  */
-public class FlattenedClipboardTransform {
+public class ClipboardTransformFuser {
 
     private final Clipboard original;
     private final Transform transform;
@@ -51,7 +51,7 @@ public class FlattenedClipboardTransform {
      * @param original the original clipboard
      * @param transform the transform
      */
-    private FlattenedClipboardTransform(Clipboard original, Transform transform) {
+    private ClipboardTransformFuser(Clipboard original, Transform transform) {
         checkNotNull(original);
         checkNotNull(transform);
         this.original = original;
@@ -128,8 +128,8 @@ public class FlattenedClipboardTransform {
      * @param transform the transform
      * @return a builder
      */
-    public static FlattenedClipboardTransform transform(Clipboard original, Transform transform) {
-        return new FlattenedClipboardTransform(original, transform);
+    public static ClipboardTransformFuser transform(Clipboard original, Transform transform) {
+        return new ClipboardTransformFuser(original, transform);
     }
 
 }

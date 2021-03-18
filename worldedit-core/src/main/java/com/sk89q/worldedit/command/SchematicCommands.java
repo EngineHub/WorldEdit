@@ -33,7 +33,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.extent.clipboard.FlattenedClipboardTransform;
+import com.sk89q.worldedit.extent.clipboard.ClipboardTransformFuser;
 import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
@@ -387,7 +387,7 @@ public class SchematicCommands {
             if (transform.isIdentity()) {
                 target = clipboard;
             } else {
-                FlattenedClipboardTransform result = FlattenedClipboardTransform.transform(clipboard, transform);
+                ClipboardTransformFuser result = ClipboardTransformFuser.transform(clipboard, transform);
                 target = new BlockArrayClipboard(result.getTransformedRegion());
                 target.setOrigin(clipboard.getOrigin());
                 Operations.completeLegacy(result.copyTo(target));
