@@ -48,7 +48,7 @@ public enum BuiltInClipboardShareDestinations implements ClipboardShareDestinati
     /**
      * The EngineHub pastebin service, at https://paste.enginehub.org/
      */
-    ENGINEHUB_PASTEBIN("enginehub", "ehpaste") {
+    ENGINEHUB_PASTEBIN("enginehub_paste", "ehpaste") {
         @Override
         public String getName() {
             return "EngineHub Paste";
