@@ -206,7 +206,7 @@ public class SchematicCommands {
     public void share(Actor actor, LocalSession session,
                       @Arg(desc = "Schematic name. Defaults to name-millis", def = "")
                           String schematicName,
-                      @Arg(desc = "Share location", def = "eh_paste")
+                      @Arg(desc = "Share location", def = "ehpaste")
                           ClipboardShareDestination destination,
                       @Arg(desc = "Format name", def = "")
                           ClipboardFormat format) throws WorldEditException {
