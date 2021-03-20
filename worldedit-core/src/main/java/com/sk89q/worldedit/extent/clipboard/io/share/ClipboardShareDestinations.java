@@ -41,7 +41,7 @@ public class ClipboardShareDestinations {
         checkNotNull(destination);
 
         for (String key : destination.getAliases()) {
-            String lowKey = key.toLowerCase(Locale.ENGLISH);
+            String lowKey = key.toLowerCase(Locale.ROOT);
             ClipboardShareDestination old = aliasMap.put(lowKey, destination);
             if (old != null) {
                 aliasMap.put(lowKey, old);
@@ -60,14 +60,13 @@ public class ClipboardShareDestinations {
     /**
      * Find the clipboard format named by the given alias.
      *
-     * @param alias
-     *            the alias
+     * @param alias the alias
      * @return the format, otherwise null if none is matched
      */
     @Nullable
     public static ClipboardShareDestination findByAlias(String alias) {
         checkNotNull(alias);
-        return aliasMap.get(alias.toLowerCase(Locale.ENGLISH).trim());
+        return aliasMap.get(alias.toLowerCase(Locale.ROOT).trim());
     }
 
     public static Collection<ClipboardShareDestination> getAll() {

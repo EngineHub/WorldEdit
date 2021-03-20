@@ -20,13 +20,11 @@
 package com.sk89q.worldedit.extent.clipboard.io.share;
 
 import com.google.common.collect.ImmutableSet;
-import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.extent.clipboard.ClipboardTransformFuser;
+import com.sk89q.worldedit.extent.clipboard.ClipboardTransformBaker;
 import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
-import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.io.Closer;
@@ -65,10 +63,7 @@ public enum BuiltInClipboardShareDestinations implements ClipboardShareDestinati
             if (transform.isIdentity()) {
                 target = clipboard;
             } else {
-                ClipboardTransformFuser result = ClipboardTransformFuser.transform(clipboard, transform);
-                target = new BlockArrayClipboard(result.getTransformedRegion());
-                target.setOrigin(clipboard.getOrigin());
-                Operations.completeLegacy(result.copyTo(target));
+                target = ClipboardTransformBaker.bakeTransform(clipboard, transform);
             }
 
             try (Closer closer = Closer.create()) {
@@ -78,6 +73,7 @@ public enum BuiltInClipboardShareDestinations implements ClipboardShareDestinati
                 writer.write(target);
             }
 
+            metadata.extension = "schem";
             EngineHubPaste pasteService = new EngineHubPaste();
             return pasteService.paste(new String(Base64.getEncoder().encode(outputStream.toByteArray()), StandardCharsets.UTF_8), metadata).call();
         }

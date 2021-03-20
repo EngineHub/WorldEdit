@@ -31,16 +31,14 @@ import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.WorldEditAsyncCommandBuilder;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
-import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.extent.clipboard.ClipboardTransformFuser;
+import com.sk89q.worldedit.extent.clipboard.ClipboardTransformBaker;
 import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.extent.clipboard.io.share.ClipboardShareDestination;
-import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.session.ClipboardHolder;
@@ -208,7 +206,7 @@ public class SchematicCommands {
     public void share(Actor actor, LocalSession session,
                       @Arg(desc = "Schematic name. Defaults to name-millis", def = "")
                           String schematicName,
-                      @Arg(desc = "Share location", def = "enginehub")
+                      @Arg(desc = "Share location", def = "eh_paste")
                           ClipboardShareDestination destination,
                       @Arg(desc = "Format name", def = "")
                           ClipboardFormat format) throws WorldEditException {
@@ -387,10 +385,7 @@ public class SchematicCommands {
             if (transform.isIdentity()) {
                 target = clipboard;
             } else {
-                ClipboardTransformFuser result = ClipboardTransformFuser.transform(clipboard, transform);
-                target = new BlockArrayClipboard(result.getTransformedRegion());
-                target.setOrigin(clipboard.getOrigin());
-                Operations.completeLegacy(result.copyTo(target));
+                target = ClipboardTransformBaker.bakeTransform(clipboard, transform);
             }
 
             try (Closer closer = Closer.create()) {
@@ -437,7 +432,6 @@ public class SchematicCommands {
         public URL call() throws Exception {
             PasteMetadata metadata = new PasteMetadata();
             metadata.author = this.actor.getName();
-            metadata.extension = "schem";
             metadata.name = name == null ? actor.getName() + "-" + System.currentTimeMillis() : name;
 
             return destination.share(holder, format, metadata);

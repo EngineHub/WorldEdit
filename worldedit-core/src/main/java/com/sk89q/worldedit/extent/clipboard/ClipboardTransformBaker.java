@@ -19,10 +19,12 @@
 
 package com.sk89q.worldedit.extent.clipboard;
 
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.transform.BlockTransformExtent;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.math.transform.AffineTransform;
 import com.sk89q.worldedit.math.transform.CombinedTransform;
@@ -35,12 +37,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Helper class to 'bake' a transform into a clipboard.
  *
- * <p>This class needs a better name and may need to be made more generic.</p>
- *
  * @see Clipboard
  * @see Transform
  */
-public class ClipboardTransformFuser {
+public class ClipboardTransformBaker {
 
     private final Clipboard original;
     private final Transform transform;
@@ -51,7 +51,7 @@ public class ClipboardTransformFuser {
      * @param original the original clipboard
      * @param transform the transform
      */
-    private ClipboardTransformFuser(Clipboard original, Transform transform) {
+    private ClipboardTransformBaker(Clipboard original, Transform transform) {
         checkNotNull(original);
         checkNotNull(transform);
         this.original = original;
@@ -63,7 +63,7 @@ public class ClipboardTransformFuser {
      *
      * @return the transformed region
      */
-    public Region getTransformedRegion() {
+    private Region getTransformedRegion() {
         Region region = original.getRegion();
         Vector3 minimum = region.getMinimumPoint().toVector3();
         Vector3 maximum = region.getMaximumPoint().toVector3();
@@ -111,7 +111,7 @@ public class ClipboardTransformFuser {
      * @param target the target
      * @return the operation
      */
-    public Operation copyTo(Extent target) {
+    private Operation copyTo(Extent target) {
         BlockTransformExtent extent = new BlockTransformExtent(original, transform);
         ForwardExtentCopy copy = new ForwardExtentCopy(extent, original.getRegion(), original.getOrigin(), target, original.getOrigin());
         copy.setTransform(transform);
@@ -127,9 +127,15 @@ public class ClipboardTransformFuser {
      * @param original the original clipboard
      * @param transform the transform
      * @return a builder
+     * @throws WorldEditException if an error occurred during copy
      */
-    public static ClipboardTransformFuser transform(Clipboard original, Transform transform) {
-        return new ClipboardTransformFuser(original, transform);
+    public static Clipboard bakeTransform(Clipboard original, Transform transform) throws WorldEditException {
+        ClipboardTransformBaker baker = new ClipboardTransformBaker(original, transform);
+        Clipboard target = new BlockArrayClipboard(baker.getTransformedRegion());
+        target.setOrigin(original.getOrigin());
+        Operations.complete(baker.copyTo(target));
+
+        return target;
     }
 
 }
