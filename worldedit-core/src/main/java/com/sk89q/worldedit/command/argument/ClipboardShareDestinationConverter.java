@@ -72,8 +72,7 @@ public class ClipboardShareDestinationConverter implements ArgumentConverter<Cli
     public ConversionResult<ClipboardShareDestination> convert(String s, InjectedValueAccess injectedValueAccess) {
         ClipboardShareDestination result = ClipboardShareDestinations.findByAlias(s);
         return result == null
-            ? FailedConversion.from(new IllegalArgumentException(
-            "Not a valid clipboard share destination: " + s))
+            ? FailedConversion.from(new IllegalArgumentException("Not a valid clipboard share destination: " + s))
             : SuccessfulConversion.fromSingle(result);
     }
 }

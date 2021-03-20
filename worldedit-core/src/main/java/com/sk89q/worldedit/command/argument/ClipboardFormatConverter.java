@@ -76,8 +76,7 @@ public class ClipboardFormatConverter implements ArgumentConverter<ClipboardForm
     public ConversionResult<ClipboardFormat> convert(String s, InjectedValueAccess injectedValueAccess) {
         ClipboardFormat result = ClipboardFormats.findByAlias(s);
         return result == null
-            ? FailedConversion.from(new IllegalArgumentException(
-            "Not a valid schematic format: " + s))
+            ? FailedConversion.from(new IllegalArgumentException("Not a valid schematic format: " + s))
             : SuccessfulConversion.fromSingle(result);
     }
 }
