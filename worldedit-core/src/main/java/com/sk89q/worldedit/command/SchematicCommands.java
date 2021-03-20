@@ -39,6 +39,7 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.extent.clipboard.io.share.ClipboardShareDestination;
+import com.sk89q.worldedit.extent.clipboard.io.share.ClipboardShareMetadata;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.session.ClipboardHolder;
@@ -55,7 +56,6 @@ import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldedit.util.io.file.MorePaths;
-import com.sk89q.worldedit.util.paste.PasteMetadata;
 import org.apache.logging.log4j.Logger;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
@@ -430,7 +430,7 @@ public class SchematicCommands {
 
         @Override
         public URL call() throws Exception {
-            PasteMetadata metadata = new PasteMetadata();
+            ClipboardShareMetadata metadata = new ClipboardShareMetadata();
             metadata.author = this.actor.getName();
             metadata.name = name == null ? actor.getName() + "-" + System.currentTimeMillis() : name;
 

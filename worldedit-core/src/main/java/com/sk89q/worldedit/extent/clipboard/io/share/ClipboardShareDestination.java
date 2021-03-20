@@ -21,7 +21,6 @@ package com.sk89q.worldedit.extent.clipboard.io.share;
 
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.session.ClipboardHolder;
-import com.sk89q.worldedit.util.paste.PasteMetadata;
 
 import java.net.URL;
 import java.util.Set;
@@ -51,7 +50,7 @@ public interface ClipboardShareDestination {
      * @return The URL
      * @throws Exception if it failed to share
      */
-    URL share(ClipboardHolder holder, ClipboardFormat format, PasteMetadata metadata) throws Exception;
+    URL share(ClipboardHolder holder, ClipboardFormat format, ClipboardShareMetadata metadata) throws Exception;
 
     /**
      * Gets the default clipboard format for this share destination.

@@ -53,7 +53,7 @@ public enum BuiltInClipboardShareDestinations implements ClipboardShareDestinati
         }
 
         @Override
-        public URL share(ClipboardHolder holder, ClipboardFormat format, PasteMetadata metadata) throws Exception {
+        public URL share(ClipboardHolder holder, ClipboardFormat format, ClipboardShareMetadata metadata) throws Exception {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             Clipboard clipboard = holder.getClipboard();
             Transform transform = holder.getTransform();
@@ -73,9 +73,12 @@ public enum BuiltInClipboardShareDestinations implements ClipboardShareDestinati
                 writer.write(target);
             }
 
-            metadata.extension = "schem";
+            PasteMetadata pasteMetadata = new PasteMetadata();
+            pasteMetadata.author = metadata.author;
+            pasteMetadata.extension = "schem";
+            pasteMetadata.name = metadata.name;
             EngineHubPaste pasteService = new EngineHubPaste();
-            return pasteService.paste(new String(Base64.getEncoder().encode(outputStream.toByteArray()), StandardCharsets.UTF_8), metadata).call();
+            return pasteService.paste(new String(Base64.getEncoder().encode(outputStream.toByteArray()), StandardCharsets.UTF_8), pasteMetadata).call();
         }
 
         @Override
