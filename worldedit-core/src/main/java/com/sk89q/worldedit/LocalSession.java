@@ -394,7 +394,7 @@ public class LocalSession {
      * call learnRegionChanges(). If the selection is not fully defined,
      * the {@code IncompleteRegionException} exception will be thrown.
      *
-     * Note that this method will return a region in the current selection world,
+     * <p>Note that this method will return a region in the current selection world,
      * which is not guaranteed to be the player's world or even the current world
      * override. If you require a specific world, use the
      * {@link LocalSession#getSelection(World)} overload instead.
