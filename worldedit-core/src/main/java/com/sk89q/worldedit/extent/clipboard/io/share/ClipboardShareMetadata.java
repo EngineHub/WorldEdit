@@ -23,6 +23,19 @@ package com.sk89q.worldedit.extent.clipboard.io.share;
  * Items of metadata about shared clipboards.
  */
 public class ClipboardShareMetadata {
-    public String name;
-    public String author;
+    private final String name;
+    private final String author;
+
+    public ClipboardShareMetadata(String name, String author) {
+        this.name = name;
+        this.author = author;
+    }
+
+    public String name() {
+        return this.name;
+    }
+
+    public String author() {
+        return this.author;
+    }
 }

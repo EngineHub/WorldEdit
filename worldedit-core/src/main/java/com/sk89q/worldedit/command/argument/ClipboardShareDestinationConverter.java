@@ -33,8 +33,8 @@ import org.enginehub.piston.inject.Key;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import static org.enginehub.piston.converter.SuggestionHelper.limitByPrefix;
 
 public class ClipboardShareDestinationConverter implements ArgumentConverter<ClipboardShareDestination> {
 
@@ -55,17 +55,11 @@ public class ClipboardShareDestinationConverter implements ArgumentConverter<Cli
         return this.choices;
     }
 
-    private Stream<ClipboardShareDestination> getDestinations() {
-        return ClipboardShareDestinations.getAll().stream();
-    }
-
     @Override
     public List<String> getSuggestions(String input, InjectedValueAccess context) {
-        return getDestinations()
+        return limitByPrefix(ClipboardShareDestinations.getAll().stream()
             .map(ClipboardShareDestination::getAliases)
-            .flatMap(Set::stream)
-            .filter(destination -> destination.startsWith(input))
-            .collect(Collectors.toList());
+            .flatMap(Set::stream), input);
     }
 
     @Override

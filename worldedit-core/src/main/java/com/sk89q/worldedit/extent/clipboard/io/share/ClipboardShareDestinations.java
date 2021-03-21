@@ -30,6 +30,7 @@ import java.util.Locale;
 import java.util.Map;
 import javax.annotation.Nullable;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ClipboardShareDestinations {
@@ -39,6 +40,7 @@ public class ClipboardShareDestinations {
 
     public static void registerClipboardShareDestination(ClipboardShareDestination destination) {
         checkNotNull(destination);
+        checkArgument(destination.supportsFormat(destination.getDefaultFormat()), "Destination must accept its default format");
 
         for (String key : destination.getAliases()) {
             String lowKey = key.toLowerCase(Locale.ROOT);

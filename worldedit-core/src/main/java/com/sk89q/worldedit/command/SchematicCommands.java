@@ -32,7 +32,6 @@ import com.sk89q.worldedit.command.util.WorldEditAsyncCommandBuilder;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.extent.clipboard.ClipboardTransformBaker;
 import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
@@ -379,14 +378,7 @@ public class SchematicCommands {
         private void writeToOutputStream(OutputStream outputStream) throws Exception {
             Clipboard clipboard = holder.getClipboard();
             Transform transform = holder.getTransform();
-            Clipboard target;
-
-            // If we have a transform, bake it into the copy
-            if (transform.isIdentity()) {
-                target = clipboard;
-            } else {
-                target = ClipboardTransformBaker.bakeTransform(clipboard, transform);
-            }
+            Clipboard target = clipboard.transform(transform);
 
             try (Closer closer = Closer.create()) {
                 OutputStream stream = closer.register(outputStream);
@@ -430,9 +422,10 @@ public class SchematicCommands {
 
         @Override
         public URL call() throws Exception {
-            ClipboardShareMetadata metadata = new ClipboardShareMetadata();
-            metadata.author = this.actor.getName();
-            metadata.name = name == null ? actor.getName() + "-" + System.currentTimeMillis() : name;
+            ClipboardShareMetadata metadata = new ClipboardShareMetadata(
+                this.actor.getName(),
+                name == null ? actor.getName() + "-" + System.currentTimeMillis() : name
+            );
 
             return destination.share(holder, format, metadata);
         }

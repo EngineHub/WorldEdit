@@ -19,8 +19,11 @@
 
 package com.sk89q.worldedit.extent.clipboard;
 
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.internal.util.ClipboardTransformBaker;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.regions.Region;
 
 /**
@@ -67,5 +70,20 @@ public interface Clipboard extends Extent {
      */
     default boolean hasBiomes() {
         return false;
+    }
+
+    /**
+     * Returns a new clipboard with a given transform baked in.
+     *
+     * <p>
+     * Note: There is no guarantee that a copy will be returned
+     * </p>
+     *
+     * @param transform The transform
+     * @return The new clipboard
+     * @throws WorldEditException If it failed to copy
+     */
+    default Clipboard transform(Transform transform) throws WorldEditException {
+        return ClipboardTransformBaker.bakeTransform(this, transform);
     }
 }

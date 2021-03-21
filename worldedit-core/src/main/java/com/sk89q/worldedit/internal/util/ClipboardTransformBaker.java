@@ -17,10 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extent.clipboard;
+package com.sk89q.worldedit.internal.util;
 
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.transform.BlockTransformExtent;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
@@ -130,6 +132,9 @@ public class ClipboardTransformBaker {
      * @throws WorldEditException if an error occurred during copy
      */
     public static Clipboard bakeTransform(Clipboard original, Transform transform) throws WorldEditException {
+        if (transform.isIdentity()) {
+            return original;
+        }
         ClipboardTransformBaker baker = new ClipboardTransformBaker(original, transform);
         Clipboard target = new BlockArrayClipboard(baker.getTransformedRegion());
         target.setOrigin(original.getOrigin());

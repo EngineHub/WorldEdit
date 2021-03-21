@@ -21,7 +21,6 @@ package com.sk89q.worldedit.extent.clipboard.io.share;
 
 import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.extent.clipboard.ClipboardTransformBaker;
 import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
@@ -57,14 +56,7 @@ public enum BuiltInClipboardShareDestinations implements ClipboardShareDestinati
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             Clipboard clipboard = holder.getClipboard();
             Transform transform = holder.getTransform();
-            Clipboard target;
-
-            // If we have a transform, bake it into the copy
-            if (transform.isIdentity()) {
-                target = clipboard;
-            } else {
-                target = ClipboardTransformBaker.bakeTransform(clipboard, transform);
-            }
+            Clipboard target = clipboard.transform(transform);
 
             try (Closer closer = Closer.create()) {
                 OutputStream stream = closer.register(outputStream);
@@ -74,9 +66,9 @@ public enum BuiltInClipboardShareDestinations implements ClipboardShareDestinati
             }
 
             PasteMetadata pasteMetadata = new PasteMetadata();
-            pasteMetadata.author = metadata.author;
+            pasteMetadata.author = metadata.author();
             pasteMetadata.extension = "schem";
-            pasteMetadata.name = metadata.name;
+            pasteMetadata.name = metadata.name();
             EngineHubPaste pasteService = new EngineHubPaste();
             return pasteService.paste(new String(Base64.getEncoder().encode(outputStream.toByteArray()), StandardCharsets.UTF_8), pasteMetadata).call();
         }

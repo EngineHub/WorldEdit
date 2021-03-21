@@ -34,8 +34,8 @@ import org.enginehub.piston.inject.Key;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import static org.enginehub.piston.converter.SuggestionHelper.limitByPrefix;
 
 public class ClipboardFormatConverter implements ArgumentConverter<ClipboardFormat> {
 
@@ -56,20 +56,14 @@ public class ClipboardFormatConverter implements ArgumentConverter<ClipboardForm
         return this.choices;
     }
 
-    private Stream<ClipboardFormat> getFormats() {
-        return ClipboardFormats.getAll().stream();
-    }
-
     @Override
     public List<String> getSuggestions(String input, InjectedValueAccess context) {
         ClipboardShareDestination destination = context.injectedValue(Key.of(ClipboardShareDestination.class)).orElse(null);
 
-        return getFormats()
+        return limitByPrefix(ClipboardFormats.getAll().stream()
             .filter(format -> destination == null || destination.supportsFormat(format))
             .map(ClipboardFormat::getAliases)
-            .flatMap(Set::stream)
-            .filter(format -> format.startsWith(input))
-            .collect(Collectors.toList());
+            .flatMap(Set::stream), input);
     }
 
     @Override
