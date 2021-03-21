@@ -22,8 +22,8 @@ package com.sk89q.worldedit.util.eventbus;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.SetMultimap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class EventBus {
 
-    private final Logger logger = LoggerFactory.getLogger(EventBus.class);
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
@@ -192,7 +192,7 @@ public final class EventBus {
         try {
             handler.handleEvent(event);
         } catch (InvocationTargetException e) {
-            logger.error("Could not dispatch event: " + event + " to handler " + handler, e);
+            LOGGER.error("Could not dispatch event: " + event + " to handler " + handler, e);
         }
     }
 

@@ -21,8 +21,8 @@ package com.sk89q.worldedit.sponge.adapter;
 
 import com.google.common.collect.Lists;
 import com.sk89q.worldedit.util.io.Closer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +38,7 @@ import java.util.jar.JarFile;
  */
 public class SpongeImplLoader {
 
-    private static final Logger log = LoggerFactory.getLogger(SpongeImplLoader.class);
+    private static final Logger LOGGER = LogManager.getLogger();
     private final List<String> adapterCandidates = new ArrayList<>();
     private String customCandidate;
 
@@ -71,7 +71,7 @@ public class SpongeImplLoader {
         if (className != null) {
             customCandidate = className;
             adapterCandidates.add(className);
-            log.info("-Dworldedit.sponge.adapter used to add " + className + " to the list of available Sponge adapters");
+            LOGGER.info("-Dworldedit.sponge.adapter used to add " + className + " to the list of available Sponge adapters");
         }
     }
 
@@ -159,18 +159,18 @@ public class SpongeImplLoader {
                 if (SpongeImplAdapter.class.isAssignableFrom(cls)) {
                     suitableAdapters.add((SpongeImplAdapter) cls.newInstance());
                 } else {
-                    log.warn("Failed to load the Sponge adapter class '" + className
+                    LOGGER.warn("Failed to load the Sponge adapter class '" + className
                         + "' because it does not implement " + SpongeImplAdapter.class.getCanonicalName());
                 }
             } catch (ClassNotFoundException e) {
-                log.warn("Failed to load the Sponge adapter class '" + className
+                LOGGER.warn("Failed to load the Sponge adapter class '" + className
                     + "' that is not supposed to be missing", e);
             } catch (IllegalAccessException e) {
-                log.warn("Failed to load the Sponge adapter class '" + className
+                LOGGER.warn("Failed to load the Sponge adapter class '" + className
                     + "' that is not supposed to be raising this error", e);
             } catch (Throwable e) {
                 if (className.equals(customCandidate)) {
-                    log.warn("Failed to load the Sponge adapter class '" + className + "'", e);
+                    LOGGER.warn("Failed to load the Sponge adapter class '" + className + "'", e);
                 }
             }
         }

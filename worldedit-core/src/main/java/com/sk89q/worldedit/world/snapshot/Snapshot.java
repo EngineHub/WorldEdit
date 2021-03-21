@@ -29,8 +29,8 @@ import com.sk89q.worldedit.world.storage.TrueZipLegacyChunkStore;
 import com.sk89q.worldedit.world.storage.TrueZipMcRegionChunkStore;
 import com.sk89q.worldedit.world.storage.ZippedLegacyChunkStore;
 import com.sk89q.worldedit.world.storage.ZippedMcRegionChunkStore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +43,7 @@ import java.util.zip.ZipFile;
  */
 public class Snapshot implements Comparable<Snapshot> {
 
-    protected static Logger logger = LoggerFactory.getLogger(Snapshot.class);
+    private static final Logger LOGGER = LogManager.getLogger();
 
     protected File file;
     protected String name;
@@ -70,7 +70,7 @@ public class Snapshot implements Comparable<Snapshot> {
     public ChunkStore getChunkStore() throws IOException, DataException {
         ChunkStore chunkStore = internalGetChunkStore();
 
-        logger.info("WorldEdit: Using " + chunkStore.getClass().getCanonicalName()
+        LOGGER.info("WorldEdit: Using " + chunkStore.getClass().getCanonicalName()
                 + " for loading snapshot '" + file.getAbsolutePath() + "'");
 
         return chunkStore;
@@ -156,7 +156,7 @@ public class Snapshot implements Comparable<Snapshot> {
             }
         } catch (IOException ex) {
             // Skip the file, but print an error
-            logger.info("Could not load snapshot: "
+            LOGGER.info("Could not load snapshot: "
                     + file.getPath());
         } catch (DataException ex) {
             // No truezip, so tar file not supported.

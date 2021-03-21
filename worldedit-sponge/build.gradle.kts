@@ -20,7 +20,13 @@ repositories {
 dependencies {
     api(project(":worldedit-core"))
     api(project(":worldedit-libs:sponge"))
-    api("org.spongepowered:spongeapi:7.1.0")
+    api("org.spongepowered:spongeapi:7.1.0") {
+        exclude(group = "org.slf4j", module = "slf4j-api")
+    }
+    implementation(enforcedPlatform("org.apache.logging.log4j:log4j-bom:2.8.1") {
+        because("Mojang provides Log4J at 2.8.1")
+    })
+    api("org.apache.logging.log4j:log4j-api:${Versions.LOG4J}")
     api("org.bstats:bstats-sponge:1.7")
     testImplementation("org.mockito:mockito-core:1.9.0-rc1")
 }

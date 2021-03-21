@@ -26,8 +26,8 @@ import com.google.gson.JsonParseException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.util.gson.GsonUtil;
 import com.sk89q.worldedit.util.io.Closer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -47,7 +47,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class JsonFileSessionStore implements SessionStore {
 
-    private static final Logger log = LoggerFactory.getLogger(JsonFileSessionStore.class);
+    private static final Logger LOGGER = LogManager.getLogger();
     private final Gson gson;
     private final File dir;
 
@@ -61,7 +61,7 @@ public class JsonFileSessionStore implements SessionStore {
 
         if (!dir.isDirectory()) {
             if (!dir.mkdirs()) {
-                log.warn("Failed to create directory '" + dir.getPath() + "' for sessions");
+                LOGGER.warn("Failed to create directory '" + dir.getPath() + "' for sessions");
             }
         }
 
@@ -90,9 +90,9 @@ public class JsonFileSessionStore implements SessionStore {
             BufferedReader br = closer.register(new BufferedReader(fr));
             LocalSession session = gson.fromJson(br, LocalSession.class);
             if (session == null) {
-                log.warn("Loaded a null session from {}, creating new session", file);
+                LOGGER.warn("Loaded a null session from {}, creating new session", file);
                 if (!file.delete()) {
-                    log.warn("Failed to delete corrupted session {}", file);
+                    LOGGER.warn("Failed to delete corrupted session {}", file);
                 }
                 session = new LocalSession();
             }
@@ -120,7 +120,7 @@ public class JsonFileSessionStore implements SessionStore {
 
         if (finalFile.exists()) {
             if (!finalFile.delete()) {
-                log.warn("Failed to delete " + finalFile.getPath() + " so the .tmp file can replace it");
+                LOGGER.warn("Failed to delete " + finalFile.getPath() + " so the .tmp file can replace it");
             }
         }
 
@@ -129,7 +129,7 @@ public class JsonFileSessionStore implements SessionStore {
         }
 
         if (!tempFile.renameTo(finalFile)) {
-            log.warn("Failed to rename temporary session file to " + finalFile.getPath());
+            LOGGER.warn("Failed to rename temporary session file to " + finalFile.getPath());
         }
     }
 

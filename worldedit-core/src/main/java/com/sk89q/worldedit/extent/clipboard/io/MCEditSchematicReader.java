@@ -52,8 +52,8 @@ import com.sk89q.worldedit.world.entity.EntityType;
 import com.sk89q.worldedit.world.entity.EntityTypes;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.storage.NBTConversions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -71,7 +71,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class MCEditSchematicReader extends NBTSchematicReader {
 
-    private static final Logger log = LoggerFactory.getLogger(MCEditSchematicReader.class);
+    private static final Logger LOGGER = LogManager.getLogger();
     private final NBTInputStream inputStream;
     private final DataFixer fixer;
     private static final ImmutableList<NBTCompatibilityHandler> COMPATIBILITY_HANDLERS
@@ -253,7 +253,7 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                             byte data = blockData[index];
                             int combined = block << 8 | data;
                             if (unknownBlocks.add(combined)) {
-                                log.warn("Unknown block when loading schematic: "
+                                LOGGER.warn("Unknown block when loading schematic: "
                                         + block + ":" + data + ". This is most likely a bad schematic.");
                             }
                         }
@@ -289,7 +289,7 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                             BaseEntity state = new BaseEntity(entityType, compound);
                             clipboard.createEntity(location, state);
                         } else {
-                            log.warn("Unknown entity when pasting schematic: " + id.toLowerCase(Locale.ROOT));
+                            LOGGER.warn("Unknown entity when pasting schematic: " + id.toLowerCase(Locale.ROOT));
                         }
                     }
                 }

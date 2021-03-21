@@ -21,9 +21,9 @@ package com.sk89q.bukkit.util;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bukkit.plugin.Plugin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.security.CodeSource;
 import java.util.HashMap;
@@ -40,7 +40,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ClassSourceValidator {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClassSourceValidator.class);
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final String SEPARATOR_LINE = Strings.repeat("*", 46);
 
     private final Plugin plugin;

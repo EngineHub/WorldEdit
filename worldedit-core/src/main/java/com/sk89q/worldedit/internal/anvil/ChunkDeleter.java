@@ -28,8 +28,8 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.sk89q.worldedit.math.BlockVector2;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -52,7 +52,7 @@ import java.util.stream.Stream;
 public final class ChunkDeleter {
 
     public static final String DELCHUNKS_FILE_NAME = "delete_chunks.json";
-    private static final Logger logger = LoggerFactory.getLogger(ChunkDeleter.class);
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private static final Comparator<BlockVector2> chunkSorter = Comparator.comparing(
         pos -> (pos.getBlockX() & 31) + (pos.getBlockZ() & 31) * 32
@@ -80,13 +80,13 @@ public final class ChunkDeleter {
         try {
             chunkDeleter = createFromFile(chunkFile);
         } catch (JsonSyntaxException | IOException e) {
-            logger.error("Could not parse chunk deletion file. Invalid file?", e);
+            LOGGER.error("Could not parse chunk deletion file. Invalid file?", e);
             return;
         }
-        logger.info("Found chunk deletions. Proceeding with deletion...");
+        LOGGER.info("Found chunk deletions. Proceeding with deletion...");
         long start = System.currentTimeMillis();
         if (chunkDeleter.runDeleter()) {
-            logger.info("Successfully deleted {} matching chunks (out of {}, taking {} ms).",
+            LOGGER.info("Successfully deleted {} matching chunks (out of {}, taking {} ms).",
                     chunkDeleter.getDeletedChunkCount(), chunkDeleter.getDeletionsRequested(),
                     System.currentTimeMillis() - start);
             if (deleteOnSuccess) {
@@ -96,12 +96,12 @@ public final class ChunkDeleter {
                 } catch (IOException ignored) {
                 }
                 if (!deletedFile) {
-                    logger.warn("Chunk deletion file could not be cleaned up. This may have unintended consequences"
+                    LOGGER.warn("Chunk deletion file could not be cleaned up. This may have unintended consequences"
                         + " on next startup, or if /delchunks is used again.");
                 }
             }
         } else {
-            logger.error("Error occurred while deleting chunks. "
+            LOGGER.error("Error occurred while deleting chunks. "
                 + "If world errors occur, stop the server and restore the *.bak backup files.");
         }
     }
@@ -131,7 +131,7 @@ public final class ChunkDeleter {
 
     private boolean runBatch(ChunkDeletionInfo.ChunkBatch chunkBatch) {
         int chunkCount = chunkBatch.getChunkCount();
-        logger.debug("Processing deletion batch with {} chunks.", chunkCount);
+        LOGGER.debug("Processing deletion batch with {} chunks.", chunkCount);
         final Map<Path, Stream<BlockVector2>> regionToChunkList = groupChunks(chunkBatch);
         BiPredicate<RegionAccess, BlockVector2> predicate = createPredicates(chunkBatch.deletionPredicates);
         shouldPreload = chunkBatch.chunks == null;
@@ -147,7 +147,7 @@ public final class ChunkDeleter {
                 try {
                     backupRegion(regionPath);
                 } catch (IOException e) {
-                    logger.warn("Error backing up region file: " + regionPath + ". Aborting the process.", e);
+                    LOGGER.warn("Error backing up region file: " + regionPath + ". Aborting the process.", e);
                     return false;
                 }
             }
@@ -263,15 +263,15 @@ public final class ChunkDeleter {
                     region.deleteChunk(chunk);
                     totalChunksDeleted++;
                     if (debugRate != 0 && totalChunksDeleted % debugRate == 0) {
-                        logger.debug("Deleted {} chunks so far.", totalChunksDeleted);
+                        LOGGER.debug("Deleted {} chunks so far.", totalChunksDeleted);
                     }
                 } else {
-                    logger.debug("Chunk did not match predicates: " + chunk);
+                    LOGGER.debug("Chunk did not match predicates: " + chunk);
                 }
             }
             return true;
         } catch (IOException e) {
-            logger.warn("Error deleting chunks from region: " + regionFile + ". Aborting the process.", e);
+            LOGGER.warn("Error deleting chunks from region: " + regionFile + ". Aborting the process.", e);
             return false;
         }
     }

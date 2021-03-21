@@ -19,15 +19,15 @@
 
 package com.sk89q.minecraft.util.commands;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class SimpleInjector implements Injector {
 
-    private static final Logger log = LoggerFactory.getLogger(SimpleInjector.class);
+    private static final Logger LOGGER = LogManager.getLogger();
     private final Object[] args;
     private final Class<?>[] argClasses;
 
@@ -46,7 +46,7 @@ public class SimpleInjector implements Injector {
             ctr.setAccessible(true);
             return ctr.newInstance(args);
         } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            log.error("Error initializing commands class " + clazz, e);
+            LOGGER.error("Error initializing commands class " + clazz, e);
             return null;
         }
     }

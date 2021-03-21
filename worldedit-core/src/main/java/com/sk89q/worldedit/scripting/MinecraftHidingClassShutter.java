@@ -20,16 +20,11 @@
 package com.sk89q.worldedit.scripting;
 
 import org.mozilla.javascript.ClassShutter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Hides Minecraft's obfuscated & de-obfuscated names from scripts.
  */
 class MinecraftHidingClassShutter implements ClassShutter {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MinecraftHidingClassShutter.class);
-
     @Override
     public boolean visibleToScripts(String fullClassName) {
         if (!fullClassName.contains(".")) {

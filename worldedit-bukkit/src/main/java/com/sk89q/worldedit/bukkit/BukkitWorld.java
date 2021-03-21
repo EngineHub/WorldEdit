@@ -45,6 +45,8 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
 import io.papermc.lib.PaperLib;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bukkit.Effect;
 import org.bukkit.TreeType;
 import org.bukkit.World;
@@ -55,7 +57,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.slf4j.Logger;
 
 import java.lang.ref.WeakReference;
 import java.nio.file.Path;
@@ -72,7 +73,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class BukkitWorld extends AbstractWorld {
 
-    private static final Logger logger = WorldEdit.logger;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private static final boolean HAS_3D_BIOMES;
 
@@ -149,9 +150,9 @@ public class BukkitWorld extends AbstractWorld {
                     return null;
                 }
             } catch (Exception e) {
-                logger.warn("Corrupt entity found when creating: " + entity.getType().getId());
+                LOGGER.warn("Corrupt entity found when creating: " + entity.getType().getId());
                 if (entity.getNbtData() != null) {
-                    logger.warn(entity.getNbtData().toString());
+                    LOGGER.warn(entity.getNbtData().toString());
                 }
                 e.printStackTrace();
                 return null;
@@ -209,7 +210,7 @@ public class BukkitWorld extends AbstractWorld {
                 throw new UnsupportedOperationException("Missing BukkitImplAdapater for this version.");
             }
         } catch (Exception e) {
-            logger.warn("Regeneration via adapter failed.", e);
+            LOGGER.warn("Regeneration via adapter failed.", e);
             return false;
         }
     }
@@ -448,7 +449,7 @@ public class BukkitWorld extends AbstractWorld {
             } catch (Exception e) {
                 if (!hasWarnedImplError) {
                     hasWarnedImplError = true;
-                    logger.warn("Unable to retrieve block via impl adapter", e);
+                    LOGGER.warn("Unable to retrieve block via impl adapter", e);
                 }
             }
         }
@@ -464,10 +465,10 @@ public class BukkitWorld extends AbstractWorld {
                 return worldNativeAccess.setBlock(position, block, sideEffects);
             } catch (Exception e) {
                 if (block instanceof BaseBlock && ((BaseBlock) block).getNbtData() != null) {
-                    logger.warn("Tried to set a corrupt tile entity at " + position.toString()
+                    LOGGER.warn("Tried to set a corrupt tile entity at " + position.toString()
                         + ": " + ((BaseBlock) block).getNbtData(), e);
                 } else {
-                    logger.warn("Failed to set block via adapter, falling back to generic", e);
+                    LOGGER.warn("Failed to set block via adapter, falling back to generic", e);
                 }
             }
         }

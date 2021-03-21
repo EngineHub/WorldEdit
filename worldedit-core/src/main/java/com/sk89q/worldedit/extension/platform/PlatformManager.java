@@ -40,8 +40,8 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
 import com.sk89q.worldedit.world.World;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -63,7 +63,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class PlatformManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(PlatformManager.class);
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private final WorldEdit worldEdit;
     private final PlatformCommandManager platformCommandManager;
@@ -95,7 +95,7 @@ public class PlatformManager {
     public synchronized void register(Platform platform) {
         checkNotNull(platform);
 
-        logger.info("Got request to register " + platform.getClass() + " with WorldEdit [" + super.toString() + "]");
+        LOGGER.info("Got request to register " + platform.getClass() + " with WorldEdit [" + super.toString() + "]");
 
         // Just add the platform to the list of platforms: we'll pick favorites
         // once all the platforms have been loaded
@@ -104,7 +104,7 @@ public class PlatformManager {
         // Make sure that versions are in sync
         if (firstSeenVersion != null) {
             if (!firstSeenVersion.equals(platform.getVersion())) {
-                logger.warn("Multiple ports of WorldEdit are installed but they report different versions ({} and {}). "
+                LOGGER.warn("Multiple ports of WorldEdit are installed but they report different versions ({} and {}). "
                         + "If these two versions are truly different, then you may run into unexpected crashes and errors.",
                     firstSeenVersion, platform.getVersion());
             }
@@ -127,7 +127,7 @@ public class PlatformManager {
         boolean removed = platforms.remove(platform);
 
         if (removed) {
-            logger.info("Unregistering " + platform.getClass().getCanonicalName() + " from WorldEdit");
+            LOGGER.info("Unregistering " + platform.getClass().getCanonicalName() + " from WorldEdit");
 
             boolean choosePreferred = false;
 

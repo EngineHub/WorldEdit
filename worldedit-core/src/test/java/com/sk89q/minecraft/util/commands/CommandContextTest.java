@@ -19,10 +19,10 @@
 
 package com.sk89q.minecraft.util.commands;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class CommandContextTest {
 
-    private static final Logger log = LoggerFactory.getLogger(CommandContextTest.class);
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final String firstCmdString = "herpderp -opw testers \"mani world\" 'another thing'  because something";
     CommandContext firstCommand;
 
@@ -45,7 +45,7 @@ public class CommandContextTest {
         try {
             firstCommand = new CommandContext(firstCmdString, new HashSet<>(Arrays.asList('o', 'w')));
         } catch (CommandException e) {
-            log.warn("Error", e);
+            LOGGER.warn("Error", e);
             fail("Unexpected exception when creating CommandContext");
         }
     }
@@ -86,7 +86,7 @@ public class CommandContextTest {
             new CommandContext(cmd);
             new CommandContext(cmd2);
         } catch (CommandException e) {
-            log.warn("Error", e);
+            LOGGER.warn("Error", e);
             fail("Error creating CommandContext");
         }
     }
@@ -97,7 +97,7 @@ public class CommandContextTest {
         try {
             new CommandContext(cmd);
         } catch (CommandException e) {
-            log.warn("Error", e);
+            LOGGER.warn("Error", e);
             fail("Error creating CommandContext");
         }
     }
@@ -108,7 +108,7 @@ public class CommandContextTest {
         try {
             new CommandContext(cmd);
         } catch (CommandException e) {
-            log.warn("Error", e);
+            LOGGER.warn("Error", e);
             fail("Error creating CommandContext");
         }
     }
@@ -122,7 +122,7 @@ public class CommandContextTest {
             CommandContext context2 = new CommandContext("r hello -f world");
             assertTrue(context2.hasFlag('f'));
         } catch (CommandException e) {
-            log.warn("Error", e);
+            LOGGER.warn("Error", e);
             fail("Error creating CommandContext");
         }
     }
@@ -138,7 +138,7 @@ public class CommandContextTest {
             CommandContext context2 = new CommandContext("pm name \"hello world\"   foo   bar");
             assertEquals("\"hello world\"   foo   bar", context2.getJoinedStrings(1));
         } catch (CommandException e) {
-            log.warn("Error", e);
+            LOGGER.warn("Error", e);
             fail("Error creating CommandContext");
         }
     }
@@ -150,7 +150,7 @@ public class CommandContextTest {
             assertArrayEquals(new String[] { "foo", "bar", "baz" }, context.getSlice(0));
 
         } catch (CommandException e) {
-            log.warn("Error", e);
+            LOGGER.warn("Error", e);
             fail("Error creating CommandContext");
         }
     }
@@ -161,7 +161,7 @@ public class CommandContextTest {
             CommandContext context = new CommandContext("region flag xmas blocked-cmds \"\"");
             assertEquals(context.argsLength(), 3);
         } catch (CommandException e) {
-            log.warn("Error", e);
+            LOGGER.warn("Error", e);
             fail("Error creating CommandContext");
         }
     }

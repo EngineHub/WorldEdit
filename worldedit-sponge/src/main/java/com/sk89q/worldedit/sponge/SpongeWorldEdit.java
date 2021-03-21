@@ -33,8 +33,8 @@ import com.sk89q.worldedit.sponge.adapter.AdapterLoadException;
 import com.sk89q.worldedit.sponge.adapter.SpongeImplAdapter;
 import com.sk89q.worldedit.sponge.adapter.SpongeImplLoader;
 import com.sk89q.worldedit.sponge.config.SpongeConfiguration;
+import org.apache.logging.log4j.Logger;
 import org.bstats.sponge.Metrics2;
-import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockType;
@@ -79,6 +79,8 @@ import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAM
         url = "https://enginehub.org/worldedit/")
 public class SpongeWorldEdit {
 
+    // I think this breaks right now b/c SpongeAPI 7 injects an slf4j logger
+    // But it should be fine in 8, where they're also Log4j
     @Inject
     private Logger logger;
 

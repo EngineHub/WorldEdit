@@ -21,9 +21,9 @@ package com.sk89q.worldedit.fabric.internal;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.tree.ClassNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class MixinConfigPlugin implements IMixinConfigPlugin {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MixinConfigPlugin.class);
+    private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
     public void onLoad(String mixinPackage) {

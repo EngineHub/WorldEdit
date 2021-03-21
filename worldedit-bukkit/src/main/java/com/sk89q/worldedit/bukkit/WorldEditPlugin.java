@@ -54,6 +54,8 @@ import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
 import io.papermc.lib.PaperLib;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -71,8 +73,6 @@ import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.enginehub.piston.CommandManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -110,7 +110,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         }
     }
 
-    private static final Logger log = LoggerFactory.getLogger(WorldEditPlugin.class);
+    private static final Logger LOGGER = LogManager.getLogger();
     public static final String CUI_PLUGIN_CHANNEL = "worldedit:cui";
     private static WorldEditPlugin INSTANCE;
     private static final int BSTATS_PLUGIN_ID = 3328;
@@ -273,23 +273,23 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         try {
             adapterLoader.addFromPath(getClass().getClassLoader());
         } catch (IOException e) {
-            log.warn("Failed to search path for Bukkit adapters");
+            LOGGER.warn("Failed to search path for Bukkit adapters");
         }
 
         try {
             adapterLoader.addFromJar(getFile());
         } catch (IOException e) {
-            log.warn("Failed to search " + getFile() + " for Bukkit adapters", e);
+            LOGGER.warn("Failed to search " + getFile() + " for Bukkit adapters", e);
         }
         try {
             bukkitAdapter = adapterLoader.loadAdapter();
-            log.info("Using " + bukkitAdapter.getClass().getCanonicalName() + " as the Bukkit adapter");
+            LOGGER.info("Using " + bukkitAdapter.getClass().getCanonicalName() + " as the Bukkit adapter");
         } catch (AdapterLoadException e) {
             Platform platform = worldEdit.getPlatformManager().queryCapability(Capability.WORLD_EDITING);
             if (platform instanceof BukkitServerInterface) {
-                log.warn(e.getMessage());
+                LOGGER.warn(e.getMessage());
             } else {
-                log.info("WorldEdit could not find a Bukkit adapter for this MC version, "
+                LOGGER.info("WorldEdit could not find a Bukkit adapter for this MC version, "
                     + "but it seems that you have another implementation of WorldEdit installed (" + platform.getPlatformName() + ") "
                     + "that handles the world editing.");
             }
