@@ -26,8 +26,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 import com.google.common.io.MoreFiles;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.util.asset.holder.ImageHeightmap;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
@@ -46,7 +46,7 @@ import java.util.Set;
 @Beta
 public class AssetLoaders {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     private final List<AssetLoader<?>> assetLoaders = Lists.newArrayList();
     private final Table<Class<?>, String, AssetLoader<?>> assetLoaderRegistration = HashBasedTable.create();

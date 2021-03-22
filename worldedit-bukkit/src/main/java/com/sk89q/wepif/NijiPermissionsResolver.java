@@ -21,7 +21,7 @@ package com.sk89q.wepif;
 
 import com.nijikokun.bukkit.Permissions.Permissions;
 import com.sk89q.util.yaml.YAMLProcessor;
-import org.apache.logging.log4j.LogManager;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -33,7 +33,7 @@ import org.bukkit.plugin.PluginManager;
 
 public class NijiPermissionsResolver implements PermissionsResolver {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     private final Server server;
     private final Permissions api;

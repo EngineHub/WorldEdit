@@ -27,8 +27,8 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.math.BlockVector2;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedWriter;
@@ -52,7 +52,7 @@ import java.util.stream.Stream;
 public final class ChunkDeleter {
 
     public static final String DELCHUNKS_FILE_NAME = "delete_chunks.json";
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     private static final Comparator<BlockVector2> chunkSorter = Comparator.comparing(
         pos -> (pos.getBlockX() & 31) + (pos.getBlockZ() & 31) * 32

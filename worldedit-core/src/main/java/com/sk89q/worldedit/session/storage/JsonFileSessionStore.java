@@ -24,9 +24,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonParseException;
 import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.util.gson.GsonUtil;
 import com.sk89q.worldedit.util.io.Closer;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
@@ -47,7 +47,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class JsonFileSessionStore implements SessionStore {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
     private final Gson gson;
     private final File dir;
 

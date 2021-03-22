@@ -19,7 +19,7 @@
 
 package com.sk89q.minecraft.util.commands;
 
-import org.apache.logging.log4j.LogManager;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
@@ -27,7 +27,7 @@ import java.lang.reflect.InvocationTargetException;
 
 public class SimpleInjector implements Injector {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
     private final Object[] args;
     private final Class<?>[] argClasses;
 

@@ -21,7 +21,7 @@ package com.sk89q.bukkit.util;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
-import org.apache.logging.log4j.LogManager;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.plugin.Plugin;
 
@@ -40,7 +40,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ClassSourceValidator {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
     private static final String SEPARATOR_LINE = Strings.repeat("*", 46);
 
     private final Plugin plugin;

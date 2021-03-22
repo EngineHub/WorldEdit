@@ -21,6 +21,7 @@
 
 package com.sk89q.worldedit.world.snapshot;
 
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 import com.sk89q.worldedit.world.storage.FileLegacyChunkStore;
@@ -29,7 +30,6 @@ import com.sk89q.worldedit.world.storage.TrueZipLegacyChunkStore;
 import com.sk89q.worldedit.world.storage.TrueZipMcRegionChunkStore;
 import com.sk89q.worldedit.world.storage.ZippedLegacyChunkStore;
 import com.sk89q.worldedit.world.storage.ZippedMcRegionChunkStore;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
@@ -43,7 +43,7 @@ import java.util.zip.ZipFile;
  */
 public class Snapshot implements Comparable<Snapshot> {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     protected File file;
     protected String name;

@@ -19,7 +19,7 @@
 
 package com.sk89q.minecraft.util.commands;
 
-import org.apache.logging.log4j.LogManager;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class CommandContextTest {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
     private static final String firstCmdString = "herpderp -opw testers \"mani world\" 'another thing'  because something";
     CommandContext firstCommand;
 

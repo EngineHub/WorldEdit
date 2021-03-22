@@ -22,7 +22,7 @@ package com.sk89q.worldedit.bukkit;
 import com.sk89q.bukkit.util.CommandInspector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Actor;
-import org.apache.logging.log4j.LogManager;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -38,7 +38,7 @@ import static com.sk89q.worldedit.util.formatting.WorldEditText.reduceToText;
 
 class BukkitCommandInspector implements CommandInspector {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
     private final WorldEditPlugin plugin;
     private final CommandManager dispatcher;
 

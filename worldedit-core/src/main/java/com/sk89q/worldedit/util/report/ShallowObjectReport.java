@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.util.report;
 
-import org.apache.logging.log4j.LogManager;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Field;
@@ -29,7 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ShallowObjectReport extends DataReport {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     public ShallowObjectReport(String title, Object object) {
         super(title);

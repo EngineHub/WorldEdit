@@ -21,7 +21,7 @@ package com.sk89q.worldedit.util.io;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
-import org.apache.logging.log4j.LogManager;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import org.apache.logging.log4j.Logger;
 
 import java.io.Closeable;
@@ -35,7 +35,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class Closer implements Closeable {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     /**
      * The suppressor implementation to use for the current Java version.

@@ -21,7 +21,7 @@ package com.sk89q.wepif;
 
 import com.sk89q.util.yaml.YAMLFormat;
 import com.sk89q.util.yaml.YAMLProcessor;
-import org.apache.logging.log4j.LogManager;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
@@ -58,7 +58,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
         + "#   and see if it gives \"ERROR:\".\r\n"
         + "# - Lines starting with # are comments and so they are ignored.\r\n"
         + "\r\n";
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     private static PermissionsResolverManager instance;
 

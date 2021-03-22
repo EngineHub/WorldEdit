@@ -20,7 +20,7 @@
 package com.sk89q.minecraft.util.commands;
 
 import com.sk89q.util.StringUtil;
-import org.apache.logging.log4j.LogManager;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.InvocationTargetException;
@@ -64,7 +64,7 @@ import java.util.Set;
 @Deprecated
 public abstract class CommandsManager<T> {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     /**
      * Mapping of commands (including aliases) with a description. Root
