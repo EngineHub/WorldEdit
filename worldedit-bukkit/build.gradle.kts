@@ -25,8 +25,9 @@ dependencies {
         exclude("junit", "junit")
     }
 
-    "implementation"(platform("org.apache.logging.log4j:log4j-bom:2.14.1") {
-        because("We can provide any Log4J we want under Bukkit, we're shading it anyways")
+    "implementation"(platform("org.apache.logging.log4j:log4j-bom:2.8.1") {
+        // Note: Paper will bump to 2.11.2, but we should only depend on 2.8 APIs for compatibility.
+        because("Spigot provides Log4J (sort of, not in API, implicitly part of server)")
     })
     "implementation"("org.apache.logging.log4j:log4j-api")
 
