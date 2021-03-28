@@ -14,11 +14,6 @@ fun Project.applyCommonConfiguration() {
     version = rootProject.version
 
     repositories {
-        mavenLocal {
-            content {
-                includeGroup("org.enginehub.piston")
-            }
-        }
         mavenCentral()
         maven { url = uri("https://maven.enginehub.org/repo/") }
         maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
