@@ -44,7 +44,9 @@ dependencies {
     "implementation"("com.google.code.findbugs:jsr305:1.3.9")
     "implementation"("com.google.code.gson:gson")
 
-    "implementation"("org.apache.logging.log4j:log4j-api:${Versions.LOG4J}")
+    "implementation"("org.apache.logging.log4j:log4j-api:2.8.1") {
+        because("Mojang provides Log4J 2.8.1")
+    }
 
     "implementation"("it.unimi.dsi:fastutil")
 

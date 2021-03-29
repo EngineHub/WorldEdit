@@ -7,8 +7,6 @@ object Versions {
     const val AUTO_VALUE = "1.7.4"
     const val JUNIT = "5.7.0"
     const val MOCKITO = "3.7.7"
-    // This should match Mojang's provided version, whatever it is.
-    const val LOG4J = "2.8.1"
     const val LOGBACK = "1.2.3"
     const val FAST_UTIL = "8.2.1"
     const val GUAVA = "21.0"
