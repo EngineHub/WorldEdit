@@ -4,6 +4,11 @@ import net.fabricmc.loom.task.RemapJarTask
 
 buildscript {
     repositories {
+        mavenLocal {
+            content {
+                includeModule("net.fabricmc", "fabric-loom")
+            }
+        }
         mavenCentral()
         maven {
             name = "Fabric"
@@ -38,6 +43,11 @@ configurations.all {
 val fabricApiConfiguration: Configuration = configurations.create("fabricApi")
 
 repositories {
+    mavenLocal {
+        content {
+            includeModule("net.fabricmc", "fabric-loom")
+        }
+    }
     maven {
         name = "Fabric"
         url = uri("https://maven.fabricmc.net/")
@@ -113,6 +123,11 @@ dependencies {
 configure<BasePluginConvention> {
     archivesBaseName = "$archivesBaseName-mc$minecraftVersion"
 }
+configure<PublishingExtension> {
+    publications.named<MavenPublication>("maven") {
+        artifactId = the<BasePluginConvention>().archivesBaseName
+    }
+}
 
 tasks.named<Copy>("processResources") {
     // this will ensure that this task is redone when the versions change.
@@ -145,8 +160,24 @@ tasks.register<Jar>("deobfJar") {
     archiveClassifier.set("dev")
 }
 
-artifacts {
-    add("archives", tasks.named("deobfJar"))
+val deobfElements = configurations.register("deobfElements") {
+    isVisible = false
+    description = "De-obfuscated elements for libs"
+    isCanBeResolved = false
+    isCanBeConsumed = true
+    attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage.JAVA_API))
+        attribute(Category.CATEGORY_ATTRIBUTE, project.objects.named(Category.LIBRARY))
+        attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling.EXTERNAL))
+        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements.JAR))
+        attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 8)
+    }
+    outgoing.artifact(tasks.named("deobfJar"))
+}
+
+val javaComponent = components["java"] as AdhocComponentWithVariants
+javaComponent.addVariantsFromConfiguration(deobfElements.get()) {
+    mapToMavenScope("runtime")
 }
 
 tasks.register<RemapJarTask>("remapShadowJar") {
@@ -160,4 +191,11 @@ tasks.register<RemapJarTask>("remapShadowJar") {
 
 tasks.named("assemble").configure {
     dependsOn("remapShadowJar")
+}
+
+configure<PublishingExtension> {
+    publications.named<MavenPublication>("maven") {
+        // Remove when https://github.com/gradle/gradle/issues/16555 is fixed
+        suppressPomMetadataWarningsFor("runtimeElements")
+    }
 }
