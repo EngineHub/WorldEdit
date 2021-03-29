@@ -39,6 +39,7 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.function.operation.Operations;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.formatting.component.CodeFormat;
@@ -54,6 +55,7 @@ import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldedit.util.io.file.MorePaths;
+import org.apache.logging.log4j.Logger;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
@@ -61,8 +63,6 @@ import org.enginehub.piston.annotation.param.ArgFlag;
 import org.enginehub.piston.annotation.param.Switch;
 import org.enginehub.piston.exception.CommandException;
 import org.enginehub.piston.exception.StopExecutionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -87,7 +87,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class SchematicCommands {
 
-    private static final Logger log = LoggerFactory.getLogger(SchematicCommands.class);
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
     private final WorldEdit worldEdit;
 
     /**
@@ -232,9 +232,9 @@ public class SchematicCommands {
 
         actor.printInfo(TranslatableComponent.of("worldedit.schematic.delete.deleted", TextComponent.of(filename)));
         try {
-            log.info(actor.getName() + " deleted " + f.getCanonicalPath());
+            LOGGER.info(actor.getName() + " deleted " + f.getCanonicalPath());
         } catch (IOException e) {
-            log.info(actor.getName() + " deleted " + f.getAbsolutePath());
+            LOGGER.info(actor.getName() + " deleted " + f.getAbsolutePath());
         }
     }
 
@@ -320,7 +320,7 @@ public class SchematicCommands {
                 ClipboardReader reader = closer.register(format.getReader(bis));
 
                 Clipboard clipboard = reader.read();
-                log.info(actor.getName() + " loaded " + file.getCanonicalPath());
+                LOGGER.info(actor.getName() + " loaded " + file.getCanonicalPath());
                 return new ClipboardHolder(clipboard);
             }
         }
@@ -363,7 +363,7 @@ public class SchematicCommands {
                 ClipboardWriter writer = closer.register(format.getWriter(bos));
                 writer.write(target);
 
-                log.info(actor.getName() + " saved " + file.getCanonicalPath() + (overwrite ? " (overwriting previous file)" : ""));
+                LOGGER.info(actor.getName() + " saved " + file.getCanonicalPath() + (overwrite ? " (overwriting previous file)" : ""));
             } catch (IOException e) {
                 file.delete();
                 throw new CommandException(TextComponent.of(e.getMessage()), e, ImmutableList.of());

@@ -26,11 +26,11 @@ import com.google.gson.reflect.TypeToken;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.internal.Constants;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.gson.VectorAdapter;
 import com.sk89q.worldedit.util.io.ResourceLoader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URL;
@@ -53,7 +53,7 @@ import javax.annotation.Nullable;
  */
 public final class BundledItemData {
 
-    private static final Logger log = LoggerFactory.getLogger(BundledItemData.class);
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
     private static BundledItemData INSTANCE;
     private final ResourceLoader resourceLoader;
 
@@ -68,7 +68,7 @@ public final class BundledItemData {
         try {
             loadFromResource();
         } catch (Throwable e) {
-            log.warn("Failed to load the built-in item registry", e);
+            LOGGER.warn("Failed to load the built-in item registry", e);
         }
     }
 
@@ -96,7 +96,7 @@ public final class BundledItemData {
         if (url == null) {
             throw new IOException("Could not find items.json");
         }
-        log.debug("Using {} for bundled item data.", url);
+        LOGGER.debug("Using {} for bundled item data.", url);
         String data = Resources.toString(url, Charset.defaultCharset());
         List<ItemEntry> entries = gson.fromJson(data, new TypeToken<List<ItemEntry>>() {}.getType());
 

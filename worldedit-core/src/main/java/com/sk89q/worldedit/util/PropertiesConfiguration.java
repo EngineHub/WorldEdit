@@ -24,10 +24,10 @@ package com.sk89q.worldedit.util;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.util.report.Unreported;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -49,7 +49,7 @@ import java.util.Set;
  */
 public class PropertiesConfiguration extends LocalConfiguration {
 
-    @Unreported private static final Logger log = LoggerFactory.getLogger(PropertiesConfiguration.class);
+    @Unreported private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     @Unreported protected Properties properties;
     @Unreported protected File path;
@@ -82,7 +82,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
             properties.load(stream);
         } catch (FileNotFoundException ignored) {
         } catch (IOException e) {
-            log.warn("Failed to read configuration", e);
+            LOGGER.warn("Failed to read configuration", e);
         }
 
         loadExtra();
@@ -144,7 +144,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         try (OutputStream output = new FileOutputStream(path)) {
             properties.store(output, "Don't put comments; they get removed");
         } catch (IOException e) {
-            log.warn("Failed to write configuration", e);
+            LOGGER.warn("Failed to write configuration", e);
         }
     }
 

@@ -34,6 +34,7 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
 import com.sk89q.worldedit.event.platform.SessionIdleEvent;
 import com.sk89q.worldedit.extension.platform.Locatable;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.session.storage.JsonFileSessionStore;
 import com.sk89q.worldedit.session.storage.SessionStore;
@@ -43,8 +44,7 @@ import com.sk89q.worldedit.util.eventbus.Subscribe;
 import com.sk89q.worldedit.world.gamemode.GameModes;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,7 +75,7 @@ public class SessionManager {
     private static final int FLUSH_PERIOD = 1000 * 30;
     private static final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(
             EvenMoreExecutors.newBoundedCachedThreadPool(0, 1, 5, "WorldEdit Session Saver - %s"));
-    private static final Logger log = LoggerFactory.getLogger(SessionManager.class);
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
     private static final Set<String> warnedInvalidTool = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     private final Timer timer = new Timer("WorldEdit Session Manager");
@@ -166,7 +166,7 @@ public class SessionManager {
                 session = store.load(getKey(sessionKey));
                 session.postLoad();
             } catch (IOException e) {
-                log.warn("Failed to load saved session", e);
+                LOGGER.warn("Failed to load saved session", e);
                 session = new LocalSession();
             }
             Request.request().setSession(session);
@@ -179,7 +179,7 @@ public class SessionManager {
                 setDefaultWand(sessionItem, config.wandItem, session, new SelectionWand());
             } catch (InvalidToolBindException e) {
                 if (warnedInvalidTool.add("selwand")) {
-                    log.warn("Invalid selection wand tool set in config. Tool will not be assigned: " + e.getItemType());
+                    LOGGER.warn("Invalid selection wand tool set in config. Tool will not be assigned: " + e.getItemType());
                 }
             }
             try {
@@ -187,7 +187,7 @@ public class SessionManager {
                 setDefaultWand(sessionItem, config.navigationWand, session, new NavigationWand());
             } catch (InvalidToolBindException e) {
                 if (warnedInvalidTool.add("navwand")) {
-                    log.warn("Invalid navigation wand tool set in config. Tool will not be assigned: " + e.getItemType());
+                    LOGGER.warn("Invalid navigation wand tool set in config. Tool will not be assigned: " + e.getItemType());
                 }
             }
             session.compareAndResetDirty();
@@ -263,7 +263,7 @@ public class SessionManager {
                     try {
                         store.save(getKey(key), entry.getValue());
                     } catch (IOException e) {
-                        log.warn("Failed to write session for UUID " + getKey(key), e);
+                        LOGGER.warn("Failed to write session for UUID " + getKey(key), e);
                         exception = e;
                     }
                 }

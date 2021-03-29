@@ -20,8 +20,8 @@
 package com.sk89q.minecraft.util.commands;
 
 import com.sk89q.util.StringUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -64,8 +64,7 @@ import java.util.Set;
 @Deprecated
 public abstract class CommandsManager<T> {
 
-    protected static final Logger logger =
-            LoggerFactory.getLogger(CommandsManager.class);
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     /**
      * Mapping of commands (including aliases) with a description. Root
@@ -144,7 +143,7 @@ public abstract class CommandsManager<T> {
                 return registerMethods(cls, parent, obj);
             }
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            logger.error("Failed to register commands", e);
+            LOGGER.error("Failed to register commands", e);
         }
         return null;
     }
@@ -525,7 +524,7 @@ public abstract class CommandsManager<T> {
         try {
             method.invoke(instance, methodArgs);
         } catch (IllegalArgumentException | IllegalAccessException e) {
-            logger.error("Failed to execute command", e);
+            LOGGER.error("Failed to execute command", e);
         } catch (InvocationTargetException e) {
             if (e.getCause() instanceof CommandException) {
                 throw (CommandException) e.getCause();

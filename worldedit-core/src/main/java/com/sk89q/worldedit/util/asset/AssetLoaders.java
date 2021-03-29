@@ -26,9 +26,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 import com.google.common.io.MoreFiles;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.util.asset.holder.ImageHeightmap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -46,7 +46,7 @@ import java.util.Set;
 @Beta
 public class AssetLoaders {
 
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     private final List<AssetLoader<?>> assetLoaders = Lists.newArrayList();
     private final Table<Class<?>, String, AssetLoader<?>> assetLoaderRegistration = HashBasedTable.create();
@@ -69,7 +69,7 @@ public class AssetLoaders {
         try {
             Files.createDirectories(this.assetsDir);
         } catch (IOException e) {
-            logger.warn("Failed to create asset directory", e);
+            LOGGER.warn("Failed to create asset directory", e);
         }
 
         registerAssetLoader(new ImageHeightmapLoader(worldEdit, this.assetsDir), ImageHeightmap.class);
@@ -79,7 +79,7 @@ public class AssetLoaders {
         assetLoaders.add(loader);
         for (String extension : loader.getAllowedExtensions()) {
             if (assetLoaderRegistration.contains(assetClass, extension)) {
-                logger.warn(String.format(
+                LOGGER.warn(String.format(
                     "Tried to register asset loader '%s' with extension '%s' and asset class '%s', but it is already registered to '%s'",
                     loader.getClass().getName(),
                     extension,
@@ -152,7 +152,7 @@ public class AssetLoaders {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(this.assetsDir, entry -> extensions.contains(MoreFiles.getFileExtension(entry)))) {
             return ImmutableList.copyOf(stream);
         } catch (IOException e) {
-            logger.warn("Failed to get files for asset type " + assetClass.getName(), e);
+            LOGGER.warn("Failed to get files for asset type " + assetClass.getName(), e);
             return ImmutableList.of();
         }
     }

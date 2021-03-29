@@ -47,9 +47,8 @@ repositories {
 dependencies {
     "api"(project(":worldedit-core"))
     "implementation"(enforcedPlatform("org.apache.logging.log4j:log4j-bom:2.8.1") {
-        because("Mojang provides Log4J, we bump to match Forge")
+        because("Mojang provides Log4J at 2.8.1")
     })
-    "implementation"("org.apache.logging.log4j:log4j-slf4j-impl")
 
     "minecraft"("com.mojang:minecraft:$minecraftVersion")
     "mappings"("net.fabricmc:yarn:$yarnMappings")
@@ -135,12 +134,8 @@ addJarManifest(WorldEditKind.Mod, includeClasspath = true)
 tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("dist-dev")
     dependencies {
-        relocate("org.slf4j", "com.sk89q.worldedit-fabric.slf4j")
-        relocate("org.apache.logging.slf4j", "com.sk89q.worldedit-fabric.l4j")
         relocate("org.antlr.v4", "com.sk89q.worldedit.antlr4")
 
-        include(dependency("org.slf4j:slf4j-api"))
-        include(dependency("org.apache.logging.log4j:log4j-slf4j-impl"))
         include(dependency("org.antlr:antlr4-runtime"))
     }
 }

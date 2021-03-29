@@ -23,7 +23,7 @@ import com.google.inject.Inject;
 import com.sk89q.worldedit.sponge.SpongeWorldEdit;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.spongepowered.api.config.DefaultConfig;
 
 import java.io.IOException;

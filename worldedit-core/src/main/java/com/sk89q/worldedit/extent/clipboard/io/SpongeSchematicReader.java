@@ -40,6 +40,7 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.internal.Constants;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
@@ -52,8 +53,7 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.entity.EntityType;
 import com.sk89q.worldedit.world.entity.EntityTypes;
 import com.sk89q.worldedit.world.storage.NBTConversions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -70,7 +70,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class SpongeSchematicReader extends NBTSchematicReader {
 
-    private static final Logger log = LoggerFactory.getLogger(SpongeSchematicReader.class);
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
     private final NBTInputStream inputStream;
     private DataFixer fixer = null;
     private int schematicVersion = -1;
@@ -102,21 +102,21 @@ public class SpongeSchematicReader extends NBTSchematicReader {
         } else if (schematicVersion == 2) {
             dataVersion = requireTag(schematic, "DataVersion", IntTag.class).getValue();
             if (dataVersion < 0) {
-                log.warn("Schematic has an unknown data version ({}). Data may be incompatible.",
+                LOGGER.warn("Schematic has an unknown data version ({}). Data may be incompatible.",
                     dataVersion);
                 // Do not DFU unknown data
                 dataVersion = liveDataVersion;
             }
             if (dataVersion > liveDataVersion) {
-                log.warn("Schematic was made in a newer Minecraft version ({} > {}). Data may be incompatible.",
+                LOGGER.warn("Schematic was made in a newer Minecraft version ({} > {}). Data may be incompatible.",
                         dataVersion, liveDataVersion);
             } else if (dataVersion < liveDataVersion) {
                 fixer = platform.getDataFixer();
                 if (fixer != null) {
-                    log.debug("Schematic was made in an older Minecraft version ({} < {}), will attempt DFU.",
+                    LOGGER.debug("Schematic was made in an older Minecraft version ({} < {}), will attempt DFU.",
                             dataVersion, liveDataVersion);
                 } else {
-                    log.info("Schematic was made in an older Minecraft version ({} < {}), but DFU is not available. Data may be incompatible.",
+                    LOGGER.info("Schematic was made in an older Minecraft version ({} < {}), but DFU is not available. Data may be incompatible.",
                             dataVersion, liveDataVersion);
                 }
             }
@@ -217,7 +217,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
             try {
                 state = WorldEdit.getInstance().getBlockFactory().parseFromInput(palettePart, parserContext).toImmutableState();
             } catch (InputParseException e) {
-                log.warn("Invalid BlockState in palette: " + palettePart + ". Block will be replaced with air.");
+                LOGGER.warn("Invalid BlockState in palette: " + palettePart + ". Block will be replaced with air.");
                 state = BlockTypes.AIR.getDefaultState();
             }
             palette.put(id, state);
@@ -327,7 +327,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
             }
             BiomeType biome = BiomeTypes.get(key);
             if (biome == null) {
-                log.warn("Unknown biome type :" + key
+                LOGGER.warn("Unknown biome type :" + key
                     + " in palette. Are you missing a mod or using a schematic made in a newer version of Minecraft?");
             }
             Tag idTag = palettePart.getValue();
@@ -396,7 +396,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
                 BaseEntity state = new BaseEntity(entityType, entityTag);
                 clipboard.createEntity(location, state);
             } else {
-                log.warn("Unknown entity when pasting schematic: " + id);
+                LOGGER.warn("Unknown entity when pasting schematic: " + id);
             }
         }
     }
