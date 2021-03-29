@@ -6,11 +6,6 @@ plugins {
 }
 
 repositories {
-    mavenLocal {
-        content {
-            includeModule("net.fabricmc", "fabric-loom")
-        }
-    }
     mavenCentral()
     gradlePluginPortal()
     maven {

@@ -4,11 +4,6 @@ import net.fabricmc.loom.task.RemapJarTask
 
 buildscript {
     repositories {
-        mavenLocal {
-            content {
-                includeModule("net.fabricmc", "fabric-loom")
-            }
-        }
         mavenCentral()
         maven {
             name = "Fabric"
@@ -43,11 +38,6 @@ configurations.all {
 val fabricApiConfiguration: Configuration = configurations.create("fabricApi")
 
 repositories {
-    mavenLocal {
-        content {
-            includeModule("net.fabricmc", "fabric-loom")
-        }
-    }
     maven {
         name = "Fabric"
         url = uri("https://maven.fabricmc.net/")
