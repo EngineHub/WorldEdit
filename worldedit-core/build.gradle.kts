@@ -38,13 +38,16 @@ dependencies {
 
     "api"(project(":worldedit-libs:core"))
     "implementation"("de.schlichtherle:truezip:6.8.4")
-    "implementation"("net.java.truevfs:truevfs-profile-default_2.13:0.12.1")
     "implementation"("org.mozilla:rhino-runtime:1.7.13")
     "implementation"("org.yaml:snakeyaml")
     "implementation"("com.google.guava:guava")
     "implementation"("com.google.code.findbugs:jsr305:1.3.9")
     "implementation"("com.google.code.gson:gson")
-    "implementation"("org.slf4j:slf4j-api:${Versions.SLF4J}")
+
+    "implementation"("org.apache.logging.log4j:log4j-api:2.8.1") {
+        because("Mojang provides Log4J 2.8.1")
+    }
+
     "implementation"("it.unimi.dsi:fastutil")
 
     val antlrVersion = "4.9.1"

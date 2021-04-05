@@ -21,14 +21,14 @@ package com.sk89q.wepif;
 
 import com.sk89q.util.yaml.YAMLFormat;
 import com.sk89q.util.yaml.YAMLProcessor;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
+import org.apache.logging.log4j.Logger;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,6 +58,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
         + "#   and see if it gives \"ERROR:\".\r\n"
         + "# - Lines starting with # are comments and so they are ignored.\r\n"
         + "\r\n";
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     private static PermissionsResolverManager instance;
 
@@ -81,7 +82,6 @@ public class PermissionsResolverManager implements PermissionsResolver {
     private final Server server;
     private PermissionsResolver permissionResolver;
     private YAMLProcessor config;
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final List<Class<? extends PermissionsResolver>> enabledResolvers = new ArrayList<>();
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -115,7 +115,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
                     break;
                 }
             } catch (Throwable e) {
-                logger.warn("Error in factory method for " + resolverClass.getSimpleName(), e);
+                LOGGER.warn("Error in factory method for " + resolverClass.getSimpleName(), e);
                 continue;
             }
         }
@@ -123,7 +123,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
             permissionResolver = new ConfigurationPermissionsResolver(config);
         }
         permissionResolver.load();
-        logger.info("WEPIF: " + permissionResolver.getDetectionMessage());
+        LOGGER.info("WEPIF: " + permissionResolver.getDetectionMessage());
     }
 
     public void setPluginPermissionsResolver(Plugin plugin) {
@@ -132,7 +132,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
         }
 
         permissionResolver = new PluginPermissionsResolver((PermissionsProvider) plugin, plugin);
-        logger.info("WEPIF: " + permissionResolver.getDetectionMessage());
+        LOGGER.info("WEPIF: " + permissionResolver.getDetectionMessage());
     }
 
     @Override
@@ -191,14 +191,14 @@ public class PermissionsResolverManager implements PermissionsResolver {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                logger.warn("Failed to create new configuration file", e);
+                LOGGER.warn("Failed to create new configuration file", e);
             }
         }
         config = new YAMLProcessor(file, false, YAMLFormat.EXTENDED);
         try {
             config.load();
         } catch (IOException e) {
-            logger.warn("Error loading WEPIF configuration", e);
+            LOGGER.warn("Error loading WEPIF configuration", e);
         }
         List<String> keys = config.getKeys(null);
         config.setHeader(CONFIG_HEADER);
@@ -229,7 +229,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
                 }
 
                 if (next == null || !PermissionsResolver.class.isAssignableFrom(next)) {
-                    logger.warn("WEPIF: Invalid or unknown class found in enabled resolvers: "
+                    LOGGER.warn("WEPIF: Invalid or unknown class found in enabled resolvers: "
                             + nextName + ". Moving to disabled resolvers list.");
                     i.remove();
                     disabledResolvers.add(nextName);
@@ -243,7 +243,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
                 if (!stagedEnabled.contains(clazz.getSimpleName())
                     && !disabledResolvers.contains(clazz.getSimpleName())) {
                     disabledResolvers.add(clazz.getSimpleName());
-                    logger.info("New permissions resolver: "
+                    LOGGER.info("New permissions resolver: "
                         + clazz.getSimpleName() + " detected. "
                         + "Added to disabled resolvers list.");
                     isUpdated = true;
@@ -264,7 +264,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
             isUpdated = true;
         }
         if (isUpdated) {
-            logger.info("WEPIF: Updated config file");
+            LOGGER.info("WEPIF: Updated config file");
             config.save();
         }
         return isUpdated;

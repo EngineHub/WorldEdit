@@ -391,17 +391,34 @@ public class LocalSession {
 
     /**
      * Get the selection region. If you change the region, you should
-     * call learnRegionChanges().  If the selection is defined in
-     * a different world, the {@code IncompleteRegionException}
-     * exception will be thrown.
+     * call learnRegionChanges(). If the selection is not fully defined,
+     * the {@code IncompleteRegionException} exception will be thrown.
+     *
+     * <p>Note that this method will return a region in the current selection world,
+     * which is not guaranteed to be the player's world or even the current world
+     * override. If you require a specific world, use the
+     * {@link LocalSession#getSelection(World)} overload instead.
+     *
+     * @return the selected region
+     * @throws IncompleteRegionException if the region is not fully defined
+     */
+    public Region getSelection() throws IncompleteRegionException {
+        return getSelection(getSelectionWorld());
+    }
+
+    /**
+     * Get the selection region. If you change the region, you should
+     * call learnRegionChanges(). If the selection is defined in
+     * a different world, or the selection isn't fully defined,
+     * the {@code IncompleteRegionException} exception will be thrown.
      *
      * @param world the world
      * @return a region
-     * @throws IncompleteRegionException if no region is selected
+     * @throws IncompleteRegionException if no region is selected, or the provided world is null
      */
-    public Region getSelection(World world) throws IncompleteRegionException {
-        checkNotNull(world);
-        if (selector.getIncompleteRegion().getWorld() == null || !selector.getIncompleteRegion().getWorld().equals(world)) {
+    public Region getSelection(@Nullable World world) throws IncompleteRegionException {
+        if (world == null || selector.getIncompleteRegion().getWorld() == null
+            || !selector.getIncompleteRegion().getWorld().equals(world)) {
             throw new IncompleteRegionException();
         }
         return selector.getRegion();
@@ -412,6 +429,7 @@ public class LocalSession {
      *
      * @return the the world of the selection
      */
+    @Nullable
     public World getSelectionWorld() {
         return selector.getIncompleteRegion().getWorld();
     }

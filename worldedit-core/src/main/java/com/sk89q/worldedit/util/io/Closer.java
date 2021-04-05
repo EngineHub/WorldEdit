@@ -21,8 +21,8 @@ package com.sk89q.worldedit.util.io;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -35,7 +35,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class Closer implements Closeable {
 
-    private static final Logger logger = LoggerFactory.getLogger(Closer.class);
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     /**
      * The suppressor implementation to use for the current Java version.
@@ -239,7 +239,7 @@ public final class Closer implements Closeable {
         @Override
         public void suppress(Object closeable, Throwable thrown, Throwable suppressed) {
             // log to the same place as Closeables
-            logger.warn("Suppressing exception thrown when closing " + closeable, suppressed);
+            LOGGER.warn("Suppressing exception thrown when closing " + closeable, suppressed);
         }
     }
 

@@ -5,6 +5,7 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.repositories
 import org.gradle.kotlin.dsl.the
 
@@ -21,6 +22,14 @@ fun Project.applyCommonConfiguration() {
     configurations.all {
         resolutionStrategy {
             cacheChangingModulesFor(5, "MINUTES")
+        }
+    }
+
+    configurations.findByName("compileClasspath")?.apply {
+        resolutionStrategy.componentSelection {
+            withModule("org.slf4j:slf4j-api") {
+                reject("No SLF4J allowed on compile classpath")
+            }
         }
     }
 

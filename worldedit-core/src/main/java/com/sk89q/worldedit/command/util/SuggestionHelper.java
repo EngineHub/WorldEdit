@@ -70,6 +70,9 @@ public final class SuggestionHelper {
         if (type == null) {
             return Stream.empty();
         }
+        if (!props.toLowerCase(Locale.ROOT).equals(props)) {
+            return Stream.empty();
+        }
         final Map<String, ? extends Property<?>> propertyMap = type.getPropertyMap();
         Set<String> matchedProperties = new HashSet<>();
         String[] propParts = props.split(",", -1);

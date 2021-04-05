@@ -26,12 +26,12 @@ import com.google.common.util.concurrent.Futures;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.renderer.TranslatableComponentRenderer;
 import com.sk89q.worldedit.util.io.ResourceLoader;
 import com.sk89q.worldedit.util.io.file.ArchiveUnpacker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -75,7 +75,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class TranslationManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TranslationManager.class);
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
     private static final Gson GSON = new GsonBuilder().create();
     private static final Type STRING_MAP_TYPE = new TypeToken<Map<String, String>>() {
     }.getType();

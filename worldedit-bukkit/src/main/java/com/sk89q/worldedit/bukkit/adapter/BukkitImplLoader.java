@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.bukkit.adapter;
 
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.util.io.Closer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +37,7 @@ import java.util.jar.JarFile;
  */
 public class BukkitImplLoader {
 
-    private static final Logger log = LoggerFactory.getLogger(BukkitImplLoader.class);
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
     private final List<String> adapterCandidates = new ArrayList<>();
     private String customCandidate;
 
@@ -72,7 +72,7 @@ public class BukkitImplLoader {
         if (className != null) {
             customCandidate = className;
             adapterCandidates.add(className);
-            log.info("-Dworldedit.bukkit.adapter used to add " + className + " to the list of available Bukkit adapters");
+            LOGGER.info("-Dworldedit.bukkit.adapter used to add " + className + " to the list of available Bukkit adapters");
         }
     }
 
@@ -161,14 +161,14 @@ public class BukkitImplLoader {
                     return (BukkitImplAdapter) cls.newInstance();
                 }
             } catch (ClassNotFoundException e) {
-                log.warn("Failed to load the Bukkit adapter class '" + className
+                LOGGER.warn("Failed to load the Bukkit adapter class '" + className
                     + "' that is not supposed to be missing", e);
             } catch (IllegalAccessException e) {
-                log.warn("Failed to load the Bukkit adapter class '" + className
+                LOGGER.warn("Failed to load the Bukkit adapter class '" + className
                     + "' that is not supposed to be raising this error", e);
             } catch (Throwable e) {
                 if (className.equals(customCandidate)) {
-                    log.warn("Failed to load the Bukkit adapter class '" + className + "'", e);
+                    LOGGER.warn("Failed to load the Bukkit adapter class '" + className + "'", e);
                 }
             }
         }

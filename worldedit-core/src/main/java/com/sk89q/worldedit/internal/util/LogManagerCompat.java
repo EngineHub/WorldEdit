@@ -17,20 +17,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.scripting;
+package com.sk89q.worldedit.internal.util;
 
-import org.mozilla.javascript.ClassShutter;
+import com.google.common.base.Throwables;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-/**
- * Hides Minecraft's obfuscated & de-obfuscated names from scripts.
- */
-class MinecraftHidingClassShutter implements ClassShutter {
-    @Override
-    public boolean visibleToScripts(String fullClassName) {
-        if (!fullClassName.contains(".")) {
-            // Default package -- probably Minecraft
-            return false;
-        }
-        return !fullClassName.startsWith("net.minecraft");
+import java.util.List;
+
+public class LogManagerCompat {
+
+    public static Logger getLogger() {
+        return LogManager.getLogger(getCallerCallerClassName());
+    }
+
+    private static String getCallerCallerClassName() {
+        List<StackTraceElement> lazyStack = Throwables.lazyStackTrace(new Throwable());
+        // 0 - this method
+        // 1 - caller
+        // 2 - caller caller
+        return lazyStack.get(2).getClassName();
+    }
+
+    private LogManagerCompat() {
     }
 }

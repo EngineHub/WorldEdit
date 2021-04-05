@@ -26,11 +26,11 @@ import com.google.gson.reflect.TypeToken;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.internal.Constants;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.gson.VectorAdapter;
 import com.sk89q.worldedit.util.io.ResourceLoader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URL;
@@ -53,7 +53,7 @@ import javax.annotation.Nullable;
  */
 public final class BundledBlockData {
 
-    private static final Logger log = LoggerFactory.getLogger(BundledBlockData.class);
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
     private static BundledBlockData INSTANCE;
     private final ResourceLoader resourceLoader;
 
@@ -68,7 +68,7 @@ public final class BundledBlockData {
         try {
             loadFromResource();
         } catch (Throwable e) {
-            log.warn("Failed to load the built-in block registry", e);
+            LOGGER.warn("Failed to load the built-in block registry", e);
         }
     }
 
@@ -96,7 +96,7 @@ public final class BundledBlockData {
         if (url == null) {
             throw new IOException("Could not find blocks.json");
         }
-        log.debug("Using {} for bundled block data.", url);
+        LOGGER.debug("Using {} for bundled block data.", url);
         String data = Resources.toString(url, Charset.defaultCharset());
         List<BlockEntry> entries = gson.fromJson(data, new TypeToken<List<BlockEntry>>() {}.getType());
 

@@ -21,9 +21,9 @@
 
 package com.sk89q.worldedit.math.interpolation;
 
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.math.Vector3;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.Map.Entry;
@@ -39,7 +39,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ReparametrisingInterpolation implements Interpolation {
 
-    private static final Logger log = LoggerFactory.getLogger(ReparametrisingInterpolation.class);
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     private final Interpolation baseInterpolation;
     private double totalArcLength;
@@ -108,7 +108,7 @@ public class ReparametrisingInterpolation implements Interpolation {
 
         Entry<Double, Double> ceilingEntry = cache.ceilingEntry(arc);
         if (ceilingEntry == null) {
-            log.warn("Error in arcToParameter: no ceiling entry for " + arc + " found!");
+            LOGGER.warn("Error in arcToParameter: no ceiling entry for " + arc + " found!");
             return 0;
         }
         final double rightArc = ceilingEntry.getKey();
