@@ -63,8 +63,7 @@ dependencies {
 
     "languageFiles"("${project.group}:worldedit-lang:7.2.1:68@zip")
 
-    "testImplementation"("ch.qos.logback:logback-core:${Versions.LOGBACK}")
-    "testImplementation"("ch.qos.logback:logback-classic:${Versions.LOGBACK}")
+    "testRuntimeOnly"("org.apache.logging.log4j:log4j-core:2.8.1")
 }
 
 tasks.named<Test>("test") {
