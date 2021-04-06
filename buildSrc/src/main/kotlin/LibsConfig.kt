@@ -31,7 +31,6 @@ fun Project.applyLibrariesConfiguration() {
 
     configurations {
         create("shade")
-        getByName("archives").extendsFrom(getByName("default"))
     }
 
     group = "${rootProject.group}.worldedit-libs"
@@ -94,17 +93,6 @@ fun Project.applyLibrariesConfiguration() {
 
     tasks.named("assemble").configure {
         dependsOn("jar", "sourcesJar")
-    }
-
-    artifacts {
-        val jar = tasks.named("jar")
-        add("archives", jar) {
-            builtBy(jar)
-        }
-        val sourcesJar = tasks.named("sourcesJar")
-        add("archives", sourcesJar) {
-            builtBy(sourcesJar)
-        }
     }
 
     project.apply<LibsConfigPluginHack>()
