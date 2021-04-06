@@ -4,6 +4,9 @@ Compiling
 You can compile WorldEdit as long as you have some version of Java greater than or equal to 8 installed. Gradle will download JDK 8 specifically if needed,
 but it needs some version of Java to bootstrap from.
 
+Note that if you have JRE 8 installed, Gradle will currently attempt to use that to compile, which will not work. It is easiest to uninstall JRE 8 and
+replace it with JDK 8.
+
 The build process uses Gradle, which you do *not* need to download. WorldEdit is a multi-module project with four modules:
 
 * `worldedit-core` contains the WorldEdit API

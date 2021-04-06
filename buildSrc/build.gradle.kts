@@ -6,7 +6,7 @@ plugins {
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
     gradlePluginPortal()
     maven {
         name = "Forge Maven"

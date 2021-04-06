@@ -7,7 +7,6 @@ object Versions {
     const val AUTO_VALUE = "1.7.4"
     const val JUNIT = "5.7.0"
     const val MOCKITO = "3.7.7"
-    const val LOGBACK = "1.2.3"
     const val FAST_UTIL = "8.2.1"
     const val GUAVA = "21.0"
     const val GSON = "2.8.0"
