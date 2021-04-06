@@ -35,6 +35,6 @@ fun Project.applyRootArtifactoryConfig() {
 
 fun Project.applyCommonArtifactoryConfig() {
     tasks.named<ArtifactoryTask>("artifactoryPublish") {
-        publishConfigs("archives")
+        publications("maven")
     }
 }
