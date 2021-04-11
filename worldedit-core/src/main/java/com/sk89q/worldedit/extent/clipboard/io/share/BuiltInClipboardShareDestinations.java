@@ -20,20 +20,13 @@
 package com.sk89q.worldedit.extent.clipboard.io.share;
 
 import com.google.common.collect.ImmutableSet;
-import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
-import com.sk89q.worldedit.math.transform.Transform;
-import com.sk89q.worldedit.session.ClipboardHolder;
-import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.paste.EngineHubPaste;
 import com.sk89q.worldedit.util.paste.PasteMetadata;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.net.URL;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
@@ -52,25 +45,17 @@ public enum BuiltInClipboardShareDestinations implements ClipboardShareDestinati
         }
 
         @Override
-        public URL share(ClipboardHolder holder, ClipboardFormat format, ClipboardShareMetadata metadata) throws Exception {
+        public URI share(ClipboardFormat format, ClipboardShareMetadata metadata, ShareOutputConsumer serialize) throws Exception {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            Clipboard clipboard = holder.getClipboard();
-            Transform transform = holder.getTransform();
-            Clipboard target = clipboard.transform(transform);
 
-            try (Closer closer = Closer.create()) {
-                OutputStream stream = closer.register(outputStream);
-                BufferedOutputStream bos = closer.register(new BufferedOutputStream(stream));
-                ClipboardWriter writer = closer.register(format.getWriter(bos));
-                writer.write(target);
-            }
+            serialize.accept(outputStream);
 
             PasteMetadata pasteMetadata = new PasteMetadata();
             pasteMetadata.author = metadata.author();
             pasteMetadata.extension = "schem";
             pasteMetadata.name = metadata.name();
             EngineHubPaste pasteService = new EngineHubPaste();
-            return pasteService.paste(new String(Base64.getEncoder().encode(outputStream.toByteArray()), StandardCharsets.UTF_8), pasteMetadata).call();
+            return pasteService.paste(new String(Base64.getEncoder().encode(outputStream.toByteArray()), StandardCharsets.UTF_8), pasteMetadata).call().toURI();
         }
 
         @Override

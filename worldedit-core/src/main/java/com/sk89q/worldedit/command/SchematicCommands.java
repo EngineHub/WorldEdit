@@ -360,22 +360,16 @@ public class SchematicCommands {
         }
     }
 
-    private static class SchematicSaveTask implements Callable<Void> {
-        private final Actor actor;
-        private final ClipboardFormat format;
-        private final ClipboardHolder holder;
-        private final File file;
-        private final boolean overwrite;
+    private abstract static class SchematicOutputTask<T> implements Callable<T> {
+        protected final ClipboardFormat format;
+        protected final ClipboardHolder holder;
 
-        SchematicSaveTask(Actor actor, File file, ClipboardFormat format, ClipboardHolder holder, boolean overwrite) {
-            this.actor = actor;
+        SchematicOutputTask(ClipboardFormat format, ClipboardHolder holder) {
             this.format = format;
             this.holder = holder;
-            this.file = file;
-            this.overwrite = overwrite;
         }
 
-        private void writeToOutputStream(OutputStream outputStream) throws Exception {
+        protected void writeToOutputStream(OutputStream outputStream) throws IOException, WorldEditException {
             Clipboard clipboard = holder.getClipboard();
             Transform transform = holder.getTransform();
             Clipboard target = clipboard.transform(transform);
@@ -386,6 +380,19 @@ public class SchematicCommands {
                 ClipboardWriter writer = closer.register(format.getWriter(bos));
                 writer.write(target);
             }
+        }
+    }
+
+    private static class SchematicSaveTask extends SchematicOutputTask<Void> {
+        private final Actor actor;
+        private final File file;
+        private final boolean overwrite;
+
+        SchematicSaveTask(Actor actor, File file, ClipboardFormat format, ClipboardHolder holder, boolean overwrite) {
+            super(format, holder);
+            this.actor = actor;
+            this.file = file;
+            this.overwrite = overwrite;
         }
 
         @Override
@@ -401,23 +408,20 @@ public class SchematicCommands {
         }
     }
 
-    private static class SchematicShareTask implements Callable<URL> {
+    private static class SchematicShareTask extends SchematicOutputTask<URL> {
         private final Actor actor;
-        private final ClipboardHolder holder;
         private final String name;
         private final ClipboardShareDestination destination;
-        private final ClipboardFormat format;
 
         SchematicShareTask(Actor actor,
                            ClipboardHolder holder,
                            ClipboardShareDestination destination,
                            ClipboardFormat format,
                            String name) {
+            super(format, holder);
             this.actor = actor;
-            this.holder = holder;
             this.name = name;
             this.destination = destination;
-            this.format = format;
         }
 
         @Override
@@ -427,7 +431,7 @@ public class SchematicCommands {
                 name == null ? actor.getName() + "-" + System.currentTimeMillis() : name
             );
 
-            return destination.share(holder, format, metadata);
+            return destination.share(format, metadata, this::writeToOutputStream).toURL();
         }
     }
 
