@@ -81,7 +81,7 @@ public interface Clipboard extends Extent {
      *
      * @param transform The transform
      * @return The new clipboard
-     * @throws WorldEditException If it failed to copy
+     * @throws WorldEditException if the copy encounters an error
      */
     default Clipboard transform(Transform transform) throws WorldEditException {
         return ClipboardTransformBaker.bakeTransform(this, transform);
