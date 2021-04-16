@@ -34,7 +34,7 @@ import org.spongepowered.asm.mixin.injection.Slice;
 
 import javax.annotation.Nullable;
 
-@Mixin(value = WorldChunk.class)
+@Mixin(WorldChunk.class)
 public abstract class MixinWorldChunkSetBlockHook implements Chunk, ExtendedChunk {
     private boolean shouldUpdate = true;
 

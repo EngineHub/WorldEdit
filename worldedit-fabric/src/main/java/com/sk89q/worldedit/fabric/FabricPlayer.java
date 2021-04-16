@@ -25,6 +25,7 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.fabric.FabricPlayer.SessionKeyImpl;
 import com.sk89q.worldedit.fabric.internal.ExtendedPlayerEntity;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
 import com.sk89q.worldedit.fabric.net.handler.WECUIPacketHandler;

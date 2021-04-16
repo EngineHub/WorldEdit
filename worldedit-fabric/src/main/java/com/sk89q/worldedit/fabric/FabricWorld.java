@@ -67,8 +67,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
@@ -330,7 +330,7 @@ public class FabricWorld extends AbstractWorld {
                 originalWorld.getServer().getSaveProperties();
             GeneratorOptions originalOpts = levelProperties.getGeneratorOptions();
 
-            RegistryOps<Tag> nbtRegOps = RegistryOps.of(
+            RegistryOps<NbtElement> nbtRegOps = RegistryOps.of(
                 NbtOps.INSTANCE,
                 ((ExtendedMinecraftServer) originalWorld.getServer())
                     .getServerResourceManager().getResourceManager(),
@@ -383,7 +383,7 @@ public class FabricWorld extends AbstractWorld {
     }
 
     @SuppressWarnings("unchecked")
-    private Dynamic<Tag> recursivelySetSeed(Dynamic<Tag> dynamic, long seed, Set<Dynamic<Tag>> seen) {
+    private Dynamic<NbtElement> recursivelySetSeed(Dynamic<NbtElement> dynamic, long seed, Set<Dynamic<NbtElement>> seen) {
         if (!seen.add(dynamic)) {
             return dynamic;
         }
@@ -391,8 +391,8 @@ public class FabricWorld extends AbstractWorld {
             if (pair.getFirst().asString("").equals("seed")) {
                 return pair.mapSecond(v -> v.createLong(seed));
             }
-            if (pair.getSecond().getValue() instanceof net.minecraft.nbt.CompoundTag) {
-                return pair.mapSecond(v -> recursivelySetSeed((Dynamic<Tag>) v, seed, seen));
+            if (pair.getSecond().getValue() instanceof net.minecraft.nbt.NbtCompound) {
+                return pair.mapSecond(v -> recursivelySetSeed((Dynamic<NbtElement>) v, seed, seen));
             }
             return pair;
         });
@@ -428,7 +428,7 @@ public class FabricWorld extends AbstractWorld {
             BlockStateHolder<?> state = FabricAdapter.adapt(chunk.getBlockState(pos));
             BlockEntity blockEntity = chunk.getBlockEntity(pos);
             if (blockEntity != null) {
-                net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
+                net.minecraft.nbt.NbtCompound tag = new net.minecraft.nbt.NbtCompound();
                 blockEntity.writeNbt(tag);
                 state = state.toBaseBlock(NBTConverter.fromNative(tag));
             }
@@ -604,7 +604,7 @@ public class FabricWorld extends AbstractWorld {
         BlockEntity tile = ((WorldChunk) getWorld().getChunk(pos)).getBlockEntity(pos, WorldChunk.CreationType.CHECK);
 
         if (tile != null) {
-            net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
+            net.minecraft.nbt.NbtCompound tag = new net.minecraft.nbt.NbtCompound();
             tile.writeNbt(tag);
             return getBlock(position).toBaseBlock(NBTConverter.fromNative(tag));
         } else {
@@ -671,7 +671,7 @@ public class FabricWorld extends AbstractWorld {
         if (createdEntity != null) {
             CompoundTag nativeTag = entity.getNbtData();
             if (nativeTag != null) {
-                net.minecraft.nbt.CompoundTag tag = NBTConverter.toNative(entity.getNbtData());
+                net.minecraft.nbt.NbtCompound tag = NBTConverter.toNative(entity.getNbtData());
                 for (String name : Constants.NO_COPY_ENTITY_NBT_FIELDS) {
                     tag.remove(name);
                 }
