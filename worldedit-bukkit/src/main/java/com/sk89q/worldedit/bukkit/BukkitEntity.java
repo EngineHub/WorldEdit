@@ -103,7 +103,11 @@ class BukkitEntity implements Entity {
     public boolean remove() {
         org.bukkit.entity.Entity entity = entityRef.get();
         if (entity != null) {
-            entity.remove();
+            try {
+                entity.remove();
+            } catch (UnsupportedOperationException e) {
+                return false;
+            }
             return entity.isDead();
         } else {
             return true;

@@ -59,6 +59,7 @@
     "worldedit.gmask.set": "Global mask set.",
     "worldedit.toggleplace.pos1": "Now placing at pos #1.",
     "worldedit.toggleplace.player": "Now placing at the block you stand in.",
+    "worldedit.toggleplace.not-locatable": "Cannot toggle placing in this context.",
     "worldedit.searchitem.too-short": "Enter a longer search string (len > 2).",
     "worldedit.searchitem.either-b-or-i": "You cannot use both the 'b' and 'i' flags simultaneously.",
     "worldedit.searchitem.searching": "(Please wait... searching items.)",
