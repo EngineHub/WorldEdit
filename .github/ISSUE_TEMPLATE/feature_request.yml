@@ -1,9 +1,6 @@
 name: Feature request
 description: Suggest an idea for WorldEdit
-title: ''
 labels: ['type:feature-request', 'status:pending']
-assignees: []
-issue_body: true
 
 body:
 - type: markdown
@@ -39,6 +36,6 @@ body:
   validations:
     required: false
 
-- type: markdown
+- type: textarea
   attributes:
     value: Add any additional context you can provide below.
