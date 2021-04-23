@@ -1,9 +1,6 @@
 name: Bug report
 description: Report a way in which WorldEdit is not working as intended
-title: ''
 labels: ['type:bug', 'status:pending']
-assignees: []
-issue_body: true
 
 body:
 - type: markdown
@@ -55,6 +52,6 @@ body:
   validations:
     required: true
 
-- type: markdown
+- type: textarea
   attributes:
     value: Add any additional context you can provide below.
