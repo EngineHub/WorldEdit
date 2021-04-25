@@ -28,7 +28,7 @@ import java.io.OutputStream;
 public interface ShareOutputConsumer {
 
     /**
-     * Consumes the given output stream.
+     * Provides the share output to {@code stream}.
      *
      * @throws IOException if it failed
      * @throws WorldEditException if WorldEdit failed to serialize to the stream
