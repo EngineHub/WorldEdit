@@ -76,7 +76,7 @@ public interface Clipboard extends Extent {
      * Returns a clipboard with a given transform baked in.
      *
      * <p>
-     * Note: If an identity transform is given, the original clipboard will be returned unedited.
+     * Note: This method may return the same clipboard object, if a copy is needed then you should check the returned value for identity equality and copy if needed.
      * </p>
      *
      * @param transform The transform
