@@ -45,10 +45,10 @@ public enum BuiltInClipboardShareDestinations implements ClipboardShareDestinati
         }
 
         @Override
-        public URI share(ClipboardFormat format, ClipboardShareMetadata metadata, ShareOutputConsumer serialize) throws Exception {
+        public URI share(ClipboardShareMetadata metadata, ShareOutputProvider serializer) throws Exception {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-            serialize.accept(outputStream);
+            serializer.writeTo(outputStream);
 
             PasteMetadata pasteMetadata = new PasteMetadata();
             pasteMetadata.author = metadata.author();

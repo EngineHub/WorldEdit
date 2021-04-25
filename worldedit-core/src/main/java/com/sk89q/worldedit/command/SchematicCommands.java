@@ -427,11 +427,12 @@ public class SchematicCommands {
         @Override
         public URL call() throws Exception {
             ClipboardShareMetadata metadata = new ClipboardShareMetadata(
+                format,
                 this.actor.getName(),
                 name == null ? actor.getName() + "-" + System.currentTimeMillis() : name
             );
 
-            return destination.share(format, metadata, this::writeToOutputStream).toURL();
+            return destination.share(metadata, this::writeToOutputStream).toURL();
         }
     }
 

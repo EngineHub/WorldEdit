@@ -43,13 +43,16 @@ public interface ClipboardShareDestination {
     /**
      * Share a clipboard output stream and return a URL.
      *
-     * @param format The clipboard format
+     * <p>
+     * The serialized schematic can be retrieved by providing an {@link java.io.OutputStream} to {@code serializer}.
+     * </p>
+     *
      * @param metadata The clipboard metadata
-     * @param serialize A consumer taking the {@link java.io.OutputStream}
+     * @param serializer A function taking the {@link java.io.OutputStream}
      * @return The URI
      * @throws Exception if it failed to share
      */
-    URI share(ClipboardFormat format, ClipboardShareMetadata metadata, ShareOutputConsumer serializer) throws Exception;
+    URI share(ClipboardShareMetadata metadata, ShareOutputProvider serializer) throws Exception;
 
     /**
      * Gets the default clipboard format for this share destination.

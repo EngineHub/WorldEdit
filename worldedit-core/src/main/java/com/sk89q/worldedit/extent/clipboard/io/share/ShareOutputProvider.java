@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 @FunctionalInterface
-public interface ShareOutputConsumer {
+public interface ShareOutputProvider {
 
     /**
      * Provides the share output to {@code stream}.

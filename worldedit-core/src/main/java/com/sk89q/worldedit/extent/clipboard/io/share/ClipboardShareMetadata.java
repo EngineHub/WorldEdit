@@ -19,16 +19,24 @@
 
 package com.sk89q.worldedit.extent.clipboard.io.share;
 
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
+
 /**
  * Items of metadata about shared clipboards.
  */
 public class ClipboardShareMetadata {
+    private final ClipboardFormat format;
     private final String name;
     private final String author;
 
-    public ClipboardShareMetadata(String name, String author) {
+    public ClipboardShareMetadata(ClipboardFormat format, String name, String author) {
+        this.format = format;
         this.name = name;
         this.author = author;
+    }
+
+    public ClipboardFormat format() {
+        return this.format;
     }
 
     public String name() {
