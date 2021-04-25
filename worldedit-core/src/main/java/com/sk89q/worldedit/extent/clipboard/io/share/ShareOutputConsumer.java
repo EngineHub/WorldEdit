@@ -33,5 +33,5 @@ public interface ShareOutputConsumer {
      * @throws IOException if it failed
      * @throws WorldEditException if WorldEdit failed to serialize to the stream
      */
-    void accept(OutputStream stream) throws IOException, WorldEditException;
+    void writeTo(OutputStream stream) throws IOException, WorldEditException;
 }
