@@ -49,7 +49,7 @@ public interface ClipboardShareDestination {
      * @return The URI
      * @throws Exception if it failed to share
      */
-    URI share(ClipboardFormat format, ClipboardShareMetadata metadata, ShareOutputConsumer serialize) throws Exception;
+    URI share(ClipboardFormat format, ClipboardShareMetadata metadata, ShareOutputConsumer serializer) throws Exception;
 
     /**
      * Gets the default clipboard format for this share destination.
