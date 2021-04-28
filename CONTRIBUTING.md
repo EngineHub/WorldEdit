@@ -5,9 +5,6 @@ Thank you for your interest in contributing to WorldEdit! We appreciate your
 effort, but to make sure that the inclusion of your patch is a smooth process, we
 ask that you make note of the following guidelines.
 
-* **Follow the [Oracle coding conventions](http://www.oracle.com/technetwork/java/codeconv-138413.html).**
-  We can't stress this enough; if your code has notable issues, it may delay
-  the process significantly.
 * **Target Java 8 for source and compilation.** Make sure to mark methods with
   ` @Override` that override methods of parent classes, or that implement
   methods of interfaces.
@@ -55,7 +52,7 @@ Ready to submit? Perform the checklist below:
    the team prior to starting work.
 6. Are my commit messages descriptive?
 
-You should be aware of [`git rebase`](http://learn.github.com/p/rebasing.html).
+You should be aware of [`git rebase`](https://docs.github.com/github/getting-started-with-github/about-git-rebase).
 It allows you to modify existing commit messages, and combine, break apart, or
 adjust past changes.
 
