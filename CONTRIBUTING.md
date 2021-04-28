@@ -5,9 +5,6 @@ Thank you for your interest in contributing to WorldEdit! We appreciate your
 effort, but to make sure that the inclusion of your patch is a smooth process, we
 ask that you make note of the following guidelines.
 
-* **Follow the [Oracle coding conventions](https://www.oracle.com/java/technologies/cc-java-programming-language.html).**
-  We can't stress this enough; if your code has notable issues, it may delay
-  the process significantly.
 * **Target Java 8 for source and compilation.** Make sure to mark methods with
   ` @Override` that override methods of parent classes, or that implement
   methods of interfaces.
