@@ -38,7 +38,7 @@ from the default.
 - Update language bundle and minor language loading fixes/improvements.
 
 7.2.0
-- Greatly improve WorldEdit performance on servers with many plugins (See more: https://matthewmiller.dev/talk/optimizing-your-application/)
+- Greatly improve WorldEdit performance on servers with many plugins (See more: https://madelinemiller.dev/talk/optimizing-your-application/)
 - Improve general WorldEdit performance
 - Added a fine-grained fast mode system with //perf to allow individually enabling or disabling update types
 - Added a stack tool that stacks the clicked block until it hits an obstacle (https://gfycat.com/faithfulhardtofinddingo)
@@ -129,7 +129,7 @@ from the default.
 - Improve messages when running the wrong WorldEdit version for the MC version
 - Fixed an issue where other plugins could send bad data to clients using the WorldEdit API
 - Significant memory optimisations. Many operations will now require less RAM.
-- Added WorldEdit-CLI, a tool to run headless WorldEdit from the commandline (see https://matthewmiller.dev/blog/introducing-worldeditcli/)
+- Added WorldEdit-CLI, a tool to run headless WorldEdit from the commandline (see https://madelinemiller.dev/blog/introducing-worldeditcli/)
 - Allowed most WorldEdit commands to be run from the console
 - Added //world, to override the world in which WorldEdit is operating (useful for console)
 - Added support for WorldEdit in CommandBlocks (on Spigot/Paper). Double slash commands require using /worldedit:/set due to a Minecraft bug.
@@ -196,7 +196,7 @@ between worlds generated at different times/with different mods
 - Further legacy schematic loading improvements
 
 7.0.0
-See https://matthewmiller.dev/blog/introducing-worldedit-7/ for a friendlier explanation of some new features
+See https://madelinemiller.dev/blog/introducing-worldedit-7/ for a friendlier explanation of some new features
 
 - Added support for 1.13 and higher versions, and removed support for earlier
 - Use the official Minecraft format for entering blocks, `minecraft:oak_sign[rotation=7]`
