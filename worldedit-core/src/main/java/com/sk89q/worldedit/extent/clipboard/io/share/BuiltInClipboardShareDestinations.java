@@ -20,15 +20,19 @@
 package com.sk89q.worldedit.extent.clipboard.io.share;
 
 import com.google.common.collect.ImmutableSet;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.paste.EngineHubPaste;
 import com.sk89q.worldedit.util.paste.PasteMetadata;
 
 import java.io.ByteArrayOutputStream;
-import java.net.URI;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.function.Consumer;
 
 /**
  * A collection of natively supported clipboard share destinations.
@@ -45,7 +49,7 @@ public enum BuiltInClipboardShareDestinations implements ClipboardShareDestinati
         }
 
         @Override
-        public URI share(ClipboardShareMetadata metadata, ShareOutputProvider serializer) throws Exception {
+        public Consumer<Actor> share(ClipboardShareMetadata metadata, ShareOutputProvider serializer) throws Exception {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
             serializer.writeTo(outputStream);
@@ -55,7 +59,10 @@ public enum BuiltInClipboardShareDestinations implements ClipboardShareDestinati
             pasteMetadata.extension = "schem";
             pasteMetadata.name = metadata.name();
             EngineHubPaste pasteService = new EngineHubPaste();
-            return pasteService.paste(new String(Base64.getEncoder().encode(outputStream.toByteArray()), StandardCharsets.UTF_8), pasteMetadata).call().toURI();
+
+            URL url = pasteService.paste(new String(Base64.getEncoder().encode(outputStream.toByteArray()), StandardCharsets.UTF_8), pasteMetadata).call();
+            String urlString = url.toExternalForm() + ".schem";
+            return actor -> actor.printInfo(TextComponent.of(urlString).clickEvent(ClickEvent.openUrl(urlString)));
         }
 
         @Override

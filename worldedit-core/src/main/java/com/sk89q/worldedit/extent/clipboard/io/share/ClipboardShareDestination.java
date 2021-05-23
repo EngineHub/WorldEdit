@@ -19,10 +19,11 @@
 
 package com.sk89q.worldedit.extent.clipboard.io.share;
 
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 
-import java.net.URI;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public interface ClipboardShareDestination {
 
@@ -49,10 +50,10 @@ public interface ClipboardShareDestination {
      *
      * @param metadata The clipboard metadata
      * @param serializer A function taking the {@link java.io.OutputStream}
-     * @return The URI
+     * @return A consumer to provide the actor with the share results
      * @throws Exception if it failed to share
      */
-    URI share(ClipboardShareMetadata metadata, ShareOutputProvider serializer) throws Exception;
+    Consumer<Actor> share(ClipboardShareMetadata metadata, ShareOutputProvider serializer) throws Exception;
 
     /**
      * Gets the default clipboard format for this share destination.

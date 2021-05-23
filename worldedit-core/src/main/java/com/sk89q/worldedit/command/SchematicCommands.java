@@ -71,7 +71,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URL;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -79,6 +78,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -234,7 +234,7 @@ public class SchematicCommands {
             .registerWithSupervisor(worldEdit.getSupervisor(), "Sharing schematic")
             .setDelayMessage(TranslatableComponent.of("worldedit.schematic.save.saving"))
             .setWorkingMessage(TranslatableComponent.of("worldedit.schematic.save.still-saving"))
-            .onSuccess("Shared", (url -> actor.printInfo(TextComponent.of(url.toExternalForm() + ".schem").clickEvent(ClickEvent.openUrl(url.toExternalForm() + ".schem")))))
+            .onSuccess("Shared", (consumer -> consumer.accept(actor)))
             .onFailure("Failed to share schematic", worldEdit.getPlatformManager().getPlatformCommandManager().getExceptionConverter())
             .buildAndExec(worldEdit.getExecutorService());
     }
@@ -408,7 +408,7 @@ public class SchematicCommands {
         }
     }
 
-    private static class SchematicShareTask extends SchematicOutputTask<URL> {
+    private static class SchematicShareTask extends SchematicOutputTask<Consumer<Actor>> {
         private final Actor actor;
         private final String name;
         private final ClipboardShareDestination destination;
@@ -425,14 +425,14 @@ public class SchematicCommands {
         }
 
         @Override
-        public URL call() throws Exception {
+        public Consumer<Actor> call() throws Exception {
             ClipboardShareMetadata metadata = new ClipboardShareMetadata(
                 format,
                 this.actor.getName(),
                 name == null ? actor.getName() + "-" + System.currentTimeMillis() : name
             );
 
-            return destination.share(metadata, this::writeToOutputStream).toURL();
+            return destination.share(metadata, this::writeToOutputStream);
         }
     }
 
