@@ -70,6 +70,8 @@ import com.sk89q.worldedit.command.WorldEditCommandsRegistration;
 import com.sk89q.worldedit.command.argument.Arguments;
 import com.sk89q.worldedit.command.argument.BooleanConverter;
 import com.sk89q.worldedit.command.argument.Chunk3dVectorConverter;
+import com.sk89q.worldedit.command.argument.ClipboardFormatConverter;
+import com.sk89q.worldedit.command.argument.ClipboardShareDestinationConverter;
 import com.sk89q.worldedit.command.argument.CommaSeparatedValuesConverter;
 import com.sk89q.worldedit.command.argument.DirectionConverter;
 import com.sk89q.worldedit.command.argument.DirectionVectorConverter;
@@ -225,6 +227,8 @@ public final class PlatformCommandManager {
         SideEffectSetConverter.register(commandManager);
         HeightConverter.register(commandManager);
         OffsetConverter.register(worldEdit, commandManager);
+        ClipboardFormatConverter.register(commandManager);
+        ClipboardShareDestinationConverter.register(commandManager);
     }
 
     private void registerAlwaysInjectedValues() {
