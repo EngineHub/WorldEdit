@@ -19,15 +19,15 @@
 
 package com.sk89q.worldedit.world.chunk;
 
-import com.sk89q.jnbt.ByteArrayTag;
-import com.sk89q.jnbt.ByteTag;
 import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.IntTag;
-import com.sk89q.jnbt.ListTag;
-import com.sk89q.jnbt.NBTUtils;
-import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.util.nbt.BinaryTag;
+import com.sk89q.worldedit.util.nbt.BinaryTagTypes;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
+import com.sk89q.worldedit.util.nbt.IntBinaryTag;
+import com.sk89q.worldedit.util.nbt.ListBinaryTag;
+import com.sk89q.worldedit.util.nbt.NbtUtils;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -36,20 +36,31 @@ import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 
 public class AnvilChunk implements Chunk {
 
-    private final CompoundTag rootTag;
+    private final CompoundBinaryTag rootTag;
     private final byte[][] blocks;
     private final byte[][] blocksAdd;
     private final byte[][] data;
     private final int rootX;
     private final int rootZ;
 
-    private Map<BlockVector3, Map<String, Tag>> tileEntities;
+    private Map<BlockVector3, CompoundBinaryTag> tileEntities;
+
+
+    /**
+     * Construct the chunk with a compound tag.
+     *
+     * @param tag the tag to read
+     * @throws DataException on a data error
+     * @deprecated Use {@link #AnvilChunk(CompoundBinaryTag)}
+     */
+    public AnvilChunk(CompoundTag tag) throws DataException {
+        this(tag.asBinaryTag());
+    }
 
     /**
      * Construct the chunk with a compound tag.
@@ -57,42 +68,42 @@ public class AnvilChunk implements Chunk {
      * @param tag the tag to read
      * @throws DataException on a data error
      */
-    public AnvilChunk(CompoundTag tag) throws DataException {
+    public AnvilChunk(CompoundBinaryTag tag) throws DataException {
         rootTag = tag;
 
-        rootX = NBTUtils.getChildTag(rootTag.getValue(), "xPos", IntTag.class).getValue();
-        rootZ = NBTUtils.getChildTag(rootTag.getValue(), "zPos", IntTag.class).getValue();
+        rootX = NbtUtils.getChildTag(rootTag, "xPos", BinaryTagTypes.INT).value();
+        rootZ = NbtUtils.getChildTag(rootTag, "zPos", BinaryTagTypes.INT).value();
 
         blocks = new byte[16][16 * 16 * 16];
         blocksAdd = new byte[16][16 * 16 * 8];
         data = new byte[16][16 * 16 * 8];
 
-        List<Tag> sections = NBTUtils.getChildTag(rootTag.getValue(), "Sections", ListTag.class).getValue();
+        ListBinaryTag sections = NbtUtils.getChildTag(rootTag, "Sections", BinaryTagTypes.LIST);
 
-        for (Tag rawSectionTag : sections) {
-            if (!(rawSectionTag instanceof CompoundTag)) {
+        for (BinaryTag rawSectionTag : sections) {
+            if (!(rawSectionTag instanceof CompoundBinaryTag)) {
                 continue;
             }
 
-            CompoundTag sectionTag = (CompoundTag) rawSectionTag;
-            if (!sectionTag.getValue().containsKey("Y")) {
+            CompoundBinaryTag sectionTag = (CompoundBinaryTag) rawSectionTag;
+            if (sectionTag.get("Y") == null) {
                 continue; // Empty section.
             }
 
-            int y = NBTUtils.getChildTag(sectionTag.getValue(), "Y", ByteTag.class).getValue();
+            int y = NbtUtils.getChildTag(sectionTag, "Y", BinaryTagTypes.BYTE).value();
             if (y < 0 || y >= 16) {
                 continue;
             }
 
-            blocks[y] = NBTUtils.getChildTag(sectionTag.getValue(),
-                    "Blocks", ByteArrayTag.class).getValue();
-            data[y] = NBTUtils.getChildTag(sectionTag.getValue(), "Data",
-                    ByteArrayTag.class).getValue();
+            blocks[y] = NbtUtils.getChildTag(sectionTag,
+                    "Blocks", BinaryTagTypes.BYTE_ARRAY).value();
+            data[y] = NbtUtils.getChildTag(sectionTag, "Data",
+                BinaryTagTypes.BYTE_ARRAY).value();
 
             // 4096 ID block support
-            if (sectionTag.getValue().containsKey("Add")) {
-                blocksAdd[y] = NBTUtils.getChildTag(sectionTag.getValue(),
-                        "Add", ByteArrayTag.class).getValue();
+            if (sectionTag.get("Add") != null) {
+                blocksAdd[y] = NbtUtils.getChildTag(sectionTag,
+                        "Add", BinaryTagTypes.BYTE_ARRAY).value();
             }
         }
 
@@ -179,50 +190,49 @@ public class AnvilChunk implements Chunk {
      * Used to load the tile entities.
      */
     private void populateTileEntities() throws DataException {
-        List<Tag> tags = NBTUtils.getChildTag(rootTag.getValue(),
-                "TileEntities", ListTag.class).getValue();
+        ListBinaryTag tags = NbtUtils.getChildTag(rootTag, "TileEntities", BinaryTagTypes.LIST);
 
         tileEntities = new HashMap<>();
 
-        for (Tag tag : tags) {
-            if (!(tag instanceof CompoundTag)) {
+        for (BinaryTag tag : tags) {
+            if (!(tag instanceof CompoundBinaryTag)) {
                 throw new InvalidFormatException("CompoundTag expected in TileEntities");
             }
 
-            CompoundTag t = (CompoundTag) tag;
+            CompoundBinaryTag t = (CompoundBinaryTag) tag;
 
             int x = 0;
             int y = 0;
             int z = 0;
 
-            Map<String, Tag> values = new HashMap<>();
+            CompoundBinaryTag.Builder values = CompoundBinaryTag.builder();
 
-            for (Map.Entry<String, Tag> entry : t.getValue().entrySet()) {
-                switch (entry.getKey()) {
+            for (String key : t.keySet()) {
+                BinaryTag value = t.get(key);
+                switch (key) {
                     case "x":
-                        if (entry.getValue() instanceof IntTag) {
-                            x = ((IntTag) entry.getValue()).getValue();
+                        if (value instanceof IntBinaryTag) {
+                            x = ((IntBinaryTag) value).value();
                         }
                         break;
                     case "y":
-                        if (entry.getValue() instanceof IntTag) {
-                            y = ((IntTag) entry.getValue()).getValue();
+                        if (value instanceof IntBinaryTag) {
+                            y = ((IntBinaryTag) value).value();
                         }
                         break;
                     case "z":
-                        if (entry.getValue() instanceof IntTag) {
-                            z = ((IntTag) entry.getValue()).getValue();
+                        if (value instanceof IntBinaryTag) {
+                            z = ((IntBinaryTag) value).value();
                         }
                         break;
                     default:
                         break;
                 }
 
-                values.put(entry.getKey(), entry.getValue());
+                values.put(key, value);
             }
-
             BlockVector3 vec = BlockVector3.at(x, y, z);
-            tileEntities.put(vec, values);
+            tileEntities.put(vec, values.build());
         }
     }
 
@@ -236,17 +246,17 @@ public class AnvilChunk implements Chunk {
      * @throws DataException thrown if there is a data error
      */
     @Nullable
-    private CompoundTag getBlockTileEntity(BlockVector3 position) throws DataException {
+    private CompoundBinaryTag getBlockTileEntity(BlockVector3 position) throws DataException {
         if (tileEntities == null) {
             populateTileEntities();
         }
 
-        Map<String, Tag> values = tileEntities.get(position);
+        CompoundBinaryTag values = tileEntities.get(position);
         if (values == null) {
             return null;
         }
 
-        return new CompoundTag(values);
+        return values;
     }
 
     @Override
@@ -259,7 +269,7 @@ public class AnvilChunk implements Chunk {
             WorldEdit.logger.warn("Unknown legacy block " + id + ":" + data + " found when loading legacy anvil chunk.");
             return BlockTypes.AIR.getDefaultState().toBaseBlock();
         }
-        CompoundTag tileEntity = getBlockTileEntity(position);
+        CompoundBinaryTag tileEntity = getBlockTileEntity(position);
 
         if (tileEntity != null) {
             return state.toBaseBlock(tileEntity);

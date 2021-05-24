@@ -31,7 +31,11 @@ import java.util.Map;
 
 /**
  * A skull block.
+ *
+ * @deprecated WorldEdit does not handle interpreting NBT,
+ *     deprecated for removal without replacement
  */
+@Deprecated
 public class SkullBlock extends BaseBlock {
 
     private String owner = ""; // notchian

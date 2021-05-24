@@ -1,9 +1,9 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import net.minecrell.gradle.licenser.LicenseExtension
-import org.gradle.api.JavaVersion
 import org.gradle.api.Project
-import org.gradle.api.plugins.JavaPluginConvention
+import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.plugins.quality.CheckstyleExtension
+import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.javadoc.Javadoc
@@ -13,27 +13,29 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.get
-import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
+import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
+import kotlin.collections.flatMap
+import kotlin.collections.joinToString
+import kotlin.collections.listOf
+import kotlin.collections.map
+import kotlin.collections.mutableMapOf
+import kotlin.collections.plus
+import kotlin.collections.set
 
 fun Project.applyPlatformAndCoreConfiguration() {
     applyCommonConfiguration()
     apply(plugin = "java")
     apply(plugin = "eclipse")
     apply(plugin = "idea")
-    apply(plugin = "maven")
+    apply(plugin = "maven-publish")
     apply(plugin = "checkstyle")
     apply(plugin = "com.github.johnrengelman.shadow")
     apply(plugin = "com.jfrog.artifactory")
 
     ext["internalVersion"] = "$version+${rootProject.ext["gitCommitHash"]}"
-
-    configure<JavaPluginConvention> {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
 
     tasks
         .withType<JavaCompile>()
@@ -45,6 +47,7 @@ fun Project.applyPlatformAndCoreConfiguration() {
             options.compilerArgs.addAll(listOf("-Xlint:all") + disabledLint.map { "-Xlint:-$it" })
             options.isDeprecation = true
             options.encoding = "UTF-8"
+            options.compilerArgs.add("-parameters")
         }
 
     configure<CheckstyleExtension> {
@@ -76,38 +79,30 @@ fun Project.applyPlatformAndCoreConfiguration() {
         }
     }
 
-    tasks.register<Jar>("javadocJar") {
-        dependsOn("javadoc")
-        archiveClassifier.set("javadoc")
-        from(tasks.getByName<Javadoc>("javadoc").destinationDir)
-    }
-
-    tasks.named("assemble").configure {
-        dependsOn("javadocJar")
-    }
-
-    artifacts {
-        add("archives", tasks.named("jar"))
-        add("archives", tasks.named("javadocJar"))
-    }
+    the<JavaPluginExtension>().withJavadocJar()
 
     if (name == "worldedit-core" || name == "worldedit-bukkit") {
-        tasks.register<Jar>("sourcesJar") {
-            dependsOn("classes")
-            archiveClassifier.set("sources")
-            from(sourceSets["main"].allSource)
-        }
-
-        artifacts {
-            add("archives", tasks.named("sourcesJar"))
-        }
-        tasks.named("assemble").configure {
-            dependsOn("sourcesJar")
-        }
+        the<JavaPluginExtension>().withSourcesJar()
     }
 
     tasks.named("check").configure {
         dependsOn("checkstyleMain", "checkstyleTest")
+    }
+
+    configure<PublishingExtension> {
+        publications {
+            register<MavenPublication>("maven") {
+                from(components["java"])
+                versionMapping {
+                    usage("java-api") {
+                        fromResolutionOf("runtimeClasspath")
+                    }
+                    usage("java-runtime") {
+                        fromResolutionResult()
+                    }
+                }
+            }
+        }
     }
 
     applyCommonArtifactoryConfig()
@@ -120,6 +115,7 @@ fun Project.applyShadowConfiguration() {
             include(project(":worldedit-libs:core"))
             include(project(":worldedit-libs:${project.name.replace("worldedit-", "")}"))
             include(project(":worldedit-core"))
+            exclude("com.google.code.findbugs:jsr305")
         }
         exclude("GradleStart**")
         exclude(".cache")
@@ -134,12 +130,24 @@ private val CLASSPATH = listOf("truezip", "truevfs", "js")
     .flatMap { listOf(it, "WorldEdit/$it") }
     .joinToString(separator = " ")
 
-fun Project.addJarManifest(includeClasspath: Boolean = false) {
+sealed class WorldEditKind(
+    val name: String,
+    val mainClass: String = "com.sk89q.worldedit.internal.util.InfoEntryPoint"
+) {
+    class Standalone(mainClass: String) : WorldEditKind("STANDALONE", mainClass)
+    object Mod : WorldEditKind("MOD")
+    object Plugin : WorldEditKind("PLUGIN")
+}
+
+fun Project.addJarManifest(kind: WorldEditKind, includeClasspath: Boolean = false) {
     tasks.named<Jar>("jar") {
         val version = project(":worldedit-core").version
         inputs.property("version", version)
         val attributes = mutableMapOf(
-            "WorldEdit-Version" to version
+            "Implementation-Version" to version,
+            "WorldEdit-Version" to version,
+            "WorldEdit-Kind" to kind.name,
+            "Main-Class" to kind.mainClass
         )
         if (includeClasspath) {
             attributes["Class-Path"] = CLASSPATH

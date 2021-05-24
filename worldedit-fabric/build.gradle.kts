@@ -47,7 +47,9 @@ repositories {
 
 dependencies {
     "api"(project(":worldedit-core"))
-    "implementation"("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
+    "implementation"(enforcedPlatform("org.apache.logging.log4j:log4j-bom:2.8.1") {
+        because("Mojang provides Log4J at 2.8.1")
+    })
 
     "minecraft"("com.mojang:minecraft:$minecraftVersion")
     "mappings"("net.fabricmc:yarn:$yarnMappings")
@@ -112,6 +114,11 @@ dependencies {
 configure<BasePluginConvention> {
     archivesBaseName = "$archivesBaseName-mc$minecraftVersion"
 }
+configure<PublishingExtension> {
+    publications.named<MavenPublication>("maven") {
+        artifactId = the<BasePluginConvention>().archivesBaseName
+    }
+}
 
 tasks.named<Copy>("processResources") {
     // this will ensure that this task is redone when the versions change.
@@ -128,17 +135,13 @@ tasks.named<Copy>("processResources") {
     }
 }
 
-addJarManifest(includeClasspath = true)
+addJarManifest(WorldEditKind.Mod, includeClasspath = true)
 
 tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("dist-dev")
     dependencies {
-        relocate("org.slf4j", "com.sk89q.worldedit.slf4j")
-        relocate("org.apache.logging.slf4j", "com.sk89q.worldedit.log4jbridge")
         relocate("org.antlr.v4", "com.sk89q.worldedit.antlr4")
 
-        include(dependency("org.slf4j:slf4j-api"))
-        include(dependency("org.apache.logging.log4j:log4j-slf4j-impl"))
         include(dependency("org.antlr:antlr4-runtime"))
     }
 }
@@ -148,8 +151,24 @@ tasks.register<Jar>("deobfJar") {
     archiveClassifier.set("dev")
 }
 
-artifacts {
-    add("archives", tasks.named("deobfJar"))
+val deobfElements = configurations.register("deobfElements") {
+    isVisible = false
+    description = "De-obfuscated elements for libs"
+    isCanBeResolved = false
+    isCanBeConsumed = true
+    attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage.JAVA_API))
+        attribute(Category.CATEGORY_ATTRIBUTE, project.objects.named(Category.LIBRARY))
+        attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling.EXTERNAL))
+        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements.JAR))
+        attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 8)
+    }
+    outgoing.artifact(tasks.named("deobfJar"))
+}
+
+val javaComponent = components["java"] as AdhocComponentWithVariants
+javaComponent.addVariantsFromConfiguration(deobfElements.get()) {
+    mapToMavenScope("runtime")
 }
 
 tasks.register<RemapJarTask>("remapShadowJar") {
@@ -163,4 +182,11 @@ tasks.register<RemapJarTask>("remapShadowJar") {
 
 tasks.named("assemble").configure {
     dependsOn("remapShadowJar")
+}
+
+configure<PublishingExtension> {
+    publications.named<MavenPublication>("maven") {
+        // Remove when https://github.com/gradle/gradle/issues/16555 is fixed
+        suppressPomMetadataWarningsFor("runtimeElements")
+    }
 }

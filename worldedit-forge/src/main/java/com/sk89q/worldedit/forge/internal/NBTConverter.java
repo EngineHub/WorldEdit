@@ -19,20 +19,20 @@
 
 package com.sk89q.worldedit.forge.internal;
 
-import com.sk89q.jnbt.ByteArrayTag;
-import com.sk89q.jnbt.ByteTag;
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.DoubleTag;
-import com.sk89q.jnbt.EndTag;
-import com.sk89q.jnbt.FloatTag;
-import com.sk89q.jnbt.IntArrayTag;
-import com.sk89q.jnbt.IntTag;
-import com.sk89q.jnbt.ListTag;
-import com.sk89q.jnbt.LongArrayTag;
-import com.sk89q.jnbt.LongTag;
-import com.sk89q.jnbt.ShortTag;
-import com.sk89q.jnbt.StringTag;
-import com.sk89q.jnbt.Tag;
+import com.sk89q.worldedit.util.nbt.BinaryTag;
+import com.sk89q.worldedit.util.nbt.ByteArrayBinaryTag;
+import com.sk89q.worldedit.util.nbt.ByteBinaryTag;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
+import com.sk89q.worldedit.util.nbt.DoubleBinaryTag;
+import com.sk89q.worldedit.util.nbt.EndBinaryTag;
+import com.sk89q.worldedit.util.nbt.FloatBinaryTag;
+import com.sk89q.worldedit.util.nbt.IntArrayBinaryTag;
+import com.sk89q.worldedit.util.nbt.IntBinaryTag;
+import com.sk89q.worldedit.util.nbt.ListBinaryTag;
+import com.sk89q.worldedit.util.nbt.LongArrayBinaryTag;
+import com.sk89q.worldedit.util.nbt.LongBinaryTag;
+import com.sk89q.worldedit.util.nbt.ShortBinaryTag;
+import com.sk89q.worldedit.util.nbt.StringBinaryTag;
 import net.minecraft.nbt.ByteArrayNBT;
 import net.minecraft.nbt.ByteNBT;
 import net.minecraft.nbt.CompoundNBT;
@@ -48,12 +48,7 @@ import net.minecraft.nbt.LongNBT;
 import net.minecraft.nbt.ShortNBT;
 import net.minecraft.nbt.StringNBT;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -64,56 +59,56 @@ public final class NBTConverter {
     private NBTConverter() {
     }
 
-    public static INBT toNative(Tag tag) {
-        if (tag instanceof IntArrayTag) {
-            return toNative((IntArrayTag) tag);
+    public static INBT toNative(BinaryTag tag) {
+        if (tag instanceof IntArrayBinaryTag) {
+            return toNative((IntArrayBinaryTag) tag);
 
-        } else if (tag instanceof ListTag) {
-            return toNative((ListTag) tag);
+        } else if (tag instanceof ListBinaryTag) {
+            return toNative((ListBinaryTag) tag);
 
-        } else if (tag instanceof LongTag) {
-            return toNative((LongTag) tag);
+        } else if (tag instanceof LongBinaryTag) {
+            return toNative((LongBinaryTag) tag);
 
-        } else if (tag instanceof LongArrayTag) {
-            return toNative((LongArrayTag) tag);
+        } else if (tag instanceof LongArrayBinaryTag) {
+            return toNative((LongArrayBinaryTag) tag);
 
-        } else if (tag instanceof StringTag) {
-            return toNative((StringTag) tag);
+        } else if (tag instanceof StringBinaryTag) {
+            return toNative((StringBinaryTag) tag);
 
-        } else if (tag instanceof IntTag) {
-            return toNative((IntTag) tag);
+        } else if (tag instanceof IntBinaryTag) {
+            return toNative((IntBinaryTag) tag);
 
-        } else if (tag instanceof ByteTag) {
-            return toNative((ByteTag) tag);
+        } else if (tag instanceof ByteBinaryTag) {
+            return toNative((ByteBinaryTag) tag);
 
-        } else if (tag instanceof ByteArrayTag) {
-            return toNative((ByteArrayTag) tag);
+        } else if (tag instanceof ByteArrayBinaryTag) {
+            return toNative((ByteArrayBinaryTag) tag);
 
-        } else if (tag instanceof CompoundTag) {
-            return toNative((CompoundTag) tag);
+        } else if (tag instanceof CompoundBinaryTag) {
+            return toNative((CompoundBinaryTag) tag);
 
-        } else if (tag instanceof FloatTag) {
-            return toNative((FloatTag) tag);
+        } else if (tag instanceof FloatBinaryTag) {
+            return toNative((FloatBinaryTag) tag);
 
-        } else if (tag instanceof ShortTag) {
-            return toNative((ShortTag) tag);
+        } else if (tag instanceof ShortBinaryTag) {
+            return toNative((ShortBinaryTag) tag);
 
-        } else if (tag instanceof DoubleTag) {
-            return toNative((DoubleTag) tag);
+        } else if (tag instanceof DoubleBinaryTag) {
+            return toNative((DoubleBinaryTag) tag);
         } else {
             throw new IllegalArgumentException("Can't convert tag of type " + tag.getClass().getCanonicalName());
         }
     }
 
-    public static IntArrayNBT toNative(IntArrayTag tag) {
-        int[] value = tag.getValue();
+    public static IntArrayNBT toNative(IntArrayBinaryTag tag) {
+        int[] value = tag.value();
         return new IntArrayNBT(Arrays.copyOf(value, value.length));
     }
 
-    public static ListNBT toNative(ListTag tag) {
+    public static ListNBT toNative(ListBinaryTag tag) {
         ListNBT list = new ListNBT();
-        for (Tag child : tag.getValue()) {
-            if (child instanceof EndTag) {
+        for (BinaryTag child : tag) {
+            if (child instanceof EndBinaryTag) {
                 continue;
             }
             list.add(toNative(child));
@@ -121,51 +116,51 @@ public final class NBTConverter {
         return list;
     }
 
-    public static LongNBT toNative(LongTag tag) {
-        return LongNBT.valueOf(tag.getValue());
+    public static LongNBT toNative(LongBinaryTag tag) {
+        return LongNBT.valueOf(tag.value());
     }
 
-    public static LongArrayNBT toNative(LongArrayTag tag) {
-        return new LongArrayNBT(tag.getValue().clone());
+    public static LongArrayNBT toNative(LongArrayBinaryTag tag) {
+        return new LongArrayNBT(tag.value().clone());
     }
 
-    public static StringNBT toNative(StringTag tag) {
-        return StringNBT.valueOf(tag.getValue());
+    public static StringNBT toNative(StringBinaryTag tag) {
+        return StringNBT.valueOf(tag.value());
     }
 
-    public static IntNBT toNative(IntTag tag) {
-        return IntNBT.valueOf(tag.getValue());
+    public static IntNBT toNative(IntBinaryTag tag) {
+        return IntNBT.valueOf(tag.value());
     }
 
-    public static ByteNBT toNative(ByteTag tag) {
-        return ByteNBT.valueOf(tag.getValue());
+    public static ByteNBT toNative(ByteBinaryTag tag) {
+        return ByteNBT.valueOf(tag.value());
     }
 
-    public static ByteArrayNBT toNative(ByteArrayTag tag) {
-        return new ByteArrayNBT(tag.getValue().clone());
+    public static ByteArrayNBT toNative(ByteArrayBinaryTag tag) {
+        return new ByteArrayNBT(tag.value().clone());
     }
 
-    public static CompoundNBT toNative(CompoundTag tag) {
+    public static CompoundNBT toNative(CompoundBinaryTag tag) {
         CompoundNBT compound = new CompoundNBT();
-        for (Entry<String, Tag> child : tag.getValue().entrySet()) {
-            compound.put(child.getKey(), toNative(child.getValue()));
+        for (String key : tag.keySet()) {
+            compound.put(key, toNative(tag.get(key)));
         }
         return compound;
     }
 
-    public static FloatNBT toNative(FloatTag tag) {
-        return FloatNBT.valueOf(tag.getValue());
+    public static FloatNBT toNative(FloatBinaryTag tag) {
+        return FloatNBT.valueOf(tag.value());
     }
 
-    public static ShortNBT toNative(ShortTag tag) {
-        return ShortNBT.valueOf(tag.getValue());
+    public static ShortNBT toNative(ShortBinaryTag tag) {
+        return ShortNBT.valueOf(tag.value());
     }
 
-    public static DoubleNBT toNative(DoubleTag tag) {
-        return DoubleNBT.valueOf(tag.getValue());
+    public static DoubleNBT toNative(DoubleBinaryTag tag) {
+        return DoubleNBT.valueOf(tag.value());
     }
 
-    public static Tag fromNative(INBT other) {
+    public static BinaryTag fromNative(INBT other) {
         if (other instanceof IntArrayNBT) {
             return fromNative((IntArrayNBT) other);
 
@@ -209,71 +204,69 @@ public final class NBTConverter {
         }
     }
 
-    public static IntArrayTag fromNative(IntArrayNBT other) {
+    public static IntArrayBinaryTag fromNative(IntArrayNBT other) {
         int[] value = other.getIntArray();
-        return new IntArrayTag(Arrays.copyOf(value, value.length));
+        return IntArrayBinaryTag.of(Arrays.copyOf(value, value.length));
     }
 
-    public static ListTag fromNative(ListNBT other) {
+    public static ListBinaryTag fromNative(ListNBT other) {
         other = other.copy();
-        List<Tag> list = new ArrayList<>();
-        Class<? extends Tag> listClass = StringTag.class;
+        ListBinaryTag.Builder<BinaryTag> list = ListBinaryTag.builder();
         int tags = other.size();
         for (int i = 0; i < tags; i++) {
-            Tag child = fromNative(other.remove(0));
+            BinaryTag child = fromNative(other.remove(0));
             list.add(child);
-            listClass = child.getClass();
         }
-        return new ListTag(listClass, list);
+        return list.build();
     }
 
-    public static EndTag fromNative(EndNBT other) {
-        return new EndTag();
+    public static EndBinaryTag fromNative(EndNBT other) {
+        return EndBinaryTag.get();
     }
 
-    public static LongTag fromNative(LongNBT other) {
-        return new LongTag(other.getLong());
+    public static LongBinaryTag fromNative(LongNBT other) {
+        return LongBinaryTag.of(other.getLong());
     }
 
-    public static LongArrayTag fromNative(LongArrayNBT other) {
-        return new LongArrayTag(other.getAsLongArray().clone());
+    public static LongArrayBinaryTag fromNative(LongArrayNBT other) {
+        return LongArrayBinaryTag.of(other.getAsLongArray().clone());
     }
 
-    public static StringTag fromNative(StringNBT other) {
-        return new StringTag(other.getString());
+    public static StringBinaryTag fromNative(StringNBT other) {
+        return StringBinaryTag.of(other.getString());
     }
 
-    public static IntTag fromNative(IntNBT other) {
-        return new IntTag(other.getInt());
+    public static IntBinaryTag fromNative(IntNBT other) {
+        return IntBinaryTag.of(other.getInt());
     }
 
-    public static ByteTag fromNative(ByteNBT other) {
-        return new ByteTag(other.getByte());
+    public static ByteBinaryTag fromNative(ByteNBT other) {
+        return ByteBinaryTag.of(other.getByte());
     }
 
-    public static ByteArrayTag fromNative(ByteArrayNBT other) {
-        return new ByteArrayTag(other.getByteArray().clone());
+    public static ByteArrayBinaryTag fromNative(ByteArrayNBT other) {
+        return ByteArrayBinaryTag.of(other.getByteArray().clone());
     }
 
-    public static CompoundTag fromNative(CompoundNBT other) {
+    public static CompoundBinaryTag fromNative(CompoundNBT other) {
         Set<String> tags = other.keySet();
-        Map<String, Tag> map = new HashMap<>();
+        CompoundBinaryTag.Builder map = CompoundBinaryTag.builder();
         for (String tagName : tags) {
             map.put(tagName, fromNative(other.get(tagName)));
         }
-        return new CompoundTag(map);
+        return map.build();
     }
 
-    public static FloatTag fromNative(FloatNBT other) {
-        return new FloatTag(other.getFloat());
+    public static FloatBinaryTag fromNative(FloatNBT other) {
+        return FloatBinaryTag.of(other.getFloat());
     }
 
-    public static ShortTag fromNative(ShortNBT other) {
-        return new ShortTag(other.getShort());
+    public static ShortBinaryTag fromNative(ShortNBT other) {
+        return ShortBinaryTag.of(other.getShort());
     }
 
-    public static DoubleTag fromNative(DoubleNBT other) {
-        return new DoubleTag(other.getDouble());
+    public static DoubleBinaryTag fromNative(DoubleNBT other) {
+        return DoubleBinaryTag.of(other.getDouble());
     }
 
 }

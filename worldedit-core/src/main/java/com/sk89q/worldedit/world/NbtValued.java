@@ -20,6 +20,10 @@
 package com.sk89q.worldedit.world;
 
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.internal.util.DeprecationUtil;
+import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 
 import javax.annotation.Nullable;
 
@@ -35,8 +39,12 @@ public interface NbtValued {
      * must not return null if this method returns true.
      *
      * @return true if there is NBT data
+     * @deprecated See {@link #getNbt()}
      */
-    boolean hasNbtData();
+    @Deprecated
+    default boolean hasNbtData() {
+        return getNbt() != null;
+    }
 
     /**
      * Get the object's NBT data (tile entity data). The returned tag, if
@@ -49,15 +57,87 @@ public interface NbtValued {
      * not return null.</p>
      *
      * @return compound tag, or null
+     * @deprecated See {@link #getNbt()}
+     */
+    @Deprecated
+    @Nullable
+    default CompoundTag getNbtData() {
+        CompoundBinaryTag tag = getNbt();
+        return tag == null ? null : new CompoundTag(tag);
+    }
+
+    /**
+     * Set the object's NBT data (tile entity data).
+     *
+     * @param nbtData NBT data, or null if no data
+     * @deprecated See {@link #setNbtReference(LazyReference)}
+     */
+    @Deprecated
+    default void setNbtData(@Nullable CompoundTag nbtData) {
+        setNbtReference(nbtData == null ? null : LazyReference.from(nbtData::asBinaryTag));
+    }
+
+    /**
+     * Get the object's NBT data (tile entity data).
+     *
+     * <p>
+     * This only needs to be used if you don't want to immediately resolve the data.
+     * Otherwise, you probably want {@link #getNbt()}.
+     * </p>
+     *
+     * @return compound tag, or null
+     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
+     *          for details
+     */
+    @NonAbstractForCompatibility(
+        delegateName = "getNbtData",
+        delegateParams = { }
+    )
+    @Nullable
+    default LazyReference<CompoundBinaryTag> getNbtReference() {
+        DeprecationUtil.checkDelegatingOverride(getClass());
+
+        CompoundTag nbtData = getNbtData();
+        return nbtData == null ? null : LazyReference.from(nbtData::asBinaryTag);
+    }
+
+    /**
+     * Get the object's NBT data (tile entity data).
+     *
+     * @return compound tag, or null
+     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
+     *          for details
      */
     @Nullable
-    CompoundTag getNbtData();
+    default CompoundBinaryTag getNbt() {
+        LazyReference<CompoundBinaryTag> ref = getNbtReference();
+        return ref == null ? null : ref.getValue();
+    }
+
+    /**
+     * Set the object's NBT data (tile entity data).
+     *
+     * @param nbtData NBT data, or null if no data
+     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
+     *          for details
+     */
+    @NonAbstractForCompatibility(
+        delegateName = "setNbtData",
+        delegateParams = { CompoundTag.class }
+    )
+    default void setNbtReference(@Nullable LazyReference<CompoundBinaryTag> nbtData) {
+        DeprecationUtil.checkDelegatingOverride(getClass());
+
+        setNbtData(nbtData == null ? null : new CompoundTag(nbtData.getValue()));
+    }
 
     /**
      * Set the object's NBT data (tile entity data).
      *
      * @param nbtData NBT data, or null if no data
      */
-    void setNbtData(@Nullable CompoundTag nbtData);
+    default void setNbt(@Nullable CompoundBinaryTag nbtData) {
+        setNbtReference(nbtData == null ? null : LazyReference.computed(nbtData));
+    }
 
 }

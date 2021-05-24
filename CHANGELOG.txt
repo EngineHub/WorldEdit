@@ -1,3 +1,24 @@
+7.2.5
+- Allow /toggleplace to work on any Locatable Actor, e.g. Command Blocks
+- Change legacy.json oak stair shape to straight
+- Changed to Log4J for logging, no more SLF4J
+- Improved API for `getSelection()`
+
+7.2.4
+- [Bukkit] Fixed an issue where chest contents may not be erased
+- [Bukkit] Worked around a Spigot bug causing potential watchdog timeouts on startup
+- [Forge] Fixed some potential issues with the merged -mod file on Forge
+- Added a message with install instructions when incorrectly trying to run the jar file
+- Fixed a problem where capital characters in block properties could cause suggestion errors
+
+7.2.3
+- [Forge/Fabric] Added -mod jar file containing both Fabric and Forge
+- [Forge/Fabric] Speed up WorldEdit<->Native block translation layer in some cases
+- [Fabric] Disable support for the UPDATE side effect when Carpet or QuickCarpet are available, due to conflict
+- Improve performance when working with tile entities
+- [Bukkit] Further tile entity performance improvements when using Paper (not Spigot)
+- Speed up initialisation from registries at startup, especially when many mods are in use
+
 7.2.2
 - [Bukkit] Add support for MC 1.16.5.
 - [Fabric] Add support for Lucko's Fabric Permissions API.
@@ -17,7 +38,7 @@ from the default.
 - Update language bundle and minor language loading fixes/improvements.
 
 7.2.0
-- Greatly improve WorldEdit performance on servers with many plugins (See more: https://matthewmiller.dev/talk/optimizing-your-application/)
+- Greatly improve WorldEdit performance on servers with many plugins (See more: https://madelinemiller.dev/talk/optimizing-your-application/)
 - Improve general WorldEdit performance
 - Added a fine-grained fast mode system with //perf to allow individually enabling or disabling update types
 - Added a stack tool that stacks the clicked block until it hits an obstacle (https://gfycat.com/faithfulhardtofinddingo)
@@ -108,7 +129,7 @@ from the default.
 - Improve messages when running the wrong WorldEdit version for the MC version
 - Fixed an issue where other plugins could send bad data to clients using the WorldEdit API
 - Significant memory optimisations. Many operations will now require less RAM.
-- Added WorldEdit-CLI, a tool to run headless WorldEdit from the commandline (see https://matthewmiller.dev/blog/introducing-worldeditcli/)
+- Added WorldEdit-CLI, a tool to run headless WorldEdit from the commandline (see https://madelinemiller.dev/blog/introducing-worldeditcli/)
 - Allowed most WorldEdit commands to be run from the console
 - Added //world, to override the world in which WorldEdit is operating (useful for console)
 - Added support for WorldEdit in CommandBlocks (on Spigot/Paper). Double slash commands require using /worldedit:/set due to a Minecraft bug.
@@ -175,7 +196,7 @@ between worlds generated at different times/with different mods
 - Further legacy schematic loading improvements
 
 7.0.0
-See https://matthewmiller.dev/blog/introducing-worldedit-7/ for a friendlier explanation of some new features
+See https://madelinemiller.dev/blog/introducing-worldedit-7/ for a friendlier explanation of some new features
 
 - Added support for 1.13 and higher versions, and removed support for earlier
 - Use the official Minecraft format for entering blocks, `minecraft:oak_sign[rotation=7]`
@@ -306,17 +327,17 @@ mostly contain bug fixes and minor changes.
 - Added //curve.
 - Added 1.7 blocks, biomes, trees, and items.
 - Added a "hand" pseudo block type that uses the currently selected block.
-- Added a "pos1" pseudo block type, which uses the block type from the 
+- Added a "pos1" pseudo block type, which uses the block type from the
   "primary position".
-- Added a //generatebiome command, which uses formulae to generate free-form 
+- Added a //generatebiome command, which uses formulae to generate free-form
   biomes.
-- Added a check for both superperms and PEX directly to support older versions 
+- Added a check for both superperms and PEX directly to support older versions
   of PEX with inGroup.
 - Added a SolidBlockMask (#solid).
 - Added an item->block mapping for LocalPlayer.getBlockInHand().
 - Added colors for stained clay and carpet data values.
 - Added configuration option to set the default for the /up and /ceil commands.
-- Added data value mappings for certain blocks and made all other block types 
+- Added data value mappings for certain blocks and made all other block types
   wildcard matches.
 - Added fly mode support for /up and /ceil,
 - Added hollow lines.
@@ -326,12 +347,12 @@ mostly contain bug fixes and minor changes.
 - Added query{,Abs,Rel}(x,y,z,typevar,datavar) to the expression parser.
 - Added support for rotating hay blocks like logs.
 - Added usage of non-existent variables in all LValue expressions.
-- Changed /up and /ceil command to use glass block by default. Flight can be 
+- Changed /up and /ceil command to use glass block by default. Flight can be
   done via -f flag now.
 - Removed the /fill command as an alias of /material (which sets the brush
   material).
 - Fixed //deform not doing anything at all.
-- Fixed //walls on non-cuboid regions so that they no longer introduces gaps 
+- Fixed //walls on non-cuboid regions so that they no longer introduces gaps
   in walls beyond 45 degrees.
 - Fixed /ascend and /descend to use the height of blocks properly.
 - Fixed /green command so that it no longer affects permadirt and podzol.
@@ -343,7 +364,7 @@ mostly contain bug fixes and minor changes.
 - Fixed not flipping the center plane blocks.
 - Fixed snapshot restore now so it now obeys masks again.
 - Fixed some attachments that would result in items being dropped.
-- Fixed the query functions not comparing data values at all for their 
+- Fixed the query functions not comparing data values at all for their
   return values.
 - Fixed improper block probability patterns (i.e. 20%,10%grass) causing an error.
 - Fixed /we help not finding commands if uppercase names are used.
@@ -490,13 +511,13 @@ Jim Nordb� (Silentspy), snaxson, Socolin, and Zhuowei Zhang (zhuowei).
 
 5.3:
 - Made #region mask keep the region selected when the pask was added, and
-    added #dregion mask that always uses the player's current 
+    added #dregion mask that always uses the player's current
 selection
 - Allow inverted and under/overlay masks to affect masks, making them more
-    flexible. This allows for things like /gmask !$biome and 
+    flexible. This allows for things like /gmask !$biome and
 /gmask >>>#region
 - Added basic entity handling with copy and paste. Paintings do not currently
-    respawn properly, entity pastes cannot be undone yet, and 
+    respawn properly, entity pastes cannot be undone yet, and
 schematics do not yet store entities
 - Added getChunkCubes() to Region to get 16^3 chunks a region overlaps with
 - Cleaned up ContainerBlock inventory reading from NBT.
@@ -511,7 +532,7 @@ schematics do not yet store entities
 - Remove error-prone redundancy in Polygonal2D min/max management
 - Updated for SpoutVanilla changes
 - Added Falling sand/gravel entities to /remove command
-- Added support for new tree types to TreeGenerator and make adding more tree 
+- Added support for new tree types to TreeGenerator and make adding more tree
     types later easier
 - Updated for changes to SpoutAPI
 - Fixed FloatingTreeRemover (/tool deltree) to work correctly with jungle trees
@@ -526,7 +547,7 @@ schematics do not yet store entities
     cylinders and ellipses.
 - Add positive() to Vector and Vector2D
 - In WorldGuard, teleport/spawn location yaw/pitch should now work.
-- Register command permissions, integrate with the Bukkit help API 
+- Register command permissions, integrate with the Bukkit help API
 - Allow annotation-free registering of commands with other plugins
     (for developers!)
 - Added default radius setting for butcher and added permissions for killing
@@ -539,7 +560,7 @@ schematics do not yet store entities
 - Fix restoring enchantments from snapshots/schematics.
 - Made tree planter tool try 10 times to make the tree before giving up.
 
-Thanks to Nidan, aumgn, Jadedwolf, wizjany, SpectralEdge, md_5, and desht for 
+Thanks to Nidan, aumgn, Jadedwolf, wizjany, SpectralEdge, md_5, and desht for
 their contributions
 
 
@@ -589,7 +610,7 @@ their contributions
 - Added //desel and //deselect as aliases for //sel
 - Added a gravity brush.
 - Added support for ellipsoid and sphere selections.
-- Add cuiVersion to LocalSession and set it via incoming CUI event Refactor 
+- Add cuiVersion to LocalSession and set it via incoming CUI event Refactor
     region selectors to handle legacy versions a bit better. Because chat
     doesn't allow the section sign to be sent, I have to send non-color codes. Meh. closes #158
 - Some region selection fixes
@@ -597,7 +618,7 @@ their contributions
 - Add a cylindrical region selector.
 - Added initial SpoutAPI compatibility
 - Allow copying item stacks with damage of > Byte.MAX_VALUE. Closes #972
-- Improved output of YAMLProcessor and added support for root-level comments. 
+- Improved output of YAMLProcessor and added support for root-level comments.
     (for developers!)
 - Removed support for Permissions2/3
 - Performance improvements
@@ -611,7 +632,7 @@ rjwboys, yetanotherx, and GiCodeWarrior
 - Added a //hollow command, which hollows out the object contained in the selection.
 
 - Added /snapshot sel, which preselects a snapshot for future operations
-- Added //sel extend, which activates cuboid selector where you can extend 
+- Added //sel extend, which activates cuboid selector where you can extend
     selections by right-clicking.
 - Added -a and -n flags to //butcher to kill animals and NPCs, respectively
 - Added support for stretched cylinders to //cyl and //hcyl (use //cyl x,z)
@@ -1291,7 +1312,7 @@ Bukkit users: Minimum build #: 541
 - Removed the dependency on Apache commons and recompiled the JavaScript
     engine to be smaller.
 
-0.6: 
+0.6:
 - Added a check that will warn you when the region you have selected is
     larger than the .schematic format can support.
 - Implemented smart block queuing that will intelligently create or

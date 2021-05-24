@@ -23,8 +23,6 @@ import com.sk89q.jchronic.Chronic;
 import com.sk89q.jchronic.Options;
 import com.sk89q.jchronic.utils.Span;
 import com.sk89q.jchronic.utils.Time;
-import com.sk89q.jnbt.IntTag;
-import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.command.tool.BlockTool;
 import com.sk89q.worldedit.command.tool.BrushTool;
 import com.sk89q.worldedit.command.tool.InvalidToolBindException;
@@ -50,7 +48,9 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.util.SideEffectSet;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -391,17 +391,34 @@ public class LocalSession {
 
     /**
      * Get the selection region. If you change the region, you should
-     * call learnRegionChanges().  If the selection is defined in
-     * a different world, the {@code IncompleteRegionException}
-     * exception will be thrown.
+     * call learnRegionChanges(). If the selection is not fully defined,
+     * the {@code IncompleteRegionException} exception will be thrown.
+     *
+     * <p>Note that this method will return a region in the current selection world,
+     * which is not guaranteed to be the player's world or even the current world
+     * override. If you require a specific world, use the
+     * {@link LocalSession#getSelection(World)} overload instead.
+     *
+     * @return the selected region
+     * @throws IncompleteRegionException if the region is not fully defined
+     */
+    public Region getSelection() throws IncompleteRegionException {
+        return getSelection(getSelectionWorld());
+    }
+
+    /**
+     * Get the selection region. If you change the region, you should
+     * call learnRegionChanges(). If the selection is defined in
+     * a different world, or the selection isn't fully defined,
+     * the {@code IncompleteRegionException} exception will be thrown.
      *
      * @param world the world
      * @return a region
-     * @throws IncompleteRegionException if no region is selected
+     * @throws IncompleteRegionException if no region is selected, or the provided world is null
      */
-    public Region getSelection(World world) throws IncompleteRegionException {
-        checkNotNull(world);
-        if (selector.getIncompleteRegion().getWorld() == null || !selector.getIncompleteRegion().getWorld().equals(world)) {
+    public Region getSelection(@Nullable World world) throws IncompleteRegionException {
+        if (world == null || selector.getIncompleteRegion().getWorld() == null
+            || !selector.getIncompleteRegion().getWorld().equals(world)) {
             throw new IncompleteRegionException();
         }
         return selector.getRegion();
@@ -412,6 +429,7 @@ public class LocalSession {
      *
      * @return the the world of the selection
      */
+    @Nullable
     public World getSelectionWorld() {
         return selector.getIncompleteRegion().getWorld();
     }
@@ -804,13 +822,15 @@ public class LocalSession {
 
         BaseBlock block = ServerCUIHandler.createStructureBlock(player);
         if (block != null) {
-            // If it's null, we don't need to do anything. The old was already removed.
-            Map<String, Tag> tags = block.getNbtData().getValue();
-            BlockVector3 tempCuiTemporaryBlock = BlockVector3.at(
-                    ((IntTag) tags.get("x")).getValue(),
-                    ((IntTag) tags.get("y")).getValue(),
-                    ((IntTag) tags.get("z")).getValue()
+            CompoundBinaryTag tags = Objects.requireNonNull(
+                block.getNbt(), "createStructureBlock should return nbt"
             );
+            BlockVector3 tempCuiTemporaryBlock = BlockVector3.at(
+                tags.getInt("x"),
+                tags.getInt("y"),
+                tags.getInt("z")
+            );
+            // If it's null, we don't need to do anything. The old was already removed.
             if (cuiTemporaryBlock != null && !tempCuiTemporaryBlock.equals(cuiTemporaryBlock)) {
                 // Update the existing block if it's the same location
                 player.sendFakeBlock(cuiTemporaryBlock, null);

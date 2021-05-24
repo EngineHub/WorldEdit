@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.fabric;
 
-import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
@@ -38,6 +37,7 @@ import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.component.TextUtils;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -55,7 +55,6 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
 import java.io.IOException;
@@ -243,7 +242,7 @@ public class FabricPlayer extends AbstractPlayerActor {
             player.networkHandler.sendPacket(packetOut);
             if (block instanceof BaseBlock && block.getBlockType().equals(BlockTypes.STRUCTURE_BLOCK)) {
                 final BaseBlock baseBlock = (BaseBlock) block;
-                final CompoundTag nbtData = baseBlock.getNbtData();
+                final CompoundBinaryTag nbtData = baseBlock.getNbt();
                 if (nbtData != null) {
                     player.networkHandler.sendPacket(new BlockEntityUpdateS2CPacket(
                             new BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()),

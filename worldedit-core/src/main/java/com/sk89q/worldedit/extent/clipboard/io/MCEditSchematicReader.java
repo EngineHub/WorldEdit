@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.extent.clipboard.io;
 
 import com.google.common.collect.ImmutableList;
+import com.sk89q.jnbt.AdventureNBTConverter;
 import com.sk89q.jnbt.ByteArrayTag;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.IntTag;
@@ -42,6 +43,7 @@ import com.sk89q.worldedit.extent.clipboard.io.legacycompat.NoteBlockCompatibili
 import com.sk89q.worldedit.extent.clipboard.io.legacycompat.Pre13HangingCompatibilityHandler;
 import com.sk89q.worldedit.extent.clipboard.io.legacycompat.SignCompatibilityHandler;
 import com.sk89q.worldedit.extent.clipboard.io.legacycompat.SkullBlockCompatibilityHandler;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
@@ -52,8 +54,7 @@ import com.sk89q.worldedit.world.entity.EntityType;
 import com.sk89q.worldedit.world.entity.EntityTypes;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.storage.NBTConversions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -71,7 +72,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class MCEditSchematicReader extends NBTSchematicReader {
 
-    private static final Logger log = LoggerFactory.getLogger(MCEditSchematicReader.class);
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
     private final NBTInputStream inputStream;
     private final DataFixer fixer;
     private static final ImmutableList<NBTCompatibilityHandler> COMPATIBILITY_HANDLERS
@@ -219,7 +220,7 @@ public class MCEditSchematicReader extends NBTSchematicReader {
             }
 
             if (fixer != null && t != null) {
-                t = fixer.fixUp(DataFixer.FixTypes.BLOCK_ENTITY, t, -1);
+                t = (CompoundTag) AdventureNBTConverter.fromAdventure(fixer.fixUp(DataFixer.FixTypes.BLOCK_ENTITY, t.asBinaryTag(), -1));
             }
 
             BlockVector3 vec = BlockVector3.at(x, y, z);
@@ -253,7 +254,7 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                             byte data = blockData[index];
                             int combined = block << 8 | data;
                             if (unknownBlocks.add(combined)) {
-                                log.warn("Unknown block when loading schematic: "
+                                LOGGER.warn("Unknown block when loading schematic: "
                                         + block + ":" + data + ". This is most likely a bad schematic.");
                             }
                         }
@@ -274,7 +275,7 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                 if (tag instanceof CompoundTag) {
                     CompoundTag compound = (CompoundTag) tag;
                     if (fixer != null) {
-                        compound = fixer.fixUp(DataFixer.FixTypes.ENTITY, compound, -1);
+                        compound = (CompoundTag) AdventureNBTConverter.fromAdventure(fixer.fixUp(DataFixer.FixTypes.ENTITY, compound.asBinaryTag(), -1));
                     }
                     String id = convertEntityId(compound.getString("id"));
                     Location location = NBTConversions.toLocation(clipboard, compound.getListTag("Pos"), compound.getListTag("Rotation"));
@@ -289,7 +290,7 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                             BaseEntity state = new BaseEntity(entityType, compound);
                             clipboard.createEntity(location, state);
                         } else {
-                            log.warn("Unknown entity when pasting schematic: " + id.toLowerCase(Locale.ROOT));
+                            LOGGER.warn("Unknown entity when pasting schematic: " + id.toLowerCase(Locale.ROOT));
                         }
                     }
                 }

@@ -27,7 +27,9 @@ configurations.all {
 
 dependencies {
     "api"(project(":worldedit-core"))
-    "implementation"("org.apache.logging.log4j:log4j-slf4j-impl:2.11.2")
+    "implementation"(enforcedPlatform("org.apache.logging.log4j:log4j-bom:2.11.2") {
+        because("Forge provides Log4J at 2.11.2 (Mojang provides 2.8.1, but Forge bumps)")
+    })
 
     "minecraft"("net.minecraftforge:forge:$minecraftVersion-$forgeVersion")
 }
@@ -57,6 +59,11 @@ configure<UserDevExtension> {
 
 configure<BasePluginConvention> {
     archivesBaseName = "$archivesBaseName-mc$minecraftVersion"
+}
+configure<PublishingExtension> {
+    publications.named<MavenPublication>("maven") {
+        artifactId = the<BasePluginConvention>().archivesBaseName
+    }
 }
 
 tasks.named<Copy>("processResources") {
@@ -88,19 +95,13 @@ tasks.named<Copy>("processResources") {
     from(project(":worldedit-core").tasks.named("processResources"))
 }
 
-addJarManifest(includeClasspath = false)
+addJarManifest(WorldEditKind.Mod, includeClasspath = false)
 
 tasks.named<ShadowJar>("shadowJar") {
     dependencies {
-        relocate("org.slf4j", "com.sk89q.worldedit.slf4j")
-        relocate("org.apache.logging.slf4j", "com.sk89q.worldedit.log4jbridge")
         relocate("org.antlr.v4", "com.sk89q.worldedit.antlr4")
 
-        include(dependency("org.slf4j:slf4j-api"))
-        include(dependency("org.apache.logging.log4j:log4j-slf4j-impl"))
         include(dependency("org.antlr:antlr4-runtime"))
-        include(dependency("de.schlichtherle:truezip"))
-        include(dependency("net.java.truevfs:truevfs-profile-default_2.13"))
         include(dependency("org.mozilla:rhino-runtime"))
     }
     minimize {
@@ -120,6 +121,22 @@ tasks.register<Jar>("deobfJar") {
     archiveClassifier.set("dev")
 }
 
-artifacts {
-    add("archives", tasks.named("deobfJar"))
+val deobfElements = configurations.register("deobfElements") {
+    isVisible = false
+    description = "De-obfuscated elements for libs"
+    isCanBeResolved = false
+    isCanBeConsumed = true
+    attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage.JAVA_API))
+        attribute(Category.CATEGORY_ATTRIBUTE, project.objects.named(Category.LIBRARY))
+        attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling.EXTERNAL))
+        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements.JAR))
+        attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 8)
+    }
+    outgoing.artifact(tasks.named("deobfJar"))
+}
+
+val javaComponent = components["java"] as AdhocComponentWithVariants
+javaComponent.addVariantsFromConfiguration(deobfElements.get()) {
+    mapToMavenScope("runtime")
 }

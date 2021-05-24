@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.fabric;
+package com.sk89q.worldedit.fabric.internal;
 
 import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.registry.state.Property;

@@ -31,7 +31,11 @@ import java.util.Map;
 
 /**
  * Represents a sign block.
+ *
+ * @deprecated WorldEdit does not handle interpreting NBT,
+ *     deprecated for removal without replacement
  */
+@Deprecated
 public class SignBlock extends BaseBlock {
 
     private String[] text;

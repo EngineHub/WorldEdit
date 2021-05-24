@@ -29,7 +29,6 @@ import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Futures;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Dynamic;
-import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
@@ -52,7 +51,9 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.io.file.SafeFiles;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.RegenOptions;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -208,6 +209,10 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public boolean clearContainerBlockContents(BlockVector3 position) {
         checkNotNull(position);
+        if (!getBlock(position).getBlockType().getMaterial().hasContainer()) {
+            return false;
+        }
+
         TileEntity tile = getWorld().getTileEntity(ForgeAdapter.toBlockPos(position));
         if (tile instanceof IClearable) {
             ((IClearable) tile).clear();
@@ -253,7 +258,7 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public boolean useItem(BlockVector3 position, BaseItem item, Direction face) {
-        ItemStack stack = ForgeAdapter.adapt(new BaseItemStack(item.getType(), item.getNbtData(), 1));
+        ItemStack stack = ForgeAdapter.adapt(new BaseItemStack(item.getType(), item.getNbtReference(), 1));
         ServerWorld world = (ServerWorld) getWorld();
         final WorldEditFakePlayer fakePlayer;
         try {
@@ -437,7 +442,7 @@ public class ForgeWorld extends AbstractWorld {
             if (blockEntity != null) {
                 CompoundNBT tag = new CompoundNBT();
                 blockEntity.write(tag);
-                state = state.toBaseBlock(NBTConverter.fromNative(tag));
+                state = state.toBaseBlock(LazyReference.from(() -> NBTConverter.fromNative(tag)));
             }
             extent.setBlock(vec, state.toBaseBlock());
 
@@ -596,11 +601,6 @@ public class ForgeWorld extends AbstractWorld {
                 .getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4)
                 .getBlockState(ForgeAdapter.toBlockPos(position));
 
-        BlockState matchingBlock = BlockStateIdAccess.getBlockStateById(Block.getStateId(mcState));
-        if (matchingBlock != null) {
-            return matchingBlock;
-        }
-
         return ForgeAdapter.adapt(mcState);
     }
 
@@ -610,7 +610,10 @@ public class ForgeWorld extends AbstractWorld {
         TileEntity tile = getWorld().getChunk(pos).getTileEntity(pos);
 
         if (tile != null) {
-            return getBlock(position).toBaseBlock(NBTConverter.fromNative(TileEntityUtils.copyNbtData(tile)));
+            CompoundNBT tag = TileEntityUtils.copyNbtData(tile);
+            return getBlock(position).toBaseBlock(
+                LazyReference.from(() -> NBTConverter.fromNative(tag))
+            );
         } else {
             return getBlock(position).toBaseBlock();
         }
@@ -677,9 +680,9 @@ public class ForgeWorld extends AbstractWorld {
         }
         net.minecraft.entity.Entity createdEntity = entityType.get().create(world);
         if (createdEntity != null) {
-            CompoundTag nativeTag = entity.getNbtData();
+            CompoundBinaryTag nativeTag = entity.getNbt();
             if (nativeTag != null) {
-                CompoundNBT tag = NBTConverter.toNative(entity.getNbtData());
+                CompoundNBT tag = NBTConverter.toNative(nativeTag);
                 for (String name : Constants.NO_COPY_ENTITY_NBT_FIELDS) {
                     tag.remove(name);
                 }

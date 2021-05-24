@@ -32,6 +32,7 @@ import com.sk89q.worldedit.command.util.WorldEditAsyncCommandBuilder;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.extension.platform.Locatable;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.RegionMaskingFilter;
 import com.sk89q.worldedit.function.block.ApplySideEffect;
@@ -415,11 +416,15 @@ public class GeneralCommands {
         aliases = {"/toggleplace"},
         desc = "Switch between your position and pos1 for placement"
     )
-    public void togglePlace(Player player, LocalSession session) {
+    public void togglePlace(Actor actor, LocalSession session) {
+        if (!(actor instanceof Locatable)) {
+            actor.printError(TranslatableComponent.of("worldedit.toggleplace.not-locatable"));
+            return;
+        }
         if (session.togglePlacementPosition()) {
-            player.printInfo(TranslatableComponent.of("worldedit.toggleplace.pos1"));
+            actor.printInfo(TranslatableComponent.of("worldedit.toggleplace.pos1"));
         } else {
-            player.printInfo(TranslatableComponent.of("worldedit.toggleplace.player"));
+            actor.printInfo(TranslatableComponent.of("worldedit.toggleplace.player"));
         }
     }
 

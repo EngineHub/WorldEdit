@@ -19,19 +19,27 @@
 
 package com.sk89q.jnbt;
 
+import com.sk89q.worldedit.util.nbt.BinaryTag;
+import com.sk89q.worldedit.util.nbt.BinaryTagLike;
+import com.sk89q.worldedit.util.nbt.ListBinaryTag;
+import com.sk89q.worldedit.util.nbt.NumberBinaryTag;
+
 import java.util.Collections;
 import java.util.List;
+import java.util.function.IntFunction;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * The {@code TAG_List} tag.
+ *
+ * @deprecated Use {@link com.sk89q.worldedit.util.nbt.ListBinaryTag}.
  */
+@Deprecated
 public final class ListTag extends Tag {
 
-    private final Class<? extends Tag> type;
-    private final List<Tag> value;
+    private final ListBinaryTag innerTag;
 
     /**
      * Creates the tag with an empty name.
@@ -40,10 +48,19 @@ public final class ListTag extends Tag {
      * @param value the value of the tag
      */
     public ListTag(Class<? extends Tag> type, List<? extends Tag> value) {
-        super();
-        checkNotNull(value);
-        this.type = type;
-        this.value = Collections.unmodifiableList(value);
+        this(ListBinaryTag.of(
+            AdventureNBTConverter.getAdventureType(type),
+            value.stream().map(BinaryTagLike::asBinaryTag).collect(Collectors.toList())
+        ));
+    }
+
+    public ListTag(ListBinaryTag adventureTag) {
+        this.innerTag = adventureTag;
+    }
+
+    @Override
+    public ListBinaryTag asBinaryTag() {
+        return this.innerTag;
     }
 
     /**
@@ -52,12 +69,14 @@ public final class ListTag extends Tag {
      * @return The type of item in this list.
      */
     public Class<? extends Tag> getType() {
-        return type;
+        return AdventureNBTConverter.getJNBTType(this.innerTag.elementType());
     }
 
     @Override
     public List<Tag> getValue() {
-        return value;
+        return this.innerTag.stream()
+            .map(AdventureNBTConverter::fromAdventure)
+            .collect(Collectors.toList());
     }
 
     /**
@@ -70,6 +89,13 @@ public final class ListTag extends Tag {
         return new ListTag(getType(), list);
     }
 
+    private <T> T accessIfExists(int index, Supplier<T> defaultValue, IntFunction<T> accessor) {
+        if (index >= this.innerTag.size()) {
+            return defaultValue.get();
+        }
+        return accessor.apply(index);
+    }
+
     /**
      * Get the tag if it exists at the given index.
      *
@@ -78,10 +104,11 @@ public final class ListTag extends Tag {
      */
     @Nullable
     public Tag getIfExists(int index) {
-        if (index >= value.size()) {
-            return null;
-        }
-        return value.get(index);
+        return accessIfExists(
+            index,
+            () -> null,
+            i -> AdventureNBTConverter.fromAdventure(this.innerTag.get(i))
+        );
     }
 
     /**
@@ -94,12 +121,11 @@ public final class ListTag extends Tag {
      * @return a byte array
      */
     public byte[] getByteArray(int index) {
-        Tag tag = getIfExists(index);
-        if (tag instanceof ByteArrayTag) {
-            return ((ByteArrayTag) tag).getValue();
-        } else {
-            return new byte[0];
-        }
+        return accessIfExists(
+            index,
+            () -> new byte[0],
+            this.innerTag::getByteArray
+        );
     }
 
     /**
@@ -112,12 +138,11 @@ public final class ListTag extends Tag {
      * @return a byte
      */
     public byte getByte(int index) {
-        Tag tag = getIfExists(index);
-        if (tag instanceof ByteTag) {
-            return ((ByteTag) tag).getValue();
-        } else {
-            return (byte) 0;
-        }
+        return accessIfExists(
+            index,
+            () -> (byte) 0,
+            this.innerTag::getByte
+        );
     }
 
     /**
@@ -130,12 +155,11 @@ public final class ListTag extends Tag {
      * @return a double
      */
     public double getDouble(int index) {
-        Tag tag = getIfExists(index);
-        if (tag instanceof DoubleTag) {
-            return ((DoubleTag) tag).getValue();
-        } else {
-            return 0;
-        }
+        return accessIfExists(
+            index,
+            () -> 0.0,
+            this.innerTag::getDouble
+        );
     }
 
     /**
@@ -149,28 +173,17 @@ public final class ListTag extends Tag {
      * @return a double
      */
     public double asDouble(int index) {
-        Tag tag = getIfExists(index);
-        if (tag instanceof ByteTag) {
-            return ((ByteTag) tag).getValue();
-
-        } else if (tag instanceof ShortTag) {
-            return ((ShortTag) tag).getValue();
-
-        } else if (tag instanceof IntTag) {
-            return ((IntTag) tag).getValue();
-
-        } else if (tag instanceof LongTag) {
-            return ((LongTag) tag).getValue();
-
-        } else if (tag instanceof FloatTag) {
-            return ((FloatTag) tag).getValue();
-
-        } else if (tag instanceof DoubleTag) {
-            return ((DoubleTag) tag).getValue();
-
-        } else {
-            return 0;
-        }
+        return accessIfExists(
+            index,
+            () -> 0.0,
+            i -> {
+                BinaryTag tag = this.innerTag.get(i);
+                if (tag instanceof NumberBinaryTag) {
+                    return ((NumberBinaryTag) tag).doubleValue();
+                }
+                return 0.0;
+            }
+        );
     }
 
     /**
@@ -183,12 +196,11 @@ public final class ListTag extends Tag {
      * @return a float
      */
     public float getFloat(int index) {
-        Tag tag = getIfExists(index);
-        if (tag instanceof FloatTag) {
-            return ((FloatTag) tag).getValue();
-        } else {
-            return 0;
-        }
+        return accessIfExists(
+            index,
+            () -> 0.0f,
+            this.innerTag::getFloat
+        );
     }
 
     /**
@@ -201,12 +213,11 @@ public final class ListTag extends Tag {
      * @return an int array
      */
     public int[] getIntArray(int index) {
-        Tag tag = getIfExists(index);
-        if (tag instanceof IntArrayTag) {
-            return ((IntArrayTag) tag).getValue();
-        } else {
-            return new int[0];
-        }
+        return accessIfExists(
+            index,
+            () -> new int[0],
+            this.innerTag::getIntArray
+        );
     }
 
     /**
@@ -219,12 +230,11 @@ public final class ListTag extends Tag {
      * @return an int
      */
     public int getInt(int index) {
-        Tag tag = getIfExists(index);
-        if (tag instanceof IntTag) {
-            return ((IntTag) tag).getValue();
-        } else {
-            return 0;
-        }
+        return accessIfExists(
+            index,
+            () -> 0,
+            this.innerTag::getInt
+        );
     }
 
     /**
@@ -238,28 +248,17 @@ public final class ListTag extends Tag {
      * @return an int
      */
     public int asInt(int index) {
-        Tag tag = getIfExists(index);
-        if (tag instanceof ByteTag) {
-            return ((ByteTag) tag).getValue();
-
-        } else if (tag instanceof ShortTag) {
-            return ((ShortTag) tag).getValue();
-
-        } else if (tag instanceof IntTag) {
-            return ((IntTag) tag).getValue();
-
-        } else if (tag instanceof LongTag) {
-            return ((LongTag) tag).getValue().intValue();
-
-        } else if (tag instanceof FloatTag) {
-            return ((FloatTag) tag).getValue().intValue();
-
-        } else if (tag instanceof DoubleTag) {
-            return ((DoubleTag) tag).getValue().intValue();
-
-        } else {
-            return 0;
-        }
+        return accessIfExists(
+            index,
+            () -> 0,
+            i -> {
+                BinaryTag tag = this.innerTag.get(i);
+                if (tag instanceof NumberBinaryTag) {
+                    return ((NumberBinaryTag) tag).intValue();
+                }
+                return 0;
+            }
+        );
     }
 
     /**
@@ -272,12 +271,7 @@ public final class ListTag extends Tag {
      * @return a list of tags
      */
     public List<Tag> getList(int index) {
-        Tag tag = getIfExists(index);
-        if (tag instanceof ListTag) {
-            return ((ListTag) tag).getValue();
-        } else {
-            return Collections.emptyList();
-        }
+        return getListTag(index).getValue();
     }
 
     /**
@@ -290,12 +284,11 @@ public final class ListTag extends Tag {
      * @return a tag list instance
      */
     public ListTag getListTag(int index) {
-        Tag tag = getIfExists(index);
-        if (tag instanceof ListTag) {
-            return (ListTag) tag;
-        } else {
-            return new ListTag(StringTag.class, Collections.<Tag>emptyList());
-        }
+        return new ListTag(accessIfExists(
+            index,
+            ListBinaryTag::empty,
+            this.innerTag::getList
+        ));
     }
 
     /**
@@ -313,14 +306,9 @@ public final class ListTag extends Tag {
      */
     @SuppressWarnings("unchecked")
     public <T extends Tag> List<T> getList(int index, Class<T> listType) {
-        Tag tag = getIfExists(index);
-        if (tag instanceof ListTag) {
-            ListTag listTag = (ListTag) tag;
-            if (listTag.getType().equals(listType)) {
-                return (List<T>) listTag.getValue();
-            } else {
-                return Collections.emptyList();
-            }
+        ListTag listTag = getListTag(index);
+        if (listTag.getType().equals(listType)) {
+            return (List<T>) listTag.getValue();
         } else {
             return Collections.emptyList();
         }
@@ -336,12 +324,11 @@ public final class ListTag extends Tag {
      * @return a long
      */
     public long getLong(int index) {
-        Tag tag = getIfExists(index);
-        if (tag instanceof LongTag) {
-            return ((LongTag) tag).getValue();
-        } else {
-            return 0L;
-        }
+        return accessIfExists(
+            index,
+            () -> 0L,
+            this.innerTag::getLong
+        );
     }
 
     /**
@@ -355,28 +342,17 @@ public final class ListTag extends Tag {
      * @return a long
      */
     public long asLong(int index) {
-        Tag tag = getIfExists(index);
-        if (tag instanceof ByteTag) {
-            return ((ByteTag) tag).getValue();
-
-        } else if (tag instanceof ShortTag) {
-            return ((ShortTag) tag).getValue();
-
-        } else if (tag instanceof IntTag) {
-            return ((IntTag) tag).getValue();
-
-        } else if (tag instanceof LongTag) {
-            return ((LongTag) tag).getValue();
-
-        } else if (tag instanceof FloatTag) {
-            return ((FloatTag) tag).getValue().longValue();
-
-        } else if (tag instanceof DoubleTag) {
-            return ((DoubleTag) tag).getValue().longValue();
-
-        } else {
-            return 0;
-        }
+        return accessIfExists(
+            index,
+            () -> 0L,
+            i -> {
+                BinaryTag tag = this.innerTag.get(i);
+                if (tag instanceof NumberBinaryTag) {
+                    return ((NumberBinaryTag) tag).longValue();
+                }
+                return 0L;
+            }
+        );
     }
 
     /**
@@ -389,12 +365,11 @@ public final class ListTag extends Tag {
      * @return a short
      */
     public short getShort(int index) {
-        Tag tag = getIfExists(index);
-        if (tag instanceof ShortTag) {
-            return ((ShortTag) tag).getValue();
-        } else {
-            return 0;
-        }
+        return accessIfExists(
+            index,
+            () -> (short) 0,
+            this.innerTag::getShort
+        );
     }
 
     /**
@@ -407,23 +382,11 @@ public final class ListTag extends Tag {
      * @return a string
      */
     public String getString(int index) {
-        Tag tag = getIfExists(index);
-        if (tag instanceof StringTag) {
-            return ((StringTag) tag).getValue();
-        } else {
-            return "";
-        }
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder bldr = new StringBuilder();
-        bldr.append("TAG_List").append(": ").append(value.size()).append(" entries of type ").append(NBTUtils.getTypeName(type)).append("\r\n{\r\n");
-        for (Tag t : value) {
-            bldr.append("   ").append(t.toString().replaceAll("\r\n", "\r\n   ")).append("\r\n");
-        }
-        bldr.append("}");
-        return bldr.toString();
+        return accessIfExists(
+            index,
+            () -> "",
+            this.innerTag::getString
+        );
     }
 
 }

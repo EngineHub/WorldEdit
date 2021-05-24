@@ -20,9 +20,9 @@
 package com.sk89q.worldedit.internal;
 
 import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
@@ -31,7 +31,7 @@ import java.nio.file.Path;
 
 public class SchematicsEventListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SchematicsEventListener.class);
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     @Subscribe
     public void onConfigLoad(ConfigurationLoadEvent event) {

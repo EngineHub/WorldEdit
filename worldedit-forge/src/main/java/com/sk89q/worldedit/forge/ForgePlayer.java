@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
@@ -36,6 +35,7 @@ import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.component.TextUtils;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -244,7 +244,7 @@ public class ForgePlayer extends AbstractPlayerActor {
             player.connection.sendPacket(packetOut);
             if (block instanceof BaseBlock && block.getBlockType().equals(BlockTypes.STRUCTURE_BLOCK)) {
                 final BaseBlock baseBlock = (BaseBlock) block;
-                final CompoundTag nbtData = baseBlock.getNbtData();
+                final CompoundBinaryTag nbtData = baseBlock.getNbt();
                 if (nbtData != null) {
                     player.connection.sendPacket(new SUpdateTileEntityPacket(
                             new BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()),

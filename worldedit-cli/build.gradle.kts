@@ -6,23 +6,18 @@ plugins {
 
 applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
+addJarManifest(WorldEditKind.Standalone("com.sk89q.worldedit.cli.CLIWorldEdit"))
 
 dependencies {
     "api"(project(":worldedit-core"))
-    "implementation"("org.apache.logging.log4j:log4j-core:2.8.1")
-    "implementation"("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
+    "implementation"(platform("org.apache.logging.log4j:log4j-bom:2.14.1") {
+        because("We control Log4J on this platform")
+    })
+    "implementation"("org.apache.logging.log4j:log4j-api")
+    "implementation"("org.apache.logging.log4j:log4j-core")
     "implementation"("commons-cli:commons-cli:1.4")
-    "implementation"("com.google.guava:guava:${Versions.GUAVA}")
-    "implementation"("com.google.code.gson:gson:${Versions.GSON}")
-}
-
-tasks.named<Jar>("jar") {
-    manifest {
-        attributes(
-                "Implementation-Version" to project.version,
-                "Main-Class" to "com.sk89q.worldedit.cli.CLIWorldEdit"
-        )
-    }
+    "implementation"("com.google.guava:guava")
+    "implementation"("com.google.code.gson:gson")
 }
 
 tasks.named<ShadowJar>("shadowJar") {

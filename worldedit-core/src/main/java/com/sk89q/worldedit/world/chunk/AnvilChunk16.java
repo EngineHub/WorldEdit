@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.world.chunk;
 
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
@@ -34,8 +35,20 @@ public class AnvilChunk16 extends AnvilChunk13 {
      *
      * @param tag the tag to read
      * @throws DataException on a data error
+     * @deprecated Use {@link #AnvilChunk16(CompoundBinaryTag)}
      */
+    @Deprecated
     public AnvilChunk16(CompoundTag tag) throws DataException {
+        super(tag);
+    }
+
+    /**
+     * Construct the chunk with a compound tag.
+     *
+     * @param tag the tag to read
+     * @throws DataException on a data error
+     */
+    public AnvilChunk16(CompoundBinaryTag tag) throws DataException {
         super(tag);
     }
 

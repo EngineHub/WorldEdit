@@ -26,7 +26,6 @@ import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.io.file.ArchiveNioSupport;
 import com.sk89q.worldedit.util.io.file.ArchiveNioSupports;
-import com.sk89q.worldedit.util.io.file.TrueVfsArchiveNioSupport;
 import com.sk89q.worldedit.util.io.file.ZipArchiveNioSupport;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.storage.ChunkStoreHelper;
@@ -108,7 +107,7 @@ class FileSystemSnapshotDatabaseTest {
             reader.close();
         }
 
-        TEMP_DIR = Files.createTempDirectory("worldedit-fs-snap-dbs");
+        TEMP_DIR = Files.createTempDirectory("worldedit-fs-snap-dbs").toRealPath();
     }
 
     @AfterAll
@@ -161,7 +160,7 @@ class FileSystemSnapshotDatabaseTest {
     @TestFactory
     Stream<DynamicNode> withSpecificNioSupport() {
         return Stream.of(
-            ZipArchiveNioSupport.getInstance(), TrueVfsArchiveNioSupport.getInstance()
+            ZipArchiveNioSupport.getInstance()
         )
             .map(nioSupport -> {
                 Stream<? extends DynamicNode> nodes = Stream.of(FSSDTestType.values())

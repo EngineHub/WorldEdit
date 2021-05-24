@@ -19,13 +19,14 @@
 
 package com.sk89q.jnbt;
 
+import com.sk89q.worldedit.util.nbt.BinaryTagIO;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
+
 import java.io.Closeable;
+import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,7 +39,10 @@ import java.util.Map;
  * found at <a href="https://minecraft.gamepedia.com/NBT_format">
  * https://minecraft.gamepedia.com/NBT_format</a>.
  * </p>
+ *
+ * @deprecated JNBT is being removed for adventure-nbt in WorldEdit 8.
  */
+@Deprecated
 public final class NBTInputStream implements Closeable {
 
     private final DataInputStream is;
@@ -60,115 +64,10 @@ public final class NBTInputStream implements Closeable {
      * @throws IOException if an I/O error occurs.
      */
     public NamedTag readNamedTag() throws IOException {
-        return readNamedTag(0);
-    }
-
-    /**
-     * Reads an NBT from the stream.
-     *
-     * @param depth the depth of this tag
-     * @return The tag that was read.
-     * @throws IOException if an I/O error occurs.
-     */
-    private NamedTag readNamedTag(int depth) throws IOException {
-        int type = is.readByte() & 0xFF;
-
-        String name;
-        if (type != NBTConstants.TYPE_END) {
-            int nameLength = is.readShort() & 0xFFFF;
-            byte[] nameBytes = new byte[nameLength];
-            is.readFully(nameBytes);
-            name = new String(nameBytes, NBTConstants.CHARSET);
-        } else {
-            name = "";
-        }
-
-        return new NamedTag(name, readTagPayload(type, depth));
-    }
-
-    /**
-     * Reads the payload of a tag given the type.
-     *
-     * @param type the type
-     * @param depth the depth
-     * @return the tag
-     * @throws IOException if an I/O error occurs.
-     */
-    private Tag readTagPayload(int type, int depth) throws IOException {
-        switch (type) {
-            case NBTConstants.TYPE_END:
-                if (depth == 0) {
-                    throw new IOException(
-                        "TAG_End found without a TAG_Compound/TAG_List tag preceding it.");
-                } else {
-                    return new EndTag();
-                }
-            case NBTConstants.TYPE_BYTE:
-                return new ByteTag(is.readByte());
-            case NBTConstants.TYPE_SHORT:
-                return new ShortTag(is.readShort());
-            case NBTConstants.TYPE_INT:
-                return new IntTag(is.readInt());
-            case NBTConstants.TYPE_LONG:
-                return new LongTag(is.readLong());
-            case NBTConstants.TYPE_FLOAT:
-                return new FloatTag(is.readFloat());
-            case NBTConstants.TYPE_DOUBLE:
-                return new DoubleTag(is.readDouble());
-            case NBTConstants.TYPE_BYTE_ARRAY:
-                int length = is.readInt();
-                byte[] bytes = new byte[length];
-                is.readFully(bytes);
-                return new ByteArrayTag(bytes);
-            case NBTConstants.TYPE_STRING:
-                length = is.readShort();
-                bytes = new byte[length];
-                is.readFully(bytes);
-                return new StringTag(new String(bytes, NBTConstants.CHARSET));
-            case NBTConstants.TYPE_LIST:
-                int childType = is.readByte();
-                length = is.readInt();
-
-                List<Tag> tagList = new ArrayList<>();
-                for (int i = 0; i < length; ++i) {
-                    Tag tag = readTagPayload(childType, depth + 1);
-                    if (tag instanceof EndTag) {
-                        throw new IOException("TAG_End not permitted in a list.");
-                    }
-                    tagList.add(tag);
-                }
-
-                return new ListTag(NBTUtils.getTypeClass(childType), tagList);
-            case NBTConstants.TYPE_COMPOUND:
-                Map<String, Tag> tagMap = new HashMap<>();
-                while (true) {
-                    NamedTag namedTag = readNamedTag(depth + 1);
-                    Tag tag = namedTag.getTag();
-                    if (tag instanceof EndTag) {
-                        break;
-                    } else {
-                        tagMap.put(namedTag.getName(), tag);
-                    }
-                }
-
-                return new CompoundTag(tagMap);
-            case NBTConstants.TYPE_INT_ARRAY:
-                length = is.readInt();
-                int[] data = new int[length];
-                for (int i = 0; i < length; i++) {
-                    data[i] = is.readInt();
-                }
-                return new IntArrayTag(data);
-            case NBTConstants.TYPE_LONG_ARRAY:
-                length = is.readInt();
-                long[] longData = new long[length];
-                for (int i = 0; i < length; i++) {
-                    longData[i] = is.readLong();
-                }
-                return new LongArrayTag(longData);
-            default:
-                throw new IOException("Invalid tag type: " + type + ".");
-        }
+        Map.Entry<String, CompoundBinaryTag> named = BinaryTagIO.reader().readNamed(
+            (DataInput) this.is
+        );
+        return new NamedTag(named.getKey(), new CompoundTag(named.getValue()));
     }
 
     @Override

@@ -19,8 +19,8 @@
 
 package com.sk89q.worldedit.util.report;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -29,7 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ShallowObjectReport extends DataReport {
 
-    private static final Logger log = LoggerFactory.getLogger(ShallowObjectReport.class);
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     public ShallowObjectReport(String title, Object object) {
         super(title);
@@ -53,7 +53,7 @@ public class ShallowObjectReport extends DataReport {
                 Object value = field.get(object);
                 append(field.getName(), String.valueOf(value));
             } catch (IllegalAccessException e) {
-                log.warn("Failed to get value of '" + field.getName() + "' on " + type);
+                LOGGER.warn("Failed to get value of '" + field.getName() + "' on " + type);
             }
         }
     }
