@@ -1,11 +1,9 @@
-import net.minecrell.gradle.licenser.LicenseExtension
+import org.cadixdev.gradle.licenser.LicenseExtension
 import org.gradle.plugins.ide.idea.model.IdeaModel
 
 plugins {
-    id("java-library")
-    id("net.ltgt.apt-eclipse")
-    id("net.ltgt.apt-idea")
-    id("antlr")
+    `java-library`
+    antlr
 }
 
 applyPlatformAndCoreConfiguration()
@@ -84,6 +82,10 @@ tasks.named<AntlrTask>("generateGrammarSource").configure {
     )
 }
 
+tasks.named("sourcesJar") {
+    mustRunAfter("generateGrammarSource")
+}
+
 configure<LicenseExtension> {
     exclude {
         it.file.startsWith(project.buildDir)
@@ -106,11 +108,7 @@ plugins.withId("idea") {
 
 sourceSets.named("main") {
     java {
-        srcDir("src/main/java")
         srcDir("src/legacy/java")
-    }
-    resources {
-        srcDir("src/main/resources")
     }
 }
 

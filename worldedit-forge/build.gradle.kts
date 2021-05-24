@@ -78,17 +78,8 @@ tasks.named<Copy>("processResources") {
         inputs.property(key, value)
     }
 
-    // replace stuff in mcmod.info, nothing else
-    from(sourceSets["main"].resources.srcDirs) {
-        include("META-INF/mods.toml")
-
-        // replace version and mcversion
+    filesMatching("META-INF/mods.toml") {
         expand(properties)
-    }
-
-    // copy everything else except the mcmod.info
-    from(sourceSets["main"].resources.srcDirs) {
-        exclude("META-INF/mods.toml")
     }
 
     // copy from -core resources as well
