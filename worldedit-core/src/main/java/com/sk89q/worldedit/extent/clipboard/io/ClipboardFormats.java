@@ -46,7 +46,7 @@ public class ClipboardFormats {
         checkNotNull(format);
 
         for (String key : format.getAliases()) {
-            String lowKey = key.toLowerCase(Locale.ENGLISH);
+            String lowKey = key.toLowerCase(Locale.ROOT);
             ClipboardFormat old = aliasMap.put(lowKey, format);
             if (old != null) {
                 aliasMap.put(lowKey, old);
@@ -54,7 +54,7 @@ public class ClipboardFormats {
             }
         }
         for (String ext : format.getFileExtensions()) {
-            String lowExt = ext.toLowerCase(Locale.ENGLISH);
+            String lowExt = ext.toLowerCase(Locale.ROOT);
             fileExtensionMap.put(lowExt, format);
         }
         registeredFormats.add(format);
@@ -76,7 +76,7 @@ public class ClipboardFormats {
     @Nullable
     public static ClipboardFormat findByAlias(String alias) {
         checkNotNull(alias);
-        return aliasMap.get(alias.toLowerCase(Locale.ENGLISH).trim());
+        return aliasMap.get(alias.toLowerCase(Locale.ROOT).trim());
     }
 
     /**
