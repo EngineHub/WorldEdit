@@ -37,6 +37,7 @@ import com.sk89q.worldedit.command.tool.brush.ImageHeightmapBrush;
 import com.sk89q.worldedit.command.tool.brush.OperationFactoryBrush;
 import com.sk89q.worldedit.command.tool.brush.SmoothBrush;
 import com.sk89q.worldedit.command.tool.brush.SphereBrush;
+import com.sk89q.worldedit.command.tool.brush.SplatterBrush;
 import com.sk89q.worldedit.command.util.AsyncCommandBuilder;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
@@ -174,6 +175,37 @@ public class BrushCommands {
         player.printInfo(TranslatableComponent.of("worldedit.brush.cylinder.equip", TextComponent.of((int) radius), TextComponent.of(height)));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
     }
+
+    @Command(
+        name = "splatter",
+        aliases = { "splat" },
+        desc = "Choose the splatter brush"
+    )
+    @CommandPermissions("worldedit.brush.splatter")
+    public void splatterBrush(Player player, LocalSession session,
+                              @Arg(desc = "The pattern of blocks to set")
+                                  Pattern pattern,
+                              @Arg(desc = "The radius of the splatter", def = "2")
+                                  double radius,
+                              @Arg(desc = "The decay of the splatter between 0 and 10", def = "1")
+                                  int decay) throws WorldEditException {
+        worldEdit.checkMaxBrushRadius(radius);
+
+        if (decay < 0 || decay > 10) {
+            player.printError(TranslatableComponent.of("worldedit.brush.splatter.decay-out-of-range", TextComponent.of(decay)));
+            return;
+        }
+
+        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+        tool.setFill(pattern);
+        tool.setSize(radius);
+
+        tool.setBrush(new SplatterBrush(decay), "worldedit.brush.splatter");
+
+        player.printInfo(TranslatableComponent.of("worldedit.brush.splatter.equip", TextComponent.of((int) radius), TextComponent.of(decay)));
+        ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
+    }
+
 
     @Command(
         name = "clipboard",
