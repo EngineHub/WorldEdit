@@ -428,8 +428,8 @@ public class SchematicCommands {
         public Consumer<Actor> call() throws Exception {
             ClipboardShareMetadata metadata = new ClipboardShareMetadata(
                 format,
-                this.actor.getName(),
-                name == null ? actor.getName() + "-" + System.currentTimeMillis() : name
+                name == null ? actor.getName() + "-" + System.currentTimeMillis() : name,
+                this.actor.getName()
             );
 
             return destination.share(metadata, this::writeToOutputStream);
