@@ -123,15 +123,8 @@ configure<PublishingExtension> {
 tasks.named<Copy>("processResources") {
     // this will ensure that this task is redone when the versions change.
     inputs.property("version", project.ext["internalVersion"])
-
-    from(sourceSets["main"].resources.srcDirs) {
-        include("fabric.mod.json")
-        expand("version" to project.ext["internalVersion"])
-    }
-
-    // copy everything else except the mod json
-    from(sourceSets["main"].resources.srcDirs) {
-        exclude("fabric.mod.json")
+    filesMatching("fabric.mod.json") {
+        this.expand("version" to project.ext["internalVersion"])
     }
 }
 
