@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.sk89q.jnbt.ByteArrayTag;
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.CompoundTagBuilder;
 import com.sk89q.jnbt.IntArrayTag;
 import com.sk89q.jnbt.IntTag;
 import com.sk89q.jnbt.ListTag;
@@ -186,24 +187,18 @@ public class SpongeSchematicV3Writer implements ClipboardWriter {
             BaseBlock block = clipboard.getFullBlock(point);
             // Also compute block entity side-effect here
             if (block.getNbtData() != null) {
-                Map<String, Tag> values = new HashMap<>(block.getNbtData().getValue());
+                CompoundTagBuilder builder = CompoundTagBuilder.create();
 
-                values.remove("id"); // Remove 'id' if it exists. We want 'Id'
-
-                // Positions are kept in NBT, we don't want that.
-                values.remove("x");
-                values.remove("y");
-                values.remove("z");
-
-                values.put("Id", new StringTag(block.getNbtId()));
+                builder.putString("Id", block.getNbtId());
                 BlockVector3 adjustedPos = point.subtract(clipboard.getMinimumPoint());
-                values.put("Pos", new IntArrayTag(new int[] {
+                builder.putIntArray("Pos", new int[] {
                     adjustedPos.getBlockX(),
                     adjustedPos.getBlockY(),
                     adjustedPos.getBlockZ()
-                }));
+                });
+                builder.put("Data", block.getNbtData());
 
-                blockEntities.add(new CompoundTag(values));
+                blockEntities.add(builder.build());
             }
             return block.toImmutableState().getAsString();
         });

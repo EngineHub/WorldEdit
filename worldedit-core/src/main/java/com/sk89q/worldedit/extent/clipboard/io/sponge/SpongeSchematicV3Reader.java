@@ -167,7 +167,7 @@ public class SpongeSchematicV3Reader extends NBTSchematicReader {
         ListTag tileEntities = getTag(blockContainer, "BlockEntities", ListTag.class);
 
         ReaderUtil.initializeClipboardFromBlocks(
-            clipboard, palette, blocks, tileEntities, fixer
+            clipboard, palette, blocks, tileEntities, fixer, true
         );
     }
 

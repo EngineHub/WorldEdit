@@ -20,12 +20,11 @@
 package com.sk89q.worldedit.extent.clipboard.io.sponge;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.CompoundTagBuilder;
 import com.sk89q.jnbt.DoubleTag;
 import com.sk89q.jnbt.FloatTag;
 import com.sk89q.jnbt.ListTag;
-import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
@@ -33,7 +32,6 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.Location;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -44,22 +42,27 @@ class WriterUtil {
             if (state == null) {
                 return null;
             }
-            Map<String, Tag> values = Maps.newHashMap();
+            CompoundTagBuilder fullTagBuilder = CompoundTagBuilder.create();
+            CompoundTagBuilder dataTagBuilder = CompoundTagBuilder.create();
             CompoundTag rawData = state.getNbtData();
             if (rawData != null) {
-                values.putAll(rawData.getValue());
+                dataTagBuilder.putAll(rawData.getValue());
+                dataTagBuilder.remove("id");
             }
-            values.remove("id");
-            values.put("Id", new StringTag(state.getType().getId()));
             final Location location = e.getLocation();
             Vector3 pos = location.toVector();
+            dataTagBuilder.put("Rotation", encodeRotation(location));
             if (positionIsRelative) {
                 pos = pos.subtract(clipboard.getMinimumPoint().toVector3());
-            }
-            values.put("Pos", encodeVector(pos));
-            values.put("Rotation", encodeRotation(location));
 
-            return new CompoundTag(values);
+                fullTagBuilder.put("Data", dataTagBuilder.build());
+            } else {
+                fullTagBuilder.putAll(dataTagBuilder.build().getValue());
+            }
+            fullTagBuilder.putString("Id", state.getType().getId());
+            fullTagBuilder.put("Pos", encodeVector(pos));
+
+            return fullTagBuilder.build();
         }).filter(Objects::nonNull).collect(Collectors.toList());
         if (entities.isEmpty()) {
             return null;

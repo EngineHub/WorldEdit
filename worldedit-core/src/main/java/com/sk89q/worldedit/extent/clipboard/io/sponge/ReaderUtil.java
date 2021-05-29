@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.extent.clipboard.io.sponge;
 
-import com.google.common.collect.Maps;
 import com.sk89q.jnbt.AdventureNBTConverter;
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.CompoundTagBuilder;
 import com.sk89q.jnbt.IntArrayTag;
 import com.sk89q.jnbt.IntTag;
 import com.sk89q.jnbt.ListTag;
@@ -49,12 +49,14 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkState;
+import static com.sk89q.worldedit.extent.clipboard.io.SchematicNbtUtil.getTag;
 import static com.sk89q.worldedit.extent.clipboard.io.SchematicNbtUtil.requireTag;
 
 /**
@@ -135,7 +137,7 @@ class ReaderUtil {
 
     static void initializeClipboardFromBlocks(
         Clipboard clipboard, Map<Integer, BlockState> palette, byte[] blocks, ListTag tileEntities,
-        VersionedDataFixer fixer
+        VersionedDataFixer fixer, boolean dataIsNested
     ) throws IOException {
         Map<BlockVector3, Map<String, Tag>> tileEntitiesMap = new HashMap<>();
         if (tileEntities != null) {
@@ -147,13 +149,23 @@ class ReaderUtil {
             for (Map<String, Tag> tileEntity : tileEntityTags) {
                 int[] pos = requireTag(tileEntity, "Pos", IntArrayTag.class).getValue();
                 final BlockVector3 pt = clipboard.getMinimumPoint().add(pos[0], pos[1], pos[2]);
-                Map<String, Tag> values = Maps.newHashMap(tileEntity);
+                Map<String, Tag> values;
+                if (dataIsNested) {
+                    CompoundTag dataTag = getTag(tileEntity, "Data", CompoundTag.class);
+                    if (dataTag != null) {
+                        values = new LinkedHashMap<>(dataTag.getValue());
+                    } else {
+                        values = new LinkedHashMap<>();
+                    }
+                } else {
+                    values = new LinkedHashMap<>(tileEntity);
+                    values.remove("Id");
+                    values.remove("Pos");
+                }
                 values.put("x", new IntTag(pt.getBlockX()));
                 values.put("y", new IntTag(pt.getBlockY()));
                 values.put("z", new IntTag(pt.getBlockZ()));
-                values.put("id", values.get("Id"));
-                values.remove("Id");
-                values.remove("Pos");
+                values.put("id", tileEntity.get("Id"));
                 if (fixer.isActive()) {
                     tileEntity = ((CompoundTag) AdventureNBTConverter.fromAdventure(fixer.fixUp(
                         DataFixer.FixTypes.BLOCK_ENTITY,
@@ -222,18 +234,32 @@ class ReaderUtil {
             CompoundTag entityTag = (CompoundTag) et;
             Map<String, Tag> tags = entityTag.getValue();
             String id = requireTag(tags, "Id", StringTag.class).getValue();
-            entityTag = entityTag.createBuilder().putString("id", id).remove("Id").build();
-            entityTag = ((CompoundTag) AdventureNBTConverter.fromAdventure(fixer.fixUp(
+            CompoundTagBuilder dataTagBuilder = CompoundTagBuilder.create();
+            if (positionIsRelative) {
+                // then we're in version 3
+                CompoundTag subTag = getTag(entityTag.getValue(), "Data", CompoundTag.class);
+                if (subTag != null) {
+                    dataTagBuilder.putAll(subTag.getValue());
+                }
+            } else {
+                // version 2
+                dataTagBuilder.putAll(tags);
+                dataTagBuilder.remove("Id");
+                dataTagBuilder.remove("Pos");
+            }
+            CompoundTag dataTag = dataTagBuilder.putString("id", id).build();
+            dataTag = ((CompoundTag) AdventureNBTConverter.fromAdventure(fixer.fixUp(
                 DataFixer.FixTypes.ENTITY,
-                entityTag.asBinaryTag()
+                dataTag.asBinaryTag()
             )));
 
             EntityType entityType = EntityTypes.get(id);
             if (entityType != null) {
                 Location location = NBTConversions.toLocation(clipboard,
                     requireTag(tags, "Pos", ListTag.class),
-                    requireTag(tags, "Rotation", ListTag.class));
-                BaseEntity state = new BaseEntity(entityType, entityTag);
+                    requireTag(dataTag.getValue(), "Rotation", ListTag.class)
+                );
+                BaseEntity state = new BaseEntity(entityType, dataTag);
                 if (positionIsRelative) {
                     location = location.setPosition(
                         location.toVector().add(clipboard.getMinimumPoint().toVector3())

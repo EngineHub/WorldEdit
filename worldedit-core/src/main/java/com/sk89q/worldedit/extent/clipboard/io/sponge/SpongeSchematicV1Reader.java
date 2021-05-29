@@ -35,12 +35,10 @@ import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.NBTSchematicReader;
 import com.sk89q.worldedit.internal.Constants;
-import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.block.BlockState;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Map;
@@ -143,7 +141,7 @@ public class SpongeSchematicV1Reader extends NBTSchematicReader {
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
         clipboard.setOrigin(origin);
         ReaderUtil.initializeClipboardFromBlocks(
-            clipboard, palette, blocks, tileEntities, fixer
+            clipboard, palette, blocks, tileEntities, fixer, false
         );
         return clipboard;
     }
