@@ -154,8 +154,7 @@ public class PlatformManager {
     }
 
     /**
-     * Get the preferred platform for handling a certain capability. Returns
-     * null if none is available.
+     * Get the preferred platform for handling a certain capability. Throws if none are available.
      *
      * @param capability the capability
      * @return the platform
