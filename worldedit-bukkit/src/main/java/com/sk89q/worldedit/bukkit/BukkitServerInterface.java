@@ -24,6 +24,7 @@ import com.sk89q.bukkit.util.CommandInfo;
 import com.sk89q.bukkit.util.CommandRegistration;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.AbstractPlatform;
@@ -67,8 +68,8 @@ public class BukkitServerInterface extends AbstractPlatform implements MultiUser
         this.server = server;
         this.dynamicCommands = new CommandRegistration(plugin);
         this.watchdog = plugin.getLifecycledBukkitImplAdapter()
-            .filter(adapter -> adapter.isPresent() && adapter.get().supportsWatchdog())
-            .map(adapter -> new BukkitWatchdog(adapter.get()));
+            .filter(BukkitImplAdapter::supportsWatchdog)
+            .map(BukkitWatchdog::new);
     }
 
     CommandRegistration getDynamicCommands() {

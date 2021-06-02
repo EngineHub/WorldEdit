@@ -118,7 +118,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     private static WorldEditPlugin INSTANCE;
     private static final int BSTATS_PLUGIN_ID = 3328;
 
-    private final SimpleLifecycled<Optional<BukkitImplAdapter>> adapter =
+    private final SimpleLifecycled<BukkitImplAdapter> adapter =
         SimpleLifecycled.invalid();
     private BukkitServerInterface platform;
     private BukkitConfiguration config;
@@ -289,7 +289,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         try {
             BukkitImplAdapter bukkitAdapter = adapterLoader.loadAdapter();
             LOGGER.info("Using " + bukkitAdapter.getClass().getCanonicalName() + " as the Bukkit adapter");
-            this.adapter.newValue(Optional.of(bukkitAdapter));
+            this.adapter.newValue(bukkitAdapter);
         } catch (AdapterLoadException e) {
             Platform platform = worldEdit.getPlatformManager().queryCapability(Capability.WORLD_EDITING);
             if (platform instanceof BukkitServerInterface) {
@@ -299,7 +299,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
                     + "but it seems that you have another implementation of WorldEdit installed (" + platform.getPlatformName() + ") "
                     + "that handles the world editing.");
             }
-            this.adapter.newValue(Optional.empty());
+            this.adapter.invalidate();
         }
     }
 
@@ -506,12 +506,12 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
      *
      * @return the adapter
      */
-    Lifecycled<Optional<BukkitImplAdapter>> getLifecycledBukkitImplAdapter() {
+    Lifecycled<BukkitImplAdapter> getLifecycledBukkitImplAdapter() {
         return adapter;
     }
 
     BukkitImplAdapter getBukkitImplAdapter() {
-        return adapter.valueOrThrow().orElse(null);
+        return adapter.value().orElse(null);
     }
 
     private class WorldInitListener implements Listener {
