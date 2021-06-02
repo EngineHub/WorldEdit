@@ -21,6 +21,7 @@ package com.sk89q.worldedit.util.collection;
 
 import com.google.common.collect.ImmutableMap;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.event.platform.PlatformsRegisteredEvent;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
@@ -50,7 +51,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -74,12 +77,13 @@ class BlockMapTest {
     static void setupFakePlatform() {
         when(MOCKED_PLATFORM.getRegistries()).thenReturn(new BundledRegistries() {
         });
-        when(MOCKED_PLATFORM.getCapabilities()).thenReturn(ImmutableMap.of(
-            Capability.WORLD_EDITING, Preference.PREFERRED,
-            Capability.GAME_HOOKS, Preference.PREFERRED
-        ));
+        when(MOCKED_PLATFORM.getCapabilities()).thenReturn(
+            Stream.of(Capability.values())
+                .collect(Collectors.toMap(Function.identity(), __ -> Preference.NORMAL))
+        );
         PlatformManager platformManager = WorldEdit.getInstance().getPlatformManager();
         platformManager.register(MOCKED_PLATFORM);
+        WorldEdit.getInstance().getEventBus().post(new PlatformsRegisteredEvent());
 
         registerBlock("minecraft:air");
         registerBlock("minecraft:oak_wood");

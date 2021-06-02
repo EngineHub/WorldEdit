@@ -19,13 +19,22 @@
 
 package com.sk89q.worldedit.event.platform;
 
+import com.sk89q.worldedit.event.Event;
 import com.sk89q.worldedit.extension.platform.Platform;
 
-/**
- * Raised when a platform has finished loading its data.
- */
-public class PlatformReadyEvent extends PlatformEvent {
-    public PlatformReadyEvent(Platform platform) {
-        super(platform);
+public abstract class PlatformEvent extends Event {
+    private final Platform platform;
+
+    protected PlatformEvent(Platform platform) {
+        this.platform = platform;
+    }
+
+    /**
+     * Get the platform for this event.
+     *
+     * @return the platform
+     */
+    public Platform getPlatform() {
+        return platform;
     }
 }

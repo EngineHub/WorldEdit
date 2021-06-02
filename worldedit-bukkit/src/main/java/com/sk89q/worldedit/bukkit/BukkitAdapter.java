@@ -23,6 +23,7 @@ import com.sk89q.worldedit.NotABlockException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
@@ -443,7 +444,8 @@ public class BukkitAdapter {
     public static BlockState adapt(BlockData blockData) {
         checkNotNull(blockData);
 
-        if (WorldEditPlugin.getInstance().getBukkitImplAdapter() == null) {
+        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+        if (adapter == null) {
             return blockStateStringCache.computeIfAbsent(blockData.getAsString(), input -> {
                 try {
                     return WorldEdit.getInstance().getBlockFactory().parseFromInput(input, TO_BLOCK_CONTEXT).toImmutableState();
@@ -454,7 +456,7 @@ public class BukkitAdapter {
             });
         } else {
             return blockStateCache.computeIfAbsent(
-                WorldEditPlugin.getInstance().getBukkitImplAdapter().getInternalBlockStateId(blockData).orElseGet(
+                adapter.getInternalBlockStateId(blockData).orElseGet(
                     () -> blockData.getAsString().hashCode()
                 ),
                 input -> {
@@ -509,8 +511,9 @@ public class BukkitAdapter {
      */
     public static BaseItemStack adapt(ItemStack itemStack) {
         checkNotNull(itemStack);
-        if (WorldEditPlugin.getInstance().getBukkitImplAdapter() != null) {
-            return WorldEditPlugin.getInstance().getBukkitImplAdapter().adapt(itemStack);
+        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+        if (adapter != null) {
+            return adapter.adapt(itemStack);
         }
         return new BaseItemStack(ItemTypes.get(itemStack.getType().getKey().toString()), itemStack.getAmount());
     }
@@ -523,8 +526,9 @@ public class BukkitAdapter {
      */
     public static ItemStack adapt(BaseItemStack item) {
         checkNotNull(item);
-        if (WorldEditPlugin.getInstance().getBukkitImplAdapter() != null) {
-            return WorldEditPlugin.getInstance().getBukkitImplAdapter().adapt(item);
+        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+        if (adapter != null) {
+            return adapter.adapt(item);
         }
         return new ItemStack(adapt(item.getType()), item.getAmount());
     }

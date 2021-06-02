@@ -33,7 +33,7 @@ import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
 import com.sk89q.worldedit.extension.platform.Preference;
 import com.sk89q.worldedit.extension.platform.Watchdog;
 import com.sk89q.worldedit.util.SideEffect;
-import com.sk89q.worldedit.util.concurrency.LazyReference;
+import com.sk89q.worldedit.util.lifecycle.Lifecycled;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.registry.Registries;
 import org.bukkit.Bukkit;
@@ -59,21 +59,16 @@ public class BukkitServerInterface extends AbstractPlatform implements MultiUser
     public final Server server;
     public final WorldEditPlugin plugin;
     private final CommandRegistration dynamicCommands;
-    private final LazyReference<Watchdog> watchdog;
+    private final Lifecycled<Watchdog> watchdog;
     private boolean hookingEvents;
 
     public BukkitServerInterface(WorldEditPlugin plugin, Server server) {
         this.plugin = plugin;
         this.server = server;
         this.dynamicCommands = new CommandRegistration(plugin);
-        this.watchdog = LazyReference.from(() -> {
-            if (plugin.getBukkitImplAdapter() != null) {
-                return plugin.getBukkitImplAdapter().supportsWatchdog()
-                    ? new BukkitWatchdog(plugin.getBukkitImplAdapter())
-                    : null;
-            }
-            return null;
-        });
+        this.watchdog = plugin.getLifecycledBukkitImplAdapter()
+            .filter(adapter -> adapter.isPresent() && adapter.get().supportsWatchdog())
+            .map(adapter -> new BukkitWatchdog(adapter.get()));
     }
 
     CommandRegistration getDynamicCommands() {
@@ -92,7 +87,7 @@ public class BukkitServerInterface extends AbstractPlatform implements MultiUser
     @SuppressWarnings("deprecation")
     @Override
     public int getDataVersion() {
-        if (plugin.getBukkitImplAdapter() != null) {
+        if (plugin.getLifecycledBukkitImplAdapter() != null) {
             return Bukkit.getUnsafe().getDataVersion();
         }
         return -1;
@@ -129,7 +124,7 @@ public class BukkitServerInterface extends AbstractPlatform implements MultiUser
 
     @Override
     public Watchdog getWatchdog() {
-        return watchdog.getValue();
+        return watchdog.valueOrThrow();
     }
 
     @Override
@@ -190,8 +185,8 @@ public class BukkitServerInterface extends AbstractPlatform implements MultiUser
     }
 
     @Override
-    public void registerGameHooks() {
-        hookingEvents = true;
+    public void setGameHooksEnabled(boolean enabled) {
+        this.hookingEvents = enabled;
     }
 
     @Override

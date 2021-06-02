@@ -122,7 +122,7 @@ class CLIPlatform extends AbstractPlatform {
     }
 
     @Override
-    public void registerGameHooks() {
+    public void setGameHooksEnabled(boolean enabled) {
     }
 
     @Override

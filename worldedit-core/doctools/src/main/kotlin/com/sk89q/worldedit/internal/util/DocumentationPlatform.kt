@@ -55,7 +55,7 @@ class DocumentationPlatform : AbstractPlatform() {
 
     override fun registerCommands(commandManager: CommandManager?) = error("Documentation does not provide this")
 
-    override fun registerGameHooks() = error("Documentation does not provide this")
+    override fun setGameHooksEnabled(enabled: Boolean) = error("Documentation does not provide this")
 
     override fun getCapabilities() = error("Documentation does not provide this")
 

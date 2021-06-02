@@ -23,9 +23,14 @@ import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
+import com.sk89q.worldedit.event.platform.PlatformUnreadyEvent;
+import com.sk89q.worldedit.event.platform.PlatformsRegisteredEvent;
 import com.sk89q.worldedit.event.platform.SessionIdleEvent;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.forge.net.handler.InternalPacketHandler;
 import com.sk89q.worldedit.forge.net.handler.WECUIPacketHandler;
 import com.sk89q.worldedit.forge.net.packet.LeftClickAirEventMessage;
@@ -50,6 +55,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickEmpty;
@@ -70,15 +76,20 @@ import net.minecraftforge.fml.network.FMLNetworkConstants;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
+import org.enginehub.piston.Command;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.forge.ForgeAdapter.adaptPlayer;
 import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAME;
+import static java.util.stream.Collectors.toList;
 
 /**
  * The Forge implementation of WorldEdit.
@@ -132,6 +143,8 @@ public class ForgeWorldEdit {
             }
         }
 
+        setupPlatform();
+
         WECUIPacketHandler.init();
         InternalPacketHandler.init();
 
@@ -142,6 +155,8 @@ public class ForgeWorldEdit {
         this.platform = new ForgePlatform(this);
 
         WorldEdit.getInstance().getPlatformManager().register(platform);
+
+        config = new ForgeConfiguration(this);
 
         //  TODO      if (ModList.get().isLoaded("sponge")) {
         //            this.provider = new ForgePermissionsProvider.SpongePermissionsProvider();
@@ -190,6 +205,30 @@ public class ForgeWorldEdit {
     }
 
     @SubscribeEvent
+    public void registerCommands(RegisterCommandsEvent event) {
+        WorldEdit.getInstance().getEventBus().post(new PlatformsRegisteredEvent());
+
+        PlatformManager manager = WorldEdit.getInstance().getPlatformManager();
+        Platform commandsPlatform = manager.queryCapability(Capability.USER_COMMANDS);
+        if (commandsPlatform != platform || !platform.isHookingEvents()) {
+            // We're not in control of commands/events -- do not register.
+            return;
+        }
+
+        List<Command> commands = manager.getPlatformCommandManager().getCommandManager()
+            .getAllCommands().collect(toList());
+        for (Command command : commands) {
+            CommandWrapper.register(event.getDispatcher(), command);
+            Set<String> perms = command.getCondition().as(PermissionCondition.class)
+                .map(PermissionCondition::getPermissions)
+                .orElseGet(Collections::emptySet);
+            if (!perms.isEmpty()) {
+                perms.forEach(getPermissionsProvider()::registerPermission);
+            }
+        }
+    }
+
+    @SubscribeEvent
     public void serverAboutToStart(FMLServerAboutToStartEvent event) {
         final Path delChunks = workingDir.resolve(DELCHUNKS_FILE_NAME);
         if (Files.exists(delChunks)) {
@@ -201,17 +240,15 @@ public class ForgeWorldEdit {
     public void serverStopping(FMLServerStoppingEvent event) {
         WorldEdit worldEdit = WorldEdit.getInstance();
         worldEdit.getSessionManager().unload();
-        worldEdit.getPlatformManager().unregister(platform);
+        WorldEdit.getInstance().getEventBus().post(new PlatformUnreadyEvent(platform));
     }
 
     @SubscribeEvent
     public void serverStarted(FMLServerStartedEvent event) {
-        setupPlatform();
         setupRegistries(event.getServer());
 
-        config = new ForgeConfiguration(this);
         config.load();
-        WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
+        WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent(platform));
     }
 
     @SubscribeEvent

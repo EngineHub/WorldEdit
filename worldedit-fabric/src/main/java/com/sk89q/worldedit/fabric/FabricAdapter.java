@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.fabric;
 
-import com.google.common.collect.ImmutableList;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.blocks.BaseItemStack;
@@ -28,10 +27,6 @@ import com.sk89q.worldedit.fabric.internal.NBTConverter;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
-import com.sk89q.worldedit.registry.state.BooleanProperty;
-import com.sk89q.worldedit.registry.state.DirectionalProperty;
-import com.sk89q.worldedit.registry.state.EnumProperty;
-import com.sk89q.worldedit.registry.state.IntegerProperty;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.world.World;
@@ -45,7 +40,6 @@ import com.sk89q.worldedit.world.item.ItemTypes;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.Identifier;
@@ -59,22 +53,11 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class FabricAdapter {
-
-    private static @Nullable MinecraftServer server;
-
-    private static MinecraftServer requireServer() {
-        return Objects.requireNonNull(server, "No server injected");
-    }
-
-    static void setServer(@Nullable MinecraftServer server) {
-        FabricAdapter.server = server;
-    }
 
     private FabricAdapter() {
     }
@@ -84,14 +67,15 @@ public final class FabricAdapter {
     }
 
     public static Biome adapt(BiomeType biomeType) {
-        return requireServer()
+        return FabricWorldEdit.LIFECYCLED_SERVER.valueOrThrow()
             .getRegistryManager()
             .get(Registry.BIOME_KEY)
             .get(new Identifier(biomeType.getId()));
     }
 
     public static BiomeType adapt(Biome biome) {
-        Identifier id = requireServer().getRegistryManager().get(Registry.BIOME_KEY).getId(biome);
+        Identifier id = FabricWorldEdit.LIFECYCLED_SERVER.valueOrThrow().getRegistryManager()
+            .get(Registry.BIOME_KEY).getId(biome);
         Objects.requireNonNull(id, "biome is not registered");
         return BiomeTypes.get(id.toString());
     }
