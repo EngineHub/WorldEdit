@@ -47,6 +47,7 @@ import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
 import io.papermc.lib.PaperLib;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.TreeType;
 import org.bukkit.World;
@@ -58,7 +59,6 @@ import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
-import java.lang.ref.WeakReference;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -96,8 +96,8 @@ public class BukkitWorld extends AbstractWorld {
         HAS_3D_BIOMES = temp;
     }
 
-    private final WeakReference<World> worldRef;
-    private final WorldNativeAccess<?, ?, ?> worldNativeAccess;
+    private final String worldName;
+    private WorldNativeAccess<?, ?, ?> cachedWorldNativeAccess;
 
     /**
      * Construct the object.
@@ -105,13 +105,7 @@ public class BukkitWorld extends AbstractWorld {
      * @param world the world
      */
     public BukkitWorld(World world) {
-        this.worldRef = new WeakReference<>(world);
-        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
-        if (adapter != null) {
-            this.worldNativeAccess = adapter.createWorldNativeAccess(world);
-        } else {
-            this.worldNativeAccess = null;
-        }
+        this.worldName = world.getName();
     }
 
     @Override
@@ -168,17 +162,17 @@ public class BukkitWorld extends AbstractWorld {
      * @return the world
      */
     public World getWorld() {
-        return checkNotNull(worldRef.get(), "The world was unloaded and the reference is unavailable");
+        return checkNotNull(Bukkit.getWorld(this.worldName), "The world was unloaded and the reference is unavailable");
     }
 
     @Override
     public String getName() {
-        return getWorld().getName();
+        return this.worldName;
     }
 
     @Override
     public String getId() {
-        return getWorld().getName().replace(" ", "_").toLowerCase(Locale.ROOT);
+        return this.worldName.replace(" ", "_").toLowerCase(Locale.ROOT);
     }
 
     @Override
@@ -325,13 +319,13 @@ public class BukkitWorld extends AbstractWorld {
 
     @Override
     public boolean equals(Object other) {
-        final World ref = worldRef.get();
+        final World ref = Bukkit.getWorld(this.worldName);
         if (ref == null) {
             return false;
         } else if (other == null) {
             return false;
         } else if ((other instanceof BukkitWorld)) {
-            World otherWorld = ((BukkitWorld) other).worldRef.get();
+            World otherWorld = Bukkit.getWorld(((BukkitWorld) other).worldName);
             return ref.equals(otherWorld);
         } else if (other instanceof com.sk89q.worldedit.world.World) {
             return ((com.sk89q.worldedit.world.World) other).getName().equals(ref.getName());
@@ -457,9 +451,20 @@ public class BukkitWorld extends AbstractWorld {
         return BukkitAdapter.adapt(bukkitBlock.getBlockData());
     }
 
+    private WorldNativeAccess<?, ?, ?> getWorldNativeAccess() {
+        if (this.cachedWorldNativeAccess == null) {
+            BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+            if (adapter != null) {
+                this.cachedWorldNativeAccess = adapter.createWorldNativeAccess(this.getWorld());
+            }
+        }
+        return this.cachedWorldNativeAccess;
+    }
+
     @Override
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectSet sideEffects) {
         clearContainerBlockContents(position);
+        WorldNativeAccess<?, ?, ?> worldNativeAccess = this.getWorldNativeAccess();
         if (worldNativeAccess != null) {
             try {
                 return worldNativeAccess.setBlock(position, block, sideEffects);
@@ -490,6 +495,7 @@ public class BukkitWorld extends AbstractWorld {
     @Override
     public Set<SideEffect> applySideEffects(BlockVector3 position, com.sk89q.worldedit.world.block.BlockState previousType,
             SideEffectSet sideEffectSet) {
+        WorldNativeAccess<?, ?, ?> worldNativeAccess = this.getWorldNativeAccess();
         if (worldNativeAccess != null) {
             worldNativeAccess.applySideEffects(position, previousType, sideEffectSet);
             return Sets.intersection(

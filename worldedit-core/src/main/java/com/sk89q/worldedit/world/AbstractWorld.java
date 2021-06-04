@@ -46,7 +46,7 @@ import javax.annotation.Nullable;
  */
 public abstract class AbstractWorld implements World {
 
-    private final PriorityQueue<QueuedEffect> effectQueue = new PriorityQueue<>();
+    private PriorityQueue<QueuedEffect> effectQueue;
     private int taskId = -1;
 
     @Override
@@ -105,6 +105,10 @@ public abstract class AbstractWorld implements World {
 
     @Override
     public boolean queueBlockBreakEffect(Platform server, BlockVector3 position, BlockType blockType, double priority) {
+        if (this.effectQueue == null) {
+            this.effectQueue = new PriorityQueue<>();
+        }
+
         if (taskId == -1) {
             taskId = server.schedule(0, 1, () -> {
                 int max = Math.max(1, Math.min(30, effectQueue.size() / 3));
