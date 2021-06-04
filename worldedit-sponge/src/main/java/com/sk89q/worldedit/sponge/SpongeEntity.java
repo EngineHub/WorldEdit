@@ -19,14 +19,17 @@
 
 package com.sk89q.worldedit.sponge;
 
-import com.flowpowered.math.vector.Vector3d;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.metadata.EntityProperties;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.sponge.internal.NbtAdapter;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.NullWorld;
-import org.spongepowered.api.world.World;
+import com.sk89q.worldedit.world.entity.EntityType;
+import org.spongepowered.api.registry.RegistryTypes;
+import org.spongepowered.api.world.server.ServerLocation;
+import org.spongepowered.math.vector.Vector3d;
 
 import java.lang.ref.WeakReference;
 import javax.annotation.Nullable;
@@ -46,7 +49,14 @@ class SpongeEntity implements Entity {
     public BaseEntity getState() {
         org.spongepowered.api.entity.Entity entity = entityRef.get();
         if (entity != null) {
-            return SpongeWorldEdit.inst().getAdapter().createBaseEntity(entity);
+            return new BaseEntity(
+                EntityType.REGISTRY.get(
+                    entity.type().key(RegistryTypes.ENTITY_TYPE).asString()
+                ),
+                entity.toContainer().getView(Constants.Sponge.UNSAFE_NBT)
+                    .map(NbtAdapter::adaptToWorldEdit)
+                    .orElse(null)
+            );
         } else {
             return null;
         }
@@ -56,10 +66,10 @@ class SpongeEntity implements Entity {
     public Location getLocation() {
         org.spongepowered.api.entity.Entity entity = entityRef.get();
         if (entity != null) {
-            org.spongepowered.api.world.Location<World> entityLoc = entity.getLocation();
-            Vector3d entityRot = entity.getRotation();
+            ServerLocation entityLoc = entity.serverLocation();
+            Vector3d entityRot = entity.rotation();
 
-            return SpongeWorldEdit.inst().getAdapter().adapt(entityLoc, entityRot);
+            return SpongeAdapter.adapt(entityLoc, entityRot);
         } else {
             return new Location(NullWorld.getInstance());
         }
@@ -79,7 +89,7 @@ class SpongeEntity implements Entity {
     public Extent getExtent() {
         org.spongepowered.api.entity.Entity entity = entityRef.get();
         if (entity != null) {
-            return SpongeWorldEdit.inst().getAdapter().getWorld(entity.getWorld());
+            return SpongeAdapter.adapt(entity.serverLocation().world());
         } else {
             return NullWorld.getInstance();
         }

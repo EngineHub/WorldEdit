@@ -20,7 +20,11 @@
 package com.sk89q.worldedit.sponge;
 
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
+import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
+import com.sk89q.worldedit.world.registry.BlockRegistry;
 import com.sk89q.worldedit.world.registry.BundledRegistries;
+import com.sk89q.worldedit.world.registry.ItemCategoryRegistry;
+import com.sk89q.worldedit.world.registry.ItemRegistry;
 
 /**
  * World data for the Sponge platform.
@@ -28,20 +32,39 @@ import com.sk89q.worldedit.world.registry.BundledRegistries;
 class SpongeRegistries extends BundledRegistries {
 
     private static final SpongeRegistries INSTANCE = new SpongeRegistries();
+
+    public static SpongeRegistries getInstance() {
+        return INSTANCE;
+    }
+
     private final BiomeRegistry biomeRegistry = new SpongeBiomeRegistry();
+    private final BlockRegistry blockRegistry = new SpongeBlockRegistry();
+    private final BlockCategoryRegistry blockCategoryRegistry = new SpongeBlockCategoryRegistry();
+    private final ItemRegistry itemRegistry = new SpongeItemRegistry();
+    private final ItemCategoryRegistry itemCategoryRegistry = new SpongeItemCategoryRegistry();
 
     @Override
     public BiomeRegistry getBiomeRegistry() {
         return biomeRegistry;
     }
 
-    /**
-     * Get a static instance.
-     *
-     * @return an instance
-     */
-    public static SpongeRegistries getInstance() {
-        return INSTANCE;
+    @Override
+    public BlockRegistry getBlockRegistry() {
+        return blockRegistry;
     }
 
+    @Override
+    public BlockCategoryRegistry getBlockCategoryRegistry() {
+        return blockCategoryRegistry;
+    }
+
+    @Override
+    public ItemRegistry getItemRegistry() {
+        return itemRegistry;
+    }
+
+    @Override
+    public ItemCategoryRegistry getItemCategoryRegistry() {
+        return itemCategoryRegistry;
+    }
 }
