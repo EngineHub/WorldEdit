@@ -45,7 +45,6 @@ import com.sk89q.worldedit.world.item.ItemType;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
@@ -176,7 +175,7 @@ public class CLIWorldEdit {
         config = new CLIConfiguration(this);
         config.load();
 
-        WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
+        WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent(platform));
     }
 
     public void onStopped() {

@@ -17,15 +17,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.event.platform;
-
-import com.sk89q.worldedit.extension.platform.Platform;
+package com.sk89q.worldedit.util.lifecycle;
 
 /**
- * Raised when a platform has finished loading its data.
+ * Used to create a new strong reference to an object that can be separately dropped.
+ *
+ * @param <T> the inner object
  */
-public class PlatformReadyEvent extends PlatformEvent {
-    public PlatformReadyEvent(Platform platform) {
-        super(platform);
+class Token<T> {
+    final T inner;
+
+    Token(T inner) {
+        this.inner = inner;
     }
 }

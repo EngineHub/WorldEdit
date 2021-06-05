@@ -22,10 +22,10 @@ package com.sk89q.worldedit.event.platform;
 import com.sk89q.worldedit.extension.platform.Platform;
 
 /**
- * Raised when a platform has finished loading its data.
+ * Raised when a platform needs to retract all registered data, e.g. due to a reload.
  */
-public class PlatformReadyEvent extends PlatformEvent {
-    public PlatformReadyEvent(Platform platform) {
+public class PlatformUnreadyEvent extends PlatformEvent {
+    public PlatformUnreadyEvent(Platform platform) {
         super(platform);
     }
 }
