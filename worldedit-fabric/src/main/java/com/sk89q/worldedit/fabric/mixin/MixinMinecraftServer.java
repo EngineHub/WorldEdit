@@ -26,6 +26,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Util;
 import net.minecraft.world.World;
 import net.minecraft.world.level.storage.LevelStorage;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.gen.Accessor;
@@ -37,6 +38,7 @@ public abstract class MixinMinecraftServer implements Watchdog, ExtendedMinecraf
 
     @Shadow
     private long timeReference;
+    @Final
     @Shadow
     protected LevelStorage.Session session;
 

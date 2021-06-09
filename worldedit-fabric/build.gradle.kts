@@ -25,9 +25,9 @@ configure<LoomGradleExtension> {
     accessWidener("src/main/resources/worldedit.accesswidener")
 }
 
-val minecraftVersion = "1.16.3"
-val yarnMappings = "1.16.3+build.1:v2"
-val loaderVersion = "0.10.8"
+val minecraftVersion = "1.17"
+val yarnMappings = "1.17+build.1:v2"
+val loaderVersion = "0.11.3"
 
 configurations.all {
     resolutionStrategy {
@@ -46,8 +46,8 @@ repositories {
 
 dependencies {
     "api"(project(":worldedit-core"))
-    "implementation"(enforcedPlatform("org.apache.logging.log4j:log4j-bom:2.8.1") {
-        because("Mojang provides Log4J at 2.8.1")
+    "implementation"(enforcedPlatform("org.apache.logging.log4j:log4j-bom:2.14.1") {
+        because("Mojang provides Log4J at 2.14.1")
     })
 
     "minecraft"("com.mojang:minecraft:$minecraftVersion")
@@ -55,7 +55,7 @@ dependencies {
     "modImplementation"("net.fabricmc:fabric-loader:$loaderVersion")
 
     // [1] declare fabric-api dependency...
-    "fabricApi"("net.fabricmc.fabric-api:fabric-api:0.29.3+1.16")
+    "fabricApi"("net.fabricmc.fabric-api:fabric-api:0.34.9+1.17")
 
     // [2] Load the API dependencies from the fabric mod json...
     @Suppress("UNCHECKED_CAST")

@@ -25,8 +25,7 @@ dependencies {
         exclude("junit", "junit")
     }
 
-    "implementation"(enforcedPlatform("org.apache.logging.log4j:log4j-bom:2.8.1") {
-        // Note: Paper will bump to 2.11.2, but we should only depend on 2.8 APIs for compatibility.
+    "implementation"(enforcedPlatform("org.apache.logging.log4j:log4j-bom:2.14.1") {
         because("Spigot provides Log4J (sort of, not in API, implicitly part of server)")
     })
     "implementation"("org.apache.logging.log4j:log4j-api")

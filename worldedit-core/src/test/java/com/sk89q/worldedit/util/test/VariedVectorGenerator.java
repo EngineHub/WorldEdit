@@ -53,13 +53,13 @@ public class VariedVectorGenerator {
         this.divisionsXZ = divisionsXZ == -1 ? DEFAULT_DIVISIONS_XZ : divisionsXZ;
         this.divisionsY = divisionsY == -1 ? DEFAULT_DIVISIONS_Y : divisionsY;
         maxXZ = 30_000_000;
-        maxY = vanilla ? 255 : Integer.MAX_VALUE;
+        maxY = vanilla ? 2047 : Integer.MAX_VALUE;
         xzStep = (maxXZ * 2) / this.divisionsXZ;
         yStep = (maxY * 2) / this.divisionsY;
         alwaysInclude =
             ImmutableSet.of(BlockVector3.ZERO, BlockVector3.ONE,
-                BlockVector3.at(-maxXZ, 0, -maxXZ),
-                BlockVector3.at(maxXZ, 0, maxXZ),
+                BlockVector3.at(-maxXZ, -maxY - 1, -maxXZ),
+                BlockVector3.at(maxXZ, -maxY - 1, maxXZ),
                 BlockVector3.at(-maxXZ, maxY, -maxXZ),
                 BlockVector3.at(maxXZ, maxY, maxXZ));
     }
@@ -86,7 +86,7 @@ public class VariedVectorGenerator {
                 BlockVector3 newVector = BlockVector3.at(x, (int) y, z);
                 y += yStep;
                 if (y > maxY) {
-                    y = 0;
+                    y = -maxY - 1;
                     z += xzStep;
                     if (z > maxXZ) {
                         z = -maxXZ;
