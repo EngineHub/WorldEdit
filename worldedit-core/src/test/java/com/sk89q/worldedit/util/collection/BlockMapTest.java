@@ -28,6 +28,7 @@ import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.extension.platform.Preference;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.Registry;
+import com.sk89q.worldedit.util.test.ResourceLockKeys;
 import com.sk89q.worldedit.util.test.VariedVectorGenerator;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -40,6 +41,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.junit.jupiter.api.parallel.ResourceLock;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -67,6 +71,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+@Execution(ExecutionMode.CONCURRENT)
+@ResourceLock(ResourceLockKeys.WORLDEDIT_PLATFORM)
 @DisplayName("An ordered block map")
 class BlockMapTest {
 
@@ -468,7 +474,7 @@ class BlockMapTest {
         @Test
         @DisplayName("calls the forEach action once")
         void neverCallsForEachAction() {
-            generator.makeVectorsStream().forEach(vec -> {
+            generator.makeVectorsStream().sequential().forEach(vec -> {
                 try (AutoCloseable ignored = MockitoAnnotations.openMocks(this)) {
                     BlockMap<BaseBlock> map = BlockMap.createForBaseBlock();
                     map.put(vec, air);

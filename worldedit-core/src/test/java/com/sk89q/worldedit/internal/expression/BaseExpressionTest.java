@@ -25,8 +25,10 @@ import com.sk89q.worldedit.event.platform.PlatformsRegisteredEvent;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.Preference;
+import com.sk89q.worldedit.util.test.ResourceLockKeys;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.parallel.ResourceLock;
 
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -39,6 +41,7 @@ import static org.mockito.Mockito.when;
 /**
  * Common setup code for expression tests.
  */
+@ResourceLock(ResourceLockKeys.WORLDEDIT_PLATFORM)
 class BaseExpressionTest {
 
     static double readSlot(Expression expr, String name) {
