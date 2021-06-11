@@ -29,7 +29,7 @@ configurations {
 dependencies {
     constraints {
         "implementation"( "org.yaml:snakeyaml") {
-            version { strictly("[1.26,2.0)") }
+            version { require("1.26") }
             because("Bukkit provides SnakeYaml")
         }
     }
