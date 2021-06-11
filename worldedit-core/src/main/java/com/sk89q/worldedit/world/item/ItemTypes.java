@@ -464,6 +464,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType GRANITE_WALL = get("minecraft:granite_wall");
     @Nullable public static final ItemType GRASS = get("minecraft:grass");
     @Nullable public static final ItemType GRASS_BLOCK = get("minecraft:grass_block");
+    @Deprecated @Nullable public static final ItemType GRASS_PATH = get("minecraft:grass_path");
     @Nullable public static final ItemType GRAVEL = get("minecraft:gravel");
     @Nullable public static final ItemType GRAY_BANNER = get("minecraft:gray_banner");
     @Nullable public static final ItemType GRAY_BED = get("minecraft:gray_bed");

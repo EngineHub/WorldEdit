@@ -366,6 +366,7 @@ public final class BlockTypes {
     @Nullable public static final BlockType GRANITE_WALL = get("minecraft:granite_wall");
     @Nullable public static final BlockType GRASS = get("minecraft:grass");
     @Nullable public static final BlockType GRASS_BLOCK = get("minecraft:grass_block");
+    @Deprecated @Nullable public static final BlockType GRASS_PATH = get("minecraft:grass_path");
     @Nullable public static final BlockType GRAVEL = get("minecraft:gravel");
     @Nullable public static final BlockType GRAY_BANNER = get("minecraft:gray_banner");
     @Nullable public static final BlockType GRAY_BED = get("minecraft:gray_bed");
