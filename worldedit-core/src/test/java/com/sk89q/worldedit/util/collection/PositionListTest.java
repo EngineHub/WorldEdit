@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.util.collection;
 
-import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.util.test.VariedVectors;
+import com.sk89q.worldedit.util.test.VariedVectorGenerator;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -29,70 +29,91 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 abstract class PositionListTest {
 
     static class Long extends PositionListTest {
-        protected Long() {
-            super(new LongPositionList());
+        @Override
+        protected PositionList createPositionList() {
+            return new LongPositionList();
         }
     }
 
     static class Vector extends PositionListTest {
-        protected Vector() {
-            super(new VectorPositionList());
+        @Override
+        protected PositionList createPositionList() {
+            return new VectorPositionList();
         }
     }
 
-    private final PositionList positionList;
+    private final VariedVectorGenerator generator = new VariedVectorGenerator(true);
 
-    protected PositionListTest(PositionList positionList) {
-        this.positionList = positionList;
-    }
+    protected abstract PositionList createPositionList();
 
-    @VariedVectors.Test(capToVanilla = true)
+    @Test
     @DisplayName("calling add(vec) increases size by 1")
-    void addIncreasesSizeByOne(BlockVector3 vec) {
-        positionList.add(vec);
-        assertEquals(1, positionList.size());
+    void addIncreasesSizeByOne() {
+        generator.makeVectorsStream().forEach(vec -> {
+            PositionList positionList = createPositionList();
+            positionList.add(vec);
+            assertEquals(1, positionList.size());
+        });
     }
 
-    @VariedVectors.Test(capToVanilla = true)
+    @Test
     @DisplayName("calling get(0) after add(vec) returns vec")
-    void canGetVectorAfterAdd(BlockVector3 vec) {
-        positionList.add(vec);
-        assertEquals(vec, positionList.get(0));
+    void canGetVectorAfterAdd() {
+        generator.makeVectorsStream().forEach(vec -> {
+            PositionList positionList = createPositionList();
+            positionList.add(vec);
+            assertEquals(vec, positionList.get(0));
+        });
     }
 
-    @VariedVectors.Test(capToVanilla = true)
+    @Test
     @DisplayName("calling iterator().hasNext() after add(vec) returns true")
-    void hasNextAfterAdd(BlockVector3 vec) {
-        positionList.add(vec);
-        assertTrue(positionList.iterator().hasNext());
+    void hasNextAfterAdd() {
+        generator.makeVectorsStream().forEach(vec -> {
+            PositionList positionList = createPositionList();
+            positionList.add(vec);
+            assertTrue(positionList.iterator().hasNext());
+        });
     }
 
-    @VariedVectors.Test(capToVanilla = true)
+    @Test
     @DisplayName("calling iterator().next() after add(vec) returns vec")
-    void nextAfterAdd(BlockVector3 vec) {
-        positionList.add(vec);
-        assertEquals(vec, positionList.iterator().next());
+    void nextAfterAdd() {
+        generator.makeVectorsStream().forEach(vec -> {
+            PositionList positionList = createPositionList();
+            positionList.add(vec);
+            assertEquals(vec, positionList.iterator().next());
+        });
     }
 
-    @VariedVectors.Test(capToVanilla = true)
+    @Test
     @DisplayName("calling reverseIterator().hasNext() after add(vec) returns true")
-    void reverseHasNextAfterAdd(BlockVector3 vec) {
-        positionList.add(vec);
-        assertTrue(positionList.reverseIterator().hasNext());
+    void reverseHasNextAfterAdd() {
+        generator.makeVectorsStream().forEach(vec -> {
+            PositionList positionList = createPositionList();
+            positionList.add(vec);
+            assertTrue(positionList.reverseIterator().hasNext());
+        });
     }
 
-    @VariedVectors.Test(capToVanilla = true)
+    @Test
     @DisplayName("calling reverseIterator().next() after add(vec) returns vec")
-    void reverseNextAfterAdd(BlockVector3 vec) {
-        positionList.add(vec);
-        assertEquals(vec, positionList.reverseIterator().next());
+    void reverseNextAfterAdd() {
+        generator.makeVectorsStream().forEach(vec -> {
+            PositionList positionList = createPositionList();
+            positionList.add(vec);
+            assertEquals(vec, positionList.reverseIterator().next());
+        });
     }
 
-    @VariedVectors.Test(capToVanilla = true)
+    @Test
     @DisplayName("calling clear() after add(vec) makes the size() zero")
-    void clearAfterAdd(BlockVector3 vec) {
-        positionList.add(vec);
-        positionList.clear();
-        assertEquals(0, positionList.size());
+    void clearAfterAdd() {
+        generator.makeVectorsStream().forEach(vec -> {
+            PositionList positionList = createPositionList();
+            positionList.add(vec);
+            positionList.clear();
+            assertEquals(0, positionList.size());
+        });
     }
 }

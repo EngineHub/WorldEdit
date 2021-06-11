@@ -17,27 +17,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.math;
+package com.sk89q.worldedit.util.test;
 
-import com.sk89q.worldedit.util.test.VariedVectorGenerator;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import com.sk89q.worldedit.math.BlockVector3;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+public class VariedVectorPair {
+    public final BlockVector3 first;
+    public final BlockVector3 second;
 
-@DisplayName("A 3D block vector")
-public class BlockVector3Test {
-
-    @Test
-    @DisplayName("survives a round-trip through long-packing")
-    void longPackingRoundTrip() {
-        new VariedVectorGenerator(true, 25, 25).makeVectorsStream()
-            .forEach(vec ->
-                assertEquals(
-                    vec,
-                    BlockVector3.fromLongPackedForm(vec.toLongPackedForm())
-                )
-            );
+    public VariedVectorPair(BlockVector3 first, BlockVector3 second) {
+        this.first = first;
+        this.second = second;
     }
-
 }
