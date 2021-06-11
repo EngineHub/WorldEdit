@@ -25,7 +25,7 @@ dependencies {
         exclude("junit", "junit")
     }
 
-    "implementation"(enforcedPlatform("org.apache.logging.log4j:log4j-bom:2.14.1") {
+    "implementation"(platform("org.apache.logging.log4j:log4j-bom:2.14.1") {
         because("Spigot provides Log4J (sort of, not in API, implicitly part of server)")
     })
     "implementation"("org.apache.logging.log4j:log4j-api")
