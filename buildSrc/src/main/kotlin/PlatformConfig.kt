@@ -1,5 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.api.Project
+import org.gradle.api.component.AdhocComponentWithVariants
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.plugins.quality.CheckstyleExtension
 import org.gradle.api.publish.PublishingExtension
@@ -122,6 +123,11 @@ fun Project.applyShadowConfiguration() {
         exclude("LICENSE*")
         exclude("META-INF/maven/**")
         minimize()
+    }
+    val javaComponent = components["java"] as AdhocComponentWithVariants
+    // I don't think we want this published (it's the shadow jar)
+    javaComponent.withVariantsFromConfiguration(configurations["shadowRuntimeElements"]) {
+        skip()
     }
 }
 
