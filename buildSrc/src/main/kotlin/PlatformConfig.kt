@@ -82,7 +82,7 @@ fun Project.applyPlatformAndCoreConfiguration() {
 
     the<JavaPluginExtension>().withJavadocJar()
 
-    if (name == "worldedit-core" || name == "worldedit-bukkit") {
+    if (name in setOf("worldedit-core", "worldedit-bukkit", "worldedit-fabric")) {
         the<JavaPluginExtension>().withSourcesJar()
     }
 
@@ -93,7 +93,6 @@ fun Project.applyPlatformAndCoreConfiguration() {
     configure<PublishingExtension> {
         publications {
             register<MavenPublication>("maven") {
-                from(components["java"])
                 versionMapping {
                     usage("java-api") {
                         fromResolutionOf("runtimeClasspath")
