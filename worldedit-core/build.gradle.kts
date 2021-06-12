@@ -120,3 +120,10 @@ tasks.named<Copy>("processResources") {
         into("lang")
     }
 }
+
+configure<PublishingExtension> {
+    publications.named<MavenPublication>("maven") {
+        artifactId = the<BasePluginConvention>().archivesBaseName
+        from(components["java"])
+    }
+}
