@@ -125,7 +125,7 @@ public class BukkitServerInterface extends AbstractPlatform implements MultiUser
 
     @Override
     public Watchdog getWatchdog() {
-        return watchdog.valueOrThrow();
+        return watchdog.value().orElse(null);
     }
 
     @Override
