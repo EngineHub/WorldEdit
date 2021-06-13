@@ -9,10 +9,6 @@ repositories {
     mavenCentral()
     gradlePluginPortal()
     maven {
-        name = "Forge Maven"
-        url = uri("https://maven.minecraftforge.net/")
-    }
-    maven {
         name = "Fabric"
         url = uri("https://maven.fabricmc.net/")
     }
@@ -23,6 +19,13 @@ repositories {
     maven {
         name = "EngineHub Repository"
         url = uri("https://maven.enginehub.org/repo/")
+    }
+    maven {
+        name = "Forge Maven"
+        url = uri("https://maven.minecraftforge.net/")
+        content {
+            includeGroupByRegex("net\\.minecraftforge\\..*")
+        }
     }
 }
 
