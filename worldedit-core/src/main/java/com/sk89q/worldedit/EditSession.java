@@ -864,6 +864,11 @@ public class EditSession implements Extent, AutoCloseable {
     }
 
     @Override
+    public void ensureLoaded(Region region) {
+        bypassNone.ensureLoaded(region);
+    }
+
+    @Override
     public List<? extends Entity> getEntities(Region region) {
         return bypassNone.getEntities(region);
     }

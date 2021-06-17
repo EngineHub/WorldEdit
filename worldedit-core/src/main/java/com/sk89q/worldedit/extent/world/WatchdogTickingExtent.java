@@ -115,6 +115,12 @@ public class WatchdogTickingExtent extends AbstractDelegateExtent {
     }
 
     @Override
+    public void ensureLoaded(Region region) {
+        onOperation();
+        super.ensureLoaded(region);
+    }
+
+    @Override
     public List<? extends Entity> getEntities() {
         onOperation();
         return super.getEntities();

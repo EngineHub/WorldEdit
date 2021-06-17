@@ -123,6 +123,11 @@ public class ClipboardWorld extends AbstractWorld implements Clipboard, CLIWorld
     }
 
     @Override
+    public void ensureLoaded(Region region) {
+        // nothing to do here
+    }
+
+    @Override
     public List<? extends Entity> getEntities(Region region) {
         return clipboard.getEntities(region);
     }

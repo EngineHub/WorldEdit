@@ -47,6 +47,7 @@ import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
 import io.papermc.lib.PaperLib;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.Chunk;
 import org.bukkit.Effect;
 import org.bukkit.TreeType;
 import org.bukkit.World;
@@ -115,6 +116,16 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     @Override
+    public void ensureLoaded(Region region) {
+        for (BlockVector2 chunkCoordinates : region.getBoundingBox().getChunks()) {
+            Chunk chunk = getWorld().getChunkAt(chunkCoordinates.getBlockX(), chunkCoordinates.getBlockZ());
+            if (!chunk.isLoaded()) {
+                chunk.load(false);
+            }
+        }
+    }
+
+    @Override
     public List<com.sk89q.worldedit.entity.Entity> getEntities(Region region) {
         World world = getWorld();
 
@@ -127,6 +138,8 @@ public class BukkitWorld extends AbstractWorld {
         }
         return entities;
     }
+
+
 
     @Override
     public List<com.sk89q.worldedit.entity.Entity> getEntities() {
