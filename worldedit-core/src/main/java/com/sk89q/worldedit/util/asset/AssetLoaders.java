@@ -75,6 +75,11 @@ public class AssetLoaders {
         registerAssetLoader(new ImageHeightmapLoader(worldEdit, this.assetsDir), ImageHeightmap.class);
     }
 
+    public void uninit() {
+        this.assetsDir = null;
+        assetLoaderRegistration.clear();
+    }
+
     public <T> void registerAssetLoader(AssetLoader<T> loader, Class<T> assetClass) {
         assetLoaders.add(loader);
         for (String extension : loader.getAllowedExtensions()) {

@@ -31,6 +31,7 @@ public final class EntityTypes {
     @Nullable public static final EntityType AREA_EFFECT_CLOUD = get("minecraft:area_effect_cloud");
     @Nullable public static final EntityType ARMOR_STAND = get("minecraft:armor_stand");
     @Nullable public static final EntityType ARROW = get("minecraft:arrow");
+    @Nullable public static final EntityType AXOLOTL = get("minecraft:axolotl");
     @Nullable public static final EntityType BAT = get("minecraft:bat");
     @Nullable public static final EntityType BEE = get("minecraft:bee");
     @Nullable public static final EntityType BLAZE = get("minecraft:blaze");
@@ -67,6 +68,9 @@ public final class EntityTypes {
     @Nullable public static final EntityType FURNACE_MINECART = get("minecraft:furnace_minecart");
     @Nullable public static final EntityType GHAST = get("minecraft:ghast");
     @Nullable public static final EntityType GIANT = get("minecraft:giant");
+    @Nullable public static final EntityType GLOW_ITEM_FRAME = get("minecraft:glow_item_frame");
+    @Nullable public static final EntityType GLOW_SQUID = get("minecraft:glow_squid");
+    @Nullable public static final EntityType GOAT = get("minecraft:goat");
     @Nullable public static final EntityType GUARDIAN = get("minecraft:guardian");
     @Nullable public static final EntityType HOGLIN = get("minecraft:hoglin");
     @Nullable public static final EntityType HOPPER_MINECART = get("minecraft:hopper_minecart");
@@ -81,6 +85,7 @@ public final class EntityTypes {
     @Nullable public static final EntityType LLAMA = get("minecraft:llama");
     @Nullable public static final EntityType LLAMA_SPIT = get("minecraft:llama_spit");
     @Nullable public static final EntityType MAGMA_CUBE = get("minecraft:magma_cube");
+    @Nullable public static final EntityType MARKER = get("minecraft:marker");
     @Nullable public static final EntityType MINECART = get("minecraft:minecart");
     @Nullable public static final EntityType MOOSHROOM = get("minecraft:mooshroom");
     @Nullable public static final EntityType MULE = get("minecraft:mule");

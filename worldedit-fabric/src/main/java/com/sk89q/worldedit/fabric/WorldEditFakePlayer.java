@@ -20,22 +20,19 @@
 package com.sk89q.worldedit.fabric;
 
 import com.mojang.authlib.GameProfile;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stat;
 import net.minecraft.text.Text;
 
 import java.util.UUID;
-import javax.annotation.Nullable;
 
 public class WorldEditFakePlayer extends ServerPlayerEntity {
     private static final GameProfile FAKE_WORLDEDIT_PROFILE = new GameProfile(UUID.nameUUIDFromBytes("worldedit".getBytes()), "[WorldEdit]");
 
     public WorldEditFakePlayer(ServerWorld world) {
-        super(world.getServer(), world, FAKE_WORLDEDIT_PROFILE, new ServerPlayerInteractionManager(world));
+        super(world.getServer(), world, FAKE_WORLDEDIT_PROFILE);
     }
 
     @Override

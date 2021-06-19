@@ -21,7 +21,6 @@ package com.sk89q.worldedit.fabric;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
-import com.mojang.brigadier.CommandDispatcher;
 import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.AbstractPlatform;
@@ -32,13 +31,15 @@ import com.sk89q.worldedit.extension.platform.Preference;
 import com.sk89q.worldedit.extension.platform.Watchdog;
 import com.sk89q.worldedit.fabric.internal.ExtendedChunk;
 import com.sk89q.worldedit.util.SideEffect;
+import com.sk89q.worldedit.util.lifecycle.Lifecycled;
+import com.sk89q.worldedit.util.lifecycle.SimpleLifecycled;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.Registries;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
-import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -55,7 +56,9 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import javax.annotation.Nullable;
 
 import static java.util.stream.Collectors.toList;
@@ -63,19 +66,19 @@ import static java.util.stream.Collectors.toList;
 class FabricPlatform extends AbstractPlatform implements MultiUserPlatform {
 
     private final FabricWorldEdit mod;
-    private final MinecraftServer server;
     private final FabricDataFixer dataFixer;
-    private final @Nullable Watchdog watchdog;
+    private final Lifecycled<Optional<Watchdog>> watchdog;
     private boolean hookingEvents = false;
-    private CommandDispatcher<ServerCommandSource> nativeDispatcher;
 
-    FabricPlatform(FabricWorldEdit mod, MinecraftServer server) {
+    FabricPlatform(FabricWorldEdit mod) {
         this.mod = mod;
-        this.server = server;
-        this.nativeDispatcher = server.getCommandManager().getDispatcher();
         this.dataFixer = new FabricDataFixer(getDataVersion());
-        this.watchdog = server instanceof MinecraftDedicatedServer
-            ? (Watchdog) server : null;
+
+        this.watchdog = FabricWorldEdit.LIFECYCLED_SERVER.map(
+            server -> server instanceof MinecraftDedicatedServer
+                ? Optional.of((Watchdog) server)
+                : Optional.empty()
+        );
     }
 
     boolean isHookingEvents() {
@@ -116,12 +119,12 @@ class FabricPlatform extends AbstractPlatform implements MultiUserPlatform {
     @Override
     @Nullable
     public Watchdog getWatchdog() {
-        return watchdog;
+        return watchdog.value().flatMap(Function.identity()).orElse(null);
     }
 
     @Override
     public List<? extends World> getWorlds() {
-        Iterable<ServerWorld> worlds = server.getWorlds();
+        Iterable<ServerWorld> worlds = FabricWorldEdit.LIFECYCLED_SERVER.valueOrThrow().getWorlds();
         List<World> ret = new ArrayList<>();
         for (ServerWorld world : worlds) {
             ret.add(new FabricWorld(world));
@@ -135,7 +138,8 @@ class FabricPlatform extends AbstractPlatform implements MultiUserPlatform {
         if (player instanceof FabricPlayer) {
             return player;
         } else {
-            ServerPlayerEntity entity = server.getPlayerManager().getPlayer(player.getName());
+            ServerPlayerEntity entity = FabricWorldEdit.LIFECYCLED_SERVER.valueOrThrow()
+                .getPlayerManager().getPlayer(player.getName());
             return entity != null ? new FabricPlayer(entity) : null;
         }
     }
@@ -146,7 +150,7 @@ class FabricPlatform extends AbstractPlatform implements MultiUserPlatform {
         if (world instanceof FabricWorld) {
             return world;
         } else {
-            for (ServerWorld ws : server.getWorlds()) {
+            for (ServerWorld ws : FabricWorldEdit.LIFECYCLED_SERVER.valueOrThrow().getWorlds()) {
                 if (((ServerWorldProperties) ws.getLevelProperties()).getLevelName().equals(world.getName())) {
                     return new FabricWorld(ws);
                 }
@@ -156,31 +160,14 @@ class FabricPlatform extends AbstractPlatform implements MultiUserPlatform {
         }
     }
 
-    public void setNativeDispatcher(CommandDispatcher<ServerCommandSource> nativeDispatcher) {
-        this.nativeDispatcher = nativeDispatcher;
-    }
-
     @Override
     public void registerCommands(CommandManager manager) {
-        if (server == null) {
-            return;
-        }
-
-        for (Command command : manager.getAllCommands().collect(toList())) {
-            CommandWrapper.register(nativeDispatcher, command);
-            Set<String> perms = command.getCondition().as(PermissionCondition.class)
-                .map(PermissionCondition::getPermissions)
-                .orElseGet(Collections::emptySet);
-            if (!perms.isEmpty()) {
-                perms.forEach(FabricWorldEdit.inst.getPermissionsProvider()::registerPermission);
-            }
-        }
+        // No-op, we register using Fabric's event
     }
 
     @Override
-    public void registerGameHooks() {
-        // We registered the events already anyway, so we just 'turn them on'
-        hookingEvents = true;
+    public void setGameHooksEnabled(boolean enabled) {
+        this.hookingEvents = enabled;
     }
 
     @Override
@@ -241,7 +228,7 @@ class FabricPlatform extends AbstractPlatform implements MultiUserPlatform {
     @Override
     public Collection<Actor> getConnectedUsers() {
         List<Actor> users = new ArrayList<>();
-        PlayerManager scm = server.getPlayerManager();
+        PlayerManager scm = FabricWorldEdit.LIFECYCLED_SERVER.valueOrThrow().getPlayerManager();
         for (ServerPlayerEntity entity : scm.getPlayerList()) {
             if (entity != null) {
                 users.add(new FabricPlayer(entity));

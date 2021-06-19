@@ -19,11 +19,13 @@
 
 package com.sk89q.worldedit.event.platform;
 
-import com.sk89q.worldedit.event.Event;
+import com.sk89q.worldedit.extension.platform.Platform;
 
 /**
- * Raised when a platform thinks that all the platforms have had a chance to
- * register themselves.
+ * Raised when a platform has finished loading its data.
  */
-public class PlatformReadyEvent extends Event {
+public class PlatformReadyEvent extends PlatformEvent {
+    public PlatformReadyEvent(Platform platform) {
+        super(platform);
+    }
 }

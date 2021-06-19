@@ -30,12 +30,10 @@ import java.util.stream.Stream;
 
 public class VariedVectorGenerator {
 
-    // For better coverage assurance, increase these values for a local Gradle run.
-    // Don't do it for IntelliJ, it'll probably run out of memory.
     private static final int DEFAULT_DIVISIONS_XZ =
-        Integer.getInteger("variedvecs.divisions.xz", 2);
+        Integer.getInteger("variedvecs.divisions.xz", 10);
     private static final int DEFAULT_DIVISIONS_Y =
-        Integer.getInteger("variedvecs.divisions.y", 2);
+        Integer.getInteger("variedvecs.divisions.y", 10);
 
     public final int divisionsXZ;
     public final int divisionsY;
@@ -46,20 +44,24 @@ public class VariedVectorGenerator {
     public final Set<BlockVector3> alwaysInclude;
 
     public VariedVectorGenerator() {
-        this(false, -1, -1);
+        this(false);
+    }
+
+    public VariedVectorGenerator(boolean vanilla) {
+        this(vanilla, -1, -1);
     }
 
     public VariedVectorGenerator(boolean vanilla, int divisionsXZ, int divisionsY) {
         this.divisionsXZ = divisionsXZ == -1 ? DEFAULT_DIVISIONS_XZ : divisionsXZ;
         this.divisionsY = divisionsY == -1 ? DEFAULT_DIVISIONS_Y : divisionsY;
         maxXZ = 30_000_000;
-        maxY = vanilla ? 255 : Integer.MAX_VALUE;
+        maxY = vanilla ? 2047 : Integer.MAX_VALUE;
         xzStep = (maxXZ * 2) / this.divisionsXZ;
         yStep = (maxY * 2) / this.divisionsY;
         alwaysInclude =
             ImmutableSet.of(BlockVector3.ZERO, BlockVector3.ONE,
-                BlockVector3.at(-maxXZ, 0, -maxXZ),
-                BlockVector3.at(maxXZ, 0, maxXZ),
+                BlockVector3.at(-maxXZ, -maxY - 1, -maxXZ),
+                BlockVector3.at(maxXZ, -maxY - 1, maxXZ),
                 BlockVector3.at(-maxXZ, maxY, -maxXZ),
                 BlockVector3.at(maxXZ, maxY, maxXZ));
     }
@@ -68,7 +70,16 @@ public class VariedVectorGenerator {
         return Stream.concat(
             alwaysInclude.stream(),
             Streams.stream(generateVectors()).filter(v -> !alwaysInclude.contains(v))
-        );
+        ).parallel();
+    }
+
+    /**
+     * Gives two vectors from {@link #makeVectorsStream()} that aren't the same.
+     */
+    public Stream<VariedVectorPair> makePairedVectorsStream() {
+        return makeVectorsStream()
+            .flatMap(vec -> makeVectorsStream().filter(v -> !v.equals(vec))
+                .map(v -> new VariedVectorPair(vec, v)));
     }
 
     private Iterator<BlockVector3> generateVectors() {
@@ -86,7 +97,7 @@ public class VariedVectorGenerator {
                 BlockVector3 newVector = BlockVector3.at(x, (int) y, z);
                 y += yStep;
                 if (y > maxY) {
-                    y = 0;
+                    y = -maxY - 1;
                     z += xzStep;
                     if (z > maxXZ) {
                         z = -maxXZ;

@@ -24,6 +24,7 @@ import com.sk89q.bukkit.util.CommandInfo;
 import com.sk89q.bukkit.util.CommandRegistration;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.AbstractPlatform;
@@ -33,7 +34,7 @@ import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
 import com.sk89q.worldedit.extension.platform.Preference;
 import com.sk89q.worldedit.extension.platform.Watchdog;
 import com.sk89q.worldedit.util.SideEffect;
-import com.sk89q.worldedit.util.concurrency.LazyReference;
+import com.sk89q.worldedit.util.lifecycle.Lifecycled;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.registry.Registries;
 import org.bukkit.Bukkit;
@@ -59,21 +60,16 @@ public class BukkitServerInterface extends AbstractPlatform implements MultiUser
     public final Server server;
     public final WorldEditPlugin plugin;
     private final CommandRegistration dynamicCommands;
-    private final LazyReference<Watchdog> watchdog;
+    private final Lifecycled<Watchdog> watchdog;
     private boolean hookingEvents;
 
     public BukkitServerInterface(WorldEditPlugin plugin, Server server) {
         this.plugin = plugin;
         this.server = server;
         this.dynamicCommands = new CommandRegistration(plugin);
-        this.watchdog = LazyReference.from(() -> {
-            if (plugin.getBukkitImplAdapter() != null) {
-                return plugin.getBukkitImplAdapter().supportsWatchdog()
-                    ? new BukkitWatchdog(plugin.getBukkitImplAdapter())
-                    : null;
-            }
-            return null;
-        });
+        this.watchdog = plugin.getLifecycledBukkitImplAdapter()
+            .filter(BukkitImplAdapter::supportsWatchdog)
+            .map(BukkitWatchdog::new);
     }
 
     CommandRegistration getDynamicCommands() {
@@ -92,7 +88,7 @@ public class BukkitServerInterface extends AbstractPlatform implements MultiUser
     @SuppressWarnings("deprecation")
     @Override
     public int getDataVersion() {
-        if (plugin.getBukkitImplAdapter() != null) {
+        if (plugin.getLifecycledBukkitImplAdapter() != null) {
             return Bukkit.getUnsafe().getDataVersion();
         }
         return -1;
@@ -129,7 +125,7 @@ public class BukkitServerInterface extends AbstractPlatform implements MultiUser
 
     @Override
     public Watchdog getWatchdog() {
-        return watchdog.getValue();
+        return watchdog.value().orElse(null);
     }
 
     @Override
@@ -190,8 +186,8 @@ public class BukkitServerInterface extends AbstractPlatform implements MultiUser
     }
 
     @Override
-    public void registerGameHooks() {
-        hookingEvents = true;
+    public void setGameHooksEnabled(boolean enabled) {
+        this.hookingEvents = enabled;
     }
 
     @Override

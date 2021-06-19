@@ -23,8 +23,8 @@ dependencies {
     api("org.spongepowered:spongeapi:7.1.0") {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
-    implementation(enforcedPlatform("org.apache.logging.log4j:log4j-bom:2.8.1") {
-        because("Sponge 8 provides Log4J at 2.8.1")
+    implementation(platform("org.apache.logging.log4j:log4j-bom:2.14.1") {
+        because("Sponge 8 (will?) provides Log4J at 2.14.1")
     })
     api("org.apache.logging.log4j:log4j-api")
     api("org.bstats:bstats-sponge:1.7")

@@ -179,7 +179,7 @@ public class SpongeWorldEdit {
 
     @Listener
     public void serverStarted(GameStartedServerEvent event) {
-        WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
+        WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent(platform));
 
         loadAdapter();
     }

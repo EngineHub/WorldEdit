@@ -33,6 +33,8 @@ import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
 import com.sk89q.worldedit.event.platform.Interaction;
 import com.sk89q.worldedit.event.platform.PlatformInitializeEvent;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
+import com.sk89q.worldedit.event.platform.PlatformUnreadyEvent;
+import com.sk89q.worldedit.event.platform.PlatformsRegisteredEvent;
 import com.sk89q.worldedit.event.platform.PlayerInputEvent;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.session.request.Request;
@@ -137,7 +139,7 @@ public class PlatformManager {
             while (it.hasNext()) {
                 Entry<Capability, Platform> entry = it.next();
                 if (entry.getValue().equals(platform)) {
-                    entry.getKey().unload(this, entry.getValue());
+                    entry.getKey().uninitialize(this, entry.getValue());
                     it.remove();
                     choosePreferred = true; // Have to choose new favorites
                 }
@@ -152,8 +154,7 @@ public class PlatformManager {
     }
 
     /**
-     * Get the preferred platform for handling a certain capability. Returns
-     * null if none is available.
+     * Get the preferred platform for handling a certain capability. Throws if none are available.
      *
      * @param capability the capability
      * @return the platform
@@ -165,12 +166,11 @@ public class PlatformManager {
             return platform;
         } else {
             if (preferences.isEmpty()) {
-                // Use the first available if preferences have not been decided yet.
-                if (platforms.isEmpty()) {
-                    // No platforms registered, this is being called too early!
-                    throw new NoCapablePlatformException("No platforms have been registered yet! Please wait until WorldEdit is initialized.");
-                }
-                return platforms.get(0);
+                // Not all platforms registered, this is being called too early!
+                throw new NoCapablePlatformException(
+                    "Not all platforms have been registered yet!"
+                        + " Please wait until WorldEdit is initialized."
+                );
             }
             throw new NoCapablePlatformException("No platform was found supporting " + capability.name());
         }
@@ -183,8 +183,15 @@ public class PlatformManager {
         for (Capability capability : Capability.values()) {
             Platform preferred = findMostPreferred(capability);
             if (preferred != null) {
-                preferences.put(capability, preferred);
-                capability.initialize(this, preferred);
+                Platform oldPreferred = preferences.put(capability, preferred);
+                // only (re)initialize if it changed
+                if (preferred != oldPreferred) {
+                    // uninitialize if needed
+                    if (oldPreferred != null) {
+                        capability.uninitialize(this, oldPreferred);
+                    }
+                    capability.initialize(this, preferred);
+                }
             }
         }
 
@@ -295,12 +302,40 @@ public class PlatformManager {
         return queryCapability(Capability.WORLD_EDITING).getSupportedSideEffects();
     }
 
+    /**
+     * You shouldn't have been calling this anyways, but this is now deprecated. Either don't
+     * fire this event at all, or fire the new event via the event bus if you're a platform.
+     */
+    @Deprecated
+    public void handlePlatformReady(@SuppressWarnings("unused") PlatformReadyEvent event) {
+        handlePlatformsRegistered(new PlatformsRegisteredEvent());
+    }
+
+    /**
+     * Internal, do not call.
+     */
     @Subscribe
-    public void handlePlatformReady(PlatformReadyEvent event) {
+    public void handlePlatformsRegistered(PlatformsRegisteredEvent event) {
         choosePreferred();
         if (initialized.compareAndSet(false, true)) {
             worldEdit.getEventBus().post(new PlatformInitializeEvent());
         }
+    }
+
+    /**
+     * Internal, do not call.
+     */
+    @Subscribe
+    public void handleNewPlatformReady(PlatformReadyEvent event) {
+        preferences.forEach((cap, platform) -> cap.ready(this, platform));
+    }
+
+    /**
+     * Internal, do not call.
+     */
+    @Subscribe
+    public void handleNewPlatformUnready(PlatformUnreadyEvent event) {
+        preferences.forEach((cap, platform) -> cap.unready(this, platform));
     }
 
     @Subscribe

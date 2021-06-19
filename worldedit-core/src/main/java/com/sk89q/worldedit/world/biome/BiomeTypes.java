@@ -48,6 +48,7 @@ public final class BiomeTypes {
     @Nullable public static final BiomeType DESERT = get("minecraft:desert");
     @Nullable public static final BiomeType DESERT_HILLS = get("minecraft:desert_hills");
     @Nullable public static final BiomeType DESERT_LAKES = get("minecraft:desert_lakes");
+    @Nullable public static final BiomeType DRIPSTONE_CAVES = get("minecraft:dripstone_caves");
     @Nullable public static final BiomeType END_BARRENS = get("minecraft:end_barrens");
     @Nullable public static final BiomeType END_HIGHLANDS = get("minecraft:end_highlands");
     @Nullable public static final BiomeType END_MIDLANDS = get("minecraft:end_midlands");
@@ -66,6 +67,7 @@ public final class BiomeTypes {
     @Nullable public static final BiomeType JUNGLE_EDGE = get("minecraft:jungle_edge");
     @Nullable public static final BiomeType JUNGLE_HILLS = get("minecraft:jungle_hills");
     @Nullable public static final BiomeType LUKEWARM_OCEAN = get("minecraft:lukewarm_ocean");
+    @Nullable public static final BiomeType LUSH_CAVES = get("minecraft:lush_caves");
     @Nullable public static final BiomeType MODIFIED_BADLANDS_PLATEAU = get("minecraft:modified_badlands_plateau");
     @Nullable public static final BiomeType MODIFIED_GRAVELLY_MOUNTAINS = get("minecraft:modified_gravelly_mountains");
     @Nullable public static final BiomeType MODIFIED_JUNGLE = get("minecraft:modified_jungle");

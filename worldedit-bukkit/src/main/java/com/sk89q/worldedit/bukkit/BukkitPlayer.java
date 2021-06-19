@@ -233,7 +233,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
 
     @Override
     public void sendAnnouncements() {
-        if (WorldEditPlugin.getInstance().getBukkitImplAdapter() == null) {
+        if (WorldEditPlugin.getInstance().getLifecycledBukkitImplAdapter() == null) {
             printError(TranslatableComponent.of("worldedit.version.bukkit.unsupported-adapter",
                     TextComponent.of("https://enginehub.org/worldedit/#downloads", TextColor.AQUA)
                         .clickEvent(ClickEvent.openUrl("https://enginehub.org/worldedit/#downloads"))));

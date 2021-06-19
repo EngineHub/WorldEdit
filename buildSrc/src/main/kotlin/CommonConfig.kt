@@ -34,7 +34,7 @@ fun Project.applyCommonConfiguration() {
 
     plugins.withId("java") {
         the<JavaPluginExtension>().toolchain {
-            languageVersion.set(JavaLanguageVersion.of(8))
+            languageVersion.set(JavaLanguageVersion.of(16))
         }
     }
 
@@ -46,15 +46,15 @@ fun Project.applyCommonConfiguration() {
                     continue
                 }
                 add(conf.name, "com.google.guava:guava") {
-                    version { strictly(Versions.GUAVA) }
+                    version { require(Versions.GUAVA) }
                     because("Mojang provides Guava")
                 }
                 add(conf.name, "com.google.code.gson:gson") {
-                    version { strictly(Versions.GSON) }
+                    version { require(Versions.GSON) }
                     because("Mojang provides Gson")
                 }
                 add(conf.name, "it.unimi.dsi:fastutil") {
-                    version { strictly(Versions.FAST_UTIL) }
+                    version { require(Versions.FAST_UTIL) }
                     because("Mojang provides FastUtil")
                 }
             }

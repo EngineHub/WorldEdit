@@ -19,18 +19,25 @@
 
 package com.sk89q.worldedit.math;
 
-import com.sk89q.worldedit.util.test.VariedVectors;
+import com.sk89q.worldedit.util.test.VariedVectorGenerator;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("A 3D block vector")
 public class BlockVector3Test {
 
-    @VariedVectors.Test(capToVanilla = true, divisionsXZ = 25, divisionsY = 25)
+    @Test
     @DisplayName("survives a round-trip through long-packing")
-    void longPackingRoundTrip(BlockVector3 vec) {
-        assertEquals(vec, BlockVector3.fromLongPackedForm(vec.toLongPackedForm()));
+    void longPackingRoundTrip() {
+        new VariedVectorGenerator(true, 25, 25).makeVectorsStream()
+            .forEach(vec ->
+                assertEquals(
+                    vec,
+                    BlockVector3.fromLongPackedForm(vec.toLongPackedForm())
+                )
+            );
     }
 
 }

@@ -26,10 +26,6 @@ import com.sk89q.worldedit.fabric.internal.NBTConverter;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
-import com.sk89q.worldedit.registry.state.BooleanProperty;
-import com.sk89q.worldedit.registry.state.DirectionalProperty;
-import com.sk89q.worldedit.registry.state.EnumProperty;
-import com.sk89q.worldedit.registry.state.IntegerProperty;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
@@ -46,8 +42,7 @@ import com.sk89q.worldedit.world.item.ItemTypes;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.property.DirectionProperty;
@@ -62,22 +57,11 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class FabricAdapter {
-
-    private static @Nullable MinecraftServer server;
-
-    private static MinecraftServer requireServer() {
-        return Objects.requireNonNull(server, "No server injected");
-    }
-
-    static void setServer(@Nullable MinecraftServer server) {
-        FabricAdapter.server = server;
-    }
 
     private FabricAdapter() {
     }
@@ -87,14 +71,15 @@ public final class FabricAdapter {
     }
 
     public static Biome adapt(BiomeType biomeType) {
-        return requireServer()
+        return FabricWorldEdit.LIFECYCLED_SERVER.valueOrThrow()
             .getRegistryManager()
             .get(Registry.BIOME_KEY)
             .get(new Identifier(biomeType.getId()));
     }
 
     public static BiomeType adapt(Biome biome) {
-        Identifier id = requireServer().getRegistryManager().get(Registry.BIOME_KEY).getId(biome);
+        Identifier id = FabricWorldEdit.LIFECYCLED_SERVER.valueOrThrow().getRegistryManager()
+            .get(Registry.BIOME_KEY).getId(biome);
         Objects.requireNonNull(id, "biome is not registered");
         return BiomeTypes.get(id.toString());
     }
@@ -206,7 +191,7 @@ public final class FabricAdapter {
     }
 
     public static ItemStack adapt(BaseItemStack baseItemStack) {
-        net.minecraft.nbt.CompoundTag fabricCompound = null;
+        net.minecraft.nbt.NbtCompound fabricCompound = null;
         if (baseItemStack.getNbt() != null) {
             fabricCompound = NBTConverter.toNative(baseItemStack.getNbt());
         }
@@ -216,18 +201,18 @@ public final class FabricAdapter {
     }
 
     public static BaseItemStack adapt(ItemStack itemStack) {
-        CompoundTag tag = itemStack.toTag(new CompoundTag());
+        net.minecraft.nbt.NbtCompound tag = itemStack.writeNbt(new net.minecraft.nbt.NbtCompound());
         if (tag.isEmpty()) {
             tag = null;
         } else {
-            final Tag tagTag = tag.get("tag");
-            if (tagTag instanceof CompoundTag) {
-                tag = ((CompoundTag) tagTag);
+            final NbtElement tagTag = tag.get("tag");
+            if (tagTag instanceof net.minecraft.nbt.NbtCompound) {
+                tag = ((net.minecraft.nbt.NbtCompound) tagTag);
             } else {
                 tag = null;
             }
         }
-        CompoundTag finalTag = tag;
+        net.minecraft.nbt.NbtCompound finalTag = tag;
         return new BaseItemStack(
             adapt(itemStack.getItem()),
             finalTag == null ? null : LazyReference.from(() -> NBTConverter.fromNative(finalTag)),

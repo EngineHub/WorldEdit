@@ -22,7 +22,10 @@ package com.sk89q.worldedit.fabric;
 import com.mojang.brigadier.CommandDispatcher;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
+import com.sk89q.worldedit.event.platform.PlatformUnreadyEvent;
+import com.sk89q.worldedit.event.platform.PlatformsRegisteredEvent;
 import com.sk89q.worldedit.event.platform.SessionIdleEvent;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
@@ -31,6 +34,8 @@ import com.sk89q.worldedit.fabric.net.handler.WECUIPacketHandler;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.lifecycle.Lifecycled;
+import com.sk89q.worldedit.util.lifecycle.SimpleLifecycled;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -65,15 +70,20 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.Logger;
+import org.enginehub.piston.Command;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.fabric.FabricAdapter.adaptPlayer;
 import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAME;
+import static java.util.stream.Collectors.toList;
 
 /**
  * The Fabric implementation of WorldEdit.
@@ -83,6 +93,15 @@ public class FabricWorldEdit implements ModInitializer {
     private static final Logger LOGGER = LogManagerCompat.getLogger();
     public static final String MOD_ID = "worldedit";
     public static final String CUI_PLUGIN_CHANNEL = "cui";
+
+    public static final Lifecycled<MinecraftServer> LIFECYCLED_SERVER;
+
+    static {
+        SimpleLifecycled<MinecraftServer> lifecycledServer = SimpleLifecycled.invalid();
+        ServerLifecycleEvents.SERVER_STARTED.register(lifecycledServer::newValue);
+        ServerLifecycleEvents.SERVER_STOPPING.register(__ -> lifecycledServer.invalidate());
+        LIFECYCLED_SERVER = lifecycledServer;
+    }
 
     private FabricPermissionsProvider provider;
 
@@ -113,6 +132,12 @@ public class FabricWorldEdit implements ModInitializer {
                 throw new UncheckedIOException(e);
             }
         }
+        this.platform = new FabricPlatform(this);
+
+        WorldEdit.getInstance().getPlatformManager().register(platform);
+
+        config = new FabricConfiguration(this);
+        this.provider = getInitialPermissionsProvider();
 
         WECUIPacketHandler.init();
 
@@ -129,29 +154,25 @@ public class FabricWorldEdit implements ModInitializer {
     }
 
     private void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
+        WorldEdit.getInstance().getEventBus().post(new PlatformsRegisteredEvent());
         PlatformManager manager = WorldEdit.getInstance().getPlatformManager();
-        if (manager.getPlatforms().isEmpty()) {
-            // We'll register as part of our platform initialization later.
-            return;
-        }
-
-        // This is a re-register (due to /reload), we must add our commands now
-
         Platform commandsPlatform = manager.queryCapability(Capability.USER_COMMANDS);
         if (commandsPlatform != platform || !platform.isHookingEvents()) {
-            // We're not in control of commands/events -- do not re-register.
+            // We're not in control of commands/events -- do not register.
             return;
         }
-        platform.setNativeDispatcher(dispatcher);
-        platform.registerCommands(manager.getPlatformCommandManager().getCommandManager());
-    }
 
-    private void setupPlatform(MinecraftServer server) {
-        this.platform = new FabricPlatform(this, server);
-
-        WorldEdit.getInstance().getPlatformManager().register(platform);
-
-        this.provider = getInitialPermissionsProvider();
+        List<Command> commands = manager.getPlatformCommandManager().getCommandManager()
+            .getAllCommands().collect(toList());
+        for (Command command : commands) {
+            CommandWrapper.register(dispatcher, command);
+            Set<String> perms = command.getCondition().as(PermissionCondition.class)
+                .map(PermissionCondition::getPermissions)
+                .orElseGet(Collections::emptySet);
+            if (!perms.isEmpty()) {
+                perms.forEach(getPermissionsProvider()::registerPermission);
+            }
+        }
     }
 
     private FabricPermissionsProvider getInitialPermissionsProvider() {
@@ -211,22 +232,16 @@ public class FabricWorldEdit implements ModInitializer {
     }
 
     private void onStartServer(MinecraftServer minecraftServer) {
-        FabricAdapter.setServer(minecraftServer);
-        setupPlatform(minecraftServer);
         setupRegistries(minecraftServer);
 
-        config = new FabricConfiguration(this);
         config.load();
-        WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
-        minecraftServer.reloadResources(
-            minecraftServer.getDataPackManager().getEnabledNames()
-        );
+        WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent(platform));
     }
 
     private void onStopServer(MinecraftServer minecraftServer) {
         WorldEdit worldEdit = WorldEdit.getInstance();
         worldEdit.getSessionManager().unload();
-        worldEdit.getPlatformManager().unregister(platform);
+        WorldEdit.getInstance().getEventBus().post(new PlatformUnreadyEvent(platform));
     }
 
     private boolean shouldSkip() {

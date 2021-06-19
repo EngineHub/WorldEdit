@@ -27,8 +27,8 @@ configurations.all {
 
 dependencies {
     "api"(project(":worldedit-core"))
-    "implementation"(enforcedPlatform("org.apache.logging.log4j:log4j-bom:2.11.2") {
-        because("Forge provides Log4J at 2.11.2 (Mojang provides 2.8.1, but Forge bumps)")
+    "implementation"(platform("org.apache.logging.log4j:log4j-bom:2.14.1") {
+        because("Mojang provides Log4J at 2.14.1")
     })
 
     "minecraft"("net.minecraftforge:forge:$minecraftVersion-$forgeVersion")
@@ -36,8 +36,8 @@ dependencies {
 
 configure<UserDevExtension> {
     mappings(mapOf(
-            "channel" to "snapshot",
-            "version" to "20200514-$mappingsMinecraftVersion"
+        "channel" to "snapshot",
+        "version" to "20200514-$mappingsMinecraftVersion"
     ))
 
     accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
@@ -45,8 +45,8 @@ configure<UserDevExtension> {
     runs {
         val runConfig = Action<RunConfig> {
             properties(mapOf(
-                    "forge.logging.markers" to "SCAN,REGISTRIES,REGISTRYDUMP",
-                    "forge.logging.console.level" to "debug"
+                "forge.logging.markers" to "SCAN,REGISTRIES,REGISTRYDUMP",
+                "forge.logging.console.level" to "debug"
             ))
             workingDirectory = project.file("run").canonicalPath
             source(sourceSets["main"])
@@ -60,19 +60,79 @@ configure<UserDevExtension> {
 configure<BasePluginConvention> {
     archivesBaseName = "$archivesBaseName-mc$minecraftVersion"
 }
+
+val javaComponent = components["java"] as AdhocComponentWithVariants
+javaComponent.withVariantsFromConfiguration(configurations["apiElements"]) {
+    skip()
+}
+
+javaComponent.withVariantsFromConfiguration(configurations["runtimeElements"]) {
+    skip()
+}
+tasks.register<Jar>("deobfJar") {
+    from(sourceSets["main"].output)
+    archiveClassifier.set("dev")
+}
+
+val reobfApiElements = configurations.register("reobfApiElements") {
+    isVisible = false
+    description = "Re-obfuscated API elements for libs"
+    isCanBeResolved = false
+    isCanBeConsumed = true
+    attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage.JAVA_API))
+        attribute(Category.CATEGORY_ATTRIBUTE, project.objects.named(Category.LIBRARY))
+        attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling.EXTERNAL))
+        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements.JAR))
+        attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 8)
+    }
+    outgoing.artifact(tasks.named("jar")) {
+        builtBy(project.provider { tasks.named("reobfJar") })
+    }
+    extendsFrom(configurations["api"])
+}
+
+javaComponent.addVariantsFromConfiguration(reobfApiElements.get()) {
+    mapToMavenScope("compile")
+}
+
+val reobfRuntimeElements = configurations.register("reobfRuntimeElements") {
+    isVisible = false
+    description = "Re-obfuscated runtime elements for libs"
+    isCanBeResolved = false
+    isCanBeConsumed = true
+    attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage.JAVA_RUNTIME))
+        attribute(Category.CATEGORY_ATTRIBUTE, project.objects.named(Category.LIBRARY))
+        attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling.EXTERNAL))
+        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements.JAR))
+        attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 8)
+    }
+    outgoing.artifact(tasks.named("jar")) {
+        builtBy(project.provider { tasks.named("reobfJar") })
+    }
+    extendsFrom(configurations["reobfApiElements"])
+    extendsFrom(configurations["runtimeClasspath"].copy { d -> d.group != "net.minecraftforge" })
+}
+
+javaComponent.addVariantsFromConfiguration(reobfRuntimeElements.get()) {
+    mapToMavenScope("runtime")
+}
+
 configure<PublishingExtension> {
     publications.named<MavenPublication>("maven") {
         artifactId = the<BasePluginConvention>().archivesBaseName
+        from(components["java"])
     }
 }
 
 tasks.named<Copy>("processResources") {
     // this will ensure that this task is redone when the versions change.
     val properties = mapOf(
-            "version" to project.ext["internalVersion"],
-            "forgeVersion" to forgeVersion,
-            "minecraftVersion" to minecraftVersion,
-            "nextMajorMinecraftVersion" to nextMajorMinecraftVersion
+        "version" to project.ext["internalVersion"],
+        "forgeVersion" to forgeVersion,
+        "minecraftVersion" to minecraftVersion,
+        "nextMajorMinecraftVersion" to nextMajorMinecraftVersion
     )
     properties.forEach { (key, value) ->
         inputs.property(key, value)
@@ -105,29 +165,4 @@ afterEvaluate {
     reobf.maybeCreate("shadowJar").run {
         mappings = tasks.getByName<GenerateSRG>("createMcpToSrg").output
     }
-}
-
-tasks.register<Jar>("deobfJar") {
-    from(sourceSets["main"].output)
-    archiveClassifier.set("dev")
-}
-
-val deobfElements = configurations.register("deobfElements") {
-    isVisible = false
-    description = "De-obfuscated elements for libs"
-    isCanBeResolved = false
-    isCanBeConsumed = true
-    attributes {
-        attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage.JAVA_API))
-        attribute(Category.CATEGORY_ATTRIBUTE, project.objects.named(Category.LIBRARY))
-        attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling.EXTERNAL))
-        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements.JAR))
-        attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 8)
-    }
-    outgoing.artifact(tasks.named("deobfJar"))
-}
-
-val javaComponent = components["java"] as AdhocComponentWithVariants
-javaComponent.addVariantsFromConfiguration(deobfElements.get()) {
-    mapToMavenScope("runtime")
 }

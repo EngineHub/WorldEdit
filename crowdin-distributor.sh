@@ -2,7 +2,7 @@
 set -e
 
 # For snapshots, please specify the full version (with date and time)
-cdist_version="0.1.0-20201128.225038-7"
+cdist_version="0.1.0-20210612.072458-9"
 cdist_path_version="$cdist_version"
 
 if [ -n "${cdist_version#*-}" ]; then
@@ -20,5 +20,5 @@ export CROWDIN_DISTRIBUTOR_MODULE="worldedit-lang"
 ## Full path to the source file, will be uploaded to crowdin, must already have uploaded at least once (will not create a new file)
 export CROWDIN_DISTRIBUTOR_SOURCE_FILE="./worldedit-core/src/main/resources/lang/strings.json"
 # Artifactory & Build Number is set by CI
-export CROWDIN_DISTRIBUTOR_OPTS="--enable-preview"
+export CROWDIN_DISTRIBUTOR_OPTS=""
 "./build/crowdin-distributor-$cdist_path_version/bin/crowdin-distributor"

@@ -33,6 +33,8 @@ import com.sk89q.worldedit.bukkit.adapter.BukkitImplLoader;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
+import com.sk89q.worldedit.event.platform.PlatformUnreadyEvent;
+import com.sk89q.worldedit.event.platform.PlatformsRegisteredEvent;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -43,6 +45,8 @@ import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.util.lifecycle.Lifecycled;
+import com.sk89q.worldedit.util.lifecycle.SimpleLifecycled;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
@@ -87,7 +91,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
-import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAME;
@@ -115,8 +118,9 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     private static WorldEditPlugin INSTANCE;
     private static final int BSTATS_PLUGIN_ID = 3328;
 
-    private BukkitImplAdapter bukkitAdapter;
-    private BukkitServerInterface server;
+    private final SimpleLifecycled<BukkitImplAdapter> adapter =
+        SimpleLifecycled.invalid();
+    private BukkitServerInterface platform;
     private BukkitConfiguration config;
 
     @Override
@@ -129,8 +133,12 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         WorldEdit worldEdit = WorldEdit.getInstance();
 
         // Setup platform
-        server = new BukkitServerInterface(this, getServer());
-        worldEdit.getPlatformManager().register(server);
+        platform = new BukkitServerInterface(this, getServer());
+        worldEdit.getPlatformManager().register(platform);
+
+        createDefaultConfiguration("config.yml"); // Create the default configuration file
+
+        config = new BukkitConfiguration(new YAMLProcessor(new File(getDataFolder(), "config.yml"), true), this);
 
         Path delChunks = Paths.get(getDataFolder().getPath(), DELCHUNKS_FILE_NAME);
         if (Files.exists(delChunks)) {
@@ -148,6 +156,8 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         // WorldEdit's classes
         ClassSourceValidator verifier = new ClassSourceValidator(this);
         verifier.reportMismatches(ImmutableList.of(World.class, CommandManager.class, EditSession.class, Actor.class));
+
+        WorldEdit.getInstance().getEventBus().post(new PlatformsRegisteredEvent());
 
         PermissionsResolverManager.initialize(this); // Setup permission resolver
 
@@ -184,14 +194,16 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
     private void setupPreWorldData() {
         loadAdapter();
-        loadConfig();
+        config.load();
         WorldEdit.getInstance().loadMappings();
     }
 
     private void setupWorldData() {
-        setupTags(); // datapacks aren't loaded until just before the world is, and bukkit has no event for this
+        // datapacks aren't loaded until just before the world is, and bukkit has no event for this
         // so the earliest we can do this is in WorldInit
-        WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
+        setupTags();
+
+        WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent(platform));
     }
 
     @SuppressWarnings({ "deprecation", "unchecked" })
@@ -257,13 +269,6 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         }
     }
 
-    private void loadConfig() {
-        createDefaultConfiguration("config.yml"); // Create the default configuration file
-
-        config = new BukkitConfiguration(new YAMLProcessor(new File(getDataFolder(), "config.yml"), true), this);
-        config.load();
-    }
-
     private void loadAdapter() {
         WorldEdit worldEdit = WorldEdit.getInstance();
 
@@ -282,8 +287,9 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             LOGGER.warn("Failed to search " + getFile() + " for Bukkit adapters", e);
         }
         try {
-            bukkitAdapter = adapterLoader.loadAdapter();
+            BukkitImplAdapter bukkitAdapter = adapterLoader.loadAdapter();
             LOGGER.info("Using " + bukkitAdapter.getClass().getCanonicalName() + " as the Bukkit adapter");
+            this.adapter.newValue(bukkitAdapter);
         } catch (AdapterLoadException e) {
             Platform platform = worldEdit.getPlatformManager().queryCapability(Capability.WORLD_EDITING);
             if (platform instanceof BukkitServerInterface) {
@@ -293,6 +299,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
                     + "but it seems that you have another implementation of WorldEdit installed (" + platform.getPlatformName() + ") "
                     + "that handles the world editing.");
             }
+            this.adapter.invalidate();
         }
     }
 
@@ -303,12 +310,13 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     public void onDisable() {
         WorldEdit worldEdit = WorldEdit.getInstance();
         worldEdit.getSessionManager().unload();
-        worldEdit.getPlatformManager().unregister(server);
+        if (platform != null) {
+            worldEdit.getEventBus().post(new PlatformUnreadyEvent(platform));
+            worldEdit.getPlatformManager().unregister(platform);
+            platform.unregisterCommands();
+        }
         if (config != null) {
             config.unload();
-        }
-        if (server != null) {
-            server.unregisterCommands();
         }
         this.getServer().getScheduler().cancelTasks(this);
     }
@@ -471,7 +479,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     }
 
     BukkitServerInterface getInternalPlatform() {
-        return server;
+        return platform;
     }
 
     /**
@@ -498,9 +506,12 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
      *
      * @return the adapter
      */
-    @Nullable
+    Lifecycled<BukkitImplAdapter> getLifecycledBukkitImplAdapter() {
+        return adapter;
+    }
+
     BukkitImplAdapter getBukkitImplAdapter() {
-        return bukkitAdapter;
+        return adapter.value().orElse(null);
     }
 
     private class WorldInitListener implements Listener {
@@ -533,7 +544,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
                 return;
             }
             String label = buffer.substring(1, firstSpace);
-            Plugin owner = server.getDynamicCommands().getCommandOwner(label);
+            Plugin owner = platform.getDynamicCommands().getCommandOwner(label);
             if (owner != WorldEditPlugin.this) {
                 return;
             }

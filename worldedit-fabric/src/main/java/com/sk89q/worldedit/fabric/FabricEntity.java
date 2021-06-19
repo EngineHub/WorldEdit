@@ -29,7 +29,7 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.entity.EntityTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -52,8 +52,8 @@ class FabricEntity implements Entity {
         net.minecraft.entity.Entity entity = entityRef.get();
         if (entity != null) {
             Identifier id = Registry.ENTITY_TYPE.getId(entity.getType());
-            CompoundTag tag = new CompoundTag();
-            entity.toTag(tag);
+            NbtCompound tag = new NbtCompound();
+            entity.writeNbt(tag);
             return new BaseEntity(EntityTypes.get(id.toString()), LazyReference.from(() -> NBTConverter.fromNative(tag)));
         } else {
             return null;
@@ -65,8 +65,8 @@ class FabricEntity implements Entity {
         net.minecraft.entity.Entity entity = entityRef.get();
         if (entity != null) {
             Vector3 position = Vector3.at(entity.getX(), entity.getY(), entity.getZ());
-            float yaw = entity.yaw;
-            float pitch = entity.pitch;
+            float yaw = entity.getYaw();
+            float pitch = entity.getPitch();
 
             return new Location(FabricAdapter.adapt(entity.world), position, yaw, pitch);
         } else {
@@ -94,7 +94,7 @@ class FabricEntity implements Entity {
     public boolean remove() {
         net.minecraft.entity.Entity entity = entityRef.get();
         if (entity != null) {
-            entity.remove();
+            entity.remove(net.minecraft.entity.Entity.RemovalReason.KILLED);
         }
         return true;
     }

@@ -138,14 +138,28 @@ public interface Platform extends Keyed {
     /**
      * Register the commands contained within the given command manager.
      *
+     * <p>
+     *     This method should be ignored if the platform offers a command registration event.
+     * </p>
+     *
      * @param commandManager the command manager
      */
     void registerCommands(CommandManager commandManager);
 
     /**
      * Register game hooks.
+     *
+     * @deprecated Call {@link #setGameHooksEnabled(boolean)} with {@code true} instead
      */
-    void registerGameHooks();
+    @Deprecated
+    default void registerGameHooks() {
+        setGameHooksEnabled(true);
+    }
+
+    /**
+     * Set if the game hooks are enabled for this platform.
+     */
+    void setGameHooksEnabled(boolean enabled);
 
     /**
      * Get the configuration from this platform.
