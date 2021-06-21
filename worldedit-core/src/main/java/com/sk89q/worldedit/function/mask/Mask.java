@@ -30,8 +30,7 @@ import javax.annotation.Nullable;
 public interface Mask {
 
     /**
-     * Returns true if the criteria is met and
-     * placement is allowed for the block.
+     * Returns true if the criteria is met.
      *
      * @param vector the vector to test
      * @return true if the criteria is met
