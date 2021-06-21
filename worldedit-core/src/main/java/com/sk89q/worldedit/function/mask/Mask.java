@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 /**
  * Tests whether a given vector meets a criteria.
  */
+@FunctionalInterface
 public interface Mask {
 
     /**
@@ -42,6 +43,8 @@ public interface Mask {
      * @return a 2D mask version or {@code null} if this mask can't be 2D
      */
     @Nullable
-    Mask2D toMask2D();
+    default Mask2D toMask2D() {
+        return null;
+    }
 
 }

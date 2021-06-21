@@ -51,10 +51,4 @@ public class BoundedHeightMask extends AbstractMask {
         return vector.getY() >= minY && vector.getY() <= maxY;
     }
 
-    @Nullable
-    @Override
-    public Mask2D toMask2D() {
-        return null;
-    }
-
 }

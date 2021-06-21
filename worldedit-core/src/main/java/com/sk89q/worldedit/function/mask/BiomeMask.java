@@ -96,10 +96,4 @@ public class BiomeMask extends AbstractMask {
         return biomes.contains(biome);
     }
 
-    @Nullable
-    @Override
-    public Mask2D toMask2D() {
-        return null;
-    }
-
 }
