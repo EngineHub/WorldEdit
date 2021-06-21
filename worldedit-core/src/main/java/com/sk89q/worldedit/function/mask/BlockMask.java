@@ -105,10 +105,4 @@ public class BlockMask extends AbstractExtentMask {
         return false;
     }
 
-    @Nullable
-    @Override
-    public Mask2D toMask2D() {
-        return null;
-    }
-
 }

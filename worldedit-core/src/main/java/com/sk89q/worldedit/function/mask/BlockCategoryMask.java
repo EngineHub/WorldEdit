@@ -44,10 +44,4 @@ public class BlockCategoryMask extends AbstractExtentMask {
     public boolean test(BlockVector3 vector) {
         return category.contains(getExtent().getBlock(vector));
     }
-
-    @Nullable
-    @Override
-    public Mask2D toMask2D() {
-        return null;
-    }
 }
