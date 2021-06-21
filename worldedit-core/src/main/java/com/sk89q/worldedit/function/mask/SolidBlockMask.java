@@ -38,10 +38,4 @@ public class SolidBlockMask extends AbstractExtentMask {
         return block.getBlockType().getMaterial().isMovementBlocker();
     }
 
-    @Nullable
-    @Override
-    public Mask2D toMask2D() {
-        return null;
-    }
-
 }

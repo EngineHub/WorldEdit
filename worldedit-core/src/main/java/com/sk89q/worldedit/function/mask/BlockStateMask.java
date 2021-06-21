@@ -61,10 +61,4 @@ public class BlockStateMask extends AbstractExtentMask {
         return checkProps.entrySet().stream()
                 .allMatch(entry -> block.getState(entry.getKey()) == entry.getValue());
     }
-
-    @Nullable
-    @Override
-    public Mask2D toMask2D() {
-        return null;
-    }
 }
