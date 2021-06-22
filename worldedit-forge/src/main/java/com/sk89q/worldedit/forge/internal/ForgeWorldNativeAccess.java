@@ -25,6 +25,7 @@ import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
+import com.sk89q.worldedit.world.storage.ChunkStore;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
@@ -105,7 +106,13 @@ public class ForgeWorldNativeAccess implements WorldNativeAccess<Chunk, BlockSta
 
     @Override
     public void notifyBlockUpdate(BlockPos position, BlockState oldState, BlockState newState) {
-        getWorld().notifyBlockUpdate(position, oldState, newState, UPDATE | NOTIFY);
+        Chunk chunk = getWorld().getChunk(
+            position.getX() >> ChunkStore.CHUNK_SHIFTS,
+            position.getZ() >> ChunkStore.CHUNK_SHIFTS
+        );
+        if (chunk.getSections()[position.getY() >> ChunkStore.CHUNK_SHIFTS] != null) {
+            getWorld().notifyBlockUpdate(position, oldState, newState, UPDATE | NOTIFY);
+        }
     }
 
     @Override
@@ -115,7 +122,13 @@ public class ForgeWorldNativeAccess implements WorldNativeAccess<Chunk, BlockSta
 
     @Override
     public void markBlockChanged(BlockPos position) {
-        ((ServerChunkProvider) getWorld().getChunkProvider()).markBlockChanged(position);
+        Chunk chunk = getWorld().getChunk(
+            position.getX() >> ChunkStore.CHUNK_SHIFTS,
+            position.getZ() >> ChunkStore.CHUNK_SHIFTS
+        );
+        if (chunk.getSections()[position.getY() >> ChunkStore.CHUNK_SHIFTS] != null) {
+            ((ServerChunkProvider) getWorld().getChunkProvider()).markBlockChanged(position);
+        }
     }
 
     @Override
