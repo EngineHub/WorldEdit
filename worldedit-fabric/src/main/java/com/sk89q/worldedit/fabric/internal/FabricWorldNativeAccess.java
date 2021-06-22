@@ -116,11 +116,7 @@ public class FabricWorldNativeAccess implements WorldNativeAccess<WorldChunk, Bl
     }
 
     @Override
-    public void notifyBlockUpdate(BlockPos position, BlockState oldState, BlockState newState) {
-        WorldChunk chunk = getWorld().getChunk(
-            position.getX() >> ChunkStore.CHUNK_SHIFTS,
-            position.getY() >> ChunkStore.CHUNK_SHIFTS
-        );
+    public void notifyBlockUpdate(WorldChunk chunk, BlockPos position, BlockState oldState, BlockState newState) {
         if (chunk.getSectionArray()[position.getY() >> ChunkStore.CHUNK_SHIFTS] != null) {
             getWorld().updateListeners(position, oldState, newState, UPDATE | NOTIFY);
         }
@@ -132,11 +128,7 @@ public class FabricWorldNativeAccess implements WorldNativeAccess<WorldChunk, Bl
     }
 
     @Override
-    public void markBlockChanged(BlockPos position) {
-        WorldChunk chunk = getWorld().getChunk(
-            position.getX() >> ChunkStore.CHUNK_SHIFTS,
-            position.getY() >> ChunkStore.CHUNK_SHIFTS
-        );
+    public void markBlockChanged(WorldChunk chunk, BlockPos position) {
         if (chunk.getSectionArray()[position.getY() >> ChunkStore.CHUNK_SHIFTS] != null) {
             ((ServerChunkManager) getWorld().getChunkManager()).markForUpdate(position);
         }

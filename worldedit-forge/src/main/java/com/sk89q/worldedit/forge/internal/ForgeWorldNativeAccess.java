@@ -105,11 +105,7 @@ public class ForgeWorldNativeAccess implements WorldNativeAccess<Chunk, BlockSta
     }
 
     @Override
-    public void notifyBlockUpdate(BlockPos position, BlockState oldState, BlockState newState) {
-        Chunk chunk = getWorld().getChunk(
-            position.getX() >> ChunkStore.CHUNK_SHIFTS,
-            position.getZ() >> ChunkStore.CHUNK_SHIFTS
-        );
+    public void notifyBlockUpdate(Chunk chunk, BlockPos position, BlockState oldState, BlockState newState) {
         if (chunk.getSections()[position.getY() >> ChunkStore.CHUNK_SHIFTS] != null) {
             getWorld().notifyBlockUpdate(position, oldState, newState, UPDATE | NOTIFY);
         }
@@ -121,11 +117,7 @@ public class ForgeWorldNativeAccess implements WorldNativeAccess<Chunk, BlockSta
     }
 
     @Override
-    public void markBlockChanged(BlockPos position) {
-        Chunk chunk = getWorld().getChunk(
-            position.getX() >> ChunkStore.CHUNK_SHIFTS,
-            position.getZ() >> ChunkStore.CHUNK_SHIFTS
-        );
+    public void markBlockChanged(Chunk chunk, BlockPos position) {
         if (chunk.getSections()[position.getY() >> ChunkStore.CHUNK_SHIFTS] != null) {
             ((ServerChunkProvider) getWorld().getChunkProvider()).markBlockChanged(position);
         }
