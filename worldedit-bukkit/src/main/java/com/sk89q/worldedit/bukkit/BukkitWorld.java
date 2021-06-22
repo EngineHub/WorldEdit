@@ -59,8 +59,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -79,8 +77,6 @@ public class BukkitWorld extends AbstractWorld {
 
     private static final boolean HAS_3D_BIOMES;
     private static final boolean HAS_MIN_Y;
-    private static final Method GET_MIN_Y;
-    private int minY;
 
     private static final Map<Integer, Effect> effects = new HashMap<>();
 
@@ -99,15 +95,12 @@ public class BukkitWorld extends AbstractWorld {
             temp = false;
         }
         HAS_3D_BIOMES = temp;
-        Method tempGetMinY;
         try {
-            tempGetMinY = World.class.getMethod("getMinHeight");
+            World.class.getMethod("getMinHeight");
             temp = true;
         } catch (NoSuchMethodException e) {
-            tempGetMinY = null;
             temp = false;
         }
-        GET_MIN_Y = tempGetMinY;
         HAS_MIN_Y = temp;
     }
 
@@ -126,13 +119,6 @@ public class BukkitWorld extends AbstractWorld {
             this.worldNativeAccess = adapter.createWorldNativeAccess(world);
         } else {
             this.worldNativeAccess = null;
-        }
-        if (HAS_MIN_Y) {
-            try {
-                minY = (int) GET_MIN_Y.invoke(world);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                minY = super.getMinY();
-            }
         }
     }
 
@@ -374,11 +360,10 @@ public class BukkitWorld extends AbstractWorld {
 
     @Override
     public int getMinY() {
-        /*if (HAS_MIN_Y) {
+        if (HAS_MIN_Y) {
             return getWorld().getMinHeight();
         }
-        return super.getMinY();*/
-        return minY;
+        return super.getMinY();
     }
 
     @SuppressWarnings("deprecation")
