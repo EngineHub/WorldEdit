@@ -24,6 +24,7 @@ import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
+import com.sk89q.worldedit.world.storage.ChunkStore;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -115,8 +116,10 @@ public class FabricWorldNativeAccess implements WorldNativeAccess<WorldChunk, Bl
     }
 
     @Override
-    public void notifyBlockUpdate(BlockPos position, BlockState oldState, BlockState newState) {
-        getWorld().updateListeners(position, oldState, newState, UPDATE | NOTIFY);
+    public void notifyBlockUpdate(WorldChunk chunk, BlockPos position, BlockState oldState, BlockState newState) {
+        if (chunk.getSectionArray()[position.getY() >> ChunkStore.CHUNK_SHIFTS] != null) {
+            getWorld().updateListeners(position, oldState, newState, UPDATE | NOTIFY);
+        }
     }
 
     @Override
@@ -125,8 +128,10 @@ public class FabricWorldNativeAccess implements WorldNativeAccess<WorldChunk, Bl
     }
 
     @Override
-    public void markBlockChanged(BlockPos position) {
-        ((ServerChunkManager) getWorld().getChunkManager()).markForUpdate(position);
+    public void markBlockChanged(WorldChunk chunk, BlockPos position) {
+        if (chunk.getSectionArray()[position.getY() >> ChunkStore.CHUNK_SHIFTS] != null) {
+            ((ServerChunkManager) getWorld().getChunkManager()).markForUpdate(position);
+        }
     }
 
     @Override
