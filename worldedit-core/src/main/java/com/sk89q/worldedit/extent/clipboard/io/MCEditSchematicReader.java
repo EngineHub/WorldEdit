@@ -225,18 +225,15 @@ public class MCEditSchematicReader extends NBTSchematicReader {
             }
 
             BlockVector3 vec = BlockVector3.at(x, y, z);
-            if (newBlock != null) {
-                if (t != null) {
-                    tileEntityBlocks.put(vec, newBlock.toBaseBlock(
-                        new CompoundTag(t.getValue())
-                    ));
-                } else {
-                    tileEntityBlocks.put(vec, newBlock.toBaseBlock());
-                }
-            } else if (t != null) {
-                tileEntityBlocks.put(vec, block.toBaseBlock(
-                    new CompoundTag(t.getValue())
-                ));
+            // Insert into the map if we have changed the block or have a tag
+            BlockState blockToInsert = newBlock != null
+                ? newBlock
+                : (t != null ? block : null);
+            if (blockToInsert != null) {
+                BaseBlock baseBlock = t != null
+                    ? blockToInsert.toBaseBlock(new CompoundTag(t.getValue()))
+                    : blockToInsert.toBaseBlock();
+                tileEntityBlocks.put(vec, baseBlock);
             }
         }
 
