@@ -19,18 +19,23 @@
 
 package com.sk89q.worldedit.cli;
 
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.cli.data.FileRegistries;
 import com.sk89q.worldedit.cli.schematic.ClipboardWorld;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
+import com.sk89q.worldedit.event.platform.PlatformsRegisteredEvent;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.extension.platform.PlatformCommandManager;
+import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
+import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
@@ -87,8 +92,27 @@ public class CLIWorldEdit {
     private void setupPlatform() {
         WorldEdit.getInstance().getPlatformManager().register(platform);
 
+        registerCommands();
+
+        config = new CLIConfiguration(this);
+
+        // There's no other platforms, so fire this immediately
+        WorldEdit.getInstance().getEventBus().post(new PlatformsRegisteredEvent());
+
         this.fileRegistries = new FileRegistries(this);
         this.fileRegistries.loadDataFiles();
+    }
+
+    private void registerCommands() {
+        PlatformCommandManager pcm = WorldEdit.getInstance().getPlatformManager()
+            .getPlatformCommandManager();
+        pcm.registerSubCommands(
+            "cli",
+            ImmutableList.of(),
+            "CLI-specific commands",
+            CLIExtraCommandsRegistration.builder(),
+            new CLIExtraCommands()
+        );
     }
 
     public void setupRegistries() {
@@ -172,7 +196,6 @@ public class CLIWorldEdit {
         setupRegistries();
         WorldEdit.getInstance().loadMappings();
 
-        config = new CLIConfiguration(this);
         config.load();
 
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent(platform));
@@ -235,8 +258,15 @@ public class CLIWorldEdit {
 
     public void run(InputStream inputStream) {
         try (Scanner scanner = new Scanner(inputStream)) {
-            while (scanner.hasNextLine()) {
+            while (true) {
+                System.err.print("> ");
+                if (!scanner.hasNextLine()) {
+                    break;
+                }
                 String line = scanner.nextLine();
+                if (line.isEmpty()) {
+                    continue;
+                }
                 if (line.equals("stop")) {
                     commandSender.printInfo(TranslatableComponent.of("worldedit.cli.stopping"));
                     break;
@@ -280,31 +310,40 @@ public class CLIWorldEdit {
             if (file == null) {
                 throw new IllegalArgumentException("A file must be provided!");
             }
+            LOGGER.info(() -> "Loading '" + file + "'...");
             if (file.getName().endsWith("level.dat")) {
                 throw new IllegalArgumentException("level.dat file support is unfinished.");
             } else {
                 ClipboardFormat format = ClipboardFormats.findByFile(file);
                 if (format != null) {
-                    ClipboardReader dataVersionReader = format
-                            .getReader(Files.newInputStream(file.toPath(), StandardOpenOption.READ));
-                    int dataVersion = dataVersionReader.getDataVersion()
-                            .orElseThrow(() -> new IllegalArgumentException("Failed to obtain data version from schematic."));
-                    dataVersionReader.close();
+                    int dataVersion;
+                    if (format != BuiltInClipboardFormat.MCEDIT_SCHEMATIC) {
+                        try (ClipboardReader dataVersionReader = format.getReader(
+                            Files.newInputStream(file.toPath(), StandardOpenOption.READ)
+                        )) {
+                            dataVersion = dataVersionReader.getDataVersion()
+                                .orElseThrow(() -> new IllegalArgumentException("Failed to obtain data version from schematic."));
+                        }
+                    } else {
+                        dataVersion = Constants.DATA_VERSION_MC_1_13_2;
+                    }
                     app.platform.setDataVersion(dataVersion);
                     app.onStarted();
+                    ClipboardWorld world;
                     try (ClipboardReader clipboardReader = format.getReader(Files.newInputStream(file.toPath(), StandardOpenOption.READ))) {
-                        ClipboardWorld world = new ClipboardWorld(
+                        world = new ClipboardWorld(
                                 file,
                                 clipboardReader.read(),
                                 file.getName()
                         );
-                        app.platform.addWorld(world);
-                        WorldEdit.getInstance().getSessionManager().get(app.commandSender).setWorldOverride(world);
                     }
+                    app.platform.addWorld(world);
+                    WorldEdit.getInstance().getSessionManager().get(app.commandSender).setWorldOverride(world);
                 } else {
                     throw new IllegalArgumentException("Unknown file provided!");
                 }
             }
+            LOGGER.info(() -> "Loaded '" + file + "'");
 
             String scriptFile = cmd.getOptionValue('s');
             if (scriptFile != null) {
