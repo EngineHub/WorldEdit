@@ -277,7 +277,7 @@ public final class PlatformCommandManager {
      * Internal use only.
      */
     public <CI> void registerSubCommands(String name, List<String> aliases, String desc,
-                                          CommandRegistration<CI> registration, CI instance) {
+                                         CommandRegistration<CI> registration, CI instance) {
         registerSubCommands(name, aliases, desc, registration, instance, m -> {
         });
     }
