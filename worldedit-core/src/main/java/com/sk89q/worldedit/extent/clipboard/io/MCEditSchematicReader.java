@@ -248,7 +248,10 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                     int index = y * width * length + z * width + x;
                     BlockVector3 pt = BlockVector3.at(x, y, z);
                     BaseBlock state = Optional.ofNullable(tileEntityBlocks.get(pt))
-                        .orElseGet(() -> getBlockState(blocks[index], blockData[index]).toBaseBlock());
+                        .orElseGet(() -> {
+                            BlockState blockState = getBlockState(blocks[index], blockData[index]);
+                            return blockState == null ? null : blockState.toBaseBlock();
+                        });
 
                     try {
                         if (state != null) {
