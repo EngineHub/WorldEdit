@@ -1,3 +1,12 @@
+7.2.6
+- Return false instead of erroring when trying to remove player entities via the API
+- Fix selections at 0,0,0 or radius of 0 with cyl/ellipse selection modes
+- Improve plugin lifecycle for stability
+- Add support for 1.17 & 1.17.1
+- Skip notifying chunk sections if they don't exist
+- Optimise legacy schematic loading
+- Add CLI-specific commands, //cli selectworld and //cli await
+
 7.2.5
 - Allow /toggleplace to work on any Locatable Actor, e.g. Command Blocks
 - Change legacy.json oak stair shape to straight
