@@ -323,7 +323,12 @@ public class GeneralCommands {
         } else {
             session.setUseServerCUI(true);
             session.updateServerCUI(player);
-            player.printInfo(TranslatableComponent.of("worldedit.drawsel.enabled"));
+
+            int dataVersion = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS).getDataVersion();
+            // 1.16 increased maxSize to 48.
+            int maxSize = dataVersion >= 2566 ? 48 : 32;
+
+            player.printInfo(TranslatableComponent.of("worldedit.drawsel.enabled", TextComponent.of(maxSize)));
         }
     }
 
