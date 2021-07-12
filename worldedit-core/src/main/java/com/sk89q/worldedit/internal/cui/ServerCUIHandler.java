@@ -28,6 +28,7 @@ import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.RegionSelector;
@@ -112,8 +113,14 @@ public class ServerCUIHandler {
             return null;
         }
 
-        if (width > 32 || length > 32 || height > 32) {
-            // Structure blocks have a limit of 32x32x32
+        int dataVersion = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS).getDataVersion();
+
+        // 1.16 increased maxSize to 48.
+        int maxSize = dataVersion >= 2566 ? 48 : 32;
+        int maxDistance = 32;
+
+        if (width > maxSize || length > maxSize || height > maxSize) {
+            // Structure blocks have a limit of maxSize^3
             return null;
         }
 
@@ -124,7 +131,10 @@ public class ServerCUIHandler {
         double xz = Math.cos(Math.toRadians(rotY));
         int x = (int) (location.getX() - (-xz * Math.sin(Math.toRadians(rotX))) * 12);
         int z = (int) (location.getZ() - (xz * Math.cos(Math.toRadians(rotX))) * 12);
-        int y = Math.max(0, Math.min(Math.min(255, posY + 32), posY + 3));
+        int y = Math.max(
+            player.getWorld().getMinY(),
+            Math.min(Math.min(player.getWorld().getMaxY(), posY + maxDistance), posY + 3)
+        );
 
         Map<String, Tag> structureTag = new HashMap<>();
 
@@ -132,7 +142,7 @@ public class ServerCUIHandler {
         posY -= y;
         posZ -= z;
 
-        if (Math.abs(posX) > 32 || Math.abs(posY) > 32 || Math.abs(posZ) > 32) {
+        if (Math.abs(posX) > maxDistance || Math.abs(posY) > maxDistance || Math.abs(posZ) > maxDistance) {
             // Structure blocks have a limit
             return null;
         }
