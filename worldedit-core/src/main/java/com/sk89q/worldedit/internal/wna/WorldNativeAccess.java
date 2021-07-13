@@ -142,11 +142,11 @@ public interface WorldNativeAccess<NC, NBS, NP> {
 
     boolean updateTileEntity(NP position, CompoundBinaryTag tag);
 
-    void notifyBlockUpdate(NP position, NBS oldState, NBS newState);
+    void notifyBlockUpdate(NC chunk, NP position, NBS oldState, NBS newState);
 
     boolean isChunkTicking(NC chunk);
 
-    void markBlockChanged(NP position);
+    void markBlockChanged(NC chunk, NP position);
 
     void notifyNeighbors(NP pos, NBS oldState, NBS newState);
 
@@ -170,10 +170,10 @@ public interface WorldNativeAccess<NC, NBS, NP> {
         // Remove redundant branches
         if (isChunkTicking(chunk)) {
             if (sideEffectSet.shouldApply(SideEffect.ENTITY_AI)) {
-                notifyBlockUpdate(pos, oldState, newState);
+                notifyBlockUpdate(chunk, pos, oldState, newState);
             } else if (sideEffectSet.shouldApply(SideEffect.NETWORK)) {
                 // If we want to skip entity AI, just mark the block for sending
-                markBlockChanged(pos);
+                markBlockChanged(chunk, pos);
             }
         }
 

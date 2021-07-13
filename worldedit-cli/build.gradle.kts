@@ -9,6 +9,9 @@ applyShadowConfiguration()
 addJarManifest(WorldEditKind.Standalone("com.sk89q.worldedit.cli.CLIWorldEdit"))
 
 dependencies {
+    "compileOnly"(project(":worldedit-libs:core:ap"))
+    "annotationProcessor"(project(":worldedit-libs:core:ap"))
+    "annotationProcessor"("com.google.guava:guava:${Versions.GUAVA}")
     "api"(project(":worldedit-core"))
     "implementation"(platform("org.apache.logging.log4j:log4j-bom:2.14.1") {
         because("We control Log4J on this platform")

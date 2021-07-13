@@ -48,7 +48,9 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.collection.BlockMap;
 import com.sk89q.worldedit.world.DataFixer;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.entity.EntityType;
 import com.sk89q.worldedit.world.entity.EntityTypes;
@@ -63,6 +65,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -185,8 +188,7 @@ public class MCEditSchematicReader extends NBTSchematicReader {
         // Need to pull out tile entities
         final ListTag tileEntityTag = getTag(schematic, "TileEntities", ListTag.class);
         List<Tag> tileEntities = tileEntityTag == null ? new ArrayList<>() : tileEntityTag.getValue();
-        Map<BlockVector3, Map<String, Tag>> tileEntitiesMap = new HashMap<>();
-        Map<BlockVector3, BlockState> blockStates = new HashMap<>();
+        BlockMap<BaseBlock> tileEntityBlocks = BlockMap.createForBaseBlock();
 
         for (Tag tag : tileEntities) {
             if (!(tag instanceof CompoundTag)) {
@@ -224,10 +226,16 @@ public class MCEditSchematicReader extends NBTSchematicReader {
             }
 
             BlockVector3 vec = BlockVector3.at(x, y, z);
-            if (t != null) {
-                tileEntitiesMap.put(vec, t.getValue());
+            // Insert into the map if we have changed the block or have a tag
+            BlockState blockToInsert = newBlock != null
+                ? newBlock
+                : (t != null ? block : null);
+            if (blockToInsert != null) {
+                BaseBlock baseBlock = t != null
+                    ? blockToInsert.toBaseBlock(new CompoundTag(t.getValue()))
+                    : blockToInsert.toBaseBlock();
+                tileEntityBlocks.put(vec, baseBlock);
             }
-            blockStates.put(vec, newBlock);
         }
 
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
@@ -240,15 +248,15 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                 for (int z = 0; z < length; ++z) {
                     int index = y * width * length + z * width + x;
                     BlockVector3 pt = BlockVector3.at(x, y, z);
-                    BlockState state = blockStates.computeIfAbsent(pt, p -> getBlockState(blocks[index], blockData[index]));
+                    BaseBlock state = Optional.ofNullable(tileEntityBlocks.get(pt))
+                        .orElseGet(() -> {
+                            BlockState blockState = getBlockState(blocks[index], blockData[index]);
+                            return blockState == null ? null : blockState.toBaseBlock();
+                        });
 
                     try {
                         if (state != null) {
-                            if (tileEntitiesMap.containsKey(pt)) {
-                                clipboard.setBlock(region.getMinimumPoint().add(pt), state.toBaseBlock(new CompoundTag(tileEntitiesMap.get(pt))));
-                            } else {
-                                clipboard.setBlock(region.getMinimumPoint().add(pt), state);
-                            }
+                            clipboard.setBlock(region.getMinimumPoint().add(pt), state);
                         } else {
                             short block = blocks[index];
                             byte data = blockData[index];

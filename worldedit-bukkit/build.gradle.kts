@@ -26,12 +26,16 @@ val localImplementation = configurations.create("localImplementation") {
 configurations["compileOnly"].extendsFrom(localImplementation)
 configurations["testImplementation"].extendsFrom(localImplementation)
 
+configurations.all {
+    attributes.attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 16)
+}
+
 dependencies {
     "api"(project(":worldedit-core"))
     "api"(project(":worldedit-libs:bukkit"))
     // Technically this is api, but everyone should already have some form of the bukkit API
     // Avoid pulling in another one, especially one so outdated.
-    "localImplementation"("org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT") {
+    "localImplementation"("org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT") {
         exclude("junit", "junit")
     }
 
@@ -41,7 +45,7 @@ dependencies {
     "localImplementation"("org.apache.logging.log4j:log4j-api")
 
     "compileOnly"("org.jetbrains:annotations:20.1.0")
-    "compileOnly"("com.destroystokyo.paper:paper-api:1.16.1-R0.1-SNAPSHOT") {
+    "compileOnly"("io.papermc.paper:paper-api:1.17-R0.1-SNAPSHOT") {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
     "implementation"("io.papermc:paperlib:1.0.6")
