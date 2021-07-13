@@ -326,7 +326,12 @@ public class GeneralCommands {
             session.updateServerCUI(player);
 
             int maxSize = ServerCUIHandler.getMaxServerCuiSize();
-            player.printInfo(TranslatableComponent.of("worldedit.drawsel.enabled", TextComponent.of(maxSize)));
+            player.printInfo(TranslatableComponent.of(
+                "worldedit.drawsel.enabled",
+                TextComponent.of(maxSize),
+                TextComponent.of(maxSize),
+                TextComponent.of(maxSize)
+            ));
         }
     }
 
