@@ -46,7 +46,16 @@ import javax.annotation.Nullable;
  */
 public class ServerCUIHandler {
 
+    private final static int MAX_DISTANCE = 32;
+
     private ServerCUIHandler() {
+    }
+
+    public static int getMaxServerCuiSize() {
+        int dataVersion = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS).getDataVersion();
+
+        // 1.16 increased maxSize to 48.
+        return dataVersion >= 2566 ? 48 : 32;
     }
 
     /**
@@ -113,11 +122,7 @@ public class ServerCUIHandler {
             return null;
         }
 
-        int dataVersion = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS).getDataVersion();
-
-        // 1.16 increased maxSize to 48.
-        int maxSize = dataVersion >= 2566 ? 48 : 32;
-        int maxDistance = 32;
+        int maxSize = getMaxServerCuiSize();
 
         if (width > maxSize || length > maxSize || height > maxSize) {
             // Structure blocks have a limit of maxSize^3
@@ -133,7 +138,7 @@ public class ServerCUIHandler {
         int z = (int) (location.getZ() - (xz * Math.cos(Math.toRadians(rotX))) * 12);
         int y = Math.max(
             player.getWorld().getMinY(),
-            Math.min(Math.min(player.getWorld().getMaxY(), posY + maxDistance), posY + 3)
+            Math.min(Math.min(player.getWorld().getMaxY(), posY + MAX_DISTANCE), posY + 3)
         );
 
         Map<String, Tag> structureTag = new HashMap<>();
@@ -142,7 +147,7 @@ public class ServerCUIHandler {
         posY -= y;
         posZ -= z;
 
-        if (Math.abs(posX) > maxDistance || Math.abs(posY) > maxDistance || Math.abs(posZ) > maxDistance) {
+        if (Math.abs(posX) > MAX_DISTANCE || Math.abs(posY) > MAX_DISTANCE || Math.abs(posZ) > MAX_DISTANCE) {
             // Structure blocks have a limit
             return null;
         }
