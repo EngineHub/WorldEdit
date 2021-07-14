@@ -33,7 +33,7 @@ public class BiomeMath {
     }
 
     /**
-     * Compute the index into the MC biome array.
+     * Compute the index into the MC biome array, for non-extended-height worlds.
      *
      * @param x the block x coordinate
      * @param y the block y coordinate
@@ -43,6 +43,25 @@ public class BiomeMath {
     public static int computeBiomeIndex(int x, int y, int z) {
         int l = (x >> 2) & HORIZONTAL_BIT_MASK;
         int m = MathHelper.clamp(y >> 2, 0, VERTICAL_BIT_MASK);
+        int n = (z >> 2) & HORIZONTAL_BIT_MASK;
+        return m << HORIZONTAL_SECTION_COUNT + HORIZONTAL_SECTION_COUNT
+            | n << HORIZONTAL_SECTION_COUNT
+            | l;
+    }
+
+    /**
+     * Compute the index into the MC biome array, for extended-height worlds.
+     *
+     * @param x the block x coordinate
+     * @param y the block y coordinate
+     * @param z the block z coordinate
+     * @param minY minimum y of the world
+     * @param maxY maximum y of the world
+     * @return the index into the standard MC biome array
+     */
+    public static int computeBiomeIndex(int x, int y, int z, int minY, int maxY) {
+        int l = (x >> 2) & HORIZONTAL_BIT_MASK;
+        int m = MathHelper.clamp((y >> 2) - minY, 0, maxY);
         int n = (z >> 2) & HORIZONTAL_BIT_MASK;
         return m << HORIZONTAL_SECTION_COUNT + HORIZONTAL_SECTION_COUNT
             | n << HORIZONTAL_SECTION_COUNT

@@ -246,7 +246,7 @@ public class ForgeWorld extends AbstractWorld {
 
         IChunk chunk = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4);
         BiomeContainer container = checkNotNull(chunk.getBiomes());
-        int idx = BiomeMath.computeBiomeIndex(position.getX(), position.getY(), position.getZ());
+        int idx = BiomeMath.computeBiomeIndex(position.getX(), position.getY(), position.getZ()); // TODO 1.17 pass min/maxY
         container.biomes[idx] = ForgeAdapter.adapt(biome);
         chunk.setModified(true);
         return true;

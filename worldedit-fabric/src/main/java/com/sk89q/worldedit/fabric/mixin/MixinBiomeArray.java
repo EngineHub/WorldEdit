@@ -34,8 +34,16 @@ public abstract class MixinBiomeArray implements MutableBiomeArray {
     @Shadow
     private Biome[] data;
 
+    @Final
+    @Shadow
+    private int field_28126; // minY
+
+    @Final
+    @Shadow
+    private int field_28127; // maxY
+
     @Override
     public void setBiome(int x, int y, int z, Biome biome) {
-        this.data[BiomeMath.computeBiomeIndex(x, y, z)] = biome;
+        this.data[BiomeMath.computeBiomeIndex(x, y, z, field_28126, field_28127)] = biome;
     }
 }
