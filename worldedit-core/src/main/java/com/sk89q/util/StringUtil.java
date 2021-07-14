@@ -36,7 +36,7 @@ public final class StringUtil {
     /**
      * Trim a string if it is longer than a certain length.
      *
-     * @param str the stirng
+     * @param str the string
      * @param len the length to trim to
      * @return a new string
      */
