@@ -24,14 +24,6 @@ fun Project.applyCommonConfiguration() {
         }
     }
 
-    configurations.findByName("compileClasspath")?.apply {
-        resolutionStrategy.componentSelection {
-            withModule("org.slf4j:slf4j-api") {
-                reject("No SLF4J allowed on compile classpath")
-            }
-        }
-    }
-
     plugins.withId("java") {
         the<JavaPluginExtension>().toolchain {
             languageVersion.set(JavaLanguageVersion.of(16))

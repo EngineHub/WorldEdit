@@ -267,7 +267,7 @@ public class RegionCommands {
     public int faces(Actor actor, EditSession editSession, @Selection Region region,
                      @Arg(desc = "The pattern of blocks to set")
                          Pattern pattern) throws WorldEditException {
-        int affected = editSession.makeCuboidFaces(region, pattern);
+        int affected = editSession.makeFaces(region, pattern);
         actor.printInfo(TranslatableComponent.of("worldedit.faces.changed", TextComponent.of(affected)));
         return affected;
     }
