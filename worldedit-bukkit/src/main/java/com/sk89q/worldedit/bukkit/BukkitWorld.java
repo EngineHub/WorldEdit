@@ -215,7 +215,7 @@ public class BukkitWorld extends AbstractWorld {
             if (adapter != null) {
                 return adapter.regenerate(getWorld(), region, extent, options);
             } else {
-                throw new UnsupportedOperationException("Missing BukkitImplAdapater for this version.");
+                throw new UnsupportedOperationException("Missing BukkitImplAdapter for this version.");
             }
         } catch (Exception e) {
             LOGGER.warn("Regeneration via adapter failed.", e);
