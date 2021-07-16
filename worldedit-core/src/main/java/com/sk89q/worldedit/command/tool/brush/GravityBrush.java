@@ -52,7 +52,7 @@ public class GravityBrush implements Brush {
             for (double z = position.getZ() - size; z <= position.getZ() + size; z++) {
                 /*
                  * Algorithm:
-                 * 1. Find lowest air block in the selection -> $lowestAir = position
+                 * 1. Find the lowest air block in the selection -> $lowestAir = position
                  * 2. Move the first non-air block above it down to $lowestAir
                  * 3. Add 1 to $lowestAir's y-coord.
                  * 4. If more blocks above current position, repeat from 2
