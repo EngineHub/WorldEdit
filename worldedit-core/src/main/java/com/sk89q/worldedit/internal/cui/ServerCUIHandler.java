@@ -46,7 +46,7 @@ import javax.annotation.Nullable;
  */
 public class ServerCUIHandler {
 
-    private final static int MAX_DISTANCE = 32;
+    private static final int MAX_DISTANCE = 32;
 
     private ServerCUIHandler() {
     }
