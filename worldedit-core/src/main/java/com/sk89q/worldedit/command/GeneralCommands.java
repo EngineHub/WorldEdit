@@ -36,6 +36,7 @@ import com.sk89q.worldedit.extension.platform.Locatable;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.internal.command.CommandUtil;
+import com.sk89q.worldedit.internal.cui.ServerCUIHandler;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
@@ -323,7 +324,14 @@ public class GeneralCommands {
         } else {
             session.setUseServerCUI(true);
             session.updateServerCUI(player);
-            player.printInfo(TranslatableComponent.of("worldedit.drawsel.enabled"));
+
+            int maxSize = ServerCUIHandler.getMaxServerCuiSize();
+            player.printInfo(TranslatableComponent.of(
+                "worldedit.drawsel.enabled",
+                TextComponent.of(maxSize),
+                TextComponent.of(maxSize),
+                TextComponent.of(maxSize)
+            ));
         }
     }
 
