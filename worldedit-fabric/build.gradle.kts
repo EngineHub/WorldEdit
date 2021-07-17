@@ -44,6 +44,8 @@ repositories {
     }
 }
 
+configurations.create("proguardOnly")
+
 dependencies {
     "api"(project(":worldedit-core"))
     "implementation"(platform("org.apache.logging.log4j:log4j-bom:2.14.1") {
@@ -108,6 +110,8 @@ dependencies {
     "compileOnly"("net.fabricmc:sponge-mixin:${project.versions.mixin}")
     "annotationProcessor"("net.fabricmc:sponge-mixin:${project.versions.mixin}")
     "annotationProcessor"("net.fabricmc:fabric-loom:${project.versions.loom}")
+
+    "proguardOnly"("org.checkerframework:checker-qual:3.10.0")
 }
 
 configure<BasePluginConvention> {
@@ -144,10 +148,87 @@ tasks.named<ShadowJar>("shadowJar") {
     }
 }
 
+val proguardConfiguration = tasks.register("proguardConfiguration") {
+    val output = project.layout.buildDirectory.file("proguard/config.pro")
+    outputs.file(output)
+    doLast {
+        output.get().asFile.writeText("""
+            -optimizationpasses 3
+            -overloadaggressively
+            -flattenpackagehierarchy worldedit
+
+            -dontwarn java.lang.invoke.MethodHandle
+            -dontwarn javax.inject.**
+
+            -renamesourcefileattribute SourceFile
+            -keepattributes Signature,Exceptions,*Annotation*,
+                            InnerClasses,PermittedSubclasses,EnclosingMethod,
+                            Deprecated,SourceFile,LineNumberTable
+
+            -keep class com.sk89q.worldedit.fabric.FabricWorldEdit { !private *; }
+            -keep class com.sk89q.worldedit.fabric.internal.MixinConfigPlugin { !private *; }
+            -keep class com.sk89q.worldedit.fabric.mixin.** { *; }
+
+            -keep class org.enginehub.piston.converter.Converter { !private *; }
+            -keepclassmembers class org.enginehub.piston.converter.SuccessfulConversion { *** fromSingle(...); }
+            -keepclassmembers class org.enginehub.piston.converter.FailedConversion { *** from(...); }
+
+            -keepclassmembers class * { static ** REGISTRY; }
+
+            -keepclassmembers @org.enginehub.piston.annotation.CommandContainer class * { !private *; }
+            # Don't touch the special annotation hack methods
+            -keepclassmembers class **Registration$* { java.lang.annotation.Annotation *(java.lang.Object); }
+            # Keep event methods, but the names don't matter
+            -keepclassmembers,allowobfuscation class * { @com.sk89q.worldedit.util.eventbus.Subscribe *; }
+            # Allow legacy loading to work
+            -keeppackagenames com.sk89q.worldedit.world.registry
+            -keepclassmembers class com.sk89q.worldedit.world.registry.LegacyMapper${'$'}LegacyDataFile {
+                *;
+            }
+            -keepclassmembers class com.sk89q.worldedit.world.registry.Bundled*Data${'$'}*Entry {
+                *;
+            }
+
+            -keepclassmembers enum * {
+                <fields>;
+                static **[] values();
+                static ** valueOf(java.lang.String);
+            }
+        """.trimIndent())
+    }
+}
+
+val proguardJar = project.layout.buildDirectory.file("proguard-shadow-jar.jar")
+tasks.register<proguard.gradle.ProGuardTask>("proguardShadowJar") {
+    injars(tasks.named("shadowJar"))
+    outjars(proguardJar)
+
+    val javaHome = project.the<JavaToolchainService>().compilerFor(
+        project.the<JavaPluginExtension>().toolchain
+    ).get().metadata.installationPath.asFile
+    for (bootMod in listOf("java.base", "java.desktop", "java.management", "java.logging", "java.scripting")) {
+        libraryjars(
+            mapOf("jarfilter" to "!**.jar", "filter" to "!module-info.class"),
+            "$javaHome/jmods/$bootMod.jmod"
+        )
+    }
+    libraryjars(
+        project.files(
+            configurations["compileClasspath"],
+            configurations["proguardOnly"],
+            project(":worldedit-core").configurations["compileClasspath"]
+        )
+    )
+
+    printmapping(project.layout.buildDirectory.file("obf.map"))
+
+    configuration(proguardConfiguration)
+}
+
 tasks.register<RemapJarTask>("remapShadowJar") {
     val shadowJar = tasks.getByName<ShadowJar>("shadowJar")
-    dependsOn(shadowJar)
-    input.set(shadowJar.archiveFile)
+    dependsOn(tasks.named("proguardShadowJar"))
+    input.set(proguardJar)
     archiveFileName.set(shadowJar.archiveFileName.get().replace(Regex("-dev\\.jar$"), ".jar"))
     addNestedDependencies.set(true)
     remapAccessWidener.set(true)

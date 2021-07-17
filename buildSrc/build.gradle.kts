@@ -48,4 +48,5 @@ dependencies {
     implementation("net.fabricmc:fabric-loom:$loomVersion")
     implementation("net.fabricmc:sponge-mixin:$mixinVersion")
     implementation("org.enginehub.gradle:gradle-codecov-plugin:0.1.0")
+    implementation("com.guardsquare:proguard-gradle:7.1.0")
 }
