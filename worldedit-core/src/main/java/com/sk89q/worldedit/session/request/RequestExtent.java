@@ -59,6 +59,11 @@ public class RequestExtent implements Extent {
     }
 
     @Override
+    public void ensureLoaded(Region region) {
+        getExtent().ensureLoaded(region);
+    }
+
+    @Override
     public List<? extends Entity> getEntities(Region region) {
         return getExtent().getEntities(region);
     }

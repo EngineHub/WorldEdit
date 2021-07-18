@@ -85,6 +85,11 @@ public abstract class AbstractDelegateExtent implements Extent {
     }
 
     @Override
+    public void ensureLoaded(Region region) {
+        extent.ensureLoaded(region);
+    }
+
+    @Override
     public List<? extends Entity> getEntities() {
         return extent.getEntities();
     }

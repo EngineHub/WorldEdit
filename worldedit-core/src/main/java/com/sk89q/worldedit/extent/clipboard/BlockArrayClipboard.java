@@ -99,6 +99,11 @@ public class BlockArrayClipboard implements Clipboard {
     }
 
     @Override
+    public void ensureLoaded(Region region) {
+        // nothing to do here
+    }
+
+    @Override
     public List<? extends Entity> getEntities(Region region) {
         List<Entity> filtered = new ArrayList<>();
         for (Entity entity : entities) {

@@ -62,7 +62,7 @@ public interface Extent extends InputExtent, OutputExtent {
      *
      * <p>If the extent is not wholly loaded (i.e. a world being simulated in the
      * game will not have every chunk loaded), then this list may not be
-     * incomplete.</p>
+     * complete.</p>
      *
      * @param region the region in which entities must be contained
      * @return a list of entities
@@ -70,11 +70,20 @@ public interface Extent extends InputExtent, OutputExtent {
     List<? extends Entity> getEntities(Region region);
 
     /**
+     * Checks all chunks in the provided region and load them if not yet loaded.
+     *
+     * @param region The region to load all chunks in
+     */
+    default void ensureLoaded(Region region) {
+        // no default implementation to ensure legacy compatability
+    }
+
+    /**
      * Get a list of all entities.
      *
      * <p>If the extent is not wholly loaded (i.e. a world being simulated in the
      * game will not have every chunk loaded), then this list may not be
-     * incomplete.</p>
+     * complete.</p>
      *
      * @return a list of entities
      */
