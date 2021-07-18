@@ -37,7 +37,7 @@
     "worldedit.setbiome.warning": "You may have to re-join your game (or close and re-open your world) to see changes.",
 
     "worldedit.drawsel.disabled": "Server CUI disabled.",
-    "worldedit.drawsel.enabled": "Server CUI enabled. This only supports cuboid regions, with a maximum size of 32x32x32.",
+    "worldedit.drawsel.enabled": "Server CUI enabled. This only supports cuboid regions, with a maximum size of {0}x{1}x{2}.",
     "worldedit.drawsel.disabled.already": "Server CUI already disabled.",
     "worldedit.drawsel.enabled.already": "Server CUI already enabled.",
     "worldedit.limit.too-high": "Your maximum allowable limit is {0}.",

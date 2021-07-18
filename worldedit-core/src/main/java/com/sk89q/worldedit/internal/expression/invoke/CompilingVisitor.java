@@ -84,7 +84,7 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
      * General idea is that we don't need to pass around variables, they're all in ExecutionData.
      * We do need to pass that around, so most MethodHandles will be of the type
      * (ExecutionData)Double, with a few as (ExecutionData,Double)Double where it needs an existing
-     * value passed in. EVERY handle returned from an overriden method must be of the first type.
+     * value passed in. EVERY handle returned from an overridden method must be of the first type.
      */
     private final Functions functions;
 
