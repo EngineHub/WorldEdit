@@ -56,7 +56,7 @@ public enum BuiltInClipboardShareDestinations implements ClipboardShareDestinati
 
             PasteMetadata pasteMetadata = new PasteMetadata();
             pasteMetadata.author = metadata.author();
-            pasteMetadata.extension = "schem";
+            pasteMetadata.extension = metadata.format().getPrimaryFileExtension();
             pasteMetadata.name = metadata.name();
             EngineHubPaste pasteService = new EngineHubPaste();
 
@@ -67,7 +67,7 @@ public enum BuiltInClipboardShareDestinations implements ClipboardShareDestinati
 
         @Override
         public ClipboardFormat getDefaultFormat() {
-            return BuiltInClipboardFormat.SPONGE_SCHEMATIC;
+            return BuiltInClipboardFormat.SPONGE_V2_SCHEMATIC;
         }
 
         @Override

@@ -116,7 +116,7 @@ public class SchematicCommands {
 
         File dir = worldEdit.getWorkingDirectoryPath(config.saveDir).toFile();
         File f = worldEdit.getSafeOpenFile(actor, dir, filename,
-                BuiltInClipboardFormat.SPONGE_SCHEMATIC.getPrimaryFileExtension(),
+                BuiltInClipboardFormat.SPONGE_V3_SCHEMATIC.getPrimaryFileExtension(),
                 ClipboardFormats.getFileExtensionArray());
 
         if (!f.exists()) {
