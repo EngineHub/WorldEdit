@@ -41,7 +41,6 @@ import com.sk89q.worldedit.forge.internal.ForgeWorldNativeAccess;
 import com.sk89q.worldedit.forge.internal.NBTConverter;
 import com.sk89q.worldedit.forge.internal.TileEntityUtils;
 import com.sk89q.worldedit.internal.Constants;
-import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.internal.util.BiomeMath;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -62,7 +61,6 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
-import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.inventory.IClearable;
@@ -83,6 +81,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistries;
+import net.minecraft.util.registry.WorldGenSettingsExport;
 import net.minecraft.util.registry.WorldSettingsImport;
 import net.minecraft.world.Dimension;
 import net.minecraft.world.World;
@@ -335,30 +334,14 @@ public class ForgeWorld extends AbstractWorld {
         SaveFormat levelStorage = SaveFormat.func_237269_a_(tempDir);
         try (SaveFormat.LevelSave session = levelStorage.func_237274_c_("WorldEditTempGen")) {
             ServerWorld originalWorld = (ServerWorld) getWorld();
-            long seed = options.getSeed().orElse(originalWorld.getSeed());
             ServerWorldInfo levelProperties =
                 (ServerWorldInfo) originalWorld.getServer().func_240793_aU_();
             DimensionGeneratorSettings originalOpts = levelProperties.field_237343_c_;
 
-            WorldSettingsImport<INBT> nbtRegOps = WorldSettingsImport.func_244335_a(
-                NBTDynamicOps.INSTANCE,
-                originalWorld.getServer().getDataPackRegistries().func_240970_h_(),
-                (DynamicRegistries.Impl) originalWorld.getServer().func_244267_aX()
-            );
-            Codec<DimensionGeneratorSettings> dimCodec = DimensionGeneratorSettings.field_236201_a_;
-            DimensionGeneratorSettings newOpts = dimCodec
-                .encodeStart(nbtRegOps, originalOpts)
-                .flatMap(tag ->
-                    dimCodec.parse(
-                        recursivelySetSeed(new Dynamic<>(nbtRegOps, tag), seed, new HashSet<>())
-                    )
-                )
-                .get().map(
-                    l -> l,
-                    error -> {
-                        throw new IllegalStateException("Unable to map GeneratorOptions: " + error.message());
-                    }
-                );
+            long seed = options.getSeed().orElse(originalWorld.getSeed());
+            DimensionGeneratorSettings newOpts = options.getSeed().isPresent()
+                ? replaceSeed(originalWorld, seed, originalOpts)
+                : originalOpts;
 
             levelProperties.field_237343_c_ = newOpts;
             RegistryKey<World> worldRegKey = originalWorld.func_234923_W_();
@@ -391,6 +374,34 @@ public class ForgeWorld extends AbstractWorld {
         } finally {
             SafeFiles.tryHardToDeleteDir(tempDir);
         }
+    }
+
+    private DimensionGeneratorSettings replaceSeed(ServerWorld originalWorld, long seed, DimensionGeneratorSettings originalOpts) {
+        WorldGenSettingsExport<INBT> nbtReadRegOps = WorldGenSettingsExport.func_240896_a_(
+            NBTDynamicOps.INSTANCE,
+            originalWorld.getServer().func_244267_aX()
+        );
+        WorldSettingsImport<INBT> nbtRegOps = WorldSettingsImport.func_244335_a(
+            NBTDynamicOps.INSTANCE,
+            originalWorld.getServer().getDataPackRegistries().func_240970_h_(),
+            (DynamicRegistries.Impl) originalWorld.getServer().func_244267_aX()
+        );
+        Codec<DimensionGeneratorSettings> dimCodec = DimensionGeneratorSettings.field_236201_a_;
+        DimensionGeneratorSettings newOpts = dimCodec
+            .encodeStart(nbtReadRegOps, originalOpts)
+            .flatMap(tag ->
+                dimCodec.parse(
+                    recursivelySetSeed(new Dynamic<>(nbtRegOps, tag), seed, new HashSet<>())
+                )
+            )
+            .get()
+            .map(
+                l -> l,
+                error -> {
+                    throw new IllegalStateException("Unable to map GeneratorOptions: " + error.message());
+                }
+            );
+        return newOpts;
     }
 
     @SuppressWarnings("unchecked")

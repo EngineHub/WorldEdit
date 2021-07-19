@@ -41,7 +41,6 @@ import com.sk89q.worldedit.fabric.internal.NBTConverter;
 import com.sk89q.worldedit.fabric.mixin.AccessorLevelProperties;
 import com.sk89q.worldedit.fabric.mixin.AccessorServerChunkManager;
 import com.sk89q.worldedit.internal.Constants;
-import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -61,7 +60,6 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
-import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -78,11 +76,11 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.RegistryOps;
+import net.minecraft.util.dynamic.RegistryReadingOps;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
@@ -325,30 +323,14 @@ public class FabricWorld extends AbstractWorld {
         LevelStorage levelStorage = LevelStorage.create(tempDir);
         try (LevelStorage.Session session = levelStorage.createSession("WorldEditTempGen")) {
             ServerWorld originalWorld = (ServerWorld) getWorld();
-            long seed = options.getSeed().orElse(originalWorld.getSeed());
             AccessorLevelProperties levelProperties = (AccessorLevelProperties)
                 originalWorld.getServer().getSaveProperties();
             GeneratorOptions originalOpts = levelProperties.getGeneratorOptions();
 
-            RegistryOps<NbtElement> nbtRegOps = RegistryOps.of(
-                NbtOps.INSTANCE,
-                ((ExtendedMinecraftServer) originalWorld.getServer())
-                    .getServerResourceManager().getResourceManager(),
-                (DynamicRegistryManager.Impl) originalWorld.getServer().getRegistryManager()
-            );
-            GeneratorOptions newOpts = GeneratorOptions.CODEC
-                .encodeStart(nbtRegOps, originalOpts)
-                .flatMap(tag ->
-                    GeneratorOptions.CODEC.parse(
-                        recursivelySetSeed(new Dynamic<>(nbtRegOps, tag), seed, new HashSet<>())
-                    )
-                )
-                .get().map(
-                    l -> l,
-                    error -> {
-                        throw new IllegalStateException("Unable to map GeneratorOptions: " + error.message());
-                    }
-                );
+            long seed = options.getSeed().orElse(originalWorld.getSeed());
+            GeneratorOptions newOpts = options.getSeed().isPresent()
+                ? replaceSeed(originalWorld, seed, originalOpts)
+                : originalOpts;
 
             levelProperties.setGeneratorOptions(newOpts);
             RegistryKey<World> worldRegKey = originalWorld.getRegistryKey();
@@ -380,6 +362,33 @@ public class FabricWorld extends AbstractWorld {
         } finally {
             SafeFiles.tryHardToDeleteDir(tempDir);
         }
+    }
+
+    private GeneratorOptions replaceSeed(ServerWorld originalWorld, long seed, GeneratorOptions originalOpts) {
+        RegistryReadingOps<NbtElement> nbtRegReadOps = RegistryReadingOps.of(
+            NbtOps.INSTANCE,
+            originalWorld.getServer().getRegistryManager()
+        );
+        RegistryOps<NbtElement> nbtRegOps = RegistryOps.method_36574(
+            NbtOps.INSTANCE,
+            ((ExtendedMinecraftServer) originalWorld.getServer())
+                .getServerResourceManager().getResourceManager(),
+            originalWorld.getServer().getRegistryManager()
+        );
+        return GeneratorOptions.CODEC
+            .encodeStart(nbtRegReadOps, originalOpts)
+            .flatMap(tag ->
+                GeneratorOptions.CODEC.parse(
+                    recursivelySetSeed(new Dynamic<>(nbtRegOps, tag), seed, new HashSet<>())
+                )
+            )
+            .get()
+            .map(
+                l -> l,
+                error -> {
+                    throw new IllegalStateException("Unable to map GeneratorOptions: " + error.message());
+                }
+            );
     }
 
     @SuppressWarnings("unchecked")
