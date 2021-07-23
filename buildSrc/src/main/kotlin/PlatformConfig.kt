@@ -80,13 +80,16 @@ fun Project.applyPlatformAndCoreConfiguration() {
         }
     }
 
-    the<JavaPluginExtension>().withJavadocJar()
+    configure<JavaPluginExtension> {
+        disableAutoTargetJvm()
+        withJavadocJar()
+    }
 
     if (name in setOf("worldedit-core", "worldedit-bukkit", "worldedit-fabric")) {
         the<JavaPluginExtension>().withSourcesJar()
     }
 
-    if (name != "worldedit-fabric") {
+    if (name !in setOf("worldedit-fabric", "worldedit-forge")) {
         configurations["compileClasspath"].apply {
             resolutionStrategy.componentSelection {
                 withModule("org.slf4j:slf4j-api") {
