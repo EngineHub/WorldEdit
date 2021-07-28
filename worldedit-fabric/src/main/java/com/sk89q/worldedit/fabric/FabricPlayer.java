@@ -50,6 +50,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
@@ -106,8 +107,16 @@ public class FabricPlayer extends AbstractPlayerActor {
 
     @Override
     public boolean setLocation(Location location) {
-        // TODO
-        return false;
+        ServerWorld level = (ServerWorld) FabricAdapter.adapt((World) location.getExtent());
+        this.player.teleport(
+            level,
+            location.getX(), location.getY(), location.getZ(),
+            location.getYaw(), location.getPitch()
+        );
+        // This check doesn't really ever get to be false in Fabric
+        // Since Fabric API doesn't allow cancelling the teleport.
+        // However, other mods could theoretically mix this in, so allow the detection.
+        return this.player.getServerWorld() == level;
     }
 
     @Override

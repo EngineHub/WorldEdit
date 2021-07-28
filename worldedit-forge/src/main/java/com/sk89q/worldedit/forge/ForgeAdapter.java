@@ -70,6 +70,22 @@ public final class ForgeAdapter {
         return new ForgeWorld(world);
     }
 
+    /**
+     * Create a Forge world from a WorldEdit world.
+     *
+     * @param world the WorldEdit world
+     * @return a Forge world
+     */
+    public static ServerLevel adapt(World world) {
+        checkNotNull(world);
+        if (world instanceof ForgeWorld) {
+            return ((ForgeWorld) world).getWorld();
+        } else {
+            // TODO introduce a better cross-platform world API to match more easily
+            throw new UnsupportedOperationException("Cannot adapt from a " + world.getClass());
+        }
+    }
+
     public static Biome adapt(BiomeType biomeType) {
         return ServerLifecycleHooks.getCurrentServer()
             .registryAccess()

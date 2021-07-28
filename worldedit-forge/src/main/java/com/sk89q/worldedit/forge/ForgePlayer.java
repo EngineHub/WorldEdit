@@ -55,6 +55,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
@@ -109,8 +111,14 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public boolean setLocation(Location location) {
-        // TODO
-        return false;
+        ServerLevel level = ForgeAdapter.adapt((World) location.getExtent());
+        this.player.teleportTo(
+            level,
+            location.getX(), location.getY(), location.getZ(),
+            location.getYaw(), location.getPitch()
+        );
+        // This may be false if the teleport was cancelled by a mod
+        return this.player.getLevel() == level;
     }
 
     @Override
