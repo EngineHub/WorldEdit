@@ -1,6 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.minecraftforge.gradle.common.util.RunConfig
-import net.minecraftforge.gradle.mcp.task.GenerateSRG
 import net.minecraftforge.gradle.userdev.UserDevExtension
 import net.minecraftforge.gradle.userdev.tasks.RenameJarInPlace
 
@@ -12,12 +11,11 @@ plugins {
 applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
 
-val minecraftVersion = "1.16.3"
+val minecraftVersion = "1.17.1"
 val nextMajorMinecraftVersion: String = minecraftVersion.split('.').let { (useless, major) ->
     "$useless.${major.toInt() + 1}"
 }
-val mappingsMinecraftVersion = "1.16"
-val forgeVersion = "34.0.0"
+val forgeVersion = "37.0.12"
 
 configurations.all {
     resolutionStrategy {
@@ -36,8 +34,8 @@ dependencies {
 
 configure<UserDevExtension> {
     mappings(mapOf(
-        "channel" to "snapshot",
-        "version" to "20200514-$mappingsMinecraftVersion"
+        "channel" to "official",
+        "version" to minecraftVersion
     ))
 
     accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
@@ -162,7 +160,5 @@ tasks.named<ShadowJar>("shadowJar") {
 
 afterEvaluate {
     val reobf = extensions.getByName<NamedDomainObjectContainer<RenameJarInPlace>>("reobf")
-    reobf.maybeCreate("shadowJar").run {
-        mappings = tasks.getByName<GenerateSRG>("createMcpToSrg").output
-    }
+    reobf.create("shadowJar")
 }

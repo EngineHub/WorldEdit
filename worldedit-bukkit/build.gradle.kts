@@ -26,10 +26,6 @@ val localImplementation = configurations.create("localImplementation") {
 configurations["compileOnly"].extendsFrom(localImplementation)
 configurations["testImplementation"].extendsFrom(localImplementation)
 
-configurations.all {
-    attributes.attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 16)
-}
-
 dependencies {
     "api"(project(":worldedit-core"))
     "api"(project(":worldedit-libs:bukkit"))

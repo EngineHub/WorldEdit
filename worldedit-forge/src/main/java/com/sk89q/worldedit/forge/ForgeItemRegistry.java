@@ -30,14 +30,14 @@ public class ForgeItemRegistry extends BundledItemRegistry {
     @Override
     public Component getRichName(ItemType itemType) {
         return TranslatableComponent.of(
-            ForgeAdapter.adapt(itemType).getTranslationKey()
+            ForgeAdapter.adapt(itemType).getDescriptionId()
         );
     }
 
     @Override
     public Component getRichName(BaseItemStack itemStack) {
         return TranslatableComponent.of(
-            ForgeAdapter.adapt(itemStack).getTranslationKey()
+            ForgeAdapter.adapt(itemStack).getDescriptionId()
         );
     }
 

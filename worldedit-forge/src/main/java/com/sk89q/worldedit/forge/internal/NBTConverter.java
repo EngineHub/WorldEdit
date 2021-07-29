@@ -33,20 +33,6 @@ import com.sk89q.jnbt.LongTag;
 import com.sk89q.jnbt.ShortTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
-import net.minecraft.nbt.ByteArrayNBT;
-import net.minecraft.nbt.ByteNBT;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.DoubleNBT;
-import net.minecraft.nbt.EndNBT;
-import net.minecraft.nbt.FloatNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.IntArrayNBT;
-import net.minecraft.nbt.IntNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.LongArrayNBT;
-import net.minecraft.nbt.LongNBT;
-import net.minecraft.nbt.ShortNBT;
-import net.minecraft.nbt.StringNBT;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,7 +50,7 @@ public final class NBTConverter {
     private NBTConverter() {
     }
 
-    public static INBT toNative(Tag tag) {
+    public static net.minecraft.nbt.Tag toNative(Tag tag) {
         if (tag instanceof IntArrayTag) {
             return toNative((IntArrayTag) tag);
 
@@ -105,13 +91,13 @@ public final class NBTConverter {
         }
     }
 
-    public static IntArrayNBT toNative(IntArrayTag tag) {
+    public static net.minecraft.nbt.IntArrayTag toNative(IntArrayTag tag) {
         int[] value = tag.getValue();
-        return new IntArrayNBT(Arrays.copyOf(value, value.length));
+        return new net.minecraft.nbt.IntArrayTag(Arrays.copyOf(value, value.length));
     }
 
-    public static ListNBT toNative(ListTag tag) {
-        ListNBT list = new ListNBT();
+    public static net.minecraft.nbt.ListTag toNative(ListTag tag) {
+        net.minecraft.nbt.ListTag list = new net.minecraft.nbt.ListTag();
         for (Tag child : tag.getValue()) {
             if (child instanceof EndTag) {
                 continue;
@@ -121,100 +107,100 @@ public final class NBTConverter {
         return list;
     }
 
-    public static LongNBT toNative(LongTag tag) {
-        return LongNBT.valueOf(tag.getValue());
+    public static net.minecraft.nbt.LongTag toNative(LongTag tag) {
+        return net.minecraft.nbt.LongTag.valueOf(tag.getValue());
     }
 
-    public static LongArrayNBT toNative(LongArrayTag tag) {
-        return new LongArrayNBT(tag.getValue().clone());
+    public static net.minecraft.nbt.LongArrayTag toNative(LongArrayTag tag) {
+        return new net.minecraft.nbt.LongArrayTag(tag.getValue().clone());
     }
 
-    public static StringNBT toNative(StringTag tag) {
-        return StringNBT.valueOf(tag.getValue());
+    public static net.minecraft.nbt.StringTag toNative(StringTag tag) {
+        return net.minecraft.nbt.StringTag.valueOf(tag.getValue());
     }
 
-    public static IntNBT toNative(IntTag tag) {
-        return IntNBT.valueOf(tag.getValue());
+    public static net.minecraft.nbt.IntTag toNative(IntTag tag) {
+        return net.minecraft.nbt.IntTag.valueOf(tag.getValue());
     }
 
-    public static ByteNBT toNative(ByteTag tag) {
-        return ByteNBT.valueOf(tag.getValue());
+    public static net.minecraft.nbt.ByteTag toNative(ByteTag tag) {
+        return net.minecraft.nbt.ByteTag.valueOf(tag.getValue());
     }
 
-    public static ByteArrayNBT toNative(ByteArrayTag tag) {
-        return new ByteArrayNBT(tag.getValue().clone());
+    public static net.minecraft.nbt.ByteArrayTag toNative(ByteArrayTag tag) {
+        return new net.minecraft.nbt.ByteArrayTag(tag.getValue().clone());
     }
 
-    public static CompoundNBT toNative(CompoundTag tag) {
-        CompoundNBT compound = new CompoundNBT();
+    public static net.minecraft.nbt.CompoundTag toNative(CompoundTag tag) {
+        net.minecraft.nbt.CompoundTag compound = new net.minecraft.nbt.CompoundTag();
         for (Entry<String, Tag> child : tag.getValue().entrySet()) {
             compound.put(child.getKey(), toNative(child.getValue()));
         }
         return compound;
     }
 
-    public static FloatNBT toNative(FloatTag tag) {
-        return FloatNBT.valueOf(tag.getValue());
+    public static net.minecraft.nbt.FloatTag toNative(FloatTag tag) {
+        return net.minecraft.nbt.FloatTag.valueOf(tag.getValue());
     }
 
-    public static ShortNBT toNative(ShortTag tag) {
-        return ShortNBT.valueOf(tag.getValue());
+    public static net.minecraft.nbt.ShortTag toNative(ShortTag tag) {
+        return net.minecraft.nbt.ShortTag.valueOf(tag.getValue());
     }
 
-    public static DoubleNBT toNative(DoubleTag tag) {
-        return DoubleNBT.valueOf(tag.getValue());
+    public static net.minecraft.nbt.DoubleTag toNative(DoubleTag tag) {
+        return net.minecraft.nbt.DoubleTag.valueOf(tag.getValue());
     }
 
-    public static Tag fromNative(INBT other) {
-        if (other instanceof IntArrayNBT) {
-            return fromNative((IntArrayNBT) other);
+    public static Tag fromNative(net.minecraft.nbt.Tag other) {
+        if (other instanceof net.minecraft.nbt.IntArrayTag) {
+            return fromNative((net.minecraft.nbt.IntArrayTag) other);
 
-        } else if (other instanceof ListNBT) {
-            return fromNative((ListNBT) other);
+        } else if (other instanceof net.minecraft.nbt.ListTag) {
+            return fromNative((net.minecraft.nbt.ListTag) other);
 
-        } else if (other instanceof EndNBT) {
-            return fromNative((EndNBT) other);
+        } else if (other instanceof net.minecraft.nbt.EndTag) {
+            return fromNative((net.minecraft.nbt.EndTag) other);
 
-        } else if (other instanceof LongNBT) {
-            return fromNative((LongNBT) other);
+        } else if (other instanceof net.minecraft.nbt.LongTag) {
+            return fromNative((net.minecraft.nbt.LongTag) other);
 
-        } else if (other instanceof LongArrayNBT) {
-            return fromNative((LongArrayNBT) other);
+        } else if (other instanceof net.minecraft.nbt.LongArrayTag) {
+            return fromNative((net.minecraft.nbt.LongArrayTag) other);
 
-        } else if (other instanceof StringNBT) {
-            return fromNative((StringNBT) other);
+        } else if (other instanceof net.minecraft.nbt.StringTag) {
+            return fromNative((net.minecraft.nbt.StringTag) other);
 
-        } else if (other instanceof IntNBT) {
-            return fromNative((IntNBT) other);
+        } else if (other instanceof net.minecraft.nbt.IntTag) {
+            return fromNative((net.minecraft.nbt.IntTag) other);
 
-        } else if (other instanceof ByteNBT) {
-            return fromNative((ByteNBT) other);
+        } else if (other instanceof net.minecraft.nbt.ByteTag) {
+            return fromNative((net.minecraft.nbt.ByteTag) other);
 
-        } else if (other instanceof ByteArrayNBT) {
-            return fromNative((ByteArrayNBT) other);
+        } else if (other instanceof net.minecraft.nbt.ByteArrayTag) {
+            return fromNative((net.minecraft.nbt.ByteArrayTag) other);
 
-        } else if (other instanceof CompoundNBT) {
-            return fromNative((CompoundNBT) other);
+        } else if (other instanceof net.minecraft.nbt.CompoundTag) {
+            return fromNative((net.minecraft.nbt.CompoundTag) other);
 
-        } else if (other instanceof FloatNBT) {
-            return fromNative((FloatNBT) other);
+        } else if (other instanceof net.minecraft.nbt.FloatTag) {
+            return fromNative((net.minecraft.nbt.FloatTag) other);
 
-        } else if (other instanceof ShortNBT) {
-            return fromNative((ShortNBT) other);
+        } else if (other instanceof net.minecraft.nbt.ShortTag) {
+            return fromNative((net.minecraft.nbt.ShortTag) other);
 
-        } else if (other instanceof DoubleNBT) {
-            return fromNative((DoubleNBT) other);
+        } else if (other instanceof net.minecraft.nbt.DoubleTag) {
+            return fromNative((net.minecraft.nbt.DoubleTag) other);
         } else {
             throw new IllegalArgumentException("Can't convert other of type " + other.getClass().getCanonicalName());
         }
     }
 
-    public static IntArrayTag fromNative(IntArrayNBT other) {
-        int[] value = other.getIntArray();
+    public static IntArrayTag fromNative(net.minecraft.nbt.IntArrayTag other) {
+        int[] value = other.getAsIntArray();
         return new IntArrayTag(Arrays.copyOf(value, value.length));
     }
 
-    public static ListTag fromNative(ListNBT other) {
+    public static ListTag fromNative(net.minecraft.nbt.ListTag other) {
         other = other.copy();
         List<Tag> list = new ArrayList<>();
         Class<? extends Tag> listClass = StringTag.class;
@@ -227,36 +213,36 @@ public final class NBTConverter {
         return new ListTag(listClass, list);
     }
 
-    public static EndTag fromNative(EndNBT other) {
+    public static EndTag fromNative(net.minecraft.nbt.EndTag other) {
         return new EndTag();
     }
 
-    public static LongTag fromNative(LongNBT other) {
-        return new LongTag(other.getLong());
+    public static LongTag fromNative(net.minecraft.nbt.LongTag other) {
+        return new LongTag(other.getAsLong());
     }
 
-    public static LongArrayTag fromNative(LongArrayNBT other) {
+    public static LongArrayTag fromNative(net.minecraft.nbt.LongArrayTag other) {
         return new LongArrayTag(other.getAsLongArray().clone());
     }
 
-    public static StringTag fromNative(StringNBT other) {
-        return new StringTag(other.getString());
+    public static StringTag fromNative(net.minecraft.nbt.StringTag other) {
+        return new StringTag(other.getAsString());
     }
 
-    public static IntTag fromNative(IntNBT other) {
-        return new IntTag(other.getInt());
+    public static IntTag fromNative(net.minecraft.nbt.IntTag other) {
+        return new IntTag(other.getAsInt());
     }
 
-    public static ByteTag fromNative(ByteNBT other) {
-        return new ByteTag(other.getByte());
+    public static ByteTag fromNative(net.minecraft.nbt.ByteTag other) {
+        return new ByteTag(other.getAsByte());
     }
 
-    public static ByteArrayTag fromNative(ByteArrayNBT other) {
-        return new ByteArrayTag(other.getByteArray().clone());
+    public static ByteArrayTag fromNative(net.minecraft.nbt.ByteArrayTag other) {
+        return new ByteArrayTag(other.getAsByteArray().clone());
     }
 
-    public static CompoundTag fromNative(CompoundNBT other) {
-        Set<String> tags = other.keySet();
+    public static CompoundTag fromNative(net.minecraft.nbt.CompoundTag other) {
+        Set<String> tags = other.getAllKeys();
         Map<String, Tag> map = new HashMap<>();
         for (String tagName : tags) {
             map.put(tagName, fromNative(other.get(tagName)));
@@ -264,16 +250,16 @@ public final class NBTConverter {
         return new CompoundTag(map);
     }
 
-    public static FloatTag fromNative(FloatNBT other) {
-        return new FloatTag(other.getFloat());
+    public static FloatTag fromNative(net.minecraft.nbt.FloatTag other) {
+        return new FloatTag(other.getAsFloat());
     }
 
-    public static ShortTag fromNative(ShortNBT other) {
-        return new ShortTag(other.getShort());
+    public static ShortTag fromNative(net.minecraft.nbt.ShortTag other) {
+        return new ShortTag(other.getAsShort());
     }
 
-    public static DoubleTag fromNative(DoubleNBT other) {
-        return new DoubleTag(other.getDouble());
+    public static DoubleTag fromNative(net.minecraft.nbt.DoubleTag other) {
+        return new DoubleTag(other.getAsDouble());
     }
 
 }
