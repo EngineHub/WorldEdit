@@ -6,6 +6,11 @@
 - Skip notifying chunk sections if they don't exist
 - Optimise legacy schematic loading
 - Add CLI-specific commands, //cli selectworld and //cli await
+- Fixed //outline for non-cuboid regions
+- Fixed setting biomes below Y 0
+- Support 48x48x48 //drawsel on new versions of Minecraft
+- Fixed the offset mask forcing negation of itself
+- Fixed //regen breaking when some certain mods are in use
 
 7.2.5
 - Allow /toggleplace to work on any Locatable Actor, e.g. Command Blocks
