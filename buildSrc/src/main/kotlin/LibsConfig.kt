@@ -49,6 +49,7 @@ fun Project.applyLibrariesConfiguration() {
             exclude(dependency("com.google.code.gson:gson"))
             exclude(dependency("org.checkerframework:checker-qual"))
             exclude(dependency("org.apache.logging.log4j:log4j-api"))
+            exclude(dependency("com.google.code.findbugs:jsr305"))
         }
 
         relocations.forEach { (from, to) ->
