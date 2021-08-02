@@ -24,13 +24,15 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Describes the current request using a {@link ThreadLocal}.
+ * Describes the current request using a Thread.name() -> request map(avoid server freeze on scale of 50+ players).
  */
 public final class Request {
 
-    private static final ThreadLocal<Request> threadLocal = ThreadLocal.withInitial(Request::new);
+    private static Map<String, Request> reqMap = new HashMap<>();
 
     private @Nullable World world;
     private @Nullable LocalSession session;
@@ -100,7 +102,9 @@ public final class Request {
      * @return the current request
      */
     public static Request request() {
-        return threadLocal.get();
+        return reqMap.computeIfAbsent(Thread.currentThread().getName(), (ignored) ->{
+            return new Request();
+        });
     }
 
     /**
@@ -108,7 +112,7 @@ public final class Request {
      */
     public static void reset() {
         request().invalidate();
-        threadLocal.remove();
+        reqMap.remove(Thread.currentThread().getName());
     }
 
     /**
