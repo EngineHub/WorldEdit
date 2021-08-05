@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.util.eventbus;
 
 import java.lang.invoke.MethodHandle;
+import java.util.Objects;
 
 public class MethodHandleEventHandler extends EventHandler {
 
@@ -50,11 +51,24 @@ public class MethodHandleEventHandler extends EventHandler {
 
     @Override
     public int hashCode() {
-        return 0;
+        return Objects.hash(methodHandle, object);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return false;
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        MethodHandleEventHandler that = (MethodHandleEventHandler) o;
+
+        if (!methodHandle.equals(that.methodHandle)) {
+            return false;
+        }
+
+        return Objects.equals(object, that.object);
     }
 }
