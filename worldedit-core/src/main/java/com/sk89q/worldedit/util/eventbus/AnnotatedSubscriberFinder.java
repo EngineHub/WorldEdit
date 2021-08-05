@@ -22,6 +22,9 @@ package com.sk89q.worldedit.util.eventbus;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 
 /**
@@ -59,7 +62,15 @@ class AnnotatedSubscriberFinder implements SubscriberFindingStrategy {
                         );
                     }
                     Class<?> eventType = parameterTypes[0];
-                    EventHandler handler = new MethodEventHandler(annotation.priority(), listener, method);
+                    MethodHandle handle;
+                    try {
+                        handle = MethodHandles.lookup().unreflect(method);
+                        handle = handle.asType(handle.type().generic().changeReturnType(void.class));
+                    } catch (IllegalAccessException e) {
+                        throw new IllegalArgumentException("Method " + method + " failed to unreflect.", e);
+                    }
+
+                    EventHandler handler = new MethodHandleEventHandler(annotation.priority(), listener, handle);
                     methodsInListener.put(eventType, handler);
                 }
             }
