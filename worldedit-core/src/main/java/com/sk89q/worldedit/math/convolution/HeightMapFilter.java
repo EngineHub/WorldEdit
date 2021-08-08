@@ -138,7 +138,7 @@ public class HeightMapFilter {
     }
 
     /**
-     * Calculate the height based on the existing data and the kernel data
+     * Calculate the height based on the existing data and the kernel data.
      *
      * @param inData the existing height data
      * @param width the width
