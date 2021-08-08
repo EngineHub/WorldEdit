@@ -305,13 +305,9 @@ public class RegionCommands {
                           @Arg(desc = "The mask of blocks to use as the height map", def = "")
                               Mask mask,
                           @ArgFlag(name = 'l', desc = "Set the amount of snow blocks under the snow", def = "1")
-                              int snowBlockCount,
-                          @ArgFlag(name = 'r', desc = "Set the radius for the GaussianKernel", def = "20")
-                              int radius,
-                          @ArgFlag(name = 's', desc = "Set the sigma variable for the GaussianKernel", def = "1.0")
-                              float sigma) throws WorldEditException {
+                              int snowBlockCount) throws WorldEditException {
         SnowHeightMap heightMap = new SnowHeightMap(editSession, region, mask);
-        HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(radius, sigma));
+        HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));
         float[] changed = heightMap.applyFilter(filter, iterations);
         int affected = heightMap.applyChanges(changed, snowBlockCount);
         actor.printInfo(TranslatableComponent.of("worldedit.snowsmooth.changed", TextComponent.of(affected)));
