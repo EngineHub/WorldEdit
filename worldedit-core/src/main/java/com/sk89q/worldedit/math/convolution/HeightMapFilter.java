@@ -96,45 +96,18 @@ public class HeightMapFilter {
     public int[] filter(int[] inData, int width, int height, float offset) {
         checkNotNull(inData);
 
+        float[] inDataFloat = new float[inData.length];
+        for (int i = 0; i < inData.length; i++) {
+            inDataFloat[i] = inData[i];
+        }
+
         int index = 0;
         float[] matrix = kernel.getKernelData(null);
         int[] outData = new int[inData.length];
 
-        int kh = kernel.getHeight();
-        int kw = kernel.getWidth();
-        int kox = kernel.getXOrigin();
-        int koy = kernel.getYOrigin();
-
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
-                float z = 0;
-
-                for (int ky = 0; ky < kh; ++ky) {
-                    int offsetY = y + ky - koy;
-                    // Clamp coordinates inside data
-                    if (offsetY < 0 || offsetY >= height) {
-                        offsetY = y;
-                    }
-
-                    offsetY *= width;
-
-                    int matrixOffset = ky * kw;
-                    for (int kx = 0; kx < kw; ++kx) {
-                        float f = matrix[matrixOffset + kx];
-                        if (f == 0) {
-                            continue;
-                        }
-
-                        int offsetX = x + kx - kox;
-                        // Clamp coordinates inside data
-                        if (offsetX < 0 || offsetX >= width) {
-                            offsetX = x;
-                        }
-
-                        z += f * inData[offsetY + offsetX];
-                    }
-                }
-                outData[index++] = (int) (z + offset);
+                outData[index++] = (int) calculateHeight(inDataFloat, width, height, offset, matrix, y, x);
             }
         }
         return outData;
@@ -156,44 +129,60 @@ public class HeightMapFilter {
         float[] matrix = kernel.getKernelData(null);
         float[] outData = new float[inData.length];
 
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                outData[index++] = calculateHeight(inData, width, height, offset, matrix, y, x);
+            }
+        }
+        return outData;
+    }
+
+    /**
+     * Calculate the height based on the existing data and the kernel data
+     *
+     * @param inData the existing height data
+     * @param width the width
+     * @param height the height
+     * @param offset the offset to add to the height
+     * @param matrix the matrix with the kernel's data
+     * @param x the current x coordinate
+     * @param y the current y coordinate
+     * @return the calculated height for that block
+     */
+    private float calculateHeight(float[] inData, int width, int height, float offset, float[] matrix, int x, int y) {
         int kh = kernel.getHeight();
         int kw = kernel.getWidth();
         int kox = kernel.getXOrigin();
         int koy = kernel.getYOrigin();
 
-        for (int y = 0; y < height; ++y) {
-            for (int x = 0; x < width; ++x) {
-                float z = 0;
+        float z = 0;
 
-                for (int ky = 0; ky < kh; ++ky) {
-                    int offsetY = y + ky - koy;
-                    // Clamp coordinates inside data
-                    if (offsetY < 0 || offsetY >= height) {
-                        offsetY = y;
-                    }
+        for (int ky = 0; ky < kh; ++ky) {
+            int offsetY = y + ky - koy;
+            // Clamp coordinates inside data
+            if (offsetY < 0 || offsetY >= height) {
+                offsetY = y;
+            }
 
-                    offsetY *= width;
+            offsetY *= width;
 
-                    int matrixOffset = ky * kw;
-                    for (int kx = 0; kx < kw; ++kx) {
-                        float f = matrix[matrixOffset + kx];
-                        if (f == 0) {
-                            continue;
-                        }
-
-                        int offsetX = x + kx - kox;
-                        // Clamp coordinates inside data
-                        if (offsetX < 0 || offsetX >= width) {
-                            offsetX = x;
-                        }
-
-                        z += f * inData[offsetY + offsetX];
-                    }
+            int matrixOffset = ky * kw;
+            for (int kx = 0; kx < kw; ++kx) {
+                float f = matrix[matrixOffset + kx];
+                if (f == 0) {
+                    continue;
                 }
-                outData[index++] = z + offset;
+
+                int offsetX = x + kx - kox;
+                // Clamp coordinates inside data
+                if (offsetX < 0 || offsetX >= width) {
+                    offsetX = x;
+                }
+
+                z += f * inData[offsetY + offsetX];
             }
         }
-        return outData;
+        return z + offset;
     }
 
 }
