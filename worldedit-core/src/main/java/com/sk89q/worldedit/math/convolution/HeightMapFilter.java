@@ -107,7 +107,7 @@ public class HeightMapFilter {
 
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
-                outData[index++] = (int) calculateHeight(inDataFloat, width, height, offset, matrix, y, x);
+                outData[index++] = (int) calculateHeight(inDataFloat, width, height, offset, matrix, x, y);
             }
         }
         return outData;
@@ -131,7 +131,7 @@ public class HeightMapFilter {
 
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
-                outData[index++] = calculateHeight(inData, width, height, offset, matrix, y, x);
+                outData[index++] = calculateHeight(inData, width, height, offset, matrix, x, y);
             }
         }
         return outData;
