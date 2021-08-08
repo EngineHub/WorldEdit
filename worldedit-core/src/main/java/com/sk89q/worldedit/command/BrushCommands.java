@@ -268,7 +268,9 @@ public class BrushCommands {
                 "worldedit.brush.smooth.equip",
                 TextComponent.of((int) radius),
                 TextComponent.of(iterations),
-                TextComponent.of(mask == null ? "any block" : "filter")
+                mask == null
+                        ? TranslatableComponent.of("worldedit.brush.smooth.nofilter")
+                        : TranslatableComponent.of("worldedit.brush.smooth.filter")
         ));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
     }
@@ -276,7 +278,7 @@ public class BrushCommands {
     @Command(
         name = "snowsmooth",
         desc = "Choose the snow terrain softener brush",
-        descFooter = "Example: '/brush snowsmooth 5 1 3'"
+        descFooter = "Example: '/brush snowsmooth 5 1 -l 3'"
     )
     @CommandPermissions("worldedit.brush.snowsmooth")
     public void snowSmoothBrush(Player player, LocalSession session,
@@ -284,9 +286,9 @@ public class BrushCommands {
                                     double radius,
                                 @Arg(desc = "The number of iterations to perform", def = "4")
                                     int iterations,
-                                @Arg(desc = "The number of snow blocks under snow", def = "1")
+                                @ArgFlag(name = 'l', desc = "The number of snow blocks under snow", def = "1")
                                     int snowBlockCount,
-                                @Arg(desc = "The mask of blocks to use for the heightmap", def = "")
+                                @ArgFlag(name = 'm', desc = "The mask of blocks to use for the heightmap")
                                     Mask mask) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(radius);
 
@@ -298,7 +300,9 @@ public class BrushCommands {
                 "worldedit.brush.snowsmooth.equip",
                 TextComponent.of((int) radius),
                 TextComponent.of(iterations),
-                TextComponent.of(mask == null ? "any block" : "filter"),
+                mask == null
+                        ? TranslatableComponent.of("worldedit.brush.snowsmooth.nofilter")
+                        : TranslatableComponent.of("worldedit.brush.snowsmooth.filter"),
                 TextComponent.of(snowBlockCount)
         ));
     }

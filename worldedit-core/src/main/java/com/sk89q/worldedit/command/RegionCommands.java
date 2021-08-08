@@ -295,14 +295,14 @@ public class RegionCommands {
     @Command(
         name = "/snowsmooth",
         desc = "Smooth the elevation in the selection with snow layers",
-        descFooter = "Example: '//snowsmooth 1 snow_block,snow' would only smooth snow terrain."
+        descFooter = "Example: '//snowsmooth 1 -m snow_block,snow' would only smooth snow terrain."
     )
     @CommandPermissions("worldedit.region.snowsmooth")
     @Logging(REGION)
     public int snowSmooth(Actor actor, EditSession editSession, @Selection Region region,
                           @Arg(desc = "# of iterations to perform", def = "1")
                               int iterations,
-                          @Arg(desc = "The mask of blocks to use as the height map", def = "")
+                          @ArgFlag(name = 'm', desc = "The mask of blocks to use as the height map")
                               Mask mask,
                           @ArgFlag(name = 'l', desc = "Set the amount of snow blocks under the snow", def = "1")
                               int snowBlockCount) throws WorldEditException {
