@@ -302,10 +302,10 @@ public class RegionCommands {
     public int snowSmooth(Actor actor, EditSession editSession, @Selection Region region,
                           @Arg(desc = "# of iterations to perform", def = "1")
                               int iterations,
-                          @ArgFlag(name = 'm', desc = "The mask of blocks to use as the height map")
-                              Mask mask,
                           @ArgFlag(name = 'l', desc = "Set the amount of snow blocks under the snow", def = "1")
-                              int snowBlockCount) throws WorldEditException {
+                              int snowBlockCount,
+                          @ArgFlag(name = 'm', desc = "The mask of blocks to use as the height map")
+                              Mask mask) throws WorldEditException {
         SnowHeightMap heightMap = new SnowHeightMap(editSession, region, mask);
         HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));
         float[] changed = heightMap.applyFilter(filter, iterations);

@@ -268,9 +268,7 @@ public class BrushCommands {
                 "worldedit.brush.smooth.equip",
                 TextComponent.of((int) radius),
                 TextComponent.of(iterations),
-                mask == null
-                        ? TranslatableComponent.of("worldedit.brush.smooth.nofilter")
-                        : TranslatableComponent.of("worldedit.brush.smooth.filter")
+                TranslatableComponent.of("worldedit.brush.smooth." + (mask == null ? "no" : "") + "filter")
         ));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
     }
@@ -300,9 +298,7 @@ public class BrushCommands {
                 "worldedit.brush.snowsmooth.equip",
                 TextComponent.of((int) radius),
                 TextComponent.of(iterations),
-                mask == null
-                        ? TranslatableComponent.of("worldedit.brush.snowsmooth.nofilter")
-                        : TranslatableComponent.of("worldedit.brush.snowsmooth.filter"),
+                TranslatableComponent.of("worldedit.brush.snowsmooth." + (mask == null ? "no" : "") + "filter"),
                 TextComponent.of(snowBlockCount)
         ));
     }
