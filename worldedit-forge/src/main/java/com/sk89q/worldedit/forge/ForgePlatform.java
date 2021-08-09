@@ -33,16 +33,16 @@ import com.sk89q.worldedit.util.io.ResourceLoader;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.Registries;
-import net.minecraft.command.Commands;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.SharedConstants;
+import net.minecraft.commands.Commands;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.DedicatedServer;
-import net.minecraft.server.management.PlayerList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SharedConstants;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.IServerWorldInfo;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.PlayerList;
+import net.minecraft.world.level.storage.ServerLevelData;
+import net.minecraftforge.fmllegacy.server.ServerLifecycleHooks;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandManager;
 
@@ -90,7 +90,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public int getDataVersion() {
-        return SharedConstants.getVersion().getWorldVersion();
+        return SharedConstants.getCurrentVersion().getWorldVersion();
     }
 
     @Override
@@ -122,9 +122,9 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public List<? extends World> getWorlds() {
-        Iterable<ServerWorld> worlds = server.getWorlds();
+        Iterable<ServerLevel> worlds = server.getAllLevels();
         List<World> ret = new ArrayList<>();
-        for (ServerWorld world : worlds) {
+        for (ServerLevel world : worlds) {
             ret.add(new ForgeWorld(world));
         }
         return ret;
@@ -136,7 +136,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
         if (player instanceof ForgePlayer) {
             return player;
         } else {
-            ServerPlayerEntity entity = server.getPlayerList().getPlayerByUsername(player.getName());
+            ServerPlayer entity = server.getPlayerList().getPlayerByName(player.getName());
             return entity != null ? new ForgePlayer(entity) : null;
         }
     }
@@ -147,8 +147,8 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
         if (world instanceof ForgeWorld) {
             return world;
         } else {
-            for (ServerWorld ws : server.getWorlds()) {
-                if (((IServerWorldInfo) ws.getWorldInfo()).getWorldName().equals(world.getName())) {
+            for (ServerLevel ws : server.getAllLevels()) {
+                if (((ServerLevelData) ws.getLevelData()).getLevelName().equals(world.getName())) {
                     return new ForgeWorld(ws);
                 }
             }
@@ -162,7 +162,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
         if (server == null) {
             return;
         }
-        Commands mcMan = server.getCommandManager();
+        Commands mcMan = server.getCommands();
 
         for (Command command : manager.getAllCommands().collect(toList())) {
             CommandWrapper.register(mcMan.getDispatcher(), command);
@@ -218,11 +218,11 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
     }
 
     private static final Set<SideEffect> SUPPORTED_SIDE_EFFECTS = Sets.immutableEnumSet(
-            SideEffect.VALIDATION,
-            SideEffect.ENTITY_AI,
-            SideEffect.LIGHTING,
-            SideEffect.NEIGHBORS,
-            SideEffect.EVENTS
+        SideEffect.VALIDATION,
+        SideEffect.ENTITY_AI,
+        SideEffect.LIGHTING,
+        SideEffect.NEIGHBORS,
+        SideEffect.EVENTS
     );
 
     @Override
@@ -234,7 +234,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
     public Collection<Actor> getConnectedUsers() {
         List<Actor> users = new ArrayList<>();
         PlayerList scm = server.getPlayerList();
-        for (ServerPlayerEntity entity : scm.getPlayers()) {
+        for (ServerPlayer entity : scm.getPlayers()) {
             if (entity != null) {
                 users.add(new ForgePlayer(entity));
             }

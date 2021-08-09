@@ -34,9 +34,9 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.util.Substring;
-import net.minecraft.command.CommandSource;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import org.enginehub.piston.inject.InjectedValueStore;
 import org.enginehub.piston.inject.Key;
 import org.enginehub.piston.inject.MapBackedValueStore;
@@ -46,18 +46,18 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
-import static net.minecraft.command.Commands.argument;
-import static net.minecraft.command.Commands.literal;
+import static net.minecraft.commands.Commands.argument;
+import static net.minecraft.commands.Commands.literal;
 
 public final class CommandWrapper {
     private CommandWrapper() {
     }
 
-    public static void register(CommandDispatcher<CommandSource> dispatcher, org.enginehub.piston.Command command) {
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, org.enginehub.piston.Command command) {
         ImmutableList.Builder<String> aliases = ImmutableList.builder();
         aliases.add(command.getName()).addAll(command.getAliases());
         for (String alias : aliases.build()) {
-            LiteralArgumentBuilder<CommandSource> base = literal(alias).executes(FAKE_COMMAND)
+            LiteralArgumentBuilder<CommandSourceStack> base = literal(alias).executes(FAKE_COMMAND)
                 .then(argument("args", StringArgumentType.greedyString())
                     .suggests(CommandWrapper::suggest)
                     .executes(FAKE_COMMAND));
@@ -68,30 +68,30 @@ public final class CommandWrapper {
         }
     }
 
-    public static final Command<CommandSource> FAKE_COMMAND = ctx -> {
-        if (ctx.getSource().getWorld().isRemote) {
+    public static final Command<CommandSourceStack> FAKE_COMMAND = ctx -> {
+        if (ctx.getSource().getLevel().isClientSide) {
             return 0;
         }
         return 1;
     };
 
-    private static Predicate<CommandSource> requirementsFor(org.enginehub.piston.Command mapping) {
+    private static Predicate<CommandSourceStack> requirementsFor(org.enginehub.piston.Command mapping) {
         return ctx -> {
             final Entity entity = ctx.getEntity();
-            if (!(entity instanceof ServerPlayerEntity)) {
+            if (!(entity instanceof ServerPlayer)) {
                 return true;
             }
-            final Actor actor = ForgeAdapter.adaptPlayer(((ServerPlayerEntity) entity));
+            final Actor actor = ForgeAdapter.adaptPlayer(((ServerPlayer) entity));
             InjectedValueStore store = MapBackedValueStore.create();
             store.injectValue(Key.of(Actor.class), context -> Optional.of(actor));
             return mapping.getCondition().satisfied(store);
         };
     }
 
-    private static CompletableFuture<Suggestions> suggest(CommandContext<CommandSource> context,
+    private static CompletableFuture<Suggestions> suggest(CommandContext<CommandSourceStack> context,
                                                           SuggestionsBuilder builder) throws CommandSyntaxException {
         CommandSuggestionEvent event = new CommandSuggestionEvent(
-            ForgeAdapter.adaptPlayer(context.getSource().asPlayer()),
+            ForgeAdapter.adaptPlayer(context.getSource().getPlayerOrException()),
             builder.getInput()
         );
         WorldEdit.getInstance().getEventBus().post(event);

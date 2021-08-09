@@ -45,14 +45,17 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.MessageType;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 
 import java.nio.charset.StandardCharsets;
@@ -104,8 +107,16 @@ public class FabricPlayer extends AbstractPlayerActor {
 
     @Override
     public boolean setLocation(Location location) {
-        // TODO
-        return false;
+        ServerWorld level = (ServerWorld) FabricAdapter.adapt((World) location.getExtent());
+        this.player.teleport(
+            level,
+            location.getX(), location.getY(), location.getZ(),
+            location.getYaw(), location.getPitch()
+        );
+        // This check doesn't really ever get to be false in Fabric
+        // Since Fabric API doesn't allow cancelling the teleport.
+        // However, other mods could theoretically mix this in, so allow the detection.
+        return this.player.getServerWorld() == level;
     }
 
     @Override
@@ -141,7 +152,7 @@ public class FabricPlayer extends AbstractPlayerActor {
     @Deprecated
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
-            this.player.sendMessage(new LiteralText(part), false);
+            this.player.sendMessage(new LiteralText(part), MessageType.SYSTEM, Util.NIL_UUID);
         }
     }
 

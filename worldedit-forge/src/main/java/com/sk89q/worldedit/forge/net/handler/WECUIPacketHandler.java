@@ -22,11 +22,10 @@ package com.sk89q.worldedit.forge.net.handler;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.forge.ForgePlayer;
 import com.sk89q.worldedit.forge.ForgeWorldEdit;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraftforge.fml.network.NetworkEvent.ClientCustomPayloadEvent;
-import net.minecraftforge.fml.network.event.EventNetworkChannel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.event.EventNetworkChannel;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import static com.sk89q.worldedit.forge.ForgeAdapter.adaptPlayer;
@@ -44,8 +43,8 @@ public final class WECUIPacketHandler {
         HANDLER.addListener(WECUIPacketHandler::onPacketData);
     }
 
-    public static void onPacketData(ClientCustomPayloadEvent event) {
-        ServerPlayerEntity player = event.getSource().get().getSender();
+    public static void onPacketData(NetworkEvent.ClientCustomPayloadEvent event) {
+        ServerPlayer player = event.getSource().get().getSender();
         LocalSession session = ForgeWorldEdit.inst.getSession(player);
         String text = event.getPayload().toString(StandardCharsets.UTF_8);
         final ForgePlayer actor = adaptPlayer(player);

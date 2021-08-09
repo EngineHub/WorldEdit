@@ -40,7 +40,6 @@ import com.sk89q.worldedit.forge.internal.ForgeWorldNativeAccess;
 import com.sk89q.worldedit.forge.internal.NBTConverter;
 import com.sk89q.worldedit.forge.internal.TileEntityUtils;
 import com.sk89q.worldedit.internal.Constants;
-import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.internal.util.BiomeMath;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -63,51 +62,49 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
-import net.minecraft.block.Block;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.inventory.IClearable;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.NBTDynamicOps;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Util;
-import net.minecraft.util.concurrent.ThreadTaskExecutor;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.DynamicRegistries;
-import net.minecraft.util.registry.WorldSettingsImport;
-import net.minecraft.world.Dimension;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeContainer;
-import net.minecraft.world.biome.ColumnFuzzedBiomeMagnifier;
-import net.minecraft.world.biome.IBiomeMagnifier;
-import net.minecraft.world.chunk.AbstractChunkProvider;
-import net.minecraft.world.chunk.ChunkStatus;
-import net.minecraft.world.chunk.IChunk;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.Features;
-import net.minecraft.world.gen.settings.DimensionGeneratorSettings;
-import net.minecraft.world.server.ServerChunkProvider;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.IServerWorldInfo;
-import net.minecraft.world.storage.IWorldInfo;
-import net.minecraft.world.storage.SaveFormat;
-import net.minecraft.world.storage.ServerWorldInfo;
+import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.data.worldgen.Features;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.RegistryReadOps;
+import net.minecraft.resources.RegistryWriteOps;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerChunkCache;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.thread.BlockableEventLoop;
+import net.minecraft.world.Clearable;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.BiomeZoomer;
+import net.minecraft.world.level.biome.FuzzyOffsetConstantColumnBiomeZoomer;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ChunkBiomeContainer;
+import net.minecraft.world.level.chunk.ChunkStatus;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.dimension.LevelStem;
+import net.minecraft.world.level.levelgen.WorldGenSettings;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.storage.LevelData;
+import net.minecraft.world.level.storage.LevelStorageSource;
+import net.minecraft.world.level.storage.PrimaryLevelData;
+import net.minecraft.world.level.storage.ServerLevelData;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
 
 import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -131,14 +128,14 @@ public class ForgeWorld extends AbstractWorld {
 
     private static final Random random = new Random();
 
-    private static ResourceLocation getDimensionRegistryKey(World world) {
+    private static ResourceLocation getDimensionRegistryKey(ServerLevel world) {
         return Objects.requireNonNull(world.getServer(), "server cannot be null")
-            .func_244267_aX()
-            .func_230520_a_()
-            .getKey(world.func_230315_m_());
+            .registryAccess()
+            .registryOrThrow(Registry.DIMENSION_TYPE_REGISTRY)
+            .getKey(world.dimensionType());
     }
 
-    private final WeakReference<World> worldRef;
+    private final WeakReference<ServerLevel> worldRef;
     private final ForgeWorldNativeAccess nativeAccess;
 
     /**
@@ -146,7 +143,7 @@ public class ForgeWorld extends AbstractWorld {
      *
      * @param world the world
      */
-    ForgeWorld(World world) {
+    ForgeWorld(ServerLevel world) {
         checkNotNull(world);
         this.worldRef = new WeakReference<>(world);
         this.nativeAccess = new ForgeWorldNativeAccess(worldRef);
@@ -158,8 +155,8 @@ public class ForgeWorld extends AbstractWorld {
      * @return the world
      * @throws RuntimeException thrown if a reference to the world was lost (i.e. world was unloaded)
      */
-    public World getWorld() {
-        World world = worldRef.get();
+    public ServerLevel getWorld() {
+        ServerLevel world = worldRef.get();
         if (world != null) {
             return world;
         } else {
@@ -169,7 +166,7 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public String getName() {
-        return ((IServerWorldInfo) getWorld().getWorldInfo()).getWorldName();
+        return ((ServerLevelData) getWorld().getLevelData()).getLevelName();
     }
 
     @Override
@@ -179,13 +176,10 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public Path getStoragePath() {
-        final World world = getWorld();
-        if (world instanceof ServerWorld) {
-            // see Fabric mixin for what all of this is
-            SaveFormat.LevelSave session = ((ServerWorld) world).getServer().anvilConverterForAnvilFile;
-            return session.func_237291_a_(world.func_234923_W_()).toPath();
-        }
-        return null;
+        final ServerLevel world = getWorld();
+        return world.getServer().storageSource.getDimensionPath(
+            world.dimension()
+        ).toPath();
     }
 
     @Override
@@ -203,7 +197,7 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public int getBlockLightLevel(BlockVector3 position) {
         checkNotNull(position);
-        return getWorld().getLight(ForgeAdapter.toBlockPos(position));
+        return getWorld().getLightEmission(ForgeAdapter.toBlockPos(position));
     }
 
     @Override
@@ -213,9 +207,9 @@ public class ForgeWorld extends AbstractWorld {
             return false;
         }
 
-        TileEntity tile = getWorld().getTileEntity(ForgeAdapter.toBlockPos(position));
-        if (tile instanceof IClearable) {
-            ((IClearable) tile).clear();
+        BlockEntity tile = getWorld().getBlockEntity(ForgeAdapter.toBlockPos(position));
+        if (tile instanceof Clearable) {
+            ((Clearable) tile).clearContent();
             return true;
         }
         return false;
@@ -223,20 +217,20 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public boolean fullySupports3DBiomes() {
-        IBiomeMagnifier magnifier = getWorld().func_230315_m_().getMagnifier();
-        return !(magnifier instanceof ColumnFuzzedBiomeMagnifier);
+        BiomeZoomer okZoomer = getWorld().dimensionType().getBiomeZoomer();
+        return !(okZoomer instanceof FuzzyOffsetConstantColumnBiomeZoomer);
     }
 
     @Override
     public BiomeType getBiome(BlockVector3 position) {
         checkNotNull(position);
 
-        IChunk chunk = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4);
+        LevelChunk chunk = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4);
         return getBiomeInChunk(position, chunk);
     }
 
-    private BiomeType getBiomeInChunk(BlockVector3 position, IChunk chunk) {
-        BiomeContainer biomes = checkNotNull(chunk.getBiomes());
+    private BiomeType getBiomeInChunk(BlockVector3 position, ChunkAccess chunk) {
+        ChunkBiomeContainer biomes = checkNotNull(chunk.getBiomes());
         return ForgeAdapter.adapt(biomes.getNoiseBiome(position.getX() >> 2, position.getY() >> 2, position.getZ() >> 2));
     }
 
@@ -245,46 +239,48 @@ public class ForgeWorld extends AbstractWorld {
         checkNotNull(position);
         checkNotNull(biome);
 
-        IChunk chunk = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4);
-        BiomeContainer container = checkNotNull(chunk.getBiomes());
-        int idx = BiomeMath.computeBiomeIndex(position.getX(), position.getY(), position.getZ()); // TODO 1.17 pass min/maxY
+        LevelChunk chunk = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4);
+        ChunkBiomeContainer container = checkNotNull(chunk.getBiomes());
+        int idx = BiomeMath.computeBiomeIndex(
+            position.getX(), position.getY(), position.getZ(), getMinY(), getMaxY()
+        );
         container.biomes[idx] = ForgeAdapter.adapt(biome);
-        chunk.setModified(true);
+        chunk.setUnsaved(true);
         return true;
     }
 
-    private static final LoadingCache<ServerWorld, WorldEditFakePlayer> fakePlayers
+    private static final LoadingCache<ServerLevel, WorldEditFakePlayer> fakePlayers
             = CacheBuilder.newBuilder().weakKeys().softValues().build(CacheLoader.from(WorldEditFakePlayer::new));
 
     @Override
     public boolean useItem(BlockVector3 position, BaseItem item, Direction face) {
         ItemStack stack = ForgeAdapter.adapt(new BaseItemStack(item.getType(), item.getNbtReference(), 1));
-        ServerWorld world = (ServerWorld) getWorld();
+        ServerLevel world = getWorld();
         final WorldEditFakePlayer fakePlayer;
         try {
             fakePlayer = fakePlayers.get(world);
         } catch (ExecutionException ignored) {
             return false;
         }
-        fakePlayer.setHeldItem(Hand.MAIN_HAND, stack);
-        fakePlayer.setLocationAndAngles(position.getBlockX(), position.getBlockY(), position.getBlockZ(),
+        fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, stack);
+        fakePlayer.absMoveTo(position.getBlockX(), position.getBlockY(), position.getBlockZ(),
                 (float) face.toVector().toYaw(), (float) face.toVector().toPitch());
         final BlockPos blockPos = ForgeAdapter.toBlockPos(position);
-        final BlockRayTraceResult rayTraceResult = new BlockRayTraceResult(ForgeAdapter.toVec3(position),
+        final BlockHitResult rayTraceResult = new BlockHitResult(ForgeAdapter.toVec3(position),
                 ForgeAdapter.adapt(face), blockPos, false);
-        ItemUseContext itemUseContext = new ItemUseContext(fakePlayer, Hand.MAIN_HAND, rayTraceResult);
-        ActionResultType used = stack.onItemUse(itemUseContext);
-        if (used != ActionResultType.SUCCESS) {
+        UseOnContext itemUseContext = new UseOnContext(fakePlayer, InteractionHand.MAIN_HAND, rayTraceResult);
+        InteractionResult used = stack.onItemUseFirst(itemUseContext);
+        if (used != InteractionResult.SUCCESS) {
             // try activating the block
-            ActionResultType resultType = getWorld().getBlockState(blockPos)
-                .onBlockActivated(world, fakePlayer, Hand.MAIN_HAND, rayTraceResult);
-            if (resultType.isSuccessOrConsume()) {
+            InteractionResult resultType = getWorld().getBlockState(blockPos)
+                .use(world, fakePlayer, InteractionHand.MAIN_HAND, rayTraceResult);
+            if (resultType.consumesAction()) {
                 used = resultType;
             } else {
-                used = stack.getItem().onItemRightClick(world, fakePlayer, Hand.MAIN_HAND).getType();
+                used = stack.getItem().use(world, fakePlayer, InteractionHand.MAIN_HAND).getResult();
             }
         }
-        return used == ActionResultType.SUCCESS;
+        return used == InteractionResult.SUCCESS;
     }
 
     @Override
@@ -297,8 +293,8 @@ public class ForgeWorld extends AbstractWorld {
         }
 
         ItemEntity entity = new ItemEntity(getWorld(), position.getX(), position.getY(), position.getZ(), ForgeAdapter.adapt(item));
-        entity.setPickupDelay(10);
-        getWorld().addEntity(entity);
+        entity.setPickUpDelay(10);
+        getWorld().addFreshEntity(entity);
     }
 
     @Override
@@ -309,19 +305,13 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public boolean canPlaceAt(BlockVector3 position, BlockState blockState) {
-        return ForgeAdapter.adapt(blockState).isValidPosition(getWorld(), ForgeAdapter.toBlockPos(position));
+        return ForgeAdapter.adapt(blockState).canSurvive(getWorld(), ForgeAdapter.toBlockPos(position));
     }
 
     // For unmapped regen names, see Fabric!
 
     @Override
     public boolean regenerate(Region region, Extent extent, RegenOptions options) {
-        // Don't even try to regen if it's going to fail.
-        AbstractChunkProvider provider = getWorld().getChunkProvider();
-        if (!(provider instanceof ServerChunkProvider)) {
-            return false;
-        }
-
         try {
             doRegen(region, extent, options);
         } catch (Exception e) {
@@ -333,47 +323,30 @@ public class ForgeWorld extends AbstractWorld {
 
     private void doRegen(Region region, Extent extent, RegenOptions options) throws Exception {
         Path tempDir = Files.createTempDirectory("WorldEditWorldGen");
-        SaveFormat levelStorage = SaveFormat.func_237269_a_(tempDir);
-        try (SaveFormat.LevelSave session = levelStorage.func_237274_c_("WorldEditTempGen")) {
-            ServerWorld originalWorld = (ServerWorld) getWorld();
+        LevelStorageSource levelStorage = LevelStorageSource.createDefault(tempDir);
+        try (LevelStorageSource.LevelStorageAccess session = levelStorage.createAccess("WorldEditTempGen")) {
+            ServerLevel originalWorld = getWorld();
+            PrimaryLevelData levelProperties = (PrimaryLevelData) originalWorld.getServer()
+                .getWorldData().overworldData();
+            WorldGenSettings originalOpts = levelProperties.worldGenSettings();
+
             long seed = options.getSeed().orElse(originalWorld.getSeed());
-            ServerWorldInfo levelProperties =
-                (ServerWorldInfo) originalWorld.getServer().func_240793_aU_();
-            DimensionGeneratorSettings originalOpts = levelProperties.field_237343_c_;
+            WorldGenSettings newOpts = options.getSeed().isPresent()
+                ? replaceSeed(originalWorld, seed, originalOpts)
+                : originalOpts;
 
-            WorldSettingsImport<INBT> nbtRegOps = WorldSettingsImport.func_244335_a(
-                NBTDynamicOps.INSTANCE,
-                originalWorld.getServer().getDataPackRegistries().func_240970_h_(),
-                (DynamicRegistries.Impl) originalWorld.getServer().func_244267_aX()
-            );
-            Codec<DimensionGeneratorSettings> dimCodec = DimensionGeneratorSettings.field_236201_a_;
-            DimensionGeneratorSettings newOpts = dimCodec
-                .encodeStart(nbtRegOps, originalOpts)
-                .flatMap(tag ->
-                    dimCodec.parse(
-                        recursivelySetSeed(new Dynamic<>(nbtRegOps, tag), seed, new HashSet<>())
-                    )
-                )
-                .get().map(
-                    l -> l,
-                    error -> {
-                        throw new IllegalStateException("Unable to map GeneratorOptions: " + error.message());
-                    }
-                );
-
-            levelProperties.field_237343_c_ = newOpts;
-            RegistryKey<World> worldRegKey = originalWorld.func_234923_W_();
-            Dimension dimGenOpts = newOpts.func_236224_e_()
-                .getOrDefault(worldRegKey.func_240901_a_());
+            levelProperties.worldGenSettings = newOpts;
+            ResourceKey<Level> worldRegKey = originalWorld.dimension();
+            LevelStem dimGenOpts = newOpts.dimensions().get(worldRegKey.location());
             checkNotNull(dimGenOpts, "No DimensionOptions for %s", worldRegKey);
-            try (ServerWorld serverWorld = new ServerWorld(
-                originalWorld.getServer(), Util.getServerExecutor(), session,
-                ((IServerWorldInfo) originalWorld.getWorldInfo()),
+            try (ServerLevel serverWorld = new ServerLevel(
+                originalWorld.getServer(), Util.backgroundExecutor(), session,
+                ((ServerLevelData) originalWorld.getLevelData()),
                 worldRegKey,
-                originalWorld.func_230315_m_(),
+                originalWorld.dimensionType(),
                 new WorldEditGenListener(),
-                dimGenOpts.func_236064_c_(),
-                originalWorld.func_234925_Z_(),
+                dimGenOpts.generator(),
+                originalWorld.isDebug(),
                 seed,
                 // No spawners are needed for this world.
                 ImmutableList.of(),
@@ -383,19 +356,46 @@ public class ForgeWorld extends AbstractWorld {
                 regenForWorld(region, extent, serverWorld, options);
 
                 // drive the server executor until all tasks are popped off
-                while (originalWorld.getServer().driveOne()) {
+                while (originalWorld.getServer().pollTask()) {
                     Thread.yield();
                 }
             } finally {
-                levelProperties.field_237343_c_ = originalOpts;
+                levelProperties.worldGenSettings = originalOpts;
             }
         } finally {
             SafeFiles.tryHardToDeleteDir(tempDir);
         }
     }
 
+    private WorldGenSettings replaceSeed(ServerLevel originalWorld, long seed, WorldGenSettings originalOpts) {
+        RegistryWriteOps<Tag> nbtReadRegOps = RegistryWriteOps.create(
+            NbtOps.INSTANCE,
+            originalWorld.getServer().registryAccess()
+        );
+        RegistryReadOps<Tag> nbtRegOps = RegistryReadOps.createAndLoad(
+            NbtOps.INSTANCE,
+            originalWorld.getServer().getResourceManager(),
+            originalWorld.getServer().registryAccess()
+        );
+        Codec<WorldGenSettings> dimCodec = WorldGenSettings.CODEC;
+        return dimCodec
+            .encodeStart(nbtReadRegOps, originalOpts)
+            .flatMap(tag ->
+                dimCodec.parse(
+                    recursivelySetSeed(new Dynamic<>(nbtRegOps, tag), seed, new HashSet<>())
+                )
+            )
+            .get()
+            .map(
+                l -> l,
+                error -> {
+                    throw new IllegalStateException("Unable to map GeneratorOptions: " + error.message());
+                }
+            );
+    }
+
     @SuppressWarnings("unchecked")
-    private Dynamic<INBT> recursivelySetSeed(Dynamic<INBT> dynamic, long seed, Set<Dynamic<INBT>> seen) {
+    private Dynamic<Tag> recursivelySetSeed(Dynamic<Tag> dynamic, long seed, Set<Dynamic<Tag>> seen) {
         if (!seen.add(dynamic)) {
             return dynamic;
         }
@@ -403,20 +403,20 @@ public class ForgeWorld extends AbstractWorld {
             if (pair.getFirst().asString("").equals("seed")) {
                 return pair.mapSecond(v -> v.createLong(seed));
             }
-            if (pair.getSecond().getValue() instanceof CompoundNBT) {
-                return pair.mapSecond(v -> recursivelySetSeed((Dynamic<INBT>) v, seed, seen));
+            if (pair.getSecond().getValue() instanceof net.minecraft.nbt.CompoundTag) {
+                return pair.mapSecond(v -> recursivelySetSeed((Dynamic<Tag>) v, seed, seen));
             }
             return pair;
         });
     }
 
-    private void regenForWorld(Region region, Extent extent, ServerWorld serverWorld,
+    private void regenForWorld(Region region, Extent extent, ServerLevel serverWorld,
                                RegenOptions options) throws WorldEditException {
-        List<CompletableFuture<IChunk>> chunkLoadings = submitChunkLoadTasks(region, serverWorld);
+        List<CompletableFuture<ChunkAccess>> chunkLoadings = submitChunkLoadTasks(region, serverWorld);
 
         // drive executor until loading finishes
-        ThreadTaskExecutor<Runnable> executor = serverWorld.getChunkProvider().executor;
-        executor.driveUntil(() -> {
+        BlockableEventLoop<Runnable> executor = serverWorld.getChunkSource().mainThreadProcessor;
+        executor.managedBlock(() -> {
             // bail out early if a future fails
             if (chunkLoadings.stream().anyMatch(ftr ->
                 ftr.isDone() && Futures.getUnchecked(ftr) == null
@@ -426,22 +426,22 @@ public class ForgeWorld extends AbstractWorld {
             return chunkLoadings.stream().allMatch(CompletableFuture::isDone);
         });
 
-        Map<ChunkPos, IChunk> chunks = new HashMap<>();
-        for (CompletableFuture<IChunk> future : chunkLoadings) {
+        Map<ChunkPos, ChunkAccess> chunks = new HashMap<>();
+        for (CompletableFuture<ChunkAccess> future : chunkLoadings) {
             @Nullable
-            IChunk chunk = future.getNow(null);
+            ChunkAccess chunk = future.getNow(null);
             checkState(chunk != null, "Failed to generate a chunk, regen failed.");
             chunks.put(chunk.getPos(), chunk);
         }
 
         for (BlockVector3 vec : region) {
             BlockPos pos = ForgeAdapter.toBlockPos(vec);
-            IChunk chunk = chunks.get(new ChunkPos(pos));
+            ChunkAccess chunk = chunks.get(new ChunkPos(pos));
             BlockStateHolder<?> state = ForgeAdapter.adapt(chunk.getBlockState(pos));
-            TileEntity blockEntity = chunk.getTileEntity(pos);
+            BlockEntity blockEntity = chunk.getBlockEntity(pos);
             if (blockEntity != null) {
-                CompoundNBT tag = new CompoundNBT();
-                blockEntity.write(tag);
+                net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
+                blockEntity.save(tag);
                 state = state.toBaseBlock(LazyReference.from(() -> NBTConverter.fromNative(tag)));
             }
             extent.setBlock(vec, state.toBaseBlock());
@@ -453,12 +453,12 @@ public class ForgeWorld extends AbstractWorld {
         }
     }
 
-    private List<CompletableFuture<IChunk>> submitChunkLoadTasks(Region region, ServerWorld world) {
-        List<CompletableFuture<IChunk>> chunkLoadings = new ArrayList<>();
+    private List<CompletableFuture<ChunkAccess>> submitChunkLoadTasks(Region region, ServerLevel world) {
+        List<CompletableFuture<ChunkAccess>> chunkLoadings = new ArrayList<>();
         // Pre-gen all the chunks
         for (BlockVector2 chunk : region.getChunks()) {
             chunkLoadings.add(
-                world.getChunkProvider().func_217233_c(chunk.getX(), chunk.getZ(), ChunkStatus.FEATURES, true)
+                world.getChunkSource().getChunkFutureMainThread(chunk.getX(), chunk.getZ(), ChunkStatus.FEATURES, true)
                     .thenApply(either -> either.left().orElse(null))
             );
         }
@@ -468,25 +468,25 @@ public class ForgeWorld extends AbstractWorld {
     @Nullable
     private static ConfiguredFeature<?, ?> createTreeFeatureGenerator(TreeType type) {
         switch (type) {
-            case TREE: return Features.field_243862_bH;
-            case BIG_TREE: return Features.field_243869_bO;
-            case REDWOOD: return Features.field_243866_bL;
-            case TALL_REDWOOD: return Features.field_243872_bR;
-            case MEGA_REDWOOD: return Features.field_243873_bS;
-            case BIRCH: return Features.field_243864_bJ;
-            case JUNGLE: return Features.field_243871_bQ;
-            case SMALL_JUNGLE: return Features.field_243868_bN;
-            case SHORT_JUNGLE: return Features.field_243870_bP;
-            case JUNGLE_BUSH: return Features.field_243876_bV;
-            case SWAMP: return Features.field_243875_bU;
-            case ACACIA: return Features.field_243865_bK;
-            case DARK_OAK: return Features.field_243863_bI;
-            case TALL_BIRCH: return Features.field_243940_cw;
-            case RED_MUSHROOM: return Features.field_243860_bF;
-            case BROWN_MUSHROOM: return Features.field_243861_bG;
-            case WARPED_FUNGUS: return Features.field_243858_bD;
-            case CRIMSON_FUNGUS: return Features.field_243856_bB;
-            case CHORUS_PLANT: return Features.field_243944_d;
+            case TREE: return Features.OAK;
+            case BIG_TREE: return Features.FANCY_OAK;
+            case REDWOOD: return Features.SPRUCE;
+            case TALL_REDWOOD: return Features.MEGA_SPRUCE;
+            case MEGA_REDWOOD: return Features.MEGA_PINE;
+            case BIRCH: return Features.BIRCH;
+            case JUNGLE: return Features.MEGA_JUNGLE_TREE;
+            case SMALL_JUNGLE: return Features.JUNGLE_TREE;
+            case SHORT_JUNGLE: return Features.JUNGLE_TREE_NO_VINE;
+            case JUNGLE_BUSH: return Features.JUNGLE_BUSH;
+            case SWAMP: return Features.SWAMP_OAK;
+            case ACACIA: return Features.ACACIA;
+            case DARK_OAK: return Features.DARK_OAK;
+            case TALL_BIRCH: return Features.SUPER_BIRCH_BEES_0002;
+            case RED_MUSHROOM: return Features.HUGE_RED_MUSHROOM;
+            case BROWN_MUSHROOM: return Features.HUGE_BROWN_MUSHROOM;
+            case WARPED_FUNGUS: return Features.WARPED_FUNGI;
+            case CRIMSON_FUNGUS: return Features.CRIMSON_FUNGI;
+            case CHORUS_PLANT: return Features.CHORUS_PLANT;
             case RANDOM: return createTreeFeatureGenerator(TreeType.values()[ThreadLocalRandom.current().nextInt(TreeType.values().length)]);
             default:
                 return null;
@@ -496,10 +496,10 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public boolean generateTree(TreeType type, EditSession editSession, BlockVector3 position) {
         ConfiguredFeature<?, ?> generator = createTreeFeatureGenerator(type);
-        ServerWorld world = (ServerWorld) getWorld();
-        ServerChunkProvider chunkManager = world.getChunkProvider();
-        return generator != null && generator.func_242765_a(
-            world, chunkManager.getChunkGenerator(), random, ForgeAdapter.toBlockPos(position)
+        ServerLevel world = getWorld();
+        ServerChunkCache chunkManager = world.getChunkSource();
+        return generator != null && generator.place(
+            world, chunkManager.getGenerator(), random, ForgeAdapter.toBlockPos(position)
         );
     }
 
@@ -515,21 +515,22 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public void fixLighting(Iterable<BlockVector2> chunks) {
-        World world = getWorld();
+        ServerLevel world = getWorld();
         for (BlockVector2 chunk : chunks) {
-            world.getChunkProvider().getLightManager().retainData(new ChunkPos(chunk.getBlockX(), chunk.getBlockZ()), true);
+            world.getChunkSource().getLightEngine().retainData(new ChunkPos(chunk.getBlockX(), chunk.getBlockZ()), true);
         }
     }
 
     @Override
     public boolean playEffect(Vector3 position, int type, int data) {
-        getWorld().playEvent(type, ForgeAdapter.toBlockPos(position.toBlockPoint()), data);
+        // TODO update sound API
+        // getWorld().play(type, ForgeAdapter.toBlockPos(position.toBlockPoint()), data);
         return true;
     }
 
     @Override
     public WeatherType getWeather() {
-        IWorldInfo info = getWorld().getWorldInfo();
+        LevelData info = getWorld().getLevelData();
         if (info.isThundering()) {
             return WeatherTypes.THUNDER_STORM;
         }
@@ -541,14 +542,14 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public long getRemainingWeatherDuration() {
-        IServerWorldInfo info = (IServerWorldInfo) getWorld().getWorldInfo();
+        ServerLevelData info = (ServerLevelData) getWorld().getLevelData();
         if (info.isThundering()) {
             return info.getThunderTime();
         }
         if (info.isRaining()) {
             return info.getRainTime();
         }
-        return info.func_230395_g_();
+        return info.getClearWeatherTime();
     }
 
     @Override
@@ -558,26 +559,25 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public void setWeather(WeatherType weatherType, long duration) {
-        IServerWorldInfo info = (IServerWorldInfo) getWorld().getWorldInfo();
+        ServerLevelData info = (ServerLevelData) getWorld().getLevelData();
         if (weatherType == WeatherTypes.THUNDER_STORM) {
-            info.func_230391_a_(0);
+            info.setClearWeatherTime(0);
             info.setThundering(true);
             info.setThunderTime((int) duration);
         } else if (weatherType == WeatherTypes.RAIN) {
-            info.func_230391_a_(0);
+            info.setClearWeatherTime(0);
             info.setRaining(true);
             info.setRainTime((int) duration);
         } else if (weatherType == WeatherTypes.CLEAR) {
             info.setRaining(false);
             info.setThundering(false);
-            info.func_230391_a_((int) duration);
+            info.setClearWeatherTime((int) duration);
         }
     }
 
     @Override
     public int getMinY() {
-        // Note: This method exists to be re-written by mods that vary world height
-        return 0;
+        return getWorld().getMinBuildHeight();
     }
 
     @Override
@@ -587,17 +587,17 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public BlockVector3 getSpawnPosition() {
-        IWorldInfo worldInfo = getWorld().getWorldInfo();
+        LevelData worldInfo = getWorld().getLevelData();
         return BlockVector3.at(
-            worldInfo.getSpawnX(),
-            worldInfo.getSpawnY(),
-            worldInfo.getSpawnZ()
+            worldInfo.getXSpawn(),
+            worldInfo.getYSpawn(),
+            worldInfo.getZSpawn()
         );
     }
 
     @Override
     public BlockState getBlock(BlockVector3 position) {
-        net.minecraft.block.BlockState mcState = getWorld()
+        net.minecraft.world.level.block.state.BlockState mcState = getWorld()
                 .getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4)
                 .getBlockState(ForgeAdapter.toBlockPos(position));
 
@@ -607,10 +607,10 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public BaseBlock getFullBlock(BlockVector3 position) {
         BlockPos pos = new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        TileEntity tile = getWorld().getChunk(pos).getTileEntity(pos);
+        BlockEntity tile = getWorld().getChunk(pos).getBlockEntity(pos);
 
         if (tile != null) {
-            CompoundNBT tag = TileEntityUtils.copyNbtData(tile);
+            net.minecraft.nbt.CompoundTag tag = TileEntityUtils.copyNbtData(tile);
             return getBlock(position).toBaseBlock(
                 LazyReference.from(() -> NBTConverter.fromNative(tag))
             );
@@ -630,8 +630,8 @@ public class ForgeWorld extends AbstractWorld {
             return false;
         } else if ((o instanceof ForgeWorld)) {
             ForgeWorld other = ((ForgeWorld) o);
-            World otherWorld = other.worldRef.get();
-            World thisWorld = worldRef.get();
+            Level otherWorld = other.worldRef.get();
+            Level thisWorld = worldRef.get();
             return otherWorld != null && otherWorld.equals(thisWorld);
         } else if (o instanceof com.sk89q.worldedit.world.World) {
             return ((com.sk89q.worldedit.world.World) o).getName().equals(getName());
@@ -642,15 +642,15 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public List<? extends Entity> getEntities(Region region) {
-        final World world = getWorld();
-        AxisAlignedBB box = new AxisAlignedBB(
+        final ServerLevel world = getWorld();
+        AABB box = new AABB(
             ForgeAdapter.toBlockPos(region.getMinimumPoint()),
             ForgeAdapter.toBlockPos(region.getMaximumPoint().add(BlockVector3.ONE))
         );
-        List<net.minecraft.entity.Entity> nmsEntities = world.getEntitiesWithinAABB(
-            (EntityType<net.minecraft.entity.Entity>) null,
+        List<net.minecraft.world.entity.Entity> nmsEntities = world.getEntities(
+            (net.minecraft.world.entity.Entity) null,
             box,
-            e -> region.contains(ForgeAdapter.adapt(e.func_233580_cy_()))
+            e -> region.contains(ForgeAdapter.adapt(e.blockPosition()))
         );
         return ImmutableList.copyOf(Lists.transform(
             nmsEntities,
@@ -660,12 +660,9 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public List<? extends Entity> getEntities() {
-        final World world = getWorld();
-        if (!(world instanceof ServerWorld)) {
-            return Collections.emptyList();
-        }
+        final ServerLevel world = getWorld();
         return ImmutableList.copyOf(Iterables.transform(
-            ((ServerWorld) world).func_241136_z_(),
+            world.getAllEntities(),
             ForgeEntity::new
         ));
     }
@@ -673,25 +670,25 @@ public class ForgeWorld extends AbstractWorld {
     @Nullable
     @Override
     public Entity createEntity(Location location, BaseEntity entity) {
-        World world = getWorld();
-        final Optional<EntityType<?>> entityType = EntityType.byKey(entity.getType().getId());
+        ServerLevel world = getWorld();
+        final Optional<EntityType<?>> entityType = EntityType.byString(entity.getType().getId());
         if (!entityType.isPresent()) {
             return null;
         }
-        net.minecraft.entity.Entity createdEntity = entityType.get().create(world);
+        net.minecraft.world.entity.Entity createdEntity = entityType.get().create(world);
         if (createdEntity != null) {
             CompoundBinaryTag nativeTag = entity.getNbt();
             if (nativeTag != null) {
-                CompoundNBT tag = NBTConverter.toNative(nativeTag);
+                net.minecraft.nbt.CompoundTag tag = NBTConverter.toNative(nativeTag);
                 for (String name : Constants.NO_COPY_ENTITY_NBT_FIELDS) {
                     tag.remove(name);
                 }
-                createdEntity.read(tag);
+                createdEntity.load(tag);
             }
 
-            createdEntity.setLocationAndAngles(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+            createdEntity.absMoveTo(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
 
-            world.addEntity(createdEntity);
+            world.addFreshEntity(createdEntity);
             return new ForgeEntity(createdEntity);
         } else {
             return null;

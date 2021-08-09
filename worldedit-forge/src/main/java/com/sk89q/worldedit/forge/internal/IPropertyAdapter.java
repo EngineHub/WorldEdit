@@ -29,12 +29,12 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 class IPropertyAdapter<T extends Comparable<T>> implements Property<T> {
 
-    private final net.minecraft.state.Property<T> property;
+    private final net.minecraft.world.level.block.state.properties.Property<T> property;
     private final List<T> values;
 
-    public IPropertyAdapter(net.minecraft.state.Property<T> property) {
+    public IPropertyAdapter(net.minecraft.world.level.block.state.properties.Property<T> property) {
         this.property = property;
-        this.values = ImmutableList.copyOf(property.getAllowedValues());
+        this.values = ImmutableList.copyOf(property.getPossibleValues());
     }
 
     @Override
@@ -49,7 +49,7 @@ class IPropertyAdapter<T extends Comparable<T>> implements Property<T> {
 
     @Override
     public T getValueFor(String string) throws IllegalArgumentException {
-        Optional<T> val = property.parseValue(string);
+        Optional<T> val = property.getValue(string);
         checkArgument(val.isPresent(), "%s has no value for %s", getName(), string);
         return val.get();
     }

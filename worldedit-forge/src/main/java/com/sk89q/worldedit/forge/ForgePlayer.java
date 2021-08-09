@@ -41,23 +41,23 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import io.netty.buffer.Unpooled;
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.play.server.SChangeBlockPacket;
-import net.minecraft.network.play.server.SCustomPayloadPlayPacket;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ChatType;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.ChatType;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
+import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.UUID;
@@ -67,27 +67,31 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     // see ClientPlayNetHandler: search for "invalid update packet", lots of hardcoded consts
     private static final int STRUCTURE_BLOCK_PACKET_ID = 7;
-    private final ServerPlayerEntity player;
+    private final ServerPlayer player;
 
-    protected ForgePlayer(ServerPlayerEntity player) {
+    protected ForgePlayer(ServerPlayer player) {
         this.player = player;
         ThreadSafeCache.getInstance().getOnlineIds().add(getUniqueId());
     }
 
     @Override
     public UUID getUniqueId() {
-        return player.getUniqueID();
+        return player.getUUID();
     }
 
     @Override
     public BaseItemStack getItemInHand(HandSide handSide) {
-        ItemStack is = this.player.getHeldItem(handSide == HandSide.MAIN_HAND ? Hand.MAIN_HAND : Hand.OFF_HAND);
+        ItemStack is = this.player.getItemInHand(
+            handSide == HandSide.MAIN_HAND
+                ? InteractionHand.MAIN_HAND
+                : InteractionHand.OFF_HAND
+        );
         return ForgeAdapter.adapt(is);
     }
 
     @Override
     public String getName() {
-        return this.player.getName().getUnformattedComponentText();
+        return this.player.getName().getString();
     }
 
     @Override
@@ -97,28 +101,34 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public Location getLocation() {
-        Vector3 position = Vector3.at(this.player.getPosX(), this.player.getPosY(), this.player.getPosZ());
+        Vector3 position = Vector3.at(this.player.getX(), this.player.getY(), this.player.getZ());
         return new Location(
-                ForgeWorldEdit.inst.getWorld(this.player.world),
-                position,
-                this.player.rotationYaw,
-                this.player.rotationPitch);
+            ForgeWorldEdit.inst.getWorld((ServerLevel) this.player.level),
+            position,
+            this.player.getYRot(),
+            this.player.getXRot());
     }
 
     @Override
     public boolean setLocation(Location location) {
-        // TODO
-        return false;
+        ServerLevel level = ForgeAdapter.adapt((World) location.getExtent());
+        this.player.teleportTo(
+            level,
+            location.getX(), location.getY(), location.getZ(),
+            location.getYaw(), location.getPitch()
+        );
+        // This may be false if the teleport was cancelled by a mod
+        return this.player.getLevel() == level;
     }
 
     @Override
     public World getWorld() {
-        return ForgeWorldEdit.inst.getWorld(this.player.world);
+        return ForgeWorldEdit.inst.getWorld((ServerLevel) this.player.level);
     }
 
     @Override
     public void giveItem(BaseItemStack itemStack) {
-        this.player.inventory.addItemStackToInventory(ForgeAdapter.adapt(itemStack));
+        this.player.getInventory().add(ForgeAdapter.adapt(itemStack));
     }
 
     @Override
@@ -128,63 +138,68 @@ public class ForgePlayer extends AbstractPlayerActor {
         if (params.length > 0) {
             send = send + "|" + StringUtil.joinString(params, "|");
         }
-        PacketBuffer buffer = new PacketBuffer(Unpooled.copiedBuffer(send, StandardCharsets.UTF_8));
-        SCustomPayloadPlayPacket packet = new SCustomPayloadPlayPacket(new ResourceLocation(ForgeWorldEdit.MOD_ID, ForgeWorldEdit.CUI_PLUGIN_CHANNEL), buffer);
-        this.player.connection.sendPacket(packet);
+        FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.copiedBuffer(send, StandardCharsets.UTF_8));
+        ClientboundCustomPayloadPacket packet = new ClientboundCustomPayloadPacket(
+            new ResourceLocation(ForgeWorldEdit.MOD_ID, ForgeWorldEdit.CUI_PLUGIN_CHANNEL),
+            buffer
+        );
+        this.player.connection.send(packet);
     }
 
-    private void sendMessage(ITextComponent textComponent) {
-        this.player.func_241151_a_(textComponent, ChatType.CHAT, Util.field_240973_b_);
+    private void sendMessage(net.minecraft.network.chat.Component textComponent) {
+        this.player.sendMessage(textComponent, ChatType.SYSTEM, Util.NIL_UUID);
     }
 
     @Override
     @Deprecated
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
-            sendMessage(new StringTextComponent(part));
+            sendMessage(new TextComponent(part));
         }
     }
 
     @Override
     @Deprecated
     public void printDebug(String msg) {
-        sendColorized(msg, TextFormatting.GRAY);
+        sendColorized(msg, ChatFormatting.GRAY);
     }
 
     @Override
     @Deprecated
     public void print(String msg) {
-        sendColorized(msg, TextFormatting.LIGHT_PURPLE);
+        sendColorized(msg, ChatFormatting.LIGHT_PURPLE);
     }
 
     @Override
     @Deprecated
     public void printError(String msg) {
-        sendColorized(msg, TextFormatting.RED);
+        sendColorized(msg, ChatFormatting.RED);
     }
 
     @Override
     public void print(Component component) {
-        sendMessage(ITextComponent.Serializer.func_240643_a_(GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale()))));
+        sendMessage(net.minecraft.network.chat.Component.Serializer.fromJson(
+            GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale()))
+        ));
     }
 
-    private void sendColorized(String msg, TextFormatting formatting) {
+    private void sendColorized(String msg, ChatFormatting formatting) {
         for (String part : msg.split("\n")) {
-            StringTextComponent component = new StringTextComponent(part);
-            component.func_240699_a_(formatting);
+            TextComponent component = new TextComponent(part);
+            component.withStyle(formatting);
             sendMessage(component);
         }
     }
 
     @Override
     public boolean trySetPosition(Vector3 pos, float pitch, float yaw) {
-        this.player.connection.setPlayerLocation(pos.getX(), pos.getY(), pos.getZ(), yaw, pitch);
+        this.player.connection.teleport(pos.getX(), pos.getY(), pos.getZ(), yaw, pitch);
         return true;
     }
 
     @Override
     public String[] getGroups() {
-        return new String[]{}; // WorldEditMod.inst.getPermissionsResolver().getGroups(this.player.username);
+        return new String[] {}; // WorldEditMod.inst.getPermissionsResolver().getGroups(this.player.username);
     }
 
     @Override
@@ -205,14 +220,14 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public boolean isAllowedToFly() {
-        return player.abilities.allowFlying;
+        return player.getAbilities().mayfly;
     }
 
     @Override
     public void setFlying(boolean flying) {
-        if (player.abilities.isFlying != flying) {
-            player.abilities.isFlying = flying;
-            player.sendPlayerAbilities();
+        if (player.getAbilities().flying != flying) {
+            player.getAbilities().flying = flying;
+            player.onUpdateAbilities();
         }
     }
 
@@ -229,27 +244,23 @@ public class ForgePlayer extends AbstractPlayerActor {
         }
         BlockPos loc = ForgeAdapter.toBlockPos(pos);
         if (block == null) {
-            final SChangeBlockPacket packetOut = new SChangeBlockPacket(((ForgeWorld) world).getWorld(), loc);
-            player.connection.sendPacket(packetOut);
+            final ClientboundBlockUpdatePacket packetOut = new ClientboundBlockUpdatePacket(
+                ((ForgeWorld) world).getWorld(),
+                loc
+            );
+            player.connection.send(packetOut);
         } else {
-            final SChangeBlockPacket packetOut = new SChangeBlockPacket();
-            PacketBuffer buf = new PacketBuffer(Unpooled.buffer());
-            buf.writeBlockPos(loc);
-            buf.writeVarInt(Block.getStateId(ForgeAdapter.adapt(block.toImmutableState())));
-            try {
-                packetOut.readPacketData(buf);
-            } catch (IOException e) {
-                return;
-            }
-            player.connection.sendPacket(packetOut);
+            player.connection.send(new ClientboundBlockUpdatePacket(
+                loc, ForgeAdapter.adapt(block.toImmutableState())
+            ));
             if (block instanceof BaseBlock && block.getBlockType().equals(BlockTypes.STRUCTURE_BLOCK)) {
                 final BaseBlock baseBlock = (BaseBlock) block;
                 final CompoundBinaryTag nbtData = baseBlock.getNbt();
                 if (nbtData != null) {
-                    player.connection.sendPacket(new SUpdateTileEntityPacket(
-                            new BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()),
-                            STRUCTURE_BLOCK_PACKET_ID,
-                            NBTConverter.toNative(nbtData))
+                    player.connection.send(new ClientboundBlockEntityDataPacket(
+                        new BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()),
+                        STRUCTURE_BLOCK_PACKET_ID,
+                        NBTConverter.toNative(nbtData))
                     );
                 }
             }
@@ -267,8 +278,8 @@ public class ForgePlayer extends AbstractPlayerActor {
         private final UUID uuid;
         private final String name;
 
-        SessionKeyImpl(ServerPlayerEntity player) {
-            this.uuid = player.getUniqueID();
+        SessionKeyImpl(ServerPlayer player) {
+            this.uuid = player.getUUID();
             this.name = player.getName().getString();
         }
 

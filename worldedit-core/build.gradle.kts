@@ -35,7 +35,7 @@ dependencies {
     }
 
     "api"(project(":worldedit-libs:core"))
-    "implementation"("de.schlichtherle:truezip:6.8.4")
+    "compileOnly"("de.schlichtherle:truezip:6.8.4")
     "implementation"("org.mozilla:rhino-runtime:1.7.13")
     "implementation"("org.yaml:snakeyaml:1.26")
     "implementation"("com.google.guava:guava")
