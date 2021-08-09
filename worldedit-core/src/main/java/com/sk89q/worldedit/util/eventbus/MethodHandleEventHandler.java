@@ -20,38 +20,46 @@
 package com.sk89q.worldedit.util.eventbus;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodType;
 import java.util.Objects;
 
 public class MethodHandleEventHandler extends EventHandler {
 
     private final MethodHandle methodHandle;
+    private final String methodName;
     private final Object object;
 
     /**
      * Create a new event handler that uses MethodHandles to dispatch.
      *
      * @param priority the priority
+     * @param object The object to invoke it on
+     * @param methodHandle The handle to invoke
+     * @param methodName The name of the method (for equality checks)
      */
-    protected MethodHandleEventHandler(Priority priority, Object object, MethodHandle methodHandle) {
+    protected MethodHandleEventHandler(Priority priority, Object object, MethodHandle methodHandle, String methodName) {
         super(priority);
 
         this.object = object;
-        this.methodHandle = methodHandle;
+        this.methodHandle = methodHandle.asType(MethodType.methodType(void.class, Object.class, Object.class));
+        this.methodName = methodName;
     }
 
     @Override
     public void dispatch(Object event) throws Exception {
         try {
             this.methodHandle.invokeExact(object, event);
-        } catch (Throwable e) {
-            // ew
-            throw new Exception(e);
+        } catch (Exception | Error e) {
+            throw e;
+        } catch (Throwable t) {
+            // If it's not an Exception or Error, throw it wrapped.
+            throw new Exception(t);
         }
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(methodHandle, object);
+        return Objects.hash(methodName, object);
     }
 
     @Override
@@ -65,7 +73,7 @@ public class MethodHandleEventHandler extends EventHandler {
 
         MethodHandleEventHandler that = (MethodHandleEventHandler) o;
 
-        if (!methodHandle.equals(that.methodHandle)) {
+        if (!methodName.equals(that.methodName)) {
             return false;
         }
 

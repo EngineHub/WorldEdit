@@ -24,7 +24,6 @@ import com.google.common.collect.Multimap;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 
 /**
@@ -64,13 +63,12 @@ class AnnotatedSubscriberFinder implements SubscriberFindingStrategy {
                     Class<?> eventType = parameterTypes[0];
                     MethodHandle handle;
                     try {
-                        handle = MethodHandles.lookup().unreflect(method);
-                        handle = handle.asType(handle.type().generic().changeReturnType(void.class));
+                        handle = MethodHandles.publicLookup().unreflect(method);
                     } catch (IllegalAccessException e) {
                         throw new IllegalArgumentException("Method " + method + " failed to unreflect.", e);
                     }
 
-                    EventHandler handler = new MethodHandleEventHandler(annotation.priority(), listener, handle);
+                    EventHandler handler = new MethodHandleEventHandler(annotation.priority(), listener, handle, method.getName());
                     methodsInListener.put(eventType, handler);
                 }
             }
