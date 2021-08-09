@@ -19,44 +19,47 @@
 
 package com.sk89q.worldedit.util.eventbus;
 
-import java.lang.reflect.Method;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodType;
 import java.util.Objects;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+public class MethodHandleEventHandler extends EventHandler {
 
-/**
- * Invokes a {@link Method} to dispatch an event.
- */
-public class MethodEventHandler extends EventHandler {
-
+    private final MethodHandle methodHandle;
+    private final String methodName;
     private final Object object;
-    private final Method method;
 
     /**
-     * Create a new event handler.
+     * Create a new event handler that uses MethodHandles to dispatch.
      *
      * @param priority the priority
-     * @param method the method
+     * @param object The object to invoke it on
+     * @param methodHandle The handle to invoke
+     * @param methodName The name of the method (for equality checks)
      */
-    public MethodEventHandler(Priority priority, Object object, Method method) {
+    protected MethodHandleEventHandler(Priority priority, Object object, MethodHandle methodHandle, String methodName) {
         super(priority);
-        checkNotNull(method);
-        this.object = object;
-        this.method = method;
-    }
 
-    /**
-     * Get the method.
-     *
-     * @return the method
-     */
-    public Method getMethod() {
-        return method;
+        this.object = object;
+        this.methodHandle = methodHandle.bindTo(object).asType(MethodType.methodType(void.class, Object.class));
+        this.methodName = methodName;
     }
 
     @Override
     public void dispatch(Object event) throws Exception {
-        method.invoke(object, event);
+        try {
+            this.methodHandle.invokeExact(event);
+        } catch (Exception | Error e) {
+            throw e;
+        } catch (Throwable t) {
+            // If it's not an Exception or Error, throw it wrapped.
+            throw new Exception(t);
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(methodName, object);
     }
 
     @Override
@@ -68,19 +71,12 @@ public class MethodEventHandler extends EventHandler {
             return false;
         }
 
-        MethodEventHandler that = (MethodEventHandler) o;
+        MethodHandleEventHandler that = (MethodHandleEventHandler) o;
 
-        if (!method.equals(that.method)) {
+        if (!methodName.equals(that.methodName)) {
             return false;
         }
 
         return Objects.equals(object, that.object);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = object != null ? object.hashCode() : 0;
-        result = 31 * result + method.hashCode();
-        return result;
     }
 }
