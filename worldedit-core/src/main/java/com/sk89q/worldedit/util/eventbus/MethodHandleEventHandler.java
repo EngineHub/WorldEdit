@@ -41,14 +41,14 @@ public class MethodHandleEventHandler extends EventHandler {
         super(priority);
 
         this.object = object;
-        this.methodHandle = methodHandle.asType(MethodType.methodType(void.class, Object.class, Object.class));
+        this.methodHandle = methodHandle.bindTo(object).asType(MethodType.methodType(void.class, Object.class));
         this.methodName = methodName;
     }
 
     @Override
     public void dispatch(Object event) throws Exception {
         try {
-            this.methodHandle.invokeExact(object, event);
+            this.methodHandle.invokeExact(event);
         } catch (Exception | Error e) {
             throw e;
         } catch (Throwable t) {
