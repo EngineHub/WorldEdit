@@ -59,7 +59,7 @@ public final class ChunkDeleter {
     );
 
     private static final Gson chunkDeleterGson = new GsonBuilder()
-            .registerTypeAdapter(BlockVector2.class, new BlockVector2Adapter())
+            .registerTypeAdapter(BlockVector2.class, new BlockVector2Adapter().nullSafe())
             .setPrettyPrinting()
             .create();
 
