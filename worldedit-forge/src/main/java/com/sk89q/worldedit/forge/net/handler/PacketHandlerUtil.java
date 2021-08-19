@@ -20,8 +20,8 @@
 package com.sk89q.worldedit.forge.net.handler;
 
 import com.sk89q.worldedit.forge.ForgeWorldEdit;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.fmllegacy.network.NetworkRegistry;
 
 import java.util.function.Predicate;
 
@@ -33,15 +33,15 @@ final class PacketHandlerUtil {
         final String verStr = Integer.toString(protocolVersion);
         final Predicate<String> validator = validateLenient(verStr);
         return NetworkRegistry.ChannelBuilder
-                .named(new ResourceLocation(ForgeWorldEdit.MOD_ID, id))
-                .clientAcceptedVersions(validator)
-                .serverAcceptedVersions(validator)
-                .networkProtocolVersion(() -> verStr);
+            .named(new ResourceLocation(ForgeWorldEdit.MOD_ID, id))
+            .clientAcceptedVersions(validator)
+            .serverAcceptedVersions(validator)
+            .networkProtocolVersion(() -> verStr);
     }
 
     private static Predicate<String> validateLenient(String protocolVersion) {
         return remoteVersion ->
-                protocolVersion.equals(remoteVersion)
+            protocolVersion.equals(remoteVersion)
                 || NetworkRegistry.ABSENT.equals(remoteVersion)
                 || NetworkRegistry.ACCEPTVANILLA.equals(remoteVersion);
     }

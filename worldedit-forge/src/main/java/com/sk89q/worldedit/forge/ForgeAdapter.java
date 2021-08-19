@@ -36,20 +36,19 @@ import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.state.DirectionProperty;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.biome.Biome;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.fmllegacy.server.ServerLifecycleHooks;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Comparator;
@@ -65,27 +64,44 @@ public final class ForgeAdapter {
     private ForgeAdapter() {
     }
 
-    public static World adapt(net.minecraft.world.World world) {
+    public static World adapt(ServerLevel world) {
         return new ForgeWorld(world);
+    }
+
+    /**
+     * Create a Forge world from a WorldEdit world.
+     *
+     * @param world the WorldEdit world
+     * @return a Forge world
+     */
+    public static ServerLevel adapt(World world) {
+        checkNotNull(world);
+        if (world instanceof ForgeWorld) {
+            return ((ForgeWorld) world).getWorld();
+        } else {
+            // TODO introduce a better cross-platform world API to match more easily
+            throw new UnsupportedOperationException("Cannot adapt from a " + world.getClass());
+        }
     }
 
     public static Biome adapt(BiomeType biomeType) {
         return ServerLifecycleHooks.getCurrentServer()
-            .func_244267_aX()
-            .func_243612_b(Registry.field_239720_u_)
-            .getOrDefault(new ResourceLocation(biomeType.getId()));
+            .registryAccess()
+            .registryOrThrow(Registry.BIOME_REGISTRY)
+            .getOptional(new ResourceLocation(biomeType.getId()))
+            .orElseThrow(() -> new IllegalStateException("No biome for " + biomeType.getId()));
     }
 
     public static BiomeType adapt(Biome biome) {
         ResourceLocation id = ServerLifecycleHooks.getCurrentServer()
-            .func_244267_aX()
-            .func_243612_b(Registry.field_239720_u_)
+            .registryAccess()
+            .registryOrThrow(Registry.BIOME_REGISTRY)
             .getKey(biome);
         Objects.requireNonNull(id, "biome is not registered");
         return BiomeTypes.get(id.toString());
     }
 
-    public static Vector3 adapt(Vector3d vector) {
+    public static Vector3 adapt(Vec3 vector) {
         return Vector3.at(vector.x, vector.y, vector.z);
     }
 
@@ -93,24 +109,24 @@ public final class ForgeAdapter {
         return BlockVector3.at(pos.getX(), pos.getY(), pos.getZ());
     }
 
-    public static Vector3d toVec3(BlockVector3 vector) {
-        return new Vector3d(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
+    public static Vec3 toVec3(BlockVector3 vector) {
+        return new Vec3(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
     }
 
-    public static net.minecraft.util.Direction adapt(Direction face) {
+    public static net.minecraft.core.Direction adapt(Direction face) {
         switch (face) {
-            case NORTH: return net.minecraft.util.Direction.NORTH;
-            case SOUTH: return net.minecraft.util.Direction.SOUTH;
-            case WEST: return net.minecraft.util.Direction.WEST;
-            case EAST: return net.minecraft.util.Direction.EAST;
-            case DOWN: return net.minecraft.util.Direction.DOWN;
+            case NORTH: return net.minecraft.core.Direction.NORTH;
+            case SOUTH: return net.minecraft.core.Direction.SOUTH;
+            case WEST: return net.minecraft.core.Direction.WEST;
+            case EAST: return net.minecraft.core.Direction.EAST;
+            case DOWN: return net.minecraft.core.Direction.DOWN;
             case UP:
             default:
-                return net.minecraft.util.Direction.UP;
+                return net.minecraft.core.Direction.UP;
         }
     }
 
-    public static Direction adaptEnumFacing(@Nullable net.minecraft.util.Direction face) {
+    public static Direction adaptEnumFacing(@Nullable net.minecraft.core.Direction face) {
         if (face == null) {
             return null;
         }
@@ -135,7 +151,7 @@ public final class ForgeAdapter {
      * @deprecated without replacement, use the block adapter methods
      */
     @Deprecated
-    public static Property<?> adaptProperty(net.minecraft.state.Property<?> property) {
+    public static Property<?> adaptProperty(net.minecraft.world.level.block.state.properties.Property<?> property) {
         return ForgeTransmogrifier.transmogToWorldEditProperty(property);
     }
 
@@ -144,30 +160,30 @@ public final class ForgeAdapter {
      * @deprecated without replacement, use the block adapter methods
      */
     @Deprecated
-    public static Map<Property<?>, Object> adaptProperties(BlockType block, Map<net.minecraft.state.Property<?>, Comparable<?>> mcProps) {
+    public static Map<Property<?>, Object> adaptProperties(BlockType block, Map<net.minecraft.world.level.block.state.properties.Property<?>, Comparable<?>> mcProps) {
         Map<Property<?>, Object> props = new TreeMap<>(Comparator.comparing(Property::getName));
-        for (Map.Entry<net.minecraft.state.Property<?>, Comparable<?>> prop : mcProps.entrySet()) {
+        for (Map.Entry<net.minecraft.world.level.block.state.properties.Property<?>, Comparable<?>> prop : mcProps.entrySet()) {
             Object value = prop.getValue();
             if (prop.getKey() instanceof DirectionProperty) {
-                value = adaptEnumFacing((net.minecraft.util.Direction) value);
-            } else if (prop.getKey() instanceof net.minecraft.state.EnumProperty) {
-                value = ((IStringSerializable) value).func_176610_l();
+                value = adaptEnumFacing((net.minecraft.core.Direction) value);
+            } else if (prop.getKey() instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
+                value = ((StringRepresentable) value).getSerializedName();
             }
             props.put(block.getProperty(prop.getKey().getName()), value);
         }
         return props;
     }
 
-    public static net.minecraft.block.BlockState adapt(BlockState blockState) {
+    public static net.minecraft.world.level.block.state.BlockState adapt(BlockState blockState) {
         int blockStateId = BlockStateIdAccess.getBlockStateId(blockState);
         if (!BlockStateIdAccess.isValidInternalId(blockStateId)) {
             return ForgeTransmogrifier.transmogToMinecraft(blockState);
         }
-        return Block.getStateById(blockStateId);
+        return Block.stateById(blockStateId);
     }
 
-    public static BlockState adapt(net.minecraft.block.BlockState blockState) {
-        int blockStateId = Block.getStateId(blockState);
+    public static BlockState adapt(net.minecraft.world.level.block.state.BlockState blockState) {
+        int blockStateId = Block.getId(blockState);
         BlockState worldEdit = BlockStateIdAccess.getBlockStateById(blockStateId);
         if (worldEdit == null) {
             return ForgeTransmogrifier.transmogToWorldEdit(blockState);
@@ -192,7 +208,7 @@ public final class ForgeAdapter {
     }
 
     public static ItemStack adapt(BaseItemStack baseItemStack) {
-        CompoundNBT forgeCompound = null;
+        net.minecraft.nbt.CompoundTag forgeCompound = null;
         if (baseItemStack.getNbt() != null) {
             forgeCompound = NBTConverter.toNative(baseItemStack.getNbt());
         }
@@ -202,18 +218,18 @@ public final class ForgeAdapter {
     }
 
     public static BaseItemStack adapt(ItemStack itemStack) {
-        CompoundNBT tag = itemStack.serializeNBT();
-        if (tag.keySet().isEmpty()) {
+        net.minecraft.nbt.CompoundTag tag = itemStack.serializeNBT();
+        if (tag.getAllKeys().isEmpty()) {
             tag = null;
         } else {
-            final INBT tagTag = tag.get("tag");
-            if (tagTag instanceof CompoundNBT) {
-                tag = ((CompoundNBT) tagTag);
+            final net.minecraft.nbt.Tag tagTag = tag.get("tag");
+            if (tagTag instanceof net.minecraft.nbt.CompoundTag) {
+                tag = ((net.minecraft.nbt.CompoundTag) tagTag);
             } else {
                 tag = null;
             }
         }
-        CompoundNBT finalTag = tag;
+        net.minecraft.nbt.CompoundTag finalTag = tag;
         return new BaseItemStack(
             adapt(itemStack.getItem()),
             finalTag == null ? null : LazyReference.from(() -> NBTConverter.fromNative(finalTag)),
@@ -227,7 +243,7 @@ public final class ForgeAdapter {
      * @param player the player
      * @return the WorldEdit player
      */
-    public static ForgePlayer adaptPlayer(ServerPlayerEntity player) {
+    public static ForgePlayer adaptPlayer(ServerPlayer player) {
         checkNotNull(player);
         return new ForgePlayer(player);
     }

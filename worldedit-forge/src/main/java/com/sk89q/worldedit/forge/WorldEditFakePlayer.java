@@ -20,8 +20,8 @@
 package com.sk89q.worldedit.forge;
 
 import com.mojang.authlib.GameProfile;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.MenuProvider;
 import net.minecraftforge.common.util.FakePlayer;
 
 import java.util.OptionalInt;
@@ -32,7 +32,7 @@ public class WorldEditFakePlayer extends FakePlayer {
 
     private static final GameProfile FAKE_GAME_PROFILE = new GameProfile(UUID.nameUUIDFromBytes("worldedit".getBytes()), "[WorldEdit]");
 
-    public WorldEditFakePlayer(ServerWorld world) {
+    public WorldEditFakePlayer(ServerLevel world) {
         super(world, FAKE_GAME_PROFILE);
     }
 
@@ -42,7 +42,7 @@ public class WorldEditFakePlayer extends FakePlayer {
     }
 
     @Override
-    public OptionalInt openContainer(@Nullable INamedContainerProvider container) {
+    public OptionalInt openMenu(@Nullable MenuProvider menuProvider) {
         return OptionalInt.empty();
     }
 }

@@ -70,6 +70,22 @@ public final class FabricAdapter {
         return new FabricWorld(world);
     }
 
+    /**
+     * Create a Fabric world from a WorldEdit world.
+     *
+     * @param world the WorldEdit world
+     * @return a Fabric world
+     */
+    public static net.minecraft.world.World adapt(World world) {
+        checkNotNull(world);
+        if (world instanceof FabricWorld) {
+            return ((FabricWorld) world).getWorld();
+        } else {
+            // TODO introduce a better cross-platform world API to match more easily
+            throw new UnsupportedOperationException("Cannot adapt from a " + world.getClass());
+        }
+    }
+
     public static Biome adapt(BiomeType biomeType) {
         return FabricWorldEdit.LIFECYCLED_SERVER.valueOrThrow()
             .getRegistryManager()

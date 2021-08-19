@@ -61,6 +61,7 @@ fun Project.applyPlatformAndCoreConfiguration() {
     }
 
     dependencies {
+        "compileOnly"("com.google.code.findbugs:jsr305:3.0.2")
         "testImplementation"("org.junit.jupiter:junit-jupiter-api:${Versions.JUNIT}")
         "testImplementation"("org.junit.jupiter:junit-jupiter-params:${Versions.JUNIT}")
         "testImplementation"("org.mockito:mockito-core:${Versions.MOCKITO}")
@@ -80,13 +81,16 @@ fun Project.applyPlatformAndCoreConfiguration() {
         }
     }
 
-    the<JavaPluginExtension>().withJavadocJar()
+    configure<JavaPluginExtension> {
+        disableAutoTargetJvm()
+        withJavadocJar()
+    }
 
     if (name in setOf("worldedit-core", "worldedit-bukkit", "worldedit-fabric")) {
         the<JavaPluginExtension>().withSourcesJar()
     }
 
-    if (name != "worldedit-fabric") {
+    if (name !in setOf("worldedit-fabric", "worldedit-forge")) {
         configurations["compileClasspath"].apply {
             resolutionStrategy.componentSelection {
                 withModule("org.slf4j:slf4j-api") {

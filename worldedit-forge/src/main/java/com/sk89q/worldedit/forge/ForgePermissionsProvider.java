@@ -19,13 +19,13 @@
 
 package com.sk89q.worldedit.forge;
 
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.world.GameType;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.GameType;
+import net.minecraftforge.fmllegacy.server.ServerLifecycleHooks;
 
 public interface ForgePermissionsProvider {
 
-    boolean hasPermission(ServerPlayerEntity player, String permission);
+    boolean hasPermission(ServerPlayer player, String permission);
 
     void registerPermission(String permission);
 
@@ -38,11 +38,11 @@ public interface ForgePermissionsProvider {
         }
 
         @Override
-        public boolean hasPermission(ServerPlayerEntity player, String permission) {
+        public boolean hasPermission(ServerPlayer player, String permission) {
             ForgeConfiguration configuration = platform.getConfiguration();
             return configuration.cheatMode
-                || ServerLifecycleHooks.getCurrentServer().getPlayerList().canSendCommands(player.getGameProfile())
-                || (configuration.creativeEnable && player.interactionManager.getGameType() == GameType.CREATIVE);
+                || ServerLifecycleHooks.getCurrentServer().getPlayerList().isOp(player.getGameProfile())
+                || (configuration.creativeEnable && player.gameMode.getGameModeForPlayer() == GameType.CREATIVE);
         }
 
         @Override
