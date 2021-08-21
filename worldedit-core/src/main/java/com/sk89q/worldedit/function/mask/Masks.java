@@ -66,26 +66,12 @@ public final class Masks {
             return ALWAYS_FALSE;
         } else if (mask instanceof AlwaysFalse) {
             return ALWAYS_TRUE;
+        } else if (mask instanceof NegatedMask) {
+            return ((NegatedMask) mask).mask;
         }
 
         checkNotNull(mask);
-        return new AbstractMask() {
-            @Override
-            public boolean test(BlockVector3 vector) {
-                return !mask.test(vector);
-            }
-
-            @Nullable
-            @Override
-            public Mask2D toMask2D() {
-                Mask2D mask2d = mask.toMask2D();
-                if (mask2d != null) {
-                    return negate(mask2d);
-                } else {
-                    return null;
-                }
-            }
-        };
+        return new NegatedMask(mask);
     }
 
     /**
@@ -99,15 +85,12 @@ public final class Masks {
             return ALWAYS_FALSE;
         } else if (mask instanceof AlwaysFalse) {
             return ALWAYS_TRUE;
+        } else if (mask instanceof NegatedMask2D) {
+            return ((NegatedMask2D) mask).mask;
         }
 
         checkNotNull(mask);
-        return new AbstractMask2D() {
-            @Override
-            public boolean test(BlockVector2 vector) {
-                return !mask.test(vector);
-            }
-        };
+        return new NegatedMask2D(mask);
     }
 
     /**
@@ -167,4 +150,39 @@ public final class Masks {
         }
     }
 
+    private static class NegatedMask implements Mask {
+        private final Mask mask;
+
+        private NegatedMask(Mask mask) {
+            this.mask = mask;
+        }
+
+        @Override
+        public boolean test(BlockVector3 vector) {
+            return !mask.test(vector);
+        }
+
+        @Nullable
+        @Override
+        public Mask2D toMask2D() {
+            Mask2D mask2D = mask.toMask2D();
+            if (mask2D == null) {
+                return null;
+            }
+            return negate(mask2D);
+        }
+    }
+
+    private static class NegatedMask2D implements Mask2D {
+        private final Mask2D mask;
+
+        private NegatedMask2D(Mask2D mask) {
+            this.mask = mask;
+        }
+
+        @Override
+        public boolean test(BlockVector2 vector) {
+            return !mask.test(vector);
+        }
+    }
 }
