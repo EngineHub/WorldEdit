@@ -19,9 +19,6 @@
 
 package com.sk89q.worldedit.session.request;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.world.World;
@@ -29,14 +26,11 @@ import com.sk89q.worldedit.world.World;
 import javax.annotation.Nullable;
 
 /**
- * Describes the current request.
+ * Describes the current request using a {@link ThreadLocal}.
  */
 public final class Request {
 
-    private static final LoadingCache<Thread, Request> THREAD_TO_REQUEST =
-        CacheBuilder.newBuilder()
-            .weakKeys()
-            .build(CacheLoader.from(Request::new));
+    private static final ThreadLocal<Request> threadLocal = ThreadLocal.withInitial(Request::new);
 
     private @Nullable World world;
     private @Nullable LocalSession session;
@@ -106,7 +100,7 @@ public final class Request {
      * @return the current request
      */
     public static Request request() {
-        return THREAD_TO_REQUEST.getUnchecked(Thread.currentThread());
+        return threadLocal.get();
     }
 
     /**
@@ -114,7 +108,7 @@ public final class Request {
      */
     public static void reset() {
         request().invalidate();
-        THREAD_TO_REQUEST.invalidate(Thread.currentThread());
+        threadLocal.remove();
     }
 
     /**
