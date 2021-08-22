@@ -11,6 +11,10 @@
 - Support 48x48x48 //drawsel on new versions of Minecraft
 - Fixed the offset mask forcing negation of itself
 - Fixed //regen breaking when some certain mods are in use
+- Fixed cycler tool removing NBT data
+- Improved performance of event bus in situations where it was flooded with data
+- Improve performance of poorly constructed masks with heavily-nested negation
+- Fixed error when using /delchunks with non-cuboid regions
 
 7.2.5
 - Allow /toggleplace to work on any Locatable Actor, e.g. Command Blocks
