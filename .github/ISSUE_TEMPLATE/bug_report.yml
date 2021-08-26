@@ -22,11 +22,26 @@ body:
     label: Platform Version
     description: |
       The version of the platform you are on, i.e. Spigot, Paper, Fabric, or Forge.
-      Please ensure you are running up to date software before making a bug report.
-      Old versions will receive little to no support.
+      Please ensure you are running up-to-date software before making a bug report.
+      Old versions or hybrids will receive little to no support.
     placeholder: e.g. git-Spigot-21fe707-e1ebe52, git-Paper-463, Fabric 0.7.1, Forge 35.1.37
   validations:
     required: true
+
+- type: checkboxes
+  id: confirmations
+  attributes:
+    label: Confirmations
+    description: Please confirm the following before submitting the bug. Your report will be closed if you are running hybrids or old software.
+    options:
+      - label: I am using the most recent Minecraft release.
+        required: true
+      - label: I am not using a hybrid server, e.g. a server that combines Bukkit and Forge. Examples include Arclight, Mohist, and Cardboard.
+        required: true
+      - label: I am using a version of WorldEdit compatible with my Minecraft version.
+        required: true
+      - label: I am using the latest or recommended version of my platform software.
+        required: true
 
 - type: textarea
   attributes:
