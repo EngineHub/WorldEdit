@@ -111,7 +111,7 @@ fun Project.applyLibrariesConfiguration() {
             attribute(Category.CATEGORY_ATTRIBUTE, project.objects.named(Category.LIBRARY))
             attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling.SHADOWED))
             attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements.JAR))
-            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 8)
+            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 16)
         }
         outgoing.artifact(tasks.named("jar"))
     }
@@ -126,7 +126,7 @@ fun Project.applyLibrariesConfiguration() {
             attribute(Category.CATEGORY_ATTRIBUTE, project.objects.named(Category.LIBRARY))
             attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling.SHADOWED))
             attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements.JAR))
-            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 8)
+            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 16)
         }
         outgoing.artifact(tasks.named("jar"))
     }
