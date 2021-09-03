@@ -225,9 +225,6 @@ public class BukkitWorld extends AbstractWorld {
     @Override
     public boolean clearContainerBlockContents(BlockVector3 pt) {
         checkNotNull(pt);
-        if (!getBlock(pt).getBlockType().getMaterial().hasContainer()) {
-            return false;
-        }
 
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         if (adapter != null) {
@@ -235,6 +232,10 @@ public class BukkitWorld extends AbstractWorld {
                 return adapter.clearContainerBlockContents(getWorld(), pt);
             } catch (Exception ignored) {
             }
+        }
+
+        if (!getBlock(pt).getBlockType().getMaterial().hasContainer()) {
+            return false;
         }
 
         Block block = getWorld().getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
