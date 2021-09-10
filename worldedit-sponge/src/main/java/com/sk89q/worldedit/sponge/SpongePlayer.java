@@ -213,7 +213,7 @@ public class SpongePlayer extends AbstractPlayerActor {
     @Override
     public void setGameMode(GameMode gameMode) {
         player.gameMode().set(
-            Sponge.game().registries().registry(RegistryTypes.GAME_MODE).value(
+            Sponge.game().registry(RegistryTypes.GAME_MODE).value(
                 ResourceKey.resolve(gameMode.getId())
             )
         );

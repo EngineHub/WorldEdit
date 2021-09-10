@@ -160,7 +160,7 @@ public class SpongeTransmogrifier {
     }
 
     public static org.spongepowered.api.block.BlockState transmogToMinecraft(BlockState blockState) {
-        org.spongepowered.api.block.BlockType mcBlock = Sponge.game().registries().registry(RegistryTypes.BLOCK_TYPE)
+        org.spongepowered.api.block.BlockType mcBlock = Sponge.game().registry(RegistryTypes.BLOCK_TYPE)
             .value(ResourceKey.resolve(blockState.getBlockType().getId()));
         org.spongepowered.api.block.BlockState newState = mcBlock.defaultState();
         Map<Property<?>, Object> states = blockState.getStates();

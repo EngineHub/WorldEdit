@@ -50,7 +50,7 @@ dependencies {
     implementation("org.ajoberstar.grgit:grgit-gradle:4.1.0")
     implementation("gradle.plugin.com.github.johnrengelman:shadow:7.1.0")
     implementation("org.jfrog.buildinfo:build-info-extractor-gradle:4.24.23")
-    implementation("org.spongepowered:spongegradle-plugin-development:1.1.0")
+    implementation("org.spongepowered:spongegradle-plugin-development:2.0.0")
     implementation("org.spongepowered:vanillagradle:0.1")
     implementation("net.minecraftforge.gradle:ForgeGradle:5.1.26")
     implementation("net.fabricmc:fabric-loom:$loomVersion")

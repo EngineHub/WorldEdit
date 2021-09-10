@@ -75,7 +75,7 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public boolean isValidMobType(String type) {
-        return Sponge.game().registries().registry(RegistryTypes.ENTITY_TYPE)
+        return Sponge.game().registry(RegistryTypes.ENTITY_TYPE)
             .findValue(ResourceKey.resolve(type)).isPresent();
     }
 

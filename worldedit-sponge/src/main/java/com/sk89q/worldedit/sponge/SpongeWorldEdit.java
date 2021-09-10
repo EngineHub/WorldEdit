@@ -55,7 +55,6 @@ import org.spongepowered.api.command.CommandCompletion;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.parameter.ArgumentReader;
 import org.spongepowered.api.config.ConfigDir;
-import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.InteractBlockEvent;
@@ -67,16 +66,13 @@ import org.spongepowered.api.event.lifecycle.StartedEngineEvent;
 import org.spongepowered.api.event.lifecycle.StartingEngineEvent;
 import org.spongepowered.api.event.lifecycle.StoppingEngineEvent;
 import org.spongepowered.api.event.network.ServerSideConnectionEvent;
-import org.spongepowered.api.item.ItemType;
-import org.spongepowered.api.registry.RegistryEntry;
 import org.spongepowered.api.registry.RegistryTypes;
 import org.spongepowered.api.scheduler.Task;
-import org.spongepowered.api.world.biome.Biome;
 import org.spongepowered.api.world.server.ServerLocation;
 import org.spongepowered.api.world.server.ServerWorld;
 import org.spongepowered.math.vector.Vector3d;
 import org.spongepowered.plugin.PluginContainer;
-import org.spongepowered.plugin.jvm.Plugin;
+import org.spongepowered.plugin.builtin.jvm.Plugin;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -156,42 +152,42 @@ public class SpongeWorldEdit {
 
     @Listener
     public void serverStarted(StartedEngineEvent<Server> event) {
-        for (RegistryEntry<BlockType> blockType : event.game().registries().registry(RegistryTypes.BLOCK_TYPE)) {
+        event.game().registry(RegistryTypes.BLOCK_TYPE).streamEntries().forEach(blockType -> {
             String id = blockType.key().asString();
             if (!com.sk89q.worldedit.world.block.BlockType.REGISTRY.keySet().contains(id)) {
                 com.sk89q.worldedit.world.block.BlockType.REGISTRY.register(id, new com.sk89q.worldedit.world.block.BlockType(
                     id,
                     input -> {
-                        BlockType spongeBlockType = Sponge.game().registries().registry(RegistryTypes.BLOCK_TYPE).value(
+                        BlockType spongeBlockType = Sponge.game().registry(RegistryTypes.BLOCK_TYPE).value(
                             ResourceKey.resolve(input.getBlockType().getId())
                         );
                         return SpongeAdapter.adapt(spongeBlockType.defaultState());
                     }
                 ));
             }
-        }
+        });
 
-        for (RegistryEntry<ItemType> itemType : event.game().registries().registry(RegistryTypes.ITEM_TYPE)) {
+        event.game().registry(RegistryTypes.ITEM_TYPE).streamEntries().forEach(itemType -> {
             String id = itemType.key().asString();
             if (!com.sk89q.worldedit.world.item.ItemType.REGISTRY.keySet().contains(id)) {
                 com.sk89q.worldedit.world.item.ItemType.REGISTRY.register(id, new com.sk89q.worldedit.world.item.ItemType(id));
             }
-        }
+        });
 
-        for (RegistryEntry<EntityType<?>> entityType : event.game().registries().registry(RegistryTypes.ENTITY_TYPE)) {
+        event.game().registry(RegistryTypes.ENTITY_TYPE).streamEntries().forEach(entityType -> {
             String id = entityType.key().asString();
             if (!com.sk89q.worldedit.world.entity.EntityType.REGISTRY.keySet().contains(id)) {
                 com.sk89q.worldedit.world.entity.EntityType.REGISTRY.register(id, new com.sk89q.worldedit.world.entity.EntityType(id));
             }
-        }
+        });
 
         for (ServerWorld world : event.engine().worldManager().worlds()) {
-            for (RegistryEntry<Biome> biomeType : world.registries().registry(RegistryTypes.BIOME)) {
+            world.registry(RegistryTypes.BIOME).streamEntries().forEach(biomeType -> {
                 String id = biomeType.key().asString();
                 if (!BiomeType.REGISTRY.keySet().contains(id)) {
                     BiomeType.REGISTRY.register(id, new BiomeType(id));
                 }
-            }
+            });
         }
 
         for (ResourceLocation name : BlockTags.getAllTags().getAvailableTags()) {
@@ -246,7 +242,7 @@ public class SpongeWorldEdit {
             public CommandResult process(CommandCause cause, ArgumentReader.Mutable arguments) {
                 CommandEvent weEvent = new CommandEvent(SpongeWorldEdit.inst().wrapCommandCause(cause), command.getName() + " " + arguments.remaining());
                 WorldEdit.getInstance().getEventBus().post(weEvent);
-                return weEvent.isCancelled() ? CommandResult.success() : CommandResult.empty();
+                return weEvent.isCancelled() ? CommandResult.success() : CommandResult.builder().build();
             }
 
             @Override
@@ -398,7 +394,7 @@ public class SpongeWorldEdit {
      * @return a version string
      */
     String getInternalVersion() {
-        return container.metadata().version();
+        return container.metadata().version().getQualifier();
     }
 
     public void setPermissionsProvider(SpongePermissionsProvider provider) {

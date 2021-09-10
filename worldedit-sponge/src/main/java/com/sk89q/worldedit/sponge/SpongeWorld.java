@@ -255,7 +255,7 @@ public final class SpongeWorld extends AbstractWorld {
     public BiomeType getBiome(BlockVector3 position) {
         checkNotNull(position);
         return BiomeType.REGISTRY.get(
-            getWorld().registries().registry(RegistryTypes.BIOME)
+            getWorld().registry(RegistryTypes.BIOME)
                 .valueKey(getWorld().biome(position.getBlockX(), position.getBlockY(), position.getBlockZ()))
                 .asString()
         );
@@ -268,7 +268,7 @@ public final class SpongeWorld extends AbstractWorld {
 
         getWorld().setBiome(
             position.getBlockX(), position.getY(), position.getBlockZ(),
-            getWorld().registries().registry(RegistryTypes.BIOME).value(
+            getWorld().registry(RegistryTypes.BIOME).value(
                 ResourceKey.resolve(biome.getId())
             )
         );
@@ -361,7 +361,7 @@ public final class SpongeWorld extends AbstractWorld {
     public Entity createEntity(Location location, BaseEntity entity) {
         ServerWorld world = getWorld();
 
-        EntityType<?> entityType = Sponge.game().registries().registry(RegistryTypes.ENTITY_TYPE)
+        EntityType<?> entityType = Sponge.game().registry(RegistryTypes.ENTITY_TYPE)
             .value(ResourceKey.resolve(entity.getType().getId()));
         Vector3d pos = new Vector3d(location.getX(), location.getY(), location.getZ());
 
@@ -401,7 +401,7 @@ public final class SpongeWorld extends AbstractWorld {
     @Override
     public void setWeather(WeatherType weatherType) {
         getWorld().setWeather(
-            Sponge.game().registries().registry(RegistryTypes.WEATHER_TYPE).value(
+            Sponge.game().registry(RegistryTypes.WEATHER_TYPE).value(
                 ResourceKey.resolve(weatherType.getId())
             )
         );
@@ -410,7 +410,7 @@ public final class SpongeWorld extends AbstractWorld {
     @Override
     public void setWeather(WeatherType weatherType, long duration) {
         getWorld().setWeather(
-            Sponge.game().registries().registry(RegistryTypes.WEATHER_TYPE).value(
+            Sponge.game().registry(RegistryTypes.WEATHER_TYPE).value(
                 ResourceKey.resolve(weatherType.getId())
             ),
             Ticks.of(duration)

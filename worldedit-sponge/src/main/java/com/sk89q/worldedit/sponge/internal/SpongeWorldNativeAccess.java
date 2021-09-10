@@ -23,6 +23,7 @@ import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
 import com.sk89q.worldedit.sponge.SpongeAdapter;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
+import com.sk89q.worldedit.world.storage.ChunkStore;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ChunkHolder;
@@ -110,8 +111,10 @@ public class SpongeWorldNativeAccess implements WorldNativeAccess<LevelChunk, Bl
     }
 
     @Override
-    public void notifyBlockUpdate(BlockPos position, BlockState oldState, BlockState newState) {
-        getWorld().sendBlockUpdated(position, oldState, newState, UPDATE | NOTIFY);
+    public void notifyBlockUpdate(LevelChunk chunk, BlockPos position, BlockState oldState, BlockState newState) {
+        if (chunk.getSections()[position.getY() >> ChunkStore.CHUNK_SHIFTS] != null) { // TODO 1.17 - world.get().getSectionIndex(position.getY())
+            getWorld().sendBlockUpdated(position, oldState, newState, UPDATE | NOTIFY);
+        }
     }
 
     @Override
@@ -120,8 +123,10 @@ public class SpongeWorldNativeAccess implements WorldNativeAccess<LevelChunk, Bl
     }
 
     @Override
-    public void markBlockChanged(BlockPos position) {
-        getWorld().getChunkSource().blockChanged(position);
+    public void markBlockChanged(LevelChunk chunk, BlockPos position) {
+        if (chunk.getSections()[position.getY() >> ChunkStore.CHUNK_SHIFTS] != null) { // TODO 1.17 - world.getSectionIndex(position.getY())
+            getWorld().getChunkSource().blockChanged(position);
+        }
     }
 
     @Override

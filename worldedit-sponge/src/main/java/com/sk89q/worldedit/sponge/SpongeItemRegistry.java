@@ -33,7 +33,7 @@ public class SpongeItemRegistry extends BundledItemRegistry {
 
     @Override
     public Component getRichName(ItemType itemType) {
-        return SpongeTextAdapter.convert(Sponge.game().registries().registry(RegistryTypes.ITEM_TYPE)
+        return SpongeTextAdapter.convert(Sponge.game().registry(RegistryTypes.ITEM_TYPE)
             .value(ResourceKey.resolve(itemType.getId())).asComponent());
     }
 
