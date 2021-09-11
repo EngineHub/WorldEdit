@@ -159,7 +159,7 @@ sealed class WorldEditKind(
     object Plugin : WorldEditKind("PLUGIN")
 }
 
-fun Project.addJarManifest(kind: WorldEditKind, includeClasspath: Boolean = false) {
+fun Project.addJarManifest(kind: WorldEditKind, includeClasspath: Boolean = false, extraAttributes: Map<String, String> = mapOf()) {
     tasks.named<Jar>("jar") {
         val version = project(":worldedit-core").version
         inputs.property("version", version)
@@ -172,6 +172,7 @@ fun Project.addJarManifest(kind: WorldEditKind, includeClasspath: Boolean = fals
         if (includeClasspath) {
             attributes["Class-Path"] = CLASSPATH
         }
+        attributes.putAll(extraAttributes)
         manifest.attributes(attributes)
     }
 }
