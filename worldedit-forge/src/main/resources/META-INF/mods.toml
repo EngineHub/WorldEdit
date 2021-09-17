@@ -35,9 +35,3 @@ WorldEdit is an easy-to-use in-game world editor for Minecraft, supporting both 
     versionRange="[${forgeVersion},)"
     ordering="NONE"
     side="BOTH"
-[[dependencies.worldedit]]
-    modId="sponge"
-    mandatory=false
-    versionRange="[1.13]"
-    ordering="BEFORE"
-    side="SERVER"
