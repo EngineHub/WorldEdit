@@ -74,9 +74,8 @@ import javax.annotation.Nullable;
  *
  * This class also provides util methods for converting compounds to wrap the update call to
  * receive the source version in the compound
- *
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.worldedit.world.DataFixer {
 
     @SuppressWarnings("unchecked")
@@ -164,7 +163,7 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
     private static String fixName(String key, int srcVer, TypeReference type) {
         return INSTANCE.fixer.update(type, new Dynamic<>(OPS_NBT, net.minecraft.nbt.StringTag.valueOf(key)), srcVer, DATA_VERSION)
-                .getValue().getAsString();
+            .getValue().getAsString();
     }
 
     private final PaperweightAdapter adapter;
@@ -460,6 +459,7 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
     private void registerEntityItemListEquipment(String type) {
         registerEntityItemList(type, "ArmorItems", "HandItems");
     }
+
     private static final Map<String, ResourceLocation> OLD_ID_TO_KEY_MAP = new HashMap<>();
 
     static {
@@ -605,7 +605,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
     private static class DataConverterEquipment implements DataConverter {
 
-        DataConverterEquipment() {}
+        DataConverterEquipment() {
+        }
 
         public int getDataVersion() {
             return 100;
@@ -664,7 +665,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
         private static final Map<String, String> b = Maps.newHashMap();
         private static final Map<String, String> c = Maps.newHashMap();
 
-        DataInspectorBlockEntity() {}
+        DataInspectorBlockEntity() {
+        }
 
         @Nullable
         private static String convertEntityId(int i, String s) {
@@ -804,7 +806,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
         private static final Logger a = LogManager.getLogger(PaperweightDataConverters.class);
 
-        DataInspectorEntity() {}
+        DataInspectorEntity() {
+        }
 
         public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
             net.minecraft.nbt.CompoundTag nbttagcompound1 = cmp.getCompound("tag");
@@ -876,6 +879,7 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
             return nbttagcompound;
         }
     }
+
     private static class DataInspectorItem extends DataInspectorTagged {
 
         private final String[] keys;
@@ -898,7 +902,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
         private static final String[] materials = new String[2268];
 
-        DataConverterMaterialId() {}
+        DataConverterMaterialId() {
+        }
 
         public int getDataVersion() {
             return 102;
@@ -1277,7 +1282,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
     private static class DataConverterArmorStand implements DataConverter {
 
-        DataConverterArmorStand() {}
+        DataConverterArmorStand() {
+        }
 
         public int getDataVersion() {
             return 147;
@@ -1294,7 +1300,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
     private static class DataConverterBanner implements DataConverter {
 
-        DataConverterBanner() {}
+        DataConverterBanner() {
+        }
 
         public int getDataVersion() {
             return 804;
@@ -1341,7 +1348,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
         private static final String[] potions = new String[128];
 
-        DataConverterPotionId() {}
+        DataConverterPotionId() {
+        }
 
         public int getDataVersion() {
             return 102;
@@ -1506,7 +1514,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
         private static final String[] eggs = new String[256];
 
-        DataConverterSpawnEgg() {}
+        DataConverterSpawnEgg() {
+        }
 
         public int getDataVersion() {
             return 105;
@@ -1612,7 +1621,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
         private static final List<String> a = Lists.newArrayList("MinecartRideable", "MinecartChest", "MinecartFurnace", "MinecartTNT", "MinecartSpawner", "MinecartHopper", "MinecartCommandBlock");
 
-        DataConverterMinecart() {}
+        DataConverterMinecart() {
+        }
 
         public int getDataVersion() {
             return 106;
@@ -1637,7 +1647,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
     private static class DataConverterMobSpawner implements DataConverter {
 
-        DataConverterMobSpawner() {}
+        DataConverterMobSpawner() {
+        }
 
         public int getDataVersion() {
             return 107;
@@ -1680,7 +1691,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
     private static class DataConverterUUID implements DataConverter {
 
-        DataConverterUUID() {}
+        DataConverterUUID() {
+        }
 
         public int getDataVersion() {
             return 108;
@@ -1699,7 +1711,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
         private static final Set<String> a = Sets.newHashSet("ArmorStand", "Bat", "Blaze", "CaveSpider", "Chicken", "Cow", "Creeper", "EnderDragon", "Enderman", "Endermite", "EntityHorse", "Ghast", "Giant", "Guardian", "LavaSlime", "MushroomCow", "Ozelot", "Pig", "PigZombie", "Rabbit", "Sheep", "Shulker", "Silverfish", "Skeleton", "Slime", "SnowMan", "Spider", "Squid", "Villager", "VillagerGolem", "Witch", "WitherBoss", "Wolf", "Zombie");
 
-        DataConverterHealth() {}
+        DataConverterHealth() {
+        }
 
         public int getDataVersion() {
             return 109;
@@ -1729,7 +1742,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
     private static class DataConverterSaddle implements DataConverter {
 
-        DataConverterSaddle() {}
+        DataConverterSaddle() {
+        }
 
         public int getDataVersion() {
             return 110;
@@ -1752,7 +1766,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
     private static class DataConverterHanging implements DataConverter {
 
-        DataConverterHanging() {}
+        DataConverterHanging() {
+        }
 
         public int getDataVersion() {
             return 111;
@@ -1789,7 +1804,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
     private static class DataConverterDropChances implements DataConverter {
 
-        DataConverterDropChances() {}
+        DataConverterDropChances() {
+        }
 
         public int getDataVersion() {
             return 113;
@@ -1818,7 +1834,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
     private static class DataConverterRiding implements DataConverter {
 
-        DataConverterRiding() {}
+        DataConverterRiding() {
+        }
 
         public int getDataVersion() {
             return 135;
@@ -1852,7 +1869,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
     private static class DataConverterBook implements DataConverter {
 
-        DataConverterBook() {}
+        DataConverterBook() {
+        }
 
         public int getDataVersion() {
             return 165;
@@ -1921,7 +1939,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
         private static final ResourceLocation a = new ResourceLocation("cooked_fished");
 
-        DataConverterCookedFish() {}
+        DataConverterCookedFish() {
+        }
 
         public int getDataVersion() {
             return 502;
@@ -1940,7 +1959,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
         private static final Random a = new Random();
 
-        DataConverterZombie() {}
+        DataConverterZombie() {
+        }
 
         public int getDataVersion() {
             return 502;
@@ -1979,7 +1999,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
     private static class DataConverterVBO implements DataConverter {
 
-        DataConverterVBO() {}
+        DataConverterVBO() {
+        }
 
         public int getDataVersion() {
             return 505;
@@ -1993,7 +2014,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
     private static class DataConverterGuardian implements DataConverter {
 
-        DataConverterGuardian() {}
+        DataConverterGuardian() {
+        }
 
         public int getDataVersion() {
             return 700;
@@ -2014,7 +2036,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
     private static class DataConverterSkeleton implements DataConverter {
 
-        DataConverterSkeleton() {}
+        DataConverterSkeleton() {
+        }
 
         public int getDataVersion() {
             return 701;
@@ -2041,7 +2064,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
     private static class DataConverterZombieType implements DataConverter {
 
-        DataConverterZombieType() {}
+        DataConverterZombieType() {
+        }
 
         public int getDataVersion() {
             return 702;
@@ -2078,7 +2102,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
     private static class DataConverterHorse implements DataConverter {
 
-        DataConverterHorse() {}
+        DataConverterHorse() {
+        }
 
         public int getDataVersion() {
             return 703;
@@ -2121,7 +2146,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
         private static final Map<String, String> a = Maps.newHashMap();
 
-        DataConverterTileEntity() {}
+        DataConverterTileEntity() {
+        }
 
         public int getDataVersion() {
             return 704;
@@ -2168,7 +2194,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
         private static final Map<String, String> a = Maps.newHashMap();
 
-        DataConverterEntity() {}
+        DataConverterEntity() {
+        }
 
         public int getDataVersion() {
             return 704;
@@ -2265,7 +2292,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
     private static class DataConverterPotionWater implements DataConverter {
 
-        DataConverterPotionWater() {}
+        DataConverterPotionWater() {
+        }
 
         public int getDataVersion() {
             return 806;
@@ -2292,7 +2320,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
     private static class DataConverterShulker implements DataConverter {
 
-        DataConverterShulker() {}
+        DataConverterShulker() {
+        }
 
         public int getDataVersion() {
             return 808;
@@ -2309,9 +2338,10 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
     private static class DataConverterShulkerBoxItem implements DataConverter {
 
-        public static final String[] a = new String[] { "minecraft:white_shulker_box", "minecraft:orange_shulker_box", "minecraft:magenta_shulker_box", "minecraft:light_blue_shulker_box", "minecraft:yellow_shulker_box", "minecraft:lime_shulker_box", "minecraft:pink_shulker_box", "minecraft:gray_shulker_box", "minecraft:silver_shulker_box", "minecraft:cyan_shulker_box", "minecraft:purple_shulker_box", "minecraft:blue_shulker_box", "minecraft:brown_shulker_box", "minecraft:green_shulker_box", "minecraft:red_shulker_box", "minecraft:black_shulker_box"};
+        public static final String[] a = new String[] { "minecraft:white_shulker_box", "minecraft:orange_shulker_box", "minecraft:magenta_shulker_box", "minecraft:light_blue_shulker_box", "minecraft:yellow_shulker_box", "minecraft:lime_shulker_box", "minecraft:pink_shulker_box", "minecraft:gray_shulker_box", "minecraft:silver_shulker_box", "minecraft:cyan_shulker_box", "minecraft:purple_shulker_box", "minecraft:blue_shulker_box", "minecraft:brown_shulker_box", "minecraft:green_shulker_box", "minecraft:red_shulker_box", "minecraft:black_shulker_box" };
 
-        DataConverterShulkerBoxItem() {}
+        DataConverterShulkerBoxItem() {
+        }
 
         public int getDataVersion() {
             return 813;
@@ -2349,7 +2379,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
     private static class DataConverterShulkerBoxBlock implements DataConverter {
 
-        DataConverterShulkerBoxBlock() {}
+        DataConverterShulkerBoxBlock() {
+        }
 
         public int getDataVersion() {
             return 813;
@@ -2366,7 +2397,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
     private static class DataConverterLang implements DataConverter {
 
-        DataConverterLang() {}
+        DataConverterLang() {
+        }
 
         public int getDataVersion() {
             return 816;
@@ -2383,7 +2415,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
     private static class DataConverterTotem implements DataConverter {
 
-        DataConverterTotem() {}
+        DataConverterTotem() {
+        }
 
         public int getDataVersion() {
             return 820;
@@ -2402,7 +2435,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
         private static final Logger a = LogManager.getLogger(PaperweightDataConverters.class);
 
-        DataConverterBedBlock() {}
+        DataConverterBedBlock() {
+        }
 
         public int getDataVersion() {
             return 1125;
@@ -2446,7 +2480,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
     private static class DataConverterBedItem implements DataConverter {
 
-        DataConverterBedItem() {}
+        DataConverterBedItem() {
+        }
 
         public int getDataVersion() {
             return 1125;
@@ -2494,7 +2529,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
             }
         }).create();
 
-        DataConverterSignText() {}
+        DataConverterSignText() {
+        }
 
         public int getDataVersion() {
             return 101;

@@ -151,6 +151,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.OptionalInt;
@@ -184,7 +185,9 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         CraftServer.class.cast(Bukkit.getServer());
 
         int dataVersion = CraftMagicNumbers.INSTANCE.getDataVersion();
-        if (dataVersion != 2730) throw new UnsupportedClassVersionError("Not 1.17.1!");
+        if (dataVersion != 2730) {
+            throw new UnsupportedClassVersionError("Not 1.17.1!");
+        }
 
         serverWorldsField = CraftServer.class.getDeclaredField("worlds");
         serverWorldsField.setAccessible(true);
@@ -472,7 +475,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
                 property = new BooleanProperty(state.getName(), ImmutableList.copyOf(state.getPossibleValues()));
             } else if (state instanceof DirectionProperty) {
                 property = new DirectionalProperty(state.getName(),
-                    (List<Direction>) state.getPossibleValues().stream().map(e -> Direction.valueOf(((StringRepresentable) e).getSerializedName().toUpperCase())).collect(Collectors.toList()));
+                    (List<Direction>) state.getPossibleValues().stream().map(e -> Direction.valueOf(((StringRepresentable) e).getSerializedName().toUpperCase(Locale.ROOT))).collect(Collectors.toList()));
             } else if (state instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
                 property = new EnumProperty(state.getName(),
                     (List<String>) state.getPossibleValues().stream().map(e -> ((StringRepresentable) e).getSerializedName()).collect(Collectors.toList()));

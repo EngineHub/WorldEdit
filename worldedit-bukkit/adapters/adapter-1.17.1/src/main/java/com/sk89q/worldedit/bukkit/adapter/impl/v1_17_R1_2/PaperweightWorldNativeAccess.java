@@ -42,7 +42,8 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 
 public class PaperweightWorldNativeAccess implements WorldNativeAccess<LevelChunk, net.minecraft.world.level.block.state.BlockState, BlockPos> {
-    private static final int UPDATE = 1, NOTIFY = 2;
+    private static final int UPDATE = 1;
+    private static final int NOTIFY = 2;
 
     private final PaperweightAdapter adapter;
     private final WeakReference<ServerLevel> world;
