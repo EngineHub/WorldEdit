@@ -19,6 +19,8 @@ interface Obfuscation : Named {
     }
 }
 
+// For specific version pinning, see
+// https://papermc.io/repo/service/rest/repository/browse/maven-public/io/papermc/paper/dev-bundle/
 fun Project.applyPaperweightAdapterConfiguration(
     paperVersion: String
 ) {
