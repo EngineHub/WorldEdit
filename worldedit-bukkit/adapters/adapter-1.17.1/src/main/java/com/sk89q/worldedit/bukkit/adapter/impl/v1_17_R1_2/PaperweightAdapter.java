@@ -317,7 +317,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     }
 
     @Override
-    public BaseBlock getBlock(Location location) {
+    public BlockState getBlock(Location location) {
         checkNotNull(location);
 
         CraftWorld craftWorld = ((CraftWorld) location.getWorld());
@@ -335,6 +335,22 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             org.bukkit.block.Block bukkitBlock = location.getBlock();
             state = BukkitAdapter.adapt(bukkitBlock.getBlockData());
         }
+
+        return state;
+    }
+
+    @Override
+    public BaseBlock getFullBlock(Location location) {
+        BlockState state = getBlock(location);
+
+        CraftWorld craftWorld = ((CraftWorld) location.getWorld());
+        int x = location.getBlockX();
+        int y = location.getBlockY();
+        int z = location.getBlockZ();
+
+        final ServerLevel handle = craftWorld.getHandle();
+        LevelChunk chunk = handle.getChunk(x >> 4, z >> 4);
+        final BlockPos blockPos = new BlockPos(x, y, z);
 
         // Read the NBT data
         BlockEntity te = chunk.getBlockEntity(blockPos);
