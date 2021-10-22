@@ -26,6 +26,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
+import com.sk89q.worldedit.bukkit.adapter.UnsupportedVersionEditException;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
@@ -449,8 +450,12 @@ public class BukkitWorld extends AbstractWorld {
                 }
             }
         }
-        Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        return BukkitAdapter.adapt(bukkitBlock.getBlockData());
+        if (WorldEditPlugin.getInstance().getLocalConfiguration().unsupportedVersionEditing) {
+            Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+            return BukkitAdapter.adapt(bukkitBlock.getBlockData());
+        } else {
+            throw new RuntimeException(new UnsupportedVersionEditException());
+        }
     }
 
     @Override
@@ -468,9 +473,13 @@ public class BukkitWorld extends AbstractWorld {
                 }
             }
         }
-        Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        bukkitBlock.setBlockData(BukkitAdapter.adapt(block), sideEffects.doesApplyAny());
-        return true;
+        if (WorldEditPlugin.getInstance().getLocalConfiguration().unsupportedVersionEditing) {
+            Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+            bukkitBlock.setBlockData(BukkitAdapter.adapt(block), sideEffects.doesApplyAny());
+            return true;
+        } else {
+            throw new RuntimeException(new UnsupportedVersionEditException());
+        }
     }
 
     @Override

@@ -34,6 +34,7 @@ public class BukkitConfiguration extends YAMLConfiguration {
 
     public boolean noOpPermissions = false;
     public boolean commandBlockSupport = false;
+    public boolean unsupportedVersionEditing = false;
     @Unreported private final WorldEditPlugin plugin;
 
     public BukkitConfiguration(YAMLProcessor config, WorldEditPlugin plugin) {
@@ -46,6 +47,7 @@ public class BukkitConfiguration extends YAMLConfiguration {
         super.load();
         noOpPermissions = config.getBoolean("no-op-permissions", false);
         commandBlockSupport = config.getBoolean("command-block-support", false);
+        unsupportedVersionEditing = config.getBoolean("allow-editing-on-unsupported-versions", false);
         migrateLegacyFolders();
     }
 
