@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.util.yaml.YAMLProcessor;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.util.YAMLConfiguration;
 import com.sk89q.worldedit.util.report.Unreported;
 import org.apache.logging.log4j.LogManager;
@@ -47,7 +48,12 @@ public class BukkitConfiguration extends YAMLConfiguration {
         super.load();
         noOpPermissions = config.getBoolean("no-op-permissions", false);
         commandBlockSupport = config.getBoolean("command-block-support", false);
-        unsupportedVersionEditing = config.getBoolean("allow-editing-on-unsupported-versions", false);
+        unsupportedVersionEditing = "I accept that I will receive no support with this flag enabled.".equals(
+                config.getString("allow-editing-on-unsupported-versions", "false"));
+        if (unsupportedVersionEditing) {
+            WorldEdit.logger.warn("Editing without a Bukkit adapter has been enabled. You will not receive support " +
+                    "for any issues that arise as a result.");
+        }
         migrateLegacyFolders();
     }
 
