@@ -51,8 +51,8 @@ public class BukkitConfiguration extends YAMLConfiguration {
         unsupportedVersionEditing = "I accept that I will receive no support with this flag enabled.".equals(
                 config.getString("allow-editing-on-unsupported-versions", "false"));
         if (unsupportedVersionEditing) {
-            WorldEdit.logger.warn("Editing without a Bukkit adapter has been enabled. You will not receive support " +
-                    "for any issues that arise as a result.");
+            WorldEdit.logger.warn("Editing without a Bukkit adapter has been enabled. You will not receive support "
+                    + "for any issues that arise as a result.");
         }
         migrateLegacyFolders();
     }
