@@ -1,3 +1,13 @@
+7.2.7
+- [Bukkit] Update 1.17.1 adapters for recent Spigot worldgen change
+- [Bukkit] Minor improvements to world access performance
+- [Bukkit] Prevent editing on unsupported versions by default
+- Fixed commands the user did not have permissions for showing in //help
+- Improve performance of setting non-BlockEntity blocks
+- Fixed CLI warnings due to Log4J dependency
+- Fixed Raise/Lower deform brushes moving blocks too far
+- Fixed JavaAdapter not being usable via craftscripts
+
 7.2.6
 - Return false instead of erroring when trying to remove player entities via the API
 - Fix selections at 0,0,0 or radius of 0 with cyl/ellipse selection modes
