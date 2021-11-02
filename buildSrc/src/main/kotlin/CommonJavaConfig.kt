@@ -51,6 +51,7 @@ fun Project.applyCommonJavaConfiguration(sourcesJar: Boolean, banSlf4j: Boolean 
 
     // Java 8 turns on doclint which we fail
     tasks.withType<Javadoc>().configureEach {
+        options.encoding = "UTF-8"
         (options as StandardJavadocDocletOptions).apply {
             addStringOption("Xdoclint:none", "-quiet")
             tags(
