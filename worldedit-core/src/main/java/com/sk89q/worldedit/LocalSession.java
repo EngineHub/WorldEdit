@@ -59,7 +59,6 @@ import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
 
-import javax.annotation.Nullable;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Collections;
@@ -72,6 +71,7 @@ import java.util.Optional;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -739,8 +739,8 @@ public class LocalSession {
      * @param item       the item type
      * @param brushClass the required class of the brush contained by the brush tool
      * @param <T>        type of the required brush
-     * @return A optional containing the brush assigned to the brush tool if the tool is a brush and is containing a brush
-     * of the required class
+     * @return A optional containing the brush assigned to the brush tool if the tool is a brush and is containing a
+     *     brush of the required class
      */
     @SuppressWarnings("unchecked")
     public <T extends Brush> Optional<T> getBrush(ItemType item, Class<T> brushClass) {
