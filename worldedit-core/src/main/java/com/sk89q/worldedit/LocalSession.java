@@ -751,7 +751,7 @@ public class LocalSession {
 
         BrushTool brushTool = optionalBrushTool.get();
 
-        if (brushTool.getBrush() != null && brushClass.isAssignableFrom(brushTool.getClass())) {
+        if (brushTool.getBrush() != null && brushClass.isAssignableFrom(brushTool.getBrush().getClass())) {
             return Optional.of((T) brushTool.getBrush());
         }
 
