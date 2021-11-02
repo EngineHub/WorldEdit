@@ -30,6 +30,7 @@ import com.sk89q.worldedit.command.tool.NavigationWand;
 import com.sk89q.worldedit.command.tool.SelectionWand;
 import com.sk89q.worldedit.command.tool.SinglePickaxe;
 import com.sk89q.worldedit.command.tool.Tool;
+import com.sk89q.worldedit.command.tool.brush.Brush;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Locatable;
@@ -58,6 +59,7 @@ import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
 
+import javax.annotation.Nullable;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Collections;
@@ -66,10 +68,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -671,7 +673,7 @@ public class LocalSession {
 
     /**
      * Get the brush tool assigned to the item. If there is no tool assigned
-     * or the tool is not assigned, the slot will be replaced with the
+     * or the tool is not a brush tool, the slot will be replaced with the
      * brush tool.
      *
      * @param item the item type
@@ -679,14 +681,81 @@ public class LocalSession {
      * @throws InvalidToolBindException if the item can't be bound to that item
      */
     public BrushTool getBrushTool(ItemType item) throws InvalidToolBindException {
-        Tool tool = getTool(item);
-
-        if (!(tool instanceof BrushTool)) {
-            tool = new BrushTool("worldedit.brush.sphere");
+        if (!isBrushTool(item)) {
+            BrushTool tool = new BrushTool("worldedit.brush.sphere");
             setTool(item, tool);
+            return tool;
         }
 
-        return (BrushTool) tool;
+        return (BrushTool) getTool(item);
+    }
+
+    /**
+     * Checks if a tool is bound on this item.
+     *
+     * @param item the item type
+     * @return true if a tool is set on the item
+     */
+    public boolean isTool(ItemType item) {
+        return getTool(item) != null;
+    }
+
+    /**
+     * Checks if a brush tool is bound on this item.
+     *
+     * @param item the item type
+     * @return true if a brush tool is set on the item
+     */
+    public boolean isBrushTool(ItemType item) {
+        return getTool(item) instanceof BrushTool;
+    }
+
+    /**
+     * Get the tool bound to the item if the assigned tool is assignable on the provided tool class.
+     *
+     * @param item      the item type
+     * @param toolClass the required class of the tool
+     * @param <T>       type of the required tool
+     * @return A optional holding the tool if the tool is assignable to the required class
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends Tool> Optional<T> getTool(ItemType item, Class<T> toolClass) {
+        if (!isTool(item)) {
+            return Optional.empty();
+        }
+
+        Tool tool = getTool(item);
+        if (toolClass.isAssignableFrom(getTool(item).getClass())) {
+            return Optional.of((T) tool);
+        }
+
+        return Optional.empty();
+    }
+
+    /**
+     * Get the brush contained by the brush tool if a brush tool is assigned to the item and if the brush contained by the
+     * brush tool matches the brush class.
+     *
+     * @param item       the item type
+     * @param brushClass the required class of the brush contained by the brush tool
+     * @param <T>        type of the required brush
+     * @return A optional containing the brush assigned to the brush tool if the tool is a brush and is containing a brush
+     * of the required class
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends Brush> Optional<T> getBrush(ItemType item, Class<T> brushClass) {
+        Optional<BrushTool> optionalBrushTool = getTool(item, BrushTool.class);
+        if (optionalBrushTool.isEmpty()) {
+            return Optional.empty();
+        }
+
+        BrushTool brushTool = optionalBrushTool.get();
+
+        if (brushTool.getBrush() != null && brushClass.isAssignableFrom(brushTool.getClass())) {
+            return Optional.of((T) brushTool.getBrush());
+        }
+
+        return Optional.empty();
     }
 
     /**
