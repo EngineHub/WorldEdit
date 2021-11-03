@@ -29,8 +29,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
 class LocalSessionTest {
 
     private static LocalSession session;
@@ -61,21 +59,21 @@ class LocalSessionTest {
 
     @Test
     void getTool() {
-        Optional<BrushTool> brushTool = session.getTool(dummyType, BrushTool.class);
-        Optional<Tool> tool = session.getTool(dummyType, Tool.class);
-        Assertions.assertTrue(brushTool.isPresent());
-        Assertions.assertTrue(tool.isPresent());
+        BrushTool brushTool = session.getTool(dummyType, BrushTool.class);
+        Tool tool = session.getTool(dummyType, Tool.class);
+        Assertions.assertNotNull(brushTool);
+        Assertions.assertNotNull(tool);
 
         tool = session.getTool(dummyType2, Tool.class);
-        Assertions.assertFalse(tool.isPresent());
+        Assertions.assertNull(tool);
     }
 
     @Test
     void getBrush() {
-        Optional<SphereBrush> sphereBrush = session.getBrush(dummyType, SphereBrush.class);
-        Optional<CylinderBrush> cylBrush = session.getBrush(dummyType, CylinderBrush.class);
+        SphereBrush sphereBrush = session.getBrush(dummyType, SphereBrush.class);
+        CylinderBrush cylBrush = session.getBrush(dummyType, CylinderBrush.class);
 
-        Assertions.assertTrue(sphereBrush.isPresent());
-        Assertions.assertFalse(cylBrush.isPresent());
+        Assertions.assertNotNull(sphereBrush);
+        Assertions.assertNull(cylBrush);
     }
 }

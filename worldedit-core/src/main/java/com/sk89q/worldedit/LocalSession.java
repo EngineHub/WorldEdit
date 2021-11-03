@@ -67,7 +67,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -681,13 +680,14 @@ public class LocalSession {
      * @throws InvalidToolBindException if the item can't be bound to that item
      */
     public BrushTool getBrushTool(ItemType item) throws InvalidToolBindException {
-        if (!isBrushTool(item)) {
-            BrushTool tool = new BrushTool("worldedit.brush.sphere");
+        Tool tool = getTool(item);
+
+        if (!(tool instanceof BrushTool)) {
+            tool = new BrushTool("worldedit.brush.sphere");
             setTool(item, tool);
-            return tool;
         }
 
-        return (BrushTool) getTool(item);
+        return (BrushTool) tool;
     }
 
     /**
@@ -716,20 +716,17 @@ public class LocalSession {
      * @param item      the item type
      * @param toolClass the required class of the tool
      * @param <T>       type of the required tool
-     * @return A optional holding the tool if the tool is assignable to the required class
+     * @return the tool if the tool is assignable to the required class or null
      */
     @SuppressWarnings("unchecked")
-    public <T extends Tool> Optional<T> getTool(ItemType item, Class<T> toolClass) {
-        if (!isTool(item)) {
-            return Optional.empty();
-        }
-
+    @Nullable
+    public <T extends Tool> T getTool(ItemType item, Class<T> toolClass) {
         Tool tool = getTool(item);
-        if (toolClass.isAssignableFrom(getTool(item).getClass())) {
-            return Optional.of((T) tool);
+        if (tool == null) {
+            return null;
         }
 
-        return Optional.empty();
+        return toolClass.isAssignableFrom(tool.getClass()) ? (T) tool : null;
     }
 
     /**
@@ -739,23 +736,21 @@ public class LocalSession {
      * @param item       the item type
      * @param brushClass the required class of the brush contained by the brush tool
      * @param <T>        type of the required brush
-     * @return A optional containing the brush assigned to the brush tool if the tool is a brush and is containing a
-     *     brush of the required class
+     * @return the brush assigned to the brush tool if the tool is a brush and contains a brush of the required class or null
      */
     @SuppressWarnings("unchecked")
-    public <T extends Brush> Optional<T> getBrush(ItemType item, Class<T> brushClass) {
-        Optional<BrushTool> optionalBrushTool = getTool(item, BrushTool.class);
-        if (optionalBrushTool.isEmpty()) {
-            return Optional.empty();
+    @Nullable
+    public <T extends Brush> T getBrush(ItemType item, Class<T> brushClass) {
+        BrushTool tool = getTool(item, BrushTool.class);
+        if (tool == null) {
+            return null;
         }
 
-        BrushTool brushTool = optionalBrushTool.get();
-
-        if (brushTool.getBrush() != null && brushClass.isAssignableFrom(brushTool.getBrush().getClass())) {
-            return Optional.of((T) brushTool.getBrush());
+        if (tool.getBrush() != null && brushClass.isAssignableFrom(tool.getBrush().getClass())) {
+            return (T) tool.getBrush();
         }
 
-        return Optional.empty();
+        return null;
     }
 
     /**
