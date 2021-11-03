@@ -30,7 +30,6 @@ import com.sk89q.worldedit.command.tool.NavigationWand;
 import com.sk89q.worldedit.command.tool.SelectionWand;
 import com.sk89q.worldedit.command.tool.SinglePickaxe;
 import com.sk89q.worldedit.command.tool.Tool;
-import com.sk89q.worldedit.command.tool.brush.Brush;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Locatable;
@@ -679,6 +678,7 @@ public class LocalSession {
      * @return the tool, or {@code null}
      * @throws InvalidToolBindException if the item can't be bound to that item
      */
+    @Deprecated
     public BrushTool getBrushTool(ItemType item) throws InvalidToolBindException {
         Tool tool = getTool(item);
 
@@ -691,66 +691,14 @@ public class LocalSession {
     }
 
     /**
-     * Checks if a tool is bound on this item.
+     * Get the brush tool assigned to this item.
      *
      * @param item the item type
-     * @return true if a tool is set on the item
+     * @return the brush tool assigned to the item type
      */
-    public boolean isTool(ItemType item) {
-        return getTool(item) != null;
-    }
-
-    /**
-     * Checks if a brush tool is bound on this item.
-     *
-     * @param item the item type
-     * @return true if a brush tool is set on the item
-     */
-    public boolean isBrushTool(ItemType item) {
-        return getTool(item) instanceof BrushTool;
-    }
-
-    /**
-     * Get the tool bound to the item if the assigned tool is assignable on the provided tool class.
-     *
-     * @param item      the item type
-     * @param toolClass the required class of the tool
-     * @param <T>       type of the required tool
-     * @return the tool if the tool is assignable to the required class or null
-     */
-    @SuppressWarnings("unchecked")
     @Nullable
-    public <T extends Tool> T getTool(ItemType item, Class<T> toolClass) {
-        Tool tool = getTool(item);
-        if (tool == null) {
-            return null;
-        }
-
-        return toolClass.isAssignableFrom(tool.getClass()) ? (T) tool : null;
-    }
-
-    /**
-     * Get the brush contained by the brush tool if a brush tool is assigned to the item and if the brush contained by the
-     * brush tool matches the brush class.
-     *
-     * @param item       the item type
-     * @param brushClass the required class of the brush contained by the brush tool
-     * @param <T>        type of the required brush
-     * @return the brush assigned to the brush tool if the tool is a brush and contains a brush of the required class or null
-     */
-    @SuppressWarnings("unchecked")
-    @Nullable
-    public <T extends Brush> T getBrush(ItemType item, Class<T> brushClass) {
-        BrushTool tool = getTool(item, BrushTool.class);
-        if (tool == null) {
-            return null;
-        }
-
-        if (tool.getBrush() != null && brushClass.isAssignableFrom(tool.getBrush().getClass())) {
-            return (T) tool.getBrush();
-        }
-
-        return null;
+    public BrushTool getBrush(ItemType item) {
+        return getTool(item) instanceof BrushTool tool ? tool : null;
     }
 
     /**
