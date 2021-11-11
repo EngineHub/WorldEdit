@@ -27,8 +27,4 @@ fun Project.applyPaperweightAdapterConfiguration(
     tasks.named("assemble") {
         dependsOn("reobfJar")
     }
-
-    configurations[REOBF_CONFIG].attributes {
-        attribute(Obfuscation.OBFUSCATION_ATTRIBUTE, objects.named(Obfuscation.OBFUSCATED))
-    }
 }
