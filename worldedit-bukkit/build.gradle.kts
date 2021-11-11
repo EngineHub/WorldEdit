@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import io.papermc.paperweight.userdev.attribute.Obfuscation
 
 plugins {
     `java-library`
@@ -32,7 +33,7 @@ val adapters = configurations.create("adapters") {
     isCanBeResolved = true
     shouldResolveConsistentlyWith(configurations["runtimeClasspath"])
     attributes {
-        attribute(Obfuscation.OBFUSCATION_ATTRIBUTE, objects.named(Obfuscation.REOBFUSCATED))
+        attribute(Obfuscation.OBFUSCATION_ATTRIBUTE, objects.named(Obfuscation.OBFUSCATED))
     }
 }
 
