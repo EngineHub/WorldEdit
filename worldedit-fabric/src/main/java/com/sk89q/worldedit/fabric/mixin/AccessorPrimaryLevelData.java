@@ -17,26 +17,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.fabric;
+package com.sk89q.worldedit.fabric.mixin;
 
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.BiomeArray;
+import net.minecraft.world.level.levelgen.WorldGenSettings;
+import net.minecraft.world.level.storage.PrimaryLevelData;
+import net.minecraft.world.level.storage.WorldData;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-/**
- * Interface over a {@link BiomeArray} as a mutable object.
- */
-public interface MutableBiomeArray {
+@Mixin(PrimaryLevelData.class)
+public interface AccessorPrimaryLevelData extends WorldData {
 
-    /**
-     * Hook into the given biome array, to allow edits on it.
-     * @param biomeArray the biome array to edit
-     * @return the mutable interface to the biome array
-     */
-    static MutableBiomeArray inject(BiomeArray biomeArray) {
-        // It's Mixin'd
-        return (MutableBiomeArray) biomeArray;
-    }
-
-    void setBiome(int x, int y, int z, Biome biome);
+    @Accessor
+    @Mutable
+    void setWorldGenSettings(WorldGenSettings options);
 
 }

@@ -24,15 +24,14 @@ import com.sk89q.worldedit.fabric.FabricAdapter;
 import com.sk89q.worldedit.fabric.FabricPlayer;
 import com.sk89q.worldedit.fabric.FabricWorldEdit;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.resources.ResourceLocation;
 import java.nio.charset.StandardCharsets;
 
 public final class WECUIPacketHandler {
     private WECUIPacketHandler() {
     }
 
-    public static final Identifier CUI_IDENTIFIER = new Identifier(FabricWorldEdit.MOD_ID, FabricWorldEdit.CUI_PLUGIN_CHANNEL);
+    public static final ResourceLocation CUI_IDENTIFIER = new ResourceLocation(FabricWorldEdit.MOD_ID, FabricWorldEdit.CUI_PLUGIN_CHANNEL);
 
     public static void init() {
         ServerPlayNetworking.registerGlobalReceiver(CUI_IDENTIFIER, (server, player, handler, buf, responder) -> {

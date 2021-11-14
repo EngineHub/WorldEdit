@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import net.fabricmc.loom.task.RemapJarTask
 
 buildscript {
@@ -14,7 +15,7 @@ buildscript {
     }
 }
 
-applyPlatformAndCoreConfiguration()
+applyPlatformAndCoreConfiguration(javaRelease = 16)
 applyShadowConfiguration()
 
 apply(plugin = "fabric-loom")
@@ -24,13 +25,11 @@ val minecraftVersion = "1.18-pre1"
 val yarnMappings = "1.18-pre1+build.6:v2"
 val loaderVersion = "0.12.5"
 
-configurations.all {
-    resolutionStrategy {
-        force("com.google.guava:guava:21.0")
-    }
-}
-
 val fabricApiConfiguration: Configuration = configurations.create("fabricApi")
+
+configure<LoomGradleExtensionAPI> {
+    accessWidenerPath.set(project.file("src/main/resources/worldedit.accesswidener"))
+}
 
 repositories {
     maven {
@@ -46,7 +45,7 @@ dependencies {
     })
 
     "minecraft"("com.mojang:minecraft:$minecraftVersion")
-    "mappings"("net.fabricmc:yarn:$yarnMappings")
+    "mappings"(project.the<LoomGradleExtensionAPI>().officialMojangMappings())
     "modImplementation"("net.fabricmc:fabric-loader:$loaderVersion")
 
     // [1] declare fabric-api dependency...
@@ -103,6 +102,9 @@ dependencies {
     "compileOnly"("net.fabricmc:sponge-mixin:${project.versions.mixin}")
     "annotationProcessor"("net.fabricmc:sponge-mixin:${project.versions.mixin}")
     "annotationProcessor"("net.fabricmc:fabric-loom:${project.versions.loom}")
+
+    // Silence some warnings, since apparently this isn't on the compile classpath like it should be.
+    "compileOnly"("com.google.errorprone:error_prone_annotations:2.10.0")
 }
 
 configure<BasePluginExtension> {
@@ -146,11 +148,4 @@ tasks.register<RemapJarTask>("remapShadowJar") {
 
 tasks.named("assemble").configure {
     dependsOn("remapShadowJar")
-}
-
-configure<PublishingExtension> {
-    publications.named<MavenPublication>("maven") {
-        // Remove when https://github.com/gradle/gradle/issues/16555 is fixed
-        suppressPomMetadataWarningsFor("runtimeElements")
-    }
 }

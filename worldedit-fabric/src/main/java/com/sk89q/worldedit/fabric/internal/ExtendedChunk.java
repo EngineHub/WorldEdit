@@ -20,15 +20,14 @@
 package com.sk89q.worldedit.fabric.internal;
 
 import com.sk89q.worldedit.util.SideEffect;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.chunk.Chunk;
-
 import javax.annotation.Nullable;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkAccess;
 
 public interface ExtendedChunk {
     /**
-     * {@link Chunk#setBlockState(BlockPos, BlockState, boolean)} with the extra
+     * {@link ChunkAccess#setBlockState(BlockPos, BlockState, boolean)} with the extra
      * {@link SideEffect#UPDATE} flag.
      *
      * @param pos the position to set

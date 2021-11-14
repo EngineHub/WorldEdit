@@ -19,15 +19,14 @@
 
 package com.sk89q.worldedit.fabric.internal;
 
-import net.minecraft.resource.ServerResourceManager;
-import net.minecraft.world.World;
-
 import java.nio.file.Path;
+import net.minecraft.server.ServerResources;
+import net.minecraft.world.level.Level;
 
 public interface ExtendedMinecraftServer {
 
-    Path getStoragePath(World world);
+    Path getStoragePath(Level world);
 
-    ServerResourceManager getServerResourceManager();
+    ServerResources getResources();
 
 }
