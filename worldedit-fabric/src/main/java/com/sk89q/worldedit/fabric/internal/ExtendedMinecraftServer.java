@@ -19,9 +19,10 @@
 
 package com.sk89q.worldedit.fabric.internal;
 
-import java.nio.file.Path;
 import net.minecraft.server.ServerResources;
 import net.minecraft.world.level.Level;
+
+import java.nio.file.Path;
 
 public interface ExtendedMinecraftServer {
 

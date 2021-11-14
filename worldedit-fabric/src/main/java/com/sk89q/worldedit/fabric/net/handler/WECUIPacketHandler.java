@@ -25,6 +25,7 @@ import com.sk89q.worldedit.fabric.FabricPlayer;
 import com.sk89q.worldedit.fabric.FabricWorldEdit;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.resources.ResourceLocation;
+
 import java.nio.charset.StandardCharsets;
 
 public final class WECUIPacketHandler {

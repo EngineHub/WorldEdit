@@ -22,6 +22,7 @@ package com.sk89q.worldedit.fabric;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;

@@ -59,10 +59,10 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
-import javax.annotation.Nullable;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.UUID;
+import javax.annotation.Nullable;
 
 public class FabricPlayer extends AbstractPlayerActor {
 

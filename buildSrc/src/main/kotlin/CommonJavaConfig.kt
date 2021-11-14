@@ -33,7 +33,7 @@ fun Project.applyCommonJavaConfiguration(sourcesJar: Boolean, javaRelease: Int =
 
     configure<CheckstyleExtension> {
         configFile = rootProject.file("config/checkstyle/checkstyle.xml")
-        toolVersion = "8.34"
+        toolVersion = "9.1"
     }
 
     tasks.withType<Test>().configureEach {

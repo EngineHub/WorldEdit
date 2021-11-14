@@ -45,7 +45,6 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.storage.ServerLevelData;
 import org.enginehub.piston.CommandManager;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,6 +54,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import javax.annotation.Nullable;
 
 class FabricPlatform extends AbstractPlatform implements MultiUserPlatform {
 

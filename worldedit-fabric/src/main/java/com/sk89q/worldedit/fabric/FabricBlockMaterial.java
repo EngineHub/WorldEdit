@@ -21,10 +21,11 @@ package com.sk89q.worldedit.fabric;
 
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.PassthroughBlockMaterial;
-import javax.annotation.Nullable;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.PushReaction;
+
+import javax.annotation.Nullable;
 
 /**
  * Fabric block material that pulls as much info as possible from the Minecraft

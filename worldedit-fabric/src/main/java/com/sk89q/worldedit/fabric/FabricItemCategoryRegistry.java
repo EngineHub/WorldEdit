@@ -21,13 +21,14 @@ package com.sk89q.worldedit.fabric;
 
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.ItemCategoryRegistry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.Tag;
+
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
 
 public class FabricItemCategoryRegistry implements ItemCategoryRegistry {
     @Override

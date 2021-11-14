@@ -27,12 +27,13 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
+import net.minecraft.world.level.block.Block;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.OptionalInt;
 import java.util.TreeMap;
-import net.minecraft.world.level.block.Block;
 
 public class FabricBlockRegistry extends BundledBlockRegistry {
 

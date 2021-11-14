@@ -20,12 +20,13 @@
 package com.sk89q.worldedit.fabric;
 
 import com.mojang.authlib.GameProfile;
-import java.util.UUID;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stat;
 import net.minecraft.world.damagesource.DamageSource;
+
+import java.util.UUID;
 
 public class WorldEditFakePlayer extends ServerPlayer {
     private static final GameProfile FAKE_WORLDEDIT_PROFILE = new GameProfile(UUID.nameUUIDFromBytes("worldedit".getBytes()), "[WorldEdit]");

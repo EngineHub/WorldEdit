@@ -37,11 +37,6 @@ import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -53,6 +48,12 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.Comparator;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -109,11 +110,16 @@ public final class FabricAdapter {
 
     public static net.minecraft.core.Direction adapt(Direction face) {
         switch (face) {
-            case NORTH: return net.minecraft.core.Direction.NORTH;
-            case SOUTH: return net.minecraft.core.Direction.SOUTH;
-            case WEST: return net.minecraft.core.Direction.WEST;
-            case EAST: return net.minecraft.core.Direction.EAST;
-            case DOWN: return net.minecraft.core.Direction.DOWN;
+            case NORTH:
+                return net.minecraft.core.Direction.NORTH;
+            case SOUTH:
+                return net.minecraft.core.Direction.SOUTH;
+            case WEST:
+                return net.minecraft.core.Direction.WEST;
+            case EAST:
+                return net.minecraft.core.Direction.EAST;
+            case DOWN:
+                return net.minecraft.core.Direction.DOWN;
             case UP:
             default:
                 return net.minecraft.core.Direction.UP;
@@ -125,11 +131,16 @@ public final class FabricAdapter {
             return null;
         }
         switch (face) {
-            case NORTH: return Direction.NORTH;
-            case SOUTH: return Direction.SOUTH;
-            case WEST: return Direction.WEST;
-            case EAST: return Direction.EAST;
-            case DOWN: return Direction.DOWN;
+            case NORTH:
+                return Direction.NORTH;
+            case SOUTH:
+                return Direction.SOUTH;
+            case WEST:
+                return Direction.WEST;
+            case EAST:
+                return Direction.EAST;
+            case DOWN:
+                return Direction.DOWN;
             case UP:
             default:
                 return Direction.UP;
@@ -142,6 +153,7 @@ public final class FabricAdapter {
 
     /**
      * Adapts property.
+     *
      * @deprecated without replacement, use the block adapter methods
      */
     @Deprecated
@@ -151,6 +163,7 @@ public final class FabricAdapter {
 
     /**
      * Adapts properties.
+     *
      * @deprecated without replacement, use the block adapter methods
      */
     @Deprecated
