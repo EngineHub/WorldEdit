@@ -1,5 +1,4 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import net.fabricmc.loom.LoomGradleExtension
 import net.fabricmc.loom.task.RemapJarTask
 
 buildscript {
@@ -21,13 +20,9 @@ applyShadowConfiguration()
 apply(plugin = "fabric-loom")
 apply(plugin = "java-library")
 
-configure<LoomGradleExtension> {
-    accessWidener("src/main/resources/worldedit.accesswidener")
-}
-
-val minecraftVersion = "1.17.1"
-val yarnMappings = "1.17.1+build.1:v2"
-val loaderVersion = "0.11.6"
+val minecraftVersion = "1.18-pre1"
+val yarnMappings = "1.18-pre1+build.6:v2"
+val loaderVersion = "0.12.5"
 
 configurations.all {
     resolutionStrategy {
@@ -55,7 +50,7 @@ dependencies {
     "modImplementation"("net.fabricmc:fabric-loader:$loaderVersion")
 
     // [1] declare fabric-api dependency...
-    "fabricApi"("net.fabricmc.fabric-api:fabric-api:0.36.1+1.17")
+    "fabricApi"("net.fabricmc.fabric-api:fabric-api:0.42.2+1.18")
 
     // [2] Load the API dependencies from the fabric mod json...
     @Suppress("UNCHECKED_CAST")
@@ -110,18 +105,14 @@ dependencies {
     "annotationProcessor"("net.fabricmc:fabric-loom:${project.versions.loom}")
 }
 
-configure<BasePluginConvention> {
-    archivesBaseName = "$archivesBaseName-mc$minecraftVersion"
+configure<BasePluginExtension> {
+    archivesName.set("${project.name}-mc$minecraftVersion")
 }
+
 configure<PublishingExtension> {
     publications.named<MavenPublication>("maven") {
-        artifactId = the<BasePluginConvention>().archivesBaseName
-        artifact(tasks.named("jar")) {
-            builtBy(tasks.named("remapJar"))
-        }
-        artifact(tasks.named("sourcesJar")) {
-            builtBy(tasks.named("remapSourcesJar"))
-        }
+        artifactId = the<BasePluginExtension>().archivesName.get()
+        from(components["java"])
     }
 }
 
