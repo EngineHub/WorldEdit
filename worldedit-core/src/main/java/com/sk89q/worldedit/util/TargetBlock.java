@@ -143,18 +143,15 @@ public class TargetBlock {
      * @return Block
      */
     public Location getAnyTargetBlock() {
-        boolean searchForLastBlock = true;
         Location lastBlock = null;
         while (getNextBlock() != null) {
             if (stopMask.test(targetPos)) {
                 break;
             } else {
-                if (searchForLastBlock) {
-                    lastBlock = getCurrentBlock();
-                    if (lastBlock.getBlockY() <= world.getMinY()
-                        || lastBlock.getBlockY() >= world.getMaxY()) {
-                        searchForLastBlock = false;
-                    }
+                lastBlock = getCurrentBlock();
+                if (lastBlock.getBlockY() < world.getMinY()
+                    || lastBlock.getBlockY() > world.getMaxY()) {
+                    return null;
                 }
             }
         }
