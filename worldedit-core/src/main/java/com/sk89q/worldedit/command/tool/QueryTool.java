@@ -53,7 +53,7 @@ public class QueryTool implements BlockTool {
 
         World world = (World) clicked.getExtent();
         BlockVector3 blockPoint = clicked.toVector().toBlockPoint();
-        BaseBlock block = player.getExtent().getFullBlock(blockPoint);
+        BaseBlock block = world.getFullBlock(blockPoint);
 
         TextComponent.Builder builder = TextComponent.builder();
         builder.append(TextComponent.of("@" + clicked.toVector().toBlockPoint() + ": ", TextColor.BLUE));
