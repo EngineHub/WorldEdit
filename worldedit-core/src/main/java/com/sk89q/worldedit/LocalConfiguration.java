@@ -50,7 +50,7 @@ public abstract class LocalConfiguration {
     private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     public boolean profile = false;
-    public boolean traceUnflushedSessions = false;
+    public boolean traceUnflushedSessions = true;
     public Set<String> disallowedBlocks = new HashSet<>();
     public int defaultChangeLimit = -1;
     public int maxChangeLimit = -1;
