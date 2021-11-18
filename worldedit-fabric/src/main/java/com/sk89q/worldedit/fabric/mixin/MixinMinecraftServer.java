@@ -49,7 +49,7 @@ public abstract class MixinMinecraftServer implements Watchdog, ExtendedMinecraf
 
     @Override
     public Path getStoragePath(Level world) {
-        return storageSource.getDimensionPath(world.dimension()).toPath();
+        return storageSource.getDimensionPath(world.dimension());
     }
 
     @Accessor
