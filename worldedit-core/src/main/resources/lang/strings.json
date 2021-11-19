@@ -212,6 +212,8 @@
     "worldedit.overlay.overlaid": "{0} blocks have been overlaid.",
     "worldedit.naturalize.naturalized": "{0} block(s) have been made to look more natural.",
     "worldedit.center.changed": "Center set. ({0} blocks changed)",
+    "worldedit.divide.changed": "Division points set. ({0} blocks changed)",
+    "worldedit.divide.invalid-type": "//divide only works with cuboid selections",
     "worldedit.smooth.changed": "Terrain's height map smoothed. {0} blocks changed.",
     "worldedit.snowsmooth.changed": "Snow's height map smoothed. {0} blocks changed.",
     "worldedit.move.moved": "{0} blocks moved.",

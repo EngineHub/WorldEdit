@@ -1199,6 +1199,73 @@ public class EditSession implements Extent, AutoCloseable {
     }
 
     /**
+     * Divides the region into N sections and places blocks at these points.
+     * If a point sits between two blocks on a certain axis, then two blocks
+     * will be placed to mark the point.
+     *
+     * @param pattern the replacement pattern
+     * @param pos1 the first position of the region
+     * @param pos2 the second position of the region
+     * @param number the number to divide by
+     * @return the number of blocks placed
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    public int divide(Pattern pattern, BlockVector3 pos1, BlockVector3 pos2, int number) throws MaxChangedBlocksException {
+        Set<BlockVector3> vset = new HashSet<>();
+
+        int x1 = pos1.getBlockX();
+        int y1 = pos1.getBlockY();
+        int z1 = pos1.getBlockZ();
+        int x2 = pos2.getBlockX();
+        int y2 = pos2.getBlockY();
+        int z2 = pos2.getBlockZ();
+        int dx = Math.abs(x2 - x1);
+        int dy = Math.abs(y2 - y1);
+        int dz = Math.abs(z2 - z1);
+
+        if (dx + dy + dz == 0) {
+            vset.add(BlockVector3.at(x1, y1, z1));
+            return setBlocks(vset, pattern);
+        }
+
+        int dMax = Math.max(Math.max(dx, dy), dz);
+        double facX = (x2 - x1 > 0 ? 1 : -1);
+        double facY = (y2 - y1 > 0 ? 1 : -1);
+        double facZ = (z2 - z1 > 0 ? 1 : -1);
+        if (dMax == dx) {
+            facY *= ((double) dy) / ((double) dx);
+            facZ *= ((double) dz) / ((double) dx);
+        } else if (dMax == dy) {
+            facX *= ((double) dx) / ((double) dy);
+            facZ *= ((double) dz) / ((double) dy);
+        } else /* if (dMax == dz) */ {
+            facX *= ((double) dx) / ((double) dy);
+            facY *= ((double) dy) / ((double) dz);
+        }
+
+        final double step = dMax / (double) number;
+        for (double s = step; s < dMax; s += step) {
+            double floor = Math.floor(s);
+
+            int x = (int) Math.round(x1 + floor * facX);
+            int y = (int) Math.round(y1 + floor * facY);
+            int z = (int) Math.round(z1 + floor * facZ);
+
+            vset.add(BlockVector3.at(x, y, z));
+
+            if (floor != s) {
+                floor++;
+                x = (int) Math.round(x1 + floor * facX);
+                y = (int) Math.round(y1 + floor * facY);
+                z = (int) Math.round(z1 + floor * facZ);
+                vset.add(BlockVector3.at(x, y, z));
+            }
+        }
+
+        return setBlocks(vset, pattern);
+    }
+
+    /**
      * Make the faces of the given region as if it was a {@link CuboidRegion}.
      *
      * @param region the region

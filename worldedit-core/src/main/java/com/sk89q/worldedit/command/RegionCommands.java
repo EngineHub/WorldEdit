@@ -233,6 +233,31 @@ public class RegionCommands {
     }
 
     @Command(
+        name = "/divide",
+        desc = "Divides the region into N sections and places blocks at these points"
+    )
+    @Logging(REGION)
+    @CommandPermissions("worldedit.region.divide")
+    public int divide(Actor actor, EditSession editSession, @Selection Region region,
+                      @Arg(desc = "The number to divide by")
+                          int number,
+                      @Arg(desc = "The pattern of blocks to set")
+                          Pattern pattern) throws WorldEditException {
+        // TODO support other region types
+        if (!(region instanceof CuboidRegion)) {
+            actor.printError(TranslatableComponent.of("worldedit.line.invalid-type"));
+            return 0;
+        }
+        checkCommandArgument(number >= 0, "Division factor must be >= 0");
+
+        CuboidRegion cuboidRegion = (CuboidRegion) region;
+
+        int affected = editSession.divide(pattern, cuboidRegion.getPos1(), cuboidRegion.getPos2(), number);
+        actor.printInfo(TranslatableComponent.of("worldedit.divide.changed", TextComponent.of(affected)));
+        return affected;
+    }
+
+    @Command(
         name = "/naturalize",
         desc = "3 layers of dirt on top then rock below"
     )
