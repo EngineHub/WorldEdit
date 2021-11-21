@@ -32,7 +32,7 @@ fun Project.applyCommonJavaConfiguration(sourcesJar: Boolean, banSlf4j: Boolean 
 
     configure<CheckstyleExtension> {
         configFile = rootProject.file("config/checkstyle/checkstyle.xml")
-        toolVersion = "8.34"
+        toolVersion = "9.1"
     }
 
     tasks.withType<Test>().configureEach {
