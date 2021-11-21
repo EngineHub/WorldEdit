@@ -6,7 +6,13 @@ plugins {
 
 applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
-addJarManifest(WorldEditKind.Standalone("com.sk89q.worldedit.cli.CLIWorldEdit"))
+addJarManifest(
+    WorldEditKind.Standalone("com.sk89q.worldedit.cli.CLIWorldEdit"),
+    extraAttributes = mapOf(
+        // We don't have any multi-release stuff, but Log4J does.
+        "Multi-Release" to "true",
+    ),
+)
 
 dependencies {
     "compileOnly"(project(":worldedit-libs:core:ap"))
@@ -38,7 +44,7 @@ tasks.named("assemble").configure {
 
 configure<PublishingExtension> {
     publications.named<MavenPublication>("maven") {
-        artifactId = the<BasePluginConvention>().archivesBaseName
+        artifactId = the<BasePluginExtension>().archivesName.get()
         from(components["java"])
     }
 }

@@ -26,6 +26,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
+import com.sk89q.worldedit.bukkit.adapter.UnsupportedVersionEditException;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
@@ -441,7 +442,7 @@ public class BukkitWorld extends AbstractWorld {
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         if (adapter != null) {
             try {
-                return adapter.getBlock(BukkitAdapter.adapt(getWorld(), position)).toImmutableState();
+                return adapter.getBlock(BukkitAdapter.adapt(getWorld(), position));
             } catch (Exception e) {
                 if (!hasWarnedImplError) {
                     hasWarnedImplError = true;
@@ -449,8 +450,12 @@ public class BukkitWorld extends AbstractWorld {
                 }
             }
         }
-        Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        return BukkitAdapter.adapt(bukkitBlock.getBlockData());
+        if (WorldEditPlugin.getInstance().getLocalConfiguration().unsupportedVersionEditing) {
+            Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+            return BukkitAdapter.adapt(bukkitBlock.getBlockData());
+        } else {
+            throw new RuntimeException(new UnsupportedVersionEditException());
+        }
     }
 
     @Override
@@ -468,16 +473,20 @@ public class BukkitWorld extends AbstractWorld {
                 }
             }
         }
-        Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        bukkitBlock.setBlockData(BukkitAdapter.adapt(block), sideEffects.doesApplyAny());
-        return true;
+        if (WorldEditPlugin.getInstance().getLocalConfiguration().unsupportedVersionEditing) {
+            Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+            bukkitBlock.setBlockData(BukkitAdapter.adapt(block), sideEffects.doesApplyAny());
+            return true;
+        } else {
+            throw new RuntimeException(new UnsupportedVersionEditException());
+        }
     }
 
     @Override
     public BaseBlock getFullBlock(BlockVector3 position) {
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         if (adapter != null) {
-            return adapter.getBlock(BukkitAdapter.adapt(getWorld(), position));
+            return adapter.getFullBlock(BukkitAdapter.adapt(getWorld(), position));
         } else {
             return getBlock(position).toBaseBlock();
         }
