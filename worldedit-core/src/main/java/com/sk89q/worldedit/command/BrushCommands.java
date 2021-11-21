@@ -525,7 +525,7 @@ public class BrushCommands {
                       @Arg(desc = "The size of the brush", def = "5")
                           double radius) throws WorldEditException {
         setOperationBasedBrush(player, localSession, radius,
-            new Deform("y-=1"), shape, "worldedit.brush.raise");
+            new Deform("y-=1", Deform.Mode.RAW_COORD), shape, "worldedit.brush.raise");
     }
 
     @Command(
@@ -539,7 +539,7 @@ public class BrushCommands {
                       @Arg(desc = "The size of the brush", def = "5")
                           double radius) throws WorldEditException {
         setOperationBasedBrush(player, localSession, radius,
-            new Deform("y+=1"), shape, "worldedit.brush.lower");
+            new Deform("y+=1", Deform.Mode.RAW_COORD), shape, "worldedit.brush.lower");
     }
 
     @Command(

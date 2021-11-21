@@ -4,6 +4,9 @@
 
 <suppressions>
     <suppress files=".*DataFixer\.java" checks="MethodName|FallThrough"/>
+    <suppress files=".*DataConverters\.java" checks="MethodName|FallThrough|JavadocParagraph"/>
+    <!-- The adapters don't have standard package names -->
+    <suppress files=".*[\\/]worldedit[\\/]bukkit[\\/]adapter[\\/]impl[\\/].*\.java" checks="PackageName"/>
     <suppress files=".*[\\/]MathUtils.java" checks="MethodName"/>
     <suppress files=".*[\\/]bPermissionsResolver.java" checks="TypeName"/>
     <!-- This thing only works via the use of a finalizer. -->

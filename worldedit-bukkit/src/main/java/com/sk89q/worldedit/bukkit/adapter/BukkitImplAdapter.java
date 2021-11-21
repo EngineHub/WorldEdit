@@ -33,6 +33,7 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.RegenOptions;
+import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -83,7 +84,15 @@ public interface BukkitImplAdapter {
      * @param location the location
      * @return the block
      */
-    BaseBlock getBlock(Location location);
+    BlockState getBlock(Location location);
+
+    /**
+     * Get the block with NBT data at the given location.
+     *
+     * @param location the location
+     * @return the block
+     */
+    BaseBlock getFullBlock(Location location);
 
     /**
      * Create a {@link WorldNativeAccess} for the given world reference.

@@ -1,106 +1,27 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.api.Project
 import org.gradle.api.component.AdhocComponentWithVariants
-import org.gradle.api.plugins.JavaPluginExtension
-import org.gradle.api.plugins.quality.CheckstyleExtension
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.Jar
-import org.gradle.api.tasks.compile.JavaCompile
-import org.gradle.api.tasks.javadoc.Javadoc
-import org.gradle.api.tasks.testing.Test
-import org.gradle.external.javadoc.StandardJavadocDocletOptions
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
-import org.gradle.kotlin.dsl.the
-import org.gradle.kotlin.dsl.withType
-import kotlin.collections.flatMap
-import kotlin.collections.joinToString
-import kotlin.collections.listOf
-import kotlin.collections.map
-import kotlin.collections.mutableMapOf
-import kotlin.collections.plus
 import kotlin.collections.set
 
 fun Project.applyPlatformAndCoreConfiguration() {
     applyCommonConfiguration()
     apply(plugin = "java")
-    apply(plugin = "eclipse")
-    apply(plugin = "idea")
     apply(plugin = "maven-publish")
-    apply(plugin = "checkstyle")
     apply(plugin = "com.jfrog.artifactory")
+    applyCommonJavaConfiguration(
+        sourcesJar = name in setOf("worldedit-core", "worldedit-bukkit", "worldedit-fabric"),
+        banSlf4j = name !in setOf("worldedit-fabric", "worldedit-forge"),
+    )
 
     ext["internalVersion"] = "$version+${rootProject.ext["gitCommitHash"]}"
-
-    tasks
-        .withType<JavaCompile>()
-        .matching { it.name == "compileJava" || it.name == "compileTestJava" }
-        .configureEach {
-            val disabledLint = listOf(
-                "processing", "path", "fallthrough", "serial"
-            )
-            options.compilerArgs.addAll(listOf("-Xlint:all") + disabledLint.map { "-Xlint:-$it" })
-            options.isDeprecation = true
-            options.encoding = "UTF-8"
-            options.compilerArgs.add("-parameters")
-        }
-
-    configure<CheckstyleExtension> {
-        configFile = rootProject.file("config/checkstyle/checkstyle.xml")
-        toolVersion = "8.34"
-    }
-
-    tasks.withType<Test>().configureEach {
-        useJUnitPlatform()
-    }
-
-    dependencies {
-        "compileOnly"("com.google.code.findbugs:jsr305:3.0.2")
-        "testImplementation"("org.junit.jupiter:junit-jupiter-api:${Versions.JUNIT}")
-        "testImplementation"("org.junit.jupiter:junit-jupiter-params:${Versions.JUNIT}")
-        "testImplementation"("org.mockito:mockito-core:${Versions.MOCKITO}")
-        "testImplementation"("org.mockito:mockito-junit-jupiter:${Versions.MOCKITO}")
-        "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:${Versions.JUNIT}")
-    }
-
-    // Java 8 turns on doclint which we fail
-    tasks.withType<Javadoc>().configureEach {
-        (options as StandardJavadocDocletOptions).apply {
-            addStringOption("Xdoclint:none", "-quiet")
-            tags(
-                "apiNote:a:API Note:",
-                "implSpec:a:Implementation Requirements:",
-                "implNote:a:Implementation Note:"
-            )
-        }
-    }
-
-    configure<JavaPluginExtension> {
-        withJavadocJar()
-    }
-
-    if (name in setOf("worldedit-core", "worldedit-bukkit", "worldedit-fabric")) {
-        the<JavaPluginExtension>().withSourcesJar()
-    }
-
-    if (name !in setOf("worldedit-fabric", "worldedit-forge")) {
-        configurations["compileClasspath"].apply {
-            resolutionStrategy.componentSelection {
-                withModule("org.slf4j:slf4j-api") {
-                    reject("No SLF4J allowed on compile classpath")
-                }
-            }
-        }
-    }
-
-    tasks.named("check").configure {
-        dependsOn("checkstyleMain", "checkstyleTest")
-    }
 
     configure<PublishingExtension> {
         publications {
@@ -157,7 +78,7 @@ sealed class WorldEditKind(
     object Plugin : WorldEditKind("PLUGIN")
 }
 
-fun Project.addJarManifest(kind: WorldEditKind, includeClasspath: Boolean = false) {
+fun Project.addJarManifest(kind: WorldEditKind, includeClasspath: Boolean = false, extraAttributes: Map<String, String> = mapOf()) {
     tasks.named<Jar>("jar") {
         val version = project(":worldedit-core").version
         inputs.property("version", version)
@@ -170,6 +91,7 @@ fun Project.addJarManifest(kind: WorldEditKind, includeClasspath: Boolean = fals
         if (includeClasspath) {
             attributes["Class-Path"] = CLASSPATH
         }
+        attributes.putAll(extraAttributes)
         manifest.attributes(attributes)
     }
 }

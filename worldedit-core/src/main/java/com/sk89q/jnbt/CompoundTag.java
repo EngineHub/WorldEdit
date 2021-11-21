@@ -243,8 +243,8 @@ public final class CompoundTag extends Tag {
      *
      * @param key the key
      * @param listType the class of the contained type
-     * @return a list of tags
      * @param <T> the type of list
+     * @return a list of tags
      */
     @SuppressWarnings("unchecked")
     public <T extends Tag> List<T> getList(String key, Class<T> listType) {
