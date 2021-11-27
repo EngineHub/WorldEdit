@@ -9,10 +9,6 @@ repositories {
     mavenCentral()
     gradlePluginPortal()
     maven {
-        name = "PaperMC"
-        url = uri("https://papermc.io/repo/repository/maven-public/")
-    }
-    maven {
         name = "Fabric"
         url = uri("https://maven.fabricmc.net/")
     }
@@ -23,6 +19,13 @@ repositories {
     maven {
         name = "EngineHub Repository"
         url = uri("https://maven.enginehub.org/repo/")
+    }
+    maven {
+        name = "PaperMC"
+        url = uri("https://papermc.io/repo/repository/maven-public/")
+        content {
+            includeGroupByRegex("io\\.papermc\\..*")
+        }
     }
     maven {
         name = "Forge Maven"
@@ -52,5 +55,5 @@ dependencies {
     implementation("net.fabricmc:fabric-loom:$loomVersion")
     implementation("net.fabricmc:sponge-mixin:$mixinVersion")
     implementation("org.enginehub.gradle:gradle-codecov-plugin:0.1.0")
-    implementation("io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:1.1.14")
+    implementation("io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:1.3.0-SNAPSHOT")
 }
