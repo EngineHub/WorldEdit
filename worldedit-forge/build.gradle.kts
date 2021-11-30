@@ -8,14 +8,14 @@ plugins {
     `java-library`
 }
 
-applyPlatformAndCoreConfiguration(javaRelease = 16)
+applyPlatformAndCoreConfiguration(javaRelease = 17)
 applyShadowConfiguration()
 
 val minecraftVersion = "1.18"
 val nextMajorMinecraftVersion: String = minecraftVersion.split('.').let { (useless, major) ->
     "$useless.${major.toInt() + 1}"
 }
-val forgeVersion = "38.0.0"
+val forgeVersion = "38.0.1"
 
 dependencies {
     "api"(project(":worldedit-core"))
@@ -61,6 +61,7 @@ javaComponent.withVariantsFromConfiguration(configurations["apiElements"]) {
 javaComponent.withVariantsFromConfiguration(configurations["runtimeElements"]) {
     skip()
 }
+
 tasks.register<Jar>("deobfJar") {
     from(sourceSets["main"].output)
     archiveClassifier.set("dev")

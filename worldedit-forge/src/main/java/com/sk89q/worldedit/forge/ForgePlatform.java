@@ -90,7 +90,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public int getDataVersion() {
-        return SharedConstants.getCurrentVersion().getWorldVersion();
+        return SharedConstants.getCurrentVersion().getDataVersion().getVersion();
     }
 
     @Override
