@@ -193,8 +193,10 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         serverWorldsField = CraftServer.class.getDeclaredField("worlds");
         serverWorldsField.setAccessible(true);
 
-        getChunkFutureMethod = ServerChunkCache.class.getDeclaredMethod("getChunkFutureMainThread",
-            int.class, int.class, ChunkStatus.class, boolean.class);
+        getChunkFutureMethod = ServerChunkCache.class.getDeclaredMethod(
+            Refraction.pickName("getChunkFutureMainThread", "c"),
+            int.class, int.class, ChunkStatus.class, boolean.class
+        );
         getChunkFutureMethod.setAccessible(true);
 
         chunkProviderExecutorField = ServerChunkCache.class.getDeclaredField(
