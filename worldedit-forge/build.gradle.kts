@@ -11,17 +11,11 @@ plugins {
 applyPlatformAndCoreConfiguration(javaRelease = 16)
 applyShadowConfiguration()
 
-val minecraftVersion = "1.17.1"
+val minecraftVersion = "1.18"
 val nextMajorMinecraftVersion: String = minecraftVersion.split('.').let { (useless, major) ->
     "$useless.${major.toInt() + 1}"
 }
-val forgeVersion = "37.0.12"
-
-configurations.all {
-    resolutionStrategy {
-        force("com.google.guava:guava:21.0")
-    }
-}
+val forgeVersion = "38.0.0"
 
 dependencies {
     "api"(project(":worldedit-core"))

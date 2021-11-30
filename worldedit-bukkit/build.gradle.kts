@@ -13,12 +13,6 @@ repositories {
     maven { url = uri("https://papermc.io/repo/repository/maven-public/") }
 }
 
-configurations.all {
-    resolutionStrategy {
-        force("com.google.guava:guava:21.0")
-    }
-}
-
 val localImplementation = configurations.create("localImplementation") {
     description = "Dependencies used locally, but provided by the runtime Bukkit implementation"
     isCanBeConsumed = false

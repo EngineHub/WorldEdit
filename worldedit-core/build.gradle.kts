@@ -55,7 +55,7 @@ dependencies {
     "compileOnly"(project(":worldedit-libs:core:ap"))
     "annotationProcessor"(project(":worldedit-libs:core:ap"))
     // ensure this is on the classpath for the AP
-    "annotationProcessor"("com.google.guava:guava:21.0")
+    "annotationProcessor"("com.google.guava:guava:${Versions.GUAVA}")
     "compileOnly"("com.google.auto.value:auto-value-annotations:${Versions.AUTO_VALUE}")
     "annotationProcessor"("com.google.auto.value:auto-value:${Versions.AUTO_VALUE}")
 
