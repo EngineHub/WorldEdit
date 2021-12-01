@@ -51,7 +51,7 @@ dependencies {
     implementation("gradle.plugin.com.github.johnrengelman:shadow:7.1.0")
     implementation("org.jfrog.buildinfo:build-info-extractor-gradle:4.24.23")
     implementation("org.spongepowered:SpongeGradle:0.11.5")
-    implementation("net.minecraftforge.gradle:ForgeGradle:5.1.25")
+    implementation("net.minecraftforge.gradle:ForgeGradle:5.1.26")
     implementation("net.fabricmc:fabric-loom:$loomVersion")
     implementation("net.fabricmc:sponge-mixin:$mixinVersion")
     implementation("org.enginehub.gradle:gradle-codecov-plugin:0.1.0")

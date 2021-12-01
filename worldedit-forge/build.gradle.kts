@@ -15,7 +15,7 @@ val minecraftVersion = "1.18"
 val nextMajorMinecraftVersion: String = minecraftVersion.split('.').let { (useless, major) ->
     "$useless.${major.toInt() + 1}"
 }
-val forgeVersion = "38.0.1"
+val forgeVersion = "38.0.2"
 
 dependencies {
     "api"(project(":worldedit-core"))
