@@ -22,7 +22,7 @@ package com.sk89q.worldedit.forge.net.packet;
 import com.sk89q.worldedit.forge.ForgeWorldEdit;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickEmpty;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.Objects;
 import java.util.function.Supplier;

@@ -39,9 +39,8 @@ public interface DoubleActionBlockTool extends BlockTool {
      * Perform the secondary action of this block tool.
      *
      * @return true to cancel the original event which triggered this action (if possible)
-     * @deprecated New subclasses must override
-     * {@link #actSecondary(Platform, LocalConfiguration, Player, LocalSession, Location, Direction)}
-     *      instead
+     * @deprecated New subclasses must override {@link #actSecondary(Platform, LocalConfiguration, Player, LocalSession,
+     *     Location, Direction)} instead
      */
     @Deprecated
     default boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {

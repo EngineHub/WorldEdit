@@ -21,7 +21,7 @@ package com.sk89q.worldedit.forge;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
-import net.minecraftforge.fmllegacy.server.ServerLifecycleHooks;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 public interface ForgePermissionsProvider {
 

@@ -27,7 +27,7 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
-import net.minecraft.block.Block;
+import net.minecraft.world.level.block.Block;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,18 +37,18 @@ import java.util.TreeMap;
 
 public class FabricBlockRegistry extends BundledBlockRegistry {
 
-    private final Map<net.minecraft.block.BlockState, FabricBlockMaterial> materialMap = new HashMap<>();
+    private final Map<net.minecraft.world.level.block.state.BlockState, FabricBlockMaterial> materialMap = new HashMap<>();
 
     @Override
     public Component getRichName(BlockType blockType) {
-        return TranslatableComponent.of(FabricAdapter.adapt(blockType).getTranslationKey());
+        return TranslatableComponent.of(FabricAdapter.adapt(blockType).getDescriptionId());
     }
 
     @Override
     public BlockMaterial getMaterial(BlockType blockType) {
         Block block = FabricAdapter.adapt(blockType);
         return materialMap.computeIfAbsent(
-            block.getDefaultState(),
+            block.defaultBlockState(),
             m -> new FabricBlockMaterial(m.getMaterial(), m, super.getMaterial(blockType))
         );
     }
@@ -57,10 +57,10 @@ public class FabricBlockRegistry extends BundledBlockRegistry {
     public Map<String, ? extends Property<?>> getProperties(BlockType blockType) {
         Block block = FabricAdapter.adapt(blockType);
         Map<String, Property<?>> map = new TreeMap<>();
-        Collection<net.minecraft.state.property.Property<?>> propertyKeys = block
-                .getDefaultState()
+        Collection<net.minecraft.world.level.block.state.properties.Property<?>> propertyKeys = block
+                .defaultBlockState()
                 .getProperties();
-        for (net.minecraft.state.property.Property<?> key : propertyKeys) {
+        for (net.minecraft.world.level.block.state.properties.Property<?> key : propertyKeys) {
             map.put(key.getName(), FabricTransmogrifier.transmogToWorldEditProperty(key));
         }
         return map;
@@ -68,7 +68,7 @@ public class FabricBlockRegistry extends BundledBlockRegistry {
 
     @Override
     public OptionalInt getInternalBlockStateId(BlockState state) {
-        net.minecraft.block.BlockState equivalent = FabricAdapter.adapt(state);
-        return OptionalInt.of(Block.getRawIdFromState(equivalent));
+        net.minecraft.world.level.block.state.BlockState equivalent = FabricAdapter.adapt(state);
+        return OptionalInt.of(Block.getId(equivalent));
     }
 }

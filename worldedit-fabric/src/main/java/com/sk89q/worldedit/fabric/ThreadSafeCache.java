@@ -21,7 +21,7 @@ package com.sk89q.worldedit.fabric;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -57,9 +57,9 @@ public class ThreadSafeCache implements ServerTickEvents.EndTick {
             if (server == null) {
                 return;
             }
-            for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+            for (ServerPlayer player : server.getPlayerList().getPlayers()) {
                 if (player != null) {
-                    onlineIds.add(player.getUuid());
+                    onlineIds.add(player.getUUID());
                 }
             }
 

@@ -19,31 +19,18 @@
 
 package com.sk89q.worldedit.fabric.mixin;
 
-import com.sk89q.worldedit.fabric.MutableBiomeArray;
-import com.sk89q.worldedit.internal.util.BiomeMath;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.BiomeArray;
-import org.spongepowered.asm.mixin.Final;
+import net.minecraft.world.level.levelgen.WorldGenSettings;
+import net.minecraft.world.level.storage.PrimaryLevelData;
+import net.minecraft.world.level.storage.WorldData;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(BiomeArray.class)
-public abstract class MixinBiomeArray implements MutableBiomeArray {
+@Mixin(PrimaryLevelData.class)
+public interface AccessorPrimaryLevelData extends WorldData {
 
-    @Final
-    @Shadow
-    private Biome[] data;
+    @Accessor
+    @Mutable
+    void setWorldGenSettings(WorldGenSettings options);
 
-    @Final
-    @Shadow
-    private int field_28126; // minY
-
-    @Final
-    @Shadow
-    private int field_28127; // maxY
-
-    @Override
-    public void setBiome(int x, int y, int z, Biome biome) {
-        this.data[BiomeMath.computeBiomeIndex(x, y, z, field_28126, field_28127)] = biome;
-    }
 }

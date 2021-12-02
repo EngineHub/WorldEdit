@@ -20,18 +20,18 @@
 package com.sk89q.worldedit.fabric;
 
 import com.mojang.authlib.GameProfile;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.stat.Stat;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stat;
+import net.minecraft.world.damagesource.DamageSource;
 
 import java.util.UUID;
 
-public class WorldEditFakePlayer extends ServerPlayerEntity {
+public class WorldEditFakePlayer extends ServerPlayer {
     private static final GameProfile FAKE_WORLDEDIT_PROFILE = new GameProfile(UUID.nameUUIDFromBytes("worldedit".getBytes()), "[WorldEdit]");
 
-    public WorldEditFakePlayer(ServerWorld world) {
+    public WorldEditFakePlayer(ServerLevel world) {
         super(world.getServer(), world, FAKE_WORLDEDIT_PROFILE);
     }
 
@@ -40,16 +40,16 @@ public class WorldEditFakePlayer extends ServerPlayerEntity {
     }
 
     @Override
-    public void increaseStat(Stat<?> stat, int incrementer) {
+    public void awardStat(Stat<?> stat, int incrementer) {
     }
 
     @Override
-    public void incrementStat(Stat<?> stat) {
+    public void awardStat(Stat<?> stat) {
     }
 
     @Override
-    public void sendMessage(Text message, boolean actionBar) {
-        super.sendMessage(message, actionBar);
+    public void displayClientMessage(Component message, boolean actionBar) {
+        super.displayClientMessage(message, actionBar);
     }
 
     @Override

@@ -8,19 +8,18 @@ plugins {
     `java-library`
 }
 
-applyPlatformAndCoreConfiguration()
+applyPlatformAndCoreConfiguration(javaRelease = 17)
 applyShadowConfiguration()
 
-val minecraftVersion = "1.17.1"
+val minecraftVersion = "1.18"
 val nextMajorMinecraftVersion: String = minecraftVersion.split('.').let { (useless, major) ->
     "$useless.${major.toInt() + 1}"
 }
-val forgeVersion = "37.0.12"
+val forgeVersion = "38.0.10"
 
-configurations.all {
-    resolutionStrategy {
-        force("com.google.guava:guava:21.0")
-    }
+val apiClasspath = configurations.create("apiClasspath") {
+    isCanBeResolved = true
+    extendsFrom(configurations.api.get())
 }
 
 dependencies {
@@ -33,10 +32,7 @@ dependencies {
 }
 
 configure<UserDevExtension> {
-    mappings(mapOf(
-        "channel" to "official",
-        "version" to minecraftVersion
-    ))
+    mappings("official", minecraftVersion)
 
     accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
 
@@ -48,6 +44,9 @@ configure<UserDevExtension> {
             ))
             workingDirectory = project.file("run").canonicalPath
             source(sourceSets["main"])
+            lazyToken("minecraft_classpath") {
+                apiClasspath.resolve().joinToString(File.pathSeparator) { it.absolutePath }
+            }
         }
         create("client", runConfig)
         create("server", runConfig)
@@ -67,6 +66,7 @@ javaComponent.withVariantsFromConfiguration(configurations["apiElements"]) {
 javaComponent.withVariantsFromConfiguration(configurations["runtimeElements"]) {
     skip()
 }
+
 tasks.register<Jar>("deobfJar") {
     from(sourceSets["main"].output)
     archiveClassifier.set("dev")

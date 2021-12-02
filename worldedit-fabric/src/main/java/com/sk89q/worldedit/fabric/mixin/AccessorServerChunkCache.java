@@ -17,26 +17,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.fabric;
+package com.sk89q.worldedit.fabric.mixin;
 
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.BiomeArray;
+import com.mojang.datafixers.util.Either;
+import net.minecraft.server.level.ChunkHolder;
+import net.minecraft.server.level.ServerChunkCache;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ChunkStatus;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
-/**
- * Interface over a {@link BiomeArray} as a mutable object.
- */
-public interface MutableBiomeArray {
+import java.util.concurrent.CompletableFuture;
 
-    /**
-     * Hook into the given biome array, to allow edits on it.
-     * @param biomeArray the biome array to edit
-     * @return the mutable interface to the biome array
-     */
-    static MutableBiomeArray inject(BiomeArray biomeArray) {
-        // It's Mixin'd
-        return (MutableBiomeArray) biomeArray;
-    }
+@Mixin(ServerChunkCache.class)
+public interface AccessorServerChunkCache {
 
-    void setBiome(int x, int y, int z, Biome biome);
+    @Invoker
+    CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> callGetChunkFuture(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create);
+
+    @Accessor
+    ServerChunkCache.MainThreadExecutor getMainThreadProcessor();
 
 }
