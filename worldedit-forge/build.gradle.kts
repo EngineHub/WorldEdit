@@ -15,10 +15,14 @@ val minecraftVersion = "1.18"
 val nextMajorMinecraftVersion: String = minecraftVersion.split('.').let { (useless, major) ->
     "$useless.${major.toInt() + 1}"
 }
-val forgeVersion = "38.0.2"
+val forgeVersion = "38.0.10"
+
+val apiClasspath = configurations.create("apiClasspath")
+apiClasspath.isCanBeResolved = true
+configurations.api.get().extendsFrom(apiClasspath)
 
 dependencies {
-    "api"(project(":worldedit-core"))
+    "apiClasspath"(project(":worldedit-core"))
     "implementation"(platform("org.apache.logging.log4j:log4j-bom:2.14.1") {
         because("Mojang provides Log4J at 2.14.1")
     })
@@ -45,6 +49,11 @@ configure<UserDevExtension> {
         }
         create("client", runConfig)
         create("server", runConfig)
+        all {
+            lazyToken("minecraft_classpath") {
+                apiClasspath.copyRecursive().resolve().joinToString(File.pathSeparator) { it.absolutePath }
+            }
+        }
     }
 
 }
