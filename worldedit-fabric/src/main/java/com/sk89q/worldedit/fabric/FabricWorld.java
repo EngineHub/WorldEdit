@@ -487,6 +487,9 @@ public class FabricWorld extends AbstractWorld {
         ConfiguredFeature<?, ?> generator = createTreeFeatureGenerator(type);
         ServerLevel world = (ServerLevel) getWorld();
         ServerChunkCache chunkManager = world.getChunkSource();
+        if (type == TreeType.CHORUS_PLANT) {
+            position = position.add(0, 1, 0);
+        }
         return generator != null && generator.place(
             world, chunkManager.getGenerator(), random,
             FabricAdapter.toBlockPos(position)

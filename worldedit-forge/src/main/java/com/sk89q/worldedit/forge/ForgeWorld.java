@@ -484,6 +484,9 @@ public class ForgeWorld extends AbstractWorld {
         ConfiguredFeature<?, ?> generator = createTreeFeatureGenerator(type);
         ServerLevel world = getWorld();
         ServerChunkCache chunkManager = world.getChunkSource();
+        if (type == TreeType.CHORUS_PLANT) {
+            position = position.add(0, 1, 0);
+        }
         return generator != null && generator.place(
             world, chunkManager.getGenerator(), random, ForgeAdapter.toBlockPos(position)
         );

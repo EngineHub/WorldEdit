@@ -17,12 +17,13 @@ val nextMajorMinecraftVersion: String = minecraftVersion.split('.').let { (usele
 }
 val forgeVersion = "38.0.10"
 
-val apiClasspath = configurations.create("apiClasspath")
-apiClasspath.isCanBeResolved = true
-configurations.api.get().extendsFrom(apiClasspath)
+val apiClasspath = configurations.create("apiClasspath") {
+    isCanBeResolved = true
+    extendsFrom(configurations.api.get())
+}
 
 dependencies {
-    "apiClasspath"(project(":worldedit-core"))
+    "api"(project(":worldedit-core"))
     "implementation"(platform("org.apache.logging.log4j:log4j-bom:2.14.1") {
         because("Mojang provides Log4J at 2.14.1")
     })
@@ -31,10 +32,7 @@ dependencies {
 }
 
 configure<UserDevExtension> {
-    mappings(mapOf(
-        "channel" to "official",
-        "version" to minecraftVersion
-    ))
+    mappings("official", minecraftVersion)
 
     accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
 
@@ -46,14 +44,12 @@ configure<UserDevExtension> {
             ))
             workingDirectory = project.file("run").canonicalPath
             source(sourceSets["main"])
+            lazyToken("minecraft_classpath") {
+                apiClasspath.resolve().joinToString(File.pathSeparator) { it.absolutePath }
+            }
         }
         create("client", runConfig)
         create("server", runConfig)
-        all {
-            lazyToken("minecraft_classpath") {
-                apiClasspath.copyRecursive().resolve().joinToString(File.pathSeparator) { it.absolutePath }
-            }
-        }
     }
 
 }
