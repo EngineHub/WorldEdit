@@ -15,4 +15,3 @@ plugins {
 artifacts {
     add("default", file("./src/main/resources/worldedit-adapter-1.17.1.jar"))
 }
-
