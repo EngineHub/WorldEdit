@@ -95,6 +95,13 @@ public interface BlockMaterial {
     int getLightValue();
 
     /**
+     * Get the map color for this block.
+     *
+     * @return the map color
+     */
+    int getMapColor();
+
+    /**
      * Get whether this block breaks when it is pushed by a piston.
      *
      * @return true if the block breaks

@@ -94,6 +94,11 @@ public class PassthroughBlockMaterial implements BlockMaterial {
     }
 
     @Override
+    public int getMapColor() {
+        return blockMaterial.getMapColor();
+    }
+
+    @Override
     public boolean isFragileWhenPushed() {
         return blockMaterial.isFragileWhenPushed();
     }

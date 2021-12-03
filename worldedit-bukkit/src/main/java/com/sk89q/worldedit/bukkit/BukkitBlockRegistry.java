@@ -28,10 +28,10 @@ import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
 import com.sk89q.worldedit.world.registry.PassthroughBlockMaterial;
 import org.bukkit.Material;
 
+import javax.annotation.Nullable;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.OptionalInt;
-import javax.annotation.Nullable;
 
 public class BukkitBlockRegistry extends BundledBlockRegistry {
     private final Map<Material, BukkitBlockMaterial> materialMap = new EnumMap<>(Material.class);
@@ -91,6 +91,13 @@ public class BukkitBlockRegistry extends BundledBlockRegistry {
                     return false;
             }
         }
+
+        // TODO Determine whether this would be the correct usage of isTransparent
+        /*@SuppressWarnings("deprecation")
+        @Override
+        public boolean isOpaque() {
+            return !material.isTransparent();
+        }*/
 
         @Override
         public boolean isSolid() {

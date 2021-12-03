@@ -31,6 +31,7 @@ class SimpleBlockMaterial implements BlockMaterial {
     private float resistance;
     private float slipperiness;
     private int lightValue;
+    private int mapColor;
     private boolean fragileWhenPushed;
     private boolean unpushable;
     private boolean ticksRandomly;
@@ -132,6 +133,15 @@ class SimpleBlockMaterial implements BlockMaterial {
     }
 
     @Override
+    public int getMapColor() {
+        return mapColor;
+    }
+
+    public void setMapColor(int mapColor) {
+        this.mapColor = mapColor;
+    }
+
+    @Override
     public boolean isFragileWhenPushed() {
         return fragileWhenPushed;
     }
@@ -190,8 +200,8 @@ class SimpleBlockMaterial implements BlockMaterial {
         return replacedDuringPlacement;
     }
 
-    public void setTranslucent(boolean isTranslucent) {
-        this.isTranslucent = isTranslucent;
+    public void setReplacedDuringPlacement(boolean replacedDuringPlacement) {
+        this.replacedDuringPlacement = replacedDuringPlacement;
     }
 
     @Override
@@ -199,8 +209,8 @@ class SimpleBlockMaterial implements BlockMaterial {
         return this.isTranslucent;
     }
 
-    public void setReplacedDuringPlacement(boolean replacedDuringPlacement) {
-        this.replacedDuringPlacement = replacedDuringPlacement;
+    public void setTranslucent(boolean isTranslucent) {
+        this.isTranslucent = isTranslucent;
     }
 
     @Override
