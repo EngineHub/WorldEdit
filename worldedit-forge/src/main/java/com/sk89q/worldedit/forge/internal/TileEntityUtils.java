@@ -50,6 +50,6 @@ public final class TileEntityUtils {
     }
 
     public static CompoundTag copyNbtData(BlockEntity tile) {
-        return tile.save(new CompoundTag());
+        return tile.saveWithId();
     }
 }
