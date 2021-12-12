@@ -39,8 +39,8 @@ repositories {
 
 dependencies {
     "api"(project(":worldedit-core"))
-    "implementation"(platform("org.apache.logging.log4j:log4j-bom:2.14.1") {
-        because("Mojang provides Log4J at 2.14.1")
+    "implementation"(platform("org.apache.logging.log4j:log4j-bom:${Versions.LOG4J}") {
+        because("Mojang provides Log4J")
     })
 
     "minecraft"("com.mojang:minecraft:$minecraftVersion")

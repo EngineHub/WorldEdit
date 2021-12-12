@@ -42,8 +42,8 @@ dependencies {
     "implementation"("com.google.code.findbugs:jsr305:1.3.9")
     "implementation"("com.google.code.gson:gson")
 
-    "implementation"("org.apache.logging.log4j:log4j-api:2.14.1") {
-        because("Mojang provides Log4J 2.14.1")
+    "implementation"("org.apache.logging.log4j:log4j-api:${Versions.LOG4J}") {
+        because("Mojang provides Log4J")
     }
 
     "implementation"("it.unimi.dsi:fastutil")
@@ -61,7 +61,7 @@ dependencies {
 
     "languageFiles"("${project.group}:worldedit-lang:7.2.6:355@zip")
 
-    "testRuntimeOnly"("org.apache.logging.log4j:log4j-core:2.14.1")
+    "testRuntimeOnly"("org.apache.logging.log4j:log4j-core:${Versions.LOG4J}")
 }
 
 tasks.named<Test>("test") {
