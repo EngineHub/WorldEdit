@@ -26,6 +26,7 @@ import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.fabric.internal.ExtendedPlayerEntity;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
+import com.sk89q.worldedit.fabric.mixin.AccessorClientboundBlockEntityDataPacket;
 import com.sk89q.worldedit.fabric.net.handler.WECUIPacketHandler;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -44,19 +45,19 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.MessageType;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.ChatType;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
@@ -65,29 +66,27 @@ import javax.annotation.Nullable;
 
 public class FabricPlayer extends AbstractPlayerActor {
 
-    // see ClientPlayNetHandler: search for "invalid update packet", lots of hardcoded consts
-    private static final int STRUCTURE_BLOCK_PACKET_ID = 7;
-    private final ServerPlayerEntity player;
+    private final ServerPlayer player;
 
-    protected FabricPlayer(ServerPlayerEntity player) {
+    protected FabricPlayer(ServerPlayer player) {
         this.player = player;
         ThreadSafeCache.getInstance().getOnlineIds().add(getUniqueId());
     }
 
     @Override
     public UUID getUniqueId() {
-        return player.getUuid();
+        return player.getUUID();
     }
 
     @Override
     public BaseItemStack getItemInHand(HandSide handSide) {
-        ItemStack is = this.player.getStackInHand(handSide == HandSide.MAIN_HAND ? Hand.MAIN_HAND : Hand.OFF_HAND);
+        ItemStack is = this.player.getItemInHand(handSide == HandSide.MAIN_HAND ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
         return FabricAdapter.adapt(is);
     }
 
     @Override
     public String getName() {
-        return this.player.getName().asString();
+        return this.player.getName().getContents();
     }
 
     @Override
@@ -99,16 +98,16 @@ public class FabricPlayer extends AbstractPlayerActor {
     public Location getLocation() {
         Vector3 position = Vector3.at(this.player.getX(), this.player.getY(), this.player.getZ());
         return new Location(
-                FabricWorldEdit.inst.getWorld(this.player.world),
+                FabricWorldEdit.inst.getWorld(this.player.level),
                 position,
-                this.player.getYaw(),
-                this.player.getPitch());
+                this.player.getYRot(),
+                this.player.getXRot());
     }
 
     @Override
     public boolean setLocation(Location location) {
-        ServerWorld level = (ServerWorld) FabricAdapter.adapt((World) location.getExtent());
-        this.player.teleport(
+        ServerLevel level = (ServerLevel) FabricAdapter.adapt((World) location.getExtent());
+        this.player.teleportTo(
             level,
             location.getX(), location.getY(), location.getZ(),
             location.getYaw(), location.getPitch()
@@ -116,17 +115,17 @@ public class FabricPlayer extends AbstractPlayerActor {
         // This check doesn't really ever get to be false in Fabric
         // Since Fabric API doesn't allow cancelling the teleport.
         // However, other mods could theoretically mix this in, so allow the detection.
-        return this.player.getServerWorld() == level;
+        return this.player.getLevel() == level;
     }
 
     @Override
     public World getWorld() {
-        return FabricWorldEdit.inst.getWorld(this.player.world);
+        return FabricWorldEdit.inst.getWorld(this.player.level);
     }
 
     @Override
     public void giveItem(BaseItemStack itemStack) {
-        this.player.getInventory().insertStack(FabricAdapter.adapt(itemStack));
+        this.player.getInventory().add(FabricAdapter.adapt(itemStack));
     }
 
     @Override
@@ -139,7 +138,7 @@ public class FabricPlayer extends AbstractPlayerActor {
         ServerPlayNetworking.send(
                 this.player,
                 WECUIPacketHandler.CUI_IDENTIFIER,
-                new PacketByteBuf(Unpooled.copiedBuffer(send, StandardCharsets.UTF_8))
+                new FriendlyByteBuf(Unpooled.copiedBuffer(send, StandardCharsets.UTF_8))
         );
     }
 
@@ -152,44 +151,44 @@ public class FabricPlayer extends AbstractPlayerActor {
     @Deprecated
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
-            this.player.sendMessage(new LiteralText(part), MessageType.SYSTEM, Util.NIL_UUID);
+            this.player.sendMessage(new TextComponent(part), ChatType.SYSTEM, Util.NIL_UUID);
         }
     }
 
     @Override
     @Deprecated
     public void printDebug(String msg) {
-        sendColorized(msg, Formatting.GRAY);
+        sendColorized(msg, ChatFormatting.GRAY);
     }
 
     @Override
     @Deprecated
     public void print(String msg) {
-        sendColorized(msg, Formatting.LIGHT_PURPLE);
+        sendColorized(msg, ChatFormatting.LIGHT_PURPLE);
     }
 
     @Override
     @Deprecated
     public void printError(String msg) {
-        sendColorized(msg, Formatting.RED);
+        sendColorized(msg, ChatFormatting.RED);
     }
 
     @Override
     public void print(Component component) {
-        this.player.sendMessage(net.minecraft.text.Text.Serializer.fromJson(GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale()))), false);
+        this.player.displayClientMessage(net.minecraft.network.chat.Component.Serializer.fromJson(GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale()))), false);
     }
 
-    private void sendColorized(String msg, Formatting formatting) {
+    private void sendColorized(String msg, ChatFormatting formatting) {
         for (String part : msg.split("\n")) {
-            MutableText component = new LiteralText(part)
-                .styled(style -> style.withColor(formatting));
-            this.player.sendMessage(component, false);
+            MutableComponent component = new TextComponent(part)
+                .withStyle(style -> style.withColor(formatting));
+            this.player.displayClientMessage(component, false);
         }
     }
 
     @Override
     public boolean trySetPosition(Vector3 pos, float pitch, float yaw) {
-        this.player.networkHandler.requestTeleport(pos.getX(), pos.getY(), pos.getZ(), yaw, pitch);
+        this.player.connection.teleport(pos.getX(), pos.getY(), pos.getZ(), yaw, pitch);
         return true;
     }
 
@@ -216,14 +215,14 @@ public class FabricPlayer extends AbstractPlayerActor {
 
     @Override
     public boolean isAllowedToFly() {
-        return player.getAbilities().allowFlying;
+        return player.getAbilities().mayfly;
     }
 
     @Override
     public void setFlying(boolean flying) {
         if (player.getAbilities().flying != flying) {
             player.getAbilities().flying = flying;
-            player.sendAbilitiesUpdate();
+            player.onUpdateAbilities();
         }
     }
 
@@ -235,20 +234,20 @@ public class FabricPlayer extends AbstractPlayerActor {
         }
         BlockPos loc = FabricAdapter.toBlockPos(pos);
         if (block == null) {
-            final BlockUpdateS2CPacket packetOut = new BlockUpdateS2CPacket(((FabricWorld) world).getWorld(), loc);
-            player.networkHandler.sendPacket(packetOut);
+            final ClientboundBlockUpdatePacket packetOut = new ClientboundBlockUpdatePacket(((FabricWorld) world).getWorld(), loc);
+            player.connection.send(packetOut);
         } else {
-            final BlockUpdateS2CPacket packetOut = new BlockUpdateS2CPacket(
+            final ClientboundBlockUpdatePacket packetOut = new ClientboundBlockUpdatePacket(
                 loc,
                 FabricAdapter.adapt(block.toImmutableState())
             );
-            player.networkHandler.sendPacket(packetOut);
+            player.connection.send(packetOut);
             if (block instanceof BaseBlock && block.getBlockType().equals(BlockTypes.STRUCTURE_BLOCK)) {
                 final CompoundBinaryTag nbtData = ((BaseBlock) block).getNbt();
                 if (nbtData != null) {
-                    player.networkHandler.sendPacket(new BlockEntityUpdateS2CPacket(
+                    player.connection.send(AccessorClientboundBlockEntityDataPacket.construct(
                             new BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()),
-                            STRUCTURE_BLOCK_PACKET_ID,
+                            BlockEntityType.STRUCTURE_BLOCK,
                             NBTConverter.toNative(nbtData))
                     );
                 }
@@ -267,8 +266,8 @@ public class FabricPlayer extends AbstractPlayerActor {
         private final UUID uuid;
         private final String name;
 
-        SessionKeyImpl(ServerPlayerEntity player) {
-            this.uuid = player.getUuid();
+        SessionKeyImpl(ServerPlayer player) {
+            this.uuid = player.getUUID();
             this.name = player.getName().getString();
         }
 

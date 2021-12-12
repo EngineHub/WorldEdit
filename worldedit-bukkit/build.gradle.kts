@@ -13,12 +13,6 @@ repositories {
     maven { url = uri("https://papermc.io/repo/repository/maven-public/") }
 }
 
-configurations.all {
-    resolutionStrategy {
-        force("com.google.guava:guava:21.0")
-    }
-}
-
 val localImplementation = configurations.create("localImplementation") {
     description = "Dependencies used locally, but provided by the runtime Bukkit implementation"
     isCanBeConsumed = false
@@ -55,7 +49,7 @@ dependencies {
     "compileOnly"("io.papermc.paper:paper-api:1.17-R0.1-SNAPSHOT") {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
-    "implementation"("io.papermc:paperlib:1.0.6")
+    "implementation"("io.papermc:paperlib:1.0.7")
     "compileOnly"("com.sk89q:dummypermscompat:1.10")
     "implementation"("org.bstats:bstats-bukkit:2.1.0")
     "implementation"("it.unimi.dsi:fastutil")

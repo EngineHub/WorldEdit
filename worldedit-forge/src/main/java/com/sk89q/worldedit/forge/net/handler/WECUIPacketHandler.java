@@ -23,8 +23,8 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.forge.ForgePlayer;
 import com.sk89q.worldedit.forge.ForgeWorldEdit;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
-import net.minecraftforge.fmllegacy.network.event.EventNetworkChannel;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.event.EventNetworkChannel;
 
 import java.nio.charset.StandardCharsets;
 

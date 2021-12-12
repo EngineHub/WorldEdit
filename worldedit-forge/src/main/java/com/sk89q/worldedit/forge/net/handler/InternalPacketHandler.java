@@ -21,7 +21,7 @@ package com.sk89q.worldedit.forge.net.handler;
 
 import com.sk89q.worldedit.forge.net.packet.LeftClickAirEventMessage;
 import com.sk89q.worldedit.forge.net.packet.LeftClickAirEventMessage.Handler;
-import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class InternalPacketHandler {
     private static final int PROTOCOL_VERSION = 1;

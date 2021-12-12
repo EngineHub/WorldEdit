@@ -17,26 +17,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.fabric;
+package com.sk89q.worldedit.scripting;
 
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.BiomeArray;
+import org.mozilla.javascript.ClassShutter;
 
 /**
- * Interface over a {@link BiomeArray} as a mutable object.
+ * Hides Minecraft's obfuscated names from scripts.
  */
-public interface MutableBiomeArray {
-
-    /**
-     * Hook into the given biome array, to allow edits on it.
-     * @param biomeArray the biome array to edit
-     * @return the mutable interface to the biome array
-     */
-    static MutableBiomeArray inject(BiomeArray biomeArray) {
-        // It's Mixin'd
-        return (MutableBiomeArray) biomeArray;
+class MinecraftHidingClassShutter implements ClassShutter {
+    @Override
+    public boolean visibleToScripts(String fullClassName) {
+        return fullClassName.contains(".") || fullClassName.length() >= 4;
     }
-
-    void setBiome(int x, int y, int z, Biome biome);
-
 }

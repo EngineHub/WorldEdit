@@ -3,6 +3,7 @@ rootProject.name = "worldedit"
 include("worldedit-libs")
 
 include("worldedit-bukkit:adapters:adapter-1.17.1")
+include("worldedit-bukkit:adapters:adapter-1.18")
 
 listOf("bukkit", "core", "sponge", "fabric", "forge", "cli").forEach {
     include("worldedit-libs:$it")

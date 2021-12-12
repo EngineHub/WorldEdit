@@ -65,7 +65,8 @@ import com.sk89q.worldedit.world.weather.WeatherTypes;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
-import net.minecraft.data.worldgen.Features;
+import net.minecraft.data.worldgen.features.EndFeatures;
+import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.RegistryReadOps;
@@ -84,13 +85,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.biome.BiomeZoomer;
-import net.minecraft.world.level.biome.FuzzyOffsetConstantColumnBiomeZoomer;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.ChunkBiomeContainer;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.WorldGenSettings;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
@@ -177,9 +177,7 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public Path getStoragePath() {
         final ServerLevel world = getWorld();
-        return world.getServer().storageSource.getDimensionPath(
-            world.dimension()
-        ).toPath();
+        return world.getServer().storageSource.getDimensionPath(world.dimension());
     }
 
     @Override
@@ -213,12 +211,6 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean fullySupports3DBiomes() {
-        BiomeZoomer okZoomer = getWorld().dimensionType().getBiomeZoomer();
-        return !(okZoomer instanceof FuzzyOffsetConstantColumnBiomeZoomer);
-    }
-
-    @Override
     public BiomeType getBiome(BlockVector3 position) {
         checkNotNull(position);
 
@@ -227,8 +219,7 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     private BiomeType getBiomeInChunk(BlockVector3 position, ChunkAccess chunk) {
-        ChunkBiomeContainer biomes = checkNotNull(chunk.getBiomes());
-        return ForgeAdapter.adapt(biomes.getNoiseBiome(position.getX() >> 2, position.getY() >> 2, position.getZ() >> 2));
+        return ForgeAdapter.adapt(chunk.getNoiseBiome(position.getX() >> 2, position.getY() >> 2, position.getZ() >> 2));
     }
 
     @Override
@@ -237,11 +228,11 @@ public class ForgeWorld extends AbstractWorld {
         checkNotNull(biome);
 
         LevelChunk chunk = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4);
-        ChunkBiomeContainer container = checkNotNull(chunk.getBiomes());
-        int idx = BiomeMath.computeBiomeIndex(
-            position.getX(), position.getY(), position.getZ(), getMinY(), getMaxY()
+        PalettedContainer<Biome> biomes = chunk.getSection(chunk.getSectionIndex(position.getY())).getBiomes();
+        biomes.getAndSetUnchecked(
+            position.getX() & 3, position.getY() & 3, position.getZ() & 3,
+            ForgeAdapter.adapt(biome)
         );
-        container.biomes[idx] = ForgeAdapter.adapt(biome);
         chunk.setUnsaved(true);
         return true;
     }
@@ -464,30 +455,29 @@ public class ForgeWorld extends AbstractWorld {
 
     @Nullable
     private static ConfiguredFeature<?, ?> createTreeFeatureGenerator(TreeType type) {
-        switch (type) {
-            case TREE: return Features.OAK;
-            case BIG_TREE: return Features.FANCY_OAK;
-            case REDWOOD: return Features.SPRUCE;
-            case TALL_REDWOOD: return Features.MEGA_SPRUCE;
-            case MEGA_REDWOOD: return Features.MEGA_PINE;
-            case BIRCH: return Features.BIRCH;
-            case JUNGLE: return Features.MEGA_JUNGLE_TREE;
-            case SMALL_JUNGLE: return Features.JUNGLE_TREE;
-            case SHORT_JUNGLE: return Features.JUNGLE_TREE_NO_VINE;
-            case JUNGLE_BUSH: return Features.JUNGLE_BUSH;
-            case SWAMP: return Features.SWAMP_OAK;
-            case ACACIA: return Features.ACACIA;
-            case DARK_OAK: return Features.DARK_OAK;
-            case TALL_BIRCH: return Features.SUPER_BIRCH_BEES_0002;
-            case RED_MUSHROOM: return Features.HUGE_RED_MUSHROOM;
-            case BROWN_MUSHROOM: return Features.HUGE_BROWN_MUSHROOM;
-            case WARPED_FUNGUS: return Features.WARPED_FUNGI;
-            case CRIMSON_FUNGUS: return Features.CRIMSON_FUNGI;
-            case CHORUS_PLANT: return Features.CHORUS_PLANT;
-            case RANDOM: return createTreeFeatureGenerator(TreeType.values()[ThreadLocalRandom.current().nextInt(TreeType.values().length)]);
-            default:
-                return null;
-        }
+        return switch (type) {
+            case TREE -> TreeFeatures.OAK;
+            case BIG_TREE -> TreeFeatures.FANCY_OAK;
+            case REDWOOD -> TreeFeatures.SPRUCE;
+            case TALL_REDWOOD -> TreeFeatures.MEGA_SPRUCE;
+            case MEGA_REDWOOD -> TreeFeatures.MEGA_PINE;
+            case BIRCH -> TreeFeatures.BIRCH;
+            case JUNGLE -> TreeFeatures.MEGA_JUNGLE_TREE;
+            case SMALL_JUNGLE -> TreeFeatures.JUNGLE_TREE;
+            case SHORT_JUNGLE -> TreeFeatures.JUNGLE_TREE_NO_VINE;
+            case JUNGLE_BUSH -> TreeFeatures.JUNGLE_BUSH;
+            case SWAMP -> TreeFeatures.SWAMP_OAK;
+            case ACACIA -> TreeFeatures.ACACIA;
+            case DARK_OAK -> TreeFeatures.DARK_OAK;
+            case TALL_BIRCH -> TreeFeatures.SUPER_BIRCH_BEES_0002;
+            case RED_MUSHROOM -> TreeFeatures.HUGE_RED_MUSHROOM;
+            case BROWN_MUSHROOM -> TreeFeatures.HUGE_BROWN_MUSHROOM;
+            case WARPED_FUNGUS -> TreeFeatures.WARPED_FUNGUS;
+            case CRIMSON_FUNGUS -> TreeFeatures.CRIMSON_FUNGUS;
+            case CHORUS_PLANT -> EndFeatures.CHORUS_PLANT;
+            case RANDOM -> createTreeFeatureGenerator(TreeType.values()[ThreadLocalRandom.current().nextInt(TreeType.values().length)]);
+            default -> null;
+        };
     }
 
     @Override
@@ -495,6 +485,9 @@ public class ForgeWorld extends AbstractWorld {
         ConfiguredFeature<?, ?> generator = createTreeFeatureGenerator(type);
         ServerLevel world = getWorld();
         ServerChunkCache chunkManager = world.getChunkSource();
+        if (type == TreeType.CHORUS_PLANT) {
+            position = position.add(0, 1, 0);
+        }
         return generator != null && generator.place(
             world, chunkManager.getGenerator(), random, ForgeAdapter.toBlockPos(position)
         );
