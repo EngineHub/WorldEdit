@@ -30,6 +30,7 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.Lifecycle;
+import com.sk89q.jnbt.AdventureNBTConverter;
 import com.sk89q.jnbt.ByteArrayTag;
 import com.sk89q.jnbt.ByteTag;
 import com.sk89q.jnbt.CompoundTag;
@@ -70,6 +71,7 @@ import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.io.file.SafeFiles;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.RegenOptions;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -499,13 +501,13 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     }
 
     @Override
-    public void sendFakeNBT(Player player, BlockVector3 pos, CompoundTag nbtData) {
+    public void sendFakeNBT(Player player, BlockVector3 pos, CompoundBinaryTag nbtData) {
         ((CraftPlayer) player).getHandle().networkManager.send(ClientboundBlockEntityDataPacket.create(
             new StructureBlockEntity(
                 new BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()),
                 Blocks.STRUCTURE_BLOCK.defaultBlockState()
             ),
-            __ -> (net.minecraft.nbt.CompoundTag) fromNative(nbtData)
+            __ -> (net.minecraft.nbt.CompoundTag) fromNative(AdventureNBTConverter.fromAdventure(nbtData))
         ));
     }
 

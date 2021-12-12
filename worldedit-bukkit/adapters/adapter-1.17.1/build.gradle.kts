@@ -1,5 +1,5 @@
 // TODO await https://github.com/PaperMC/paperweight/issues/116
-//applyPaperweightAdapterConfiguration()
+//applyPaperweightAdapterConfiguration(javaRelease = 16)
 //
 //dependencies {
 //    paperDevBundle("1.17.1-R0.1-20211120.192557-194")
