@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.command.tool;
 
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.entity.Player;
@@ -53,9 +52,8 @@ public class QueryTool implements BlockTool {
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked, @Nullable Direction face) {
 
         World world = (World) clicked.getExtent();
-        EditSession editSession = session.createEditSession(player);
         BlockVector3 blockPoint = clicked.toVector().toBlockPoint();
-        BaseBlock block = editSession.getFullBlock(blockPoint);
+        BaseBlock block = world.getFullBlock(blockPoint);
 
         TextComponent.Builder builder = TextComponent.builder();
         builder.append(TextComponent.of("@" + clicked.toVector().toBlockPoint() + ": ", TextColor.BLUE));
