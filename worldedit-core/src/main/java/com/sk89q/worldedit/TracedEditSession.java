@@ -21,9 +21,11 @@ package com.sk89q.worldedit;
 
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.internal.util.ErrorReporting;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.world.World;
 
+import java.lang.ref.Cleaner;
 import javax.annotation.Nullable;
 
 /**
@@ -31,22 +33,47 @@ import javax.annotation.Nullable;
  */
 class TracedEditSession extends EditSession {
 
+    private static final Cleaner cleaner = Cleaner.create();
+
+    private static final class TraceRecord implements Runnable {
+        private final Throwable stacktrace = new Throwable("An EditSession was not closed.");
+        private final Actor actor;
+
+        private volatile boolean committed = false;
+
+        private TraceRecord(Actor actor) {
+            this.actor = actor;
+        }
+
+        @Override
+        public void run() {
+            if (!committed) {
+                WorldEdit.logger.warn("####### EDIT SESSION NOT CLOSED #######");
+                WorldEdit.logger.warn("This means that some code did not close their EditSession.");
+                WorldEdit.logger.warn("Here is a stacktrace from the creation of this EditSession:", stacktrace);
+                ErrorReporting.trigger(actor, stacktrace);
+            }
+        }
+    }
+
+    private final TraceRecord record;
+    private final Cleaner.Cleanable cleanable;
+
     TracedEditSession(EventBus eventBus, @Nullable World world, int maxBlocks, @Nullable BlockBag blockBag,
                       @Nullable Actor actor,
                       boolean tracing) {
         super(eventBus, world, maxBlocks, blockBag, actor, tracing);
+        this.record = new TraceRecord(actor);
+        this.cleanable = cleaner.register(this, record);
     }
 
-    private final Throwable stacktrace = new Throwable("Creation trace.");
-
     @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-
-        if (commitRequired()) {
-            WorldEdit.logger.warn("####### LEFTOVER BUFFER BLOCKS DETECTED #######");
-            WorldEdit.logger.warn("This means that some code did not flush their EditSession.");
-            WorldEdit.logger.warn("Here is a stacktrace from the creation of this EditSession:", stacktrace);
+    public void close() {
+        try {
+            super.close();
+        } finally {
+            this.record.committed = true;
+            cleanable.clean();
         }
     }
 }
