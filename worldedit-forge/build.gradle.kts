@@ -11,11 +11,11 @@ plugins {
 applyPlatformAndCoreConfiguration(javaRelease = 17)
 applyShadowConfiguration()
 
-val minecraftVersion = "1.18"
+val minecraftVersion = "1.18.1"
 val nextMajorMinecraftVersion: String = minecraftVersion.split('.').let { (useless, major) ->
     "$useless.${major.toInt() + 1}"
 }
-val forgeVersion = "38.0.10"
+val forgeVersion = "39.0.0"
 
 val apiClasspath = configurations.create("apiClasspath") {
     isCanBeResolved = true
@@ -24,8 +24,8 @@ val apiClasspath = configurations.create("apiClasspath") {
 
 dependencies {
     "api"(project(":worldedit-core"))
-    "implementation"(platform("org.apache.logging.log4j:log4j-bom:2.14.1") {
-        because("Mojang provides Log4J at 2.14.1")
+    "implementation"(platform("org.apache.logging.log4j:log4j-bom:${Versions.LOG4J}") {
+        because("Mojang provides Log4J")
     })
 
     "minecraft"("net.minecraftforge:forge:$minecraftVersion-$forgeVersion")

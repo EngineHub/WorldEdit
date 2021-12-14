@@ -10,6 +10,7 @@ object Versions {
     const val FAST_UTIL = "8.5.6"
     const val GUAVA = "31.0.1-jre"
     const val GSON = "2.8.8"
+    const val LOG4J = "2.15.0"
 }
 
 // Properties that need a project reference to resolve:
