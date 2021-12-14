@@ -252,7 +252,6 @@
     "worldedit.timezone.set": "Timezone set for this session to: {0}",
     "worldedit.timezone.current": "The current time in that timezone is: {0}",
     "worldedit.version.version": "WorldEdit version {0}",
-    "worldedit.version.bukkit.unsupported-adapter": "This WorldEdit version does not fully support your version of Bukkit. Block entities (e.g. chests) will be empty, block properties (e.g. rotation) will be missing, and other things may not work. Update WorldEdit to restore this functionality:\n{0}",
 
     "worldedit.trace.no-tracing-extents":  "Trace: No extent was used.",
     "worldedit.trace.action-failed":  "Trace: Action(s) {0} at {1} discarded by extent {2}",
@@ -453,5 +452,8 @@
     "worldedit.help.subcommand-not-found": "The sub-command '{0}' under '{1}' could not be found.",
 
     "worldedit.cli.stopping": "Stopping!",
-    "worldedit.cli.unknown-command": "Unknown command!"
+    "worldedit.cli.unknown-command": "Unknown command!",
+
+    "worldedit.version.bukkit.unsupported-adapter": "This WorldEdit version does not fully support your version of Bukkit. Block entities (e.g. chests) will be empty, block properties (e.g. rotation) will be missing, and other things may not work. Update WorldEdit to restore this functionality:\n{0}",
+    "worldedit.bukkit.no-edit-without-adapter": "Editing on unsupported versions is disabled."
 }

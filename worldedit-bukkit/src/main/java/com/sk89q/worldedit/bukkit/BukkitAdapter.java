@@ -361,6 +361,9 @@ public class BukkitAdapter {
         return GameModes.get(gameMode.name().toLowerCase(Locale.ROOT));
     }
 
+    private static final EnumMap<Biome, BiomeType> biomeBiomeTypeCache = new EnumMap<>(Biome.class);
+    private static final Map<BiomeType, Biome> biomeTypeBiomeCache = new HashMap<>();
+
     /**
      * Create a WorldEdit BiomeType from a Bukkit one.
      *
@@ -368,7 +371,7 @@ public class BukkitAdapter {
      * @return WorldEdit BiomeType
      */
     public static BiomeType adapt(Biome biome) {
-        return BiomeTypes.get(biome.name().toLowerCase(Locale.ROOT));
+        return biomeBiomeTypeCache.computeIfAbsent(biome, b -> BiomeTypes.get(b.name().toLowerCase(Locale.ROOT)));
     }
 
     public static Biome adapt(BiomeType biomeType) {
@@ -376,7 +379,7 @@ public class BukkitAdapter {
             throw new IllegalArgumentException("Bukkit only supports vanilla biomes");
         }
         try {
-            return Biome.valueOf(biomeType.getId().substring(10).toUpperCase(Locale.ROOT));
+            return biomeTypeBiomeCache.computeIfAbsent(biomeType, type -> Biome.valueOf(type.getId().substring(10).toUpperCase(Locale.ROOT)));
         } catch (IllegalArgumentException e) {
             return null;
         }

@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import io.papermc.paperweight.userdev.attribute.Obfuscation
 
 plugins {
     `java-library`
@@ -26,6 +27,16 @@ val localImplementation = configurations.create("localImplementation") {
 configurations["compileOnly"].extendsFrom(localImplementation)
 configurations["testImplementation"].extendsFrom(localImplementation)
 
+val adapters = configurations.create("adapters") {
+    description = "Adapters to include in the JAR"
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    shouldResolveConsistentlyWith(configurations["runtimeClasspath"])
+    attributes {
+        attribute(Obfuscation.OBFUSCATION_ATTRIBUTE, objects.named(Obfuscation.OBFUSCATED))
+    }
+}
+
 dependencies {
     "api"(project(":worldedit-core"))
     "api"(project(":worldedit-libs:bukkit"))
@@ -49,6 +60,10 @@ dependencies {
     "implementation"("org.bstats:bstats-bukkit:2.1.0")
     "implementation"("it.unimi.dsi:fastutil")
     "testImplementation"("org.mockito:mockito-core:1.9.0-rc1")
+
+    project.project(":worldedit-bukkit:adapters").subprojects.forEach {
+        "adapters"(project(it.path))
+    }
 }
 
 tasks.named<Copy>("processResources") {
@@ -57,15 +72,19 @@ tasks.named<Copy>("processResources") {
     filesMatching("plugin.yml") {
         expand("internalVersion" to internalVersion)
     }
-    // exclude adapters entirely from this JAR, they should only be in the shadow JAR
-    exclude("**/worldedit-adapters.jar")
 }
 
 addJarManifest(WorldEditKind.Plugin, includeClasspath = true)
 
 tasks.named<ShadowJar>("shadowJar") {
-    from(zipTree("src/main/resources/worldedit-adapters.jar").matching {
-        exclude("META-INF/")
+    dependsOn(project.project(":worldedit-bukkit:adapters").subprojects.map { it.tasks.named("assemble") })
+    from(Callable {
+        adapters.resolve()
+            .map { f ->
+                zipTree(f).matching {
+                    exclude("META-INF/")
+                }
+            }
     })
     dependencies {
         // In tandem with not bundling log4j, we shouldn't relocate base package here.

@@ -284,8 +284,7 @@ public interface Player extends Entity, Actor {
      * @param pos where to move them
      * @param pitch the pitch (up/down) of the player's view in degrees
      * @param yaw the yaw (left/right) of the player's view in degrees
-     * @deprecated This method may fail without indication. Use
-     * {@link #trySetPosition(Vector3, float, float)} instead
+     * @deprecated This method may fail without indication. Use {@link #trySetPosition(Vector3, float, float)} instead
      */
     @Deprecated
     default void setPosition(Vector3 pos, float pitch, float yaw) {
