@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.world.chunk;
 
-import com.sk89q.jnbt.ByteTag;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.IntTag;
 import com.sk89q.jnbt.ListTag;
@@ -34,6 +33,7 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 import java.util.HashMap;
 import java.util.List;
@@ -46,12 +46,11 @@ import javax.annotation.Nullable;
 public class AnvilChunk18 implements Chunk {
 
     private final CompoundTag rootTag;
-    private final HashMap<Integer, BlockState[]> blocks;
+    private final Int2ObjectOpenHashMap<BlockState[]> blocks;
     private final int rootX;
     private final int rootZ;
 
     private Map<BlockVector3, Map<String, Tag>> tileEntities;
-
 
     /**
      * Construct the chunk with a compound tag.
@@ -65,9 +64,8 @@ public class AnvilChunk18 implements Chunk {
         rootX = NBTUtils.getChildTag(rootTag.getValue(), "xPos", IntTag.class).getValue();
         rootZ = NBTUtils.getChildTag(rootTag.getValue(), "zPos", IntTag.class).getValue();
 
-        blocks = new HashMap<>();
-
         List<Tag> sections = NBTUtils.getChildTag(rootTag.getValue(), "sections", ListTag.class).getValue();
+        blocks = new Int2ObjectOpenHashMap<>(sections.size());
 
         for (Tag rawSectionTag : sections) {
             if (!(rawSectionTag instanceof CompoundTag)) {
