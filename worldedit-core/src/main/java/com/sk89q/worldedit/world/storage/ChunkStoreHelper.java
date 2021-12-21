@@ -32,6 +32,7 @@ import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.chunk.AnvilChunk;
 import com.sk89q.worldedit.world.chunk.AnvilChunk13;
 import com.sk89q.worldedit.world.chunk.AnvilChunk16;
+import com.sk89q.worldedit.world.chunk.AnvilChunk18;
 import com.sk89q.worldedit.world.chunk.Chunk;
 import com.sk89q.worldedit.world.chunk.OldChunk;
 
@@ -69,6 +70,25 @@ public class ChunkStoreHelper {
      * @throws DataException if the rootTag is not valid chunk data
      */
     public static Chunk getChunk(CompoundTag rootTag) throws DataException {
+        int dataVersion = rootTag.getInt("DataVersion");
+        if (dataVersion == 0) {
+            dataVersion = -1;
+        }
+
+        final Platform platform = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING);
+        final int currentDataVersion = platform.getDataVersion();
+        if ((dataVersion > 0 || hasLevelSections(rootTag)) && dataVersion < currentDataVersion) { // only fix up MCA format, DFU doesn't support MCR chunks
+            final DataFixer dataFixer = platform.getDataFixer();
+            if (dataFixer != null) {
+                rootTag = (CompoundTag) AdventureNBTConverter.fromAdventure(dataFixer.fixUp(DataFixer.FixTypes.CHUNK, rootTag.asBinaryTag(), dataVersion));
+                dataVersion = currentDataVersion;
+            }
+        }
+
+        if (dataVersion >= Constants.DATA_VERSION_MC_1_18) {
+            return new AnvilChunk18(rootTag);
+        }
+
         Map<String, Tag> children = rootTag.getValue();
         CompoundTag tag = null;
 
@@ -88,19 +108,6 @@ public class ChunkStoreHelper {
             throw new ChunkStoreException("Missing root 'Level' tag");
         }
 
-        int dataVersion = rootTag.getInt("DataVersion");
-        if (dataVersion == 0) {
-            dataVersion = -1;
-        }
-        final Platform platform = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING);
-        final int currentDataVersion = platform.getDataVersion();
-        if (tag.getValue().containsKey("Sections") && dataVersion < currentDataVersion) { // only fix up MCA format, DFU doesn't support MCR chunks
-            final DataFixer dataFixer = platform.getDataFixer();
-            if (dataFixer != null) {
-                tag = (CompoundTag) ((CompoundTag) AdventureNBTConverter.fromAdventure(dataFixer.fixUp(DataFixer.FixTypes.CHUNK, rootTag.asBinaryTag(), dataVersion))).getValue().get("Level");
-                dataVersion = currentDataVersion;
-            }
-        }
         if (dataVersion >= Constants.DATA_VERSION_MC_1_16) {
             return new AnvilChunk16(tag);
         }
@@ -114,6 +121,15 @@ public class ChunkStoreHelper {
         }
 
         return new OldChunk(tag);
+    }
+
+    private static boolean hasLevelSections(CompoundTag rootTag) {
+        Map<String, Tag> children = rootTag.getValue();
+        Tag levelTag = children.get("Level");
+        if (levelTag instanceof CompoundTag) {
+            return ((CompoundTag) levelTag).getValue().containsKey("Sections");
+        }
+        return false;
     }
 
     private ChunkStoreHelper() {

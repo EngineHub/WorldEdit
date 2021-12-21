@@ -19,7 +19,7 @@ jobs:
         cache: 'gradle'
         distribution: 'temurin'
     - name: Build with Gradle
-      run: ./gradlew build -s --no-daemon
+      run: ./gradlew build -s
     - uses: actions/upload-artifact@v2.2.4
       name: Archive Reports
       if: always()
