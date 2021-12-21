@@ -4,7 +4,7 @@ import org.gradle.kotlin.dsl.dependencies
 
 // For specific version pinning, see
 // https://papermc.io/repo/service/rest/repository/browse/maven-public/io/papermc/paper/dev-bundle/
-fun Project.applyPaperweightAdapterConfiguration(javaRelease: Int = 16) {
+fun Project.applyPaperweightAdapterConfiguration(javaRelease: Int = 17) {
     applyCommonConfiguration()
     apply(plugin = "java-library")
     applyCommonJavaConfiguration(

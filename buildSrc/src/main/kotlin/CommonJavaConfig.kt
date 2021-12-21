@@ -11,7 +11,7 @@ import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.withType
 
-fun Project.applyCommonJavaConfiguration(sourcesJar: Boolean, javaRelease: Int = 16, banSlf4j: Boolean = true) {
+fun Project.applyCommonJavaConfiguration(sourcesJar: Boolean, javaRelease: Int = 17, banSlf4j: Boolean = true) {
     applyCommonConfiguration()
     apply(plugin = "eclipse")
     apply(plugin = "idea")

@@ -11,7 +11,7 @@ import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
 import kotlin.collections.set
 
-fun Project.applyPlatformAndCoreConfiguration(javaRelease: Int = 16) {
+fun Project.applyPlatformAndCoreConfiguration(javaRelease: Int = 17) {
     applyCommonConfiguration()
     apply(plugin = "java")
     apply(plugin = "maven-publish")
