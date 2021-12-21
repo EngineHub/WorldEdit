@@ -25,32 +25,32 @@ import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ChunkHolder;
-import net.minecraft.server.world.ServerChunkManager;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ChunkHolder;
+import net.minecraft.server.level.ServerChunkCache;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 
 import java.lang.ref.WeakReference;
 import java.util.Objects;
 import javax.annotation.Nullable;
 
-public class FabricWorldNativeAccess implements WorldNativeAccess<WorldChunk, BlockState, BlockPos> {
+public class FabricWorldNativeAccess implements WorldNativeAccess<LevelChunk, BlockState, BlockPos> {
     private static final int UPDATE = 1;
     private static final int NOTIFY = 2;
 
-    private final WeakReference<World> world;
+    private final WeakReference<Level> world;
     private SideEffectSet sideEffectSet;
 
-    public FabricWorldNativeAccess(WeakReference<World> world) {
+    public FabricWorldNativeAccess(WeakReference<Level> world) {
         this.world = world;
     }
 
-    private World getWorld() {
+    private Level getWorld() {
         return Objects.requireNonNull(world.get(), "The reference to the world was lost");
     }
 
@@ -60,7 +60,7 @@ public class FabricWorldNativeAccess implements WorldNativeAccess<WorldChunk, Bl
     }
 
     @Override
-    public WorldChunk getChunk(int x, int z) {
+    public LevelChunk getChunk(int x, int z) {
         return getWorld().getChunk(x, z);
     }
 
@@ -68,18 +68,18 @@ public class FabricWorldNativeAccess implements WorldNativeAccess<WorldChunk, Bl
     public BlockState toNative(com.sk89q.worldedit.world.block.BlockState state) {
         int stateId = BlockStateIdAccess.getBlockStateId(state);
         return BlockStateIdAccess.isValidInternalId(stateId)
-            ? Block.getStateFromRawId(stateId)
+            ? Block.stateById(stateId)
             : FabricAdapter.adapt(state);
     }
 
     @Override
-    public BlockState getBlockState(WorldChunk chunk, BlockPos position) {
+    public BlockState getBlockState(LevelChunk chunk, BlockPos position) {
         return chunk.getBlockState(position);
     }
 
     @Nullable
     @Override
-    public BlockState setBlockState(WorldChunk chunk, BlockPos position, BlockState state) {
+    public BlockState setBlockState(LevelChunk chunk, BlockPos position, BlockState state) {
         if (chunk instanceof ExtendedChunk) {
             return ((ExtendedChunk) chunk).setBlockState(
                 position, state, false, sideEffectSet.shouldApply(SideEffect.UPDATE)
@@ -90,7 +90,7 @@ public class FabricWorldNativeAccess implements WorldNativeAccess<WorldChunk, Bl
 
     @Override
     public BlockState getValidBlockForPosition(BlockState block, BlockPos position) {
-        return Block.postProcessState(block, getWorld(), position);
+        return Block.updateFromNeighbourShapes(block, getWorld(), position);
     }
 
     @Override
@@ -100,58 +100,58 @@ public class FabricWorldNativeAccess implements WorldNativeAccess<WorldChunk, Bl
 
     @Override
     public void updateLightingForBlock(BlockPos position) {
-        getWorld().getChunkManager().getLightingProvider().checkBlock(position);
+        getWorld().getChunkSource().getLightEngine().checkBlock(position);
     }
 
     @Override
     public boolean updateTileEntity(BlockPos position, CompoundBinaryTag tag) {
-        NbtCompound nativeTag = NBTConverter.toNative(tag);
-        BlockEntity tileEntity = getWorld().getWorldChunk(position).getBlockEntity(position);
+        CompoundTag nativeTag = NBTConverter.toNative(tag);
+        BlockEntity tileEntity = getWorld().getChunkAt(position).getBlockEntity(position);
         if (tileEntity == null) {
             return false;
         }
-        tileEntity.readNbt(nativeTag);
-        tileEntity.markDirty();
+        tileEntity.load(nativeTag);
+        tileEntity.setChanged();
         return true;
     }
 
     @Override
-    public void notifyBlockUpdate(WorldChunk chunk, BlockPos position, BlockState oldState, BlockState newState) {
-        if (chunk.getSectionArray()[getWorld().getSectionIndex(position.getY())] != null) {
-            getWorld().updateListeners(position, oldState, newState, UPDATE | NOTIFY);
+    public void notifyBlockUpdate(LevelChunk chunk, BlockPos position, BlockState oldState, BlockState newState) {
+        if (chunk.getSections()[getWorld().getSectionIndex(position.getY())] != null) {
+            getWorld().sendBlockUpdated(position, oldState, newState, UPDATE | NOTIFY);
         }
     }
 
     @Override
-    public boolean isChunkTicking(WorldChunk chunk) {
-        return chunk.getLevelType().isAfter(ChunkHolder.LevelType.TICKING);
+    public boolean isChunkTicking(LevelChunk chunk) {
+        return chunk.getFullStatus().isOrAfter(ChunkHolder.FullChunkStatus.TICKING);
     }
 
     @Override
-    public void markBlockChanged(WorldChunk chunk, BlockPos position) {
-        if (chunk.getSectionArray()[getWorld().getSectionIndex(position.getY())] != null) {
-            ((ServerChunkManager) getWorld().getChunkManager()).markForUpdate(position);
+    public void markBlockChanged(LevelChunk chunk, BlockPos position) {
+        if (chunk.getSections()[getWorld().getSectionIndex(position.getY())] != null) {
+            ((ServerChunkCache) getWorld().getChunkSource()).blockChanged(position);
         }
     }
 
     @Override
     public void notifyNeighbors(BlockPos pos, BlockState oldState, BlockState newState) {
-        getWorld().updateNeighbors(pos, oldState.getBlock());
-        if (newState.hasComparatorOutput()) {
-            getWorld().updateComparators(pos, newState.getBlock());
+        getWorld().blockUpdated(pos, oldState.getBlock());
+        if (newState.hasAnalogOutputSignal()) {
+            getWorld().updateNeighbourForOutputSignal(pos, newState.getBlock());
         }
     }
 
     @Override
     public void updateNeighbors(BlockPos pos, BlockState oldState, BlockState newState, int recursionLimit) {
-        World world = getWorld();
-        oldState.prepare(world, pos, NOTIFY, recursionLimit);
-        newState.updateNeighbors(world, pos, NOTIFY, recursionLimit);
-        newState.prepare(world, pos, NOTIFY, recursionLimit);
+        Level world = getWorld();
+        oldState.updateIndirectNeighbourShapes(world, pos, NOTIFY, recursionLimit);
+        newState.updateNeighbourShapes(world, pos, NOTIFY, recursionLimit);
+        newState.updateIndirectNeighbourShapes(world, pos, NOTIFY, recursionLimit);
     }
 
     @Override
     public void onBlockStateChange(BlockPos pos, BlockState oldState, BlockState newState) {
-        getWorld().onBlockChanged(pos, oldState, newState);
+        getWorld().onBlockStateChange(pos, oldState, newState);
     }
 }

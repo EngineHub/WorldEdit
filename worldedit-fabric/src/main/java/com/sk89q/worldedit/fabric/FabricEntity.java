@@ -29,9 +29,9 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.entity.EntityTypes;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 
 import java.lang.ref.WeakReference;
 import javax.annotation.Nullable;
@@ -40,20 +40,20 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 class FabricEntity implements Entity {
 
-    private final WeakReference<net.minecraft.entity.Entity> entityRef;
+    private final WeakReference<net.minecraft.world.entity.Entity> entityRef;
 
-    FabricEntity(net.minecraft.entity.Entity entity) {
+    FabricEntity(net.minecraft.world.entity.Entity entity) {
         checkNotNull(entity);
         this.entityRef = new WeakReference<>(entity);
     }
 
     @Override
     public BaseEntity getState() {
-        net.minecraft.entity.Entity entity = entityRef.get();
+        net.minecraft.world.entity.Entity entity = entityRef.get();
         if (entity != null) {
-            Identifier id = Registry.ENTITY_TYPE.getId(entity.getType());
-            NbtCompound tag = new NbtCompound();
-            entity.writeNbt(tag);
+            ResourceLocation id = Registry.ENTITY_TYPE.getKey(entity.getType());
+            CompoundTag tag = new CompoundTag();
+            entity.saveWithoutId(tag);
             return new BaseEntity(EntityTypes.get(id.toString()), LazyReference.from(() -> NBTConverter.fromNative(tag)));
         } else {
             return null;
@@ -62,13 +62,13 @@ class FabricEntity implements Entity {
 
     @Override
     public Location getLocation() {
-        net.minecraft.entity.Entity entity = entityRef.get();
+        net.minecraft.world.entity.Entity entity = entityRef.get();
         if (entity != null) {
             Vector3 position = Vector3.at(entity.getX(), entity.getY(), entity.getZ());
-            float yaw = entity.getYaw();
-            float pitch = entity.getPitch();
+            float yaw = entity.getYRot();
+            float pitch = entity.getXRot();
 
-            return new Location(FabricAdapter.adapt(entity.world), position, yaw, pitch);
+            return new Location(FabricAdapter.adapt(entity.level), position, yaw, pitch);
         } else {
             return new Location(NullWorld.getInstance());
         }
@@ -82,9 +82,9 @@ class FabricEntity implements Entity {
 
     @Override
     public Extent getExtent() {
-        net.minecraft.entity.Entity entity = entityRef.get();
+        net.minecraft.world.entity.Entity entity = entityRef.get();
         if (entity != null) {
-            return FabricAdapter.adapt(entity.world);
+            return FabricAdapter.adapt(entity.level);
         } else {
             return NullWorld.getInstance();
         }
@@ -92,9 +92,9 @@ class FabricEntity implements Entity {
 
     @Override
     public boolean remove() {
-        net.minecraft.entity.Entity entity = entityRef.get();
+        net.minecraft.world.entity.Entity entity = entityRef.get();
         if (entity != null) {
-            entity.remove(net.minecraft.entity.Entity.RemovalReason.KILLED);
+            entity.remove(net.minecraft.world.entity.Entity.RemovalReason.KILLED);
         }
         return true;
     }
@@ -103,7 +103,7 @@ class FabricEntity implements Entity {
     @Nullable
     @Override
     public <T> T getFacet(Class<? extends T> cls) {
-        net.minecraft.entity.Entity entity = entityRef.get();
+        net.minecraft.world.entity.Entity entity = entityRef.get();
         if (entity != null) {
             if (EntityProperties.class.isAssignableFrom(cls)) {
                 return (T) new FabricEntityProperties(entity);

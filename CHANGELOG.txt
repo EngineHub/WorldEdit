@@ -1,3 +1,9 @@
+7.2.8
+- Update to 1.18.1
+- Fixed issues with certain imports in craftscripts
+- Fixed brush tracing counting the world limit as a placement location
+- Removed the height flag from //expand vert
+
 7.2.7
 - [Bukkit] Update 1.17.1 adapters for recent Spigot worldgen change
 - [Bukkit] Minor improvements to world access performance

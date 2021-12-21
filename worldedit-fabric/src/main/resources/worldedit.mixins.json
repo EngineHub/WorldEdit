@@ -3,13 +3,12 @@
     "package": "com.sk89q.worldedit.fabric.mixin",
     "compatibilityLevel": "JAVA_8",
     "mixins": [
-        "MixinBiomeArray",
-        "MixinServerPlayerEntity",
+        "AccessorClientboundBlockEntityDataPacket",
+        "AccessorPrimaryLevelData",
+        "AccessorServerChunkCache",
+        "MixinLevelChunkSetBlockHook",
         "MixinMinecraftServer",
-        "MixinWorldChunkSetBlockHook",
-        "AccessorClientSettingsC2SPacket",
-        "AccessorLevelProperties",
-        "AccessorServerChunkManager"
+        "MixinServerPlayer"
     ],
     "plugin": "com.sk89q.worldedit.fabric.internal.MixinConfigPlugin",
     "server": [

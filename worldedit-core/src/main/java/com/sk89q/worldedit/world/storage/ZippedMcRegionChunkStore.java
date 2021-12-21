@@ -93,7 +93,7 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
                             endIndex = entryName.lastIndexOf('\\');
                         }
                         folder = entryName.substring(0, endIndex);
-                        if (folder.endsWith("poi")) {
+                        if (folder.endsWith("poi") || folder.endsWith("entities")) {
                             continue;
                         }
                         name = folder + "/" + name;

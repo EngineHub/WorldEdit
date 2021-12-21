@@ -59,6 +59,9 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickEmpty;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
+import net.minecraftforge.event.server.ServerStartedEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -69,10 +72,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.fmllegacy.network.FMLNetworkConstants;
-import net.minecraftforge.fmlserverevents.FMLServerAboutToStartEvent;
-import net.minecraftforge.fmlserverevents.FMLServerStartedEvent;
-import net.minecraftforge.fmlserverevents.FMLServerStoppingEvent;
+import net.minecraftforge.network.NetworkConstants;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Logger;
 import org.enginehub.piston.Command;
@@ -129,7 +129,7 @@ public class ForgeWorldEdit {
                     ModLoadingContext.get(),
                     IExtensionPoint.DisplayTest.class,
                     (Supplier<?>) () -> new IExtensionPoint.DisplayTest(
-                        () -> FMLNetworkConstants.IGNORESERVERONLY,
+                        () -> NetworkConstants.IGNORESERVERONLY,
                         (a, b) -> true
                     )
                 );
@@ -237,7 +237,7 @@ public class ForgeWorldEdit {
     }
 
     @SubscribeEvent
-    public void serverAboutToStart(FMLServerAboutToStartEvent event) {
+    public void serverAboutToStart(ServerAboutToStartEvent event) {
         final Path delChunks = workingDir.resolve(DELCHUNKS_FILE_NAME);
         if (Files.exists(delChunks)) {
             ChunkDeleter.runFromFile(delChunks, true);
@@ -245,14 +245,14 @@ public class ForgeWorldEdit {
     }
 
     @SubscribeEvent
-    public void serverStopping(FMLServerStoppingEvent event) {
+    public void serverStopping(ServerStoppingEvent event) {
         WorldEdit worldEdit = WorldEdit.getInstance();
         worldEdit.getSessionManager().unload();
         WorldEdit.getInstance().getEventBus().post(new PlatformUnreadyEvent(platform));
     }
 
     @SubscribeEvent
-    public void serverStarted(FMLServerStartedEvent event) {
+    public void serverStarted(ServerStartedEvent event) {
         setupRegistries(event.getServer());
 
         config.load();

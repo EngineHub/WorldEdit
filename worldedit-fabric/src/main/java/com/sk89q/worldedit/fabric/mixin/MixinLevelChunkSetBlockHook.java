@@ -20,13 +20,19 @@
 package com.sk89q.worldedit.fabric.mixin;
 
 import com.sk89q.worldedit.fabric.internal.ExtendedChunk;
-import net.minecraft.block.BlockState;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.WorldChunk;
-import org.spongepowered.asm.mixin.Final;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelHeightAccessor;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.LevelChunkSection;
+import net.minecraft.world.level.chunk.UpgradeData;
+import net.minecraft.world.level.levelgen.blending.BlendingData;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -34,9 +40,13 @@ import org.spongepowered.asm.mixin.injection.Slice;
 
 import javax.annotation.Nullable;
 
-@Mixin(WorldChunk.class)
-public abstract class MixinWorldChunkSetBlockHook implements Chunk, ExtendedChunk {
+@Mixin(LevelChunk.class)
+public abstract class MixinLevelChunkSetBlockHook extends ChunkAccess implements ExtendedChunk {
     private boolean shouldUpdate = true;
+
+    public MixinLevelChunkSetBlockHook(ChunkPos chunkPos, UpgradeData upgradeData, LevelHeightAccessor levelHeightAccessor, Registry<Biome> registry, long l, @org.jetbrains.annotations.Nullable LevelChunkSection[] levelChunkSections, @org.jetbrains.annotations.Nullable BlendingData blendingData) {
+        super(chunkPos, upgradeData, levelHeightAccessor, registry, l, levelChunkSections, blendingData);
+    }
 
     @Nullable
     @Override
@@ -54,14 +64,14 @@ public abstract class MixinWorldChunkSetBlockHook implements Chunk, ExtendedChun
     @Redirect(
         method = "setBlockState",
         slice = @Slice(
-            from = @At(value = "INVOKE", target = "Lnet/minecraft/block/AbstractBlock$AbstractBlockState;isOf(Lnet/minecraft/block/Block;)Z")
+            from = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;is(Lnet/minecraft/world/level/block/Block;)Z")
         ),
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;onBlockAdded(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Z)V", ordinal = 0)
+        at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;onPlace(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Z)V")
     )
-    public void setBlockStateHook(BlockState target, World world, BlockPos pos, BlockState old, boolean move) {
+    public void setBlockStateHook(BlockState target, Level world, BlockPos pos, BlockState old, boolean move) {
         boolean localShouldUpdate;
         MinecraftServer server = world.getServer();
-        if (server == null || Thread.currentThread() != server.getThread()) {
+        if (server == null || Thread.currentThread() != server.getRunningThread()) {
             // We're not on the server thread for some reason, WorldEdit will never be here
             // so we'll just ignore our flag
             localShouldUpdate = true;
@@ -69,7 +79,7 @@ public abstract class MixinWorldChunkSetBlockHook implements Chunk, ExtendedChun
             localShouldUpdate = shouldUpdate;
         }
         if (localShouldUpdate) {
-            target.onBlockAdded(world, pos, old, move);
+            target.onPlace(world, pos, old, move);
         }
     }
 }

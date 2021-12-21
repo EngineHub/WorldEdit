@@ -9,10 +9,6 @@ repositories {
     mavenCentral()
     gradlePluginPortal()
     maven {
-        name = "PaperMC"
-        url = uri("https://papermc.io/repo/repository/maven-public/")
-    }
-    maven {
         name = "Fabric"
         url = uri("https://maven.fabricmc.net/")
     }
@@ -23,6 +19,13 @@ repositories {
     maven {
         name = "EngineHub Repository"
         url = uri("https://maven.enginehub.org/repo/")
+    }
+    maven {
+        name = "PaperMC"
+        url = uri("https://papermc.io/repo/repository/maven-public/")
+        content {
+            includeGroupByRegex("io\\.papermc\\..*")
+        }
     }
     maven {
         name = "Forge Maven"
@@ -45,12 +48,12 @@ dependencies {
     implementation(gradleApi())
     implementation("gradle.plugin.org.cadixdev.gradle:licenser:0.6.1")
     implementation("org.ajoberstar.grgit:grgit-gradle:4.1.0")
-    implementation("com.github.jengelman.gradle.plugins:shadow:6.1.0")
-    implementation("org.jfrog.buildinfo:build-info-extractor-gradle:4.21.0")
+    implementation("gradle.plugin.com.github.johnrengelman:shadow:7.1.0")
+    implementation("org.jfrog.buildinfo:build-info-extractor-gradle:4.24.23")
     implementation("org.spongepowered:SpongeGradle:0.11.5")
-    implementation("net.minecraftforge.gradle:ForgeGradle:5.1.14")
+    implementation("net.minecraftforge.gradle:ForgeGradle:5.1.26")
     implementation("net.fabricmc:fabric-loom:$loomVersion")
     implementation("net.fabricmc:sponge-mixin:$mixinVersion")
     implementation("org.enginehub.gradle:gradle-codecov-plugin:0.1.0")
-    implementation("io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:1.1.14")
+    implementation("io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:1.3.3")
 }

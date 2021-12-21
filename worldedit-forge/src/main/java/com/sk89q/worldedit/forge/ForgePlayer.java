@@ -55,6 +55,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.StructureBlockEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 
@@ -257,11 +259,13 @@ public class ForgePlayer extends AbstractPlayerActor {
                 final BaseBlock baseBlock = (BaseBlock) block;
                 final CompoundBinaryTag nbtData = baseBlock.getNbt();
                 if (nbtData != null) {
-                    player.connection.send(new ClientboundBlockEntityDataPacket(
-                        new BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()),
-                        STRUCTURE_BLOCK_PACKET_ID,
-                        NBTConverter.toNative(nbtData))
-                    );
+                    player.connection.send(ClientboundBlockEntityDataPacket.create(
+                        new StructureBlockEntity(
+                            new BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()),
+                            Blocks.STRUCTURE_BLOCK.defaultBlockState()
+                        ),
+                        __ -> NBTConverter.toNative(nbtData)
+                    ));
                 }
             }
         }

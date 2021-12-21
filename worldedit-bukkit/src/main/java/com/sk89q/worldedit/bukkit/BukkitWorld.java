@@ -519,7 +519,7 @@ public class BukkitWorld extends AbstractWorld {
     @Override
     public boolean fullySupports3DBiomes() {
         // Supports if API does and we're not in the overworld
-        return HAS_3D_BIOMES && getWorld().getEnvironment() != World.Environment.NORMAL;
+        return HAS_3D_BIOMES && (getWorld().getEnvironment() != World.Environment.NORMAL || PaperLib.isVersion(18));
     }
 
     @SuppressWarnings("deprecation")
