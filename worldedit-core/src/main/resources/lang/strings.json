@@ -428,6 +428,7 @@
     "worldedit.selection.transform.error.cannot-expand": "Cannot expand a TransformedRegion.",
     "worldedit.selection.transform.error.cannot-contract": "Cannot contract a TransformedRegion.",
     "worldedit.selection.transform.error.cannot-change": "Cannot change a TransformedRegion.",
+    "worldedit.selection.updated": "Positions updated.",
 
     "worldedit.sideeffect.lighting": "Lighting",
     "worldedit.sideeffect.lighting.description": "Updates block lighting",
