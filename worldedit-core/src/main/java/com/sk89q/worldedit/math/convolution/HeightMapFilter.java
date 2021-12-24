@@ -120,7 +120,7 @@ public class HeightMapFilter {
                         z += f * inData[offsetY + offsetX];
                     }
                 }
-                outData[index++] = (int) (z + 0.5);
+                outData[index++] = (int) Math.floor(z + 0.5);
             }
         }
         return outData;

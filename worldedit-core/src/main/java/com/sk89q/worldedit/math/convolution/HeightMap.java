@@ -144,7 +144,7 @@ public class HeightMap {
 
                         // Grow -- start from 1 below top replacing airblocks
                         for (int y = newHeight - 1 - originY; y >= 0; --y) {
-                            int copyFrom = (int) (y * scale);
+                            int copyFrom = (int) Math.floor(y * scale);
                             session.setBlock(BlockVector3.at(xr, originY + y, zr), session.getBlock(BlockVector3.at(xr, originY + copyFrom, zr)));
                             ++blocksChanged;
                         }
@@ -152,7 +152,7 @@ public class HeightMap {
                 } else if (curHeight > newHeight) {
                     // Shrink -- start from bottom
                     for (int y = 0; y < newHeight - originY; ++y) {
-                        int copyFrom = (int) (y * scale);
+                        int copyFrom = (int) Math.floor(y * scale);
                         session.setBlock(BlockVector3.at(xr, originY + y, zr), session.getBlock(BlockVector3.at(xr, originY + copyFrom, zr)));
                         ++blocksChanged;
                     }
