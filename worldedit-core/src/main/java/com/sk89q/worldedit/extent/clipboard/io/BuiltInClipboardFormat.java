@@ -121,6 +121,39 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
 
             return true;
         }
+    },
+    MINECRAFT_STRUCTURE("structure") {
+        @Override
+        public String getPrimaryFileExtension() {
+            return "nbt";
+        }
+
+        @Override
+        public ClipboardReader getReader(InputStream inputStream) throws IOException {
+            NBTInputStream nbtStream = new NBTInputStream(new GZIPInputStream(inputStream));
+            return new MinecraftStructureReader(nbtStream);
+        }
+
+        @Override
+        public ClipboardWriter getWriter(OutputStream outputStream) throws IOException {
+            throw new IOException("This format does not support saving");
+        }
+
+        @Override
+        public boolean isFormat(File file) {
+            try (NBTInputStream str = new NBTInputStream(new GZIPInputStream(new FileInputStream(file)))) {
+                NamedTag rootTag = str.readNamedTag();
+                CompoundTag structureTag = (CompoundTag) rootTag.getTag();
+                Map<String, Tag> structure = structureTag.getValue();
+                if (!structure.containsKey("DataVersion")) {
+                    return false;
+                }
+            } catch (Exception e) {
+                return false;
+            }
+
+            return true;
+        }
     };
 
     private final ImmutableSet<String> aliases;
