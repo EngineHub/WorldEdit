@@ -107,7 +107,7 @@ public class HeightMapFilter {
 
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
-                outData[index++] = (int) calculateHeight(inDataFloat, width, height, offset, matrix, x, y);
+                outData[index++] = (int) Math.floor(calculateHeight(inDataFloat, width, height, offset, matrix, x, y));
             }
         }
         return outData;

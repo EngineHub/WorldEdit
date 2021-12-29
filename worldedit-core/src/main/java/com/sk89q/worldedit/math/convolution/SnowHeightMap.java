@@ -167,11 +167,11 @@ public class SnowHeightMap {
                         ++blocksChanged;
 
                         // Grow -- start from 1 below top replacing airblocks
-                        for (int y = (int) newHeight - 1 - originY; y >= 0; --y) {
-                            if (y >= newHeight - 1 - originY - layerBlocks) {
+                        for (int y = (int) Math.floor(newHeight - 1 - originY); y >= 0; --y) {
+                            if (y >= Math.floor(newHeight - 1 - originY - layerBlocks)) {
                                 session.setBlock(BlockVector3.at(xr, originY + y, zr), fillerSnow);
                             } else {
-                                int copyFrom = (int) (y * scale);
+                                int copyFrom = (int) Math.floor(y * scale);
                                 BlockState block = session.getBlock(BlockVector3.at(xr, originY + copyFrom, zr));
                                 session.setBlock(BlockVector3.at(xr, originY + y, zr), block);
                             }
@@ -180,11 +180,11 @@ public class SnowHeightMap {
                     }
                 } else {
                     // Shrink -- start from bottom
-                    for (int y = 0; y < (int) newHeight - originY; ++y) {
-                        if (y >= (int) newHeight - originY - layerBlocks) {
+                    for (int y = 0; y < (int) Math.floor(newHeight - originY); ++y) {
+                        if (y >= (int) Math.floor(newHeight - originY - layerBlocks)) {
                             session.setBlock(BlockVector3.at(xr, originY + y, zr), fillerSnow);
                         } else {
-                            int copyFrom = (int) (y * scale);
+                            int copyFrom = (int) Math.floor(y * scale);
                             BlockState block = session.getBlock(BlockVector3.at(xr, originY + copyFrom, zr));
                             session.setBlock(BlockVector3.at(xr, originY + y, zr), block);
                         }
@@ -195,7 +195,7 @@ public class SnowHeightMap {
                     ++blocksChanged;
 
                     // Fill rest with air
-                    for (int y = (int) newHeight + 1; y <= curHeight; ++y) {
+                    for (int y = (int) Math.floor(newHeight + 1); y <= Math.floor(curHeight); ++y) {
                         session.setBlock(BlockVector3.at(xr, y, zr), fillerAir);
                         ++blocksChanged;
                     }
@@ -208,7 +208,8 @@ public class SnowHeightMap {
     }
 
     private void setSnowLayer(int x, int z, float newHeight) throws MaxChangedBlocksException {
-        int numOfLayers = (int) ((newHeight % 1) * 8) + 1;
-        session.setBlock(BlockVector3.at(x, (int) newHeight, z), BlockTypes.SNOW.getState(ImmutableMap.of(this.layers, numOfLayers)));
+        int y = (int) Math.floor(newHeight);
+        int numOfLayers = (int) ((newHeight - y) * 8) + 1;
+        session.setBlock(BlockVector3.at(x, y, z), BlockTypes.SNOW.getState(ImmutableMap.of(this.layers, numOfLayers)));
     }
 }
