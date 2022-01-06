@@ -219,7 +219,8 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
         SideEffect.VALIDATION,
         SideEffect.ENTITY_AI,
         SideEffect.LIGHTING,
-        SideEffect.NEIGHBORS
+        SideEffect.NEIGHBORS,
+        SideEffect.EVENTS
     );
 
     private static final Set<SideEffect> SUPPORTED_SIDE_EFFECTS = Sets.immutableEnumSet(
