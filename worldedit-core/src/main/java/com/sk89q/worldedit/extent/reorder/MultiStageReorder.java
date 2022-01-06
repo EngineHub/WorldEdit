@@ -42,7 +42,10 @@ import java.util.Map;
 
 /**
  * Re-orders blocks into several stages.
+ *
+ * @deprecated Use {@link com.sk89q.worldedit.extent.world.SideEffectExtent} with post edit instead.
  */
+@Deprecated
 public class MultiStageReorder extends AbstractBufferingExtent implements ReorderingExtent {
 
     private static final Map<BlockType, PlacementPriority> priorityMap = new HashMap<>();

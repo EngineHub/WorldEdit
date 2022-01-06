@@ -48,7 +48,6 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.util.SideEffectSet;
-import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.World;
@@ -1120,6 +1119,7 @@ public class LocalSession {
      *
      * @return The reorder mode
      */
+    @Deprecated
     public EditSession.ReorderMode getReorderMode() {
         return reorderMode;
     }
@@ -1129,6 +1129,7 @@ public class LocalSession {
      *
      * @param reorderMode The reorder mode
      */
+    @Deprecated
     public void setReorderMode(EditSession.ReorderMode reorderMode) {
         this.reorderMode = reorderMode;
     }
