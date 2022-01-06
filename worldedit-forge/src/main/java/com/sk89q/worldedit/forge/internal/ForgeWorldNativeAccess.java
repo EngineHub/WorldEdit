@@ -77,6 +77,11 @@ public class ForgeWorldNativeAccess implements WorldNativeAccess<LevelChunk, Blo
     @Nullable
     @Override
     public BlockState setBlockState(LevelChunk chunk, BlockPos position, BlockState state) {
+        if (chunk instanceof ExtendedChunk) {
+            return ((ExtendedChunk) chunk).setBlockState(
+                position, state, false, sideEffectSet.shouldApply(SideEffect.UPDATE)
+            );
+        }
         return chunk.setBlockState(position, state, false);
     }
 

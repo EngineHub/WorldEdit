@@ -5,6 +5,7 @@ import net.minecraftforge.gradle.userdev.tasks.RenameJarInPlace
 
 plugins {
     id("net.minecraftforge.gradle")
+    id("org.spongepowered.mixin")
     `java-library`
 }
 
@@ -29,6 +30,7 @@ dependencies {
     })
 
     "minecraft"("net.minecraftforge:forge:$minecraftVersion-$forgeVersion")
+    "annotationProcessor"("org.spongepowered:mixin:0.8.5:processor")
 }
 
 configure<UserDevExtension> {
@@ -52,6 +54,11 @@ configure<UserDevExtension> {
         create("server", runConfig)
     }
 
+}
+
+configure<org.spongepowered.asm.gradle.plugins.MixinExtension> {
+    add(sourceSets["main"], "worldedit.mixins.refmap.json")
+    config("worldedit.mixins.json")
 }
 
 configure<BasePluginConvention> {
