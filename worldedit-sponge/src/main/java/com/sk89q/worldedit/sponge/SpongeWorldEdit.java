@@ -131,7 +131,6 @@ public class SpongeWorldEdit {
         Task.builder()
             .plugin(container)
             .interval(30, TimeUnit.SECONDS)
-            .name("WorldEdit ThreadSafeCache")
             .execute(ThreadSafeCache.getInstance())
             .build();
 

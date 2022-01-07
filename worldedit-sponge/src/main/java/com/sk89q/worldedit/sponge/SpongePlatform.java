@@ -93,7 +93,7 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
             .execute(task)
             .plugin(SpongeWorldEdit.inst().getPluginContainer())
             .build();
-        return Math.abs(t.name().hashCode()); // TODO This isn't right, but we only check for -1 values
+        return Math.abs(t.hashCode()); // TODO This isn't right, but we only check for -1 values
     }
 
     @Override
