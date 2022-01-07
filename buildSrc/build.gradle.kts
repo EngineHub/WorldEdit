@@ -56,4 +56,5 @@ dependencies {
     implementation("net.fabricmc:sponge-mixin:$mixinVersion")
     implementation("org.enginehub.gradle:gradle-codecov-plugin:0.1.0")
     implementation("io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:1.3.3")
+    implementation("org.spongepowered:mixingradle:0.7.32")
 }
