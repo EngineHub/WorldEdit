@@ -56,7 +56,7 @@ dependencies {
     })
     api("org.apache.logging.log4j:log4j-api")
     // bStats isn't updated yet :(
-    // api("org.bstats:bstats-sponge:2.2.1")
+    api("org.bstats:bstats-sponge:2.2.1")
     testImplementation("org.mockito:mockito-core:${Versions.MOCKITO}")
 }
 
@@ -65,7 +65,7 @@ addJarManifest(WorldEditKind.Mod, includeClasspath = true)
 tasks.named<ShadowJar>("shadowJar") {
     dependencies {
         relocate("org.bstats", "com.sk89q.worldedit.sponge.bstats") {
-            include(dependency("org.bstats:bstats-sponge"))
+            include(dependency("org.bstats:"))
         }
         include(dependency(":worldedit-core"))
 
