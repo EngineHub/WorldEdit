@@ -52,6 +52,8 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.entity.BlockEntityArchetype;
+import org.spongepowered.api.block.entity.BlockEntityType;
 import org.spongepowered.api.data.persistence.DataContainer;
 import org.spongepowered.api.data.persistence.DataView;
 import org.spongepowered.api.entity.EntityType;
@@ -59,6 +61,7 @@ import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.Item;
 import org.spongepowered.api.registry.RegistryTypes;
 import org.spongepowered.api.util.Ticks;
+import org.spongepowered.api.world.BlockChangeFlags;
 import org.spongepowered.api.world.LightTypes;
 import org.spongepowered.api.world.server.ServerLocation;
 import org.spongepowered.api.world.server.ServerWorld;
@@ -151,9 +154,47 @@ public final class SpongeWorld extends AbstractWorld {
         checkNotNull(position);
         checkNotNull(block);
 
-        // Switch back to https://gist.github.com/octylFractal/d1fd5b46574b43e13bb4eb673e53deda
-        // When applySideEffects can be implemented in API and we don't need WNA!
-        return worldNativeAccess.setBlock(position, block, sideEffects);
+        ServerWorld world = getWorld();
+
+        org.spongepowered.api.block.BlockState newState = SpongeAdapter.adapt(block.toImmutableState());
+
+        boolean didSet = world.setBlock(
+            position.getX(), position.getY(), position.getZ(),
+            newState,
+            BlockChangeFlags.NONE
+                .withUpdateNeighbors(sideEffects.shouldApply(SideEffect.NEIGHBORS))
+                .withNotifyClients(true)
+                .withPhysics(sideEffects.shouldApply(SideEffect.UPDATE))
+                .withNotifyObservers(sideEffects.shouldApply(SideEffect.UPDATE))
+                .withLightingUpdates(sideEffects.shouldApply(SideEffect.LIGHTING))
+                .withPathfindingUpdates(sideEffects.shouldApply(SideEffect.ENTITY_AI))
+                .withNeighborDropsAllowed(false)
+                .withBlocksMoving(false)
+                .withForcedReRender(false)
+                .withIgnoreRender(false)
+        );
+        if (!didSet) {
+            // still update NBT if the block is the same
+            if (world.block(position.getX(), position.getY(), position.getZ()) == newState) {
+                didSet = block.toBaseBlock().hasNbtData();
+            }
+        }
+
+        // Create the TileEntity
+        if (didSet && block instanceof BaseBlock && ((BaseBlock) block).hasNbtData()) {
+            BaseBlock baseBlock = (BaseBlock) block;
+            BlockEntityArchetype.builder()
+                .blockEntity((BlockEntityType)
+                    world.engine().registry(RegistryTypes.BLOCK_ENTITY_TYPE)
+                        .value(ResourceKey.resolve(baseBlock.getNbtId()))
+                )
+                .blockEntityData(NbtAdapter.adaptFromWorldEdit(baseBlock.getNbtData()))
+                .state(newState)
+                .build()
+                .apply(ServerLocation.of(world, position.getX(), position.getY(), position.getZ()));
+        }
+
+        return true;
     }
 
     @Override

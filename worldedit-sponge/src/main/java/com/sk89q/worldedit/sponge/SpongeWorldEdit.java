@@ -81,6 +81,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
 
 import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAME;
 import static java.util.stream.Collectors.toList;
@@ -235,20 +236,33 @@ public class SpongeWorldEdit {
         }
     }
 
+    private String rebuildArguments(org.enginehub.piston.Command command, ArgumentReader.Mutable arguments, @Nullable String extraArgs) {
+        StringBuilder argBuilder = new StringBuilder("/");
+        argBuilder.append(command.getName());
+        if (arguments.remainingLength() > 0) {
+            argBuilder.append(" ").append(arguments.remaining());
+        }
+        if (extraArgs != null) {
+            argBuilder.append(" ").append(extraArgs);
+        }
+        return argBuilder.toString();
+    }
+
     private void registerAdaptedCommand(RegisterCommandEvent<Command.Raw> event, org.enginehub.piston.Command command) {
         CommandAdapter adapter = new CommandAdapter(command) {
             @Override
             public CommandResult process(CommandCause cause, ArgumentReader.Mutable arguments) {
-                CommandEvent weEvent = new CommandEvent(SpongeWorldEdit.inst().wrapCommandCause(cause), command.getName() + " " + arguments.remaining());
+                CommandEvent weEvent = new CommandEvent(SpongeWorldEdit.inst().wrapCommandCause(cause), rebuildArguments(command, arguments, null));
                 WorldEdit.getInstance().getEventBus().post(weEvent);
                 return weEvent.isCancelled() ? CommandResult.success() : CommandResult.builder().build();
             }
 
             @Override
             public List<CommandCompletion> complete(CommandCause cause, ArgumentReader.Mutable arguments) {
-                CommandSuggestionEvent weEvent = new CommandSuggestionEvent(SpongeWorldEdit.inst().wrapCommandCause(cause), command.getName() + " " + arguments.remaining());
+                String remaining = arguments.remaining();
+                CommandSuggestionEvent weEvent = new CommandSuggestionEvent(SpongeWorldEdit.inst().wrapCommandCause(cause), rebuildArguments(command, arguments, remaining));
                 WorldEdit.getInstance().getEventBus().post(weEvent);
-                return CommandUtil.fixSuggestions(arguments.remaining(), weEvent.getSuggestions())
+                return CommandUtil.fixSuggestions(remaining, weEvent.getSuggestions())
                     .stream().map(CommandCompletion::of).collect(toList());
             }
         };
