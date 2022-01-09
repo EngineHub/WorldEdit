@@ -30,12 +30,17 @@ import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
  */
 public class ErrorReporting {
     public static void trigger(Actor actor, Throwable error) {
-        actor.printError(TranslatableComponent.of("worldedit.command.error.report"));
-        actor.print(
-            TextComponent.builder(error.getClass().getName() + ": " + error.getMessage())
-                .hoverEvent(HoverEvent.showText(TextComponent.of(Throwables.getStackTraceAsString(error))))
-                .build()
-        );
+        boolean showDetailedError = actor.hasPermission("worldedit.error.detailed");
+
+        actor.printError(TranslatableComponent.of("worldedit.command.error"));
+        if (showDetailedError) {
+            actor.printError(TranslatableComponent.of("worldedit.command.error.report"));
+            actor.print(
+                TextComponent.builder(error.getClass().getName() + ": " + error.getMessage())
+                    .hoverEvent(HoverEvent.showText(TextComponent.of(Throwables.getStackTraceAsString(error))))
+                    .build()
+            );
+        }
     }
 
     private ErrorReporting() {
