@@ -19,7 +19,7 @@ minecraft {
 }
 
 sponge {
-    apiVersion("8.0.0-SNAPSHOT")
+    apiVersion("8.0.0")
     license("GPL3")
     plugin("worldedit") {
         loader {
@@ -48,7 +48,7 @@ sponge {
 dependencies {
     api(project(":worldedit-core"))
     api(project(":worldedit-libs:sponge"))
-    api("org.spongepowered:spongeapi:8.0.0-SNAPSHOT") {
+    api("org.spongepowered:spongeapi:8.0.0") {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
     implementation(platform("org.apache.logging.log4j:log4j-bom:${Versions.LOG4J}") {
