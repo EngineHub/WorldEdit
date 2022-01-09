@@ -178,8 +178,7 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
     @Override
     public Set<SideEffect> getSupportedSideEffects() {
         return ImmutableSet.of(
-            SideEffect.UPDATE, SideEffect.ENTITY_AI, SideEffect.LIGHTING, SideEffect.NEIGHBORS,
-            SideEffect.VALIDATION
+            SideEffect.UPDATE, SideEffect.ENTITY_AI, SideEffect.LIGHTING, SideEffect.NEIGHBORS
         );
     }
 
