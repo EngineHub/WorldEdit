@@ -27,8 +27,10 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
+import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.sponge.internal.NbtAdapter;
 import com.sk89q.worldedit.sponge.internal.SpongeWorldNativeAccess;
@@ -38,6 +40,7 @@ import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.RegenOptions;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -50,7 +53,9 @@ import net.minecraft.data.worldgen.Features;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import org.apache.logging.log4j.Logger;
 import org.spongepowered.api.ResourceKey;
+import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.entity.BlockEntityArchetype;
 import org.spongepowered.api.block.entity.BlockEntityType;
@@ -63,8 +68,11 @@ import org.spongepowered.api.registry.RegistryTypes;
 import org.spongepowered.api.util.Ticks;
 import org.spongepowered.api.world.BlockChangeFlags;
 import org.spongepowered.api.world.LightTypes;
+import org.spongepowered.api.world.SerializationBehavior;
+import org.spongepowered.api.world.generation.config.WorldGenerationConfig;
 import org.spongepowered.api.world.server.ServerLocation;
 import org.spongepowered.api.world.server.ServerWorld;
+import org.spongepowered.api.world.server.WorldTemplate;
 import org.spongepowered.api.world.volume.stream.StreamOptions;
 import org.spongepowered.math.vector.Vector3d;
 import org.spongepowered.math.vector.Vector3i;
@@ -74,6 +82,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -86,6 +95,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class SpongeWorld extends AbstractWorld {
 
     private static final Random random = new Random();
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     private final WeakReference<ServerWorld> worldRef;
     private final SpongeWorldNativeAccess worldNativeAccess;
@@ -217,8 +227,56 @@ public final class SpongeWorld extends AbstractWorld {
 
     @Override
     public boolean regenerate(Region region, Extent extent, RegenOptions options) {
-        // TODO get sponge team to implement this for us
-        return false;
+        Server server = Sponge.server();
+
+        final String id = "worldedittemp_" + getWorld().key().value();
+
+        WorldGenerationConfig baseConfig = getWorld().asTemplate().generationConfig();
+
+        WorldTemplate tempWorldProperties = getWorld().asTemplate().asBuilder()
+            .key(ResourceKey.of("worldedit", id))
+            .loadOnStartup(false)
+            .serializationBehavior(SerializationBehavior.NONE)
+            .generationConfig(options.getSeed().isPresent()
+                ? WorldGenerationConfig.Mutable.builder()
+                    .generateBonusChest(baseConfig.generateBonusChest())
+                    .generateBonusChest(baseConfig.generateBonusChest())
+                    .seed(options.getSeed().getAsLong())
+                    .build()
+                : baseConfig)
+            .build();
+
+        ServerWorld tempWorld;
+        try {
+            tempWorld = server.worldManager().loadWorld(tempWorldProperties).get();
+        } catch (InterruptedException | ExecutionException e) {
+            LOGGER.error("Failed to load temp world", e);
+            return false;
+        }
+
+        try {
+            // Pre-gen all the chunks
+            // We need to also pull one more chunk in every direction
+            CuboidRegion expandedPreGen = new CuboidRegion(region.getMinimumPoint().subtract(16, 16, 16), region.getMaximumPoint().add(16, 16, 16));
+            for (BlockVector3 chunk : expandedPreGen.getChunkCubes()) {
+                tempWorld.loadChunk(chunk.getBlockX(), chunk.getBlockY(), chunk.getBlockZ(), true);
+            }
+
+            World from = SpongeAdapter.adapt(tempWorld);
+            for (BlockVector3 vec : region) {
+                extent.setBlock(vec, from.getFullBlock(vec));
+                if (options.shouldRegenBiomes()) {
+                    extent.setBiome(vec, from.getBiome(vec));
+                }
+            }
+        } catch (WorldEditException e) {
+            throw new RuntimeException(e);
+        } finally {
+            // Remove temp world
+            server.worldManager().unloadWorld(tempWorldProperties.key()).thenRun(() -> server.worldManager().deleteWorld(tempWorldProperties.key()));
+        }
+
+        return true;
     }
 
 

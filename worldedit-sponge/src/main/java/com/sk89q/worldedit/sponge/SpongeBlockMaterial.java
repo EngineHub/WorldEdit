@@ -28,7 +28,7 @@ import net.minecraft.world.level.material.PushReaction;
 import javax.annotation.Nullable;
 
 /**
- * Fabric block material that pulls as much info as possible from the Minecraft
+ * Sponge block material that pulls as much info as possible from the Minecraft
  * Material, and passes the rest to another implementation, typically the
  * bundled block info.
  */
