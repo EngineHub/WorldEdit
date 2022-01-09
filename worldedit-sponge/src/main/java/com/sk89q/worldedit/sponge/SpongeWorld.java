@@ -240,7 +240,7 @@ public final class SpongeWorld extends AbstractWorld {
             .generationConfig(options.getSeed().isPresent()
                 ? WorldGenerationConfig.Mutable.builder()
                     .generateBonusChest(baseConfig.generateBonusChest())
-                    .generateBonusChest(baseConfig.generateBonusChest())
+                    .generateFeatures(baseConfig.generateFeatures())
                     .seed(options.getSeed().getAsLong())
                     .build()
                 : baseConfig)
