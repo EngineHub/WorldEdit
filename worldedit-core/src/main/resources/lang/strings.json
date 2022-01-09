@@ -263,6 +263,7 @@
     "worldedit.command.time-elapsed": "{0}s elapsed (history: {1} changed; {2} blocks/sec).",
     "worldedit.command.permissions": "You are not permitted to do that. Are you in the right mode?",
     "worldedit.command.player-only": "This command must be used with a player.",
+    "worldedit.command.error": "An unexpected error occurred trying to run your command",    
     "worldedit.command.error.report": "Please report this error: [See console]",
     "worldedit.pastebin.uploading": "(Please wait... sending output to pastebin...)",
     "worldedit.session.cant-find-session": "Unable to find session for {0}",
