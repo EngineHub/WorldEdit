@@ -255,7 +255,7 @@ public class SpongeWorldEdit {
         CommandAdapter adapter = new CommandAdapter(command) {
             @Override
             public CommandResult process(CommandCause cause, ArgumentReader.Mutable arguments) {
-                CommandEvent weEvent = new CommandEvent(SpongeWorldEdit.inst().wrapCommandCause(cause), rebuildArguments(command.getName(), arguments.remaining()));
+                CommandEvent weEvent = new CommandEvent(SpongeWorldEdit.inst().wrapCommandCause(cause), rebuildArguments(command.getName(), arguments.remaining()).trim());
                 WorldEdit.getInstance().getEventBus().post(weEvent);
                 return weEvent.isCancelled() ? CommandResult.success() : CommandResult.builder().build();
             }

@@ -18,8 +18,10 @@ minecraft {
     version("1.16.5")
 }
 
+val spongeApiVersion = "8.0.0";
+
 sponge {
-    apiVersion("8.0.0")
+    apiVersion(spongeApiVersion)
     license("GPL3")
     plugin("worldedit") {
         loader {
@@ -48,7 +50,7 @@ sponge {
 dependencies {
     api(project(":worldedit-core"))
     api(project(":worldedit-libs:sponge"))
-    api("org.spongepowered:spongeapi:8.0.0") {
+    api("org.spongepowered:spongeapi:${spongeApiVersion}") {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
     implementation(platform("org.apache.logging.log4j:log4j-bom:${Versions.LOG4J}") {
@@ -58,6 +60,10 @@ dependencies {
     // bStats isn't updated yet :(
     api("org.bstats:bstats-sponge:2.2.1")
     testImplementation("org.mockito:mockito-core:${Versions.MOCKITO}")
+}
+
+configure<BasePluginExtension> {
+    archivesName.set("${project.name}-api$spongeApiVersion")
 }
 
 addJarManifest(WorldEditKind.Mod, includeClasspath = true)
