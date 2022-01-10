@@ -30,10 +30,8 @@ import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
  */
 public class ErrorReporting {
     public static void trigger(Actor actor, Throwable error) {
-        boolean showDetailedError = actor.hasPermission("worldedit.error.detailed");
-
         actor.printError(TranslatableComponent.of("worldedit.command.error.report"));
-        if (showDetailedError) {
+        if (actor.hasPermission("worldedit.error.detailed")) {
             actor.print(
                 TextComponent.builder(error.getClass().getName() + ": " + error.getMessage())
                     .hoverEvent(HoverEvent.showText(TextComponent.of(Throwables.getStackTraceAsString(error))))
