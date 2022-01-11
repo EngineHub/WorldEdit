@@ -42,6 +42,12 @@ public abstract class CommandAdapter implements org.spongepowered.api.command.Co
         Set<String> permissions = command.getCondition().as(PermissionCondition.class)
             .map(PermissionCondition::getPermissions)
             .orElseGet(Collections::emptySet);
+
+        // Allow commands without permission nodes to always execute.
+        if (permissions.isEmpty()) {
+            return true;
+        }
+
         for (String perm : permissions) {
             if (cause.hasPermission(perm)) {
                 return true;

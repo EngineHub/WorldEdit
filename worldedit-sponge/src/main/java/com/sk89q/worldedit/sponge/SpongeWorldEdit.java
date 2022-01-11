@@ -410,7 +410,7 @@ public class SpongeWorldEdit {
      * @return a version string
      */
     String getInternalVersion() {
-        return container.metadata().version().getQualifier();
+        return container.metadata().version().toString();
     }
 
     public void setPermissionsProvider(SpongePermissionsProvider provider) {
