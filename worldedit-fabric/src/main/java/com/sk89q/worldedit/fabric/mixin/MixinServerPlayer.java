@@ -20,22 +20,22 @@
 package com.sk89q.worldedit.fabric.mixin;
 
 import com.sk89q.worldedit.fabric.internal.ExtendedPlayerEntity;
-import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.network.protocol.game.ServerboundClientInformationPacket;
+import net.minecraft.server.level.ServerPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ServerPlayerEntity.class)
-public abstract class MixinServerPlayerEntity implements ExtendedPlayerEntity {
+@Mixin(ServerPlayer.class)
+public abstract class MixinServerPlayer implements ExtendedPlayerEntity {
 
     private String language = "en_us";
 
-    @Inject(method = "setClientSettings", at = @At(value = "HEAD"))
-    public void setClientSettings(ClientSettingsC2SPacket clientSettingsC2SPacket,
+    @Inject(method = "updateOptions", at = @At(value = "HEAD"))
+    public void updateOptions(ServerboundClientInformationPacket clientSettingsC2SPacket,
                                   CallbackInfo callbackInfo) {
-        this.language = ((AccessorClientSettingsC2SPacket) clientSettingsC2SPacket).getLanguage();
+        this.language = clientSettingsC2SPacket.language();
     }
 
     @Override

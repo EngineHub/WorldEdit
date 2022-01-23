@@ -1,3 +1,19 @@
+7.2.8
+- Update to 1.18.1
+- Fixed issues with certain imports in craftscripts
+- Fixed brush tracing counting the world limit as a placement location
+- Removed the height flag from //expand vert
+
+7.2.7
+- [Bukkit] Update 1.17.1 adapters for recent Spigot worldgen change
+- [Bukkit] Minor improvements to world access performance
+- [Bukkit] Prevent editing on unsupported versions by default
+- Fixed commands the user did not have permissions for showing in //help
+- Improve performance of setting non-BlockEntity blocks
+- Fixed CLI warnings due to Log4J dependency
+- Fixed Raise/Lower deform brushes moving blocks too far
+- Fixed JavaAdapter not being usable via craftscripts
+
 7.2.6
 - Return false instead of erroring when trying to remove player entities via the API
 - Fix selections at 0,0,0 or radius of 0 with cyl/ellipse selection modes
@@ -6,6 +22,15 @@
 - Skip notifying chunk sections if they don't exist
 - Optimise legacy schematic loading
 - Add CLI-specific commands, //cli selectworld and //cli await
+- Fixed //outline for non-cuboid regions
+- Fixed setting biomes below Y 0
+- Support 48x48x48 //drawsel on new versions of Minecraft
+- Fixed the offset mask forcing negation of itself
+- Fixed //regen breaking when some certain mods are in use
+- Fixed cycler tool removing NBT data
+- Improved performance of event bus in situations where it was flooded with data
+- Improve performance of poorly constructed masks with heavily-nested negation
+- Fixed error when using /delchunks with non-cuboid regions
 
 7.2.5
 - Allow /toggleplace to work on any Locatable Actor, e.g. Command Blocks

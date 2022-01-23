@@ -132,9 +132,8 @@ public class AssetLoaders {
      * Get the Asset Loaders for the given type.
      *
      * @param assetClass The class to get the loaders of
-     * @return The list of asset loaders
-     *
      * @param <T> The asset type
+     * @return The list of asset loaders
      */
     @SuppressWarnings("unchecked")
     public <T> List<AssetLoader<T>> getAssetLoaders(Class<T> assetClass) {

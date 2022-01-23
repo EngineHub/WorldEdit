@@ -52,23 +52,23 @@ import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.ItemTags;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
 import org.apache.logging.log4j.Logger;
 import org.enginehub.piston.Command;
 
@@ -153,7 +153,7 @@ public class FabricWorldEdit implements ModInitializer {
         LOGGER.info("WorldEdit for Fabric (version " + getInternalVersion() + ") is loaded");
     }
 
-    private void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
+    private void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, boolean dedicated) {
         WorldEdit.getInstance().getEventBus().post(new PlatformsRegisteredEvent());
         PlatformManager manager = WorldEdit.getInstance().getPlatformManager();
         Platform commandsPlatform = manager.queryCapability(Capability.USER_COMMANDS);
@@ -187,37 +187,37 @@ public class FabricWorldEdit implements ModInitializer {
 
     private void setupRegistries(MinecraftServer server) {
         // Blocks
-        for (Identifier name : Registry.BLOCK.getIds()) {
+        for (ResourceLocation name : Registry.BLOCK.keySet()) {
             if (BlockType.REGISTRY.get(name.toString()) == null) {
                 BlockType.REGISTRY.register(name.toString(), new BlockType(name.toString(),
-                    input -> FabricAdapter.adapt(FabricAdapter.adapt(input.getBlockType()).getDefaultState())));
+                    input -> FabricAdapter.adapt(FabricAdapter.adapt(input.getBlockType()).defaultBlockState())));
             }
         }
         // Items
-        for (Identifier name : Registry.ITEM.getIds()) {
+        for (ResourceLocation name : Registry.ITEM.keySet()) {
             if (ItemType.REGISTRY.get(name.toString()) == null) {
                 ItemType.REGISTRY.register(name.toString(), new ItemType(name.toString()));
             }
         }
         // Entities
-        for (Identifier name : Registry.ENTITY_TYPE.getIds()) {
+        for (ResourceLocation name : Registry.ENTITY_TYPE.keySet()) {
             if (EntityType.REGISTRY.get(name.toString()) == null) {
                 EntityType.REGISTRY.register(name.toString(), new EntityType(name.toString()));
             }
         }
         // Biomes
-        for (Identifier name : server.getRegistryManager().get(Registry.BIOME_KEY).getIds()) {
+        for (ResourceLocation name : server.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).keySet()) {
             if (BiomeType.REGISTRY.get(name.toString()) == null) {
                 BiomeType.REGISTRY.register(name.toString(), new BiomeType(name.toString()));
             }
         }
         // Tags
-        for (Identifier name : BlockTags.getTagGroup().getTagIds()) {
+        for (ResourceLocation name : BlockTags.getAllTags().getAvailableTags()) {
             if (BlockCategory.REGISTRY.get(name.toString()) == null) {
                 BlockCategory.REGISTRY.register(name.toString(), new BlockCategory(name.toString()));
             }
         }
-        for (Identifier name : ItemTags.getTagGroup().getTagIds()) {
+        for (ResourceLocation name : ItemTags.getAllTags().getAvailableTags()) {
             if (ItemCategory.REGISTRY.get(name.toString()) == null) {
                 ItemCategory.REGISTRY.register(name.toString(), new ItemCategory(name.toString()));
             }
@@ -252,13 +252,13 @@ public class FabricWorldEdit implements ModInitializer {
         return !platform.isHookingEvents(); // We have to be told to catch these events
     }
 
-    private ActionResult onLeftClickBlock(PlayerEntity playerEntity, World world, Hand hand, BlockPos blockPos, Direction direction) {
-        if (shouldSkip() || hand == Hand.OFF_HAND || world.isClient) {
-            return ActionResult.PASS;
+    private InteractionResult onLeftClickBlock(Player playerEntity, Level world, InteractionHand hand, BlockPos blockPos, Direction direction) {
+        if (shouldSkip() || hand == InteractionHand.OFF_HAND || world.isClientSide) {
+            return InteractionResult.PASS;
         }
 
         WorldEdit we = WorldEdit.getInstance();
-        FabricPlayer player = adaptPlayer((ServerPlayerEntity) playerEntity);
+        FabricPlayer player = adaptPlayer((ServerPlayer) playerEntity);
         FabricWorld localWorld = getWorld(world);
         Location pos = new Location(localWorld,
                 blockPos.getX(),
@@ -268,61 +268,61 @@ public class FabricWorldEdit implements ModInitializer {
         com.sk89q.worldedit.util.Direction weDirection = FabricAdapter.adaptEnumFacing(direction);
 
         if (we.handleBlockLeftClick(player, pos, weDirection)) {
-            return ActionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
 
         if (we.handleArmSwing(player)) {
-            return ActionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
 
-        return ActionResult.PASS;
+        return InteractionResult.PASS;
     }
 
-    private ActionResult onRightClickBlock(PlayerEntity playerEntity, World world, Hand hand, BlockHitResult blockHitResult) {
-        if (shouldSkip() || hand == Hand.OFF_HAND || world.isClient) {
-            return ActionResult.PASS;
+    private InteractionResult onRightClickBlock(Player playerEntity, Level world, InteractionHand hand, BlockHitResult blockHitResult) {
+        if (shouldSkip() || hand == InteractionHand.OFF_HAND || world.isClientSide) {
+            return InteractionResult.PASS;
         }
 
         WorldEdit we = WorldEdit.getInstance();
-        FabricPlayer player = adaptPlayer((ServerPlayerEntity) playerEntity);
+        FabricPlayer player = adaptPlayer((ServerPlayer) playerEntity);
         FabricWorld localWorld = getWorld(world);
         Location pos = new Location(localWorld,
                 blockHitResult.getBlockPos().getX(),
                 blockHitResult.getBlockPos().getY(),
                 blockHitResult.getBlockPos().getZ()
         );
-        com.sk89q.worldedit.util.Direction direction = FabricAdapter.adaptEnumFacing(blockHitResult.getSide());
+        com.sk89q.worldedit.util.Direction direction = FabricAdapter.adaptEnumFacing(blockHitResult.getDirection());
 
         if (we.handleBlockRightClick(player, pos, direction)) {
-            return ActionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
 
         if (we.handleRightClick(player)) {
-            return ActionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
 
-        return ActionResult.PASS;
+        return InteractionResult.PASS;
     }
 
-    private TypedActionResult<ItemStack> onRightClickAir(PlayerEntity playerEntity, World world, Hand hand) {
-        ItemStack stackInHand = playerEntity.getStackInHand(hand);
-        if (shouldSkip() || hand == Hand.OFF_HAND || world.isClient) {
-            return TypedActionResult.pass(stackInHand);
+    private InteractionResultHolder<ItemStack> onRightClickAir(Player playerEntity, Level world, InteractionHand hand) {
+        ItemStack stackInHand = playerEntity.getItemInHand(hand);
+        if (shouldSkip() || hand == InteractionHand.OFF_HAND || world.isClientSide) {
+            return InteractionResultHolder.pass(stackInHand);
         }
 
         WorldEdit we = WorldEdit.getInstance();
-        FabricPlayer player = adaptPlayer((ServerPlayerEntity) playerEntity);
+        FabricPlayer player = adaptPlayer((ServerPlayer) playerEntity);
 
         if (we.handleRightClick(player)) {
-            return TypedActionResult.success(stackInHand);
+            return InteractionResultHolder.success(stackInHand);
         }
 
-        return TypedActionResult.pass(stackInHand);
+        return InteractionResultHolder.pass(stackInHand);
     }
 
     // TODO Pass empty left click to server
 
-    private void onPlayerDisconnect(ServerPlayNetworkHandler handler, MinecraftServer server) {
+    private void onPlayerDisconnect(ServerGamePacketListenerImpl handler, MinecraftServer server) {
         WorldEdit.getInstance().getEventBus()
                 .post(new SessionIdleEvent(new FabricPlayer.SessionKeyImpl(handler.player)));
     }
@@ -342,7 +342,7 @@ public class FabricWorldEdit implements ModInitializer {
      * @param player the player
      * @return the session
      */
-    public LocalSession getSession(ServerPlayerEntity player) {
+    public LocalSession getSession(ServerPlayer player) {
         checkNotNull(player);
         return WorldEdit.getInstance().getSessionManager().get(adaptPlayer(player));
     }
@@ -353,7 +353,7 @@ public class FabricWorldEdit implements ModInitializer {
      * @param world the world
      * @return the WorldEdit world
      */
-    public FabricWorld getWorld(World world) {
+    public FabricWorld getWorld(Level world) {
         checkNotNull(world);
         return new FabricWorld(world);
     }

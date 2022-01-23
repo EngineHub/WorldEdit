@@ -25,6 +25,11 @@
     "worldedit.brush.splatter.decay-out-of-range": "Splatter brush decay value: {0} is out of range 0 - 10.",
     "worldedit.brush.clipboard.equip": "Clipboard brush shape equipped.",
     "worldedit.brush.smooth.equip": "Smooth brush equipped ({0} x {1}x using {2}).",
+    "worldedit.brush.smooth.nofilter": "any block",
+    "worldedit.brush.smooth.filter": "filter",
+    "worldedit.brush.snowsmooth.equip": "SnowSmooth brush equipped ({0} x {1}x using {2}), {3} snow blocks.",
+    "worldedit.brush.snowsmooth.nofilter": "any block",
+    "worldedit.brush.snowsmooth.filter": "filter",
     "worldedit.brush.extinguish.equip": "Extinguisher equipped ({0}).",
     "worldedit.brush.gravity.equip": "Gravity brush equipped ({0}).",
     "worldedit.brush.butcher.equip": "Butcher brush equipped ({0}).",
@@ -37,7 +42,7 @@
     "worldedit.setbiome.warning": "You may have to re-join your game (or close and re-open your world) to see changes.",
 
     "worldedit.drawsel.disabled": "Server CUI disabled.",
-    "worldedit.drawsel.enabled": "Server CUI enabled. This only supports cuboid regions, with a maximum size of 32x32x32.",
+    "worldedit.drawsel.enabled": "Server CUI enabled. This only supports cuboid regions, with a maximum size of {0}x{1}x{2}.",
     "worldedit.drawsel.disabled.already": "Server CUI already disabled.",
     "worldedit.drawsel.enabled.already": "Server CUI already enabled.",
     "worldedit.limit.too-high": "Your maximum allowable limit is {0}.",
@@ -208,6 +213,7 @@
     "worldedit.naturalize.naturalized": "{0} block(s) have been made to look more natural.",
     "worldedit.center.changed": "Center set. ({0} blocks changed)",
     "worldedit.smooth.changed": "Terrain's height map smoothed. {0} blocks changed.",
+    "worldedit.snowsmooth.changed": "Snow's height map smoothed. {0} blocks changed.",
     "worldedit.move.moved": "{0} blocks moved.",
     "worldedit.deform.deformed": "{0} blocks have been deformed.",
     "worldedit.hollow.changed": "{0} blocks have been changed.",
@@ -246,7 +252,6 @@
     "worldedit.timezone.set": "Timezone set for this session to: {0}",
     "worldedit.timezone.current": "The current time in that timezone is: {0}",
     "worldedit.version.version": "WorldEdit version {0}",
-    "worldedit.version.bukkit.unsupported-adapter": "This WorldEdit version does not fully support your version of Bukkit. Block entities (e.g. chests) will be empty, block properties (e.g. rotation) will be missing, and other things may not work. Update WorldEdit to restore this functionality:\n{0}",
 
     "worldedit.trace.no-tracing-extents":  "Trace: No extent was used.",
     "worldedit.trace.action-failed":  "Trace: Action(s) {0} at {1} discarded by extent {2}",
@@ -423,6 +428,7 @@
     "worldedit.selection.transform.error.cannot-expand": "Cannot expand a TransformedRegion.",
     "worldedit.selection.transform.error.cannot-contract": "Cannot contract a TransformedRegion.",
     "worldedit.selection.transform.error.cannot-change": "Cannot change a TransformedRegion.",
+    "worldedit.selection.updated": "Positions updated.",
 
     "worldedit.sideeffect.lighting": "Lighting",
     "worldedit.sideeffect.lighting.description": "Updates block lighting",
@@ -447,5 +453,8 @@
     "worldedit.help.subcommand-not-found": "The sub-command '{0}' under '{1}' could not be found.",
 
     "worldedit.cli.stopping": "Stopping!",
-    "worldedit.cli.unknown-command": "Unknown command!"
+    "worldedit.cli.unknown-command": "Unknown command!",
+
+    "worldedit.version.bukkit.unsupported-adapter": "This WorldEdit version does not fully support your version of Bukkit. Block entities (e.g. chests) will be empty, block properties (e.g. rotation) will be missing, and other things may not work. Update WorldEdit to restore this functionality:\n{0}",
+    "worldedit.bukkit.no-edit-without-adapter": "Editing on unsupported versions is disabled."
 }

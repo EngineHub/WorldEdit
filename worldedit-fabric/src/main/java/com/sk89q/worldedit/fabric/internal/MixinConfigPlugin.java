@@ -47,7 +47,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        if (mixinClassName.equals("com.sk89q.worldedit.fabric.mixin.MixinWorldChunkSetBlockHook")) {
+        if (mixinClassName.equals("com.sk89q.worldedit.fabric.mixin.MixinLevelChunkSetBlockHook")) {
             List<ModContainer> conflictingContainers = Stream.of("carpet", "quickcarpet")
                 .map(FabricLoader.getInstance()::getModContainer)
                 .filter(Optional::isPresent)

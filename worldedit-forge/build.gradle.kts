@@ -1,6 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.minecraftforge.gradle.common.util.RunConfig
-import net.minecraftforge.gradle.mcp.task.GenerateSRG
 import net.minecraftforge.gradle.userdev.UserDevExtension
 import net.minecraftforge.gradle.userdev.tasks.RenameJarInPlace
 
@@ -9,36 +8,31 @@ plugins {
     `java-library`
 }
 
-applyPlatformAndCoreConfiguration()
+applyPlatformAndCoreConfiguration(javaRelease = 17)
 applyShadowConfiguration()
 
-val minecraftVersion = "1.16.3"
+val minecraftVersion = "1.18.1"
 val nextMajorMinecraftVersion: String = minecraftVersion.split('.').let { (useless, major) ->
     "$useless.${major.toInt() + 1}"
 }
-val mappingsMinecraftVersion = "1.16"
-val forgeVersion = "34.0.0"
+val forgeVersion = "39.0.0"
 
-configurations.all {
-    resolutionStrategy {
-        force("com.google.guava:guava:21.0")
-    }
+val apiClasspath = configurations.create("apiClasspath") {
+    isCanBeResolved = true
+    extendsFrom(configurations.api.get())
 }
 
 dependencies {
     "api"(project(":worldedit-core"))
-    "implementation"(platform("org.apache.logging.log4j:log4j-bom:2.14.1") {
-        because("Mojang provides Log4J at 2.14.1")
+    "implementation"(platform("org.apache.logging.log4j:log4j-bom:${Versions.LOG4J}") {
+        because("Mojang provides Log4J")
     })
 
     "minecraft"("net.minecraftforge:forge:$minecraftVersion-$forgeVersion")
 }
 
 configure<UserDevExtension> {
-    mappings(mapOf(
-        "channel" to "snapshot",
-        "version" to "20200514-$mappingsMinecraftVersion"
-    ))
+    mappings("official", minecraftVersion)
 
     accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
 
@@ -50,6 +44,9 @@ configure<UserDevExtension> {
             ))
             workingDirectory = project.file("run").canonicalPath
             source(sourceSets["main"])
+            lazyToken("minecraft_classpath") {
+                apiClasspath.resolve().joinToString(File.pathSeparator) { it.absolutePath }
+            }
         }
         create("client", runConfig)
         create("server", runConfig)
@@ -69,6 +66,7 @@ javaComponent.withVariantsFromConfiguration(configurations["apiElements"]) {
 javaComponent.withVariantsFromConfiguration(configurations["runtimeElements"]) {
     skip()
 }
+
 tasks.register<Jar>("deobfJar") {
     from(sourceSets["main"].output)
     archiveClassifier.set("dev")
@@ -162,7 +160,5 @@ tasks.named<ShadowJar>("shadowJar") {
 
 afterEvaluate {
     val reobf = extensions.getByName<NamedDomainObjectContainer<RenameJarInPlace>>("reobf")
-    reobf.maybeCreate("shadowJar").run {
-        mappings = tasks.getByName<GenerateSRG>("createMcpToSrg").output
-    }
+    reobf.create("shadowJar")
 }

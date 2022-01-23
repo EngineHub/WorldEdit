@@ -17,16 +17,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.fabric.mixin;
+package com.sk89q.worldedit.bukkit.adapter;
 
-import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 
-@Mixin(ClientSettingsC2SPacket.class)
-public interface AccessorClientSettingsC2SPacket {
-
-    @Accessor
-    String getLanguage();
-
+public class UnsupportedVersionEditException extends WorldEditException {
+    public UnsupportedVersionEditException() {
+        super(TranslatableComponent.of("worldedit.bukkit.no-edit-without-adapter"));
+    }
 }

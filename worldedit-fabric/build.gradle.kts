@@ -1,5 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import net.fabricmc.loom.LoomGradleExtension
+import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import net.fabricmc.loom.task.RemapJarTask
 
 buildscript {
@@ -15,27 +15,20 @@ buildscript {
     }
 }
 
-applyPlatformAndCoreConfiguration()
+applyPlatformAndCoreConfiguration(javaRelease = 17)
 applyShadowConfiguration()
 
 apply(plugin = "fabric-loom")
 apply(plugin = "java-library")
 
-configure<LoomGradleExtension> {
-    accessWidener("src/main/resources/worldedit.accesswidener")
-}
-
-val minecraftVersion = "1.17.1"
-val yarnMappings = "1.17.1+build.1:v2"
-val loaderVersion = "0.11.6"
-
-configurations.all {
-    resolutionStrategy {
-        force("com.google.guava:guava:21.0")
-    }
-}
+val minecraftVersion = "1.18.1"
+val loaderVersion = "0.12.9"
 
 val fabricApiConfiguration: Configuration = configurations.create("fabricApi")
+
+configure<LoomGradleExtensionAPI> {
+    accessWidenerPath.set(project.file("src/main/resources/worldedit.accesswidener"))
+}
 
 repositories {
     maven {
@@ -46,16 +39,16 @@ repositories {
 
 dependencies {
     "api"(project(":worldedit-core"))
-    "implementation"(platform("org.apache.logging.log4j:log4j-bom:2.14.1") {
-        because("Mojang provides Log4J at 2.14.1")
+    "implementation"(platform("org.apache.logging.log4j:log4j-bom:${Versions.LOG4J}") {
+        because("Mojang provides Log4J")
     })
 
     "minecraft"("com.mojang:minecraft:$minecraftVersion")
-    "mappings"("net.fabricmc:yarn:$yarnMappings")
+    "mappings"(project.the<LoomGradleExtensionAPI>().officialMojangMappings())
     "modImplementation"("net.fabricmc:fabric-loader:$loaderVersion")
 
     // [1] declare fabric-api dependency...
-    "fabricApi"("net.fabricmc.fabric-api:fabric-api:0.36.1+1.17")
+    "fabricApi"("net.fabricmc.fabric-api:fabric-api:0.44.0+1.18")
 
     // [2] Load the API dependencies from the fabric mod json...
     @Suppress("UNCHECKED_CAST")
@@ -108,20 +101,19 @@ dependencies {
     "compileOnly"("net.fabricmc:sponge-mixin:${project.versions.mixin}")
     "annotationProcessor"("net.fabricmc:sponge-mixin:${project.versions.mixin}")
     "annotationProcessor"("net.fabricmc:fabric-loom:${project.versions.loom}")
+
+    // Silence some warnings, since apparently this isn't on the compile classpath like it should be.
+    "compileOnly"("com.google.errorprone:error_prone_annotations:2.10.0")
 }
 
-configure<BasePluginConvention> {
-    archivesBaseName = "$archivesBaseName-mc$minecraftVersion"
+configure<BasePluginExtension> {
+    archivesName.set("${project.name}-mc$minecraftVersion")
 }
+
 configure<PublishingExtension> {
     publications.named<MavenPublication>("maven") {
-        artifactId = the<BasePluginConvention>().archivesBaseName
-        artifact(tasks.named("jar")) {
-            builtBy(tasks.named("remapJar"))
-        }
-        artifact(tasks.named("sourcesJar")) {
-            builtBy(tasks.named("remapSourcesJar"))
-        }
+        artifactId = the<BasePluginExtension>().archivesName.get()
+        from(components["java"])
     }
 }
 
@@ -155,11 +147,4 @@ tasks.register<RemapJarTask>("remapShadowJar") {
 
 tasks.named("assemble").configure {
     dependsOn("remapShadowJar")
-}
-
-configure<PublishingExtension> {
-    publications.named<MavenPublication>("maven") {
-        // Remove when https://github.com/gradle/gradle/issues/16555 is fixed
-        suppressPomMetadataWarningsFor("runtimeElements")
-    }
 }

@@ -20,8 +20,8 @@
 package com.sk89q.worldedit.forge;
 
 import com.sk89q.worldedit.extension.platform.Watchdog;
+import net.minecraft.Util;
 import net.minecraft.server.dedicated.DedicatedServer;
-import net.minecraft.util.Util;
 
 class ForgeWatchdog implements Watchdog {
 
@@ -33,6 +33,6 @@ class ForgeWatchdog implements Watchdog {
 
     @Override
     public void tick() {
-        server.serverTime = Util.milliTime();
+        server.nextTickTime = Util.getMillis();
     }
 }

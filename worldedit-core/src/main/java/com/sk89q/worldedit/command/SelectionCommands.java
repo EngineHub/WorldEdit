@@ -26,6 +26,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.command.argument.SelectorChoice;
+import com.sk89q.worldedit.command.argument.SelectorChoiceOrList;
 import com.sk89q.worldedit.command.tool.NavigationWand;
 import com.sk89q.worldedit.command.tool.SelectionWand;
 import com.sk89q.worldedit.command.tool.Tool;
@@ -49,14 +50,9 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.regions.RegionSelector;
-import com.sk89q.worldedit.regions.selector.ConvexPolyhedralRegionSelector;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
-import com.sk89q.worldedit.regions.selector.CylinderRegionSelector;
-import com.sk89q.worldedit.regions.selector.EllipsoidRegionSelector;
 import com.sk89q.worldedit.regions.selector.ExtendingCuboidRegionSelector;
-import com.sk89q.worldedit.regions.selector.Polygonal2DRegionSelector;
 import com.sk89q.worldedit.regions.selector.RegionSelectorType;
-import com.sk89q.worldedit.regions.selector.SphereRegionSelector;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.util.Location;
@@ -85,8 +81,8 @@ import org.enginehub.piston.annotation.param.Switch;
 import org.enginehub.piston.exception.StopExecutionException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 
 import static com.sk89q.worldedit.command.util.Logging.LogMode.POSITION;
 import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
@@ -105,6 +101,66 @@ public class SelectionCommands {
         this.we = we;
     }
 
+    @Nullable
+    private BlockVector3 getLocatablePosition(Actor actor) {
+        if (actor instanceof Locatable locatable) {
+            return locatable.getLocation().toVector().toBlockPoint();
+        }
+        actor.printError(TranslatableComponent.of("worldedit.pos.console-require-coords"));
+        return null;
+    }
+
+    @Command(
+        name = "/pos",
+        desc = "Set positions"
+    )
+    @Logging(POSITION)
+    @CommandPermissions("worldedit.selection.pos")
+    public void pos(Actor actor, World world, LocalSession session,
+                    @Arg(desc = "Coordinates to set the primary position to. Defaults to the player position if not passed.", def = "")
+                        BlockVector3 pos1,
+                    @Arg(desc = "Coordinates to add as secondary positions. Defaults to the player position if not passed.", def = "", variable = true)
+                        List<BlockVector3> pos2,
+                    @ArgFlag(name = 's', desc = "Selector to switch to")
+                        SelectorChoice selectorChoice) throws WorldEditException {
+        if (pos1 == null) {
+            pos1 = getLocatablePosition(actor);
+            if (pos1 == null) {
+                return;
+            }
+        }
+
+        if (pos2.isEmpty()) {
+            var newPos2 = getLocatablePosition(actor);
+            if (newPos2 == null) {
+                return;
+            }
+            pos2 = List.of(newPos2);
+        }
+
+        RegionSelector regionSelector = session.getRegionSelector(world);
+
+        if (selectorChoice != null) {
+            var newSelector = selectorChoice.createNewSelector(world);
+            session.setRegionSelector(world, newSelector);
+            selectorChoice.explainNewSelector(actor);
+            regionSelector = newSelector;
+        }
+
+        regionSelector.selectPrimary(pos1, ActorSelectorLimits.forActor(actor));
+
+        for (BlockVector3 vector : pos2) {
+            regionSelector.selectSecondary(vector, ActorSelectorLimits.forActor(actor));
+        }
+
+        session.dispatchCUISelection(actor);
+
+        for (Component line : regionSelector.getSelectionInfoLines()) {
+            actor.printInfo(line);
+        }
+        actor.printInfo(TranslatableComponent.of("worldedit.selection.updated"));
+    }
+
     @Command(
         name = "/pos1",
         desc = "Set position 1"
@@ -113,24 +169,20 @@ public class SelectionCommands {
     @CommandPermissions("worldedit.selection.pos")
     public void pos1(Actor actor, World world, LocalSession session,
                      @Arg(desc = "Coordinates to set position 1 to", def = "")
-                         BlockVector3 coordinates) throws WorldEditException {
-        Location pos;
-        if (coordinates != null) {
-            pos = new Location(world, coordinates.toVector3());
-        } else if (actor instanceof Locatable) {
-            pos = ((Locatable) actor).getBlockLocation();
-        } else {
-            actor.printError(TranslatableComponent.of("worldedit.pos.console-require-coords"));
-            return;
+                         BlockVector3 coordinates) {
+        if (coordinates == null) {
+            coordinates = getLocatablePosition(actor);
+            if (coordinates == null) {
+                return;
+            }
         }
 
-        if (!session.getRegionSelector(world).selectPrimary(pos.toVector().toBlockPoint(), ActorSelectorLimits.forActor(actor))) {
+        if (!session.getRegionSelector(world).selectPrimary(coordinates, ActorSelectorLimits.forActor(actor))) {
             actor.printError(TranslatableComponent.of("worldedit.pos.already-set"));
             return;
         }
 
-        session.getRegionSelector(world)
-                .explainPrimarySelection(actor, session, pos.toVector().toBlockPoint());
+        session.getRegionSelector(world).explainPrimarySelection(actor, session, coordinates);
     }
 
     @Command(
@@ -141,24 +193,20 @@ public class SelectionCommands {
     @CommandPermissions("worldedit.selection.pos")
     public void pos2(Actor actor, World world, LocalSession session,
                      @Arg(desc = "Coordinates to set position 2 to", def = "")
-                         BlockVector3 coordinates) throws WorldEditException {
-        Location pos;
-        if (coordinates != null) {
-            pos = new Location(world, coordinates.toVector3());
-        } else if (actor instanceof Locatable) {
-            pos = ((Locatable) actor).getBlockLocation();
-        } else {
-            actor.printError(TranslatableComponent.of("worldedit.pos.console-require-coords"));
-            return;
+                         BlockVector3 coordinates) {
+        if (coordinates == null) {
+            coordinates = getLocatablePosition(actor);
+            if (coordinates == null) {
+                return;
+            }
         }
 
-        if (!session.getRegionSelector(world).selectSecondary(pos.toVector().toBlockPoint(), ActorSelectorLimits.forActor(actor))) {
+        if (!session.getRegionSelector(world).selectSecondary(coordinates, ActorSelectorLimits.forActor(actor))) {
             actor.printError(TranslatableComponent.of("worldedit.pos.already-set"));
             return;
         }
 
-        session.getRegionSelector(world)
-                .explainSecondarySelection(actor, session, pos.toVector().toBlockPoint());
+        session.getRegionSelector(world).explainSecondarySelection(actor, session, coordinates);
     }
 
     @Command(
@@ -166,7 +214,7 @@ public class SelectionCommands {
         desc = "Set position 1 to targeted block"
     )
     @CommandPermissions("worldedit.selection.hpos")
-    public void hpos1(Player player, LocalSession session) throws WorldEditException {
+    public void hpos1(Player player, LocalSession session) {
 
         Location pos = player.getBlockTrace(300);
 
@@ -188,7 +236,7 @@ public class SelectionCommands {
         desc = "Set position 2 to targeted block"
     )
     @CommandPermissions("worldedit.selection.hpos")
-    public void hpos2(Player player, LocalSession session) throws WorldEditException {
+    public void hpos2(Player player, LocalSession session) {
 
         Location pos = player.getBlockTrace(300);
 
@@ -561,74 +609,37 @@ public class SelectionCommands {
     )
     public void select(Actor actor, World world, LocalSession session,
                        @Arg(desc = "Selector to switch to", def = "")
-                           SelectorChoice selector,
+                           SelectorChoiceOrList selectorChoiceOrList,
                        @Switch(name = 'd', desc = "Set default selector")
                            boolean setDefaultSelector) throws WorldEditException {
-        if (selector == null) {
+        if (selectorChoiceOrList == null) {
             session.getRegionSelector(world).clear();
             session.dispatchCUISelection(actor);
             actor.printInfo(TranslatableComponent.of("worldedit.select.cleared"));
             return;
         }
 
+        if (!(selectorChoiceOrList instanceof SelectorChoice selectorChoice)) {
+            CommandListBox box = new CommandListBox("Selection modes", null, null);
+            box.setHidingHelp(true);
+            TextComponentProducer contents = box.getContents();
+            contents.append(SubtleFormat.wrap("Select one of the modes below:")).newline();
+            box.appendCommand("cuboid", TranslatableComponent.of("worldedit.select.cuboid.description"), "//sel cuboid");
+            box.appendCommand("extend", TranslatableComponent.of("worldedit.select.extend.description"), "//sel extend");
+            box.appendCommand("poly", TranslatableComponent.of("worldedit.select.poly.description"), "//sel poly");
+            box.appendCommand("ellipsoid", TranslatableComponent.of("worldedit.select.ellipsoid.description"), "//sel ellipsoid");
+            box.appendCommand("sphere", TranslatableComponent.of("worldedit.select.sphere.description"), "//sel sphere");
+            box.appendCommand("cyl", TranslatableComponent.of("worldedit.select.cyl.description"), "//sel cyl");
+            box.appendCommand("convex", TranslatableComponent.of("worldedit.select.convex.description"), "//sel convex");
+            actor.print(box.create(1));
+            return;
+        }
+
+
         final RegionSelector oldSelector = session.getRegionSelector(world);
 
-        final RegionSelector newSelector;
-        switch (selector) {
-            case CUBOID:
-                newSelector = new CuboidRegionSelector(oldSelector);
-                actor.printInfo(TranslatableComponent.of("worldedit.select.cuboid.message"));
-                break;
-            case EXTEND:
-                newSelector = new ExtendingCuboidRegionSelector(oldSelector);
-                actor.printInfo(TranslatableComponent.of("worldedit.select.extend.message"));
-                break;
-            case POLY: {
-                newSelector = new Polygonal2DRegionSelector(oldSelector);
-                actor.printInfo(TranslatableComponent.of("worldedit.select.poly.message"));
-                Optional<Integer> limit = ActorSelectorLimits.forActor(actor).getPolygonVertexLimit();
-                limit.ifPresent(integer -> actor.printInfo(TranslatableComponent.of("worldedit.select.poly.limit-message", TextComponent.of(integer))));
-                break;
-            }
-            case ELLIPSOID:
-                newSelector = new EllipsoidRegionSelector(oldSelector);
-                actor.printInfo(TranslatableComponent.of("worldedit.select.ellipsoid.message"));
-                break;
-            case SPHERE:
-                newSelector = new SphereRegionSelector(oldSelector);
-                actor.printInfo(TranslatableComponent.of("worldedit.select.sphere.message"));
-                break;
-            case CYL:
-                newSelector = new CylinderRegionSelector(oldSelector);
-                actor.printInfo(TranslatableComponent.of("worldedit.select.cyl.message"));
-                break;
-            case CONVEX:
-            case HULL:
-            case POLYHEDRON: {
-                newSelector = new ConvexPolyhedralRegionSelector(oldSelector);
-                actor.printInfo(TranslatableComponent.of("worldedit.select.convex.message"));
-                Optional<Integer> limit = ActorSelectorLimits.forActor(actor).getPolyhedronVertexLimit();
-                limit.ifPresent(integer -> actor.printInfo(TranslatableComponent.of("worldedit.select.convex.limit-message", TextComponent.of(integer))));
-                break;
-            }
-            case LIST:
-            default:
-                CommandListBox box = new CommandListBox("Selection modes", null, null);
-                box.setHidingHelp(true);
-                TextComponentProducer contents = box.getContents();
-                contents.append(SubtleFormat.wrap("Select one of the modes below:")).newline();
-
-                box.appendCommand("cuboid", TranslatableComponent.of("worldedit.select.cuboid.description"), "//sel cuboid");
-                box.appendCommand("extend", TranslatableComponent.of("worldedit.select.extend.description"), "//sel extend");
-                box.appendCommand("poly", TranslatableComponent.of("worldedit.select.poly.description"), "//sel poly");
-                box.appendCommand("ellipsoid", TranslatableComponent.of("worldedit.select.ellipsoid.description"), "//sel ellipsoid");
-                box.appendCommand("sphere", TranslatableComponent.of("worldedit.select.sphere.description"), "//sel sphere");
-                box.appendCommand("cyl", TranslatableComponent.of("worldedit.select.cyl.description"), "//sel cyl");
-                box.appendCommand("convex", TranslatableComponent.of("worldedit.select.convex.description"), "//sel convex");
-
-                actor.print(box.create(1));
-                return;
-        }
+        final RegionSelector newSelector = selectorChoice.createNewSelector(oldSelector);
+        selectorChoice.explainNewSelector(actor);
 
         if (setDefaultSelector) {
             RegionSelectorType found = null;

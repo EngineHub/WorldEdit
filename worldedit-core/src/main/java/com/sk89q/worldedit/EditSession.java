@@ -322,8 +322,7 @@ public class EditSession implements Extent, AutoCloseable {
         return event.getExtent();
     }
 
-    // pkg private for TracedEditSession only, may later become public API
-    boolean commitRequired() {
+    private boolean commitRequired() {
         if (reorderExtent != null && reorderExtent.commitRequired()) {
             return true;
         }

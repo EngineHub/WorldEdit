@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import io.papermc.paperweight.userdev.attribute.Obfuscation
 
 plugins {
     `java-library`
@@ -12,12 +13,6 @@ repositories {
     maven { url = uri("https://papermc.io/repo/repository/maven-public/") }
 }
 
-configurations.all {
-    resolutionStrategy {
-        force("com.google.guava:guava:21.0")
-    }
-}
-
 val localImplementation = configurations.create("localImplementation") {
     description = "Dependencies used locally, but provided by the runtime Bukkit implementation"
     isCanBeConsumed = false
@@ -26,8 +21,14 @@ val localImplementation = configurations.create("localImplementation") {
 configurations["compileOnly"].extendsFrom(localImplementation)
 configurations["testImplementation"].extendsFrom(localImplementation)
 
-configurations.all {
-    attributes.attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 16)
+val adapters = configurations.create("adapters") {
+    description = "Adapters to include in the JAR"
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    shouldResolveConsistentlyWith(configurations["runtimeClasspath"])
+    attributes {
+        attribute(Obfuscation.OBFUSCATION_ATTRIBUTE, objects.named(Obfuscation.OBFUSCATED))
+    }
 }
 
 dependencies {
@@ -39,7 +40,7 @@ dependencies {
         exclude("junit", "junit")
     }
 
-    "localImplementation"(platform("org.apache.logging.log4j:log4j-bom:2.14.1") {
+    "localImplementation"(platform("org.apache.logging.log4j:log4j-bom:${Versions.LOG4J}") {
         because("Spigot provides Log4J (sort of, not in API, implicitly part of server)")
     })
     "localImplementation"("org.apache.logging.log4j:log4j-api")
@@ -48,11 +49,15 @@ dependencies {
     "compileOnly"("io.papermc.paper:paper-api:1.17-R0.1-SNAPSHOT") {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
-    "implementation"("io.papermc:paperlib:1.0.6")
+    "implementation"("io.papermc:paperlib:1.0.7")
     "compileOnly"("com.sk89q:dummypermscompat:1.10")
     "implementation"("org.bstats:bstats-bukkit:2.1.0")
     "implementation"("it.unimi.dsi:fastutil")
     "testImplementation"("org.mockito:mockito-core:1.9.0-rc1")
+
+    project.project(":worldedit-bukkit:adapters").subprojects.forEach {
+        "adapters"(project(it.path))
+    }
 }
 
 tasks.named<Copy>("processResources") {
@@ -61,15 +66,19 @@ tasks.named<Copy>("processResources") {
     filesMatching("plugin.yml") {
         expand("internalVersion" to internalVersion)
     }
-    // exclude adapters entirely from this JAR, they should only be in the shadow JAR
-    exclude("**/worldedit-adapters.jar")
 }
 
 addJarManifest(WorldEditKind.Plugin, includeClasspath = true)
 
 tasks.named<ShadowJar>("shadowJar") {
-    from(zipTree("src/main/resources/worldedit-adapters.jar").matching {
-        exclude("META-INF/")
+    dependsOn(project.project(":worldedit-bukkit:adapters").subprojects.map { it.tasks.named("assemble") })
+    from(Callable {
+        adapters.resolve()
+            .map { f ->
+                zipTree(f).matching {
+                    exclude("META-INF/")
+                }
+            }
     })
     dependencies {
         // In tandem with not bundling log4j, we shouldn't relocate base package here.

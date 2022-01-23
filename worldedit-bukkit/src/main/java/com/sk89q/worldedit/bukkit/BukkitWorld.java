@@ -26,6 +26,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
+import com.sk89q.worldedit.bukkit.adapter.UnsupportedVersionEditException;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
@@ -54,7 +55,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.Entity;
-import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
@@ -223,37 +223,18 @@ public class BukkitWorld extends AbstractWorld {
         }
     }
 
-    /**
-     * Gets the single block inventory for a potentially double chest.
-     * Handles people who have an old version of Bukkit.
-     * This should be replaced with {@link org.bukkit.block.Chest#getBlockInventory()}
-     * in a few months (now = March 2012) // note from future dev - lol
-     *
-     * @param chest The chest to get a single block inventory for
-     * @return The chest's inventory
-     */
-    private Inventory getBlockInventory(Chest chest) {
-        try {
-            return chest.getBlockInventory();
-        } catch (Throwable t) {
-            if (chest.getInventory() instanceof DoubleChestInventory) {
-                DoubleChestInventory inven = (DoubleChestInventory) chest.getInventory();
-                if (inven.getLeftSide().getHolder().equals(chest)) {
-                    return inven.getLeftSide();
-                } else if (inven.getRightSide().getHolder().equals(chest)) {
-                    return inven.getRightSide();
-                } else {
-                    return inven;
-                }
-            } else {
-                return chest.getInventory();
-            }
-        }
-    }
-
     @Override
     public boolean clearContainerBlockContents(BlockVector3 pt) {
         checkNotNull(pt);
+
+        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+        if (adapter != null) {
+            try {
+                return adapter.clearContainerBlockContents(getWorld(), pt);
+            } catch (Exception ignored) {
+            }
+        }
+
         if (!getBlock(pt).getBlockType().getMaterial().hasContainer()) {
             return false;
         }
@@ -267,7 +248,7 @@ public class BukkitWorld extends AbstractWorld {
         InventoryHolder chest = (InventoryHolder) state;
         Inventory inven = chest.getInventory();
         if (chest instanceof Chest) {
-            inven = getBlockInventory((Chest) chest);
+            inven = ((Chest) chest).getBlockInventory();
         }
         inven.clear();
         return true;
@@ -461,7 +442,7 @@ public class BukkitWorld extends AbstractWorld {
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         if (adapter != null) {
             try {
-                return adapter.getBlock(BukkitAdapter.adapt(getWorld(), position)).toImmutableState();
+                return adapter.getBlock(BukkitAdapter.adapt(getWorld(), position));
             } catch (Exception e) {
                 if (!hasWarnedImplError) {
                     hasWarnedImplError = true;
@@ -469,8 +450,12 @@ public class BukkitWorld extends AbstractWorld {
                 }
             }
         }
-        Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        return BukkitAdapter.adapt(bukkitBlock.getBlockData());
+        if (WorldEditPlugin.getInstance().getLocalConfiguration().unsupportedVersionEditing) {
+            Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+            return BukkitAdapter.adapt(bukkitBlock.getBlockData());
+        } else {
+            throw new RuntimeException(new UnsupportedVersionEditException());
+        }
     }
 
     @Override
@@ -488,16 +473,20 @@ public class BukkitWorld extends AbstractWorld {
                 }
             }
         }
-        Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        bukkitBlock.setBlockData(BukkitAdapter.adapt(block), sideEffects.doesApplyAny());
-        return true;
+        if (WorldEditPlugin.getInstance().getLocalConfiguration().unsupportedVersionEditing) {
+            Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+            bukkitBlock.setBlockData(BukkitAdapter.adapt(block), sideEffects.doesApplyAny());
+            return true;
+        } else {
+            throw new RuntimeException(new UnsupportedVersionEditException());
+        }
     }
 
     @Override
     public BaseBlock getFullBlock(BlockVector3 position) {
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         if (adapter != null) {
-            return adapter.getBlock(BukkitAdapter.adapt(getWorld(), position));
+            return adapter.getFullBlock(BukkitAdapter.adapt(getWorld(), position));
         } else {
             return getBlock(position).toBaseBlock();
         }
@@ -530,7 +519,7 @@ public class BukkitWorld extends AbstractWorld {
     @Override
     public boolean fullySupports3DBiomes() {
         // Supports if API does and we're not in the overworld
-        return HAS_3D_BIOMES && getWorld().getEnvironment() != World.Environment.NORMAL;
+        return HAS_3D_BIOMES && (getWorld().getEnvironment() != World.Environment.NORMAL || PaperLib.isVersion(18));
     }
 
     @SuppressWarnings("deprecation")

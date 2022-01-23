@@ -21,9 +21,9 @@ package com.sk89q.worldedit.fabric;
 
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.PassthroughBlockMaterial;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Material;
-import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.PushReaction;
 
 import javax.annotation.Nullable;
 
@@ -50,7 +50,7 @@ public class FabricBlockMaterial extends PassthroughBlockMaterial {
 
     @Override
     public boolean isOpaque() {
-        return delegate.blocksLight();
+        return delegate.isSolidBlocking();
     }
 
     @Override
@@ -65,27 +65,27 @@ public class FabricBlockMaterial extends PassthroughBlockMaterial {
 
     @Override
     public boolean isFragileWhenPushed() {
-        return delegate.getPistonBehavior() == PistonBehavior.DESTROY;
+        return delegate.getPushReaction() == PushReaction.DESTROY;
     }
 
     @Override
     public boolean isUnpushable() {
-        return delegate.getPistonBehavior() == PistonBehavior.BLOCK;
+        return delegate.getPushReaction() == PushReaction.BLOCK;
     }
 
     @Override
     public boolean isMovementBlocker() {
-        return delegate.blocksMovement();
+        return delegate.blocksMotion();
     }
 
     @Override
     public boolean isBurnable() {
-        return delegate.isBurnable();
+        return delegate.isFlammable();
     }
 
     @Override
     public boolean isToolRequired() {
-        return block.isToolRequired();
+        return block.requiresCorrectToolForDrops();
     }
 
     @Override

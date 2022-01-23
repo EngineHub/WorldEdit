@@ -17,20 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.fabric.mixin;
+package com.sk89q.worldedit.command.argument;
 
-import net.minecraft.world.SaveProperties;
-import net.minecraft.world.gen.GeneratorOptions;
-import net.minecraft.world.level.LevelProperties;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
-import org.spongepowered.asm.mixin.gen.Accessor;
+public final class SelectorChoiceList implements SelectorChoiceOrList {
+    public static final SelectorChoiceList INSTANCE = new SelectorChoiceList();
 
-@Mixin(LevelProperties.class)
-public interface AccessorLevelProperties extends SaveProperties {
-
-    @Accessor
-    @Mutable
-    void setGeneratorOptions(GeneratorOptions options);
-
+    private SelectorChoiceList() {
+    }
 }

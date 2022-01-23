@@ -22,15 +22,11 @@ package com.sk89q.worldedit.scripting;
 import org.mozilla.javascript.ClassShutter;
 
 /**
- * Hides Minecraft's obfuscated & de-obfuscated names from scripts.
+ * Hides Minecraft's obfuscated names from scripts.
  */
 class MinecraftHidingClassShutter implements ClassShutter {
     @Override
     public boolean visibleToScripts(String fullClassName) {
-        if (!fullClassName.contains(".")) {
-            // Default package -- probably Minecraft
-            return false;
-        }
-        return !fullClassName.startsWith("net.minecraft");
+        return fullClassName.contains(".") || fullClassName.length() >= 4;
     }
 }

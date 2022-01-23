@@ -36,6 +36,7 @@ import com.sk89q.worldedit.command.tool.brush.HollowSphereBrush;
 import com.sk89q.worldedit.command.tool.brush.ImageHeightmapBrush;
 import com.sk89q.worldedit.command.tool.brush.OperationFactoryBrush;
 import com.sk89q.worldedit.command.tool.brush.SmoothBrush;
+import com.sk89q.worldedit.command.tool.brush.SnowSmoothBrush;
 import com.sk89q.worldedit.command.tool.brush.SphereBrush;
 import com.sk89q.worldedit.command.tool.brush.SplatterBrush;
 import com.sk89q.worldedit.command.util.AsyncCommandBuilder;
@@ -267,9 +268,39 @@ public class BrushCommands {
                 "worldedit.brush.smooth.equip",
                 TextComponent.of((int) radius),
                 TextComponent.of(iterations),
-                TextComponent.of(mask == null ? "any block" : "filter")
+                TranslatableComponent.of("worldedit.brush.smooth." + (mask == null ? "no" : "") + "filter")
         ));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
+    }
+
+    @Command(
+        name = "snowsmooth",
+        desc = "Choose the snow terrain softener brush",
+        descFooter = "Example: '/brush snowsmooth 5 1 -l 3'"
+    )
+    @CommandPermissions("worldedit.brush.snowsmooth")
+    public void snowSmoothBrush(Player player, LocalSession session,
+                                @Arg(desc = "The radius to sample for softening", def = "2")
+                                    double radius,
+                                @Arg(desc = "The number of iterations to perform", def = "4")
+                                    int iterations,
+                                @ArgFlag(name = 'l', desc = "The number of snow blocks under snow", def = "1")
+                                    int snowBlockCount,
+                                @ArgFlag(name = 'm', desc = "The mask of blocks to use for the heightmap")
+                                    Mask mask) throws WorldEditException {
+        worldEdit.checkMaxBrushRadius(radius);
+
+        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+        tool.setSize(radius);
+        tool.setBrush(new SnowSmoothBrush(iterations, snowBlockCount, mask), "worldedit.brush.snowsmooth");
+
+        player.printInfo(TranslatableComponent.of(
+                "worldedit.brush.snowsmooth.equip",
+                TextComponent.of((int) radius),
+                TextComponent.of(iterations),
+                TranslatableComponent.of("worldedit.brush.snowsmooth." + (mask == null ? "no" : "") + "filter"),
+                TextComponent.of(snowBlockCount)
+        ));
     }
 
     @Command(
@@ -494,7 +525,7 @@ public class BrushCommands {
                       @Arg(desc = "The size of the brush", def = "5")
                           double radius) throws WorldEditException {
         setOperationBasedBrush(player, localSession, radius,
-            new Deform("y-=1"), shape, "worldedit.brush.raise");
+            new Deform("y-=1", Deform.Mode.RAW_COORD), shape, "worldedit.brush.raise");
     }
 
     @Command(
@@ -508,7 +539,7 @@ public class BrushCommands {
                       @Arg(desc = "The size of the brush", def = "5")
                           double radius) throws WorldEditException {
         setOperationBasedBrush(player, localSession, radius,
-            new Deform("y+=1"), shape, "worldedit.brush.lower");
+            new Deform("y+=1", Deform.Mode.RAW_COORD), shape, "worldedit.brush.lower");
     }
 
     @Command(

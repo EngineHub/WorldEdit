@@ -17,33 +17,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.fabric.mixin;
+package com.sk89q.worldedit.bukkit.adapter;
 
-import com.sk89q.worldedit.fabric.MutableBiomeArray;
-import com.sk89q.worldedit.internal.util.BiomeMath;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.BiomeArray;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+/**
+ * Reflection helper to deal with obfuscation.
+ */
+public class Refraction {
+    private static final String MOJANG_MAPPED_CLASS_NAME = "net.minecraft.nbt.ListTag";
+    private static final boolean IS_MOJANG_MAPPED;
 
-@Mixin(BiomeArray.class)
-public abstract class MixinBiomeArray implements MutableBiomeArray {
+    static {
+        boolean isMojangMapped;
+        try {
+            Class.forName(MOJANG_MAPPED_CLASS_NAME, false, Refraction.class.getClassLoader());
+            isMojangMapped = true;
+        } catch (ClassNotFoundException e) {
+            isMojangMapped = false;
+        }
+        IS_MOJANG_MAPPED = isMojangMapped;
+    }
 
-    @Final
-    @Shadow
-    private Biome[] data;
+    public static String pickName(String mojangName, String spigotName) {
+        return IS_MOJANG_MAPPED ? mojangName : spigotName;
+    }
 
-    @Final
-    @Shadow
-    private int field_28126; // minY
-
-    @Final
-    @Shadow
-    private int field_28127; // maxY
-
-    @Override
-    public void setBiome(int x, int y, int z, Biome biome) {
-        this.data[BiomeMath.computeBiomeIndex(x, y, z, field_28126, field_28127)] = biome;
+    private Refraction() {
     }
 }

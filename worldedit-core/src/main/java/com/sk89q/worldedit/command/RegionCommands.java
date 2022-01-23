@@ -49,6 +49,7 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.math.convolution.GaussianKernel;
 import com.sk89q.worldedit.math.convolution.HeightMap;
 import com.sk89q.worldedit.math.convolution.HeightMapFilter;
+import com.sk89q.worldedit.math.convolution.SnowHeightMap;
 import com.sk89q.worldedit.math.noise.RandomNoise;
 import com.sk89q.worldedit.regions.ConvexPolyhedralRegion;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -288,6 +289,28 @@ public class RegionCommands {
         HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));
         int affected = heightMap.applyFilter(filter, iterations);
         actor.printInfo(TranslatableComponent.of("worldedit.smooth.changed", TextComponent.of(affected)));
+        return affected;
+    }
+
+    @Command(
+        name = "/snowsmooth",
+        desc = "Smooth the elevation in the selection with snow layers",
+        descFooter = "Example: '//snowsmooth 1 -m snow_block,snow' would only smooth snow terrain."
+    )
+    @CommandPermissions("worldedit.region.snowsmooth")
+    @Logging(REGION)
+    public int snowSmooth(Actor actor, EditSession editSession, @Selection Region region,
+                          @Arg(desc = "# of iterations to perform", def = "1")
+                              int iterations,
+                          @ArgFlag(name = 'l', desc = "Set the amount of snow blocks under the snow", def = "1")
+                              int snowBlockCount,
+                          @ArgFlag(name = 'm', desc = "The mask of blocks to use as the height map")
+                              Mask mask) throws WorldEditException {
+        SnowHeightMap heightMap = new SnowHeightMap(editSession, region, mask);
+        HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));
+        float[] changed = heightMap.applyFilter(filter, iterations);
+        int affected = heightMap.applyChanges(changed, snowBlockCount);
+        actor.printInfo(TranslatableComponent.of("worldedit.snowsmooth.changed", TextComponent.of(affected)));
         return affected;
     }
 

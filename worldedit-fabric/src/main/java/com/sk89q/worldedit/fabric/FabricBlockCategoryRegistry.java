@@ -21,9 +21,9 @@ package com.sk89q.worldedit.fabric;
 
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.Tag;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -33,8 +33,8 @@ import java.util.stream.Collectors;
 public class FabricBlockCategoryRegistry implements BlockCategoryRegistry {
     @Override
     public Set<BlockType> getCategorisedByName(String category) {
-        return Optional.ofNullable(BlockTags.getTagGroup().getTag(new Identifier(category)))
-            .map(Tag::values)
+        return Optional.ofNullable(BlockTags.getAllTags().getTag(new ResourceLocation(category)))
+            .map(Tag::getValues)
             .orElse(Collections.emptyList())
             .stream()
             .map(FabricAdapter::adapt)

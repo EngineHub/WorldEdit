@@ -19,26 +19,27 @@
 
 package com.sk89q.worldedit.forge;
 
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.chunk.ChunkStatus;
-import net.minecraft.world.chunk.listener.IChunkStatusListener;
+import net.minecraft.server.level.progress.ChunkProgressListener;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.chunk.ChunkStatus;
 
 import javax.annotation.Nullable;
 
 // For now, this does nothing, but might be useful later for regen progress communication.
-class WorldEditGenListener implements IChunkStatusListener {
-
+class WorldEditGenListener implements ChunkProgressListener {
     @Override
-    public void start(ChunkPos spawnPos) {
+    public void updateSpawnPos(ChunkPos chunkPos) {
     }
 
     @Override
-    public void statusChanged(ChunkPos chunkPosition, @Nullable ChunkStatus newStatus) {
+    public void onStatusChange(ChunkPos chunkPos, @Nullable ChunkStatus chunkStatus) {
+    }
 
+    @Override
+    public void start() {
     }
 
     @Override
     public void stop() {
     }
-
 }

@@ -48,8 +48,10 @@ fun Project.applyLibrariesConfiguration() {
         dependencies {
             exclude(dependency("com.google.guava:guava"))
             exclude(dependency("com.google.code.gson:gson"))
+            exclude(dependency("com.google.errorprone:error_prone_annotations"))
             exclude(dependency("org.checkerframework:checker-qual"))
             exclude(dependency("org.apache.logging.log4j:log4j-api"))
+            exclude(dependency("com.google.code.findbugs:jsr305"))
         }
 
         relocations.forEach { (from, to) ->
@@ -110,7 +112,7 @@ fun Project.applyLibrariesConfiguration() {
             attribute(Category.CATEGORY_ATTRIBUTE, project.objects.named(Category.LIBRARY))
             attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling.SHADOWED))
             attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements.JAR))
-            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 8)
+            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 16)
         }
         outgoing.artifact(tasks.named("jar"))
     }
@@ -125,7 +127,7 @@ fun Project.applyLibrariesConfiguration() {
             attribute(Category.CATEGORY_ATTRIBUTE, project.objects.named(Category.LIBRARY))
             attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling.SHADOWED))
             attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements.JAR))
-            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 8)
+            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 16)
         }
         outgoing.artifact(tasks.named("jar"))
     }

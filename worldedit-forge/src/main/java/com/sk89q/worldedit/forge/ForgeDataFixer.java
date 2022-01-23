@@ -36,22 +36,21 @@ import com.mojang.datafixers.schemas.Schema;
 import com.mojang.serialization.Dynamic;
 import com.sk89q.worldedit.forge.internal.NBTConverter;
 import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
-import net.minecraft.item.DyeColor;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.FloatNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.NBTDynamicOps;
-import net.minecraft.nbt.StringNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StringUtils;
-import net.minecraft.util.datafix.DataFixesManager;
-import net.minecraft.util.datafix.TypeReferences;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.FloatTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.util.StringUtil;
+import net.minecraft.util.datafix.DataFixers;
+import net.minecraft.util.datafix.fixes.References;
+import net.minecraft.world.item.DyeColor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -110,50 +109,50 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
     }
 
     private CompoundBinaryTag fixChunk(CompoundBinaryTag originalChunk, int srcVer) {
-        CompoundNBT tag = NBTConverter.toNative(originalChunk);
-        CompoundNBT fixed = convert(LegacyType.CHUNK, tag, srcVer);
+        net.minecraft.nbt.CompoundTag tag = NBTConverter.toNative(originalChunk);
+        net.minecraft.nbt.CompoundTag fixed = convert(LegacyType.CHUNK, tag, srcVer);
         return NBTConverter.fromNative(fixed);
     }
 
     private CompoundBinaryTag fixBlockEntity(CompoundBinaryTag origTileEnt, int srcVer) {
-        CompoundNBT tag = NBTConverter.toNative(origTileEnt);
-        CompoundNBT fixed = convert(LegacyType.BLOCK_ENTITY, tag, srcVer);
+        net.minecraft.nbt.CompoundTag tag = NBTConverter.toNative(origTileEnt);
+        net.minecraft.nbt.CompoundTag fixed = convert(LegacyType.BLOCK_ENTITY, tag, srcVer);
         return NBTConverter.fromNative(fixed);
     }
 
     private CompoundBinaryTag fixEntity(CompoundBinaryTag origEnt, int srcVer) {
-        CompoundNBT tag = NBTConverter.toNative(origEnt);
-        CompoundNBT fixed = convert(LegacyType.ENTITY, tag, srcVer);
+        net.minecraft.nbt.CompoundTag tag = NBTConverter.toNative(origEnt);
+        net.minecraft.nbt.CompoundTag fixed = convert(LegacyType.ENTITY, tag, srcVer);
         return NBTConverter.fromNative(fixed);
     }
 
     private String fixBlockState(String blockState, int srcVer) {
-        CompoundNBT stateNBT = stateToNBT(blockState);
-        Dynamic<INBT> dynamic = new Dynamic<>(OPS_NBT, stateNBT);
-        CompoundNBT fixed = (CompoundNBT) INSTANCE.fixer.update(TypeReferences.BLOCK_STATE, dynamic, srcVer, DATA_VERSION).getValue();
+        net.minecraft.nbt.CompoundTag stateNBT = stateToNBT(blockState);
+        Dynamic<Tag> dynamic = new Dynamic<>(OPS_NBT, stateNBT);
+        net.minecraft.nbt.CompoundTag fixed = (net.minecraft.nbt.CompoundTag) INSTANCE.fixer.update(References.BLOCK_STATE, dynamic, srcVer, DATA_VERSION).getValue();
         return nbtToState(fixed);
     }
 
-    private String nbtToState(CompoundNBT tagCompound) {
+    private String nbtToState(net.minecraft.nbt.CompoundTag tagCompound) {
         StringBuilder sb = new StringBuilder();
         sb.append(tagCompound.getString("Name"));
         if (tagCompound.contains("Properties", 10)) {
             sb.append('[');
-            CompoundNBT props = tagCompound.getCompound("Properties");
-            sb.append(props.keySet().stream().map(k -> k + "=" + props.getString(k).replace("\"", "")).collect(Collectors.joining(",")));
+            net.minecraft.nbt.CompoundTag props = tagCompound.getCompound("Properties");
+            sb.append(props.getAllKeys().stream().map(k -> k + "=" + props.getString(k).replace("\"", "")).collect(Collectors.joining(",")));
             sb.append(']');
         }
         return sb.toString();
     }
 
-    private static CompoundNBT stateToNBT(String blockState) {
+    private static net.minecraft.nbt.CompoundTag stateToNBT(String blockState) {
         int propIdx = blockState.indexOf('[');
-        CompoundNBT tag = new CompoundNBT();
+        net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
         if (propIdx < 0) {
             tag.putString("Name", blockState);
         } else {
             tag.putString("Name", blockState.substring(0, propIdx));
-            CompoundNBT propTag = new CompoundNBT();
+            net.minecraft.nbt.CompoundTag propTag = new net.minecraft.nbt.CompoundTag();
             String props = blockState.substring(propIdx + 1, blockState.length() - 1);
             String[] propArr = props.split(",");
             for (String pair : propArr) {
@@ -166,19 +165,19 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
     }
 
     private String fixBiome(String key, int srcVer) {
-        return fixName(key, srcVer, TypeReferences.BIOME);
+        return fixName(key, srcVer, References.BIOME);
     }
 
     private String fixItemType(String key, int srcVer) {
-        return fixName(key, srcVer, TypeReferences.ITEM_NAME);
+        return fixName(key, srcVer, References.ITEM_NAME);
     }
 
     private static String fixName(String key, int srcVer, TypeReference type) {
-        return INSTANCE.fixer.update(type, new Dynamic<>(OPS_NBT, StringNBT.valueOf(key)), srcVer, DATA_VERSION)
+        return INSTANCE.fixer.update(type, new Dynamic<>(OPS_NBT, StringTag.valueOf(key)), srcVer, DATA_VERSION)
             .asString().result().orElse(key);
     }
 
-    private static final NBTDynamicOps OPS_NBT = NBTDynamicOps.INSTANCE;
+    private static final NbtOps OPS_NBT = NbtOps.INSTANCE;
     private static final int LEGACY_VERSION = 1343;
     private static int DATA_VERSION;
     private static ForgeDataFixer INSTANCE;
@@ -191,14 +190,14 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
     private static final Map<String, LegacyType> DFU_TO_LEGACY = new HashMap<>();
 
     public enum LegacyType {
-        LEVEL(TypeReferences.LEVEL),
-        PLAYER(TypeReferences.PLAYER),
-        CHUNK(TypeReferences.CHUNK),
-        BLOCK_ENTITY(TypeReferences.BLOCK_ENTITY),
-        ENTITY(TypeReferences.ENTITY),
-        ITEM_INSTANCE(TypeReferences.ITEM_STACK),
-        OPTIONS(TypeReferences.OPTIONS),
-        STRUCTURE(TypeReferences.STRUCTURE);
+        LEVEL(References.LEVEL),
+        PLAYER(References.PLAYER),
+        CHUNK(References.CHUNK),
+        BLOCK_ENTITY(References.BLOCK_ENTITY),
+        ENTITY(References.ENTITY),
+        ITEM_INSTANCE(References.ITEM_STACK),
+        OPTIONS(References.OPTIONS),
+        STRUCTURE(References.STRUCTURE);
 
         private final TypeReference type;
 
@@ -218,7 +217,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
         INSTANCE = this;
         registerConverters();
         registerInspectors();
-        this.fixer = new WrappedDataFixer(DataFixesManager.getDataFixer());
+        this.fixer = new WrappedDataFixer(DataFixers.getDataFixer());
     }
 
     @Override
@@ -237,7 +236,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
         public <T> Dynamic<T> update(TypeReference type, Dynamic<T> dynamic, int sourceVer, int targetVer) {
             LegacyType legacyType = DFU_TO_LEGACY.get(type.typeName());
             if (sourceVer < LEGACY_VERSION && legacyType != null) {
-                CompoundNBT cmp = (CompoundNBT) dynamic.getValue();
+                net.minecraft.nbt.CompoundTag cmp = (net.minecraft.nbt.CompoundTag) dynamic.getValue();
                 int desiredVersion = Math.min(targetVer, LEGACY_VERSION);
 
                 cmp = convert(legacyType, cmp, sourceVer, desiredVersion);
@@ -247,7 +246,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return realFixer.update(type, dynamic, sourceVer, targetVer);
         }
 
-        private CompoundNBT convert(LegacyType type, CompoundNBT cmp, int sourceVer, int desiredVersion) {
+        private net.minecraft.nbt.CompoundTag convert(LegacyType type, net.minecraft.nbt.CompoundTag cmp, int sourceVer, int desiredVersion) {
             List<DataConverter> converters = ForgeDataFixer.this.converters.get(type);
             if (converters != null && !converters.isEmpty()) {
                 for (DataConverter converter : converters) {
@@ -274,44 +273,44 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
         }
     }
 
-    public static CompoundNBT convert(LegacyType type, CompoundNBT cmp) {
+    public static net.minecraft.nbt.CompoundTag convert(LegacyType type, net.minecraft.nbt.CompoundTag cmp) {
         return convert(type.getDFUType(), cmp);
     }
 
-    public static CompoundNBT convert(LegacyType type, CompoundNBT cmp, int sourceVer) {
+    public static net.minecraft.nbt.CompoundTag convert(LegacyType type, net.minecraft.nbt.CompoundTag cmp, int sourceVer) {
         return convert(type.getDFUType(), cmp, sourceVer);
     }
 
-    public static CompoundNBT convert(LegacyType type, CompoundNBT cmp, int sourceVer, int targetVer) {
+    public static net.minecraft.nbt.CompoundTag convert(LegacyType type, net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
         return convert(type.getDFUType(), cmp, sourceVer, targetVer);
     }
 
-    public static CompoundNBT convert(TypeReference type, CompoundNBT cmp) {
+    public static net.minecraft.nbt.CompoundTag convert(TypeReference type, net.minecraft.nbt.CompoundTag cmp) {
         int i = cmp.contains("DataVersion", 99) ? cmp.getInt("DataVersion") : -1;
         return convert(type, cmp, i);
     }
 
-    public static CompoundNBT convert(TypeReference type, CompoundNBT cmp, int sourceVer) {
+    public static net.minecraft.nbt.CompoundTag convert(TypeReference type, net.minecraft.nbt.CompoundTag cmp, int sourceVer) {
         return convert(type, cmp, sourceVer, DATA_VERSION);
     }
 
-    public static CompoundNBT convert(TypeReference type, CompoundNBT cmp, int sourceVer, int targetVer) {
+    public static net.minecraft.nbt.CompoundTag convert(TypeReference type, net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
         if (sourceVer >= targetVer) {
             return cmp;
         }
-        return (CompoundNBT) INSTANCE.fixer.update(type, new Dynamic<>(OPS_NBT, cmp), sourceVer, targetVer).getValue();
+        return (net.minecraft.nbt.CompoundTag) INSTANCE.fixer.update(type, new Dynamic<>(OPS_NBT, cmp), sourceVer, targetVer).getValue();
     }
 
 
     public interface DataInspector {
-        CompoundNBT inspect(CompoundNBT cmp, int sourceVer, int targetVer);
+        net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer);
     }
 
     public interface DataConverter {
 
         int getDataVersion();
 
-        CompoundNBT convert(CompoundNBT cmp);
+        net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp);
     }
 
 
@@ -589,19 +588,19 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
         return key;
     }
 
-    private static void convertCompound(LegacyType type, CompoundNBT cmp, String key, int sourceVer, int targetVer) {
+    private static void convertCompound(LegacyType type, net.minecraft.nbt.CompoundTag cmp, String key, int sourceVer, int targetVer) {
         cmp.put(key, convert(type, cmp.getCompound(key), sourceVer, targetVer));
     }
 
-    private static void convertItem(CompoundNBT nbttagcompound, String key, int sourceVer, int targetVer) {
+    private static void convertItem(net.minecraft.nbt.CompoundTag nbttagcompound, String key, int sourceVer, int targetVer) {
         if (nbttagcompound.contains(key, 10)) {
             convertCompound(LegacyType.ITEM_INSTANCE, nbttagcompound, key, sourceVer, targetVer);
         }
     }
 
-    private static void convertItems(CompoundNBT nbttagcompound, String key, int sourceVer, int targetVer) {
+    private static void convertItems(net.minecraft.nbt.CompoundTag nbttagcompound, String key, int sourceVer, int targetVer) {
         if (nbttagcompound.contains(key, 9)) {
-            ListNBT nbttaglist = nbttagcompound.getList(key, 10);
+            ListTag nbttaglist = nbttagcompound.getList(key, 10);
 
             for (int j = 0; j < nbttaglist.size(); ++j) {
                 nbttaglist.add(j, convert(LegacyType.ITEM_INSTANCE, nbttaglist.getCompound(j), sourceVer, targetVer));
@@ -621,19 +620,19 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
         }
 
         @Override
-        public CompoundNBT convert(CompoundNBT cmp) {
-            ListNBT nbttaglist = cmp.getList("Equipment", 10);
-            ListNBT nbttaglist1;
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
+            ListTag nbttaglist = cmp.getList("Equipment", 10);
+            ListTag nbttaglist1;
 
             if (!nbttaglist.isEmpty() && !cmp.contains("HandItems", 10)) {
-                nbttaglist1 = new ListNBT();
+                nbttaglist1 = new ListTag();
                 nbttaglist1.add(nbttaglist.get(0));
-                nbttaglist1.add(new CompoundNBT());
+                nbttaglist1.add(new net.minecraft.nbt.CompoundTag());
                 cmp.put("HandItems", nbttaglist1);
             }
 
             if (nbttaglist.size() > 1 && !cmp.contains("ArmorItem", 10)) {
-                nbttaglist1 = new ListNBT();
+                nbttaglist1 = new ListTag();
                 nbttaglist1.add(nbttaglist.get(1));
                 nbttaglist1.add(nbttaglist.get(2));
                 nbttaglist1.add(nbttaglist.get(3));
@@ -644,21 +643,21 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             cmp.remove("Equipment");
             if (cmp.contains("DropChances", 9)) {
                 nbttaglist1 = cmp.getList("DropChances", 5);
-                ListNBT nbttaglist2;
+                ListTag nbttaglist2;
 
                 if (!cmp.contains("HandDropChances", 10)) {
-                    nbttaglist2 = new ListNBT();
-                    nbttaglist2.add(FloatNBT.valueOf(nbttaglist1.getFloat(0)));
-                    nbttaglist2.add(FloatNBT.valueOf(0.0F));
+                    nbttaglist2 = new ListTag();
+                    nbttaglist2.add(FloatTag.valueOf(nbttaglist1.getFloat(0)));
+                    nbttaglist2.add(FloatTag.valueOf(0.0F));
                     cmp.put("HandDropChances", nbttaglist2);
                 }
 
                 if (!cmp.contains("ArmorDropChances", 10)) {
-                    nbttaglist2 = new ListNBT();
-                    nbttaglist2.add(FloatNBT.valueOf(nbttaglist1.getFloat(1)));
-                    nbttaglist2.add(FloatNBT.valueOf(nbttaglist1.getFloat(2)));
-                    nbttaglist2.add(FloatNBT.valueOf(nbttaglist1.getFloat(3)));
-                    nbttaglist2.add(FloatNBT.valueOf(nbttaglist1.getFloat(4)));
+                    nbttaglist2 = new ListTag();
+                    nbttaglist2.add(FloatTag.valueOf(nbttaglist1.getFloat(1)));
+                    nbttaglist2.add(FloatTag.valueOf(nbttaglist1.getFloat(2)));
+                    nbttaglist2.add(FloatTag.valueOf(nbttaglist1.getFloat(3)));
+                    nbttaglist2.add(FloatTag.valueOf(nbttaglist1.getFloat(4)));
                     cmp.put("ArmorDropChances", nbttaglist2);
                 }
 
@@ -688,14 +687,14 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
         }
 
         @Override
-        public CompoundNBT inspect(CompoundNBT cmp, int sourceVer, int targetVer) {
+        public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
             if (!cmp.contains("tag", 10)) {
                 return cmp;
             } else {
-                CompoundNBT nbttagcompound1 = cmp.getCompound("tag");
+                net.minecraft.nbt.CompoundTag nbttagcompound1 = cmp.getCompound("tag");
 
                 if (nbttagcompound1.contains("BlockEntityTag", 10)) {
-                    CompoundNBT nbttagcompound2 = nbttagcompound1.getCompound("BlockEntityTag");
+                    net.minecraft.nbt.CompoundTag nbttagcompound2 = nbttagcompound1.getCompound("BlockEntityTag");
                     String s = cmp.getString("id");
                     String s1 = convertEntityId(sourceVer, s);
                     boolean flag;
@@ -820,11 +819,11 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
         }
 
         @Override
-        public CompoundNBT inspect(CompoundNBT cmp, int sourceVer, int targetVer) {
-            CompoundNBT nbttagcompound1 = cmp.getCompound("tag");
+        public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
+            net.minecraft.nbt.CompoundTag nbttagcompound1 = cmp.getCompound("tag");
 
             if (nbttagcompound1.contains("EntityTag", 10)) {
-                CompoundNBT nbttagcompound2 = nbttagcompound1.getCompound("EntityTag");
+                net.minecraft.nbt.CompoundTag nbttagcompound2 = nbttagcompound1.getCompound("EntityTag");
                 String s = cmp.getString("id");
                 String s1;
 
@@ -867,7 +866,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             this.key = getKey(type);
         }
 
-        public CompoundNBT inspect(CompoundNBT cmp, int sourceVer, int targetVer) {
+        public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
             if (this.key.equals(new ResourceLocation(cmp.getString("id")))) {
                 cmp = this.inspectChecked(cmp, sourceVer, targetVer);
             }
@@ -875,7 +874,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return cmp;
         }
 
-        abstract CompoundNBT inspectChecked(CompoundNBT nbttagcompound, int sourceVer, int targetVer);
+        abstract net.minecraft.nbt.CompoundTag inspectChecked(net.minecraft.nbt.CompoundTag nbttagcompound, int sourceVer, int targetVer);
     }
 
     private static class DataInspectorItemList extends DataInspectorTagged {
@@ -887,7 +886,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             this.keys = astring;
         }
 
-        CompoundNBT inspectChecked(CompoundNBT nbttagcompound, int sourceVer, int targetVer) {
+        net.minecraft.nbt.CompoundTag inspectChecked(net.minecraft.nbt.CompoundTag nbttagcompound, int sourceVer, int targetVer) {
             for (String s : this.keys) {
                 ForgeDataFixer.convertItems(nbttagcompound, s, sourceVer, targetVer);
             }
@@ -905,7 +904,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             this.keys = astring;
         }
 
-        CompoundNBT inspectChecked(CompoundNBT nbttagcompound, int sourceVer, int targetVer) {
+        net.minecraft.nbt.CompoundTag inspectChecked(net.minecraft.nbt.CompoundTag nbttagcompound, int sourceVer, int targetVer) {
             for (String key : this.keys) {
                 ForgeDataFixer.convertItem(nbttagcompound, key, sourceVer, targetVer);
             }
@@ -925,7 +924,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 102;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             if (cmp.contains("id", 99)) {
                 short short0 = cmp.getShort("id");
 
@@ -1265,7 +1264,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 147;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             if ("ArmorStand".equals(cmp.getString("id")) && cmp.getBoolean("Silent") && !cmp.getBoolean("Marker")) {
                 cmp.remove("Silent");
             }
@@ -1283,20 +1282,20 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 804;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             if ("minecraft:banner".equals(cmp.getString("id")) && cmp.contains("tag", 10)) {
-                CompoundNBT nbttagcompound1 = cmp.getCompound("tag");
+                net.minecraft.nbt.CompoundTag nbttagcompound1 = cmp.getCompound("tag");
 
                 if (nbttagcompound1.contains("BlockEntityTag", 10)) {
-                    CompoundNBT nbttagcompound2 = nbttagcompound1.getCompound("BlockEntityTag");
+                    net.minecraft.nbt.CompoundTag nbttagcompound2 = nbttagcompound1.getCompound("BlockEntityTag");
 
                     if (nbttagcompound2.contains("Base", 99)) {
                         cmp.putShort("Damage", (short) (nbttagcompound2.getShort("Base") & 15));
                         if (nbttagcompound1.contains("display", 10)) {
-                            CompoundNBT nbttagcompound3 = nbttagcompound1.getCompound("display");
+                            net.minecraft.nbt.CompoundTag nbttagcompound3 = nbttagcompound1.getCompound("display");
 
                             if (nbttagcompound3.contains("Lore", 9)) {
-                                ListNBT nbttaglist = nbttagcompound3.getList("Lore", 8);
+                                ListTag nbttaglist = nbttagcompound3.getList("Lore", 8);
 
                                 if (nbttaglist.size() == 1 && "(+NBT)".equals(nbttaglist.getString(0))) {
                                     return cmp;
@@ -1331,9 +1330,9 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 102;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             if ("minecraft:potion".equals(cmp.getString("id"))) {
-                CompoundNBT nbttagcompound1 = cmp.getCompound("tag");
+                net.minecraft.nbt.CompoundTag nbttagcompound1 = cmp.getCompound("tag");
                 short short0 = cmp.getShort("Damage");
 
                 if (!nbttagcompound1.contains("Potion", 8)) {
@@ -1497,10 +1496,10 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 105;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             if ("minecraft:spawn_egg".equals(cmp.getString("id"))) {
-                CompoundNBT nbttagcompound1 = cmp.getCompound("tag");
-                CompoundNBT nbttagcompound2 = nbttagcompound1.getCompound("EntityTag");
+                net.minecraft.nbt.CompoundTag nbttagcompound1 = cmp.getCompound("tag");
+                net.minecraft.nbt.CompoundTag nbttagcompound2 = nbttagcompound1.getCompound("EntityTag");
                 short short0 = cmp.getShort("Damage");
 
                 if (!nbttagcompound2.contains("id", 8)) {
@@ -1604,7 +1603,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 106;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             if ("Minecart".equals(cmp.getString("id"))) {
                 String s = "MinecartRideable";
                 int i = cmp.getInt("Type");
@@ -1630,13 +1629,13 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 107;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             if (!"MobSpawner".equals(cmp.getString("id"))) {
                 return cmp;
             } else {
                 if (cmp.contains("EntityId", 8)) {
                     String s = cmp.getString("EntityId");
-                    CompoundNBT nbttagcompound1 = cmp.getCompound("SpawnData");
+                    net.minecraft.nbt.CompoundTag nbttagcompound1 = cmp.getCompound("SpawnData");
 
                     nbttagcompound1.putString("id", s.isEmpty() ? "Pig" : s);
                     cmp.put("SpawnData", nbttagcompound1);
@@ -1644,13 +1643,13 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
                 }
 
                 if (cmp.contains("SpawnPotentials", 9)) {
-                    ListNBT nbttaglist = cmp.getList("SpawnPotentials", 10);
+                    ListTag nbttaglist = cmp.getList("SpawnPotentials", 10);
 
                     for (int i = 0; i < nbttaglist.size(); ++i) {
-                        CompoundNBT nbttagcompound2 = nbttaglist.getCompound(i);
+                        net.minecraft.nbt.CompoundTag nbttagcompound2 = nbttaglist.getCompound(i);
 
                         if (nbttagcompound2.contains("Type", 8)) {
-                            CompoundNBT nbttagcompound3 = nbttagcompound2.getCompound("Properties");
+                            net.minecraft.nbt.CompoundTag nbttagcompound3 = nbttagcompound2.getCompound("Properties");
 
                             nbttagcompound3.putString("id", nbttagcompound2.getString("Type"));
                             nbttagcompound2.put("Entity", nbttagcompound3);
@@ -1674,9 +1673,9 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 108;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             if (cmp.contains("UUID", 8)) {
-                cmp.putUniqueId("UUID", UUID.fromString(cmp.getString("UUID")));
+                cmp.putUUID("UUID", UUID.fromString(cmp.getString("UUID")));
             }
 
             return cmp;
@@ -1694,7 +1693,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 109;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             if (DataConverterHealth.a.contains(cmp.getString("id"))) {
                 float f;
 
@@ -1725,9 +1724,9 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 110;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             if ("EntityHorse".equals(cmp.getString("id")) && !cmp.contains("SaddleItem", 10) && cmp.getBoolean("Saddle")) {
-                CompoundNBT nbttagcompound1 = new CompoundNBT();
+                net.minecraft.nbt.CompoundTag nbttagcompound1 = new net.minecraft.nbt.CompoundTag();
 
                 nbttagcompound1.putString("id", "minecraft:saddle");
                 nbttagcompound1.putByte("Count", (byte) 1);
@@ -1749,7 +1748,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 111;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             String s = cmp.getString("id");
             boolean flag = "Painting".equals(s);
             boolean flag1 = "ItemFrame".equals(s);
@@ -1758,20 +1757,20 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
                 Direction enumdirection;
 
                 if (cmp.contains("Direction", 99)) {
-                    enumdirection = Direction.byHorizontalIndex(cmp.getByte("Direction"));
-                    cmp.putInt("TileX", cmp.getInt("TileX") + enumdirection.getXOffset());
-                    cmp.putInt("TileY", cmp.getInt("TileY") + enumdirection.getYOffset());
-                    cmp.putInt("TileZ", cmp.getInt("TileZ") + enumdirection.getZOffset());
+                    enumdirection = Direction.from2DDataValue(cmp.getByte("Direction"));
+                    cmp.putInt("TileX", cmp.getInt("TileX") + enumdirection.getStepX());
+                    cmp.putInt("TileY", cmp.getInt("TileY") + enumdirection.getStepY());
+                    cmp.putInt("TileZ", cmp.getInt("TileZ") + enumdirection.getStepZ());
                     cmp.remove("Direction");
                     if (flag1 && cmp.contains("ItemRotation", 99)) {
                         cmp.putByte("ItemRotation", (byte) (cmp.getByte("ItemRotation") * 2));
                     }
                 } else {
-                    enumdirection = Direction.byHorizontalIndex(cmp.getByte("Dir"));
+                    enumdirection = Direction.from2DDataValue(cmp.getByte("Dir"));
                     cmp.remove("Dir");
                 }
 
-                cmp.putByte("Facing", (byte) enumdirection.getHorizontalIndex());
+                cmp.putByte("Facing", (byte) enumdirection.get2DDataValue());
             }
 
             return cmp;
@@ -1787,8 +1786,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 113;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
-            ListNBT nbttaglist;
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
+            ListTag nbttaglist;
 
             if (cmp.contains("HandDropChances", 9)) {
                 nbttaglist = cmp.getList("HandDropChances", 5);
@@ -1817,9 +1816,9 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 135;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             while (cmp.contains("Riding", 10)) {
-                CompoundNBT nbttagcompound1 = this.b(cmp);
+                net.minecraft.nbt.CompoundTag nbttagcompound1 = this.b(cmp);
 
                 this.convert(cmp, nbttagcompound1);
                 cmp = nbttagcompound1;
@@ -1828,15 +1827,15 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return cmp;
         }
 
-        protected void convert(CompoundNBT nbttagcompound, CompoundNBT nbttagcompound1) {
-            ListNBT nbttaglist = new ListNBT();
+        protected void convert(net.minecraft.nbt.CompoundTag nbttagcompound, net.minecraft.nbt.CompoundTag nbttagcompound1) {
+            ListTag nbttaglist = new ListTag();
 
             nbttaglist.add(nbttagcompound);
             nbttagcompound1.put("Passengers", nbttaglist);
         }
 
-        protected CompoundNBT b(CompoundNBT nbttagcompound) {
-            CompoundNBT nbttagcompound1 = nbttagcompound.getCompound("Riding");
+        protected net.minecraft.nbt.CompoundTag b(net.minecraft.nbt.CompoundTag nbttagcompound) {
+            net.minecraft.nbt.CompoundTag nbttagcompound1 = nbttagcompound.getCompound("Riding");
 
             nbttagcompound.remove("Riding");
             return nbttagcompound1;
@@ -1852,25 +1851,25 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 165;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             if ("minecraft:written_book".equals(cmp.getString("id"))) {
-                CompoundNBT nbttagcompound1 = cmp.getCompound("tag");
+                net.minecraft.nbt.CompoundTag nbttagcompound1 = cmp.getCompound("tag");
 
                 if (nbttagcompound1.contains("pages", 9)) {
-                    ListNBT nbttaglist = nbttagcompound1.getList("pages", 8);
+                    ListTag nbttaglist = nbttagcompound1.getList("pages", 8);
 
                     for (int i = 0; i < nbttaglist.size(); ++i) {
                         String s = nbttaglist.getString(i);
                         Object object = null;
 
-                        if (!"null".equals(s) && !StringUtils.isNullOrEmpty(s)) {
+                        if (!"null".equals(s) && !StringUtil.isNullOrEmpty(s)) {
                             if ((s.charAt(0) != 34 || s.charAt(s.length() - 1) != 34) && (s.charAt(0) != 123 || s.charAt(s.length() - 1) != 125)) {
-                                object = new StringTextComponent(s);
+                                object = new TextComponent(s);
                             } else {
                                 try {
-                                    object = JSONUtils.fromJson(DataConverterSignText.a, s, ITextComponent.class, true);
+                                    object = GsonHelper.fromJson(DataConverterSignText.a, s, Component.class, true);
                                     if (object == null) {
-                                        object = new StringTextComponent("");
+                                        object = new TextComponent("");
                                     }
                                 } catch (JsonParseException jsonparseexception) {
                                     ;
@@ -1878,7 +1877,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
                                 if (object == null) {
                                     try {
-                                        object = ITextComponent.Serializer.func_240643_a_(s);
+                                        object = Component.Serializer.fromJson(s);
                                     } catch (JsonParseException jsonparseexception1) {
                                         ;
                                     }
@@ -1886,21 +1885,21 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
                                 if (object == null) {
                                     try {
-                                        object = ITextComponent.Serializer.func_240644_b_(s);
+                                        object = Component.Serializer.fromJsonLenient(s);
                                     } catch (JsonParseException jsonparseexception2) {
                                         ;
                                     }
                                 }
 
                                 if (object == null) {
-                                    object = new StringTextComponent(s);
+                                    object = new TextComponent(s);
                                 }
                             }
                         } else {
-                            object = new StringTextComponent("");
+                            object = new TextComponent("");
                         }
 
-                        nbttaglist.set(i, StringNBT.valueOf(ITextComponent.Serializer.toJson((ITextComponent) object)));
+                        nbttaglist.set(i, StringTag.valueOf(Component.Serializer.toJson((Component) object)));
                     }
 
                     nbttagcompound1.put("pages", nbttaglist);
@@ -1922,7 +1921,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 502;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             if (cmp.contains("id", 8) && DataConverterCookedFish.a.equals(new ResourceLocation(cmp.getString("id")))) {
                 cmp.putString("id", "minecraft:cooked_fish");
             }
@@ -1942,7 +1941,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 502;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             if ("Zombie".equals(cmp.getString("id")) && cmp.getBoolean("IsVillager")) {
                 if (!cmp.contains("ZombieType", 99)) {
                     int i = -1;
@@ -1982,7 +1981,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 505;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             cmp.putString("useVbo", "true");
             return cmp;
         }
@@ -1997,7 +1996,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 700;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             if ("Guardian".equals(cmp.getString("id"))) {
                 if (cmp.getBoolean("Elder")) {
                     cmp.putString("id", "ElderGuardian");
@@ -2019,7 +2018,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 701;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             String s = cmp.getString("id");
 
             if ("Skeleton".equals(s)) {
@@ -2047,7 +2046,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 702;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             if ("Zombie".equals(cmp.getString("id"))) {
                 int i = cmp.getInt("ZombieType");
 
@@ -2083,7 +2082,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 703;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             if ("EntityHorse".equals(cmp.getString("id"))) {
                 int i = cmp.getInt("Type");
 
@@ -2128,7 +2127,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 704;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             String s = DataConverterTileEntity.a.get(cmp.getString("id"));
 
             if (s != null) {
@@ -2176,7 +2175,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 704;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             String s = DataConverterEntity.a.get(cmp.getString("id"));
 
             if (s != null) {
@@ -2274,11 +2273,11 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 806;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             String s = cmp.getString("id");
 
             if ("minecraft:potion".equals(s) || "minecraft:splash_potion".equals(s) || "minecraft:lingering_potion".equals(s) || "minecraft:tipped_arrow".equals(s)) {
-                CompoundNBT nbttagcompound1 = cmp.getCompound("tag");
+                net.minecraft.nbt.CompoundTag nbttagcompound1 = cmp.getCompound("tag");
 
                 if (!nbttagcompound1.contains("Potion", 8)) {
                     nbttagcompound1.putString("Potion", "minecraft:water");
@@ -2302,7 +2301,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 808;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             if ("minecraft:shulker".equals(cmp.getString("id")) && !cmp.contains("Color", 99)) {
                 cmp.putByte("Color", (byte) 10);
             }
@@ -2322,12 +2321,12 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 813;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             if ("minecraft:shulker_box".equals(cmp.getString("id")) && cmp.contains("tag", 10)) {
-                CompoundNBT nbttagcompound1 = cmp.getCompound("tag");
+                net.minecraft.nbt.CompoundTag nbttagcompound1 = cmp.getCompound("tag");
 
                 if (nbttagcompound1.contains("BlockEntityTag", 10)) {
-                    CompoundNBT nbttagcompound2 = nbttagcompound1.getCompound("BlockEntityTag");
+                    net.minecraft.nbt.CompoundTag nbttagcompound2 = nbttagcompound1.getCompound("BlockEntityTag");
 
                     if (nbttagcompound2.getList("Items", 10).isEmpty()) {
                         nbttagcompound2.remove("Items");
@@ -2361,7 +2360,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 813;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             if ("minecraft:shulker".equals(cmp.getString("id"))) {
                 cmp.remove("Color");
             }
@@ -2379,7 +2378,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 816;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             if (cmp.contains("lang", 8)) {
                 cmp.putString("lang", cmp.getString("lang").toLowerCase(Locale.ROOT));
             }
@@ -2397,7 +2396,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 820;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             if ("minecraft:totem".equals(cmp.getString("id"))) {
                 cmp.putString("id", "minecraft:totem_of_undying");
             }
@@ -2417,18 +2416,18 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 1125;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             boolean flag = true;
 
             try {
-                CompoundNBT nbttagcompound1 = cmp.getCompound("Level");
+                net.minecraft.nbt.CompoundTag nbttagcompound1 = cmp.getCompound("Level");
                 int i = nbttagcompound1.getInt("xPos");
                 int j = nbttagcompound1.getInt("zPos");
-                ListNBT nbttaglist = nbttagcompound1.getList("TileEntities", 10);
-                ListNBT nbttaglist1 = nbttagcompound1.getList("Sections", 10);
+                ListTag nbttaglist = nbttagcompound1.getList("TileEntities", 10);
+                ListTag nbttaglist1 = nbttagcompound1.getList("Sections", 10);
 
                 for (int k = 0; k < nbttaglist1.size(); ++k) {
-                    CompoundNBT nbttagcompound2 = nbttaglist1.getCompound(k);
+                    net.minecraft.nbt.CompoundTag nbttagcompound2 = nbttaglist1.getCompound(k);
                     byte b0 = nbttagcompound2.getByte("Y");
                     byte[] abyte = nbttagcompound2.getByteArray("Blocks");
 
@@ -2437,7 +2436,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
                             int i1 = l & 15;
                             int j1 = l >> 8 & 15;
                             int k1 = l >> 4 & 15;
-                            CompoundNBT nbttagcompound3 = new CompoundNBT();
+                            net.minecraft.nbt.CompoundTag nbttagcompound3 = new net.minecraft.nbt.CompoundTag();
 
                             nbttagcompound3.putString("id", "bed");
                             nbttagcompound3.putInt("x", i1 + (i << 4));
@@ -2464,7 +2463,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 1125;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             if ("minecraft:bed".equals(cmp.getString("id")) && cmp.getShort("Damage") == 0) {
                 cmp.putShort("Damage", (short) DyeColor.RED.getId());
             }
@@ -2475,23 +2474,23 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterSignText implements DataConverter {
 
-        public static final Gson a = new GsonBuilder().registerTypeAdapter(ITextComponent.class, new JsonDeserializer() {
-            IFormattableTextComponent a(JsonElement jsonelement, Type type, JsonDeserializationContext jsondeserializationcontext) throws JsonParseException {
+        public static final Gson a = new GsonBuilder().registerTypeAdapter(Component.class, new JsonDeserializer() {
+            MutableComponent a(JsonElement jsonelement, Type type, JsonDeserializationContext jsondeserializationcontext) throws JsonParseException {
                 if (jsonelement.isJsonPrimitive()) {
-                    return new StringTextComponent(jsonelement.getAsString());
+                    return new TextComponent(jsonelement.getAsString());
                 } else if (jsonelement.isJsonArray()) {
                     JsonArray jsonarray = jsonelement.getAsJsonArray();
-                    IFormattableTextComponent iTextComponent = null;
+                    MutableComponent iTextComponent = null;
                     Iterator iterator = jsonarray.iterator();
 
                     while (iterator.hasNext()) {
                         JsonElement jsonelement1 = (JsonElement) iterator.next();
-                        IFormattableTextComponent iTextComponent1 = this.a(jsonelement1, jsonelement1.getClass(), jsondeserializationcontext);
+                        MutableComponent iTextComponent1 = this.a(jsonelement1, jsonelement1.getClass(), jsondeserializationcontext);
 
                         if (iTextComponent == null) {
                             iTextComponent = iTextComponent1;
                         } else {
-                            iTextComponent.func_230529_a_(iTextComponent1);
+                            iTextComponent.append(iTextComponent1);
                         }
                     }
 
@@ -2513,7 +2512,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return 101;
         }
 
-        public CompoundNBT convert(CompoundNBT cmp) {
+        public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             if ("Sign".equals(cmp.getString("id"))) {
                 this.convert(cmp, "Text1");
                 this.convert(cmp, "Text2");
@@ -2524,18 +2523,18 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return cmp;
         }
 
-        private void convert(CompoundNBT nbttagcompound, String s) {
+        private void convert(net.minecraft.nbt.CompoundTag nbttagcompound, String s) {
             String s1 = nbttagcompound.getString(s);
             Object object = null;
 
-            if (!"null".equals(s1) && !StringUtils.isNullOrEmpty(s1)) {
+            if (!"null".equals(s1) && !StringUtil.isNullOrEmpty(s1)) {
                 if ((s1.charAt(0) != 34 || s1.charAt(s1.length() - 1) != 34) && (s1.charAt(0) != 123 || s1.charAt(s1.length() - 1) != 125)) {
-                    object = new StringTextComponent(s1);
+                    object = new TextComponent(s1);
                 } else {
                     try {
-                        object = JSONUtils.fromJson(DataConverterSignText.a, s1, ITextComponent.class, true);
+                        object = GsonHelper.fromJson(DataConverterSignText.a, s1, Component.class, true);
                         if (object == null) {
-                            object = new StringTextComponent("");
+                            object = new TextComponent("");
                         }
                     } catch (JsonParseException jsonparseexception) {
                         ;
@@ -2543,7 +2542,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
                     if (object == null) {
                         try {
-                            object = ITextComponent.Serializer.func_240643_a_(s1);
+                            object = Component.Serializer.fromJson(s1);
                         } catch (JsonParseException jsonparseexception1) {
                             ;
                         }
@@ -2551,29 +2550,29 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
                     if (object == null) {
                         try {
-                            object = ITextComponent.Serializer.func_240644_b_(s1);
+                            object = Component.Serializer.fromJsonLenient(s1);
                         } catch (JsonParseException jsonparseexception2) {
                             ;
                         }
                     }
 
                     if (object == null) {
-                        object = new StringTextComponent(s1);
+                        object = new TextComponent(s1);
                     }
                 }
             } else {
-                object = new StringTextComponent("");
+                object = new TextComponent("");
             }
 
-            nbttagcompound.putString(s, ITextComponent.Serializer.toJson((ITextComponent) object));
+            nbttagcompound.putString(s, Component.Serializer.toJson((Component) object));
         }
     }
 
     private static class DataInspectorPlayerVehicle implements DataInspector {
         @Override
-        public CompoundNBT inspect(CompoundNBT cmp, int sourceVer, int targetVer) {
+        public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
             if (cmp.contains("RootVehicle", 10)) {
-                CompoundNBT nbttagcompound1 = cmp.getCompound("RootVehicle");
+                net.minecraft.nbt.CompoundTag nbttagcompound1 = cmp.getCompound("RootVehicle");
 
                 if (nbttagcompound1.contains("Entity", 10)) {
                     convertCompound(LegacyType.ENTITY, nbttagcompound1, "Entity", sourceVer, targetVer);
@@ -2586,7 +2585,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataInspectorLevelPlayer implements DataInspector {
         @Override
-        public CompoundNBT inspect(CompoundNBT cmp, int sourceVer, int targetVer) {
+        public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
             if (cmp.contains("Player", 10)) {
                 convertCompound(LegacyType.PLAYER, cmp, "Player", sourceVer, targetVer);
             }
@@ -2597,16 +2596,16 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataInspectorStructure implements DataInspector {
         @Override
-        public CompoundNBT inspect(CompoundNBT cmp, int sourceVer, int targetVer) {
-            ListNBT nbttaglist;
+        public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
+            ListTag nbttaglist;
             int j;
-            CompoundNBT nbttagcompound1;
+            net.minecraft.nbt.CompoundTag nbttagcompound1;
 
             if (cmp.contains("entities", 9)) {
                 nbttaglist = cmp.getList("entities", 10);
 
                 for (j = 0; j < nbttaglist.size(); ++j) {
-                    nbttagcompound1 = (CompoundNBT) nbttaglist.get(j);
+                    nbttagcompound1 = (net.minecraft.nbt.CompoundTag) nbttaglist.get(j);
                     if (nbttagcompound1.contains("nbt", 10)) {
                         convertCompound(LegacyType.ENTITY, nbttagcompound1, "nbt", sourceVer, targetVer);
                     }
@@ -2617,7 +2616,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
                 nbttaglist = cmp.getList("blocks", 10);
 
                 for (j = 0; j < nbttaglist.size(); ++j) {
-                    nbttagcompound1 = (CompoundNBT) nbttaglist.get(j);
+                    nbttagcompound1 = (net.minecraft.nbt.CompoundTag) nbttaglist.get(j);
                     if (nbttagcompound1.contains("nbt", 10)) {
                         convertCompound(LegacyType.BLOCK_ENTITY, nbttagcompound1, "nbt", sourceVer, targetVer);
                     }
@@ -2630,17 +2629,17 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataInspectorChunks implements DataInspector {
         @Override
-        public CompoundNBT inspect(CompoundNBT cmp, int sourceVer, int targetVer) {
+        public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
             if (cmp.contains("Level", 10)) {
-                CompoundNBT nbttagcompound1 = cmp.getCompound("Level");
-                ListNBT nbttaglist;
+                net.minecraft.nbt.CompoundTag nbttagcompound1 = cmp.getCompound("Level");
+                ListTag nbttaglist;
                 int j;
 
                 if (nbttagcompound1.contains("Entities", 9)) {
                     nbttaglist = nbttagcompound1.getList("Entities", 10);
 
                     for (j = 0; j < nbttaglist.size(); ++j) {
-                        nbttaglist.set(j, convert(LegacyType.ENTITY, (CompoundNBT) nbttaglist.get(j), sourceVer, targetVer));
+                        nbttaglist.set(j, convert(LegacyType.ENTITY, (net.minecraft.nbt.CompoundTag) nbttaglist.get(j), sourceVer, targetVer));
                     }
                 }
 
@@ -2648,7 +2647,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
                     nbttaglist = nbttagcompound1.getList("TileEntities", 10);
 
                     for (j = 0; j < nbttaglist.size(); ++j) {
-                        nbttaglist.set(j, convert(LegacyType.BLOCK_ENTITY, (CompoundNBT) nbttaglist.get(j), sourceVer, targetVer));
+                        nbttaglist.set(j, convert(LegacyType.BLOCK_ENTITY, (net.minecraft.nbt.CompoundTag) nbttaglist.get(j), sourceVer, targetVer));
                     }
                 }
             }
@@ -2659,9 +2658,9 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataInspectorEntityPassengers implements DataInspector {
         @Override
-        public CompoundNBT inspect(CompoundNBT cmp, int sourceVer, int targetVer) {
+        public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
             if (cmp.contains("Passengers", 9)) {
-                ListNBT nbttaglist = cmp.getList("Passengers", 10);
+                ListTag nbttaglist = cmp.getList("Passengers", 10);
 
                 for (int j = 0; j < nbttaglist.size(); ++j) {
                     nbttaglist.set(j, convert(LegacyType.ENTITY, nbttaglist.getCompound(j), sourceVer, targetVer));
@@ -2674,7 +2673,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataInspectorPlayer implements DataInspector {
         @Override
-        public CompoundNBT inspect(CompoundNBT cmp, int sourceVer, int targetVer) {
+        public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
             convertItems(cmp, "Inventory", sourceVer, targetVer);
             convertItems(cmp, "EnderItems", sourceVer, targetVer);
             if (cmp.contains("ShoulderEntityLeft", 10)) {
@@ -2693,15 +2692,15 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
         ResourceLocation entityVillager = getKey("EntityVillager");
 
         @Override
-        public CompoundNBT inspect(CompoundNBT cmp, int sourceVer, int targetVer) {
+        public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
             if (entityVillager.equals(new ResourceLocation(cmp.getString("id"))) && cmp.contains("Offers", 10)) {
-                CompoundNBT nbttagcompound1 = cmp.getCompound("Offers");
+                net.minecraft.nbt.CompoundTag nbttagcompound1 = cmp.getCompound("Offers");
 
                 if (nbttagcompound1.contains("Recipes", 9)) {
-                    ListNBT nbttaglist = nbttagcompound1.getList("Recipes", 10);
+                    ListTag nbttaglist = nbttagcompound1.getList("Recipes", 10);
 
                     for (int j = 0; j < nbttaglist.size(); ++j) {
-                        CompoundNBT nbttagcompound2 = nbttaglist.getCompound(j);
+                        net.minecraft.nbt.CompoundTag nbttagcompound2 = nbttaglist.getCompound(j);
 
                         convertItem(nbttagcompound2, "buy", sourceVer, targetVer);
                         convertItem(nbttagcompound2, "buyB", sourceVer, targetVer);
@@ -2720,7 +2719,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
         ResourceLocation tileEntityMobSpawner = getKey("TileEntityMobSpawner");
 
         @Override
-        public CompoundNBT inspect(CompoundNBT cmp, int sourceVer, int targetVer) {
+        public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
             String s = cmp.getString("id");
             if (entityMinecartMobSpawner.equals(new ResourceLocation(s))) {
                 cmp.putString("id", tileEntityMobSpawner.toString());
@@ -2736,13 +2735,13 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
         ResourceLocation tileEntityMobSpawner = getKey("TileEntityMobSpawner");
 
         @Override
-        public CompoundNBT inspect(CompoundNBT cmp, int sourceVer, int targetVer) {
+        public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
             if (tileEntityMobSpawner.equals(new ResourceLocation(cmp.getString("id")))) {
                 if (cmp.contains("SpawnPotentials", 9)) {
-                    ListNBT nbttaglist = cmp.getList("SpawnPotentials", 10);
+                    ListTag nbttaglist = cmp.getList("SpawnPotentials", 10);
 
                     for (int j = 0; j < nbttaglist.size(); ++j) {
-                        CompoundNBT nbttagcompound1 = nbttaglist.getCompound(j);
+                        net.minecraft.nbt.CompoundTag nbttagcompound1 = nbttaglist.getCompound(j);
 
                         convertCompound(LegacyType.ENTITY, nbttagcompound1, "Entity", sourceVer, targetVer);
                     }
@@ -2759,7 +2758,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
         ResourceLocation tileEntityCommand = getKey("TileEntityCommand");
 
         @Override
-        public CompoundNBT inspect(CompoundNBT cmp, int sourceVer, int targetVer) {
+        public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
             if (tileEntityCommand.equals(new ResourceLocation(cmp.getString("id")))) {
                 cmp.putString("id", "Control");
                 convert(LegacyType.BLOCK_ENTITY, cmp, sourceVer, targetVer);
