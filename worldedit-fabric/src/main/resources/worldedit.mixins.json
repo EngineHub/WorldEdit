@@ -5,6 +5,7 @@
     "mixins": [
         "AccessorClientboundBlockEntityDataPacket",
         "AccessorPrimaryLevelData",
+        "AccessorDerivedLevelData",
         "AccessorServerChunkCache",
         "MixinLevelChunkSetBlockHook",
         "MixinMinecraftServer",
