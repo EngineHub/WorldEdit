@@ -44,6 +44,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import org.apache.logging.log4j.Logger;
+import org.bstats.sponge.Metrics;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
@@ -113,12 +114,14 @@ public class SpongeWorldEdit {
     public SpongeWorldEdit(Logger logger,
                            PluginContainer container,
                            SpongeConfiguration config,
+                           Metrics.Factory metricsFactory,
                            @ConfigDir(sharedRoot = false)
                                Path workingDir) {
         this.logger = logger;
         this.container = container;
         this.config = config;
         this.workingDir = workingDir;
+        metricsFactory.make(BSTATS_PLUGIN_ID);
         inst = this;
     }
 

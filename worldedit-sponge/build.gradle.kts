@@ -22,7 +22,7 @@ val spongeApiVersion = "8.0.0";
 
 sponge {
     apiVersion(spongeApiVersion)
-    license("GPL3")
+    license("GPL-3.0-or-later")
     plugin("worldedit") {
         loader {
             name(PluginLoaders.JAVA_PLAIN)
@@ -50,15 +50,11 @@ sponge {
 dependencies {
     api(project(":worldedit-core"))
     api(project(":worldedit-libs:sponge"))
-    api("org.spongepowered:spongeapi:${spongeApiVersion}") {
-        exclude(group = "org.slf4j", module = "slf4j-api")
-    }
     implementation(platform("org.apache.logging.log4j:log4j-bom:${Versions.LOG4J}") {
         because("Sponge 8 (will?) provides Log4J")
     })
     api("org.apache.logging.log4j:log4j-api")
-    // bStats isn't updated yet :(
-    api("org.bstats:bstats-sponge:2.2.1")
+    api("org.bstats:bstats-sponge:3.0.0")
     testImplementation("org.mockito:mockito-core:${Versions.MOCKITO}")
 }
 
