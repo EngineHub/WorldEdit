@@ -41,7 +41,6 @@ import com.sk89q.worldedit.forge.internal.ForgeWorldNativeAccess;
 import com.sk89q.worldedit.forge.internal.NBTConverter;
 import com.sk89q.worldedit.forge.internal.TileEntityUtils;
 import com.sk89q.worldedit.internal.Constants;
-import com.sk89q.worldedit.internal.util.BiomeMath;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -427,9 +426,7 @@ public class ForgeWorld extends AbstractWorld {
             BlockStateHolder<?> state = ForgeAdapter.adapt(chunk.getBlockState(pos));
             BlockEntity blockEntity = chunk.getBlockEntity(pos);
             if (blockEntity != null) {
-                net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
-                blockEntity.save(tag);
-                state = state.toBaseBlock(NBTConverter.fromNative(tag));
+                state = state.toBaseBlock(NBTConverter.fromNative(blockEntity.saveWithId()));
             }
             extent.setBlock(vec, state.toBaseBlock());
 
