@@ -23,21 +23,15 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
-import com.sk89q.worldedit.util.auth.AuthorizationException;
-import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.adapter.spongeapi.TextAdapter;
-import org.spongepowered.api.command.CommandSource;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import net.kyori.adventure.audience.Audience;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColor;
-import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.io.File;
 import java.util.Locale;
 import java.util.UUID;
-import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -49,15 +43,15 @@ public class SpongeCommandSender implements Actor {
      */
     private static final UUID DEFAULT_ID = UUID.fromString("a233eb4b-4cab-42cd-9fd9-7e7b9a3f74be");
 
-    private final CommandSource sender;
-    private final SpongeWorldEdit plugin;
+    private final Audience sender;
 
-    public SpongeCommandSender(SpongeWorldEdit plugin, CommandSource sender) {
-        checkNotNull(plugin);
+    public SpongeCommandSender(Audience sender) {
         checkNotNull(sender);
-        checkArgument(!(sender instanceof Player), "Cannot wrap a player");
+        checkArgument(
+            !(sender instanceof Player),
+            "Players should be wrapped using the specialized class"
+        );
 
-        this.plugin = plugin;
         this.sender = sender;
     }
 
@@ -68,42 +62,44 @@ public class SpongeCommandSender implements Actor {
 
     @Override
     public String getName() {
-        return sender.getName();
+        return "Console";
     }
 
-    @SuppressWarnings("deprecation")
     @Override
+    @Deprecated
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
-            sender.sendMessage(TextSerializers.LEGACY_FORMATTING_CODE.deserialize(part));
+            sender.sendMessage(net.kyori.adventure.text.Component.text(part));
         }
     }
 
     @Override
+    @Deprecated
     public void print(String msg) {
-        sendColorized(msg, TextColors.LIGHT_PURPLE);
+        for (String part : msg.split("\n")) {
+            print(TextComponent.of(part, TextColor.LIGHT_PURPLE));
+        }
     }
 
     @Override
+    @Deprecated
     public void printDebug(String msg) {
-        sendColorized(msg, TextColors.GRAY);
+        for (String part : msg.split("\n")) {
+            print(TextComponent.of(part, TextColor.GRAY));
+        }
     }
 
     @Override
+    @Deprecated
     public void printError(String msg) {
-        sendColorized(msg, TextColors.RED);
+        for (String part : msg.split("\n")) {
+            print(TextComponent.of(part, TextColor.RED));
+        }
     }
 
     @Override
     public void print(Component component) {
-        TextAdapter.sendMessage(sender, WorldEditText.format(component, getLocale()));
-    }
-
-    @SuppressWarnings("deprecation")
-    private void sendColorized(String msg, TextColor formatting) {
-        for (String part : msg.split("\n")) {
-            sender.sendMessage(Text.of(formatting, TextSerializers.LEGACY_FORMATTING_CODE.deserialize(part)));
-        }
+        sender.sendMessage(SpongeTextAdapter.convert(component, getLocale()));
     }
 
     @Override
@@ -122,7 +118,7 @@ public class SpongeCommandSender implements Actor {
     }
 
     @Override
-    public void checkPermission(String permission) throws AuthorizationException {
+    public void checkPermission(String permission) {
     }
 
     @Override
@@ -152,20 +148,19 @@ public class SpongeCommandSender implements Actor {
     @Override
     public SessionKey getSessionKey() {
         return new SessionKey() {
-            @Nullable
             @Override
             public String getName() {
-                return null;
+                return "Console";
             }
 
             @Override
             public boolean isActive() {
-                return false;
+                return true;
             }
 
             @Override
             public boolean isPersistent() {
-                return false;
+                return true;
             }
 
             @Override
