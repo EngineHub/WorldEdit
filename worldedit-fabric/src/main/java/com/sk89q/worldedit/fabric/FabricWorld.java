@@ -38,6 +38,7 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.fabric.internal.ExtendedMinecraftServer;
 import com.sk89q.worldedit.fabric.internal.FabricWorldNativeAccess;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
+import com.sk89q.worldedit.fabric.mixin.AccessorDerivedLevelData;
 import com.sk89q.worldedit.fabric.mixin.AccessorPrimaryLevelData;
 import com.sk89q.worldedit.fabric.mixin.AccessorServerChunkCache;
 import com.sk89q.worldedit.internal.Constants;
@@ -316,8 +317,12 @@ public class FabricWorld extends AbstractWorld {
         LevelStorageSource levelStorage = LevelStorageSource.createDefault(tempDir);
         try (LevelStorageSource.LevelStorageAccess session = levelStorage.createAccess("WorldEditTempGen")) {
             ServerLevel originalWorld = (ServerLevel) getWorld();
-            AccessorPrimaryLevelData levelProperties = (AccessorPrimaryLevelData)
-                originalWorld.getLevelData();
+            AccessorPrimaryLevelData levelProperties;
+            if (originalWorld.getLevelData() instanceof AccessorDerivedLevelData derivedLevelData) {
+                levelProperties = (AccessorPrimaryLevelData) derivedLevelData.getWrapped();
+            } else {
+                levelProperties = (AccessorPrimaryLevelData) originalWorld.getLevelData();
+            }
             WorldGenSettings originalOpts = levelProperties.worldGenSettings();
 
             long seed = options.getSeed().orElse(originalWorld.getSeed());
