@@ -20,18 +20,17 @@
 package com.sk89q.worldedit.sponge;
 
 import com.sk89q.worldedit.command.util.PermissionCondition;
+import com.sk89q.worldedit.sponge.internal.LocaleResolver;
+import net.kyori.adventure.text.Component;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.enginehub.piston.Command;
-import org.spongepowered.api.command.CommandCallable;
-import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.text.Text;
+import org.spongepowered.api.command.CommandCause;
 
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.sk89q.worldedit.sponge.SpongeTextAdapter.convert;
-
-public abstract class CommandAdapter implements CommandCallable {
+public abstract class CommandAdapter implements org.spongepowered.api.command.Command.Raw {
     private final Command command;
 
     protected CommandAdapter(Command command) {
@@ -39,12 +38,18 @@ public abstract class CommandAdapter implements CommandCallable {
     }
 
     @Override
-    public boolean testPermission(CommandSource source) {
+    public boolean canExecute(CommandCause cause) {
         Set<String> permissions = command.getCondition().as(PermissionCondition.class)
             .map(PermissionCondition::getPermissions)
             .orElseGet(Collections::emptySet);
+
+        // Allow commands without permission nodes to always execute.
+        if (permissions.isEmpty()) {
+            return true;
+        }
+
         for (String perm : permissions) {
-            if (source.hasPermission(perm)) {
+            if (cause.hasPermission(perm)) {
                 return true;
             }
         }
@@ -52,19 +57,25 @@ public abstract class CommandAdapter implements CommandCallable {
     }
 
     @Override
-    public Optional<Text> getShortDescription(CommandSource source) {
+    public Optional<Component> shortDescription(CommandCause cause) {
         return Optional.of(command.getDescription())
-            .map(desc -> SpongeTextAdapter.convert(desc, source.getLocale()));
+            .map(desc -> SpongeTextAdapter.convert(desc, LocaleResolver.resolveLocale(cause.audience())));
     }
 
     @Override
-    public Optional<Text> getHelp(CommandSource source) {
+    public Optional<Component> extendedDescription(CommandCause cause) {
+        return command.getFooter()
+            .map(footer -> SpongeTextAdapter.convert(footer, LocaleResolver.resolveLocale(cause.audience())));
+    }
+
+    @Override
+    public Optional<Component> help(@NonNull CommandCause cause) {
         return Optional.of(command.getFullHelp())
-            .map(help -> SpongeTextAdapter.convert(help, source.getLocale()));
+            .map(help -> SpongeTextAdapter.convert(help, LocaleResolver.resolveLocale(cause.audience())));
     }
 
     @Override
-    public Text getUsage(CommandSource source) {
-        return convert(command.getUsage(), source.getLocale());
+    public Component usage(CommandCause cause) {
+        return SpongeTextAdapter.convert(command.getUsage(), LocaleResolver.resolveLocale(cause.audience()));
     }
 }

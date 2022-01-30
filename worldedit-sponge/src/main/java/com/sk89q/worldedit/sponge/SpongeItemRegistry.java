@@ -19,27 +19,29 @@
 
 package com.sk89q.worldedit.sponge;
 
-import com.sk89q.worldedit.util.formatting.WorldEditText;
+import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.world.item.ItemType;
+import com.sk89q.worldedit.world.registry.BundledItemRegistry;
+import net.minecraft.world.item.ItemStack;
+import org.spongepowered.api.ResourceKey;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.registry.RegistryTypes;
 
-import java.util.Locale;
+public class SpongeItemRegistry extends BundledItemRegistry {
 
-public class SpongeTextAdapter {
-
-    public static net.kyori.adventure.text.Component convert(Component component, Locale locale) {
-        component = WorldEditText.format(component, locale);
-        return net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson()
-            .deserialize(GsonComponentSerializer.INSTANCE.serialize(component));
+    @Override
+    public Component getRichName(ItemType itemType) {
+        return SpongeTextAdapter.convert(Sponge.game().registry(RegistryTypes.ITEM_TYPE)
+            .value(ResourceKey.resolve(itemType.getId())).asComponent());
     }
 
-    public static Component convert(net.kyori.adventure.text.Component component) {
-        return GsonComponentSerializer.INSTANCE.deserialize(
-            net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson()
-                .serialize(component)
+    @Override
+    public Component getRichName(BaseItemStack itemStack) {
+        return TranslatableComponent.of(
+            ((ItemStack) (Object) SpongeAdapter.adapt(itemStack)).getDescriptionId()
         );
     }
 
-    private SpongeTextAdapter() {
-    }
 }

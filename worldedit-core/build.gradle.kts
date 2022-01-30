@@ -39,7 +39,7 @@ dependencies {
     "implementation"("org.mozilla:rhino-runtime:1.7.13")
     "implementation"("org.yaml:snakeyaml:1.26")
     "implementation"("com.google.guava:guava")
-    "implementation"("com.google.code.findbugs:jsr305:1.3.9")
+    "compileOnlyApi"("com.google.code.findbugs:jsr305:1.3.9")
     "implementation"("com.google.code.gson:gson")
 
     "implementation"("org.apache.logging.log4j:log4j-api:${Versions.LOG4J}") {

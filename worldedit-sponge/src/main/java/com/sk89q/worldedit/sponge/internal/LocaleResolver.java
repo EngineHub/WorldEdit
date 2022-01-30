@@ -17,25 +17,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.sponge.adapter;
+package com.sk89q.worldedit.sponge.internal;
 
-/**
- * Thrown when no adapter can be found.
- */
-public class AdapterLoadException extends Exception {
+import com.sk89q.worldedit.WorldEdit;
+import net.kyori.adventure.audience.Audience;
+import org.spongepowered.api.util.locale.LocaleSource;
 
-    public AdapterLoadException() {
-    }
+import java.util.Locale;
 
-    public AdapterLoadException(String message) {
-        super(message);
-    }
-
-    public AdapterLoadException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public AdapterLoadException(Throwable cause) {
-        super(cause);
+public class LocaleResolver {
+    public static Locale resolveLocale(Audience audience) {
+        if (audience instanceof LocaleSource) {
+            return ((LocaleSource) audience).locale();
+        }
+        return WorldEdit.getInstance().getConfiguration().defaultLocale;
     }
 }
