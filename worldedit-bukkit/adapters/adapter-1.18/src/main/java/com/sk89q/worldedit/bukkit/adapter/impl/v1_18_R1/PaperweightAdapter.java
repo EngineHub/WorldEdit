@@ -738,9 +738,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             }
             extent.setBlock(vec, state.toBaseBlock());
             if (options.shouldRegenBiomes()) {
-                PalettedContainer<Biome> biomeIndex = chunk.getSection(chunk.getSectionIndex(vec.getBlockY()))
-                    .getBiomes();
-                Biome origBiome = biomeIndex.get(vec.getBlockX(), vec.getBlockY(), vec.getBlockZ());
+                Biome origBiome = chunk.getNoiseBiome(vec.getX(), vec.getY(), vec.getZ());
                 BiomeType adaptedBiome = adapt(serverWorld, origBiome);
                 if (adaptedBiome != null) {
                     extent.setBiome(vec, adaptedBiome);
