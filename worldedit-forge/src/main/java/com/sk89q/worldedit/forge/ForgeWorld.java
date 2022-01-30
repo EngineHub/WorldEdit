@@ -426,7 +426,7 @@ public class ForgeWorld extends AbstractWorld {
             BlockStateHolder<?> state = ForgeAdapter.adapt(chunk.getBlockState(pos));
             BlockEntity blockEntity = chunk.getBlockEntity(pos);
             if (blockEntity != null) {
-                state = state.toBaseBlock(NBTConverter.fromNative(blockEntity.saveWithId()));
+                state = state.toBaseBlock(NBTConverter.fromNative(blockEntity.saveWithFullMetadata()));
             }
             extent.setBlock(vec, state.toBaseBlock());
 
