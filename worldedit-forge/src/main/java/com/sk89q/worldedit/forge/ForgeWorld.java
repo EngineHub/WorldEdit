@@ -568,7 +568,7 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public int getMaxY() {
-        return getWorld().getHeight() - 1;
+        return getWorld().getMaxBuildHeight() - 1;
     }
 
     @Override
