@@ -444,7 +444,7 @@ public class RegionCommands {
         desc = "Deforms a selected region with an expression",
         descFooter = "The expression is executed for each block and is expected\n"
             + "to modify the variables x, y and z to point to a new block\n"
-            + "to fetch. See also https://tinyurl.com/weexpr"
+            + "to fetch. For details, see https://ehub.to/we/expr"
     )
     @CommandPermissions("worldedit.region.deform")
     @Logging(ALL)
