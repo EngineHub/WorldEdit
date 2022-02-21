@@ -102,32 +102,26 @@ public interface RegionSelector {
     void explainRegionAdjust(Actor actor, LocalSession session);
 
     /**
-     * Get the primary position.
+     * {@return the primary position}
      *
-     * @return the primary position
      * @throws IncompleteRegionException thrown if a region has not been fully defined
      */
     BlockVector3 getPrimaryPosition() throws IncompleteRegionException;
 
     /**
-     * Get the selection.
+     * {@return the region, if defined}
      *
-     * @return the created region
      * @throws IncompleteRegionException thrown if a region has not been fully defined
      */
     Region getRegion() throws IncompleteRegionException;
 
     /**
-     * Get the region even if it's not fully defined.
-     *
-     * @return an incomplete region object that is incomplete
+     * {@return the region, even if it is not fully defined}
      */
     Region getIncompleteRegion();
 
     /**
-     * Returns whether the region has been fully defined.
-     *
-     * @return true if a selection is available
+     * {@return whether the region has been fully defined}
      */
     boolean isDefined();
 
@@ -187,9 +181,7 @@ public interface RegionSelector {
     }
 
     /**
-     * Get lines of information about the selection.
-     *
-     * @return a list of lines describing the region.
+     * {@return a list of lines describing the region}
      */
     default List<Component> getSelectionInfoLines() {
         return getInformationLines().stream()
