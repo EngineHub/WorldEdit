@@ -157,6 +157,8 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         ClassSourceValidator verifier = new ClassSourceValidator(this);
         verifier.reportMismatches(ImmutableList.of(World.class, CommandManager.class, EditSession.class, Actor.class));
 
+        config.load(); // Load config before we say we've loaded platforms as it is used in listeners of the event
+
         WorldEdit.getInstance().getEventBus().post(new PlatformsRegisteredEvent());
 
         PermissionsResolverManager.initialize(this); // Setup permission resolver
@@ -194,7 +196,6 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
     private void setupPreWorldData() {
         loadAdapter();
-        config.load();
         WorldEdit.getInstance().loadMappings();
     }
 
