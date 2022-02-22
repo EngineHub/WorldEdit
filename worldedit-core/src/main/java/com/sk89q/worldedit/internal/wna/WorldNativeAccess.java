@@ -146,6 +146,8 @@ public interface WorldNativeAccess<NC, NBS, NP> {
 
     void notifyNeighbors(NP pos, NBS oldState, NBS newState);
 
+    default void updateBlock(NP pos, NBS oldState, NBS newState) {}
+
     void updateNeighbors(NP pos, NBS oldState, NBS newState, int recursionLimit);
 
     void onBlockStateChange(NP pos, NBS oldState, NBS newState);
@@ -184,6 +186,10 @@ public interface WorldNativeAccess<NC, NBS, NP> {
 
         // Seems used only for PoI updates
         onBlockStateChange(pos, oldState, blockState1);
+
+        if (sideEffectSet.shouldApply(SideEffect.UPDATE)) {
+            updateBlock(pos, oldState, newState);
+        }
     }
 
 }
