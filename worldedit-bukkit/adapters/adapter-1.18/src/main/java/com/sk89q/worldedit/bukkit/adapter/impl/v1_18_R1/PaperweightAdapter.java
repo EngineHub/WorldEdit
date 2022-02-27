@@ -176,6 +176,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     private final Method getChunkFutureMethod;
     private final Field chunkProviderExecutorField;
     private final Watchdog watchdog;
+    private final DataFixer dataFixerUpper;
 
     // ------------------------------------------------------------------------
     // Code that may break between versions of Minecraft
@@ -204,7 +205,15 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         );
         chunkProviderExecutorField.setAccessible(true);
 
-        new PaperweightDataConverters(CraftMagicNumbers.INSTANCE.getDataVersion(), this).build(ForkJoinPool.commonPool());
+        DataFixer tmpDFU;
+        try {
+            Class.forName("ca.spottedleaf.dataconverter.minecraft.MCDataConverter");
+            tmpDFU = new PaperDataConverter(dataVersion, this);
+        } catch (ClassNotFoundException ex) {
+            new PaperweightDataConverters(dataVersion, this).build(ForkJoinPool.commonPool());
+            tmpDFU = PaperweightDataConverters.INSTANCE;
+        }
+        this.dataFixerUpper = tmpDFU;
 
         Watchdog watchdog;
         try {
@@ -228,7 +237,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
     @Override
     public DataFixer getDataFixer() {
-        return PaperweightDataConverters.INSTANCE;
+        return dataFixerUpper;
     }
 
     /**
