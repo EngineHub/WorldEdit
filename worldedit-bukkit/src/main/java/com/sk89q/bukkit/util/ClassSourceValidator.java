@@ -23,7 +23,9 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.PluginClassLoader;
 
 import java.security.CodeSource;
 import java.util.HashMap;
@@ -45,7 +47,7 @@ public class ClassSourceValidator {
 
     private final Plugin plugin;
     @Nullable
-    private final CodeSource expectedCodeSource;
+    private final ClassLoader expectedClassLoader;
 
     /**
      * Create a new instance.
@@ -55,7 +57,7 @@ public class ClassSourceValidator {
     public ClassSourceValidator(Plugin plugin) {
         checkNotNull(plugin, "plugin");
         this.plugin = plugin;
-        this.expectedCodeSource = plugin.getClass().getProtectionDomain().getCodeSource();
+        this.expectedClassLoader = plugin.getClass().getClassLoader();
     }
 
     /**
@@ -64,19 +66,29 @@ public class ClassSourceValidator {
      * @param classes A list of classes to check
      * @return The results
      */
-    public Map<Class<?>, CodeSource> findMismatches(List<Class<?>> classes) {
+    public Map<Class<?>, Plugin> findMismatches(List<Class<?>> classes) {
         checkNotNull(classes, "classes");
 
-        if (expectedCodeSource == null) {
+        if (expectedClassLoader == null) {
             return ImmutableMap.of();
         }
 
-        Map<Class<?>, CodeSource> mismatches = new HashMap<>();
+        Map<Class<?>, Plugin> mismatches = new HashMap<>();
 
-        for (Class<?> testClass : classes) {
-            CodeSource testSource = testClass.getProtectionDomain().getCodeSource();
-            if (!expectedCodeSource.equals(testSource)) {
-                mismatches.put(testClass, testSource);
+        for (Plugin target : Bukkit.getPluginManager().getPlugins()) {
+            if (target == plugin) {
+                continue;
+            }
+            ClassLoader targetLoader = target.getClass().getClassLoader();
+            for (Class<?> testClass : classes) {
+                ClassLoader testSource = null;
+                try {
+                    testSource = targetLoader.loadClass(testClass.getName()).getClassLoader();
+                } catch (ClassNotFoundException ignored) {
+                }
+                if (testSource != null && testSource != expectedClassLoader) {
+                    mismatches.putIfAbsent(testClass, testSource == targetLoader ? target : null);
+                }
             }
         }
 
@@ -94,7 +106,7 @@ public class ClassSourceValidator {
         if (Boolean.getBoolean("enginehub.disable.class.source.validation")) {
             return;
         }
-        Map<Class<?>, CodeSource> mismatches = findMismatches(classes);
+        Map<Class<?>, Plugin> mismatches = findMismatches(classes);
 
         if (mismatches.isEmpty()) {
             return;
@@ -117,9 +129,11 @@ public class ClassSourceValidator {
         builder.append("**\n");
         builder.append("** Here are some files that have been overridden:\n");
         builder.append("** \n");
-        for (Map.Entry<Class<?>, CodeSource> entry : mismatches.entrySet()) {
-            CodeSource codeSource = entry.getValue();
-            String url = codeSource != null ? codeSource.getLocation().toExternalForm() : "(unknown)";
+        for (Map.Entry<Class<?>, Plugin> entry : mismatches.entrySet()) {
+            Plugin badPlugin = entry.getValue();
+            String url = badPlugin == null
+                    ? "(unknown)"
+                    : badPlugin.getName() + " (" + badPlugin.getClass().getProtectionDomain().getCodeSource().getLocation() + ")";
             builder.append("** '").append(entry.getKey().getSimpleName()).append("' came from '").append(url).append("'\n");
         }
         builder.append("**\n");
