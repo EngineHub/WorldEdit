@@ -27,8 +27,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Futures;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.Dynamic;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEditException;
@@ -65,10 +63,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.data.worldgen.features.EndFeatures;
 import net.minecraft.data.worldgen.features.TreeFeatures;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.RegistryReadOps;
-import net.minecraft.resources.RegistryWriteOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerChunkCache;
@@ -104,11 +98,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.OptionalLong;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -318,7 +312,7 @@ public class ForgeWorld extends AbstractWorld {
 
             long seed = options.getSeed().orElse(originalWorld.getSeed());
             WorldGenSettings newOpts = options.getSeed().isPresent()
-                ? replaceSeed(originalWorld, seed, originalOpts)
+                ? originalOpts.withSeed(levelProperties.isHardcore(), OptionalLong.of(seed))
                 : originalOpts;
 
             levelProperties.worldGenSettings = newOpts;
@@ -351,49 +345,6 @@ public class ForgeWorld extends AbstractWorld {
         } finally {
             SafeFiles.tryHardToDeleteDir(tempDir);
         }
-    }
-
-    private WorldGenSettings replaceSeed(ServerLevel originalWorld, long seed, WorldGenSettings originalOpts) {
-        RegistryWriteOps<Tag> nbtReadRegOps = RegistryWriteOps.create(
-            NbtOps.INSTANCE,
-            originalWorld.getServer().registryAccess()
-        );
-        RegistryReadOps<Tag> nbtRegOps = RegistryReadOps.createAndLoad(
-            NbtOps.INSTANCE,
-            originalWorld.getServer().getResourceManager(),
-            originalWorld.getServer().registryAccess()
-        );
-        Codec<WorldGenSettings> dimCodec = WorldGenSettings.CODEC;
-        return dimCodec
-            .encodeStart(nbtReadRegOps, originalOpts)
-            .flatMap(tag ->
-                dimCodec.parse(
-                    recursivelySetSeed(new Dynamic<>(nbtRegOps, tag), seed, new HashSet<>())
-                )
-            )
-            .get()
-            .map(
-                l -> l,
-                error -> {
-                    throw new IllegalStateException("Unable to map GeneratorOptions: " + error.message());
-                }
-            );
-    }
-
-    @SuppressWarnings("unchecked")
-    private Dynamic<Tag> recursivelySetSeed(Dynamic<Tag> dynamic, long seed, Set<Dynamic<Tag>> seen) {
-        if (!seen.add(dynamic)) {
-            return dynamic;
-        }
-        return dynamic.updateMapValues(pair -> {
-            if (pair.getFirst().asString("").equals("seed")) {
-                return pair.mapSecond(v -> v.createLong(seed));
-            }
-            if (pair.getSecond().getValue() instanceof net.minecraft.nbt.CompoundTag) {
-                return pair.mapSecond(v -> recursivelySetSeed((Dynamic<Tag>) v, seed, seen));
-            }
-            return pair;
-        });
     }
 
     private void regenForWorld(Region region, Extent extent, ServerLevel serverWorld,

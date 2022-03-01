@@ -60,8 +60,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -83,7 +82,6 @@ import java.util.Set;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.fabric.FabricAdapter.adaptPlayer;
 import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAME;
-import static java.util.stream.Collectors.toList;
 
 /**
  * The Fabric implementation of WorldEdit.
@@ -163,7 +161,7 @@ public class FabricWorldEdit implements ModInitializer {
         }
 
         List<Command> commands = manager.getPlatformCommandManager().getCommandManager()
-            .getAllCommands().collect(toList());
+            .getAllCommands().toList();
         for (Command command : commands) {
             CommandWrapper.register(dispatcher, command);
             Set<String> perms = command.getCondition().as(PermissionCondition.class)
@@ -212,16 +210,16 @@ public class FabricWorldEdit implements ModInitializer {
             }
         }
         // Tags
-        for (ResourceLocation name : BlockTags.getAllTags().getAvailableTags()) {
+        Registry.BLOCK.getTagNames().map(TagKey::location).forEach(name -> {
             if (BlockCategory.REGISTRY.get(name.toString()) == null) {
                 BlockCategory.REGISTRY.register(name.toString(), new BlockCategory(name.toString()));
             }
-        }
-        for (ResourceLocation name : ItemTags.getAllTags().getAvailableTags()) {
+        });
+        Registry.ITEM.getTagNames().map(TagKey::location).forEach(name -> {
             if (ItemCategory.REGISTRY.get(name.toString()) == null) {
                 ItemCategory.REGISTRY.register(name.toString(), new ItemCategory(name.toString()));
             }
-        }
+        });
     }
 
     private void onStartingServer(MinecraftServer minecraftServer) {
