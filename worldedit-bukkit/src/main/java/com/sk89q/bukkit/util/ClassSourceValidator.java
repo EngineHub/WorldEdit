@@ -27,7 +27,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.PluginClassLoader;
 
-import java.security.CodeSource;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -44,6 +45,19 @@ public class ClassSourceValidator {
 
     private static final Logger LOGGER = LogManagerCompat.getLogger();
     private static final String SEPARATOR_LINE = Strings.repeat("*", 46);
+    private static final Method loadClass;
+
+    static {
+        Method tmp;
+        try {
+            tmp = PluginClassLoader.class.getDeclaredMethod("loadClass0",
+                    String.class, boolean.class, boolean.class, boolean.class);
+            tmp.setAccessible(true);
+        } catch (NoSuchMethodException e) {
+            tmp = null;
+        }
+        loadClass = tmp;
+    }
 
     private final Plugin plugin;
     @Nullable
@@ -69,7 +83,7 @@ public class ClassSourceValidator {
     public Map<Class<?>, Plugin> findMismatches(List<Class<?>> classes) {
         checkNotNull(classes, "classes");
 
-        if (expectedClassLoader == null) {
+        if (expectedClassLoader == null || loadClass == null) {
             return ImmutableMap.of();
         }
 
@@ -80,14 +94,18 @@ public class ClassSourceValidator {
                 continue;
             }
             ClassLoader targetLoader = target.getClass().getClassLoader();
+            if (!(targetLoader instanceof PluginClassLoader)) {
+                continue;
+            }
             for (Class<?> testClass : classes) {
-                ClassLoader testSource = null;
+                Class<?> targetClass;
                 try {
-                    testSource = targetLoader.loadClass(testClass.getName()).getClassLoader();
-                } catch (ClassNotFoundException ignored) {
+                    targetClass = (Class<?>) loadClass.invoke(targetLoader, testClass.getName(), false, false, false);
+                } catch (IllegalAccessException | InvocationTargetException ignored) {
+                    continue;
                 }
-                if (testSource != null && testSource != expectedClassLoader) {
-                    mismatches.putIfAbsent(testClass, testSource == targetLoader ? target : null);
+                if (targetClass.getClassLoader() != expectedClassLoader) {
+                    mismatches.putIfAbsent(testClass, targetClass.getClassLoader() == targetLoader ? target : null);
                 }
             }
         }
