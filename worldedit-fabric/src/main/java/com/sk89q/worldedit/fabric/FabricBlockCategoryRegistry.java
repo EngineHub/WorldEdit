@@ -21,22 +21,22 @@ package com.sk89q.worldedit.fabric;
 
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 
-import java.util.Collections;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class FabricBlockCategoryRegistry implements BlockCategoryRegistry {
     @Override
     public Set<BlockType> getCategorisedByName(String category) {
-        return Optional.ofNullable(BlockTags.getAllTags().getTag(new ResourceLocation(category)))
-            .map(Tag::getValues)
-            .orElse(Collections.emptyList())
+        return Registry.BLOCK.getTag(TagKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(category)))
             .stream()
+            .flatMap(HolderSet.Named::stream)
+            .map(Holder::value)
             .map(FabricAdapter::adapt)
             .collect(Collectors.toSet());
     }

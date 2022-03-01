@@ -13,14 +13,14 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Set up JDK
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v3
       with:
         java-version: 17
         cache: 'gradle'
         distribution: 'temurin'
     - name: Build with Gradle
       run: ./gradlew build -s
-    - uses: actions/upload-artifact@v2.2.4
+    - uses: actions/upload-artifact@v2
       name: Archive Reports
       if: always()
       with:
