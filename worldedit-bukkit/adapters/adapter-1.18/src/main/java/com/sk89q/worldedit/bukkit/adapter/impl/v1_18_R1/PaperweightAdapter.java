@@ -27,8 +27,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Futures;
 import com.mojang.datafixers.util.Either;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.Lifecycle;
 import com.sk89q.jnbt.ByteArrayTag;
 import com.sk89q.jnbt.ByteTag;
@@ -83,11 +81,8 @@ import com.sk89q.worldedit.world.item.ItemType;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.network.protocol.game.ClientboundEntityEventPacket;
-import net.minecraft.resources.RegistryReadOps;
-import net.minecraft.resources.RegistryWriteOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -118,7 +113,6 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.WorldGenSettings;
 import net.minecraft.world.level.storage.LevelStorageSource;
@@ -150,12 +144,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.OptionalInt;
+import java.util.OptionalLong;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -602,7 +596,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
             long seed = options.getSeed().orElse(originalWorld.getSeed());
             WorldGenSettings newOpts = options.getSeed().isPresent()
-                ? replaceSeed(originalWorld, seed, originalOpts)
+                ? originalOpts.withSeed(levelProperties.isHardcore(), OptionalLong.of(seed))
                 : originalOpts;
 
             LevelSettings newWorldSettings = new LevelSettings(
@@ -645,49 +639,6 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             }
             SafeFiles.tryHardToDeleteDir(tempDir);
         }
-    }
-
-    private WorldGenSettings replaceSeed(ServerLevel originalWorld, long seed, WorldGenSettings originalOpts) {
-        RegistryWriteOps<net.minecraft.nbt.Tag> nbtReadRegOps = RegistryWriteOps.create(
-            NbtOps.INSTANCE,
-            originalWorld.getServer().registryAccess()
-        );
-        RegistryReadOps<net.minecraft.nbt.Tag> nbtRegOps = RegistryReadOps.createAndLoad(
-            NbtOps.INSTANCE,
-            originalWorld.getServer().getResourceManager(),
-            originalWorld.getServer().registryAccess()
-        );
-        Codec<WorldGenSettings> dimCodec = WorldGenSettings.CODEC;
-        return dimCodec
-            .encodeStart(nbtReadRegOps, originalOpts)
-            .flatMap(tag ->
-                dimCodec.parse(
-                    recursivelySetSeed(new Dynamic<>(nbtRegOps, tag), seed, new HashSet<>())
-                )
-            )
-            .get()
-            .map(
-                l -> l,
-                error -> {
-                    throw new IllegalStateException("Unable to map GeneratorOptions: " + error.message());
-                }
-            );
-    }
-
-    @SuppressWarnings("unchecked")
-    private Dynamic<net.minecraft.nbt.Tag> recursivelySetSeed(Dynamic<net.minecraft.nbt.Tag> dynamic, long seed, Set<Dynamic<net.minecraft.nbt.Tag>> seen) {
-        if (!seen.add(dynamic)) {
-            return dynamic;
-        }
-        return dynamic.updateMapValues(pair -> {
-            if (pair.getFirst().asString("").equals("seed")) {
-                return pair.mapSecond(v -> v.createLong(seed));
-            }
-            if (pair.getSecond().getValue() instanceof net.minecraft.nbt.CompoundTag) {
-                return pair.mapSecond(v -> recursivelySetSeed((Dynamic<net.minecraft.nbt.Tag>) v, seed, seen));
-            }
-            return pair;
-        });
     }
 
     private BiomeType adapt(ServerLevel serverWorld, Biome origBiome) {
