@@ -21,20 +21,25 @@ package com.sk89q.worldedit.forge;
 
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.ItemCategoryRegistry;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 
-import java.util.Collections;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ForgeItemCategoryRegistry implements ItemCategoryRegistry {
+    // TODO clean this up once Forge adds a proper API for this
+    @SuppressWarnings("deprecation")
     @Override
     public Set<ItemType> getCategorisedByName(String category) {
-        return Optional.ofNullable(ItemTags.getAllTags().getTag(new ResourceLocation(category)))
-            .map(Tag::getValues).orElse(Collections.emptyList())
-            .stream().map(ForgeAdapter::adapt).collect(Collectors.toSet());
+        return Registry.ITEM.getTag(TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(category)))
+            .stream()
+            .flatMap(HolderSet.Named::stream)
+            .map(Holder::value)
+            .map(ForgeAdapter::adapt)
+            .collect(Collectors.toSet());
     }
 }

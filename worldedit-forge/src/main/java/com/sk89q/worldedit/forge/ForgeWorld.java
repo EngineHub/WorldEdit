@@ -23,9 +23,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.collect.Streams;
 import com.google.common.util.concurrent.Futures;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.EditSession;
@@ -60,6 +59,7 @@ import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.data.worldgen.features.EndFeatures;
 import net.minecraft.data.worldgen.features.TreeFeatures;
@@ -211,7 +211,9 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     private BiomeType getBiomeInChunk(BlockVector3 position, ChunkAccess chunk) {
-        return ForgeAdapter.adapt(chunk.getNoiseBiome(position.getX() >> 2, position.getY() >> 2, position.getZ() >> 2));
+        return ForgeAdapter.adapt(
+            chunk.getNoiseBiome(position.getX() >> 2, position.getY() >> 2, position.getZ() >> 2).value()
+        );
     }
 
     @Override
@@ -220,10 +222,12 @@ public class ForgeWorld extends AbstractWorld {
         checkNotNull(biome);
 
         LevelChunk chunk = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4);
-        PalettedContainer<Biome> biomes = chunk.getSection(chunk.getSectionIndex(position.getY())).getBiomes();
+        PalettedContainer<Holder<Biome>> biomes = chunk.getSection(chunk.getSectionIndex(position.getY())).getBiomes();
         biomes.getAndSetUnchecked(
             position.getX() & 3, position.getY() & 3, position.getZ() & 3,
-            ForgeAdapter.adapt(biome)
+            getWorld().registryAccess().registry(Registry.BIOME_REGISTRY)
+                .orElseThrow()
+                .getHolderOrThrow(ResourceKey.create(Registry.BIOME_REGISTRY, new ResourceLocation(biome.getId())))
         );
         chunk.setUnsaved(true);
         return true;
@@ -323,7 +327,7 @@ public class ForgeWorld extends AbstractWorld {
                 originalWorld.getServer(), Util.backgroundExecutor(), session,
                 ((ServerLevelData) originalWorld.getLevelData()),
                 worldRegKey,
-                originalWorld.dimensionType(),
+                originalWorld.dimensionTypeRegistration(),
                 new WorldEditGenListener(),
                 dimGenOpts.generator(),
                 originalWorld.isDebug(),
@@ -401,7 +405,7 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Nullable
-    private static ConfiguredFeature<?, ?> createTreeFeatureGenerator(TreeType type) {
+    private static Holder<? extends ConfiguredFeature<?, ?>> createTreeFeatureGenerator(TreeType type) {
         return switch (type) {
             case TREE -> TreeFeatures.OAK;
             case BIG_TREE -> TreeFeatures.FANCY_OAK;
@@ -429,7 +433,9 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public boolean generateTree(TreeType type, EditSession editSession, BlockVector3 position) {
-        ConfiguredFeature<?, ?> generator = createTreeFeatureGenerator(type);
+        ConfiguredFeature<?, ?> generator = Optional.ofNullable(createTreeFeatureGenerator(type))
+            .map(Holder::value)
+            .orElse(null);
         ServerLevel world = getWorld();
         ServerChunkCache chunkManager = world.getChunkSource();
         if (type == TreeType.CHORUS_PLANT) {
@@ -562,8 +568,7 @@ public class ForgeWorld extends AbstractWorld {
     public boolean equals(Object o) {
         if (o == null) {
             return false;
-        } else if ((o instanceof ForgeWorld)) {
-            ForgeWorld other = ((ForgeWorld) o);
+        } else if ((o instanceof ForgeWorld other)) {
             Level otherWorld = other.worldRef.get();
             Level thisWorld = worldRef.get();
             return otherWorld != null && otherWorld.equals(thisWorld);
@@ -586,19 +591,15 @@ public class ForgeWorld extends AbstractWorld {
             box,
             e -> region.contains(ForgeAdapter.adapt(e.blockPosition()))
         );
-        return ImmutableList.copyOf(Lists.transform(
-            nmsEntities,
-            ForgeEntity::new
-        ));
+        return nmsEntities.stream().map(ForgeEntity::new).collect(ImmutableList.toImmutableList());
     }
 
     @Override
     public List<? extends Entity> getEntities() {
         final ServerLevel world = getWorld();
-        return ImmutableList.copyOf(Iterables.transform(
-            world.getAllEntities(),
-            ForgeEntity::new
-        ));
+        return Streams.stream(world.getAllEntities())
+            .map(ForgeEntity::new)
+            .collect(ImmutableList.toImmutableList());
     }
 
     @Nullable
@@ -606,7 +607,7 @@ public class ForgeWorld extends AbstractWorld {
     public Entity createEntity(Location location, BaseEntity entity) {
         ServerLevel world = getWorld();
         final Optional<EntityType<?>> entityType = EntityType.byString(entity.getType().getId());
-        if (!entityType.isPresent()) {
+        if (entityType.isEmpty()) {
             return null;
         }
         net.minecraft.world.entity.Entity createdEntity = entityType.get().create(world);
