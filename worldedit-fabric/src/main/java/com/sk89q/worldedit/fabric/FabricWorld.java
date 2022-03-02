@@ -231,7 +231,9 @@ public class FabricWorld extends AbstractWorld {
         PalettedContainer<Holder<Biome>> biomeArray = chunk.getSection(chunk.getSectionIndex(position.getY())).getBiomes();
         biomeArray.getAndSetUnchecked(
             position.getX() & 3, position.getY() & 3, position.getZ() & 3,
-            Holder.direct(FabricAdapter.adapt(biome))
+            getWorld().registryAccess().registry(Registry.BIOME_REGISTRY)
+                .orElseThrow()
+                .getHolderOrThrow(ResourceKey.create(Registry.BIOME_REGISTRY, new ResourceLocation(biome.getId())))
         );
         chunk.setUnsaved(true);
         return true;
