@@ -21,19 +21,17 @@ package com.sk89q.bukkit.util;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
-import com.sk89q.worldedit.internal.util.LogManagerCompat;
-import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.PluginClassLoader;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -43,7 +41,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ClassSourceValidator {
 
-    private static final Logger LOGGER = LogManagerCompat.getLogger();
     private static final String SEPARATOR_LINE = Strings.repeat("*", 46);
     private static final Method loadClass;
 
@@ -72,6 +69,9 @@ public class ClassSourceValidator {
         checkNotNull(plugin, "plugin");
         this.plugin = plugin;
         this.expectedClassLoader = plugin.getClass().getClassLoader();
+        if (loadClass == null) {
+            plugin.getLogger().info("Bukkit PluginClassLoader seems to have changed. Class source validation will be skipped.");
+        }
     }
 
     /**
@@ -158,6 +158,6 @@ public class ClassSourceValidator {
         builder.append("** Please report this to the plugins' developers.\n");
         builder.append(SEPARATOR_LINE).append("\n");
 
-        LOGGER.error(builder.toString());
+        plugin.getLogger().severe(builder.toString());
     }
 }
