@@ -97,6 +97,10 @@ public interface WorldNativeAccess<NC, NBS, NP> {
         NBS oldData = toNative(previousType);
         NBS newData = getBlockState(chunk, pos);
 
+        if (sideEffectSet.shouldApply(SideEffect.UPDATE)) {
+            updateBlock(pos, oldData, newData);
+        }
+
         if (sideEffectSet.getState(SideEffect.LIGHTING) == SideEffect.State.ON) {
             updateLightingForBlock(pos);
         }
@@ -187,10 +191,6 @@ public interface WorldNativeAccess<NC, NBS, NP> {
 
         // Seems used only for PoI updates
         onBlockStateChange(pos, oldState, blockState1);
-
-        if (sideEffectSet.shouldApply(SideEffect.UPDATE)) {
-            updateBlock(pos, oldState, newState);
-        }
     }
 
 }
