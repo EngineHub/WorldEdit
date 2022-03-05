@@ -23,7 +23,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.PluginClassLoader;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -43,14 +42,17 @@ public class ClassSourceValidator {
 
     private static final String SEPARATOR_LINE = Strings.repeat("*", 46);
     private static final Method loadClass;
+    private static Class<?> pluginClassLoaderClass;
 
     static {
         Method tmp;
         try {
-            tmp = PluginClassLoader.class.getDeclaredMethod("loadClass0",
+            pluginClassLoaderClass = Class.forName("org.bukkit.plugin.java.PluginClassLoader", false,
+                    Bukkit.class.getClassLoader());
+            tmp = pluginClassLoaderClass.getDeclaredMethod("loadClass0",
                     String.class, boolean.class, boolean.class, boolean.class);
             tmp.setAccessible(true);
-        } catch (NoSuchMethodException e) {
+        } catch (NoSuchMethodException | ClassNotFoundException e) {
             tmp = null;
         }
         loadClass = tmp;
@@ -94,7 +96,7 @@ public class ClassSourceValidator {
                 continue;
             }
             ClassLoader targetLoader = target.getClass().getClassLoader();
-            if (!(targetLoader instanceof PluginClassLoader)) {
+            if (!(pluginClassLoaderClass.isAssignableFrom(targetLoader.getClass()))) {
                 continue;
             }
             for (Class<?> testClass : classes) {
