@@ -21,11 +21,12 @@ package com.sk89q.bukkit.util;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
-import com.sk89q.worldedit.internal.util.LogManagerCompat;
-import org.apache.logging.log4j.Logger;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.PluginClassLoader;
 
-import java.security.CodeSource;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -40,12 +41,24 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ClassSourceValidator {
 
-    private static final Logger LOGGER = LogManagerCompat.getLogger();
     private static final String SEPARATOR_LINE = Strings.repeat("*", 46);
+    private static final Method loadClass;
+
+    static {
+        Method tmp;
+        try {
+            tmp = PluginClassLoader.class.getDeclaredMethod("loadClass0",
+                    String.class, boolean.class, boolean.class, boolean.class);
+            tmp.setAccessible(true);
+        } catch (NoSuchMethodException e) {
+            tmp = null;
+        }
+        loadClass = tmp;
+    }
 
     private final Plugin plugin;
     @Nullable
-    private final CodeSource expectedCodeSource;
+    private final ClassLoader expectedClassLoader;
 
     /**
      * Create a new instance.
@@ -55,7 +68,10 @@ public class ClassSourceValidator {
     public ClassSourceValidator(Plugin plugin) {
         checkNotNull(plugin, "plugin");
         this.plugin = plugin;
-        this.expectedCodeSource = plugin.getClass().getProtectionDomain().getCodeSource();
+        this.expectedClassLoader = plugin.getClass().getClassLoader();
+        if (loadClass == null) {
+            plugin.getLogger().info("Bukkit PluginClassLoader seems to have changed. Class source validation will be skipped.");
+        }
     }
 
     /**
@@ -64,19 +80,33 @@ public class ClassSourceValidator {
      * @param classes A list of classes to check
      * @return The results
      */
-    public Map<Class<?>, CodeSource> findMismatches(List<Class<?>> classes) {
+    public Map<Class<?>, Plugin> findMismatches(List<Class<?>> classes) {
         checkNotNull(classes, "classes");
 
-        if (expectedCodeSource == null) {
+        if (expectedClassLoader == null || loadClass == null) {
             return ImmutableMap.of();
         }
 
-        Map<Class<?>, CodeSource> mismatches = new HashMap<>();
+        Map<Class<?>, Plugin> mismatches = new HashMap<>();
 
-        for (Class<?> testClass : classes) {
-            CodeSource testSource = testClass.getProtectionDomain().getCodeSource();
-            if (!expectedCodeSource.equals(testSource)) {
-                mismatches.put(testClass, testSource);
+        for (Plugin target : Bukkit.getPluginManager().getPlugins()) {
+            if (target == plugin) {
+                continue;
+            }
+            ClassLoader targetLoader = target.getClass().getClassLoader();
+            if (!(targetLoader instanceof PluginClassLoader)) {
+                continue;
+            }
+            for (Class<?> testClass : classes) {
+                Class<?> targetClass;
+                try {
+                    targetClass = (Class<?>) loadClass.invoke(targetLoader, testClass.getName(), false, false, false);
+                } catch (IllegalAccessException | InvocationTargetException ignored) {
+                    continue;
+                }
+                if (targetClass.getClassLoader() != expectedClassLoader) {
+                    mismatches.putIfAbsent(testClass, targetClass.getClassLoader() == targetLoader ? target : null);
+                }
             }
         }
 
@@ -94,7 +124,7 @@ public class ClassSourceValidator {
         if (Boolean.getBoolean("enginehub.disable.class.source.validation")) {
             return;
         }
-        Map<Class<?>, CodeSource> mismatches = findMismatches(classes);
+        Map<Class<?>, Plugin> mismatches = findMismatches(classes);
 
         if (mismatches.isEmpty()) {
             return;
@@ -117,15 +147,17 @@ public class ClassSourceValidator {
         builder.append("**\n");
         builder.append("** Here are some files that have been overridden:\n");
         builder.append("** \n");
-        for (Map.Entry<Class<?>, CodeSource> entry : mismatches.entrySet()) {
-            CodeSource codeSource = entry.getValue();
-            String url = codeSource != null ? codeSource.getLocation().toExternalForm() : "(unknown)";
+        for (Map.Entry<Class<?>, Plugin> entry : mismatches.entrySet()) {
+            Plugin badPlugin = entry.getValue();
+            String url = badPlugin == null
+                    ? "(unknown)"
+                    : badPlugin.getName() + " (" + badPlugin.getClass().getProtectionDomain().getCodeSource().getLocation() + ")";
             builder.append("** '").append(entry.getKey().getSimpleName()).append("' came from '").append(url).append("'\n");
         }
         builder.append("**\n");
         builder.append("** Please report this to the plugins' developers.\n");
         builder.append(SEPARATOR_LINE).append("\n");
 
-        LOGGER.error(builder.toString());
+        plugin.getLogger().severe(builder.toString());
     }
 }
