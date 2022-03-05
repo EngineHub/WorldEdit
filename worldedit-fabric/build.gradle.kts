@@ -48,7 +48,7 @@ dependencies {
     "modImplementation"("net.fabricmc:fabric-loader:$loaderVersion")
 
     // [1] declare fabric-api dependency...
-    "fabricApi"("net.fabricmc.fabric-api:fabric-api:0.47.8+1.18.2")
+    "fabricApi"("net.fabricmc.fabric-api:fabric-api:0.47.9+1.18.2")
 
     // [2] Load the API dependencies from the fabric mod json...
     @Suppress("UNCHECKED_CAST")
