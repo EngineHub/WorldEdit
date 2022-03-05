@@ -142,6 +142,12 @@ public class FabricWorldNativeAccess implements WorldNativeAccess<LevelChunk, Bl
     }
 
     @Override
+    public void updateBlock(BlockPos pos, BlockState oldState, BlockState newState) {
+        Level world = getWorld();
+        newState.onPlace(world, pos, oldState, false);
+    }
+
+    @Override
     public void updateNeighbors(BlockPos pos, BlockState oldState, BlockState newState, int recursionLimit) {
         Level world = getWorld();
         oldState.updateIndirectNeighbourShapes(world, pos, NOTIFY, recursionLimit);

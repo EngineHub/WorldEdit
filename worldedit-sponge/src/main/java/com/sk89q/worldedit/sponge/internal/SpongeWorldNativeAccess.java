@@ -138,6 +138,12 @@ public class SpongeWorldNativeAccess implements WorldNativeAccess<LevelChunk, Bl
     }
 
     @Override
+    public void updateBlock(BlockPos pos, BlockState oldState, BlockState newState) {
+        ServerLevel world = getWorld();
+        newState.onPlace(world, pos, oldState, false);
+    }
+
+    @Override
     public void updateNeighbors(BlockPos pos, BlockState oldState, BlockState newState, int recursionLimit) {
         ServerLevel world = getWorld();
         oldState.updateNeighbourShapes(world, pos, NOTIFY, recursionLimit);
