@@ -40,6 +40,9 @@ import com.sk89q.worldedit.fabric.internal.NBTConverter;
 import com.sk89q.worldedit.fabric.mixin.AccessorDerivedLevelData;
 import com.sk89q.worldedit.fabric.mixin.AccessorPrimaryLevelData;
 import com.sk89q.worldedit.fabric.mixin.AccessorServerChunkCache;
+import com.sk89q.worldedit.function.mask.AbstractExtentMask;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.mask.Mask2D;
 import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -81,6 +84,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkSource;
@@ -649,5 +653,22 @@ public class FabricWorld extends AbstractWorld {
             return null;
         }
     }
+
+    @Override
+    public Mask createLiquidMask() {
+        return new AbstractExtentMask(this) {
+            @Override
+            public boolean test(BlockVector3 vector) {
+                return FabricAdapter.adapt(getExtent().getBlock(vector)).getBlock() instanceof LiquidBlock;
+            }
+
+            @Nullable
+            @Override
+            public Mask2D toMask2D() {
+                return null;
+            }
+        };
+    }
+
 
 }

@@ -37,6 +37,9 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.forge.internal.ForgeWorldNativeAccess;
 import com.sk89q.worldedit.forge.internal.NBTConverter;
 import com.sk89q.worldedit.forge.internal.TileEntityUtils;
+import com.sk89q.worldedit.function.mask.AbstractExtentMask;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.mask.Mask2D;
 import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -78,6 +81,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkStatus;
@@ -92,6 +96,7 @@ import net.minecraft.world.level.storage.PrimaryLevelData;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraftforge.fluids.IFluidBlock;
 
 import java.lang.ref.WeakReference;
 import java.nio.file.Files;
@@ -630,4 +635,19 @@ public class ForgeWorld extends AbstractWorld {
         }
     }
 
+    @Override
+    public Mask createLiquidMask() {
+        return new AbstractExtentMask(this) {
+            @Override
+            public boolean test(BlockVector3 vector) {
+                return ForgeAdapter.adapt(getExtent().getBlock(vector)).getBlock() instanceof LiquidBlock;
+            }
+
+            @Nullable
+            @Override
+            public Mask2D toMask2D() {
+                return null;
+            }
+        };
+    }
 }
