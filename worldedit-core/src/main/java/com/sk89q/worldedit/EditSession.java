@@ -465,7 +465,7 @@ public class EditSession implements Extent, AutoCloseable {
     /**
      * Queue certain types of block for better reproduction of those blocks.
      *
-     * @deprecated
+     * @deprecated There is no specific replacement, instead enable what you want specifically.
      */
     @Deprecated
     public void enableQueue() {
