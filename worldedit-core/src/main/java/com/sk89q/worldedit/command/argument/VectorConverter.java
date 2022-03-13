@@ -48,7 +48,7 @@ public class VectorConverter<C, T> implements ArgumentConverter<T> {
         INT_CONVERTER,
         3,
         cmps -> BlockVector3.at(cmps.get(0), cmps.get(1), cmps.get(2)),
-        "block vector with x, y, and z"
+        "block vector in the form x,y,z"
     );
 
     public static void register(CommandManager commandManager) {
@@ -58,14 +58,14 @@ public class VectorConverter<C, T> implements ArgumentConverter<T> {
                 INT_CONVERTER,
                 2,
                 cmps -> BlockVector2.at(cmps.get(0), cmps.get(1)),
-                "block vector with x and z"
+                "block vector in the form x,z"
             ));
         commandManager.registerConverter(Key.of(Vector2.class),
             new VectorConverter<>(
                 doubleConverter,
                 2,
                 cmps -> Vector2.at(cmps.get(0), cmps.get(1)),
-                "vector with x and z"
+                "vector in the form x,z"
             ));
         commandManager.registerConverter(Key.of(BlockVector3.class), BLOCK_VECTOR_3_CONVERTER);
         commandManager.registerConverter(Key.of(Vector3.class),
@@ -73,7 +73,7 @@ public class VectorConverter<C, T> implements ArgumentConverter<T> {
                 doubleConverter,
                 3,
                 cmps -> Vector3.at(cmps.get(0), cmps.get(1), cmps.get(2)),
-                "vector with x, y, and z"
+                "vector in the form x,y,z"
             ));
     }
 
