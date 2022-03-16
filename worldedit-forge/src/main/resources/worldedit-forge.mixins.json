@@ -1,7 +1,7 @@
 {
     "required": true,
     "package": "com.sk89q.worldedit.forge.mixin",
-    "compatibilityLevel": "JAVA_17",
+    "compatibilityLevel": "JAVA_8",
     "mixins": [
         "MixinLevelChunkSetBlockHook"
     ],

@@ -15,7 +15,7 @@ tasks.register<Jar>("jar") {
     from(zipTree({remapFabric.get().archiveFile}))
     from(zipTree({project(":worldedit-forge").tasks.getByName("shadowJar").outputs.files.singleFile}))
 
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    duplicatesStrategy = DuplicatesStrategy.WARN
     archiveClassifier.set("dist")
 }
 
