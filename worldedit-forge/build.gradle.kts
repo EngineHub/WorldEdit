@@ -165,10 +165,5 @@ tasks.named<ShadowJar>("shadowJar") {
     }
 }
 
-afterEvaluate {
-    val reobf = extensions.getByName<NamedDomainObjectContainer<RenameJarInPlace>>("reobf")
-    reobf.create("shadowJar") {
-        dependsOn(tasks["createMcpToSrg"])
-        mappings.set(tasks["createMcpToSrg"].outputs.files.singleFile)
-    }
-}
+val reobf = extensions.getByName<NamedDomainObjectContainer<RenameJarInPlace>>("reobf")
+reobf.create("shadowJar")
