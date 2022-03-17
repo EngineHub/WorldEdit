@@ -54,7 +54,7 @@ dependencies {
         because("Sponge 8 (will?) provides Log4J")
     })
     api("org.apache.logging.log4j:log4j-api")
-    api("org.bstats:bstats-sponge:3.0.0")
+    implementation("org.bstats:bstats-sponge:3.0.0")
     testImplementation("org.mockito:mockito-core:${Versions.MOCKITO}")
 }
 
@@ -71,7 +71,7 @@ tasks.named<ShadowJar>("shadowJar") {
         }
         include(dependency(":worldedit-core"))
 
-        relocate("org.antlr.v4", "com.sk89q.worldedit.sponge.antlr4")
+        relocate("org.antlr.v4", "com.sk89q.worldedit.antlr4")
         include(dependency("org.antlr:antlr4-runtime"))
         relocate("it.unimi.dsi.fastutil", "com.sk89q.worldedit.sponge.fastutil") {
             include(dependency("it.unimi.dsi:fastutil"))

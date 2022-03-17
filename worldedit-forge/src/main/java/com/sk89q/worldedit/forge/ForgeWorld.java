@@ -611,27 +611,44 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public Entity createEntity(Location location, BaseEntity entity) {
         ServerLevel world = getWorld();
-        final Optional<EntityType<?>> entityType = EntityType.byString(entity.getType().getId());
+        String entityId = entity.getType().getId();
+        final Optional<EntityType<?>> entityType = EntityType.byString(entityId);
         if (entityType.isEmpty()) {
             return null;
         }
-        net.minecraft.world.entity.Entity createdEntity = entityType.get().create(world);
-        if (createdEntity != null) {
-            CompoundTag nativeTag = entity.getNbtData();
-            if (nativeTag != null) {
-                net.minecraft.nbt.CompoundTag tag = NBTConverter.toNative(entity.getNbtData());
-                for (String name : Constants.NO_COPY_ENTITY_NBT_FIELDS) {
-                    tag.remove(name);
-                }
-                createdEntity.load(tag);
-            }
-
-            createdEntity.absMoveTo(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
-
-            world.addFreshEntity(createdEntity);
-            return new ForgeEntity(createdEntity);
+        CompoundTag nativeTag = entity.getNbtData();
+        net.minecraft.nbt.CompoundTag tag;
+        if (nativeTag != null) {
+            tag = NBTConverter.toNative(entity.getNbtData());
+            removeUnwantedEntityTagsRecursively(tag);
         } else {
-            return null;
+            tag = new net.minecraft.nbt.CompoundTag();
+        }
+        tag.putString("id", entityId);
+
+        net.minecraft.world.entity.Entity createdEntity = EntityType.loadEntityRecursive(tag, world, (loadedEntity) -> {
+            loadedEntity.absMoveTo(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+            return loadedEntity;
+        });
+        if (createdEntity != null) {
+            world.addFreshEntityWithPassengers(createdEntity);
+            return new ForgeEntity(createdEntity);
+        }
+        return null;
+    }
+
+    private void removeUnwantedEntityTagsRecursively(net.minecraft.nbt.CompoundTag tag) {
+        for (String name : Constants.NO_COPY_ENTITY_NBT_FIELDS) {
+            tag.remove(name);
+        }
+
+        // Adapted from net.minecraft.world.entity.EntityType#loadEntityRecursive
+        if (tag.contains("Passengers", 9)) {
+            net.minecraft.nbt.ListTag nbttaglist = tag.getList("Passengers", 10);
+
+            for (int i = 0; i < nbttaglist.size(); ++i) {
+                removeUnwantedEntityTagsRecursively(nbttaglist.getCompound(i));
+            }
         }
     }
 

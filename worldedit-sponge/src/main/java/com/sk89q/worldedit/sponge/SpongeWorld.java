@@ -19,14 +19,19 @@
 
 package com.sk89q.worldedit.sponge;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.ListTag;
+import com.sk89q.jnbt.StringTag;
+import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -61,6 +66,7 @@ import org.spongepowered.api.block.entity.BlockEntityArchetype;
 import org.spongepowered.api.block.entity.BlockEntityType;
 import org.spongepowered.api.data.persistence.DataContainer;
 import org.spongepowered.api.data.persistence.DataView;
+import org.spongepowered.api.entity.EntityArchetype;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.Item;
@@ -79,7 +85,11 @@ import org.spongepowered.math.vector.Vector3i;
 
 import java.lang.ref.WeakReference;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -458,31 +468,17 @@ public final class SpongeWorld extends AbstractWorld {
     @Nullable
     @Override
     public Entity createEntity(Location location, BaseEntity entity) {
-        ServerWorld world = getWorld();
-
-        EntityType<?> entityType = Sponge.game().registry(RegistryTypes.ENTITY_TYPE)
-            .value(ResourceKey.resolve(entity.getType().getId()));
-        Vector3d pos = new Vector3d(location.getX(), location.getY(), location.getZ());
-
-        org.spongepowered.api.entity.Entity newEnt = world.createEntity(entityType, pos);
-        if (entity.hasNbtData()) {
-            newEnt.setRawData(DataContainer.createNew(DataView.SafetyMode.NO_DATA_CLONED)
-                .set(Constants.Sponge.UNSAFE_NBT, entity.getNbtData()));
+        Optional<EntityType<?>> entityType = Sponge.game().registry(RegistryTypes.ENTITY_TYPE)
+                .findValue(ResourceKey.resolve(entity.getType().getId()));
+        if (!entityType.isPresent()) {
+            return null;
         }
-
-        // Overwrite any data set by the NBT application
-        Vector3 dir = location.getDirection();
-
-        newEnt.setLocationAndRotation(
-            ServerLocation.of(getWorld(), pos),
-            new Vector3d(dir.getX(), dir.getY(), dir.getZ())
-        );
-
-        if (world.spawnEntity(newEnt)) {
-            return new SpongeEntity(newEnt);
+        EntityArchetype.Builder builder = EntityArchetype.builder().type(entityType.get());
+        CompoundTag nativeTag = entity.getNbtData();
+        if (nativeTag != null) {
+            builder.entityData(NbtAdapter.adaptFromWorldEdit(nativeTag));
         }
-
-        return null;
+        return builder.build().apply(SpongeAdapter.adapt(location)).map(SpongeEntity::new).orElse(null);
     }
 
     @Override
