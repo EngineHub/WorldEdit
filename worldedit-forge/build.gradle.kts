@@ -57,8 +57,8 @@ configure<UserDevExtension> {
 }
 
 configure<org.spongepowered.asm.gradle.plugins.MixinExtension> {
-    add(sourceSets["main"], "worldedit.mixins.refmap.json")
-    config("worldedit.mixins.json")
+    add(sourceSets["main"], "worldedit-forge.mixins.refmap.json")
+    config("worldedit-forge.mixins.json")
 }
 
 configure<BasePluginConvention> {
@@ -165,7 +165,5 @@ tasks.named<ShadowJar>("shadowJar") {
     }
 }
 
-afterEvaluate {
-    val reobf = extensions.getByName<NamedDomainObjectContainer<RenameJarInPlace>>("reobf")
-    reobf.create("shadowJar")
-}
+val reobf = extensions.getByName<NamedDomainObjectContainer<RenameJarInPlace>>("reobf")
+reobf.create("shadowJar")

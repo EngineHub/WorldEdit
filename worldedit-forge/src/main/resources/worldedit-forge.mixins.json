@@ -9,5 +9,6 @@
     ],
     "injectors": {
         "defaultRequire": 1
-    }
+    },
+    "refmap": "worldedit-forge.mixins.refmap.json"
 }
