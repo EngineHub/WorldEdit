@@ -19,27 +19,32 @@
 
 package com.sk89q.worldedit.forge;
 
+import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Block;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.tags.ITagManager;
 
+import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class ForgeBlockCategoryRegistry implements BlockCategoryRegistry {
-    // TODO clean this up once Forge adds a proper API for this
-    @SuppressWarnings("deprecation")
     @Override
     public Set<BlockType> getCategorisedByName(String category) {
-        return Registry.BLOCK.getTag(TagKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(category)))
+        ITagManager<Block> tags = Objects.requireNonNull(
+            ForgeRegistries.BLOCKS.tags(), "no block tags registry"
+        );
+        return tags
+            .getTag(TagKey.create(
+                Registry.BLOCK_REGISTRY,
+                new ResourceLocation(category)
+            ))
             .stream()
-            .flatMap(HolderSet.Named::stream)
-            .map(Holder::value)
             .map(ForgeAdapter::adapt)
-            .collect(Collectors.toSet());
+            .collect(ImmutableSet.toImmutableSet());
     }
 }
