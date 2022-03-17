@@ -475,8 +475,8 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         }
 
         // Adapted from net.minecraft.world.entity.EntityType#loadEntityRecursive
-        if (tag.contains("Passengers", 9)) {
-            net.minecraft.nbt.ListTag nbttaglist = tag.getList("Passengers", 10);
+        if (tag.contains("Passengers", NBTConstants.TYPE_LIST)) {
+            net.minecraft.nbt.ListTag nbttaglist = tag.getList("Passengers", NBTConstants.TYPE_COMPOUND);
 
             for (int i = 0; i < nbttaglist.size(); ++i) {
                 removeUnwantedEntityTagsRecursively(nbttaglist.getCompound(i));
