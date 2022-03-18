@@ -1,13 +1,24 @@
+7.2.10
+- [Forge] Fixed a bug where the max world height would not always be read correctly
+- [Bukkit] Fixed detection of other plugins bundling WorldEdit for newer Spigot versions
+- [Forge] [Fabric] Improve fluid masks to properly detect mod fluids
+- [Forge] Fixed the UPDATE side effect
+- Update to 1.18.2
+- Moved external links away from tinyurl to EngineHub URL shortener
+- Allowed biome commands to be used by non-player actors (console, command block, etc)
+- Fixed the UPDATE side effect not applying when called later on by API or FAST reorder mode
+- Fixed entity passenger and riding status not being copied correctly
+
 7.2.9
-* [Forge] Add support for the UPDATE side effect
-* [Forge] Fixed regen on recent Forge builds
-* [Fabric] Fixed regen outside of Overworld
-* [Sponge] Update to Sponge API8 (MC 1.16.5)
-* [Bukkit] Fixed regen when biomes are used
-* Fixed snapshots in 1.18
-* Fixed smooth functions below y=0
-* Tweak command usage label correctness for Bukkit API usage
-* Fixed legacy error message output for plugins utilising our legacy APIs (Eg, WorldGuard and CraftBook)
+- [Forge] Add support for the UPDATE side effect
+- [Forge] Fixed regen on recent Forge builds
+- [Fabric] Fixed regen outside of Overworld
+- [Sponge] Update to Sponge API8 (MC 1.16.5)
+- [Bukkit] Fixed regen when biomes are used
+- Fixed snapshots in 1.18
+- Fixed smooth functions below y=0
+- Tweak command usage label correctness for Bukkit API usage
+- Fixed legacy error message output for plugins utilising our legacy APIs (Eg, WorldGuard and CraftBook)
 
 7.2.8
 - Update to 1.18.1
