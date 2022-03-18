@@ -78,7 +78,7 @@ public class BaseEntity implements NbtValued {
 
     @Override
     public boolean hasNbtData() {
-        return true;
+        return nbtData != null;
     }
 
     @Nullable

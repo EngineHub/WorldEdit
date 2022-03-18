@@ -48,18 +48,18 @@ class SpongeEntity implements Entity {
     @Override
     public BaseEntity getState() {
         org.spongepowered.api.entity.Entity entity = entityRef.get();
-        if (entity != null) {
-            return new BaseEntity(
-                EntityType.REGISTRY.get(
-                    entity.type().key(RegistryTypes.ENTITY_TYPE).asString()
-                ),
-                entity.toContainer().getView(Constants.Sponge.UNSAFE_NBT)
-                    .map(NbtAdapter::adaptToWorldEdit)
-                    .orElse(null)
-            );
-        } else {
+        if (entity == null || entity.vehicle().isPresent()) {
             return null;
         }
+        EntityType entityType = EntityType.REGISTRY.get(entity.type().key(RegistryTypes.ENTITY_TYPE).asString());
+        if (entityType == null) {
+            return null;
+        }
+        return new BaseEntity(entityType,
+            entity.toContainer().getView(Constants.Sponge.UNSAFE_NBT)
+                .map(NbtAdapter::adaptToWorldEdit)
+                .orElse(null)
+        );
     }
 
     @Override

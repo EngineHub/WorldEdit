@@ -412,6 +412,11 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         CraftEntity craftEntity = ((CraftEntity) entity);
         Entity mcEntity = craftEntity.getHandle();
 
+        // Do not allow creating of passenger entity snapshots, passengers are included in the vehicle entity
+        if (mcEntity.isPassenger()) {
+            return null;
+        }
+
         String id = getEntityId(mcEntity);
 
         net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
@@ -428,24 +433,45 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         CraftWorld craftWorld = ((CraftWorld) location.getWorld());
         ServerLevel worldServer = craftWorld.getHandle();
 
-        Entity createdEntity = createEntityFromId(state.getType().getId(), craftWorld.getHandle());
+        String entityId = state.getType().getId();
+
+        CompoundTag nativeTag = state.getNbtData();
+        net.minecraft.nbt.CompoundTag tag;
+        if (nativeTag != null) {
+            tag = (net.minecraft.nbt.CompoundTag) fromNative(nativeTag);
+            removeUnwantedEntityTagsRecursively(tag);
+        } else {
+            tag = new net.minecraft.nbt.CompoundTag();
+        }
+
+        tag.putString("id", entityId);
+
+        Entity createdEntity = EntityType.loadEntityRecursive(tag, craftWorld.getHandle(), (loadedEntity) -> {
+            loadedEntity.absMoveTo(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+            return loadedEntity;
+        });
 
         if (createdEntity != null) {
-            CompoundTag nativeTag = state.getNbtData();
-            if (nativeTag != null) {
-                net.minecraft.nbt.CompoundTag tag = (net.minecraft.nbt.CompoundTag) fromNative(nativeTag);
-                for (String name : Constants.NO_COPY_ENTITY_NBT_FIELDS) {
-                    tag.remove(name);
-                }
-                readTagIntoEntity(tag, createdEntity);
-            }
-
-            createdEntity.absMoveTo(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
-
-            worldServer.addFreshEntity(createdEntity, SpawnReason.CUSTOM);
+            worldServer.addFreshEntityWithPassengers(createdEntity, SpawnReason.CUSTOM);
             return createdEntity.getBukkitEntity();
         } else {
             return null;
+        }
+    }
+
+    // This removes all unwanted tags from the main entity and all its passengers
+    private void removeUnwantedEntityTagsRecursively(net.minecraft.nbt.CompoundTag tag) {
+        for (String name : Constants.NO_COPY_ENTITY_NBT_FIELDS) {
+            tag.remove(name);
+        }
+
+        // Adapted from net.minecraft.world.entity.EntityType#loadEntityRecursive
+        if (tag.contains("Passengers", NBTConstants.TYPE_LIST)) {
+            net.minecraft.nbt.ListTag nbttaglist = tag.getList("Passengers", NBTConstants.TYPE_COMPOUND);
+
+            for (int i = 0; i < nbttaglist.size(); ++i) {
+                removeUnwantedEntityTagsRecursively(nbttaglist.getCompound(i));
+            }
         }
     }
 
