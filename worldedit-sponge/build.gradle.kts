@@ -73,9 +73,6 @@ tasks.named<ShadowJar>("shadowJar") {
 
         relocate("org.antlr.v4", "com.sk89q.worldedit.antlr4")
         include(dependency("org.antlr:antlr4-runtime"))
-        relocate("it.unimi.dsi.fastutil", "com.sk89q.worldedit.sponge.fastutil") {
-            include(dependency("it.unimi.dsi:fastutil"))
-        }
     }
 }
 tasks.named("assemble").configure {
