@@ -23,25 +23,24 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.world.block.BlockTypes;
 
-public class ErodeBrush implements Brush {
+public class MorphBrush implements Brush {
 
-    private final int minFillFaces;
-    private final int numFillIterations;
     private final int minErodeFaces;
     private final int numErodeIterations;
+    private final int minDilateFaces;
+    private final int minDilateIterations;
 
-    public ErodeBrush(int minFillFaces, int numFillIterations, int minErodeFaces, int numErodeIterations) {
-        this.minFillFaces = minFillFaces;
-        this.numFillIterations = numFillIterations;
+    public MorphBrush(int minErodeFaces, int numErodeIterations, int minDilateFaces, int minDilateIterations) {
         this.minErodeFaces = minErodeFaces;
         this.numErodeIterations = numErodeIterations;
+        this.minDilateFaces = minDilateFaces;
+        this.minDilateIterations = minDilateIterations;
     }
 
     @Override
     public void build(EditSession editSession, BlockVector3 position, Pattern pattern, double size) throws MaxChangedBlocksException {
-        editSession.erode(position, size, this.minFillFaces, this.numFillIterations, this.minErodeFaces, this.numErodeIterations);
+        editSession.morph(position, size, this.minErodeFaces, this.numErodeIterations, this.minDilateFaces, this.minDilateIterations);
     }
 
 }

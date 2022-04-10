@@ -2687,7 +2687,7 @@ public class EditSession implements Extent, AutoCloseable {
         return changed;
     }
 
-    public int erode(BlockVector3 position, double brushSize, int minFillFaces, int numFillIterations, int minErodeFaces, int numErodeIterations) throws MaxChangedBlocksException {
+    public int morph(BlockVector3 position, double brushSize, int minErodeFaces, int numErodeIterations, int minDilateFaces, int numDilateIterations) throws MaxChangedBlocksException {
         int ceilBrushSize = (int) Math.ceil(brushSize);
         int bufferSize = ceilBrushSize * 2 + 3;  // + 1 due to checking the adjacent blocks, plus the 0th block
         // Store block states in a 3d array so we can do multiple mutations then commit.
@@ -2697,7 +2697,6 @@ public class EditSession implements Extent, AutoCloseable {
 
         // Simply used for swapping the two
         BlockState[][][] tmp;
-
 
         // Load into buffer
         for (int x = 0; x < bufferSize; x++) {
@@ -2768,7 +2767,7 @@ public class EditSession implements Extent, AutoCloseable {
             nextBuffer = tmp;
         }
 
-        for (int i = 0; i < numFillIterations; i++) {
+        for (int i = 0; i < numDilateIterations; i++) {
             for (int x = 0; x <= ceilBrushSize * 2; x++) {
                 for (int y = 0; y <= ceilBrushSize * 2; y++) {
                     for (int z = 0; z <= ceilBrushSize * 2; z++) {
@@ -2808,7 +2807,7 @@ public class EditSession implements Extent, AutoCloseable {
                             }
                         }
 
-                        if (totalFaces >= minFillFaces) {
+                        if (totalFaces >= minDilateFaces) {
                             nextBuffer[x + 1][y + 1][z + 1] = highestState;
                         }
                     }
@@ -2825,8 +2824,9 @@ public class EditSession implements Extent, AutoCloseable {
         for (int x = 0; x < bufferSize; x++) {
             for (int y = 0; y < bufferSize; y++) {
                 for (int z = 0; z < bufferSize; z++) {
-                    setBlock(position.add(x - ceilBrushSize - 1, y - ceilBrushSize - 1, z - ceilBrushSize - 1), currentBuffer[x][y][z]);
-                    changed++;
+                    if (setBlock(position.add(x - ceilBrushSize - 1, y - ceilBrushSize - 1, z - ceilBrushSize - 1), currentBuffer[x][y][z])) {
+                        changed++;
+                    }
                 }
             }
         }
