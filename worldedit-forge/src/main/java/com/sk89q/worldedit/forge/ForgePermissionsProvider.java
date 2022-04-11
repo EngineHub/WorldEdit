@@ -22,6 +22,7 @@ package com.sk89q.worldedit.forge;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.world.GameType;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.server.permission.PermissionAPI;
 
 public interface ForgePermissionsProvider {
 
@@ -41,8 +42,8 @@ public interface ForgePermissionsProvider {
         public boolean hasPermission(ServerPlayerEntity player, String permission) {
             ForgeConfiguration configuration = platform.getConfiguration();
             return configuration.cheatMode
-                || ServerLifecycleHooks.getCurrentServer().getPlayerList().canSendCommands(player.getGameProfile())
-                || (configuration.creativeEnable && player.interactionManager.getGameType() == GameType.CREATIVE);
+                || PermissionAPI.hasPermission(player, permission)
+                || (configuration.creativeEnable && player.interactionManager.isCreative());
         }
 
         @Override
