@@ -20,9 +20,7 @@
 package com.sk89q.worldedit.forge;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.world.GameType;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
-import net.minecraftforge.server.permission.DefaultPermissionLevel;
 import net.minecraftforge.server.permission.PermissionAPI;
 
 public interface ForgePermissionsProvider {
