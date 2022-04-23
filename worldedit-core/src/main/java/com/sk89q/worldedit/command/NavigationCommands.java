@@ -29,11 +29,13 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.world.World;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
 import org.enginehub.piston.annotation.param.Switch;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.command.util.Logging.LogMode.POSITION;
 
@@ -75,6 +77,8 @@ public class NavigationCommands {
     public void ascend(Player player,
                        @Arg(desc = "# of levels to ascend", def = "1")
                            int levels) throws WorldEditException {
+        World world = player.getWorld();
+        checkArgument(levels >= 1 && levels <= (world.getMaxY() - world.getMinY()), "1 <= levels <= world height");
         int ascentLevels = 0;
         while (player.ascendLevel()) {
             ++ascentLevels;
@@ -98,6 +102,8 @@ public class NavigationCommands {
     public void descend(Player player,
                         @Arg(desc = "# of levels to descend", def = "1")
                             int levels) throws WorldEditException {
+        World world = player.getWorld();
+        checkArgument(levels >= 1 && levels <= (world.getMaxY() - world.getMinY()), "1 <= levels <= world height");
         int descentLevels = 0;
         while (player.descendLevel()) {
             ++descentLevels;
