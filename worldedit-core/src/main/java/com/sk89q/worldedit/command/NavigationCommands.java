@@ -77,8 +77,7 @@ public class NavigationCommands {
     public void ascend(Player player,
                        @Arg(desc = "# of levels to ascend", def = "1")
                            int levels) throws WorldEditException {
-        World world = player.getWorld();
-        checkArgument(levels >= 1 && levels <= (world.getMaxY() - world.getMinY()), "1 <= levels <= world height");
+        checkHeightChangeLevel(player.getWorld(), levels);
         int ascentLevels = 0;
         while (player.ascendLevel()) {
             ++ascentLevels;
@@ -102,8 +101,7 @@ public class NavigationCommands {
     public void descend(Player player,
                         @Arg(desc = "# of levels to descend", def = "1")
                             int levels) throws WorldEditException {
-        World world = player.getWorld();
-        checkArgument(levels >= 1 && levels <= (world.getMaxY() - world.getMinY()), "1 <= levels <= world height");
+        checkHeightChangeLevel(player.getWorld(), levels);
         int descentLevels = 0;
         while (player.descendLevel()) {
             ++descentLevels;
@@ -203,5 +201,16 @@ public class NavigationCommands {
         final LocalConfiguration config = worldEdit.getConfiguration();
 
         return forceGlass || (config.navigationUseGlass && !forceFlight);
+    }
+
+    /**
+     * Helper function for /asc and /desc. Ensures given level number to ascend or descend by is within reasonable bounds to
+     * prevent large and/or "infinite" loops.
+     *
+     * @param world  the world in which the command is run
+     * @param levels the number of levels wanting to be ascended of descended
+     */
+    private void checkHeightChangeLevel(World world, int levels) {
+        checkArgument(1 <= levels && levels <= (world.getMaxY() - world.getMinY()), "1 <= levels <= world height");
     }
 }
