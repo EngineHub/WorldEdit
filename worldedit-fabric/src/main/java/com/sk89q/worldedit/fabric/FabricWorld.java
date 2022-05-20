@@ -75,6 +75,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Clearable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -127,7 +128,7 @@ import static com.google.common.base.Preconditions.checkState;
  */
 public class FabricWorld extends AbstractWorld {
 
-    private static final Random random = new Random();
+    private static final RandomSource random = RandomSource.create();
 
     private static ResourceLocation getDimensionRegistryKey(Level world) {
         return Objects.requireNonNull(world.getServer(), "server cannot be null")
@@ -343,9 +344,11 @@ public class FabricWorld extends AbstractWorld {
                 originalWorld.getServer(), Util.backgroundExecutor(), session,
                 ((ServerLevelData) originalWorld.getLevelData()),
                 worldRegKey,
-                originalWorld.dimensionTypeRegistration(),
+                new LevelStem(
+                    originalWorld.dimensionTypeRegistration(),
+                    dimGenOpts.generator()
+                ),
                 new WorldEditGenListener(),
-                dimGenOpts.generator(),
                 originalWorld.isDebug(),
                 seed,
                 // No spawners are needed for this world.
