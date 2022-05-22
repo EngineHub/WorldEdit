@@ -32,7 +32,7 @@ import static com.google.common.base.Preconditions.checkState;
 public final class BlockStateIdAccess {
 
     private static final int INVALID_ID = -1;
-    private static final int EXPECTED_BLOCK_COUNT = 2 << 13;
+    private static final int EXPECTED_BLOCK_COUNT = 2 << 14;
     private static final Int2ObjectOpenHashMap<BlockState> TO_STATE =
         new Int2ObjectOpenHashMap<>(EXPECTED_BLOCK_COUNT);
 
