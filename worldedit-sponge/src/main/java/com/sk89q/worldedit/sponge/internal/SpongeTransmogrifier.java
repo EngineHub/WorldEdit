@@ -19,6 +19,9 @@
 
 package com.sk89q.worldedit.sponge.internal;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.registry.state.BooleanProperty;
 import com.sk89q.worldedit.registry.state.DirectionalProperty;
@@ -48,26 +51,33 @@ import java.util.stream.Collectors;
  */
 public class SpongeTransmogrifier {
 
+    private static final LoadingCache<StateProperty<?>, Property<?>> propertyCache = CacheBuilder.newBuilder().build(new CacheLoader<StateProperty<?>, Property<?>>() {
+        @Override
+        public Property<?> load(StateProperty<?> property) throws Exception {
+            if (property instanceof BooleanStateProperty) {
+                return new BooleanProperty(property.name(), ImmutableList.copyOf(((BooleanStateProperty) property).possibleValues()));
+            }
+            if (property instanceof IntegerStateProperty) {
+                return new IntegerProperty(property.name(), ImmutableList.copyOf(((IntegerStateProperty) property).possibleValues()));
+            }
+            if (isDirectionProperty(property)) {
+                return new DirectionalProperty(property.name(),
+                    ((EnumStateProperty<?>) property).possibleValues().stream()
+                        .map(x -> adaptDirection((net.minecraft.core.Direction) x))
+                        .collect(Collectors.toList())
+                );
+            }
+            if (property instanceof EnumStateProperty) {
+                return new EnumProperty(property.name(), ((EnumStateProperty<?>) property).possibleValues().stream()
+                    .map(x -> ((StringRepresentable) x).getSerializedName())
+                    .collect(Collectors.toList()));
+            }
+            throw new IllegalStateException("Unknown property type");
+        }
+    });
+
     public static Property<?> transmogToWorldEditProperty(StateProperty<?> property) {
-        if (property instanceof BooleanStateProperty) {
-            return new BooleanProperty(property.name(), ImmutableList.copyOf(((BooleanStateProperty) property).possibleValues()));
-        }
-        if (property instanceof IntegerStateProperty) {
-            return new IntegerProperty(property.name(), ImmutableList.copyOf(((IntegerStateProperty) property).possibleValues()));
-        }
-        if (isDirectionProperty(property)) {
-            return new DirectionalProperty(property.name(),
-                ((EnumStateProperty<?>) property).possibleValues().stream()
-                .map(x -> adaptDirection((net.minecraft.core.Direction) x))
-                .collect(Collectors.toList())
-            );
-        }
-        if (property instanceof EnumStateProperty) {
-            return new EnumProperty(property.name(), ((EnumStateProperty<?>) property).possibleValues().stream()
-                .map(x -> ((StringRepresentable) x).getSerializedName())
-                .collect(Collectors.toList()));
-        }
-        throw new IllegalStateException("Unknown property type");
+        return propertyCache.getUnchecked(property);
     }
 
     private static Map<Property<?>, Object> transmogToWorldEditProperties(BlockType block, Map<StateProperty<?>, ?> mcProps) {
