@@ -21,24 +21,23 @@ package com.sk89q.worldedit.sponge;
 
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.ItemCategoryRegistry;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
+import org.spongepowered.api.ResourceKey;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.registry.RegistryTypes;
 
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SpongeItemCategoryRegistry implements ItemCategoryRegistry {
     @Override
     public Set<ItemType> getCategorisedByName(String category) {
-        return Optional.ofNullable(ItemTags.getAllTags().getTag(new ResourceLocation(category)))
-            .map(Tag::getValues)
+        return Sponge.game().registry(RegistryTypes.ITEM_TYPE_TAGS)
+            .findValue(ResourceKey.resolve(category))
+            .map(org.spongepowered.api.tag.Tag::values)
             .orElse(Collections.emptyList())
             .stream()
-            .map(b -> ItemType.REGISTRY.get(Registry.ITEM.getKey(b).toString()))
+            .map(b -> ItemType.REGISTRY.get(Sponge.game().registry(RegistryTypes.ITEM_TYPE).valueKey(b).formatted()))
             .collect(Collectors.toSet());
     }
 }

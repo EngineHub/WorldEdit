@@ -40,9 +40,6 @@ import com.sk89q.worldedit.world.gamemode.GameModes;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.Keys;
@@ -87,7 +84,6 @@ public class SpongePlayer extends AbstractPlayerActor {
         return this.player.name();
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public String getDisplayName() {
         return LegacyComponentSerializer.legacySection().serialize(player.displayName().get());
@@ -234,20 +230,15 @@ public class SpongePlayer extends AbstractPlayerActor {
         if (block == null) {
             player.resetBlockChange(pos.getX(), pos.getY(), pos.getZ());
         } else {
-            net.minecraft.server.level.ServerPlayer mcPlayer =
-                ((net.minecraft.server.level.ServerPlayer) player);
-            final ClientboundBlockUpdatePacket packetOut = new ClientboundBlockUpdatePacket(
-                new BlockPos(pos.getX(), pos.getY(), pos.getZ()),
-                (net.minecraft.world.level.block.state.BlockState)
-                    SpongeAdapter.adapt(block.toImmutableState())
-            );
-            mcPlayer.connection.send(packetOut);
+            player.sendBlockChange(pos.getX(), pos.getY(), pos.getZ(), SpongeAdapter.adapt(block.toImmutableState()));
             if (block instanceof BaseBlock && block.getBlockType().equals(com.sk89q.worldedit.world.block.BlockTypes.STRUCTURE_BLOCK)) {
                 final BaseBlock baseBlock = (BaseBlock) block;
                 final CompoundTag nbtData = baseBlock.getNbtData();
                 if (nbtData != null) {
-                    mcPlayer.connection.send(new ClientboundBlockEntityDataPacket(
-                        new BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()),
+                    net.minecraft.server.level.ServerPlayer mcPlayer =
+                        ((net.minecraft.server.level.ServerPlayer) player);
+                    mcPlayer.connection.send(new net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket(
+                        new net.minecraft.core.BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()),
                         STRUCTURE_BLOCK_PACKET_ID,
                         NbtAdapter.adaptNMSToWorldEdit(nbtData))
                     );
