@@ -1,4 +1,5 @@
-import org.ajoberstar.grgit.Grgit
+import java.io.ByteArrayOutputStream
+import java.nio.charset.StandardCharsets
 
 plugins {
     id("org.enginehub.codecov")
@@ -6,9 +7,13 @@ plugins {
 }
 
 if (!project.hasProperty("gitCommitHash")) {
-    apply(plugin = "org.ajoberstar.grgit")
     ext["gitCommitHash"] = try {
-        extensions.getByName<Grgit>("grgit").head()?.abbreviatedId
+        val capture = ByteArrayOutputStream()
+        exec {
+            commandLine("git", "rev-parse", "--short", "HEAD")
+            standardOutput = capture
+        }
+        capture.toString(StandardCharsets.UTF_8.name())
     } catch (e: Exception) {
         logger.warn("Error getting commit hash", e)
 
