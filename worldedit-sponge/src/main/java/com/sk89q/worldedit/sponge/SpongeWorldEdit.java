@@ -40,9 +40,6 @@ import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.item.ItemCategory;
 import net.kyori.adventure.audience.Audience;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.ItemTags;
 import org.apache.logging.log4j.Logger;
 import org.bstats.sponge.Metrics;
 import org.spongepowered.api.ResourceKey;
@@ -193,16 +190,18 @@ public class SpongeWorldEdit {
             });
         }
 
-        for (ResourceLocation name : BlockTags.getAllTags().getAvailableTags()) {
-            if (BlockCategory.REGISTRY.get(name.toString()) == null) {
-                BlockCategory.REGISTRY.register(name.toString(), new BlockCategory(name.toString()));
+        event.game().registry(RegistryTypes.BLOCK_TYPE_TAGS).streamEntries().forEach(blockTypeTag -> {
+            String id = blockTypeTag.key().asString();
+            if (!BlockCategory.REGISTRY.keySet().contains(id)) {
+                BlockCategory.REGISTRY.register(id, new BlockCategory(id));
             }
-        }
-        for (ResourceLocation name : ItemTags.getAllTags().getAvailableTags()) {
-            if (ItemCategory.REGISTRY.get(name.toString()) == null) {
-                ItemCategory.REGISTRY.register(name.toString(), new ItemCategory(name.toString()));
+        });
+        event.game().registry(RegistryTypes.ITEM_TYPE_TAGS).streamEntries().forEach(itemTypeTag -> {
+            String id = itemTypeTag.key().asString();
+            if (!ItemCategory.REGISTRY.keySet().contains(id)) {
+                ItemCategory.REGISTRY.register(id, new ItemCategory(id));
             }
-        }
+        });
 
         config.load();
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent(platform));
