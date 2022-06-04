@@ -43,7 +43,7 @@ import java.util.Map;
 /**
  * Re-orders blocks into several stages.
  *
- * @deprecated Use {@link com.sk89q.worldedit.extent.world.SideEffectExtent} with post edit instead.
+ * @deprecated Use {@link com.sk89q.worldedit.extent.world.SideEffectExtent} with {@link com.sk89q.worldedit.extent.world.SideEffectExtent#setPostEditSimulationEnabled} instead.
  */
 @Deprecated
 public class MultiStageReorder extends AbstractBufferingExtent implements ReorderingExtent {
