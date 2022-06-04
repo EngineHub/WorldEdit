@@ -50,21 +50,16 @@ class ForgeEntity implements Entity {
     @Override
     public BaseEntity getState() {
         net.minecraft.world.entity.Entity entity = entityRef.get();
-        if (entity != null) {
-            ResourceLocation id = entity.getType().getRegistryName();
-            if (id != null) {
-                CompoundTag tag = new CompoundTag();
-                entity.saveWithoutId(tag);
-                return new BaseEntity(
-                    EntityTypes.get(id.toString()),
-                    LazyReference.from(() -> NBTConverter.fromNative(tag))
-                );
-            } else {
-                return null;
-            }
-        } else {
+        if (entity == null || entity.isPassenger()) {
             return null;
         }
+        ResourceLocation id = entity.getType().getRegistryName();
+        if (id == null) {
+            return null;
+        }
+        CompoundTag tag = new CompoundTag();
+        entity.saveWithoutId(tag);
+        return new BaseEntity(EntityTypes.get(id.toString()), LazyReference.from(() -> NBTConverter.fromNative(tag)));
     }
 
     @Override

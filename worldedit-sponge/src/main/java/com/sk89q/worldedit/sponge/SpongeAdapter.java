@@ -19,15 +19,37 @@
 
 package com.sk89q.worldedit.sponge;
 
-import com.flowpowered.math.vector.Vector3d;
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
+import com.sk89q.worldedit.sponge.internal.NbtAdapter;
+import com.sk89q.worldedit.sponge.internal.SpongeTransmogrifier;
+import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
-import com.sk89q.worldedit.world.biome.BiomeTypes;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.item.ItemTypes;
+import net.minecraft.world.level.block.Block;
+import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.data.persistence.DataContainer;
+import org.spongepowered.api.data.persistence.DataView;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.registry.RegistryKey;
+import org.spongepowered.api.registry.RegistryReference;
+import org.spongepowered.api.registry.RegistryTypes;
+import org.spongepowered.api.world.biome.Biome;
+import org.spongepowered.api.world.server.ServerLocation;
+import org.spongepowered.api.world.server.ServerWorld;
+import org.spongepowered.math.vector.Vector3d;
+import org.spongepowered.math.vector.Vector3i;
+
+import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -36,22 +58,21 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class SpongeAdapter {
 
-    private SpongeAdapter() {
+    public static org.spongepowered.api.block.BlockState adapt(BlockState blockState) {
+        int blockStateId = BlockStateIdAccess.getBlockStateId(blockState);
+        if (!BlockStateIdAccess.isValidInternalId(blockStateId)) {
+            return SpongeTransmogrifier.transmogToMinecraft(blockState);
+        }
+        return (org.spongepowered.api.block.BlockState) Block.stateById(blockStateId);
     }
 
-    /**
-     * Create a WorldEdit world from a Sponge extent.
-     *
-     * @param world the Sponge extent
-     * @return a WorldEdit world
-     */
-    public static World checkWorld(org.spongepowered.api.world.extent.Extent world) {
-        checkNotNull(world);
-        if (world instanceof org.spongepowered.api.world.World) {
-            return adapt((org.spongepowered.api.world.World) world);
-        } else {
-            throw new IllegalArgumentException("Extent type is not a world");
+    public static BlockState adapt(org.spongepowered.api.block.BlockState blockState) {
+        int blockStateId = Block.getId((net.minecraft.world.level.block.state.BlockState) blockState);
+        BlockState worldEdit = BlockStateIdAccess.getBlockStateById(blockStateId);
+        if (worldEdit == null) {
+            return SpongeTransmogrifier.transmogToWorldEdit(blockState);
         }
+        return worldEdit;
     }
 
     /**
@@ -60,9 +81,9 @@ public class SpongeAdapter {
      * @param world the Sponge world
      * @return a WorldEdit world
      */
-    public static World adapt(org.spongepowered.api.world.World world) {
+    public static World adapt(ServerWorld world) {
         checkNotNull(world);
-        return SpongeWorldEdit.inst().getWorld(world);
+        return new SpongeWorld(world);
     }
 
     /**
@@ -71,12 +92,13 @@ public class SpongeAdapter {
      * @param player The Sponge player
      * @return The WorldEdit player
      */
-    public static SpongePlayer adapt(Player player) {
-        return SpongeWorldEdit.inst().wrapPlayer(player);
+    public static SpongePlayer adapt(ServerPlayer player) {
+        Objects.requireNonNull(player);
+        return new SpongePlayer(player);
     }
 
     /**
-     * Create a Bukkit Player from a WorldEdit Player.
+     * Create a Sponge Player from a WorldEdit Player.
      *
      * @param player The WorldEdit player
      * @return The Bukkit player
@@ -91,12 +113,15 @@ public class SpongeAdapter {
      * @param world the WorldEdit world
      * @return a Sponge world
      */
-    public static org.spongepowered.api.world.World adapt(World world) {
+    public static ServerWorld adapt(World world) {
         checkNotNull(world);
         if (world instanceof SpongeWorld) {
             return ((SpongeWorld) world).getWorld();
         } else {
-            org.spongepowered.api.world.World match = Sponge.getServer().getWorld(world.getName()).orElse(null);
+            // Currently this is 99% certain to fail, we don't have consistent world name/id mapping
+            ServerWorld match = Sponge.server().worldManager().world(
+                ResourceKey.resolve(world.getName())
+            ).orElse(null);
             if (match != null) {
                 return match;
             } else {
@@ -105,12 +130,9 @@ public class SpongeAdapter {
         }
     }
 
-    public static BiomeType adapt(org.spongepowered.api.world.biome.BiomeType biomeType) {
-        return BiomeTypes.get(biomeType.getId());
-    }
-
-    public static org.spongepowered.api.world.biome.BiomeType adapt(BiomeType biomeType) {
-        return Sponge.getRegistry().getType(org.spongepowered.api.world.biome.BiomeType.class, biomeType.getId()).orElse(null);
+    public static RegistryReference<Biome> adapt(BiomeType biomeType) {
+        return RegistryKey.of(RegistryTypes.BIOME, ResourceKey.resolve(biomeType.getId()))
+            .asReference();
     }
 
     /**
@@ -119,14 +141,15 @@ public class SpongeAdapter {
      * @param location the Sponge location
      * @return a WorldEdit location
      */
-    public static Location adapt(org.spongepowered.api.world.Location<org.spongepowered.api.world.World> location, Vector3d rotation) {
+    public static Location adapt(ServerLocation location, Vector3d rotation) {
         checkNotNull(location);
         Vector3 position = asVector(location);
         return new Location(
-                adapt(location.getExtent()),
-                position,
-                (float) rotation.getX(),
-                (float) rotation.getY());
+            adapt(location.world()),
+            position,
+            (float) rotation.x(),
+            (float) rotation.y()
+        );
     }
 
     /**
@@ -135,12 +158,13 @@ public class SpongeAdapter {
      * @param location the WorldEdit location
      * @return a Sponge location
      */
-    public static org.spongepowered.api.world.Location<org.spongepowered.api.world.World> adapt(Location location) {
+    public static ServerLocation adapt(Location location) {
         checkNotNull(location);
         Vector3 position = location.toVector();
-        return new org.spongepowered.api.world.Location<>(
-                adapt((World) location.getExtent()),
-                position.getX(), position.getY(), position.getZ());
+        return ServerLocation.of(
+            adapt((World) location.getExtent()),
+            position.getX(), position.getY(), position.getZ()
+        );
     }
 
     /**
@@ -155,24 +179,66 @@ public class SpongeAdapter {
     }
 
     /**
-     * Create a WorldEdit Vector from a Bukkit location.
+     * Create a WorldEdit Vector from a Sponge location.
      *
-     * @param location The Bukkit location
+     * @param location The Sponge location
      * @return a WorldEdit vector
      */
-    public static Vector3 asVector(org.spongepowered.api.world.Location<org.spongepowered.api.world.World> location) {
+    public static Vector3 asVector(ServerLocation location) {
         checkNotNull(location);
-        return Vector3.at(location.getX(), location.getY(), location.getZ());
+        return Vector3.at(location.x(), location.y(), location.z());
     }
 
     /**
-     * Create a WorldEdit BlockVector from a Bukkit location.
+     * Create a WorldEdit BlockVector from a Sponge location.
      *
-     * @param location The Bukkit location
+     * @param location The Sponge location
      * @return a WorldEdit vector
      */
-    public static BlockVector3 asBlockVector(org.spongepowered.api.world.Location<org.spongepowered.api.world.World> location) {
+    public static BlockVector3 asBlockVector(ServerLocation location) {
         checkNotNull(location);
-        return BlockVector3.at(location.getX(), location.getY(), location.getZ());
+        return BlockVector3.at(location.x(), location.y(), location.z());
     }
+
+    public static BaseItemStack adapt(ItemStack itemStack) {
+        CompoundTag tag = itemStack.toContainer().getView(Constants.Sponge.UNSAFE_NBT)
+            .map(NbtAdapter::adaptToWorldEdit)
+            .orElse(null);
+        return new BaseItemStack(
+            ItemTypes.get(itemStack.type().key(RegistryTypes.ITEM_TYPE).asString()),
+            tag,
+            itemStack.quantity()
+        );
+    }
+
+    public static ItemStack adapt(BaseItemStack itemStack) {
+        ItemStack stack = ItemStack.builder()
+            .itemType(() -> Sponge.game().registry(RegistryTypes.ITEM_TYPE)
+                .value(ResourceKey.resolve(itemStack.getType().getId())))
+            .quantity(itemStack.getAmount())
+            .build();
+        if (itemStack.getNbtData() != null) {
+            stack.setRawData(
+                DataContainer.createNew(DataView.SafetyMode.NO_DATA_CLONED)
+                    .set(Constants.Sponge.UNSAFE_NBT, NbtAdapter.adaptFromWorldEdit(itemStack.getNbtData()))
+            );
+        }
+        return stack;
+    }
+
+    public static Direction adapt(org.spongepowered.api.util.Direction direction) {
+        return Direction.valueOf(direction.name());
+    }
+
+    public static Vector3i adaptVector3i(BlockVector3 bv3) {
+        return new Vector3i(bv3.getX(), bv3.getY(), bv3.getZ());
+    }
+
+    public static BlockVector3 adaptVector3i(Vector3i vec3i) {
+        return BlockVector3.at(vec3i.x(), vec3i.y(), vec3i.z());
+    }
+
+    private SpongeAdapter() {
+    }
+
 }

@@ -75,7 +75,7 @@ public class CommandRegistration {
         }
         for (CommandInfo command : registered) {
             DynamicPluginCommand cmd = new DynamicPluginCommand(command.getAliases(),
-                    command.getDesc(), "/" + command.getAliases()[0] + " " + command.getUsage(), executor, command.getRegisteredWith(), plugin);
+                    command.getDesc(), command.getUsage(), executor, command.getRegisteredWith(), plugin);
             cmd.setPermissions(command.getPermissions());
             commandMap.register(plugin.getDescription().getName(), cmd);
         }

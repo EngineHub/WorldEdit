@@ -19,31 +19,25 @@
 
 package com.sk89q.worldedit.sponge;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.event.platform.CommandEvent;
-import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.extension.platform.AbstractPlatform;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
 import com.sk89q.worldedit.extension.platform.Preference;
-import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.sponge.config.SpongeConfiguration;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.Registries;
-import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandManager;
+import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandException;
-import org.spongepowered.api.command.CommandResult;
-import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+import org.spongepowered.api.registry.RegistryTypes;
 import org.spongepowered.api.scheduler.Task;
-import org.spongepowered.api.world.Location;
+import org.spongepowered.api.util.Ticks;
+import org.spongepowered.api.world.server.ServerWorld;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -76,13 +70,13 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public int getDataVersion() {
-        // TODO add to adapter - org.spongepowered.common.data.util.DataUtil#MINECRAFT_DATA_VERSION
-        return 1631;
+        return Sponge.platform().minecraftVersion().dataVersion().orElse(-1);
     }
 
     @Override
     public boolean isValidMobType(String type) {
-        return Sponge.getRegistry().getType(EntityType.class, type).isPresent();
+        return Sponge.game().registry(RegistryTypes.ENTITY_TYPE)
+            .findValue(ResourceKey.resolve(type)).isPresent();
     }
 
     @Override
@@ -93,16 +87,21 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public int schedule(long delay, long period, Runnable task) {
-        Task.builder().delayTicks(delay).intervalTicks(period).execute(task).submit(SpongeWorldEdit.inst());
-        return 0; // TODO This isn't right, but we only check for -1 values
+        Task t = Task.builder()
+            .delay(Ticks.of(delay))
+            .interval(Ticks.of(period))
+            .execute(task)
+            .plugin(SpongeWorldEdit.inst().getPluginContainer())
+            .build();
+        return Math.abs(t.hashCode()); // TODO This isn't right, but we only check for -1 values
     }
 
     @Override
     public List<? extends com.sk89q.worldedit.world.World> getWorlds() {
-        Collection<org.spongepowered.api.world.World> worlds = Sponge.getServer().getWorlds();
+        Collection<ServerWorld> worlds = Sponge.server().worldManager().worlds();
         List<com.sk89q.worldedit.world.World> ret = new ArrayList<>(worlds.size());
-        for (org.spongepowered.api.world.World world : worlds) {
-            ret.add(SpongeWorldEdit.inst().getAdapter().getWorld(world));
+        for (ServerWorld world : worlds) {
+            ret.add(SpongeAdapter.adapt(world));
         }
         return ret;
     }
@@ -113,8 +112,8 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
         if (player instanceof SpongePlayer) {
             return player;
         } else {
-            Optional<org.spongepowered.api.entity.living.player.Player> optPlayer = Sponge.getServer().getPlayer(player.getUniqueId());
-            return optPlayer.<Player>map(player1 -> new SpongePlayer(this, player1)).orElse(null);
+            Optional<ServerPlayer> optPlayer = Sponge.server().player(player.getUniqueId());
+            return optPlayer.map(SpongePlayer::new).orElse(null);
         }
     }
 
@@ -124,9 +123,10 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
         if (world instanceof SpongeWorld) {
             return world;
         } else {
-            for (org.spongepowered.api.world.World ws : Sponge.getServer().getWorlds()) {
-                if (ws.getName().equals(world.getName())) {
-                    return SpongeWorldEdit.inst().getAdapter().getWorld(ws);
+            // TODO this needs fixing for world name shenanigans
+            for (ServerWorld spongeWorld : Sponge.server().worldManager().worlds()) {
+                if (spongeWorld.key().toString().equals(world.getName())) {
+                    return SpongeAdapter.adapt(spongeWorld);
                 }
             }
 
@@ -136,26 +136,6 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public void registerCommands(CommandManager manager) {
-        for (Command command : manager.getAllCommands().collect(toList())) {
-            CommandAdapter adapter = new CommandAdapter(command) {
-                @Override
-                public CommandResult process(CommandSource source, String arguments) throws org.spongepowered.api.command.CommandException {
-                    CommandEvent weEvent = new CommandEvent(SpongeWorldEdit.inst().wrapCommandSource(source), command.getName() + " " + arguments);
-                    WorldEdit.getInstance().getEventBus().post(weEvent);
-                    return weEvent.isCancelled() ? CommandResult.success() : CommandResult.empty();
-                }
-
-                @Override
-                public List<String> getSuggestions(CommandSource source, String arguments, @Nullable Location<org.spongepowered.api.world.World> targetPosition) throws CommandException {
-                    CommandSuggestionEvent weEvent = new CommandSuggestionEvent(SpongeWorldEdit.inst().wrapCommandSource(source), command.getName() + " " + arguments);
-                    WorldEdit.getInstance().getEventBus().post(weEvent);
-                    return CommandUtil.fixSuggestions(arguments, weEvent.getSuggestions());
-                }
-            };
-            ImmutableList.Builder<String> aliases = ImmutableList.builder();
-            aliases.add(command.getName()).addAll(command.getAliases());
-            Sponge.getCommandManager().register(SpongeWorldEdit.inst(), adapter, aliases.build());
-        }
     }
 
     @Override
@@ -202,15 +182,13 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public Set<SideEffect> getSupportedSideEffects() {
-        return ImmutableSet.of();
+        return ImmutableSet.of(
+            SideEffect.UPDATE, SideEffect.ENTITY_AI, SideEffect.LIGHTING, SideEffect.NEIGHBORS
+        );
     }
 
     @Override
     public Collection<Actor> getConnectedUsers() {
-        List<Actor> users = new ArrayList<>();
-        for (org.spongepowered.api.entity.living.player.Player player : Sponge.getServer().getOnlinePlayers()) {
-            users.add(new SpongePlayer(this, player));
-        }
-        return users;
+        return Sponge.server().onlinePlayers().stream().map(SpongePlayer::new).collect(toList());
     }
 }

@@ -39,7 +39,7 @@
         "fabric-permissions-api-v0": "*"
     },
     "mixins": [
-        "worldedit.mixins.json"
+        "worldedit-fabric.mixins.json"
     ],
     "accessWidener" : "worldedit.accesswidener"
 }

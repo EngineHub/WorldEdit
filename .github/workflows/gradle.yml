@@ -20,7 +20,7 @@ jobs:
         distribution: 'temurin'
     - name: Build with Gradle
       run: ./gradlew build -s
-    - uses: actions/upload-artifact@v2.2.4
+    - uses: actions/upload-artifact@v2
       name: Archive Reports
       if: always()
       with:

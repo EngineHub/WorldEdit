@@ -20,28 +20,28 @@
 package com.sk89q.worldedit.sponge;
 
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandCallable;
-import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.SubjectReference;
 
 public class SpongePermissionsProvider {
 
-    public boolean hasPermission(Player player, String permission) {
+    public boolean hasPermission(ServerPlayer player, String permission) {
         return player.hasPermission(permission);
     }
 
-    public void registerPermission(CommandCallable command, String permission) {
-        Sponge.getGame().getServiceManager().getRegistration(PermissionService.class).ifPresent((permissionService -> {
-            PermissionDescription.Builder permissionBuilder = permissionService.getProvider().newDescriptionBuilder(SpongeWorldEdit.inst());
+    public void registerPermission(String permission) {
+        Sponge.game().serviceProvider().registration(PermissionService.class).ifPresent((permissionService -> {
+            PermissionDescription.Builder permissionBuilder = permissionService.service()
+                .newDescriptionBuilder(SpongeWorldEdit.inst().getPluginContainer());
             permissionBuilder.id(permission).register();
         }));
     }
 
-    public String[] getGroups(Player player) {
-        return player.getParents().stream()
-                .map(SubjectReference::getSubjectIdentifier)
-                .toArray(String[]::new);
+    public String[] getGroups(ServerPlayer player) {
+        return player.parents().stream()
+            .map(SubjectReference::subjectIdentifier)
+            .toArray(String[]::new);
     }
 }

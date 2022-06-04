@@ -77,6 +77,11 @@ public class ForgeWorldNativeAccess implements WorldNativeAccess<LevelChunk, Blo
     @Nullable
     @Override
     public BlockState setBlockState(LevelChunk chunk, BlockPos position, BlockState state) {
+        if (chunk instanceof ExtendedChunk) {
+            return ((ExtendedChunk) chunk).setBlockState(
+                position, state, false, sideEffectSet.shouldApply(SideEffect.UPDATE)
+            );
+        }
         return chunk.setBlockState(position, state, false);
     }
 
@@ -138,6 +143,12 @@ public class ForgeWorldNativeAccess implements WorldNativeAccess<LevelChunk, Blo
         if (newState.hasAnalogOutputSignal()) {
             world.updateNeighbourForOutputSignal(pos, newState.getBlock());
         }
+    }
+
+    @Override
+    public void updateBlock(BlockPos pos, BlockState oldState, BlockState newState) {
+        ServerLevel world = getWorld();
+        newState.onPlace(world, pos, oldState, false);
     }
 
     @Override

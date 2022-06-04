@@ -23,12 +23,9 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Futures;
 import com.mojang.datafixers.util.Either;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.Lifecycle;
 import com.sk89q.jnbt.AdventureNBTConverter;
 import com.sk89q.jnbt.ByteArrayTag;
@@ -85,11 +82,8 @@ import com.sk89q.worldedit.world.item.ItemType;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.network.protocol.game.ClientboundEntityEventPacket;
-import net.minecraft.resources.RegistryReadOps;
-import net.minecraft.resources.RegistryWriteOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -120,7 +114,6 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.WorldGenSettings;
 import net.minecraft.world.level.storage.LevelStorageSource;
@@ -152,13 +145,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.OptionalInt;
+import java.util.OptionalLong;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
@@ -420,6 +414,11 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         CraftEntity craftEntity = ((CraftEntity) entity);
         Entity mcEntity = craftEntity.getHandle();
 
+        // Do not allow creating of passenger entity snapshots, passengers are included in the vehicle entity
+        if (mcEntity.isPassenger()) {
+            return null;
+        }
+
         String id = getEntityId(mcEntity);
 
         net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
@@ -436,24 +435,45 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         CraftWorld craftWorld = ((CraftWorld) location.getWorld());
         ServerLevel worldServer = craftWorld.getHandle();
 
-        Entity createdEntity = createEntityFromId(state.getType().getId(), craftWorld.getHandle());
+        String entityId = state.getType().getId();
+
+        CompoundTag nativeTag = state.getNbtData();
+        net.minecraft.nbt.CompoundTag tag;
+        if (nativeTag != null) {
+            tag = (net.minecraft.nbt.CompoundTag) fromNative(nativeTag);
+            removeUnwantedEntityTagsRecursively(tag);
+        } else {
+            tag = new net.minecraft.nbt.CompoundTag();
+        }
+
+        tag.putString("id", entityId);
+
+        Entity createdEntity = EntityType.loadEntityRecursive(tag, craftWorld.getHandle(), (loadedEntity) -> {
+            loadedEntity.absMoveTo(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+            return loadedEntity;
+        });
 
         if (createdEntity != null) {
-            CompoundTag nativeTag = state.getNbtData();
-            if (nativeTag != null) {
-                net.minecraft.nbt.CompoundTag tag = (net.minecraft.nbt.CompoundTag) fromNative(nativeTag);
-                for (String name : Constants.NO_COPY_ENTITY_NBT_FIELDS) {
-                    tag.remove(name);
-                }
-                readTagIntoEntity(tag, createdEntity);
-            }
-
-            createdEntity.absMoveTo(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
-
-            worldServer.addFreshEntity(createdEntity, SpawnReason.CUSTOM);
+            worldServer.addFreshEntityWithPassengers(createdEntity, SpawnReason.CUSTOM);
             return createdEntity.getBukkitEntity();
         } else {
             return null;
+        }
+    }
+
+    // This removes all unwanted tags from the main entity and all its passengers
+    private void removeUnwantedEntityTagsRecursively(net.minecraft.nbt.CompoundTag tag) {
+        for (String name : Constants.NO_COPY_ENTITY_NBT_FIELDS) {
+            tag.remove(name);
+        }
+
+        // Adapted from net.minecraft.world.entity.EntityType#loadEntityRecursive
+        if (tag.contains("Passengers", NBTConstants.TYPE_LIST)) {
+            net.minecraft.nbt.ListTag nbttaglist = tag.getList("Passengers", NBTConstants.TYPE_COMPOUND);
+
+            for (int i = 0; i < nbttaglist.size(); ++i) {
+                removeUnwantedEntityTagsRecursively(nbttaglist.getCompound(i));
+            }
         }
     }
 
@@ -473,28 +493,34 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
+    private static final LoadingCache<net.minecraft.world.level.block.state.properties.Property, Property<?>> PROPERTY_CACHE = CacheBuilder.newBuilder().build(new CacheLoader<net.minecraft.world.level.block.state.properties.Property, Property<?>>() {
+        @Override
+        public Property<?> load(net.minecraft.world.level.block.state.properties.Property state) throws Exception {
+            if (state instanceof net.minecraft.world.level.block.state.properties.BooleanProperty) {
+                return new BooleanProperty(state.getName(), ImmutableList.copyOf(state.getPossibleValues()));
+            } else if (state instanceof DirectionProperty) {
+                return new DirectionalProperty(state.getName(),
+                    (List<Direction>) state.getPossibleValues().stream().map(e -> Direction.valueOf(((StringRepresentable) e).getSerializedName().toUpperCase(Locale.ROOT))).collect(Collectors.toList()));
+            } else if (state instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
+                return new EnumProperty(state.getName(),
+                    (List<String>) state.getPossibleValues().stream().map(e -> ((StringRepresentable) e).getSerializedName()).collect(Collectors.toList()));
+            } else if (state instanceof net.minecraft.world.level.block.state.properties.IntegerProperty) {
+                return new IntegerProperty(state.getName(), ImmutableList.copyOf(state.getPossibleValues()));
+            } else {
+                throw new IllegalArgumentException("WorldEdit needs an update to support " + state.getClass().getSimpleName());
+            }
+        }
+    });
+
+    @SuppressWarnings({ "rawtypes" })
     @Override
     public Map<String, ? extends Property<?>> getProperties(BlockType blockType) {
-        Map<String, Property<?>> properties = Maps.newTreeMap(String::compareTo);
+        Map<String, Property<?>> properties = new TreeMap<>();
         Block block = getBlockFromType(blockType);
         StateDefinition<Block, net.minecraft.world.level.block.state.BlockState> blockStateList =
             block.getStateDefinition();
         for (net.minecraft.world.level.block.state.properties.Property state : blockStateList.getProperties()) {
-            Property property;
-            if (state instanceof net.minecraft.world.level.block.state.properties.BooleanProperty) {
-                property = new BooleanProperty(state.getName(), ImmutableList.copyOf(state.getPossibleValues()));
-            } else if (state instanceof DirectionProperty) {
-                property = new DirectionalProperty(state.getName(),
-                    (List<Direction>) state.getPossibleValues().stream().map(e -> Direction.valueOf(((StringRepresentable) e).getSerializedName().toUpperCase(Locale.ROOT))).collect(Collectors.toList()));
-            } else if (state instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
-                property = new EnumProperty(state.getName(),
-                    (List<String>) state.getPossibleValues().stream().map(e -> ((StringRepresentable) e).getSerializedName()).collect(Collectors.toList()));
-            } else if (state instanceof net.minecraft.world.level.block.state.properties.IntegerProperty) {
-                property = new IntegerProperty(state.getName(), ImmutableList.copyOf(state.getPossibleValues()));
-            } else {
-                throw new IllegalArgumentException("WorldEdit needs an update to support " + state.getClass().getSimpleName());
-            }
-
+            Property<?> property = PROPERTY_CACHE.getUnchecked(state);
             properties.put(property.getName(), property);
         }
         return properties;
@@ -604,7 +630,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
             long seed = options.getSeed().orElse(originalWorld.getSeed());
             WorldGenSettings newOpts = options.getSeed().isPresent()
-                ? replaceSeed(originalWorld, seed, originalOpts)
+                ? originalOpts.withSeed(levelProperties.isHardcore(), OptionalLong.of(seed))
                 : originalOpts;
 
             LevelSettings newWorldSettings = new LevelSettings(
@@ -647,49 +673,6 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             }
             SafeFiles.tryHardToDeleteDir(tempDir);
         }
-    }
-
-    private WorldGenSettings replaceSeed(ServerLevel originalWorld, long seed, WorldGenSettings originalOpts) {
-        RegistryWriteOps<net.minecraft.nbt.Tag> nbtReadRegOps = RegistryWriteOps.create(
-            NbtOps.INSTANCE,
-            originalWorld.getServer().registryAccess()
-        );
-        RegistryReadOps<net.minecraft.nbt.Tag> nbtRegOps = RegistryReadOps.createAndLoad(
-            NbtOps.INSTANCE,
-            originalWorld.getServer().getResourceManager(),
-            originalWorld.getServer().registryAccess()
-        );
-        Codec<WorldGenSettings> dimCodec = WorldGenSettings.CODEC;
-        return dimCodec
-            .encodeStart(nbtReadRegOps, originalOpts)
-            .flatMap(tag ->
-                dimCodec.parse(
-                    recursivelySetSeed(new Dynamic<>(nbtRegOps, tag), seed, new HashSet<>())
-                )
-            )
-            .get()
-            .map(
-                l -> l,
-                error -> {
-                    throw new IllegalStateException("Unable to map GeneratorOptions: " + error.message());
-                }
-            );
-    }
-
-    @SuppressWarnings("unchecked")
-    private Dynamic<net.minecraft.nbt.Tag> recursivelySetSeed(Dynamic<net.minecraft.nbt.Tag> dynamic, long seed, Set<Dynamic<net.minecraft.nbt.Tag>> seen) {
-        if (!seen.add(dynamic)) {
-            return dynamic;
-        }
-        return dynamic.updateMapValues(pair -> {
-            if (pair.getFirst().asString("").equals("seed")) {
-                return pair.mapSecond(v -> v.createLong(seed));
-            }
-            if (pair.getSecond().getValue() instanceof net.minecraft.nbt.CompoundTag) {
-                return pair.mapSecond(v -> recursivelySetSeed((Dynamic<net.minecraft.nbt.Tag>) v, seed, seen));
-            }
-            return pair;
-        });
     }
 
     private BiomeType adapt(ServerLevel serverWorld, Biome origBiome) {
@@ -740,9 +723,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             }
             extent.setBlock(vec, state.toBaseBlock());
             if (options.shouldRegenBiomes()) {
-                PalettedContainer<Biome> biomeIndex = chunk.getSection(chunk.getSectionIndex(vec.getBlockY()))
-                    .getBiomes();
-                Biome origBiome = biomeIndex.get(vec.getBlockX(), vec.getBlockY(), vec.getBlockZ());
+                Biome origBiome = chunk.getNoiseBiome(vec.getX(), vec.getY(), vec.getZ());
                 BiomeType adaptedBiome = adapt(serverWorld, origBiome);
                 if (adaptedBiome != null) {
                     extent.setBiome(vec, adaptedBiome);

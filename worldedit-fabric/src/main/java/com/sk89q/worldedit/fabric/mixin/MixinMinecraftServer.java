@@ -23,13 +23,11 @@ import com.sk89q.worldedit.extension.platform.Watchdog;
 import com.sk89q.worldedit.fabric.internal.ExtendedMinecraftServer;
 import net.minecraft.Util;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.ServerResources;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.nio.file.Path;
 
@@ -52,7 +50,4 @@ public abstract class MixinMinecraftServer implements Watchdog, ExtendedMinecraf
         return storageSource.getDimensionPath(world.dimension());
     }
 
-    @Accessor
-    @Override
-    public abstract ServerResources getResources();
 }
