@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  */
 public class FabricTransmogrifier {
 
-    private static final LoadingCache<net.minecraft.world.level.block.state.properties.Property<?>, Property<?>> propertyCache = CacheBuilder.newBuilder().build(new CacheLoader<>() {
+    private static final LoadingCache<net.minecraft.world.level.block.state.properties.Property<?>, Property<?>> PROPERTY_CACHE = CacheBuilder.newBuilder().build(new CacheLoader<>() {
         @Override
         public Property<?> load(net.minecraft.world.level.block.state.properties.Property<?> property) throws Exception {
             if (property instanceof net.minecraft.world.level.block.state.properties.BooleanProperty) {
@@ -74,7 +74,7 @@ public class FabricTransmogrifier {
     });
 
     public static Property<?> transmogToWorldEditProperty(net.minecraft.world.level.block.state.properties.Property<?> property) {
-        return propertyCache.getUnchecked(property);
+        return PROPERTY_CACHE.getUnchecked(property);
     }
 
     private static Map<Property<?>, Object> transmogToWorldEditProperties(BlockType block, Map<net.minecraft.world.level.block.state.properties.Property<?>, Comparable<?>> mcProps) {

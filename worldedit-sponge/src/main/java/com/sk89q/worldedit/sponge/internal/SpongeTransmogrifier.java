@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
  */
 public class SpongeTransmogrifier {
 
-    private static final LoadingCache<StateProperty<?>, Property<?>> propertyCache = CacheBuilder.newBuilder().build(new CacheLoader<StateProperty<?>, Property<?>>() {
+    private static final LoadingCache<StateProperty<?>, Property<?>> PROPERTY_CACHE = CacheBuilder.newBuilder().build(new CacheLoader<StateProperty<?>, Property<?>>() {
         @Override
         public Property<?> load(StateProperty<?> property) throws Exception {
             if (property instanceof BooleanStateProperty) {
@@ -77,7 +77,7 @@ public class SpongeTransmogrifier {
     });
 
     public static Property<?> transmogToWorldEditProperty(StateProperty<?> property) {
-        return propertyCache.getUnchecked(property);
+        return PROPERTY_CACHE.getUnchecked(property);
     }
 
     private static Map<Property<?>, Object> transmogToWorldEditProperties(BlockType block, Map<StateProperty<?>, ?> mcProps) {

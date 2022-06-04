@@ -23,7 +23,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Futures;
 import com.mojang.datafixers.util.Either;
@@ -151,6 +150,7 @@ import java.util.Objects;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
@@ -491,7 +491,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static final LoadingCache<net.minecraft.world.level.block.state.properties.Property, Property<?>> propertyCache = CacheBuilder.newBuilder().build(new CacheLoader<net.minecraft.world.level.block.state.properties.Property, Property<?>>() {
+    private static final LoadingCache<net.minecraft.world.level.block.state.properties.Property, Property<?>> PROPERTY_CACHE = CacheBuilder.newBuilder().build(new CacheLoader<net.minecraft.world.level.block.state.properties.Property, Property<?>>() {
         @Override
         public Property<?> load(net.minecraft.world.level.block.state.properties.Property state) throws Exception {
             if (state instanceof net.minecraft.world.level.block.state.properties.BooleanProperty) {
@@ -513,12 +513,12 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     @SuppressWarnings({ "rawtypes" })
     @Override
     public Map<String, ? extends Property<?>> getProperties(BlockType blockType) {
-        Map<String, Property<?>> properties = Maps.newTreeMap(String::compareTo);
+        Map<String, Property<?>> properties = new TreeMap<>();
         Block block = getBlockFromType(blockType);
         StateDefinition<Block, net.minecraft.world.level.block.state.BlockState> blockStateList =
             block.getStateDefinition();
         for (net.minecraft.world.level.block.state.properties.Property state : blockStateList.getProperties()) {
-            Property<?> property = propertyCache.getUnchecked(state);
+            Property<?> property = PROPERTY_CACHE.getUnchecked(state);
             properties.put(property.getName(), property);
         }
         return properties;
