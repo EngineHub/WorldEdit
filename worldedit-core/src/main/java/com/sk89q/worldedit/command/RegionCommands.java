@@ -371,6 +371,8 @@ public class RegionCommands {
                         boolean blockUnits,
                      @ArgFlag(name = 'm', desc = "Set the include mask, non-matching blocks become air")
                          Mask mask) throws WorldEditException {
+        checkCommandArgument(count >= 1, "Count must be >= 1");
+
         Mask combinedMask;
         if (ignoreAirBlocks) {
             if (mask == null) {
