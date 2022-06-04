@@ -23,7 +23,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Futures;
 import com.mojang.datafixers.util.Either;
@@ -151,6 +150,7 @@ import java.util.Objects;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
@@ -491,28 +491,34 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
+    private static final LoadingCache<net.minecraft.world.level.block.state.properties.Property, Property<?>> PROPERTY_CACHE = CacheBuilder.newBuilder().build(new CacheLoader<net.minecraft.world.level.block.state.properties.Property, Property<?>>() {
+        @Override
+        public Property<?> load(net.minecraft.world.level.block.state.properties.Property state) throws Exception {
+            if (state instanceof net.minecraft.world.level.block.state.properties.BooleanProperty) {
+                return new BooleanProperty(state.getName(), ImmutableList.copyOf(state.getPossibleValues()));
+            } else if (state instanceof DirectionProperty) {
+                return new DirectionalProperty(state.getName(),
+                    (List<Direction>) state.getPossibleValues().stream().map(e -> Direction.valueOf(((StringRepresentable) e).getSerializedName().toUpperCase(Locale.ROOT))).collect(Collectors.toList()));
+            } else if (state instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
+                return new EnumProperty(state.getName(),
+                    (List<String>) state.getPossibleValues().stream().map(e -> ((StringRepresentable) e).getSerializedName()).collect(Collectors.toList()));
+            } else if (state instanceof net.minecraft.world.level.block.state.properties.IntegerProperty) {
+                return new IntegerProperty(state.getName(), ImmutableList.copyOf(state.getPossibleValues()));
+            } else {
+                throw new IllegalArgumentException("WorldEdit needs an update to support " + state.getClass().getSimpleName());
+            }
+        }
+    });
+
+    @SuppressWarnings({ "rawtypes" })
     @Override
     public Map<String, ? extends Property<?>> getProperties(BlockType blockType) {
-        Map<String, Property<?>> properties = Maps.newTreeMap(String::compareTo);
+        Map<String, Property<?>> properties = new TreeMap<>();
         Block block = getBlockFromType(blockType);
         StateDefinition<Block, net.minecraft.world.level.block.state.BlockState> blockStateList =
             block.getStateDefinition();
         for (net.minecraft.world.level.block.state.properties.Property state : blockStateList.getProperties()) {
-            Property property;
-            if (state instanceof net.minecraft.world.level.block.state.properties.BooleanProperty) {
-                property = new BooleanProperty(state.getName(), ImmutableList.copyOf(state.getPossibleValues()));
-            } else if (state instanceof DirectionProperty) {
-                property = new DirectionalProperty(state.getName(),
-                    (List<Direction>) state.getPossibleValues().stream().map(e -> Direction.valueOf(((StringRepresentable) e).getSerializedName().toUpperCase(Locale.ROOT))).collect(Collectors.toList()));
-            } else if (state instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
-                property = new EnumProperty(state.getName(),
-                    (List<String>) state.getPossibleValues().stream().map(e -> ((StringRepresentable) e).getSerializedName()).collect(Collectors.toList()));
-            } else if (state instanceof net.minecraft.world.level.block.state.properties.IntegerProperty) {
-                property = new IntegerProperty(state.getName(), ImmutableList.copyOf(state.getPossibleValues()));
-            } else {
-                throw new IllegalArgumentException("WorldEdit needs an update to support " + state.getClass().getSimpleName());
-            }
-
+            Property<?> property = PROPERTY_CACHE.getUnchecked(state);
             properties.put(property.getName(), property);
         }
         return properties;
