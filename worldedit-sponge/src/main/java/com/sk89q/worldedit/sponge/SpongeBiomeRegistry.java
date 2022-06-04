@@ -24,7 +24,8 @@ import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.translation.TranslationManager;
 import com.sk89q.worldedit.world.biome.BiomeData;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
-import org.spongepowered.api.world.biome.BiomeType;
+import org.spongepowered.api.registry.RegistryReference;
+import org.spongepowered.api.world.biome.Biome;
 
 import javax.annotation.Nullable;
 
@@ -49,21 +50,21 @@ class SpongeBiomeRegistry implements BiomeRegistry {
 
     @Deprecated
     private static class SpongeBiomeData implements BiomeData {
-        private final BiomeType biome;
+        private final RegistryReference<Biome> biome;
 
         /**
          * Create a new instance.
          *
          * @param biome the base biome
          */
-        private SpongeBiomeData(BiomeType biome) {
+        private SpongeBiomeData(RegistryReference<Biome> biome) {
             this.biome = biome;
         }
 
         @SuppressWarnings("deprecation")
         @Override
         public String getName() {
-            return biome.getName();
+            return biome.location().asString();
         }
     }
 

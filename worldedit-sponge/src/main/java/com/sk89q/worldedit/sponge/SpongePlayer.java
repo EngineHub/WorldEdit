@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.sponge;
 
-import com.flowpowered.math.vector.Vector3d;
+import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
@@ -29,63 +29,64 @@ import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.session.SessionKey;
+import com.sk89q.worldedit.sponge.internal.NbtAdapter;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.adapter.spongeapi.TextAdapter;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.gamemode.GameMode;
 import com.sk89q.worldedit.world.gamemode.GameModes;
-import com.sk89q.worldedit.world.item.ItemTypes;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColor;
-import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.serializer.TextSerializers;
-import org.spongepowered.api.world.World;
+import org.spongepowered.api.registry.RegistryTypes;
+import org.spongepowered.api.world.server.ServerLocation;
+import org.spongepowered.math.vector.Vector3d;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
 
 public class SpongePlayer extends AbstractPlayerActor {
+    private static final int STRUCTURE_BLOCK_PACKET_ID = 7;
 
-    private final Player player;
+    private final ServerPlayer player;
 
-    protected SpongePlayer(SpongePlatform platform, Player player) {
+    protected SpongePlayer(ServerPlayer player) {
         this.player = player;
         ThreadSafeCache.getInstance().getOnlineIds().add(getUniqueId());
     }
 
     @Override
     public UUID getUniqueId() {
-        return player.getUniqueId();
+        return player.uniqueId();
     }
 
     @Override
     public BaseItemStack getItemInHand(HandSide handSide) {
-        Optional<ItemStack> is = this.player.getItemInHand(handSide == HandSide.MAIN_HAND
-                ? HandTypes.MAIN_HAND : HandTypes.OFF_HAND);
-        return is.map(itemStack -> new BaseItemStack(ItemTypes.get(itemStack.getType().getId()))).orElse(null);
+        ItemStack is = this.player.itemInHand(
+            handSide == HandSide.MAIN_HAND ? HandTypes.MAIN_HAND : HandTypes.OFF_HAND
+        );
+        return SpongeAdapter.adapt(is);
     }
 
     @Override
     public String getName() {
-        return this.player.getName();
+        return this.player.name();
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public String getDisplayName() {
-        return player.getDisplayNameData().displayName().getDirect().map(TextSerializers.LEGACY_FORMATTING_CODE::serialize).orElse(getName());
+        return LegacyComponentSerializer.legacySection().serialize(player.displayName().get());
     }
 
     @Override
@@ -95,10 +96,10 @@ public class SpongePlayer extends AbstractPlayerActor {
 
     @Override
     public Location getLocation() {
-        org.spongepowered.api.world.Location<World> entityLoc = this.player.getLocation();
-        Vector3d entityRot = this.player.getRotation();
+        ServerLocation entityLoc = this.player.serverLocation();
+        Vector3d entityRot = this.player.rotation();
 
-        return SpongeWorldEdit.inst().getAdapter().adapt(entityLoc, entityRot);
+        return SpongeAdapter.adapt(entityLoc, entityRot);
     }
 
     @Override
@@ -108,15 +109,12 @@ public class SpongePlayer extends AbstractPlayerActor {
 
     @Override
     public com.sk89q.worldedit.world.World getWorld() {
-        return SpongeWorldEdit.inst().getAdapter().getWorld(player.getWorld());
+        return SpongeAdapter.adapt(player.serverLocation().world());
     }
 
     @Override
     public void giveItem(BaseItemStack itemStack) {
-        this.player.getInventory().offer(
-                ItemStack.of(Sponge.getGame().getRegistry().getType(ItemType.class, itemStack.getType().getId()).get(),
-                itemStack.getAmount())
-        );
+        this.player.inventory().offer(SpongeAdapter.adapt(itemStack));
     }
 
     @Override
@@ -128,46 +126,55 @@ public class SpongePlayer extends AbstractPlayerActor {
         }
 
         String finalData = send;
-        CUIChannelHandler.getActiveChannel().sendTo(player, buffer -> buffer.writeBytes(finalData.getBytes(StandardCharsets.UTF_8)));
+        CUIChannelHandler.channel().play().sendTo(
+            player,
+            buffer -> buffer.writeBytes(finalData.getBytes(StandardCharsets.UTF_8))
+        );
     }
 
     @Override
+    @Deprecated
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
-            this.player.sendMessage(TextSerializers.FORMATTING_CODE.deserialize(part));
+            this.player.sendMessage(LegacyComponentSerializer.legacySection().deserialize(part));
         }
     }
 
     @Override
+    @Deprecated
     public void printDebug(String msg) {
-        sendColorized(msg, TextColors.GRAY);
+        sendColorized(msg, NamedTextColor.GRAY);
     }
 
     @Override
+    @Deprecated
     public void print(String msg) {
-        sendColorized(msg, TextColors.LIGHT_PURPLE);
+        sendColorized(msg, NamedTextColor.LIGHT_PURPLE);
     }
 
     @Override
+    @Deprecated
     public void printError(String msg) {
-        sendColorized(msg, TextColors.RED);
+        sendColorized(msg, NamedTextColor.RED);
     }
 
     @Override
     public void print(Component component) {
-        TextAdapter.sendMessage(player, WorldEditText.format(component, getLocale()));
+        player.sendMessage(SpongeTextAdapter.convert(component, getLocale()));
     }
 
     private void sendColorized(String msg, TextColor formatting) {
         for (String part : msg.split("\n")) {
-            this.player.sendMessage(Text.of(formatting, TextSerializers.FORMATTING_CODE.deserialize(part)));
+            this.player.sendMessage(
+                LegacyComponentSerializer.legacySection().deserialize(part).color(formatting)
+            );
         }
     }
 
     @Override
     public boolean trySetPosition(Vector3 pos, float pitch, float yaw) {
-        org.spongepowered.api.world.Location<World> loc = new org.spongepowered.api.world.Location<>(
-            this.player.getWorld(), pos.getX(), pos.getY(), pos.getZ()
+        ServerLocation loc = ServerLocation.of(
+            this.player.world(), pos.getX(), pos.getY(), pos.getZ()
         );
 
         return this.player.setLocationAndRotation(loc, new Vector3d(pitch, yaw, 0));
@@ -196,13 +203,16 @@ public class SpongePlayer extends AbstractPlayerActor {
 
     @Override
     public GameMode getGameMode() {
-        return GameModes.get(player.getGameModeData().type().get().getId());
+        return GameModes.get(player.gameMode().get().key(RegistryTypes.GAME_MODE).asString());
     }
 
     @Override
     public void setGameMode(GameMode gameMode) {
-        player.getGameModeData().type().set(Sponge.getRegistry().getType(org.spongepowered.api.entity.living.player.gamemode.GameMode.class,
-                gameMode.getId()).get());
+        player.gameMode().set(
+            Sponge.game().registry(RegistryTypes.GAME_MODE).value(
+                ResourceKey.resolve(gameMode.getId())
+            )
+        );
     }
 
     @Override
@@ -217,24 +227,29 @@ public class SpongePlayer extends AbstractPlayerActor {
 
     @Override
     public <B extends BlockStateHolder<B>> void sendFakeBlock(BlockVector3 pos, B block) {
-        org.spongepowered.api.world.Location<World> loc = player.getWorld().getLocation(pos.getX(), pos.getY(), pos.getZ());
         if (block == null) {
-            player.sendBlockChange(loc.getBlockPosition(), loc.getBlock());
+            player.resetBlockChange(pos.getX(), pos.getY(), pos.getZ());
         } else {
-            // TODO
-            //            player.sendBlockChange(loc, BukkitAdapter.adapt(block));
-            //            if (block instanceof BaseBlock && ((BaseBlock) block).hasNbtData()) {
-            //                BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
-            //                if (adapter != null) {
-            //                    adapter.sendFakeNBT(player, pos, ((BaseBlock) block).getNbtData());
-            //                }
-            //            }
+            player.sendBlockChange(pos.getX(), pos.getY(), pos.getZ(), SpongeAdapter.adapt(block.toImmutableState()));
+            if (block instanceof BaseBlock && block.getBlockType().equals(com.sk89q.worldedit.world.block.BlockTypes.STRUCTURE_BLOCK)) {
+                final BaseBlock baseBlock = (BaseBlock) block;
+                final CompoundTag nbtData = baseBlock.getNbtData();
+                if (nbtData != null) {
+                    net.minecraft.server.level.ServerPlayer mcPlayer =
+                        ((net.minecraft.server.level.ServerPlayer) player);
+                    mcPlayer.connection.send(new net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket(
+                        new net.minecraft.core.BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()),
+                        STRUCTURE_BLOCK_PACKET_ID,
+                        NbtAdapter.adaptNMSToWorldEdit(nbtData))
+                    );
+                }
+            }
         }
     }
 
     @Override
     public Locale getLocale() {
-        return player.getLocale();
+        return player.locale();
     }
 
     @Override
@@ -249,8 +264,8 @@ public class SpongePlayer extends AbstractPlayerActor {
         private final String name;
 
         SessionKeyImpl(Player player) {
-            this.uuid = player.getUniqueId();
-            this.name = player.getName();
+            this.uuid = player.uniqueId();
+            this.name = player.name();
         }
 
         @Override

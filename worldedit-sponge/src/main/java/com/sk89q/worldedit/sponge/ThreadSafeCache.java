@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.sponge;
 
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,8 +49,8 @@ public class ThreadSafeCache implements Runnable {
     public void run() {
         List<UUID> onlineIds = new ArrayList<>();
 
-        for (Player player : Sponge.getServer().getOnlinePlayers()) {
-            onlineIds.add(player.getUniqueId());
+        for (ServerPlayer player : Sponge.server().onlinePlayers()) {
+            onlineIds.add(player.uniqueId());
         }
 
         this.onlineIds = new CopyOnWriteArraySet<>(onlineIds);

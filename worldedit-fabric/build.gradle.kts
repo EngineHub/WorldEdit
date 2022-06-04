@@ -21,8 +21,8 @@ applyShadowConfiguration()
 apply(plugin = "fabric-loom")
 apply(plugin = "java-library")
 
-val minecraftVersion = "1.18.1"
-val loaderVersion = "0.12.9"
+val minecraftVersion = "1.18.2"
+val loaderVersion = "0.13.3"
 
 val fabricApiConfiguration: Configuration = configurations.create("fabricApi")
 
@@ -48,7 +48,7 @@ dependencies {
     "modImplementation"("net.fabricmc:fabric-loader:$loaderVersion")
 
     // [1] declare fabric-api dependency...
-    "fabricApi"("net.fabricmc.fabric-api:fabric-api:0.44.0+1.18")
+    "fabricApi"("net.fabricmc.fabric-api:fabric-api:0.47.9+1.18.2")
 
     // [2] Load the API dependencies from the fabric mod json...
     @Suppress("UNCHECKED_CAST")
@@ -58,6 +58,7 @@ dependencies {
     val wantedDependencies = (fabricModJson["depends"] ?: error("no depends in fabric.mod.json")).keys
         .filter { it == "fabric-api-base" || it.contains(Regex("v\\d$")) }
         .map { "net.fabricmc.fabric-api:$it" }
+        .toSet()
     logger.lifecycle("Looking for these dependencies:")
     for (wantedDependency in wantedDependencies) {
         logger.lifecycle(wantedDependency)
@@ -103,7 +104,7 @@ dependencies {
     "annotationProcessor"("net.fabricmc:fabric-loom:${project.versions.loom}")
 
     // Silence some warnings, since apparently this isn't on the compile classpath like it should be.
-    "compileOnly"("com.google.errorprone:error_prone_annotations:2.10.0")
+    "compileOnly"("com.google.errorprone:error_prone_annotations:2.11.0")
 }
 
 configure<BasePluginExtension> {
@@ -139,10 +140,9 @@ tasks.named<ShadowJar>("shadowJar") {
 tasks.register<RemapJarTask>("remapShadowJar") {
     val shadowJar = tasks.getByName<ShadowJar>("shadowJar")
     dependsOn(shadowJar)
-    input.set(shadowJar.archiveFile)
+    inputFile.set(shadowJar.archiveFile)
     archiveFileName.set(shadowJar.archiveFileName.get().replace(Regex("-dev\\.jar$"), ".jar"))
     addNestedDependencies.set(true)
-    remapAccessWidener.set(true)
 }
 
 tasks.named("assemble").configure {

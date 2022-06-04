@@ -23,12 +23,10 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.collect.Streams;
 import com.google.common.util.concurrent.Futures;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.Dynamic;
+import com.sk89q.jnbt.NBTConstants;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
@@ -39,8 +37,10 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.forge.internal.ForgeWorldNativeAccess;
 import com.sk89q.worldedit.forge.internal.NBTConverter;
 import com.sk89q.worldedit.forge.internal.TileEntityUtils;
+import com.sk89q.worldedit.function.mask.AbstractExtentMask;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.mask.Mask2D;
 import com.sk89q.worldedit.internal.Constants;
-import com.sk89q.worldedit.internal.util.BiomeMath;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -64,13 +64,10 @@ import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.data.worldgen.features.EndFeatures;
 import net.minecraft.data.worldgen.features.TreeFeatures;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.RegistryReadOps;
-import net.minecraft.resources.RegistryWriteOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerChunkCache;
@@ -86,6 +83,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkStatus;
@@ -106,11 +104,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.OptionalLong;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -219,7 +217,9 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     private BiomeType getBiomeInChunk(BlockVector3 position, ChunkAccess chunk) {
-        return ForgeAdapter.adapt(chunk.getNoiseBiome(position.getX() >> 2, position.getY() >> 2, position.getZ() >> 2));
+        return ForgeAdapter.adapt(
+            chunk.getNoiseBiome(position.getX() >> 2, position.getY() >> 2, position.getZ() >> 2).value()
+        );
     }
 
     @Override
@@ -228,10 +228,12 @@ public class ForgeWorld extends AbstractWorld {
         checkNotNull(biome);
 
         LevelChunk chunk = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4);
-        PalettedContainer<Biome> biomes = chunk.getSection(chunk.getSectionIndex(position.getY())).getBiomes();
+        PalettedContainer<Holder<Biome>> biomes = chunk.getSection(chunk.getSectionIndex(position.getY())).getBiomes();
         biomes.getAndSetUnchecked(
             position.getX() & 3, position.getY() & 3, position.getZ() & 3,
-            ForgeAdapter.adapt(biome)
+            getWorld().registryAccess().registry(Registry.BIOME_REGISTRY)
+                .orElseThrow()
+                .getHolderOrThrow(ResourceKey.create(Registry.BIOME_REGISTRY, new ResourceLocation(biome.getId())))
         );
         chunk.setUnsaved(true);
         return true;
@@ -320,7 +322,7 @@ public class ForgeWorld extends AbstractWorld {
 
             long seed = options.getSeed().orElse(originalWorld.getSeed());
             WorldGenSettings newOpts = options.getSeed().isPresent()
-                ? replaceSeed(originalWorld, seed, originalOpts)
+                ? originalOpts.withSeed(levelProperties.isHardcore(), OptionalLong.of(seed))
                 : originalOpts;
 
             levelProperties.worldGenSettings = newOpts;
@@ -331,7 +333,7 @@ public class ForgeWorld extends AbstractWorld {
                 originalWorld.getServer(), Util.backgroundExecutor(), session,
                 ((ServerLevelData) originalWorld.getLevelData()),
                 worldRegKey,
-                originalWorld.dimensionType(),
+                originalWorld.dimensionTypeRegistration(),
                 new WorldEditGenListener(),
                 dimGenOpts.generator(),
                 originalWorld.isDebug(),
@@ -353,49 +355,6 @@ public class ForgeWorld extends AbstractWorld {
         } finally {
             SafeFiles.tryHardToDeleteDir(tempDir);
         }
-    }
-
-    private WorldGenSettings replaceSeed(ServerLevel originalWorld, long seed, WorldGenSettings originalOpts) {
-        RegistryWriteOps<Tag> nbtReadRegOps = RegistryWriteOps.create(
-            NbtOps.INSTANCE,
-            originalWorld.getServer().registryAccess()
-        );
-        RegistryReadOps<Tag> nbtRegOps = RegistryReadOps.createAndLoad(
-            NbtOps.INSTANCE,
-            originalWorld.getServer().getResourceManager(),
-            originalWorld.getServer().registryAccess()
-        );
-        Codec<WorldGenSettings> dimCodec = WorldGenSettings.CODEC;
-        return dimCodec
-            .encodeStart(nbtReadRegOps, originalOpts)
-            .flatMap(tag ->
-                dimCodec.parse(
-                    recursivelySetSeed(new Dynamic<>(nbtRegOps, tag), seed, new HashSet<>())
-                )
-            )
-            .get()
-            .map(
-                l -> l,
-                error -> {
-                    throw new IllegalStateException("Unable to map GeneratorOptions: " + error.message());
-                }
-            );
-    }
-
-    @SuppressWarnings("unchecked")
-    private Dynamic<Tag> recursivelySetSeed(Dynamic<Tag> dynamic, long seed, Set<Dynamic<Tag>> seen) {
-        if (!seen.add(dynamic)) {
-            return dynamic;
-        }
-        return dynamic.updateMapValues(pair -> {
-            if (pair.getFirst().asString("").equals("seed")) {
-                return pair.mapSecond(v -> v.createLong(seed));
-            }
-            if (pair.getSecond().getValue() instanceof net.minecraft.nbt.CompoundTag) {
-                return pair.mapSecond(v -> recursivelySetSeed((Dynamic<Tag>) v, seed, seen));
-            }
-            return pair;
-        });
     }
 
     private void regenForWorld(Region region, Extent extent, ServerLevel serverWorld,
@@ -428,9 +387,7 @@ public class ForgeWorld extends AbstractWorld {
             BlockStateHolder<?> state = ForgeAdapter.adapt(chunk.getBlockState(pos));
             BlockEntity blockEntity = chunk.getBlockEntity(pos);
             if (blockEntity != null) {
-                net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
-                blockEntity.save(tag);
-                state = state.toBaseBlock(LazyReference.from(() -> NBTConverter.fromNative(tag)));
+                state = state.toBaseBlock(LazyReference.from(() -> NBTConverter.fromNative(blockEntity.saveWithFullMetadata())));
             }
             extent.setBlock(vec, state.toBaseBlock());
 
@@ -454,7 +411,7 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Nullable
-    private static ConfiguredFeature<?, ?> createTreeFeatureGenerator(TreeType type) {
+    private static Holder<? extends ConfiguredFeature<?, ?>> createTreeFeatureGenerator(TreeType type) {
         return switch (type) {
             case TREE -> TreeFeatures.OAK;
             case BIG_TREE -> TreeFeatures.FANCY_OAK;
@@ -482,7 +439,9 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public boolean generateTree(TreeType type, EditSession editSession, BlockVector3 position) {
-        ConfiguredFeature<?, ?> generator = createTreeFeatureGenerator(type);
+        ConfiguredFeature<?, ?> generator = Optional.ofNullable(createTreeFeatureGenerator(type))
+            .map(Holder::value)
+            .orElse(null);
         ServerLevel world = getWorld();
         ServerChunkCache chunkManager = world.getChunkSource();
         if (type == TreeType.CHORUS_PLANT) {
@@ -572,7 +531,7 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public int getMaxY() {
-        return getWorld().getHeight() - 1;
+        return getWorld().getMaxBuildHeight() - 1;
     }
 
     @Override
@@ -618,8 +577,7 @@ public class ForgeWorld extends AbstractWorld {
     public boolean equals(Object o) {
         if (o == null) {
             return false;
-        } else if ((o instanceof ForgeWorld)) {
-            ForgeWorld other = ((ForgeWorld) o);
+        } else if ((o instanceof ForgeWorld other)) {
             Level otherWorld = other.worldRef.get();
             Level thisWorld = worldRef.get();
             return otherWorld != null && otherWorld.equals(thisWorld);
@@ -642,47 +600,75 @@ public class ForgeWorld extends AbstractWorld {
             box,
             e -> region.contains(ForgeAdapter.adapt(e.blockPosition()))
         );
-        return ImmutableList.copyOf(Lists.transform(
-            nmsEntities,
-            ForgeEntity::new
-        ));
+        return nmsEntities.stream().map(ForgeEntity::new).collect(ImmutableList.toImmutableList());
     }
 
     @Override
     public List<? extends Entity> getEntities() {
         final ServerLevel world = getWorld();
-        return ImmutableList.copyOf(Iterables.transform(
-            world.getAllEntities(),
-            ForgeEntity::new
-        ));
+        return Streams.stream(world.getAllEntities())
+            .map(ForgeEntity::new)
+            .collect(ImmutableList.toImmutableList());
     }
 
     @Nullable
     @Override
     public Entity createEntity(Location location, BaseEntity entity) {
         ServerLevel world = getWorld();
-        final Optional<EntityType<?>> entityType = EntityType.byString(entity.getType().getId());
-        if (!entityType.isPresent()) {
+        String entityId = entity.getType().getId();
+        final Optional<EntityType<?>> entityType = EntityType.byString(entityId);
+        if (entityType.isEmpty()) {
             return null;
         }
-        net.minecraft.world.entity.Entity createdEntity = entityType.get().create(world);
-        if (createdEntity != null) {
-            CompoundBinaryTag nativeTag = entity.getNbt();
-            if (nativeTag != null) {
-                net.minecraft.nbt.CompoundTag tag = NBTConverter.toNative(nativeTag);
-                for (String name : Constants.NO_COPY_ENTITY_NBT_FIELDS) {
-                    tag.remove(name);
-                }
-                createdEntity.load(tag);
-            }
-
-            createdEntity.absMoveTo(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
-
-            world.addFreshEntity(createdEntity);
-            return new ForgeEntity(createdEntity);
+        CompoundBinaryTag nativeTag = entity.getNbt();
+        net.minecraft.nbt.CompoundTag tag;
+        if (nativeTag != null) {
+            tag = NBTConverter.toNative(nativeTag);
+            removeUnwantedEntityTagsRecursively(tag);
         } else {
-            return null;
+            tag = new net.minecraft.nbt.CompoundTag();
+        }
+        tag.putString("id", entityId);
+
+        net.minecraft.world.entity.Entity createdEntity = EntityType.loadEntityRecursive(tag, world, (loadedEntity) -> {
+            loadedEntity.absMoveTo(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+            return loadedEntity;
+        });
+        if (createdEntity != null) {
+            world.addFreshEntityWithPassengers(createdEntity);
+            return new ForgeEntity(createdEntity);
+        }
+        return null;
+    }
+
+    private void removeUnwantedEntityTagsRecursively(net.minecraft.nbt.CompoundTag tag) {
+        for (String name : Constants.NO_COPY_ENTITY_NBT_FIELDS) {
+            tag.remove(name);
+        }
+
+        // Adapted from net.minecraft.world.entity.EntityType#loadEntityRecursive
+        if (tag.contains("Passengers", NBTConstants.TYPE_LIST)) {
+            net.minecraft.nbt.ListTag nbttaglist = tag.getList("Passengers", NBTConstants.TYPE_COMPOUND);
+
+            for (int i = 0; i < nbttaglist.size(); ++i) {
+                removeUnwantedEntityTagsRecursively(nbttaglist.getCompound(i));
+            }
         }
     }
 
+    @Override
+    public Mask createLiquidMask() {
+        return new AbstractExtentMask(this) {
+            @Override
+            public boolean test(BlockVector3 vector) {
+                return ForgeAdapter.adapt(getExtent().getBlock(vector)).getBlock() instanceof LiquidBlock;
+            }
+
+            @Nullable
+            @Override
+            public Mask2D toMask2D() {
+                return null;
+            }
+        };
+    }
 }

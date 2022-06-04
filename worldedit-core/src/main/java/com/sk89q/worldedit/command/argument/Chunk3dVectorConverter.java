@@ -56,7 +56,7 @@ public class Chunk3dVectorConverter<C, T> implements ArgumentConverter<T> {
                     }
                     throw new AssertionError("Expected 2 or 3 components");
                 },
-                "block vector with x,z or x,y,z"
+                "block vector in the form x,z or x,y,z"
             ));
     }
 

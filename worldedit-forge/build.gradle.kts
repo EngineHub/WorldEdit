@@ -5,17 +5,18 @@ import net.minecraftforge.gradle.userdev.tasks.RenameJarInPlace
 
 plugins {
     id("net.minecraftforge.gradle")
+    id("org.spongepowered.mixin")
     `java-library`
 }
 
 applyPlatformAndCoreConfiguration(javaRelease = 17)
 applyShadowConfiguration()
 
-val minecraftVersion = "1.18.1"
+val minecraftVersion = "1.18.2"
 val nextMajorMinecraftVersion: String = minecraftVersion.split('.').let { (useless, major) ->
     "$useless.${major.toInt() + 1}"
 }
-val forgeVersion = "39.0.0"
+val forgeVersion = "40.0.18"
 
 val apiClasspath = configurations.create("apiClasspath") {
     isCanBeResolved = true
@@ -29,6 +30,7 @@ dependencies {
     })
 
     "minecraft"("net.minecraftforge:forge:$minecraftVersion-$forgeVersion")
+    "annotationProcessor"("org.spongepowered:mixin:0.8.5:processor")
 }
 
 configure<UserDevExtension> {
@@ -52,6 +54,11 @@ configure<UserDevExtension> {
         create("server", runConfig)
     }
 
+}
+
+configure<org.spongepowered.asm.gradle.plugins.MixinExtension> {
+    add(sourceSets["main"], "worldedit-forge.mixins.refmap.json")
+    config("worldedit-forge.mixins.json")
 }
 
 configure<BasePluginConvention> {
@@ -158,7 +165,5 @@ tasks.named<ShadowJar>("shadowJar") {
     }
 }
 
-afterEvaluate {
-    val reobf = extensions.getByName<NamedDomainObjectContainer<RenameJarInPlace>>("reobf")
-    reobf.create("shadowJar")
-}
+val reobf = extensions.getByName<NamedDomainObjectContainer<RenameJarInPlace>>("reobf")
+reobf.create("shadowJar")

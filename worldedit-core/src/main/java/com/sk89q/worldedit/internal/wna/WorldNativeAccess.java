@@ -101,6 +101,10 @@ public interface WorldNativeAccess<NC, NBS, NP> {
         NBS oldData = toNative(previousType);
         NBS newData = getBlockState(chunk, pos);
 
+        if (sideEffectSet.shouldApply(SideEffect.UPDATE)) {
+            updateBlock(pos, oldData, newData);
+        }
+
         if (sideEffectSet.getState(SideEffect.LIGHTING) == SideEffect.State.ON) {
             updateLightingForBlock(pos);
         }
@@ -149,6 +153,9 @@ public interface WorldNativeAccess<NC, NBS, NP> {
     void markBlockChanged(NC chunk, NP position);
 
     void notifyNeighbors(NP pos, NBS oldState, NBS newState);
+
+    default void updateBlock(NP pos, NBS oldState, NBS newState) {
+    }
 
     void updateNeighbors(NP pos, NBS oldState, NBS newState, int recursionLimit);
 

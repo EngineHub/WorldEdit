@@ -20,42 +20,48 @@
 package com.sk89q.worldedit.sponge;
 
 import com.sk89q.worldedit.LocalSession;
-import org.spongepowered.api.Platform;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.network.ChannelBinding;
-import org.spongepowered.api.network.ChannelBuf;
-import org.spongepowered.api.network.PlayerConnection;
-import org.spongepowered.api.network.RawDataListener;
-import org.spongepowered.api.network.RemoteConnection;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.util.lifecycle.SimpleLifecycled;
+import org.spongepowered.api.ResourceKey;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.lifecycle.RegisterChannelEvent;
+import org.spongepowered.api.network.ServerPlayerConnection;
+import org.spongepowered.api.network.channel.ChannelBuf;
+import org.spongepowered.api.network.channel.raw.RawDataChannel;
+import org.spongepowered.api.network.channel.raw.play.RawPlayDataHandler;
 
 import java.nio.charset.StandardCharsets;
 
-public class CUIChannelHandler implements RawDataListener {
-    public static final String CUI_PLUGIN_CHANNEL = "worldedit:cui";
+public class CUIChannelHandler implements RawPlayDataHandler<ServerPlayerConnection> {
+    public static final ResourceKey CUI_PLUGIN_CHANNEL = ResourceKey.of("worldedit", "cui");
+    private static final SimpleLifecycled<RawDataChannel> CHANNEL = SimpleLifecycled.invalid();
 
-    private static ChannelBinding.RawDataChannel channel;
-
-    public static void init() {
-        channel = Sponge.getChannelRegistrar().createRawChannel(SpongeWorldEdit.inst(), CUI_PLUGIN_CHANNEL);
-        channel.addListener(Platform.Type.SERVER, new CUIChannelHandler());
+    public static final class RegistrationHandler {
+        @Listener
+        public void onChannelRegistration(RegisterChannelEvent event) {
+            RawDataChannel channel = event.register(CUI_PLUGIN_CHANNEL, RawDataChannel.class);
+            channel.play().addHandler(ServerPlayerConnection.class, new CUIChannelHandler());
+            CHANNEL.newValue(channel);
+        }
     }
 
-
-    public static ChannelBinding.RawDataChannel getActiveChannel() {
-        return channel;
+    public static RawDataChannel channel() {
+        return CHANNEL.valueOrThrow();
     }
 
     @Override
-    public void handlePayload(ChannelBuf data, RemoteConnection connection, Platform.Type side) {
-        if (connection instanceof PlayerConnection) {
-            Player player = ((PlayerConnection) connection).getPlayer();
+    public void handlePayload(ChannelBuf data, ServerPlayerConnection connection) {
+        ServerPlayer player = connection.player();
 
-            LocalSession session = SpongeWorldEdit.inst().getSession(player);
+        SpongePlayer spongePlayer = SpongeAdapter.adapt(player);
+        LocalSession session = WorldEdit.getInstance().getSessionManager().get(
+            spongePlayer
+        );
 
-            final SpongePlayer actor = SpongeWorldEdit.inst().wrapPlayer(player);
-            session.handleCUIInitializationMessage(new String(data.readBytes(data.available()), StandardCharsets.UTF_8),
-                    actor);
-        }
+        session.handleCUIInitializationMessage(
+            new String(data.readBytes(data.available()), StandardCharsets.UTF_8),
+            spongePlayer
+        );
     }
 }

@@ -6,6 +6,7 @@
     "worldedit.biomeinfo.lineofsight": "Biomes at line of sight point: {0}",
     "worldedit.biomeinfo.position": "Biomes at your position: {0}",
     "worldedit.biomeinfo.selection": "Biomes in your selection: {0}",
+    "worldedit.biomeinfo.not-locatable": "Command sender must be present in the world to use the -p flag.",
 
     "worldedit.brush.radius-too-large": "Maximum allowed brush radius: {0}",
     "worldedit.brush.apply.description": "Apply brush, apply a function to every block",
@@ -41,6 +42,7 @@
 
     "worldedit.setbiome.changed": "Biomes were changed for approximately {0} blocks.",
     "worldedit.setbiome.warning": "You may have to re-join your game (or close and re-open your world) to see changes.",
+    "worldedit.setbiome.not-locatable": "Command sender must be present in the world to use the -p flag.",
 
     "worldedit.drawsel.disabled": "Server CUI disabled.",
     "worldedit.drawsel.enabled": "Server CUI enabled. This only supports cuboid regions, with a maximum size of {0}x{1}x{2}.",
@@ -86,6 +88,7 @@
     "worldedit.clearhistory.cleared": "History cleared.",
 
     "worldedit.raytrace.noblock": "No block in sight!",
+    "worldedit.raytrace.require-player": "Raytracing commands require a player!",
 
     "worldedit.restore.not-configured": "Snapshot/backup restore is not configured.",
     "worldedit.restore.not-available": "That snapshot does not exist or is not available.",

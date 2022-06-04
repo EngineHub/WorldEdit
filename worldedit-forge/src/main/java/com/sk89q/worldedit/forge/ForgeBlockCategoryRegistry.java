@@ -19,22 +19,32 @@
 
 package com.sk89q.worldedit.forge;
 
+import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Block;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.tags.ITagManager;
 
-import java.util.Collections;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class ForgeBlockCategoryRegistry implements BlockCategoryRegistry {
     @Override
     public Set<BlockType> getCategorisedByName(String category) {
-        return Optional.ofNullable(BlockTags.getAllTags().getTag(new ResourceLocation(category)))
-            .map(Tag::getValues).orElse(Collections.emptyList())
-            .stream().map(ForgeAdapter::adapt).collect(Collectors.toSet());
+        ITagManager<Block> tags = Objects.requireNonNull(
+            ForgeRegistries.BLOCKS.tags(), "no block tags registry"
+        );
+        return tags
+            .getTag(TagKey.create(
+                Registry.BLOCK_REGISTRY,
+                new ResourceLocation(category)
+            ))
+            .stream()
+            .map(ForgeAdapter::adapt)
+            .collect(ImmutableSet.toImmutableSet());
     }
 }
