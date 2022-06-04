@@ -34,6 +34,7 @@ import com.sk89q.worldedit.command.tool.brush.GravityBrush;
 import com.sk89q.worldedit.command.tool.brush.HollowCylinderBrush;
 import com.sk89q.worldedit.command.tool.brush.HollowSphereBrush;
 import com.sk89q.worldedit.command.tool.brush.ImageHeightmapBrush;
+import com.sk89q.worldedit.command.tool.brush.MorphBrush;
 import com.sk89q.worldedit.command.tool.brush.OperationFactoryBrush;
 import com.sk89q.worldedit.command.tool.brush.SmoothBrush;
 import com.sk89q.worldedit.command.tool.brush.SnowSmoothBrush;
@@ -579,6 +580,62 @@ public class BrushCommands {
         setOperationBasedBrush(player, localSession, radius,
             new ApplyRegion(new BiomeFactory(biomeType)), shape, "worldedit.brush.biome");
         player.printInfo(TranslatableComponent.of("worldedit.setbiome.warning"));
+    }
+
+    @Command(
+        name = "morph",
+        desc = "Morph brush, morphs blocks in the area"
+    )
+    @CommandPermissions("worldedit.brush.morph")
+    public void morph(Player player, LocalSession session,
+                      @Arg(desc = "The size of the brush", def = "5")
+                          double brushSize,
+                      @Arg(desc = "Minimum number of faces for erosion", def = "3")
+                          int minErodeFaces,
+                      @Arg(desc = "Erode iterations", def = "1")
+                          int numErodeIterations,
+                      @Arg(desc = "Minimum number of faces for dilation", def = "3")
+                          int minDilateFaces,
+                      @Arg(desc = "Dilate iterations", def = "1")
+                          int numDilateIterations) throws WorldEditException {
+        worldEdit.checkMaxBrushRadius(brushSize);
+        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+        tool.setSize(brushSize);
+        tool.setBrush(new MorphBrush(minErodeFaces, numErodeIterations, minDilateFaces, numDilateIterations), "worldedit.brush.morph");
+
+        player.printInfo(TranslatableComponent.of("worldedit.brush.morph.equip", TextComponent.of((int) brushSize)));
+    }
+
+    @Command(
+        name = "erode",
+        desc = "Erode preset for morph brush, erodes blocks in the area"
+    )
+    @CommandPermissions("worldedit.brush.morph")
+    public void erode(Player player, LocalSession session,
+                      @Arg(desc = "The size of the brush", def = "5")
+                          double brushSize) throws WorldEditException {
+        worldEdit.checkMaxBrushRadius(brushSize);
+        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+        tool.setSize(brushSize);
+        tool.setBrush(new MorphBrush(2, 1, 5, 1), "worldedit.brush.morph");
+
+        player.printInfo(TranslatableComponent.of("worldedit.brush.morph.equip", TextComponent.of((int) brushSize)));
+    }
+
+    @Command(
+        name = "dilate",
+        desc = "Dilate preset for morph brush, dilates blocks in the area"
+    )
+    @CommandPermissions("worldedit.brush.morph")
+    public void dilate(Player player, LocalSession session,
+                       @Arg(desc = "The size of the brush", def = "5")
+                           double brushSize) throws WorldEditException {
+        worldEdit.checkMaxBrushRadius(brushSize);
+        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+        tool.setSize(brushSize);
+        tool.setBrush(new MorphBrush(5, 1, 2, 1), "worldedit.brush.morph");
+
+        player.printInfo(TranslatableComponent.of("worldedit.brush.morph.equip", TextComponent.of((int) brushSize)));
     }
 
     static void setOperationBasedBrush(Player player, LocalSession session, double radius,
