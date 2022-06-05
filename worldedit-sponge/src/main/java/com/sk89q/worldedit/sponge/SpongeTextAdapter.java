@@ -22,16 +22,22 @@ package com.sk89q.worldedit.sponge;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.Locale;
 
 public class SpongeTextAdapter {
 
-    public static Text convert(Component component, Locale locale) {
+    public static net.kyori.adventure.text.Component convert(Component component, Locale locale) {
         component = WorldEditText.format(component, locale);
-        return TextSerializers.JSON.deserialize(GsonComponentSerializer.INSTANCE.serialize(component));
+        return net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson()
+            .deserialize(GsonComponentSerializer.INSTANCE.serialize(component));
+    }
+
+    public static Component convert(net.kyori.adventure.text.Component component) {
+        return GsonComponentSerializer.INSTANCE.deserialize(
+            net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson()
+                .serialize(component)
+        );
     }
 
     private SpongeTextAdapter() {

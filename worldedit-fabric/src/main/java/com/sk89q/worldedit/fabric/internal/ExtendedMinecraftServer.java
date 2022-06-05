@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.fabric.internal;
 
-import net.minecraft.server.ServerResources;
 import net.minecraft.world.level.Level;
 
 import java.nio.file.Path;
@@ -27,7 +26,5 @@ import java.nio.file.Path;
 public interface ExtendedMinecraftServer {
 
     Path getStoragePath(Level world);
-
-    ServerResources getResources();
 
 }

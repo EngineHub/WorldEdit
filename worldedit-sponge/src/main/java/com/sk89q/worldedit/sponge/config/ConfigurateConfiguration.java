@@ -19,17 +19,17 @@
 
 package com.sk89q.worldedit.sponge.config;
 
-import com.google.common.reflect.TypeToken;
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.util.report.Unreported;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
-import ninja.leaping.configurate.ConfigurationOptions;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.apache.logging.log4j.Logger;
+import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.ConfigurationOptions;
+import org.spongepowered.configurate.loader.ConfigurationLoader;
+import org.spongepowered.configurate.serialize.SerializationException;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -37,10 +37,13 @@ import java.util.Locale;
 
 public class ConfigurateConfiguration extends LocalConfiguration {
 
-    @Unreported protected final ConfigurationLoader<CommentedConfigurationNode> config;
-    @Unreported protected final Logger logger;
+    @Unreported
+    protected final ConfigurationLoader<CommentedConfigurationNode> config;
+    @Unreported
+    protected final Logger logger;
 
-    @Unreported protected CommentedConfigurationNode node;
+    @Unreported
+    protected CommentedConfigurationNode node;
 
     public ConfigurateConfiguration(ConfigurationLoader<CommentedConfigurationNode> config, Logger logger) {
         this.config = config;
@@ -51,87 +54,94 @@ public class ConfigurateConfiguration extends LocalConfiguration {
     public void load() {
         try {
             ConfigurationOptions options = ConfigurationOptions.defaults();
-            options = options.setShouldCopyDefaults(true);
+            options = options.shouldCopyDefaults(true);
 
             node = config.load(options);
         } catch (IOException e) {
             logger.warn("Error loading WorldEdit configuration", e);
         }
 
-        profile = node.getNode("debug").getBoolean(profile);
-        traceUnflushedSessions = node.getNode("debugging", "trace-unflushed-sessions").getBoolean(traceUnflushedSessions);
-        wandItem = node.getNode("wand-item").getString(wandItem).toLowerCase(Locale.ROOT);
+        profile = node.node("debug").getBoolean(profile);
+        traceUnflushedSessions = node.node("debugging", "trace-unflushed-sessions").getBoolean(traceUnflushedSessions);
+        wandItem = node.node("wand-item").getString(wandItem).toLowerCase(Locale.ROOT);
         try {
             wandItem = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(wandItem)).getId();
         } catch (Throwable ignored) {
         }
 
-        defaultChangeLimit = Math.max(-1, node.getNode("limits", "max-blocks-changed", "default").getInt(defaultChangeLimit));
-        maxChangeLimit = Math.max(-1, node.getNode("limits", "max-blocks-changed", "maximum").getInt(maxChangeLimit));
+        defaultChangeLimit = Math.max(-1, node.node("limits", "max-blocks-changed", "default").getInt(defaultChangeLimit));
+        maxChangeLimit = Math.max(-1, node.node("limits", "max-blocks-changed", "maximum").getInt(maxChangeLimit));
 
-        defaultVerticalHeight = Math.max(1, node.getNode("limits", "vertical-height", "default").getInt(defaultVerticalHeight));
+        defaultVerticalHeight = Math.max(1, node.node("limits", "vertical-height", "default").getInt(defaultVerticalHeight));
 
-        defaultMaxPolygonalPoints = Math.max(-1, node.getNode("limits", "max-polygonal-points", "default").getInt(defaultMaxPolygonalPoints));
-        maxPolygonalPoints = Math.max(-1, node.getNode("limits", "max-polygonal-points", "maximum").getInt(maxPolygonalPoints));
+        defaultMaxPolygonalPoints = Math.max(-1, node.node("limits", "max-polygonal-points", "default").getInt(defaultMaxPolygonalPoints));
+        maxPolygonalPoints = Math.max(-1, node.node("limits", "max-polygonal-points", "maximum").getInt(maxPolygonalPoints));
 
-        maxRadius = Math.max(-1, node.getNode("limits", "max-radius").getInt(maxRadius));
-        maxBrushRadius = node.getNode("limits", "max-brush-radius").getInt(maxBrushRadius);
-        maxSuperPickaxeSize = Math.max(1, node.getNode("limits", "max-super-pickaxe-size").getInt(maxSuperPickaxeSize));
+        maxRadius = Math.max(-1, node.node("limits", "max-radius").getInt(maxRadius));
+        maxBrushRadius = node.node("limits", "max-brush-radius").getInt(maxBrushRadius);
+        maxSuperPickaxeSize = Math.max(1, node.node("limits", "max-super-pickaxe-size").getInt(maxSuperPickaxeSize));
 
-        butcherDefaultRadius = Math.max(-1, node.getNode("limits", "butcher-radius", "default").getInt(butcherDefaultRadius));
-        butcherMaxRadius = Math.max(-1, node.getNode("limits", "butcher-radius", "maximum").getInt(butcherMaxRadius));
+        butcherDefaultRadius = Math.max(-1, node.node("limits", "butcher-radius", "default").getInt(butcherDefaultRadius));
+        butcherMaxRadius = Math.max(-1, node.node("limits", "butcher-radius", "maximum").getInt(butcherMaxRadius));
 
         try {
-            disallowedBlocks = new HashSet<>(node.getNode("limits", "disallowed-blocks").getList(TypeToken.of(String.class)));
-        } catch (ObjectMappingException e) {
+            disallowedBlocks = new HashSet<>(
+                node.node("limits", "disallowed-blocks").getList(
+                    String.class,
+                    ImmutableList.copyOf(getDefaultDisallowedBlocks())
+                )
+            );
+        } catch (SerializationException e) {
             logger.warn("Error loading WorldEdit configuration", e);
         }
         try {
-            allowedDataCycleBlocks = new HashSet<>(node.getNode("limits", "allowed-data-cycle-blocks").getList(TypeToken.of(String.class)));
-        } catch (ObjectMappingException e) {
+            allowedDataCycleBlocks = new HashSet<>(
+                node.node("limits", "allowed-data-cycle-blocks").getList(String.class, ImmutableList.of())
+            );
+        } catch (SerializationException e) {
             logger.warn("Error loading WorldEdit configuration", e);
         }
 
-        registerHelp = node.getNode("register-help").getBoolean(true);
-        logCommands = node.getNode("logging", "log-commands").getBoolean(logCommands);
-        logFile = node.getNode("logging", "file").getString(logFile);
-        logFormat = node.getNode("logging", "format").getString(logFormat);
+        registerHelp = node.node("register-help").getBoolean(true);
+        logCommands = node.node("logging", "log-commands").getBoolean(logCommands);
+        logFile = node.node("logging", "file").getString(logFile);
+        logFormat = node.node("logging", "format").getString(logFormat);
 
-        superPickaxeDrop = node.getNode("super-pickaxe", "drop-items").getBoolean(superPickaxeDrop);
-        superPickaxeManyDrop = node.getNode("super-pickaxe", "many-drop-items").getBoolean(superPickaxeManyDrop);
+        superPickaxeDrop = node.node("super-pickaxe", "drop-items").getBoolean(superPickaxeDrop);
+        superPickaxeManyDrop = node.node("super-pickaxe", "many-drop-items").getBoolean(superPickaxeManyDrop);
 
-        useInventory = node.getNode("use-inventory", "enable").getBoolean(useInventory);
-        useInventoryOverride = node.getNode("use-inventory", "allow-override").getBoolean(useInventoryOverride);
-        useInventoryCreativeOverride = node.getNode("use-inventory", "creative-mode-overrides").getBoolean(useInventoryCreativeOverride);
+        useInventory = node.node("use-inventory", "enable").getBoolean(useInventory);
+        useInventoryOverride = node.node("use-inventory", "allow-override").getBoolean(useInventoryOverride);
+        useInventoryCreativeOverride = node.node("use-inventory", "creative-mode-overrides").getBoolean(useInventoryCreativeOverride);
 
-        navigationWand = node.getNode("navigation-wand", "item").getString(navigationWand).toLowerCase(Locale.ROOT);
+        navigationWand = node.node("navigation-wand", "item").getString(navigationWand).toLowerCase(Locale.ROOT);
         try {
             navigationWand = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(navigationWand)).getId();
         } catch (Throwable ignored) {
         }
-        navigationWandMaxDistance = node.getNode("navigation-wand", "max-distance").getInt(navigationWandMaxDistance);
-        navigationUseGlass = node.getNode("navigation", "use-glass").getBoolean(navigationUseGlass);
+        navigationWandMaxDistance = node.node("navigation-wand", "max-distance").getInt(navigationWandMaxDistance);
+        navigationUseGlass = node.node("navigation", "use-glass").getBoolean(navigationUseGlass);
 
-        scriptTimeout = node.getNode("scripting", "timeout").getInt(scriptTimeout);
-        scriptsDir = node.getNode("scripting", "dir").getString(scriptsDir);
+        scriptTimeout = node.node("scripting", "timeout").getInt(scriptTimeout);
+        scriptsDir = node.node("scripting", "dir").getString(scriptsDir);
 
-        saveDir = node.getNode("saving", "dir").getString(saveDir);
+        saveDir = node.node("saving", "dir").getString(saveDir);
 
-        allowSymlinks = node.getNode("files", "allow-symbolic-links").getBoolean(false);
-        LocalSession.MAX_HISTORY_SIZE = Math.max(0, node.getNode("history", "size").getInt(15));
-        SessionManager.EXPIRATION_GRACE = node.getNode("history", "expiration").getInt(10) * 60 * 1000;
+        allowSymlinks = node.node("files", "allow-symbolic-links").getBoolean(false);
+        LocalSession.MAX_HISTORY_SIZE = Math.max(0, node.node("history", "size").getInt(15));
+        SessionManager.EXPIRATION_GRACE = node.node("history", "expiration").getInt(10) * 60 * 1000;
 
-        showHelpInfo = node.getNode("show-help-on-first-use").getBoolean(true);
-        serverSideCUI = node.getNode("server-side-cui").getBoolean(true);
+        showHelpInfo = node.node("show-help-on-first-use").getBoolean(true);
+        serverSideCUI = node.node("server-side-cui").getBoolean(true);
 
-        String snapshotsDir = node.getNode("snapshots", "directory").getString("");
-        boolean experimentalSnapshots = node.getNode("snapshots", "experimental").getBoolean(false);
+        String snapshotsDir = node.node("snapshots", "directory").getString("");
+        boolean experimentalSnapshots = node.node("snapshots", "experimental").getBoolean(false);
         initializeSnapshotConfiguration(snapshotsDir, experimentalSnapshots);
 
-        String type = node.getNode("shell-save-type").getString("").trim();
+        String type = node.node("shell-save-type").getString("").trim();
         shellSaveType = type.equals("") ? null : type;
 
-        extendedYLimit = node.getNode("compat", "extended-y-limit").getBoolean(false);
-        setDefaultLocaleName(node.getNode("default-locale").getString(defaultLocaleName));
+        extendedYLimit = node.node("compat", "extended-y-limit").getBoolean(false);
+        setDefaultLocaleName(node.node("default-locale").getString(defaultLocaleName));
     }
 }

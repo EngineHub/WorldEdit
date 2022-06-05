@@ -50,8 +50,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
@@ -173,6 +172,8 @@ public class ForgeWorldEdit {
         //        }
     }
 
+    // TODO clean this up once Forge adds a proper API for this
+    @SuppressWarnings("deprecation")
     private void setupRegistries(MinecraftServer server) {
         // Blocks
         for (ResourceLocation name : ForgeRegistries.BLOCKS.getKeys()) {
@@ -200,16 +201,16 @@ public class ForgeWorldEdit {
             }
         }
         // Tags
-        for (ResourceLocation name : BlockTags.getAllTags().getAvailableTags()) {
+        Registry.BLOCK.getTagNames().map(TagKey::location).forEach(name -> {
             if (BlockCategory.REGISTRY.get(name.toString()) == null) {
                 BlockCategory.REGISTRY.register(name.toString(), new BlockCategory(name.toString()));
             }
-        }
-        for (ResourceLocation name : ItemTags.getAllTags().getAvailableTags()) {
+        });
+        Registry.ITEM.getTagNames().map(TagKey::location).forEach(name -> {
             if (ItemCategory.REGISTRY.get(name.toString()) == null) {
                 ItemCategory.REGISTRY.register(name.toString(), new ItemCategory(name.toString()));
             }
-        }
+        });
     }
 
     @SubscribeEvent

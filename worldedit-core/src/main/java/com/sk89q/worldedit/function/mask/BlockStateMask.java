@@ -28,6 +28,7 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 
 import java.util.Map;
+import java.util.Objects;
 import javax.annotation.Nullable;
 
 public class BlockStateMask extends AbstractExtentMask {
@@ -58,7 +59,11 @@ public class BlockStateMask extends AbstractExtentMask {
         if (strict && checkProps.isEmpty()) {
             return false;
         }
-        return checkProps.entrySet().stream()
-                .allMatch(entry -> block.getState(entry.getKey()) == entry.getValue());
+        for (Map.Entry<Property<Object>, Object> entry : checkProps.entrySet()) {
+            if (!Objects.equals(block.getState(entry.getKey()), entry.getValue())) {
+                return false;
+            }
+        }
+        return true;
     }
 }

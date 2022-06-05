@@ -19,22 +19,32 @@
 
 package com.sk89q.worldedit.forge;
 
+import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.ItemCategoryRegistry;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.tags.ITagManager;
 
-import java.util.Collections;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class ForgeItemCategoryRegistry implements ItemCategoryRegistry {
     @Override
     public Set<ItemType> getCategorisedByName(String category) {
-        return Optional.ofNullable(ItemTags.getAllTags().getTag(new ResourceLocation(category)))
-            .map(Tag::getValues).orElse(Collections.emptyList())
-            .stream().map(ForgeAdapter::adapt).collect(Collectors.toSet());
+        ITagManager<Item> tags = Objects.requireNonNull(
+            ForgeRegistries.ITEMS.tags(), "no item tags registry"
+        );
+        return tags
+            .getTag(TagKey.create(
+                Registry.ITEM_REGISTRY,
+                new ResourceLocation(category)
+            ))
+            .stream()
+            .map(ForgeAdapter::adapt)
+            .collect(ImmutableSet.toImmutableSet());
     }
 }

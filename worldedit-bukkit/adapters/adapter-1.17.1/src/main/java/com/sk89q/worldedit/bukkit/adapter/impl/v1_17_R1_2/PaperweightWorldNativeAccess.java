@@ -155,6 +155,12 @@ public class PaperweightWorldNativeAccess implements WorldNativeAccess<LevelChun
         }
     }
 
+    @Override
+    public void updateBlock(BlockPos pos, net.minecraft.world.level.block.state.BlockState oldState, net.minecraft.world.level.block.state.BlockState newState) {
+        ServerLevel world = getWorld();
+        newState.onPlace(world, pos, oldState, false);
+    }
+
     private void fireNeighborChanged(BlockPos pos, ServerLevel world, Block block, BlockPos neighborPos) {
         world.getBlockState(neighborPos).neighborChanged(world, neighborPos, block, pos, false);
     }

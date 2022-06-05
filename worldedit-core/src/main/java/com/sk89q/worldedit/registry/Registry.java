@@ -45,14 +45,14 @@ public class Registry<V extends Keyed> implements Iterable<V> {
 
     @Nullable
     public V get(final String key) {
-        checkState(key.equals(key.toLowerCase(Locale.ROOT)), "key must be lowercase");
+        checkState(key.equals(key.toLowerCase(Locale.ROOT)), "key must be lowercase: %s", key);
         return this.map.get(key);
     }
 
     public V register(final String key, final V value) {
         requireNonNull(key, "key");
         requireNonNull(value, "value");
-        checkState(key.equals(key.toLowerCase(Locale.ROOT)), "key must be lowercase");
+        checkState(key.equals(key.toLowerCase(Locale.ROOT)), "key must be lowercase: %s", key);
         checkState(!this.map.containsKey(key), "key '%s' already has an associated %s", key, this.name);
         this.map.put(key, value);
         return value;

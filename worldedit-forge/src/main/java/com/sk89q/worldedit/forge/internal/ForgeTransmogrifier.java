@@ -19,6 +19,9 @@
 
 package com.sk89q.worldedit.forge.internal;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.forge.ForgeAdapter;
 import com.sk89q.worldedit.registry.state.BooleanProperty;
@@ -44,27 +47,34 @@ import java.util.stream.Collectors;
  */
 public class ForgeTransmogrifier {
 
+    private static final LoadingCache<net.minecraft.world.level.block.state.properties.Property<?>, Property<?>> PROPERTY_CACHE = CacheBuilder.newBuilder().build(new CacheLoader<>() {
+        @Override
+        public Property<?> load(net.minecraft.world.level.block.state.properties.Property<?> property) throws Exception {
+            if (property instanceof net.minecraft.world.level.block.state.properties.BooleanProperty) {
+                return new BooleanProperty(property.getName(), ImmutableList.copyOf(((net.minecraft.world.level.block.state.properties.BooleanProperty) property).getPossibleValues()));
+            }
+            if (property instanceof net.minecraft.world.level.block.state.properties.IntegerProperty) {
+                return new IntegerProperty(property.getName(), ImmutableList.copyOf(((net.minecraft.world.level.block.state.properties.IntegerProperty) property).getPossibleValues()));
+            }
+            if (property instanceof DirectionProperty) {
+                return new DirectionalProperty(property.getName(), ((DirectionProperty) property).getPossibleValues().stream()
+                    .map(ForgeAdapter::adaptEnumFacing)
+                    .collect(Collectors.toList()));
+            }
+            if (property instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
+                // Note: do not make x.getSerializedName a method reference.
+                // It will cause runtime bootstrap exceptions.
+                //noinspection Convert2MethodRef
+                return new EnumProperty(property.getName(), ((net.minecraft.world.level.block.state.properties.EnumProperty<?>) property).getPossibleValues().stream()
+                    .map(x -> x.getSerializedName())
+                    .collect(Collectors.toList()));
+            }
+            return new IPropertyAdapter<>(property);
+        }
+    });
+
     public static Property<?> transmogToWorldEditProperty(net.minecraft.world.level.block.state.properties.Property<?> property) {
-        if (property instanceof net.minecraft.world.level.block.state.properties.BooleanProperty) {
-            return new BooleanProperty(property.getName(), ImmutableList.copyOf(((net.minecraft.world.level.block.state.properties.BooleanProperty) property).getPossibleValues()));
-        }
-        if (property instanceof net.minecraft.world.level.block.state.properties.IntegerProperty) {
-            return new IntegerProperty(property.getName(), ImmutableList.copyOf(((net.minecraft.world.level.block.state.properties.IntegerProperty) property).getPossibleValues()));
-        }
-        if (property instanceof DirectionProperty) {
-            return new DirectionalProperty(property.getName(), ((DirectionProperty) property).getPossibleValues().stream()
-                .map(ForgeAdapter::adaptEnumFacing)
-                .collect(Collectors.toList()));
-        }
-        if (property instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
-            // Note: do not make x.getSerializedName a method reference.
-            // It will cause runtime bootstrap exceptions.
-            //noinspection Convert2MethodRef
-            return new EnumProperty(property.getName(), ((net.minecraft.world.level.block.state.properties.EnumProperty<?>) property).getPossibleValues().stream()
-                .map(x -> x.getSerializedName())
-                .collect(Collectors.toList()));
-        }
-        return new IPropertyAdapter<>(property);
+        return PROPERTY_CACHE.getUnchecked(property);
     }
 
     public static Map<Property<?>, Object> transmogToWorldEditProperties(BlockType block, Map<net.minecraft.world.level.block.state.properties.Property<?>, Comparable<?>> mcProps) {

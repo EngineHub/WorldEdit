@@ -50,14 +50,13 @@ class FabricEntity implements Entity {
     @Override
     public BaseEntity getState() {
         net.minecraft.world.entity.Entity entity = entityRef.get();
-        if (entity != null) {
-            ResourceLocation id = Registry.ENTITY_TYPE.getKey(entity.getType());
-            CompoundTag tag = new CompoundTag();
-            entity.saveWithoutId(tag);
-            return new BaseEntity(EntityTypes.get(id.toString()), LazyReference.from(() -> NBTConverter.fromNative(tag)));
-        } else {
+        if (entity == null || entity.isPassenger()) {
             return null;
         }
+        ResourceLocation id = Registry.ENTITY_TYPE.getKey(entity.getType());
+        CompoundTag tag = new CompoundTag();
+        entity.saveWithoutId(tag);
+        return new BaseEntity(EntityTypes.get(id.toString()), LazyReference.from(() -> NBTConverter.fromNative(tag)));
     }
 
     @Override
