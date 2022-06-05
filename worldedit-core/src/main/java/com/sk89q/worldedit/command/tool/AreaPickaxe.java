@@ -31,6 +31,7 @@ import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
@@ -57,7 +58,8 @@ public class AreaPickaxe implements BlockTool {
         int ox = clicked.getBlockX();
         int oy = clicked.getBlockY();
         int oz = clicked.getBlockZ();
-        BlockType initialType = clicked.getExtent().getBlock(clicked.toVector().toBlockPoint()).getBlockType();
+        BlockState initialState = clicked.getExtent().getBlock(clicked.toVector().toBlockPoint());
+        BlockType initialType = initialState.getBlockType();
 
         if (initialType.getMaterial().isAir()) {
             return false;
@@ -81,7 +83,7 @@ public class AreaPickaxe implements BlockTool {
 
                             editSession.setBlock(pos, BlockTypes.AIR.getDefaultState());
 
-                            ((World) clicked.getExtent()).queueBlockBreakEffect(server, pos, initialType,
+                            ((World) clicked.getExtent()).queueBlockBreakEffect(server, pos, initialState,
                                     clicked.toVector().toBlockPoint().distanceSq(pos));
                         }
                     }
