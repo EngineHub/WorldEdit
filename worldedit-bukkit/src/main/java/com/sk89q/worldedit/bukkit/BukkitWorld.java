@@ -371,6 +371,14 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     @Override
+    public boolean playBreakBlockEffect(Vector3 position, com.sk89q.worldedit.world.block.BlockState block) {
+        World world = getWorld();
+
+        world.playEffect(BukkitAdapter.adapt(world, position), Effect.STEP_SOUND, BukkitAdapter.adapt(block.getBlockType())); // Bukkit doesn't use a blockstate, instead uses material
+        return true;
+    }
+
+    @Override
     public WeatherType getWeather() {
         if (getWorld().isThundering()) {
             return WeatherTypes.THUNDER_STORM;

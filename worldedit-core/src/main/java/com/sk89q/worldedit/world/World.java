@@ -307,8 +307,21 @@ public interface World extends Extent, Keyed {
      * @param type the effect type
      * @param data the effect data
      * @return true if the effect was played
+     * @deprecated magic numbers
      */
+    @Deprecated
     boolean playEffect(Vector3 position, int type, int data);
+
+
+    /**
+     * Plays a block break effect and sound at
+     * the given position.
+     *
+     * @param position position
+     * @param block block
+     * @return true if the effect was played
+     */
+     boolean playBreakBlockEffect(Vector3 position, BlockState block);
 
     /**
      * Queue a block break effect.
@@ -318,8 +331,23 @@ public interface World extends Extent, Keyed {
      * @param blockType the block type
      * @param priority the priority
      * @return true if the effect was played
+     * @deprecated use a blockstate instead of block type
      */
-    boolean queueBlockBreakEffect(Platform server, BlockVector3 position, BlockType blockType, double priority);
+    @Deprecated
+    default boolean queueBlockBreakEffect(Platform server, BlockVector3 position, BlockType blockType, double priority) {
+        return queueBlockBreakEffect(server, position, blockType.getDefaultState(), priority);
+    }
+
+    /**
+     * Queue a block break effect.
+     *
+     * @param server the server
+     * @param position the position
+     * @param blockState the block state
+     * @param priority the priority
+     * @return true if the effect was played
+     */
+    boolean queueBlockBreakEffect(Platform server, BlockVector3 position, BlockState blockState, double priority);
 
     /**
      * Gets the weather type of the world.

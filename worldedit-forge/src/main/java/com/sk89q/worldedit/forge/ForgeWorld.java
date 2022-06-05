@@ -83,6 +83,8 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -474,6 +476,12 @@ public class ForgeWorld extends AbstractWorld {
     public boolean playEffect(Vector3 position, int type, int data) {
         // TODO update sound API
         // getWorld().play(type, ForgeAdapter.toBlockPos(position.toBlockPoint()), data);
+        return true;
+    }
+
+    @Override
+    public boolean playBreakBlockEffect(Vector3 position, BlockState block) {
+        getWorld().globalLevelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, ForgeAdapter.toBlockPos(position.toBlockPoint()), Block.getId(ForgeAdapter.adapt(block)));
         return true;
     }
 
