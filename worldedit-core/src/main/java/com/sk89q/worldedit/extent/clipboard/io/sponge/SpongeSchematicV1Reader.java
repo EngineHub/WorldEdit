@@ -68,6 +68,11 @@ public class SpongeSchematicV1Reader extends NBTSchematicReader {
         CompoundTag schematicTag = getBaseTag();
         ReaderUtil.checkSchematicVersion(1, getBaseTag());
 
+        return doRead(schematicTag);
+    }
+
+    // For legacy SpongeSchematicReader, can be inlined in WorldEdit 8
+    public static BlockArrayClipboard doRead(CompoundTag schematicTag) throws IOException {
         final Platform platform = WorldEdit.getInstance().getPlatformManager()
             .queryCapability(Capability.WORLD_EDITING);
 

@@ -62,17 +62,20 @@ import static com.sk89q.worldedit.extent.clipboard.io.SchematicNbtUtil.requireTa
 /**
  * Common code shared between schematic readers.
  */
-class ReaderUtil {
+public class ReaderUtil {
     private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     static void checkSchematicVersion(int version, CompoundTag schematicTag) throws IOException {
-        int schematicVersion = requireTag(schematicTag.getValue(), "Version", IntTag.class)
-            .getValue();
+        int schematicVersion = getSchematicVersion(schematicTag);
 
         checkState(
             version == schematicVersion,
             "Schematic is not version %s, but %s", version, schematicVersion
         );
+    }
+
+    public static Integer getSchematicVersion(CompoundTag schematicTag) throws IOException {
+        return requireTag(schematicTag.getValue(), "Version", IntTag.class).getValue();
     }
 
     static VersionedDataFixer getVersionedDataFixer(Map<String, Tag> schematic, Platform platform,

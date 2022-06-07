@@ -1,0 +1,108 @@
+{
+    "Nothing should be implementing a conflicting method": [
+        {
+            "type": "com.sk89q.worldedit.extent.clipboard.Clipboard",
+            "member": "Method com.sk89q.worldedit.extent.clipboard.Clipboard.transform(com.sk89q.worldedit.math.transform.Transform)",
+            "changes": [
+                "METHOD_NEW_DEFAULT"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.function.mask.Mask",
+            "member": "Method com.sk89q.worldedit.function.mask.Mask.toMask2D()",
+            "changes": [
+                "METHOD_ABSTRACT_NOW_DEFAULT"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.util.paste.Paster",
+            "member": "Method com.sk89q.worldedit.util.paste.Paster.paste(java.lang.String)",
+            "changes": [
+                "METHOD_ABSTRACT_NOW_DEFAULT"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.block.BlockStateHolder",
+            "member": "Method com.sk89q.worldedit.world.block.BlockStateHolder.toBaseBlock(com.sk89q.jnbt.CompoundTag)",
+            "changes": [
+                "METHOD_ABSTRACT_NOW_DEFAULT",
+                "ANNOTATION_DEPRECATED_ADDED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.block.BlockStateHolder",
+            "member": "Method com.sk89q.worldedit.world.block.BlockStateHolder.toBaseBlock(com.sk89q.worldedit.util.concurrency.LazyReference)",
+            "changes": [
+                "METHOD_NEW_DEFAULT"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.block.BlockStateHolder",
+            "member": "Method com.sk89q.worldedit.world.block.BlockStateHolder.toBaseBlock(com.sk89q.worldedit.util.nbt.CompoundBinaryTag)",
+            "changes": [
+                "METHOD_NEW_DEFAULT"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.NbtValued",
+            "member": "Method com.sk89q.worldedit.world.NbtValued.getNbt()",
+            "changes": [
+                "METHOD_NEW_DEFAULT"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.NbtValued",
+            "member": "Method com.sk89q.worldedit.world.NbtValued.getNbtData()",
+            "changes": [
+                "METHOD_ABSTRACT_NOW_DEFAULT",
+                "ANNOTATION_DEPRECATED_ADDED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.NbtValued",
+            "member": "Method com.sk89q.worldedit.world.NbtValued.getNbtReference()",
+            "changes": [
+                "METHOD_NEW_DEFAULT"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.NbtValued",
+            "member": "Method com.sk89q.worldedit.world.NbtValued.hasNbtData()",
+            "changes": [
+                "METHOD_ABSTRACT_NOW_DEFAULT",
+                "ANNOTATION_DEPRECATED_ADDED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.NbtValued",
+            "member": "Method com.sk89q.worldedit.world.NbtValued.setNbt(com.sk89q.worldedit.util.nbt.CompoundBinaryTag)",
+            "changes": [
+                "METHOD_NEW_DEFAULT"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.NbtValued",
+            "member": "Method com.sk89q.worldedit.world.NbtValued.setNbtData(com.sk89q.jnbt.CompoundTag)",
+            "changes": [
+                "METHOD_ABSTRACT_NOW_DEFAULT",
+                "ANNOTATION_DEPRECATED_ADDED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.NbtValued",
+            "member": "Method com.sk89q.worldedit.world.NbtValued.setNbtReference(com.sk89q.worldedit.util.concurrency.LazyReference)",
+            "changes": [
+                "METHOD_NEW_DEFAULT"
+            ]
+        }
+    ],
+    "LazyReference was never publicly extensible": [
+        {
+            "type": "com.sk89q.worldedit.util.concurrency.LazyReference",
+            "member": "Class com.sk89q.worldedit.util.concurrency.LazyReference",
+            "changes": [
+                "CLASS_NOW_FINAL"
+            ]
+        }
+    ]
+}
