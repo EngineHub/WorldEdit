@@ -44,7 +44,6 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.StringUtil;
@@ -221,7 +220,12 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
     }
 
     @Override
-    public DataFixer build(final Executor executor) {
+    public DataFixer buildUnoptimized() {
+        return fixer;
+    }
+
+    @Override
+    public DataFixer buildOptimized(Executor executor) {
         return fixer;
     }
 
@@ -1864,12 +1868,12 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
                         if (!"null".equals(s) && !StringUtil.isNullOrEmpty(s)) {
                             if ((s.charAt(0) != 34 || s.charAt(s.length() - 1) != 34) && (s.charAt(0) != 123 || s.charAt(s.length() - 1) != 125)) {
-                                object = new TextComponent(s);
+                                object = Component.literal(s);
                             } else {
                                 try {
                                     object = GsonHelper.fromJson(DataConverterSignText.a, s, Component.class, true);
                                     if (object == null) {
-                                        object = new TextComponent("");
+                                        object = Component.literal("");
                                     }
                                 } catch (JsonParseException jsonparseexception) {
                                     ;
@@ -1892,11 +1896,11 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
                                 }
 
                                 if (object == null) {
-                                    object = new TextComponent(s);
+                                    object = Component.literal(s);
                                 }
                             }
                         } else {
-                            object = new TextComponent("");
+                            object = Component.literal("");
                         }
 
                         nbttaglist.set(i, StringTag.valueOf(Component.Serializer.toJson((Component) object)));
@@ -2477,7 +2481,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
         public static final Gson a = new GsonBuilder().registerTypeAdapter(Component.class, new JsonDeserializer() {
             MutableComponent a(JsonElement jsonelement, Type type, JsonDeserializationContext jsondeserializationcontext) throws JsonParseException {
                 if (jsonelement.isJsonPrimitive()) {
-                    return new TextComponent(jsonelement.getAsString());
+                    return Component.literal(jsonelement.getAsString());
                 } else if (jsonelement.isJsonArray()) {
                     JsonArray jsonarray = jsonelement.getAsJsonArray();
                     MutableComponent iTextComponent = null;
@@ -2529,12 +2533,12 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
             if (!"null".equals(s1) && !StringUtil.isNullOrEmpty(s1)) {
                 if ((s1.charAt(0) != 34 || s1.charAt(s1.length() - 1) != 34) && (s1.charAt(0) != 123 || s1.charAt(s1.length() - 1) != 125)) {
-                    object = new TextComponent(s1);
+                    object = Component.literal(s1);
                 } else {
                     try {
                         object = GsonHelper.fromJson(DataConverterSignText.a, s1, Component.class, true);
                         if (object == null) {
-                            object = new TextComponent("");
+                            object = Component.literal("");
                         }
                     } catch (JsonParseException jsonparseexception) {
                         ;
@@ -2557,11 +2561,11 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
                     }
 
                     if (object == null) {
-                        object = new TextComponent(s1);
+                        object = Component.literal(s1);
                     }
                 }
             } else {
-                object = new TextComponent("");
+                object = Component.literal("");
             }
 
             nbttagcompound.putString(s, Component.Serializer.toJson((Component) object));
