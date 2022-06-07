@@ -1,6 +1,7 @@
 import japicmp.accept.AcceptingSetupRule
 import japicmp.accept.BinaryCompatRule
 import me.champeau.gradle.japicmp.JapicmpTask
+import org.gradle.internal.resolve.ModuleVersionNotFoundException
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.util.*
@@ -76,6 +77,21 @@ for (projectFragment in listOf("bukkit", "cli", "core", "fabric", "forge", "spon
             )
             addRule(BinaryCompatRule::class.java)
             reportName.set("api-compatibility-$projectFragment.html")
+        }
+
+        onlyIf {
+            // Only check if we have a jar to compare against
+            try {
+                conf.resolvedConfiguration.rethrowFailure()
+                true
+            } catch (e: ResolveException) {
+                if (e.cause is ModuleVersionNotFoundException) {
+                    it.logger.warn("Skipping check for $projectFragment API compatibility because there is no jar to compare against")
+                    false
+                } else {
+                    throw e
+                }
+            }
         }
 
         oldClasspath.from(conf)
