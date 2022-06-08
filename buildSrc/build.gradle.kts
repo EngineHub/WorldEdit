@@ -48,6 +48,7 @@ dependencies {
     implementation(gradleApi())
     implementation("gradle.plugin.org.cadixdev.gradle:licenser:0.6.1")
     implementation("org.ajoberstar.grgit:grgit-gradle:4.1.1")
+    implementation("me.champeau.gradle:japicmp-gradle-plugin:0.4.0")
     implementation("gradle.plugin.com.github.johnrengelman:shadow:7.1.2")
     implementation("org.jfrog.buildinfo:build-info-extractor-gradle:4.27.1")
     implementation("org.spongepowered:spongegradle-plugin-development:2.0.1")

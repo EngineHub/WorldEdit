@@ -14,3 +14,5 @@ include("worldedit-mod")
 include("worldedit-libs:core:ap")
 
 include("worldedit-core:doctools")
+
+include("verification")
