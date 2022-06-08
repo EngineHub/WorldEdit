@@ -30,6 +30,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.collection.BlockMap;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockCategories;
+import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -60,7 +61,11 @@ public class MultiStageReorder extends AbstractBufferingExtent implements Reorde
         BlockCategories.BUTTONS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
         BlockCategories.ANVIL.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
         BlockCategories.WOODEN_PRESSURE_PLATES.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
-        BlockCategories.CARPETS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
+        // Keeping CARPETS for pre-1.19 compatibility
+        @SuppressWarnings("deprecation")
+        BlockCategory carpets = BlockCategories.CARPETS;
+        carpets.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
+        BlockCategories.WOOL_CARPETS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
         BlockCategories.RAILS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
         BlockCategories.BEDS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
         BlockCategories.SMALL_FLOWERS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
@@ -132,6 +137,7 @@ public class MultiStageReorder extends AbstractBufferingExtent implements Reorde
         BlockCategories.DOORS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.FINAL));
         BlockCategories.BANNERS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.FINAL));
         BlockCategories.SIGNS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.FINAL));
+        // Keeping sign and wall_sign for 1.13 compatibility
         @SuppressWarnings("deprecation")
         BlockType sign = BlockTypes.SIGN;
         priorityMap.put(sign, PlacementPriority.FINAL);

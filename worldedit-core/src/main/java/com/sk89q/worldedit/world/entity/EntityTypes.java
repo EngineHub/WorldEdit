@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
  */
 @SuppressWarnings("unused")
 public final class EntityTypes {
+    @Nullable public static final EntityType ALLAY = get("minecraft:allay");
     @Nullable public static final EntityType AREA_EFFECT_CLOUD = get("minecraft:area_effect_cloud");
     @Nullable public static final EntityType ARMOR_STAND = get("minecraft:armor_stand");
     @Nullable public static final EntityType ARROW = get("minecraft:arrow");
@@ -38,6 +39,7 @@ public final class EntityTypes {
     @Nullable public static final EntityType BOAT = get("minecraft:boat");
     @Nullable public static final EntityType CAT = get("minecraft:cat");
     @Nullable public static final EntityType CAVE_SPIDER = get("minecraft:cave_spider");
+    @Nullable public static final EntityType CHEST_BOAT = get("minecraft:chest_boat");
     @Nullable public static final EntityType CHEST_MINECART = get("minecraft:chest_minecart");
     @Nullable public static final EntityType CHICKEN = get("minecraft:chicken");
     @Nullable public static final EntityType COD = get("minecraft:cod");
@@ -65,6 +67,7 @@ public final class EntityTypes {
     @Nullable public static final EntityType FIREWORK_ROCKET = get("minecraft:firework_rocket");
     @Nullable public static final EntityType FISHING_BOBBER = get("minecraft:fishing_bobber");
     @Nullable public static final EntityType FOX = get("minecraft:fox");
+    @Nullable public static final EntityType FROG = get("minecraft:frog");
     @Nullable public static final EntityType FURNACE_MINECART = get("minecraft:furnace_minecart");
     @Nullable public static final EntityType GHAST = get("minecraft:ghast");
     @Nullable public static final EntityType GIANT = get("minecraft:giant");
@@ -121,6 +124,7 @@ public final class EntityTypes {
     @Nullable public static final EntityType SQUID = get("minecraft:squid");
     @Nullable public static final EntityType STRAY = get("minecraft:stray");
     @Nullable public static final EntityType STRIDER = get("minecraft:strider");
+    @Nullable public static final EntityType TADPOLE = get("minecraft:tadpole");
     @Nullable public static final EntityType TNT = get("minecraft:tnt");
     @Nullable public static final EntityType TNT_MINECART = get("minecraft:tnt_minecart");
     @Nullable public static final EntityType TRADER_LLAMA = get("minecraft:trader_llama");
@@ -131,6 +135,7 @@ public final class EntityTypes {
     @Nullable public static final EntityType VILLAGER = get("minecraft:villager");
     @Nullable public static final EntityType VINDICATOR = get("minecraft:vindicator");
     @Nullable public static final EntityType WANDERING_TRADER = get("minecraft:wandering_trader");
+    @Nullable public static final EntityType WARDEN = get("minecraft:warden");
     @Nullable public static final EntityType WITCH = get("minecraft:witch");
     @Nullable public static final EntityType WITHER = get("minecraft:wither");
     @Nullable public static final EntityType WITHER_SKELETON = get("minecraft:wither_skeleton");
