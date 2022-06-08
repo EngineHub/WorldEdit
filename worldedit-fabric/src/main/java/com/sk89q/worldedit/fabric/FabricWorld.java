@@ -113,7 +113,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalLong;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -234,7 +233,8 @@ public class FabricWorld extends AbstractWorld {
         checkNotNull(biome);
 
         ChunkAccess chunk = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4);
-        PalettedContainer<Holder<Biome>> biomeArray = chunk.getSection(chunk.getSectionIndex(position.getY())).getBiomes();
+        // Screw it, we know it's really mutable...
+        var biomeArray = (PalettedContainer<Holder<Biome>>) chunk.getSection(chunk.getSectionIndex(position.getY())).getBiomes();
         biomeArray.getAndSetUnchecked(
             position.getX() & 3, position.getY() & 3, position.getZ() & 3,
             getWorld().registryAccess().registry(Registry.BIOME_REGISTRY)
