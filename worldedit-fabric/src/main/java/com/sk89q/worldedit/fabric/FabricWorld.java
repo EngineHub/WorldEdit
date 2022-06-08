@@ -95,6 +95,8 @@ import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.WorldGenSettings;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.TreeFeature;
 import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.ServerLevelData;
@@ -459,10 +461,19 @@ public class FabricWorld extends AbstractWorld {
         if (type == TreeType.CHORUS_PLANT) {
             position = position.add(0, 1, 0);
         }
-        return generator != null && generator.place(
-            world, chunkManager.getGenerator(), random,
-            FabricAdapter.toBlockPos(position)
-        );
+        if (generator == null) {
+            return false;
+        }
+        BlockPos blockPos = FabricAdapter.toBlockPos(position);
+        // Manual override of the chunk generator to prevent the tree from generating in non-dirt
+        if (generator.feature() instanceof TreeFeature && !isTreePosition(world, blockPos)) {
+            return false;
+        }
+        return generator.place(world, chunkManager.getGenerator(), random, blockPos);
+    }
+
+    private static boolean isTreePosition(ServerLevel world, BlockPos blockPos) {
+        return world.isStateAtPosition(blockPos.below(), Feature::isDirt);
     }
 
     @Override
