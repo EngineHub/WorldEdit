@@ -26,6 +26,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,7 +45,9 @@ public class BukkitBlockCategoryRegistry implements BlockCategoryRegistry {
         String key =  split.length > 1 ? split[1] : category;
         @SuppressWarnings("deprecation")
         Tag<Material> tag = Bukkit.getTag(Tag.REGISTRY_BLOCKS, new NamespacedKey(namespace, key), Material.class);
-        checkNotNull(tag);
+        if (tag == null) {
+            return Collections.emptySet();
+        }
         return getFromBukkitTag(tag);
     }
 }
