@@ -47,7 +47,8 @@ dependencies {
 
     "compileOnly"("org.jetbrains:annotations:20.1.0")
     "compileOnly"("io.papermc.paper:paper-api:1.17-R0.1-SNAPSHOT") {
-        exclude(group = "org.slf4j", module = "slf4j-api")
+        exclude("org.slf4j", "slf4j-api")
+        exclude("junit", "junit")
     }
     "implementation"("io.papermc:paperlib:1.0.7")
     "compileOnly"("com.sk89q:dummypermscompat:1.10")

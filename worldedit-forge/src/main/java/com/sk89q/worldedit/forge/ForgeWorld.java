@@ -71,6 +71,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.Clearable;
 import net.minecraft.world.InteractionHand;
@@ -97,7 +98,6 @@ import net.minecraft.world.level.storage.PrimaryLevelData;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.fluids.IFluidBlock;
 
 import java.lang.ref.WeakReference;
 import java.nio.file.Files;
@@ -109,7 +109,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalLong;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -124,7 +123,7 @@ import static com.google.common.base.Preconditions.checkState;
  */
 public class ForgeWorld extends AbstractWorld {
 
-    private static final Random random = new Random();
+    private static final RandomSource random = RandomSource.create();
 
     private static ResourceLocation getDimensionRegistryKey(ServerLevel world) {
         return Objects.requireNonNull(world.getServer(), "server cannot be null")
@@ -228,7 +227,7 @@ public class ForgeWorld extends AbstractWorld {
         checkNotNull(biome);
 
         LevelChunk chunk = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4);
-        PalettedContainer<Holder<Biome>> biomes = chunk.getSection(chunk.getSectionIndex(position.getY())).getBiomes();
+        var biomes = (PalettedContainer<Holder<Biome>>) chunk.getSection(chunk.getSectionIndex(position.getY())).getBiomes();
         biomes.getAndSetUnchecked(
             position.getX() & 3, position.getY() & 3, position.getZ() & 3,
             getWorld().registryAccess().registry(Registry.BIOME_REGISTRY)
@@ -333,9 +332,11 @@ public class ForgeWorld extends AbstractWorld {
                 originalWorld.getServer(), Util.backgroundExecutor(), session,
                 ((ServerLevelData) originalWorld.getLevelData()),
                 worldRegKey,
-                originalWorld.dimensionTypeRegistration(),
+                new LevelStem(
+                    originalWorld.dimensionTypeRegistration(),
+                    dimGenOpts.generator()
+                ),
                 new WorldEditGenListener(),
-                dimGenOpts.generator(),
                 originalWorld.isDebug(),
                 seed,
                 // No spawners are needed for this world.

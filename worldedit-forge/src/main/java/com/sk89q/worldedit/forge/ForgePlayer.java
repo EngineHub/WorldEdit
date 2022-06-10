@@ -42,11 +42,8 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import io.netty.buffer.Unpooled;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.ChatType;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
@@ -57,8 +54,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.StructureBlockEntity;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
@@ -67,8 +62,6 @@ import javax.annotation.Nullable;
 
 public class ForgePlayer extends AbstractPlayerActor {
 
-    // see ClientPlayNetHandler: search for "invalid update packet", lots of hardcoded consts
-    private static final int STRUCTURE_BLOCK_PACKET_ID = 7;
     private final ServerPlayer player;
 
     protected ForgePlayer(ServerPlayer player) {
@@ -149,14 +142,14 @@ public class ForgePlayer extends AbstractPlayerActor {
     }
 
     private void sendMessage(net.minecraft.network.chat.Component textComponent) {
-        this.player.sendMessage(textComponent, ChatType.SYSTEM, Util.NIL_UUID);
+        this.player.sendSystemMessage(textComponent);
     }
 
     @Override
     @Deprecated
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
-            sendMessage(new TextComponent(part));
+            sendMessage(net.minecraft.network.chat.Component.literal(part));
         }
     }
 
@@ -187,7 +180,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     private void sendColorized(String msg, ChatFormatting formatting) {
         for (String part : msg.split("\n")) {
-            TextComponent component = new TextComponent(part);
+            var component = net.minecraft.network.chat.Component.literal(part);
             component.withStyle(formatting);
             sendMessage(component);
         }
@@ -255,8 +248,7 @@ public class ForgePlayer extends AbstractPlayerActor {
             player.connection.send(new ClientboundBlockUpdatePacket(
                 loc, ForgeAdapter.adapt(block.toImmutableState())
             ));
-            if (block instanceof BaseBlock && block.getBlockType().equals(BlockTypes.STRUCTURE_BLOCK)) {
-                final BaseBlock baseBlock = (BaseBlock) block;
+            if (block instanceof BaseBlock baseBlock && block.getBlockType().equals(BlockTypes.STRUCTURE_BLOCK)) {
                 final CompoundTag nbtData = baseBlock.getNbtData();
                 if (nbtData != null) {
                     player.connection.send(ClientboundBlockEntityDataPacket.create(

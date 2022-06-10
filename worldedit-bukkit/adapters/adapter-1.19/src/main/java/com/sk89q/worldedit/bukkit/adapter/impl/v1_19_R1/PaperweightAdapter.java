@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.bukkit.adapter.impl.v1_18_R1;
+package com.sk89q.worldedit.bukkit.adapter.impl.v1_19_R1;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -122,13 +122,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World.Environment;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.craftbukkit.v1_18_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_18_R1.block.data.CraftBlockData;
-import org.bukkit.craftbukkit.v1_18_R1.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_18_R1.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_19_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_19_R1.block.data.CraftBlockData;
+import org.bukkit.craftbukkit.v1_19_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_19_R1.util.CraftMagicNumbers;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.generator.ChunkGenerator;
@@ -153,7 +153,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -180,8 +179,8 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         CraftServer.class.cast(Bukkit.getServer());
 
         int dataVersion = CraftMagicNumbers.INSTANCE.getDataVersion();
-        if (dataVersion != 2860 && dataVersion != 2865) {
-            throw new UnsupportedClassVersionError("Not 1.18(.1)!");
+        if (dataVersion != 3105) {
+            throw new UnsupportedClassVersionError("Not 1.19!");
         }
 
         serverWorldsField = CraftServer.class.getDeclaredField("worlds");
@@ -194,11 +193,11 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         getChunkFutureMethod.setAccessible(true);
 
         chunkProviderExecutorField = ServerChunkCache.class.getDeclaredField(
-            Refraction.pickName("mainThreadProcessor", "h")
+            Refraction.pickName("mainThreadProcessor", "g")
         );
         chunkProviderExecutorField.setAccessible(true);
 
-        new PaperweightDataConverters(CraftMagicNumbers.INSTANCE.getDataVersion(), this).build(ForkJoinPool.commonPool());
+        new PaperweightDataConverters(CraftMagicNumbers.INSTANCE.getDataVersion(), this).buildUnoptimized();
 
         Watchdog watchdog;
         try {
@@ -647,14 +646,17 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
                 originalWorld.getServer().executor,
                 session, newWorldData,
                 originalWorld.dimension(),
-                originalWorld.dimensionType(),
+                new LevelStem(
+                    originalWorld.dimensionTypeRegistration(),
+                    newOpts.dimensions().get(worldDimKey).generator()
+                ),
                 new NoOpWorldLoadListener(),
-                newOpts.dimensions().get(worldDimKey).generator(),
                 originalWorld.isDebug(),
                 seed,
                 ImmutableList.of(),
                 false,
-                env, gen,
+                env,
+                gen,
                 bukkitWorld.getBiomeProvider()
             );
             try {
@@ -721,7 +723,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             }
             extent.setBlock(vec, state.toBaseBlock());
             if (options.shouldRegenBiomes()) {
-                Biome origBiome = chunk.getNoiseBiome(vec.getX(), vec.getY(), vec.getZ());
+                Biome origBiome = chunk.getNoiseBiome(vec.getX(), vec.getY(), vec.getZ()).value();
                 BiomeType adaptedBiome = adapt(serverWorld, origBiome);
                 if (adaptedBiome != null) {
                     extent.setBiome(vec, adaptedBiome);

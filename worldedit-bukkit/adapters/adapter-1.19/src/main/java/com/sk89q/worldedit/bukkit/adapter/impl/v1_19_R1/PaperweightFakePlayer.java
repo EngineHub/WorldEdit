@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.bukkit.adapter.impl.v1_18_R1;
+package com.sk89q.worldedit.bukkit.adapter.impl.v1_19_R1;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.network.chat.ChatType;
@@ -41,7 +41,7 @@ class PaperweightFakePlayer extends ServerPlayer {
     private static final Vec3 ORIGIN = new Vec3(0.0D, 0.0D, 0.0D);
 
     PaperweightFakePlayer(ServerLevel world) {
-        super(world.getServer(), world, FAKE_WORLDEDIT_PROFILE);
+        super(world.getServer(), world, FAKE_WORLDEDIT_PROFILE, null);
     }
 
     @Override
@@ -73,10 +73,6 @@ class PaperweightFakePlayer extends ServerPlayer {
 
     @Override
     public void displayClientMessage(Component message, boolean actionBar) {
-    }
-
-    @Override
-    public void sendMessage(Component message, ChatType type, UUID sender) {
     }
 
     @Override

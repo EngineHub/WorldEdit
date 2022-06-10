@@ -75,6 +75,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Clearable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -112,7 +113,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalLong;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -127,7 +127,7 @@ import static com.google.common.base.Preconditions.checkState;
  */
 public class FabricWorld extends AbstractWorld {
 
-    private static final Random random = new Random();
+    private static final RandomSource random = RandomSource.create();
 
     private static ResourceLocation getDimensionRegistryKey(Level world) {
         return Objects.requireNonNull(world.getServer(), "server cannot be null")
@@ -233,7 +233,8 @@ public class FabricWorld extends AbstractWorld {
         checkNotNull(biome);
 
         ChunkAccess chunk = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4);
-        PalettedContainer<Holder<Biome>> biomeArray = chunk.getSection(chunk.getSectionIndex(position.getY())).getBiomes();
+        // Screw it, we know it's really mutable...
+        var biomeArray = (PalettedContainer<Holder<Biome>>) chunk.getSection(chunk.getSectionIndex(position.getY())).getBiomes();
         biomeArray.getAndSetUnchecked(
             position.getX() & 3, position.getY() & 3, position.getZ() & 3,
             getWorld().registryAccess().registry(Registry.BIOME_REGISTRY)
@@ -343,9 +344,11 @@ public class FabricWorld extends AbstractWorld {
                 originalWorld.getServer(), Util.backgroundExecutor(), session,
                 ((ServerLevelData) originalWorld.getLevelData()),
                 worldRegKey,
-                originalWorld.dimensionTypeRegistration(),
+                new LevelStem(
+                    originalWorld.dimensionTypeRegistration(),
+                    dimGenOpts.generator()
+                ),
                 new WorldEditGenListener(),
-                dimGenOpts.generator(),
                 originalWorld.isDebug(),
                 seed,
                 // No spawners are needed for this world.
