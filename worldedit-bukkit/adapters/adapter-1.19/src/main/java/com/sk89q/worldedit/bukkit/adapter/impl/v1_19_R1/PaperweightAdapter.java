@@ -963,8 +963,11 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         MojangWatchdog(DedicatedServer server) throws NoSuchFieldException {
             this.server = server;
             Field tickField = MinecraftServer.class.getDeclaredField(
-                Refraction.pickName("nextTickTime", "ao")
+                Refraction.pickName("nextTickTime", "ag")
             );
+            if (tickField.getType() != long.class) {
+                throw new IllegalStateException("nextTickTime is not a long field, mapping is likely incorrect");
+            }
             tickField.setAccessible(true);
             this.tickField = tickField;
         }
