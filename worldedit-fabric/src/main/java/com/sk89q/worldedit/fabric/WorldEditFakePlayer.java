@@ -32,7 +32,7 @@ public class WorldEditFakePlayer extends ServerPlayer {
     private static final GameProfile FAKE_WORLDEDIT_PROFILE = new GameProfile(UUID.nameUUIDFromBytes("worldedit".getBytes()), "[WorldEdit]");
 
     public WorldEditFakePlayer(ServerLevel world) {
-        super(world.getServer(), world, FAKE_WORLDEDIT_PROFILE);
+        super(world.getServer(), world, FAKE_WORLDEDIT_PROFILE, null);
     }
 
     @Override

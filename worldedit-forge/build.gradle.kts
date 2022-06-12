@@ -12,15 +12,27 @@ plugins {
 applyPlatformAndCoreConfiguration(javaRelease = 17)
 applyShadowConfiguration()
 
-val minecraftVersion = "1.18.2"
+val minecraftVersion = "1.19"
 val nextMajorMinecraftVersion: String = minecraftVersion.split('.').let { (useless, major) ->
     "$useless.${major.toInt() + 1}"
 }
-val forgeVersion = "40.0.18"
+val forgeVersion = "41.0.1"
 
 val apiClasspath = configurations.create("apiClasspath") {
     isCanBeResolved = true
     extendsFrom(configurations.api.get())
+}
+
+repositories {
+    val forgeMaven = maven {
+        name = "Forge Maven"
+        url = uri("https://maven.minecraftforge.net/")
+        content {
+            includeGroupByRegex("net\\.minecraftforge(|\\..*)$")
+        }
+    }
+    remove(forgeMaven)
+    addFirst(forgeMaven)
 }
 
 dependencies {

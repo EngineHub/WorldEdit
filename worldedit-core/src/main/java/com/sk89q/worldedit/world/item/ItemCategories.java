@@ -37,15 +37,20 @@ public final class ItemCategories {
     public static final ItemCategory BOATS = get("minecraft:boats");
     public static final ItemCategory BUTTONS = get("minecraft:buttons");
     public static final ItemCategory CANDLES = get("minecraft:candles");
-    public static final ItemCategory CARPETS = get("minecraft:carpets");
+    @Deprecated public static final ItemCategory CARPETS = get("minecraft:carpets");
+    public static final ItemCategory CHEST_BOATS = get("minecraft:chest_boats");
     public static final ItemCategory CLUSTER_MAX_HARVESTABLES = get("minecraft:cluster_max_harvestables");
     public static final ItemCategory COAL_ORES = get("minecraft:coal_ores");
     public static final ItemCategory COALS = get("minecraft:coals");
+    public static final ItemCategory COMPASSES = get("minecraft:compasses");
+    public static final ItemCategory COMPLETES_FIND_TREE_TUTORIAL = get("minecraft:completes_find_tree_tutorial");
     public static final ItemCategory COPPER_ORES = get("minecraft:copper_ores");
     public static final ItemCategory CREEPER_DROP_MUSIC_DISCS = get("minecraft:creeper_drop_music_discs");
     public static final ItemCategory CRIMSON_STEMS = get("minecraft:crimson_stems");
+    public static final ItemCategory DAMPENS_VIBRATIONS = get("minecraft:dampens_vibrations");
     public static final ItemCategory DARK_OAK_LOGS = get("minecraft:dark_oak_logs");
     public static final ItemCategory DIAMOND_ORES = get("minecraft:diamond_ores");
+    public static final ItemCategory DIRT = get("minecraft:dirt");
     public static final ItemCategory DOORS = get("minecraft:doors");
     public static final ItemCategory EMERALD_ORES = get("minecraft:emerald_ores");
     public static final ItemCategory FENCES = get("minecraft:fences");
@@ -63,10 +68,12 @@ public final class ItemCategories {
     public static final ItemCategory LECTERN_BOOKS = get("minecraft:lectern_books");
     public static final ItemCategory LOGS = get("minecraft:logs");
     public static final ItemCategory LOGS_THAT_BURN = get("minecraft:logs_that_burn");
+    public static final ItemCategory MANGROVE_LOGS = get("minecraft:mangrove_logs");
     public static final ItemCategory MUSIC_DISCS = get("minecraft:music_discs");
     public static final ItemCategory NON_FLAMMABLE_WOOD = get("minecraft:non_flammable_wood");
     public static final ItemCategory OAK_LOGS = get("minecraft:oak_logs");
-    public static final ItemCategory OCCLUDES_VIBRATION_SIGNALS = get("minecraft:occludes_vibration_signals");
+    @Deprecated public static final ItemCategory OCCLUDES_VIBRATION_SIGNALS = get("minecraft:occludes_vibration_signals");
+    public static final ItemCategory OVERWORLD_NATURAL_LOGS = get("minecraft:overworld_natural_logs");
     public static final ItemCategory PIGLIN_FOOD = get("minecraft:piglin_food");
     public static final ItemCategory PIGLIN_LOVED = get("minecraft:piglin_loved");
     public static final ItemCategory PIGLIN_REPELLENTS = get("minecraft:piglin_repellents");
@@ -85,9 +92,11 @@ public final class ItemCategories {
     public static final ItemCategory STONE_CRAFTING_MATERIALS = get("minecraft:stone_crafting_materials");
     public static final ItemCategory STONE_TOOL_MATERIALS = get("minecraft:stone_tool_materials");
     public static final ItemCategory TALL_FLOWERS = get("minecraft:tall_flowers");
+    public static final ItemCategory TERRACOTTA = get("minecraft:terracotta");
     public static final ItemCategory TRAPDOORS = get("minecraft:trapdoors");
     public static final ItemCategory WALLS = get("minecraft:walls");
     public static final ItemCategory WARPED_STEMS = get("minecraft:warped_stems");
+    public static final ItemCategory WART_BLOCKS = get("minecraft:wart_blocks");
     public static final ItemCategory WOODEN_BUTTONS = get("minecraft:wooden_buttons");
     public static final ItemCategory WOODEN_DOORS = get("minecraft:wooden_doors");
     public static final ItemCategory WOODEN_FENCES = get("minecraft:wooden_fences");
@@ -96,6 +105,7 @@ public final class ItemCategories {
     public static final ItemCategory WOODEN_STAIRS = get("minecraft:wooden_stairs");
     public static final ItemCategory WOODEN_TRAPDOORS = get("minecraft:wooden_trapdoors");
     public static final ItemCategory WOOL = get("minecraft:wool");
+    public static final ItemCategory WOOL_CARPETS = get("minecraft:wool_carpets");
 
     private ItemCategories() {
     }

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.bukkit.adapter.impl.v1_18_R1;
+package com.sk89q.worldedit.bukkit.adapter.impl.v1_19_R1;
 
 import com.sk89q.jnbt.AdventureNBTConverter;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
@@ -34,8 +34,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
-import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_18_R1.block.data.CraftBlockData;
+import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_19_R1.block.data.CraftBlockData;
 import org.bukkit.event.block.BlockPhysicsEvent;
 
 import java.lang.ref.WeakReference;
@@ -160,6 +160,8 @@ public class PaperweightWorldNativeAccess implements WorldNativeAccess<LevelChun
         newState.onPlace(world, pos, oldState, false);
     }
 
+    // Not sure why neighborChanged is deprecated
+    @SuppressWarnings("deprecation")
     private void fireNeighborChanged(BlockPos pos, ServerLevel world, Block block, BlockPos neighborPos) {
         world.getBlockState(neighborPos).neighborChanged(world, neighborPos, block, pos, false);
     }

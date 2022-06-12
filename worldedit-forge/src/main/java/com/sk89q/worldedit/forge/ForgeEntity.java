@@ -32,6 +32,7 @@ import com.sk89q.worldedit.world.entity.EntityTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.lang.ref.WeakReference;
 import javax.annotation.Nullable;
@@ -53,7 +54,7 @@ class ForgeEntity implements Entity {
         if (entity == null || entity.isPassenger()) {
             return null;
         }
-        ResourceLocation id = entity.getType().getRegistryName();
+        ResourceLocation id = ForgeRegistries.ENTITIES.getKey(entity.getType());
         if (id == null) {
             return null;
         }

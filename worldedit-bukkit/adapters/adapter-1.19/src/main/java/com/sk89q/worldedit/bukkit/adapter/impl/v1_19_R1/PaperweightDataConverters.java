@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.bukkit.adapter.impl.v1_18_R1;
+package com.sk89q.worldedit.bukkit.adapter.impl.v1_19_R1;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -39,7 +39,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.StringUtil;
@@ -214,8 +213,13 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
     // Called after fixers are built and ready for FIXING
     @Override
-    public DataFixer build(final Executor executor) {
+    public DataFixer buildUnoptimized() {
         return this.fixer = new WrappedDataFixer(DataFixers.getDataFixer());
+    }
+
+    @Override
+    public DataFixer buildOptimized(Executor executor) {
+        return buildUnoptimized();
     }
 
     @SuppressWarnings("unchecked")
@@ -803,8 +807,6 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
     }
 
     private static class DataInspectorEntity implements DataInspector {
-
-        private static final Logger a = LogManager.getLogger(PaperweightDataConverters.class);
 
         DataInspectorEntity() {
         }
@@ -1889,12 +1891,12 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
                         if (!"null".equals(s) && !StringUtil.isNullOrEmpty(s)) {
                             if ((s.charAt(0) != 34 || s.charAt(s.length() - 1) != 34) && (s.charAt(0) != 123 || s.charAt(s.length() - 1) != 125)) {
-                                object = new TextComponent(s);
+                                object = Component.literal(s);
                             } else {
                                 try {
                                     object = GsonHelper.fromJson(DataConverterSignText.a, s, Component.class, true);
                                     if (object == null) {
-                                        object = new TextComponent("");
+                                        object = Component.literal("");
                                     }
                                 } catch (JsonParseException jsonparseexception) {
                                     ;
@@ -1917,11 +1919,11 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
                                 }
 
                                 if (object == null) {
-                                    object = new TextComponent(s);
+                                    object = Component.literal(s);
                                 }
                             }
                         } else {
-                            object = new TextComponent("");
+                            object = Component.literal("");
                         }
 
                         nbttaglist.set(i, net.minecraft.nbt.StringTag.valueOf(Component.Serializer.toJson(object)));
@@ -2501,7 +2503,7 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
         public static final Gson a = new GsonBuilder().registerTypeAdapter(Component.class, new JsonDeserializer() {
             MutableComponent a(JsonElement jsonelement, Type type, JsonDeserializationContext jsondeserializationcontext) throws JsonParseException {
                 if (jsonelement.isJsonPrimitive()) {
-                    return new TextComponent(jsonelement.getAsString());
+                    return Component.literal(jsonelement.getAsString());
                 } else if (jsonelement.isJsonArray()) {
                     JsonArray jsonarray = jsonelement.getAsJsonArray();
                     MutableComponent ichatbasecomponent = null;
@@ -2553,12 +2555,12 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
             if (!"null".equals(s1) && !StringUtil.isNullOrEmpty(s1)) {
                 if ((s1.charAt(0) != 34 || s1.charAt(s1.length() - 1) != 34) && (s1.charAt(0) != 123 || s1.charAt(s1.length() - 1) != 125)) {
-                    object = new TextComponent(s1);
+                    object = Component.literal(s1);
                 } else {
                     try {
                         object = GsonHelper.fromJson(DataConverterSignText.a, s1, Component.class, true);
                         if (object == null) {
-                            object = new TextComponent("");
+                            object = Component.literal("");
                         }
                     } catch (JsonParseException jsonparseexception) {
                         ;
@@ -2581,11 +2583,11 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
                     }
 
                     if (object == null) {
-                        object = new TextComponent(s1);
+                        object = Component.literal(s1);
                     }
                 }
             } else {
-                object = new TextComponent("");
+                object = Component.literal("");
             }
 
             nbttagcompound.putString(s, Component.Serializer.toJson(object));

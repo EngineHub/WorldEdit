@@ -66,4 +66,10 @@ public class BlockStateMask extends AbstractExtentMask {
         }
         return true;
     }
+
+    @Nullable
+    @Override
+    public Mask2D toMask2D() {
+        return null;
+    }
 }

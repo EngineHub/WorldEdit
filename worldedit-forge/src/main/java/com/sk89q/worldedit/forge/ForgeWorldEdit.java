@@ -337,7 +337,7 @@ public class ForgeWorldEdit {
         event.setCanceled(true);
         WorldEdit.getInstance().getEventBus().post(new com.sk89q.worldedit.event.platform.CommandEvent(
             adaptPlayer(parseResults.getContext().getSource().getPlayerOrException()),
-            parseResults.getReader().getString()
+            "/" + parseResults.getReader().getString()
         ));
     }
 

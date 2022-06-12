@@ -34,7 +34,7 @@ public abstract class MixinServerPlayer implements ExtendedPlayerEntity {
 
     @Inject(method = "updateOptions", at = @At(value = "HEAD"))
     public void updateOptions(ServerboundClientInformationPacket clientSettingsC2SPacket,
-                                  CallbackInfo callbackInfo) {
+                              CallbackInfo callbackInfo) {
         this.language = clientSettingsC2SPacket.language();
     }
 

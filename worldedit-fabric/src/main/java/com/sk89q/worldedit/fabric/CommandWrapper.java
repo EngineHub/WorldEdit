@@ -63,7 +63,7 @@ public final class CommandWrapper {
         Command<CommandSourceStack> commandRunner = ctx -> {
             WorldEdit.getInstance().getEventBus().post(new com.sk89q.worldedit.event.platform.CommandEvent(
                 adaptPlayer(ctx.getSource().getPlayerOrException()),
-                ctx.getInput()
+                "/" + ctx.getInput()
             ));
             return 0;
         };
