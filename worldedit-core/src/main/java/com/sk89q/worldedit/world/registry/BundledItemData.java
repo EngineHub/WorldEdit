@@ -23,13 +23,9 @@ import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.extension.platform.Capability;
-import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.gson.VectorAdapter;
-import com.sk89q.worldedit.util.io.ResourceLoader;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
@@ -55,7 +51,6 @@ public final class BundledItemData {
 
     private static final Logger LOGGER = LogManagerCompat.getLogger();
     private static BundledItemData INSTANCE;
-    private final ResourceLoader resourceLoader;
 
     private final Map<String, ItemEntry> idMap = new HashMap<>();
 
@@ -63,8 +58,6 @@ public final class BundledItemData {
      * Create a new instance.
      */
     private BundledItemData() {
-        this.resourceLoader = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.CONFIGURATION).getResourceLoader();
-
         try {
             loadFromResource();
         } catch (Throwable e) {
@@ -81,23 +74,7 @@ public final class BundledItemData {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Vector3.class, new VectorAdapter());
         Gson gson = gsonBuilder.create();
-        URL url = null;
-        final int dataVersion = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getDataVersion();
-        if (dataVersion >= Constants.DATA_VERSION_MC_1_17) {
-            url = resourceLoader.getResource(BundledBlockData.class, "items.117.json");
-        } else if (dataVersion >= Constants.DATA_VERSION_MC_1_16) {
-            url = resourceLoader.getResource(BundledBlockData.class, "items.116.json");
-        } else if (dataVersion >= Constants.DATA_VERSION_MC_1_15) {
-            url = resourceLoader.getResource(BundledBlockData.class, "items.115.json");
-        } else if (dataVersion >= Constants.DATA_VERSION_MC_1_14) {
-            url = resourceLoader.getResource(BundledBlockData.class, "items.114.json");
-        }
-        if (url == null) {
-            url = resourceLoader.getResource(BundledBlockData.class, "items.json");
-        }
-        if (url == null) {
-            throw new IOException("Could not find items.json");
-        }
+        URL url = BundledRegistries.loadRegistry("items");
         LOGGER.debug("Using {} for bundled item data.", url);
         String data = Resources.toString(url, Charset.defaultCharset());
         List<ItemEntry> entries = gson.fromJson(data, new TypeToken<List<ItemEntry>>() {}.getType());

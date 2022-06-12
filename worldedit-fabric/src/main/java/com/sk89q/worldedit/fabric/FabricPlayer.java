@@ -46,12 +46,9 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -86,7 +83,7 @@ public class FabricPlayer extends AbstractPlayerActor {
 
     @Override
     public String getName() {
-        return this.player.getName().getContents();
+        return this.player.getName().getString();
     }
 
     @Override
@@ -151,7 +148,9 @@ public class FabricPlayer extends AbstractPlayerActor {
     @Deprecated
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
-            this.player.sendMessage(new TextComponent(part), ChatType.SYSTEM, Util.NIL_UUID);
+            this.player.sendSystemMessage(
+                net.minecraft.network.chat.Component.literal(part)
+            );
         }
     }
 
@@ -175,14 +174,14 @@ public class FabricPlayer extends AbstractPlayerActor {
 
     @Override
     public void print(Component component) {
-        this.player.displayClientMessage(net.minecraft.network.chat.Component.Serializer.fromJson(GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale()))), false);
+        this.player.sendSystemMessage(net.minecraft.network.chat.Component.Serializer.fromJson(GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale()))));
     }
 
     private void sendColorized(String msg, ChatFormatting formatting) {
         for (String part : msg.split("\n")) {
-            MutableComponent component = new TextComponent(part)
+            MutableComponent component = net.minecraft.network.chat.Component.literal(part)
                 .withStyle(style -> style.withColor(formatting));
-            this.player.displayClientMessage(component, false);
+            this.player.sendSystemMessage(component);
         }
     }
 

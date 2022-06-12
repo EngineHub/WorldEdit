@@ -30,7 +30,7 @@
     "depends": {
         "fabricloader": ">=0.4.0",
         "fabric-api-base": "*",
-        "fabric-command-api-v1": "*",
+        "fabric-command-api-v2": "*",
         "fabric-lifecycle-events-v1": "*",
         "fabric-events-interaction-v0": "*",
         "fabric-networking-api-v1": "*"
