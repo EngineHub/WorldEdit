@@ -177,6 +177,7 @@ public class EditSession implements Extent, AutoCloseable {
      * NONE = Place blocks without worrying about placement order.
      * </p>
      */
+    @Deprecated
     public enum ReorderMode {
         MULTI_STAGE("multi"),
         FAST("fast"),
@@ -213,6 +214,7 @@ public class EditSession implements Extent, AutoCloseable {
 
     private final @Nullable List<TracingExtent> tracingExtents;
 
+    @Deprecated
     private ReorderMode reorderMode = ReorderMode.FAST;
 
     private Mask oldMask;
@@ -363,6 +365,7 @@ public class EditSession implements Extent, AutoCloseable {
      *
      * @param reorderMode The reorder mode
      */
+    @Deprecated
     public void setReorderMode(ReorderMode reorderMode) {
         if (reorderMode == ReorderMode.FAST && sideEffectExtent == null) {
             throw new IllegalArgumentException("An EditSession without a fast mode tried to use it for reordering!");
@@ -406,6 +409,7 @@ public class EditSession implements Extent, AutoCloseable {
      *
      * @return the reorder mode
      */
+    @Deprecated
     public ReorderMode getReorderMode() {
         return reorderMode;
     }
@@ -451,7 +455,7 @@ public class EditSession implements Extent, AutoCloseable {
      * Returns queue status.
      *
      * @return whether the queue is enabled
-     * @deprecated Use {@link EditSession#getReorderMode()} with MULTI_STAGE instead.
+     * @deprecated Use {@link EditSession#isBufferingEnabled()} instead.
      */
     @Deprecated
     public boolean isQueueEnabled() {
@@ -461,7 +465,7 @@ public class EditSession implements Extent, AutoCloseable {
     /**
      * Queue certain types of block for better reproduction of those blocks.
      *
-     * @deprecated Use {@link EditSession#setReorderMode(ReorderMode)} with MULTI_STAGE instead.
+     * @deprecated There is no specific replacement, instead enable what you want specifically.
      */
     @Deprecated
     public void enableQueue() {
@@ -471,7 +475,7 @@ public class EditSession implements Extent, AutoCloseable {
     /**
      * Disable the queue. This will flush the session.
      *
-     * @deprecated Use {@link EditSession#setReorderMode(ReorderMode)} with another mode instead.
+     * @deprecated Use {@link EditSession#disableBuffering()} instead.
      */
     @Deprecated
     public void disableQueue() {
@@ -615,6 +619,15 @@ public class EditSession implements Extent, AutoCloseable {
     }
 
     /**
+     * Check if this session has any buffering extents enabled.
+     *
+     * @return {@code true} if any extents are buffering
+     */
+    public boolean isBufferingEnabled() {
+        return isBatchingChunks() || (sideEffectExtent != null && sideEffectExtent.isPostEditSimulationEnabled());
+    }
+
+    /**
      * Disable all buffering extents.
      *
      * @see #setReorderMode(ReorderMode)
@@ -624,6 +637,9 @@ public class EditSession implements Extent, AutoCloseable {
         // We optimize here to avoid repeated calls to flushSession.
         if (commitRequired()) {
             internalFlushSession();
+        }
+        if (sideEffectExtent != null) {
+            sideEffectExtent.setPostEditSimulationEnabled(false);
         }
         setReorderMode(ReorderMode.NONE);
         if (chunkBatchingExtent != null) {
