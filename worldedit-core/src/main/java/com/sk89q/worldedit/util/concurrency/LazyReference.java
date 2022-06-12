@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 /**
  * Thread-safe lazy reference.
  */
-public class LazyReference<T> {
+public final class LazyReference<T> {
 
     public static <T> LazyReference<T> from(Supplier<T> valueComputation) {
         return new LazyReference<>(valueComputation);

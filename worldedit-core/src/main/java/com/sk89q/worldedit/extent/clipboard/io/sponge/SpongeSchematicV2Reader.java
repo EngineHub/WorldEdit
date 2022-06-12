@@ -72,6 +72,11 @@ public class SpongeSchematicV2Reader extends NBTSchematicReader {
         CompoundTag schematicTag = getBaseTag();
         ReaderUtil.checkSchematicVersion(2, schematicTag);
 
+        return doRead(schematicTag);
+    }
+
+    // For legacy SpongeSchematicReader, can be inlined in WorldEdit 8
+    public static Clipboard doRead(CompoundTag schematicTag) throws IOException {
         final Platform platform = WorldEdit.getInstance().getPlatformManager()
             .queryCapability(Capability.WORLD_EDITING);
         int liveDataVersion = platform.getDataVersion();
@@ -106,8 +111,8 @@ public class SpongeSchematicV2Reader extends NBTSchematicReader {
         return (CompoundTag) rootTag.getTag();
     }
 
-    private Clipboard readVersion2(BlockArrayClipboard version1, CompoundTag schematicTag,
-                                   VersionedDataFixer fixer) throws IOException {
+    private static Clipboard readVersion2(BlockArrayClipboard version1, CompoundTag schematicTag,
+                                          VersionedDataFixer fixer) throws IOException {
         Map<String, Tag> schematic = schematicTag.getValue();
         if (schematic.containsKey("BiomeData")) {
             readBiomes2(version1, schematic, fixer);
@@ -121,8 +126,8 @@ public class SpongeSchematicV2Reader extends NBTSchematicReader {
         return version1;
     }
 
-    private void readBiomes2(BlockArrayClipboard clipboard, Map<String, Tag> schematic,
-                             VersionedDataFixer fixer) throws IOException {
+    private static void readBiomes2(BlockArrayClipboard clipboard, Map<String, Tag> schematic,
+                                    VersionedDataFixer fixer) throws IOException {
         ByteArrayTag dataTag = requireTag(schematic, "BiomeData", ByteArrayTag.class);
         IntTag maxTag = requireTag(schematic, "BiomePaletteMax", IntTag.class);
         CompoundTag paletteTag = requireTag(schematic, "BiomePalette", CompoundTag.class);

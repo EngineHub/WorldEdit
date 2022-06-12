@@ -19,6 +19,9 @@
 
 package com.sk89q.jnbt;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 /**
  * A class which holds constant values.
  *
@@ -26,6 +29,10 @@ package com.sk89q.jnbt;
  */
 @Deprecated
 public final class NBTConstants {
+
+    // ABI compatibility
+    @SuppressWarnings("unused")
+    public static final Charset CHARSET = StandardCharsets.UTF_8;
 
     public static final int TYPE_END = 0;
     public static final int TYPE_BYTE = 1;
