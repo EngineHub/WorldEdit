@@ -1,3 +1,9 @@
+7.2.11
+- Update to 1.19
+- Fixed block state mask not working with string/enum properties
+- Fixed //stack causing an error when given a count of 0
+- Reduced initial memory usage on load
+
 7.2.10
 - [Forge] Fixed a bug where the max world height would not always be read correctly
 - [Bukkit] Fixed detection of other plugins bundling WorldEdit for newer Spigot versions
