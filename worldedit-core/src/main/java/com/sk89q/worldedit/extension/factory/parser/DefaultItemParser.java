@@ -33,13 +33,13 @@ import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
-import com.sk89q.worldedit.util.nbt.TagStringIO;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
+import org.enginehub.linbus.format.snbt.LinStringIO;
+import org.enginehub.linbus.stream.exception.NbtParseException;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
-import java.io.IOException;
 import java.util.Locale;
 import java.util.stream.Stream;
 
@@ -57,7 +57,7 @@ public class DefaultItemParser extends InputParser<BaseItem> {
     @Override
     public BaseItem parseFromInput(String input, ParserContext context) throws InputParseException {
         ItemType itemType;
-        CompoundBinaryTag itemNbtData = null;
+        LinCompoundTag itemNbtData = null;
 
         BaseItem item = null;
 
@@ -115,21 +115,20 @@ public class DefaultItemParser extends InputParser<BaseItem> {
             }
 
             if (nbtString != null) {
+                LinCompoundTag otherTag;
                 try {
-                    CompoundBinaryTag otherTag = TagStringIO.get().asCompound(nbtString);
-                    if (itemNbtData == null) {
-                        itemNbtData = otherTag;
-                    } else {
-                        for (String key : otherTag.keySet()) {
-                            itemNbtData.put(key, otherTag.get(key));
-                        }
-                    }
-                } catch (IOException e) {
+                    otherTag = LinStringIO.readFromStringUsing(nbtString, LinCompoundTag::readFrom);
+                } catch (NbtParseException e) {
                     throw new NoMatchException(TranslatableComponent.of(
                         "worldedit.error.invalid-nbt",
                         TextComponent.of(input),
                         TextComponent.of(e.getMessage())
                     ));
+                }
+                if (itemNbtData == null) {
+                    itemNbtData = otherTag;
+                } else {
+                    itemNbtData = itemNbtData.toBuilder().putAll(otherTag.value()).build();
                 }
             }
 

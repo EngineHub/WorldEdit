@@ -19,44 +19,27 @@
 
 package com.sk89q.jnbt;
 
-import com.sk89q.worldedit.util.nbt.StringBinaryTag;
+import org.enginehub.linbus.tree.LinStringTag;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * The {@code TAG_String} tag.
  *
- * @deprecated Use {@link StringBinaryTag}.
+ * @deprecated Use {@link LinStringTag}.
  */
 @Deprecated
-public final class StringTag extends Tag {
-
-    private final StringBinaryTag innerTag;
-
+public final class StringTag extends Tag<String, LinStringTag> {
     /**
      * Creates the tag with an empty name.
      *
      * @param value the value of the tag
      */
     public StringTag(String value) {
-        super();
-        checkNotNull(value);
-        this.innerTag = StringBinaryTag.of(value);
+        super(LinStringTag.of(checkNotNull(value)));
     }
 
-    public StringTag(StringBinaryTag adventureTag) {
-        super();
-        this.innerTag = adventureTag;
+    public StringTag(LinStringTag tag) {
+        super(tag);
     }
-
-    @Override
-    public StringBinaryTag asBinaryTag() {
-        return this.innerTag;
-    }
-
-    @Override
-    public String getValue() {
-        return innerTag.value();
-    }
-
 }

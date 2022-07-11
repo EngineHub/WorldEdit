@@ -55,7 +55,6 @@ import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.io.file.SafeFiles;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.RegenOptions;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -102,6 +101,7 @@ import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.lang.ref.WeakReference;
 import java.nio.file.Files;
@@ -642,7 +642,7 @@ public class FabricWorld extends AbstractWorld {
         if (entityType.isEmpty()) {
             return null;
         }
-        CompoundBinaryTag nativeTag = entity.getNbt();
+        LinCompoundTag nativeTag = entity.getNbt();
         net.minecraft.nbt.CompoundTag tag;
         if (nativeTag != null) {
             tag = NBTConverter.toNative(nativeTag);

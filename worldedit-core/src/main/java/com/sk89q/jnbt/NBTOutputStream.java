@@ -19,19 +19,14 @@
 
 package com.sk89q.jnbt;
 
-import com.google.common.collect.Maps;
-import com.sk89q.worldedit.util.nbt.BinaryTagIO;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
+import org.enginehub.linbus.stream.LinBinaryIO;
+import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinRootEntry;
 
 import java.io.Closeable;
-import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
-import java.util.Map;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * This class writes <strong>NBT</strong>, or <strong>Named Binary Tag</strong>
@@ -43,7 +38,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * https://minecraft.gamepedia.com/NBT_format</a>.
  * </p>
  *
- * @deprecated JNBT is being removed for adventure-nbt in WorldEdit 8.
+ * @deprecated JNBT is being removed for lin-bus in WorldEdit 8, use {@link LinBinaryIO} instead
  */
 @Deprecated
 public final class NBTOutputStream implements Closeable {
@@ -57,27 +52,22 @@ public final class NBTOutputStream implements Closeable {
      * Creates a new {@code NBTOutputStream}, which will write data to the
      * specified underlying output stream.
      *
-     * @param os
-     *            The output stream.
-     * @throws IOException
-     *             if an I/O error occurs.
+     * @param os The output stream.
      */
-    public NBTOutputStream(OutputStream os) throws IOException {
+    public NBTOutputStream(OutputStream os) {
         this.os = new DataOutputStream(os);
     }
 
     /**
      * Writes a tag.
      *
-     * @param tag
-     *            The tag to write.
-     * @throws IOException
-     *             if an I/O error occurs.
+     * @param tag The tag to write.
+     * @throws IOException if an I/O error occurs.
      */
-    public void writeNamedTag(String name, Tag tag) throws IOException {
-        BinaryTagIO.writer().writeNamed(
-            Maps.immutableEntry(name, (CompoundBinaryTag) tag.asBinaryTag()),
-            (DataOutput) this.os
+    public void writeNamedTag(String name, Tag<?, ?> tag) throws IOException {
+        LinBinaryIO.write(
+            os,
+            new LinRootEntry(name, (LinCompoundTag) tag.toLinTag())
         );
     }
 

@@ -80,7 +80,7 @@ public class SpongeSchematicV2Writer implements ClipboardWriter {
      * @param clipboard The clipboard
      * @return The schematic map
      */
-    private Map<String, Tag> write2(Clipboard clipboard) {
+    private Map<String, Tag<?, ?>> write2(Clipboard clipboard) {
         Region region = clipboard.getRegion();
         BlockVector3 origin = clipboard.getOrigin();
         BlockVector3 min = region.getMinimumPoint();
@@ -99,24 +99,24 @@ public class SpongeSchematicV2Writer implements ClipboardWriter {
             throw new IllegalArgumentException("Length of region too large for a .schematic");
         }
 
-        Map<String, Tag> schematic = new HashMap<>();
+        Map<String, Tag<?, ?>> schematic = new HashMap<>();
         schematic.put("Version", new IntTag(CURRENT_VERSION));
         schematic.put("DataVersion", new IntTag(
             WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getDataVersion()));
 
-        Map<String, Tag> metadata = new HashMap<>();
+        Map<String, Tag<?, ?>> metadata = new HashMap<>();
         metadata.put("WEOffsetX", new IntTag(offset.getBlockX()));
         metadata.put("WEOffsetY", new IntTag(offset.getBlockY()));
         metadata.put("WEOffsetZ", new IntTag(offset.getBlockZ()));
 
-        Map<String, Tag> worldEditSection = new HashMap<>();
+        Map<String, Tag<?, ?>> worldEditSection = new HashMap<>();
         worldEditSection.put("Version", new StringTag(WorldEdit.getVersion()));
         worldEditSection.put("EditingPlatform", new StringTag(WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getId()));
         worldEditSection.put("Offset", new IntArrayTag(new int[] {
             offset.getBlockX(), offset.getBlockY(), offset.getBlockZ()
         }));
 
-        Map<String, Tag> platformsSection = new HashMap<>();
+        Map<String, Tag<?, ?>> platformsSection = new HashMap<>();
         for (Platform platform : WorldEdit.getInstance().getPlatformManager().getPlatforms()) {
             platformsSection.put(platform.getId(), new CompoundTag(ImmutableMap.of(
                 "Name", new StringTag(platform.getPlatformName()),
@@ -156,7 +156,7 @@ public class SpongeSchematicV2Writer implements ClipboardWriter {
                     BlockVector3 point = BlockVector3.at(x0, y0, z0);
                     BaseBlock block = clipboard.getFullBlock(point);
                     if (block.getNbtData() != null) {
-                        Map<String, Tag> values = new HashMap<>(block.getNbtData().getValue());
+                        Map<String, Tag<?, ?>> values = new HashMap<>(block.getNbtData().getValue());
 
                         values.remove("id"); // Remove 'id' if it exists. We want 'Id'
 
@@ -192,7 +192,7 @@ public class SpongeSchematicV2Writer implements ClipboardWriter {
 
         schematic.put("PaletteMax", new IntTag(paletteMax));
 
-        Map<String, Tag> paletteTag = new HashMap<>();
+        Map<String, Tag<?, ?>> paletteTag = new HashMap<>();
         palette.forEach((key, value) -> paletteTag.put(key, new IntTag(value)));
 
         schematic.put("Palette", new CompoundTag(paletteTag));
@@ -214,7 +214,7 @@ public class SpongeSchematicV2Writer implements ClipboardWriter {
         return schematic;
     }
 
-    private void writeBiomes(Clipboard clipboard, Map<String, Tag> schematic) {
+    private void writeBiomes(Clipboard clipboard, Map<String, Tag<?, ?>> schematic) {
         BlockVector3 min = clipboard.getMinimumPoint();
         int width = clipboard.getRegion().getWidth();
         int length = clipboard.getRegion().getLength();
@@ -251,7 +251,7 @@ public class SpongeSchematicV2Writer implements ClipboardWriter {
 
         schematic.put("BiomePaletteMax", new IntTag(paletteMax));
 
-        Map<String, Tag> paletteTag = new HashMap<>();
+        Map<String, Tag<?, ?>> paletteTag = new HashMap<>();
         palette.forEach((key, value) -> paletteTag.put(key, new IntTag(value)));
 
         schematic.put("BiomePalette", new CompoundTag(paletteTag));

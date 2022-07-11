@@ -19,15 +19,13 @@
 
 package com.sk89q.jnbt;
 
-import com.sk89q.worldedit.util.nbt.BinaryTagIO;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
+import org.enginehub.linbus.stream.LinBinaryIO;
+import org.enginehub.linbus.tree.LinRootEntry;
 
 import java.io.Closeable;
-import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 
 /**
  * This class reads <strong>NBT</strong>, or <strong>Named Binary Tag</strong>
@@ -40,7 +38,7 @@ import java.util.Map;
  * https://minecraft.gamepedia.com/NBT_format</a>.
  * </p>
  *
- * @deprecated JNBT is being removed for adventure-nbt in WorldEdit 8.
+ * @deprecated JNBT is being removed for lin-bus in WorldEdit 8, use {@link LinBinaryIO} instead
  */
 @Deprecated
 public final class NBTInputStream implements Closeable {
@@ -61,13 +59,10 @@ public final class NBTInputStream implements Closeable {
      * Reads an NBT tag from the stream.
      *
      * @return The tag that was read.
-     * @throws IOException if an I/O error occurs.
      */
     public NamedTag readNamedTag() throws IOException {
-        Map.Entry<String, CompoundBinaryTag> named = BinaryTagIO.reader().readNamed(
-            (DataInput) this.is
-        );
-        return new NamedTag(named.getKey(), new CompoundTag(named.getValue()));
+        LinRootEntry named = LinBinaryIO.readUsing(is, LinRootEntry::readFrom);
+        return new NamedTag(named.name(), new CompoundTag(named.value()));
     }
 
     @Override

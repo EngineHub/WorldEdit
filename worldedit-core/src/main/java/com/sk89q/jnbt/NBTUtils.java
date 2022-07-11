@@ -46,7 +46,7 @@ public final class NBTUtils {
      * @param clazz the tag class
      * @return The type name.
      */
-    public static String getTypeName(Class<? extends Tag> clazz) {
+    public static String getTypeName(Class<? extends Tag<?, ?>> clazz) {
         if (clazz.equals(ByteArrayTag.class)) {
             return "TAG_Byte_Array";
         } else if (clazz.equals(ByteTag.class)) {
@@ -75,7 +75,7 @@ public final class NBTUtils {
             return "TAG_Long_Array";
         } else {
             throw new IllegalArgumentException("Invalid tag class ("
-                    + clazz.getName() + ").");
+                + clazz.getName() + ").");
         }
     }
 
@@ -86,8 +86,35 @@ public final class NBTUtils {
      * @return The type code.
      * @throws IllegalArgumentException if the tag class is invalid.
      */
-    public static int getTypeCode(Class<? extends Tag> clazz) {
-        return AdventureNBTConverter.getAdventureType(clazz).id();
+    public static int getTypeCode(Class<? extends Tag<?, ?>> clazz) {
+        if (clazz == ByteArrayTag.class) {
+            return NBTConstants.TYPE_BYTE_ARRAY;
+        } else if (clazz == ByteTag.class) {
+            return NBTConstants.TYPE_BYTE;
+        } else if (clazz == CompoundTag.class) {
+            return NBTConstants.TYPE_COMPOUND;
+        } else if (clazz == DoubleTag.class) {
+            return NBTConstants.TYPE_DOUBLE;
+        } else if (clazz == EndTag.class) {
+            return NBTConstants.TYPE_END;
+        } else if (clazz == FloatTag.class) {
+            return NBTConstants.TYPE_FLOAT;
+        } else if (clazz == IntArrayTag.class) {
+            return NBTConstants.TYPE_INT_ARRAY;
+        } else if (clazz == IntTag.class) {
+            return NBTConstants.TYPE_INT;
+        } else if (clazz.equals(ListTag.class) /* I hate this, it wouldn't do == b/c generics */) {
+            return NBTConstants.TYPE_LIST;
+        } else if (clazz == LongArrayTag.class) {
+            return NBTConstants.TYPE_LONG_ARRAY;
+        } else if (clazz == LongTag.class) {
+            return NBTConstants.TYPE_LONG;
+        } else if (clazz == ShortTag.class) {
+            return NBTConstants.TYPE_SHORT;
+        } else if (clazz == StringTag.class) {
+            return NBTConstants.TYPE_STRING;
+        }
+        throw new IllegalArgumentException("Invalid tag class (" + clazz.getName() + ")");
     }
 
     /**
@@ -97,38 +124,8 @@ public final class NBTUtils {
      * @return The class.
      * @throws IllegalArgumentException if the tag type is invalid.
      */
-    public static Class<? extends Tag> getTypeClass(int type) {
-        switch (type) {
-            case NBTConstants.TYPE_END:
-                return EndTag.class;
-            case NBTConstants.TYPE_BYTE:
-                return ByteTag.class;
-            case NBTConstants.TYPE_SHORT:
-                return ShortTag.class;
-            case NBTConstants.TYPE_INT:
-                return IntTag.class;
-            case NBTConstants.TYPE_LONG:
-                return LongTag.class;
-            case NBTConstants.TYPE_FLOAT:
-                return FloatTag.class;
-            case NBTConstants.TYPE_DOUBLE:
-                return DoubleTag.class;
-            case NBTConstants.TYPE_BYTE_ARRAY:
-                return ByteArrayTag.class;
-            case NBTConstants.TYPE_STRING:
-                return StringTag.class;
-            case NBTConstants.TYPE_LIST:
-                return ListTag.class;
-            case NBTConstants.TYPE_COMPOUND:
-                return CompoundTag.class;
-            case NBTConstants.TYPE_INT_ARRAY:
-                return IntArrayTag.class;
-            case NBTConstants.TYPE_LONG_ARRAY:
-                return LongArrayTag.class;
-            default:
-                throw new IllegalArgumentException("Invalid tag type : " + type
-                    + ".");
-        }
+    public static Class<? extends Tag<?, ?>> getTypeClass(int type) {
+        return NBTConstants.getClassFromType(type);
     }
 
     /**
@@ -140,7 +137,7 @@ public final class NBTUtils {
      * @param listTag the list tag
      * @return a vector
      */
-    public static Vector3 toVector(ListTag listTag) {
+    public static Vector3 toVector(ListTag<?, ?> listTag) {
         checkNotNull(listTag);
         return Vector3.at(listTag.asDouble(0), listTag.asDouble(1), listTag.asDouble(2));
     }
@@ -154,11 +151,11 @@ public final class NBTUtils {
      * @return child tag
      * @throws InvalidFormatException if the format of the items is invalid
      */
-    public static <T extends Tag> T getChildTag(Map<String, Tag> items, String key, Class<T> expected) throws InvalidFormatException {
+    public static <T extends Tag<?, ?>> T getChildTag(Map<String, Tag<?, ?>> items, String key, Class<T> expected) throws InvalidFormatException {
         if (!items.containsKey(key)) {
             throw new InvalidFormatException("Missing a \"" + key + "\" tag");
         }
-        Tag tag = items.get(key);
+        Tag<?, ?> tag = items.get(key);
         if (!expected.isInstance(tag)) {
             throw new InvalidFormatException(key + " tag is not of tag type " + expected.getName());
         }

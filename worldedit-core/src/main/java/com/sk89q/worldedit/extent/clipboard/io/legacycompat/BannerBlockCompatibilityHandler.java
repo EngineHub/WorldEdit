@@ -19,21 +19,16 @@
 
 package com.sk89q.worldedit.extent.clipboard.io.legacycompat;
 
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.CompoundTagBuilder;
-import com.sk89q.jnbt.IntTag;
-import com.sk89q.jnbt.ListTag;
-import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinIntTag;
+import org.enginehub.linbus.tree.LinListTag;
+import org.enginehub.linbus.tree.LinTagType;
 
 public class BannerBlockCompatibilityHandler implements NBTCompatibilityHandler {
 
@@ -55,17 +50,19 @@ public class BannerBlockCompatibilityHandler implements NBTCompatibilityHandler 
     }
 
     @Override
-    public <B extends BlockStateHolder<B>> boolean isAffectedBlock(B block) {
-        return block.getBlockType() == BlockTypes.WHITE_BANNER
-                || block.getBlockType() == BlockTypes.WHITE_WALL_BANNER;
-    }
-
-    @Override
-    public <B extends BlockStateHolder<B>> BlockStateHolder<?> updateNBT(B block, Map<String, Tag> values) {
-        Tag typeTag = values.get("Base");
-        if (typeTag instanceof IntTag) {
+    public BaseBlock updateNbt(BaseBlock block) {
+        var blockType = block.getBlockType();
+        if (blockType != BlockTypes.WHITE_BANNER && blockType != BlockTypes.WHITE_WALL_BANNER) {
+            return block;
+        }
+        var nbt = block.getNbt();
+        if (nbt == null) {
+            return block;
+        }
+        LinIntTag typeTag = nbt.findTag("Base", LinTagType.intTag());
+        if (typeTag != null) {
             boolean isWall = block.getBlockType() == BlockTypes.WHITE_WALL_BANNER;
-            String bannerType = convertBannerType(((IntTag) typeTag).getValue(), isWall);
+            String bannerType = convertBannerType(typeTag.valueAsInt(), isWall);
             if (bannerType != null) {
                 BlockType type = BlockTypes.get("minecraft:" + bannerType);
                 if (type != null) {
@@ -79,29 +76,25 @@ public class BannerBlockCompatibilityHandler implements NBTCompatibilityHandler 
                         state = state.with(rotationProp, block.getState(RotationProperty));
                     }
 
-                    values.remove("Base");
+                    var nbtBuilder = nbt.toBuilder();
+                    nbtBuilder.remove("Base");
 
-                    Tag patternsTag = values.get("Patterns");
-                    if (patternsTag instanceof ListTag) {
-                        List<Tag> tempList = new ArrayList<>();
-                        for (Tag pattern : ((ListTag) patternsTag).getValue()) {
-                            if (pattern instanceof CompoundTag) {
-                                Map<String, Tag> patternMap = ((CompoundTag) pattern).getValue();
-                                Tag colorTag = patternMap.get("Color");
-
-                                CompoundTagBuilder builder = CompoundTagBuilder.create();
-                                builder.putAll(patternMap);
-                                if (colorTag instanceof IntTag) {
-                                    builder.putInt("Color", 15 - ((IntTag) colorTag).getValue());
-                                }
-                                tempList.add(builder.build());
+                    var patternsTag = nbt.findListTag("Patterns", LinTagType.compoundTag());
+                    if (patternsTag != null) {
+                        var newPatterns = LinListTag.builder(LinTagType.compoundTag());
+                        for (LinCompoundTag pattern : patternsTag.value()) {
+                            LinIntTag color = pattern.findTag("Color", LinTagType.intTag());
+                            if (color != null) {
+                                newPatterns.add(pattern.toBuilder()
+                                    .putInt("Color", 15 - color.valueAsInt())
+                                    .build());
                             } else {
-                                tempList.add(pattern);
+                                newPatterns.add(pattern);
                             }
                         }
-                        values.put("Patterns", new ListTag(((ListTag) patternsTag).getType(), tempList));
+                        nbtBuilder.put("Patterns", newPatterns.build());
                     }
-                    return state;
+                    return state.toBaseBlock(nbtBuilder.build());
                 }
             }
         }
@@ -109,58 +102,27 @@ public class BannerBlockCompatibilityHandler implements NBTCompatibilityHandler 
     }
 
     private static String convertBannerType(int oldType, boolean isWall) {
-        String color;
-        switch (oldType) {
-            case 0:
-                color = "black";
-                break;
-            case 1:
-                color = "red";
-                break;
-            case 2:
-                color = "green";
-                break;
-            case 3:
-                color = "brown";
-                break;
-            case 4:
-                color = "blue";
-                break;
-            case 5:
-                color = "purple";
-                break;
-            case 6:
-                color = "cyan";
-                break;
-            case 7:
-                color = "light_gray";
-                break;
-            case 8:
-                color = "gray";
-                break;
-            case 9:
-                color = "pink";
-                break;
-            case 10:
-                color = "lime";
-                break;
-            case 11:
-                color = "yellow";
-                break;
-            case 12:
-                color = "light_blue";
-                break;
-            case 13:
-                color = "magenta";
-                break;
-            case 14:
-                color = "orange";
-                break;
-            case 15:
-                color = "white";
-                break;
-            default:
-                return null;
+        String color = switch (oldType) {
+            case 0 -> "black";
+            case 1 -> "red";
+            case 2 -> "green";
+            case 3 -> "brown";
+            case 4 -> "blue";
+            case 5 -> "purple";
+            case 6 -> "cyan";
+            case 7 -> "light_gray";
+            case 8 -> "gray";
+            case 9 -> "pink";
+            case 10 -> "lime";
+            case 11 -> "yellow";
+            case 12 -> "light_blue";
+            case 13 -> "magenta";
+            case 14 -> "orange";
+            case 15 -> "white";
+            default -> null;
+        };
+        if (color == null) {
+            return null;
         }
         return color + (isWall ? "_wall_banner" : "_banner");
     }

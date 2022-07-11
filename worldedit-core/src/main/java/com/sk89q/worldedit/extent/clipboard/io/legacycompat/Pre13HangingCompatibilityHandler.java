@@ -19,41 +19,31 @@
 
 package com.sk89q.worldedit.extent.clipboard.io.legacycompat;
 
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.CompoundTagBuilder;
 import com.sk89q.worldedit.internal.helper.MCDirections;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.world.entity.EntityType;
+import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinNumberTag;
 
 public class Pre13HangingCompatibilityHandler implements EntityNBTCompatibilityHandler {
 
     @Override
-    public boolean isAffectedEntity(EntityType type, CompoundTag tag) {
+    public LinCompoundTag updateNbt(EntityType type, LinCompoundTag tag) {
         if (!type.getId().startsWith("minecraft:")) {
-            return false;
+            return tag;
         }
-        boolean hasLegacyDirection = tag.containsKey("Dir") || tag.containsKey("Direction");
-        boolean hasFacing = tag.containsKey("Facing");
-        return hasLegacyDirection || hasFacing;
-    }
-
-    @Override
-    public CompoundTag updateNBT(EntityType type, CompoundTag tag) {
-        boolean hasLegacyDir = tag.containsKey("Dir");
-        boolean hasLegacyDirection = tag.containsKey("Direction");
-        boolean hasPre113Facing = tag.containsKey("Facing");
         Direction newDirection;
-        if (hasLegacyDir) {
-            newDirection = MCDirections.fromPre13Hanging(MCDirections.fromLegacyHanging((byte) tag.asInt("Dir")));
-        } else if (hasLegacyDirection) {
-            newDirection = MCDirections.fromPre13Hanging(tag.asInt("Direction"));
-        } else if (hasPre113Facing) {
-            newDirection = MCDirections.fromPre13Hanging(tag.asInt("Facing"));
+        if (tag.value().get("Dir") instanceof LinNumberTag<?> legacyDir) {
+            newDirection = MCDirections.fromPre13Hanging(MCDirections.fromLegacyHanging(legacyDir.value().byteValue()));
+        } else if (tag.value().get("Direction") instanceof LinNumberTag<?> legacyDirection) {
+            newDirection = MCDirections.fromPre13Hanging(legacyDirection.value().intValue());
+        } else if (tag.value().get("Facing") instanceof LinNumberTag<?> legacyFacing) {
+            newDirection = MCDirections.fromPre13Hanging(legacyFacing.value().intValue());
         } else {
             return tag;
         }
         byte hangingByte = (byte) MCDirections.toHanging(newDirection);
-        CompoundTagBuilder builder = tag.createBuilder();
+        var builder = tag.toBuilder();
         builder.putByte("Facing", hangingByte);
         return builder.build();
     }

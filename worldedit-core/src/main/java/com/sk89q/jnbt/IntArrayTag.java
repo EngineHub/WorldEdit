@@ -19,44 +19,27 @@
 
 package com.sk89q.jnbt;
 
-import com.sk89q.worldedit.util.nbt.IntArrayBinaryTag;
+import org.enginehub.linbus.tree.LinIntArrayTag;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * The {@code TAG_Int_Array} tag.
  *
- * @deprecated Use {@link IntArrayBinaryTag}.
+ * @deprecated Use {@link LinIntArrayTag}.
  */
 @Deprecated
-public final class IntArrayTag extends Tag {
-
-    private final IntArrayBinaryTag innerTag;
-
+public final class IntArrayTag extends Tag<int[], LinIntArrayTag> {
     /**
      * Creates the tag with an empty name.
      *
      * @param value the value of the tag
      */
     public IntArrayTag(int[] value) {
-        super();
-        checkNotNull(value);
-        this.innerTag = IntArrayBinaryTag.of(value);
+        this(LinIntArrayTag.of(checkNotNull(value)));
     }
 
-    public IntArrayTag(IntArrayBinaryTag adventureTag) {
-        super();
-        this.innerTag = adventureTag;
+    public IntArrayTag(LinIntArrayTag tag) {
+        super(tag);
     }
-
-    @Override
-    public IntArrayBinaryTag asBinaryTag() {
-        return this.innerTag;
-    }
-
-    @Override
-    public int[] getValue() {
-        return innerTag.value();
-    }
-
 }

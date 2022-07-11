@@ -13,9 +13,24 @@ fun Project.applyCommonConfiguration() {
     version = rootProject.version
 
     repositories {
-        mavenCentral()
+        mavenCentral {
+            mavenContent {
+                releasesOnly()
+            }
+        }
         maven { url = uri("https://maven.enginehub.org/repo/") }
-        maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
+        maven {
+            url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+            mavenContent {
+                snapshotsOnly()
+            }
+        }
+        mavenLocal {
+            content {
+                includeGroup("org.enginehub.lin-bus")
+                includeGroup("org.enginehub.lin-bus.format")
+            }
+        }
     }
 
     configurations.all {

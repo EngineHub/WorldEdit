@@ -97,7 +97,7 @@ public class SignBlock extends BaseBlock {
 
     @Override
     public CompoundTag getNbtData() {
-        Map<String, Tag> values = new HashMap<>();
+        Map<String, Tag<?, ?>> values = new HashMap<>();
         values.put("Text1", new StringTag(text[0]));
         values.put("Text2", new StringTag(text[1]));
         values.put("Text3", new StringTag(text[2]));
@@ -111,9 +111,9 @@ public class SignBlock extends BaseBlock {
             return;
         }
 
-        Map<String, Tag> values = rootTag.getValue();
+        Map<String, Tag<?, ?>> values = rootTag.getValue();
 
-        Tag t;
+        Tag<?, ?> t;
 
         text = new String[] { EMPTY, EMPTY, EMPTY, EMPTY };
 

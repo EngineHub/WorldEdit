@@ -96,8 +96,8 @@ public class SkullBlock extends BaseBlock {
 
     @Override
     public CompoundTag getNbtData() {
-        Map<String, Tag> values = new HashMap<>();
-        Map<String, Tag> inner = new HashMap<>();
+        Map<String, Tag<?, ?>> values = new HashMap<>();
+        Map<String, Tag<?, ?>> inner = new HashMap<>();
         inner.put("Name", new StringTag(owner));
         values.put(DeprecationUtil.getHeadOwnerKey(), new CompoundTag(inner));
         return new CompoundTag(values);
@@ -109,7 +109,7 @@ public class SkullBlock extends BaseBlock {
             return;
         }
 
-        Map<String, Tag> values = rootTag.getValue();
+        Map<String, Tag<?, ?>> values = rootTag.getValue();
 
         Tag t;
 

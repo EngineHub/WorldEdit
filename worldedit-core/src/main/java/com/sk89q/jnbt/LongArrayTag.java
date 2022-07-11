@@ -19,44 +19,27 @@
 
 package com.sk89q.jnbt;
 
-import com.sk89q.worldedit.util.nbt.LongArrayBinaryTag;
+import org.enginehub.linbus.tree.LinLongArrayTag;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * The {@code TAG_Long_Array} tag.
  *
- * @deprecated Use {@link LongArrayBinaryTag}.
+ * @deprecated Use {@link LinLongArrayTag}.
  */
 @Deprecated
-public class LongArrayTag extends Tag {
-
-    private final LongArrayBinaryTag innerTag;
-
+public class LongArrayTag extends Tag<long[], LinLongArrayTag> {
     /**
      * Creates the tag with an empty name.
      *
      * @param value the value of the tag
      */
     public LongArrayTag(long[] value) {
-        super();
-        checkNotNull(value);
-        this.innerTag = LongArrayBinaryTag.of(value);
+        this(LinLongArrayTag.of(checkNotNull(value)));
     }
 
-    public LongArrayTag(LongArrayBinaryTag adventureTag) {
-        super();
-        this.innerTag = adventureTag;
+    public LongArrayTag(LinLongArrayTag tag) {
+        super(tag);
     }
-
-    @Override
-    public LongArrayBinaryTag asBinaryTag() {
-        return this.innerTag;
-    }
-
-    @Override
-    public long[] getValue() {
-        return innerTag.value();
-    }
-
 }

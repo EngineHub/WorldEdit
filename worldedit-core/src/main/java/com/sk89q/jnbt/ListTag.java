@@ -19,10 +19,20 @@
 
 package com.sk89q.jnbt;
 
-import com.sk89q.worldedit.util.nbt.BinaryTag;
-import com.sk89q.worldedit.util.nbt.BinaryTagLike;
-import com.sk89q.worldedit.util.nbt.ListBinaryTag;
-import com.sk89q.worldedit.util.nbt.NumberBinaryTag;
+import org.enginehub.linbus.common.LinTagId;
+import org.enginehub.linbus.tree.LinByteArrayTag;
+import org.enginehub.linbus.tree.LinByteTag;
+import org.enginehub.linbus.tree.LinDoubleTag;
+import org.enginehub.linbus.tree.LinFloatTag;
+import org.enginehub.linbus.tree.LinIntArrayTag;
+import org.enginehub.linbus.tree.LinIntTag;
+import org.enginehub.linbus.tree.LinListTag;
+import org.enginehub.linbus.tree.LinLongTag;
+import org.enginehub.linbus.tree.LinNumberTag;
+import org.enginehub.linbus.tree.LinShortTag;
+import org.enginehub.linbus.tree.LinStringTag;
+import org.enginehub.linbus.tree.LinTag;
+import org.enginehub.linbus.tree.LinTagType;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,33 +44,25 @@ import javax.annotation.Nullable;
 /**
  * The {@code TAG_List} tag.
  *
- * @deprecated Use {@link com.sk89q.worldedit.util.nbt.ListBinaryTag}.
+ * @deprecated Use {@link LinListTag}.
  */
 @Deprecated
-public final class ListTag extends Tag {
-
-    private final ListBinaryTag innerTag;
-
+public final class ListTag<EV, E extends LinTag<EV>> extends Tag<Object, LinListTag<E>> {
     /**
      * Creates the tag with an empty name.
      *
      * @param type the type of tag
      * @param value the value of the tag
      */
-    public ListTag(Class<? extends Tag> type, List<? extends Tag> value) {
-        this(ListBinaryTag.of(
-            AdventureNBTConverter.getAdventureType(type),
-            value.stream().map(BinaryTagLike::asBinaryTag).collect(Collectors.toList())
+    public ListTag(Class<? extends Tag<EV, E>> type, List<? extends Tag<EV, E>> value) {
+        this(LinListTag.of(
+            LinTagType.fromId(LinTagId.fromId(NBTUtils.getTypeCode(type))),
+            value.stream().map(Tag::toLinTag).collect(Collectors.toList())
         ));
     }
 
-    public ListTag(ListBinaryTag adventureTag) {
-        this.innerTag = adventureTag;
-    }
-
-    @Override
-    public ListBinaryTag asBinaryTag() {
-        return this.innerTag;
+    public ListTag(LinListTag<E> tag) {
+        super(tag);
     }
 
     /**
@@ -68,15 +70,14 @@ public final class ListTag extends Tag {
      *
      * @return The type of item in this list.
      */
-    public Class<? extends Tag> getType() {
-        return AdventureNBTConverter.getJNBTType(this.innerTag.elementType());
+    @SuppressWarnings("unchecked")
+    public Class<? extends Tag<EV, E>> getType() {
+        return (Class<? extends Tag<EV, E>>) NBTUtils.getTypeClass(linTag.elementType().id().id());
     }
 
     @Override
-    public List<Tag> getValue() {
-        return this.innerTag.stream()
-            .map(AdventureNBTConverter::fromAdventure)
-            .collect(Collectors.toList());
+    public List<? extends Tag<EV, E>> getValue() {
+        return linTag.value().stream().map(AdventureNBTConverter::toJnbtTag).toList();
     }
 
     /**
@@ -85,15 +86,29 @@ public final class ListTag extends Tag {
      * @param list the new list
      * @return a new list tag
      */
-    public ListTag setValue(List<Tag> list) {
-        return new ListTag(getType(), list);
+    public ListTag<EV, E> setValue(List<? extends Tag<EV, E>> list) {
+        return new ListTag<>(getType(), list);
     }
 
     private <T> T accessIfExists(int index, Supplier<T> defaultValue, IntFunction<T> accessor) {
-        if (index >= this.innerTag.size()) {
+        if (index >= this.linTag.value().size()) {
             return defaultValue.get();
         }
         return accessor.apply(index);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T, LT extends LinTag<T>> T extractViaValue(
+        int index, Class<LT> requiredType, Supplier<T> defaultValue
+    ) {
+        if (index >= this.linTag.value().size()) {
+            return defaultValue.get();
+        }
+        E value = this.linTag.get(index);
+        if (!requiredType.isInstance(value)) {
+            return defaultValue.get();
+        }
+        return (T) value.value();
     }
 
     /**
@@ -103,11 +118,11 @@ public final class ListTag extends Tag {
      * @return the tag or null
      */
     @Nullable
-    public Tag getIfExists(int index) {
+    public Tag<EV, E> getIfExists(int index) {
         return accessIfExists(
             index,
             () -> null,
-            i -> AdventureNBTConverter.fromAdventure(this.innerTag.get(i))
+            i -> AdventureNBTConverter.toJnbtTag(this.linTag.get(i))
         );
     }
 
@@ -121,11 +136,7 @@ public final class ListTag extends Tag {
      * @return a byte array
      */
     public byte[] getByteArray(int index) {
-        return accessIfExists(
-            index,
-            () -> new byte[0],
-            this.innerTag::getByteArray
-        );
+        return extractViaValue(index, LinByteArrayTag.class, () -> new byte[0]);
     }
 
     /**
@@ -138,11 +149,7 @@ public final class ListTag extends Tag {
      * @return a byte
      */
     public byte getByte(int index) {
-        return accessIfExists(
-            index,
-            () -> (byte) 0,
-            this.innerTag::getByte
-        );
+        return extractViaValue(index, LinByteTag.class, () -> (byte) 0);
     }
 
     /**
@@ -155,11 +162,7 @@ public final class ListTag extends Tag {
      * @return a double
      */
     public double getDouble(int index) {
-        return accessIfExists(
-            index,
-            () -> 0.0,
-            this.innerTag::getDouble
-        );
+        return extractViaValue(index, LinDoubleTag.class, () -> 0.0);
     }
 
     /**
@@ -176,13 +179,9 @@ public final class ListTag extends Tag {
         return accessIfExists(
             index,
             () -> 0.0,
-            i -> {
-                BinaryTag tag = this.innerTag.get(i);
-                if (tag instanceof NumberBinaryTag) {
-                    return ((NumberBinaryTag) tag).doubleValue();
-                }
-                return 0.0;
-            }
+            i -> this.linTag.get(i) instanceof LinNumberTag<?> tag
+                ? tag.value().doubleValue()
+                : 0.0
         );
     }
 
@@ -196,11 +195,7 @@ public final class ListTag extends Tag {
      * @return a float
      */
     public float getFloat(int index) {
-        return accessIfExists(
-            index,
-            () -> 0.0f,
-            this.innerTag::getFloat
-        );
+        return extractViaValue(index, LinFloatTag.class, () -> 0f);
     }
 
     /**
@@ -213,11 +208,7 @@ public final class ListTag extends Tag {
      * @return an int array
      */
     public int[] getIntArray(int index) {
-        return accessIfExists(
-            index,
-            () -> new int[0],
-            this.innerTag::getIntArray
-        );
+        return extractViaValue(index, LinIntArrayTag.class, () -> new int[0]);
     }
 
     /**
@@ -230,11 +221,7 @@ public final class ListTag extends Tag {
      * @return an int
      */
     public int getInt(int index) {
-        return accessIfExists(
-            index,
-            () -> 0,
-            this.innerTag::getInt
-        );
+        return extractViaValue(index, LinIntTag.class, () -> 0);
     }
 
     /**
@@ -251,13 +238,9 @@ public final class ListTag extends Tag {
         return accessIfExists(
             index,
             () -> 0,
-            i -> {
-                BinaryTag tag = this.innerTag.get(i);
-                if (tag instanceof NumberBinaryTag) {
-                    return ((NumberBinaryTag) tag).intValue();
-                }
-                return 0;
-            }
+            i -> this.linTag.get(i) instanceof LinNumberTag<?> tag
+                ? tag.value().intValue()
+                : 0
         );
     }
 
@@ -270,7 +253,7 @@ public final class ListTag extends Tag {
      * @param index the index
      * @return a list of tags
      */
-    public List<Tag> getList(int index) {
+    public List<? extends Tag<?, ?>> getList(int index) {
         return getListTag(index).getValue();
     }
 
@@ -283,11 +266,12 @@ public final class ListTag extends Tag {
      * @param index the index
      * @return a tag list instance
      */
-    public ListTag getListTag(int index) {
-        return new ListTag(accessIfExists(
+    @SuppressWarnings("unchecked")
+    public ListTag<?, ?> getListTag(int index) {
+        return new ListTag<>(extractViaValue(
             index,
-            ListBinaryTag::empty,
-            this.innerTag::getList
+            LinListTag.class,
+            () -> LinListTag.empty(LinTagType.endTag())
         ));
     }
 
@@ -305,8 +289,8 @@ public final class ListTag extends Tag {
      * @return a list of tags
      */
     @SuppressWarnings("unchecked")
-    public <T extends Tag> List<T> getList(int index, Class<T> listType) {
-        ListTag listTag = getListTag(index);
+    public <T extends Tag<?, ?>> List<T> getList(int index, Class<T> listType) {
+        ListTag<?, ?> listTag = getListTag(index);
         if (listTag.getType().equals(listType)) {
             return (List<T>) listTag.getValue();
         } else {
@@ -324,11 +308,7 @@ public final class ListTag extends Tag {
      * @return a long
      */
     public long getLong(int index) {
-        return accessIfExists(
-            index,
-            () -> 0L,
-            this.innerTag::getLong
-        );
+        return extractViaValue(index, LinLongTag.class, () -> 0L);
     }
 
     /**
@@ -345,13 +325,9 @@ public final class ListTag extends Tag {
         return accessIfExists(
             index,
             () -> 0L,
-            i -> {
-                BinaryTag tag = this.innerTag.get(i);
-                if (tag instanceof NumberBinaryTag) {
-                    return ((NumberBinaryTag) tag).longValue();
-                }
-                return 0L;
-            }
+            i -> this.linTag.get(i) instanceof LinNumberTag<?> tag
+                ? tag.value().longValue()
+                : 0L
         );
     }
 
@@ -365,11 +341,7 @@ public final class ListTag extends Tag {
      * @return a short
      */
     public short getShort(int index) {
-        return accessIfExists(
-            index,
-            () -> (short) 0,
-            this.innerTag::getShort
-        );
+        return extractViaValue(index, LinShortTag.class, () -> (short) 0);
     }
 
     /**
@@ -382,11 +354,7 @@ public final class ListTag extends Tag {
      * @return a string
      */
     public String getString(int index) {
-        return accessIfExists(
-            index,
-            () -> "",
-            this.innerTag::getString
-        );
+        return extractViaValue(index, LinStringTag.class, () -> "");
     }
 
 }

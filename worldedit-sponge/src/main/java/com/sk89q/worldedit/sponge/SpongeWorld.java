@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.sponge;
 
 import com.google.common.collect.Sets;
-import com.sk89q.jnbt.AdventureNBTConverter;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEditException;
@@ -39,7 +38,6 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.RegenOptions;
 import com.sk89q.worldedit.world.World;
@@ -200,7 +198,7 @@ public final class SpongeWorld extends AbstractWorld {
                     world.engine().registry(RegistryTypes.BLOCK_ENTITY_TYPE)
                         .value(ResourceKey.resolve(baseBlock.getNbtId()))
                 )
-                .blockEntityData(NbtAdapter.adaptFromWorldEdit((CompoundTag) AdventureNBTConverter.fromAdventure(baseBlock.getNbt())))
+                .blockEntityData(NbtAdapter.adaptFromWorldEdit(new CompoundTag(baseBlock.getNbt())))
                 .state(newState)
                 .build()
                 .apply(ServerLocation.of(world, position.getX(), position.getY(), position.getZ()));
@@ -466,9 +464,9 @@ public final class SpongeWorld extends AbstractWorld {
             return null;
         }
         EntityArchetype.Builder builder = EntityArchetype.builder().type(entityType.get());
-        CompoundBinaryTag nativeTag = entity.getNbt();
+        var nativeTag = entity.getNbt();
         if (nativeTag != null) {
-            builder.entityData(NbtAdapter.adaptFromWorldEdit((CompoundTag) AdventureNBTConverter.fromAdventure(nativeTag)));
+            builder.entityData(NbtAdapter.adaptFromWorldEdit(new CompoundTag(nativeTag)));
         }
         return builder.build().apply(SpongeAdapter.adapt(location)).map(SpongeEntity::new).orElse(null);
     }

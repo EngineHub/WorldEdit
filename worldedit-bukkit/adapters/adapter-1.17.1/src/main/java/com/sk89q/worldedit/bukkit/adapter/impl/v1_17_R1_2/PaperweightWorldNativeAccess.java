@@ -19,14 +19,12 @@
 
 package com.sk89q.worldedit.bukkit.adapter.impl.v1_17_R1_2;
 
-import com.sk89q.jnbt.AdventureNBTConverter;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.block.BlockState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.Tag;
@@ -38,6 +36,7 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_17_R1.block.data.CraftBlockData;
 import org.bukkit.event.block.BlockPhysicsEvent;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.lang.ref.WeakReference;
 import java.util.Objects;
@@ -105,13 +104,13 @@ public class PaperweightWorldNativeAccess implements WorldNativeAccess<LevelChun
     }
 
     @Override
-    public boolean updateTileEntity(BlockPos position, CompoundBinaryTag tag) {
+    public boolean updateTileEntity(BlockPos position, LinCompoundTag tag) {
         // We will assume that the tile entity was created for us
         BlockEntity tileEntity = getWorld().getBlockEntity(position);
         if (tileEntity == null) {
             return false;
         }
-        Tag nativeTag = adapter.fromNative(AdventureNBTConverter.fromAdventure(tag));
+        Tag nativeTag = adapter.fromNative(new CompoundTag(tag));
         PaperweightAdapter.readTagIntoTileEntity((net.minecraft.nbt.CompoundTag) nativeTag, tileEntity);
         return true;
     }

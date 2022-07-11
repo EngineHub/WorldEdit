@@ -24,13 +24,13 @@ import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.lang.ref.WeakReference;
 import java.util.Objects;
@@ -101,7 +101,7 @@ public class ForgeWorldNativeAccess implements WorldNativeAccess<LevelChunk, Blo
     }
 
     @Override
-    public boolean updateTileEntity(BlockPos position, CompoundBinaryTag tag) {
+    public boolean updateTileEntity(BlockPos position, LinCompoundTag tag) {
         net.minecraft.nbt.CompoundTag nativeTag = NBTConverter.toNative(tag);
         return TileEntityUtils.setTileEntity(getWorld(), position, nativeTag);
     }

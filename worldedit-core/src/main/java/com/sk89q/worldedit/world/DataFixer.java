@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.world;
 
 import com.google.common.annotations.Beta;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
 /**
  * This entire class is subject to heavy changes. Do not use this as API.
@@ -37,12 +37,12 @@ public interface DataFixer {
         private FixTypes() {
         }
 
-        public static FixType<CompoundBinaryTag> CHUNK = new FixType<>();
-        public static FixType<CompoundBinaryTag> BLOCK_ENTITY = new FixType<>();
-        public static FixType<CompoundBinaryTag> ENTITY = new FixType<>();
-        public static FixType<String> BLOCK_STATE = new FixType<>();
-        public static FixType<String> BIOME = new FixType<>();
-        public static FixType<String> ITEM_TYPE = new FixType<>();
+        public static final FixType<LinCompoundTag> CHUNK = new FixType<>();
+        public static final FixType<LinCompoundTag> BLOCK_ENTITY = new FixType<>();
+        public static final FixType<LinCompoundTag> ENTITY = new FixType<>();
+        public static final FixType<String> BLOCK_STATE = new FixType<>();
+        public static final FixType<String> BIOME = new FixType<>();
+        public static final FixType<String> ITEM_TYPE = new FixType<>();
     }
 
     default <T> T fixUp(FixType<T> type, T original) {

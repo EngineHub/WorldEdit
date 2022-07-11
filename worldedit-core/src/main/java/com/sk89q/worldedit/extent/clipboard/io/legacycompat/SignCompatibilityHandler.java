@@ -24,50 +24,52 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
-import com.sk89q.jnbt.StringTag;
-import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.internal.util.DeprecationUtil;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
-
-import java.util.Map;
+import com.sk89q.worldedit.world.block.BaseBlock;
+import org.enginehub.linbus.tree.LinStringTag;
+import org.enginehub.linbus.tree.LinTagType;
 
 public class SignCompatibilityHandler implements NBTCompatibilityHandler {
 
     @Override
-    public <B extends BlockStateHolder<B>> boolean isAffectedBlock(B block) {
-        return DeprecationUtil.isSign(block.getBlockType());
-    }
-
-    @Override
-    public <B extends BlockStateHolder<B>> BlockStateHolder<?> updateNBT(B block, Map<String, Tag> values) {
+    public BaseBlock updateNbt(BaseBlock block) {
+        if (!DeprecationUtil.isSign(block.getBlockType())) {
+            return block;
+        }
+        var tag = block.getNbt();
+        if (tag == null) {
+            return block;
+        }
+        var newTag = tag.toBuilder();
         for (int i = 0; i < 4; ++i) {
             String key = "Text" + (i + 1);
-            Tag value = values.get(key);
-            if (value instanceof StringTag) {
-                String storedString = ((StringTag) value).getValue();
-                JsonElement jsonElement = null;
-                if (storedString != null && storedString.startsWith("{")) {
-                    try {
-                        jsonElement = new JsonParser().parse(storedString);
-                    } catch (JsonSyntaxException ex) {
-                        // ignore: jsonElement will be null in the next check
-                    }
-                }
-                if (jsonElement == null) {
-                    jsonElement = new JsonPrimitive(storedString == null ? "" : storedString);
-                }
-                if (jsonElement.isJsonObject()) {
-                    continue;
-                }
-
-                if (jsonElement.isJsonNull()) {
-                    jsonElement = new JsonPrimitive("");
-                }
-
-                JsonObject jsonTextObject = new JsonObject();
-                jsonTextObject.add("text", jsonElement);
-                values.put("Text" + (i + 1), new StringTag(jsonTextObject.toString()));
+            var value = tag.findTag(key, LinTagType.stringTag());
+            if (value == null) {
+                continue;
             }
+            String storedString = value.value();
+            JsonElement jsonElement = null;
+            if (storedString.startsWith("{")) {
+                try {
+                    jsonElement = JsonParser.parseString(storedString);
+                } catch (JsonSyntaxException ex) {
+                    // ignore: jsonElement will be null in the next check
+                }
+            }
+            if (jsonElement == null) {
+                jsonElement = new JsonPrimitive(storedString);
+            }
+            if (jsonElement.isJsonObject()) {
+                continue;
+            }
+
+            if (jsonElement.isJsonNull()) {
+                jsonElement = new JsonPrimitive("");
+            }
+
+            JsonObject jsonTextObject = new JsonObject();
+            jsonTextObject.add("text", jsonElement);
+            newTag.put("Text" + (i + 1), LinStringTag.of(jsonTextObject.toString()));
         }
         return block;
     }

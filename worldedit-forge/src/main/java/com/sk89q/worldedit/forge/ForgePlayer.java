@@ -35,7 +35,6 @@ import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.component.TextUtils;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -54,6 +53,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.StructureBlockEntity;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
@@ -249,7 +249,7 @@ public class ForgePlayer extends AbstractPlayerActor {
                 loc, ForgeAdapter.adapt(block.toImmutableState())
             ));
             if (block instanceof BaseBlock baseBlock && block.getBlockType().equals(BlockTypes.STRUCTURE_BLOCK)) {
-                final CompoundBinaryTag nbtData = baseBlock.getNbt();
+                final LinCompoundTag nbtData = baseBlock.getNbt();
                 if (nbtData != null) {
                     player.connection.send(ClientboundBlockEntityDataPacket.create(
                         new StructureBlockEntity(

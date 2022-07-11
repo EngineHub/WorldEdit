@@ -49,13 +49,14 @@ import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
+import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinTagType;
 
 import java.time.ZoneId;
 import java.util.Calendar;
@@ -833,13 +834,13 @@ public class LocalSession {
 
         BaseBlock block = ServerCUIHandler.createStructureBlock(player);
         if (block != null) {
-            CompoundBinaryTag tags = Objects.requireNonNull(
+            LinCompoundTag tags = Objects.requireNonNull(
                 block.getNbt(), "createStructureBlock should return nbt"
             );
             BlockVector3 tempCuiTemporaryBlock = BlockVector3.at(
-                tags.getInt("x"),
-                tags.getInt("y"),
-                tags.getInt("z")
+                tags.getTag("x", LinTagType.intTag()).valueAsInt(),
+                tags.getTag("y", LinTagType.intTag()).valueAsInt(),
+                tags.getTag("z", LinTagType.intTag()).valueAsInt()
             );
             // If it's null, we don't need to do anything. The old was already removed.
             if (cuiTemporaryBlock != null && !tempCuiTemporaryBlock.equals(cuiTemporaryBlock)) {

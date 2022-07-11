@@ -78,7 +78,7 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
                 CompoundTag schematicTag = (CompoundTag) rootTag.getTag();
 
                 // Check
-                Map<String, Tag> schematic = schematicTag.getValue();
+                Map<String, Tag<?, ?>> schematic = schematicTag.getValue();
                 if (!schematic.containsKey("Materials")) {
                     return false;
                 }
@@ -116,8 +116,8 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
                 CompoundTag schematicTag = (CompoundTag) rootTag.getTag();
 
                 // Check
-                Map<String, Tag> schematic = schematicTag.getValue();
-                Tag versionTag = schematic.get("Version");
+                Map<String, Tag<?, ?>> schematic = schematicTag.getValue();
+                Tag<?, ?> versionTag = schematic.get("Version");
                 if (!(versionTag instanceof IntTag) || ((IntTag) versionTag).getValue() != 1) {
                     return false;
                 }
@@ -157,8 +157,8 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
                 CompoundTag schematicTag = (CompoundTag) rootTag.getTag();
 
                 // Check
-                Map<String, Tag> schematic = schematicTag.getValue();
-                Tag versionTag = schematic.get("Version");
+                Map<String, Tag<?, ?>> schematic = schematicTag.getValue();
+                Tag<?, ?> versionTag = schematic.get("Version");
                 if (!(versionTag instanceof IntTag) || ((IntTag) versionTag).getValue() != 2) {
                     return false;
                 }
@@ -203,7 +203,7 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
                 }
 
                 // Check
-                Map<String, Tag> schematic = ((CompoundTag) schematicTag).getValue();
+                Map<String, Tag<?, ?>> schematic = ((CompoundTag) schematicTag).getValue();
                 Tag versionTag = schematic.get("Version");
                 if (!(versionTag instanceof IntTag) || ((IntTag) versionTag).getValue() != 3) {
                     return false;

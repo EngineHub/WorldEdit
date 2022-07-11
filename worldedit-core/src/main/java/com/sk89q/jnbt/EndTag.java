@@ -19,23 +19,16 @@
 
 package com.sk89q.jnbt;
 
-import com.sk89q.worldedit.util.nbt.EndBinaryTag;
+import org.enginehub.linbus.tree.LinEndTag;
 
 /**
  * The {@code TAG_End} tag.
  *
- * @deprecated Use {@link com.sk89q.worldedit.util.nbt.EndBinaryTag}.
+ * @deprecated Use {@link LinEndTag}.
  */
 @Deprecated
-public final class EndTag extends Tag {
-
-    @Override
-    public Object getValue() {
-        return null;
-    }
-
-    @Override
-    public EndBinaryTag asBinaryTag() {
-        return EndBinaryTag.get();
+public final class EndTag extends Tag<Object, LinEndTag> {
+    public EndTag() {
+        super(LinEndTag.instance());
     }
 }

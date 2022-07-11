@@ -19,41 +19,25 @@
 
 package com.sk89q.jnbt;
 
-import com.sk89q.worldedit.util.nbt.LongBinaryTag;
+import org.enginehub.linbus.tree.LinLongTag;
 
 /**
  * The {@code TAG_Long} tag.
  *
- * @deprecated Use {@link LongBinaryTag}.
+ * @deprecated Use {@link LinLongTag}.
  */
 @Deprecated
-public final class LongTag extends Tag {
-
-    private final LongBinaryTag innerTag;
-
+public final class LongTag extends Tag<Long, LinLongTag> {
     /**
      * Creates the tag with an empty name.
      *
      * @param value the value of the tag
      */
     public LongTag(long value) {
-        super();
-        this.innerTag = LongBinaryTag.of(value);
+        this(LinLongTag.of(value));
     }
 
-    public LongTag(LongBinaryTag adventureTag) {
-        super();
-        this.innerTag = adventureTag;
+    public LongTag(LinLongTag tag) {
+        super(tag);
     }
-
-    @Override
-    public LongBinaryTag asBinaryTag() {
-        return this.innerTag;
-    }
-
-    @Override
-    public Long getValue() {
-        return innerTag.value();
-    }
-
 }

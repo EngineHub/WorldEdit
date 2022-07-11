@@ -24,7 +24,6 @@ import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ChunkHolder;
@@ -34,6 +33,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.lang.ref.WeakReference;
 import java.util.Objects;
@@ -104,7 +104,7 @@ public class FabricWorldNativeAccess implements WorldNativeAccess<LevelChunk, Bl
     }
 
     @Override
-    public boolean updateTileEntity(BlockPos position, CompoundBinaryTag tag) {
+    public boolean updateTileEntity(BlockPos position, LinCompoundTag tag) {
         CompoundTag nativeTag = NBTConverter.toNative(tag);
         BlockEntity tileEntity = getWorld().getChunkAt(position).getBlockEntity(position);
         if (tileEntity == null) {

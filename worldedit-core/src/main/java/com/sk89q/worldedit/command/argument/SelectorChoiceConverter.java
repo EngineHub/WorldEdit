@@ -26,9 +26,9 @@ import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
 import org.enginehub.piston.converter.MultiKeyConverter;
 import org.enginehub.piston.inject.Key;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
+import javax.annotation.Nonnull;
 
 public class SelectorChoiceConverter {
     public static void register(CommandManager commandManager) {
@@ -47,7 +47,7 @@ public class SelectorChoiceConverter {
         );
     }
 
-    @NotNull
+    @Nonnull
     private static SetMultimap<SelectorChoice, String> getBasicItems() {
         SetMultimap<SelectorChoice, String> items = LinkedHashMultimap.create();
         for (var item : SelectorChoice.values()) {

@@ -21,10 +21,11 @@ package com.sk89q.jnbt;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.sk89q.worldedit.util.nbt.BinaryTag;
-import com.sk89q.worldedit.util.nbt.BinaryTagLike;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
-import com.sk89q.worldedit.util.nbt.NumberBinaryTag;
+import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinListTag;
+import org.enginehub.linbus.tree.LinNumberTag;
+import org.enginehub.linbus.tree.LinTag;
+import org.enginehub.linbus.tree.LinTagType;
 
 import java.util.Collections;
 import java.util.List;
@@ -33,26 +34,21 @@ import java.util.Map;
 /**
  * The {@code TAG_Compound} tag.
  *
- * @deprecated Use {@link com.sk89q.worldedit.util.nbt.CompoundBinaryTag}.
+ * @deprecated Use {@link LinCompoundTag}.
  */
 @Deprecated
-public final class CompoundTag extends Tag {
-
-    private final CompoundBinaryTag innerTag;
-
+public final class CompoundTag extends Tag<Object, LinCompoundTag> {
     /**
      * Creates the tag with an empty name.
      *
      * @param value the value of the tag
      */
-    public CompoundTag(Map<String, Tag> value) {
-        this(CompoundBinaryTag.builder()
-            .put(Maps.transformValues(value, BinaryTagLike::asBinaryTag))
-            .build());
+    public CompoundTag(Map<String, Tag<?, ?>> value) {
+        this(LinCompoundTag.of(Maps.transformValues(value, Tag::toLinTag)));
     }
 
-    public CompoundTag(CompoundBinaryTag adventureTag) {
-        this.innerTag = adventureTag;
+    public CompoundTag(LinCompoundTag tag) {
+        super(tag);
     }
 
     /**
@@ -62,16 +58,16 @@ public final class CompoundTag extends Tag {
      * @return true if the tag contains the given key
      */
     public boolean containsKey(String key) {
-        return innerTag.keySet().contains(key);
+        return linTag.value().containsKey(key);
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public Map<String, Tag> getValue() {
-        ImmutableMap.Builder<String, Tag> map = ImmutableMap.builder();
-        for (String key : innerTag.keySet()) {
-            map.put(key, AdventureNBTConverter.fromAdventure(innerTag.get(key)));
-        }
-        return map.build();
+    public Map<String, Tag<?, ?>> getValue() {
+        return ImmutableMap.copyOf(Maps.transformValues(
+            linTag.value(),
+            tag -> (Tag<?, ?>) AdventureNBTConverter.toJnbtTag((LinTag) tag)
+        ));
     }
 
     /**
@@ -80,7 +76,7 @@ public final class CompoundTag extends Tag {
      * @param value the value
      * @return the new compound tag
      */
-    public CompoundTag setValue(Map<String, Tag> value) {
+    public CompoundTag setValue(Map<String, Tag<?, ?>> value) {
         return new CompoundTag(value);
     }
 
@@ -90,7 +86,7 @@ public final class CompoundTag extends Tag {
      * @return the builder
      */
     public CompoundTagBuilder createBuilder() {
-        return new CompoundTagBuilder(innerTag);
+        return new CompoundTagBuilder(linTag);
     }
 
     /**
@@ -103,7 +99,8 @@ public final class CompoundTag extends Tag {
      * @return a byte array
      */
     public byte[] getByteArray(String key) {
-        return this.innerTag.getByteArray(key);
+        var tag = linTag.findTag(key, LinTagType.byteArrayTag());
+        return tag == null ? new byte[0] : tag.value();
     }
 
     /**
@@ -116,7 +113,8 @@ public final class CompoundTag extends Tag {
      * @return a byte
      */
     public byte getByte(String key) {
-        return this.innerTag.getByte(key);
+        var tag = linTag.findTag(key, LinTagType.byteTag());
+        return tag == null ? 0 : tag.value();
     }
 
     /**
@@ -129,7 +127,8 @@ public final class CompoundTag extends Tag {
      * @return a double
      */
     public double getDouble(String key) {
-        return this.innerTag.getDouble(key);
+        var tag = linTag.findTag(key, LinTagType.doubleTag());
+        return tag == null ? 0 : tag.value();
     }
 
     /**
@@ -143,9 +142,10 @@ public final class CompoundTag extends Tag {
      * @return a double
      */
     public double asDouble(String key) {
-        BinaryTag tag = this.innerTag.get(key);
-        if (tag instanceof NumberBinaryTag) {
-            return ((NumberBinaryTag) tag).doubleValue();
+        var tag = linTag.value().get(key);
+        if (tag instanceof LinNumberTag<?> numberTag) {
+            Number value = numberTag.value();
+            return value.doubleValue();
         }
         return 0;
     }
@@ -160,7 +160,8 @@ public final class CompoundTag extends Tag {
      * @return a float
      */
     public float getFloat(String key) {
-        return this.innerTag.getFloat(key);
+        var tag = linTag.findTag(key, LinTagType.floatTag());
+        return tag == null ? 0 : tag.value();
     }
 
     /**
@@ -173,7 +174,8 @@ public final class CompoundTag extends Tag {
      * @return an int array
      */
     public int[] getIntArray(String key) {
-        return this.innerTag.getIntArray(key);
+        var tag = linTag.findTag(key, LinTagType.intArrayTag());
+        return tag == null ? new int[0] : tag.value();
     }
 
     /**
@@ -186,7 +188,8 @@ public final class CompoundTag extends Tag {
      * @return an int
      */
     public int getInt(String key) {
-        return this.innerTag.getInt(key);
+        var tag = linTag.findTag(key, LinTagType.intTag());
+        return tag == null ? 0 : tag.value();
     }
 
     /**
@@ -200,9 +203,10 @@ public final class CompoundTag extends Tag {
      * @return an int
      */
     public int asInt(String key) {
-        BinaryTag tag = this.innerTag.get(key);
-        if (tag instanceof NumberBinaryTag) {
-            return ((NumberBinaryTag) tag).intValue();
+        var tag = linTag.value().get(key);
+        if (tag instanceof LinNumberTag<?> numberTag) {
+            Number value = numberTag.value();
+            return value.intValue();
         }
         return 0;
     }
@@ -216,7 +220,7 @@ public final class CompoundTag extends Tag {
      * @param key the key
      * @return a list of tags
      */
-    public List<Tag> getList(String key) {
+    public List<? extends Tag<?, ?>> getList(String key) {
         return getListTag(key).getValue();
     }
 
@@ -229,8 +233,15 @@ public final class CompoundTag extends Tag {
      * @param key the key
      * @return a tag list instance
      */
-    public ListTag getListTag(String key) {
-        return new ListTag(this.innerTag.getList(key));
+    public <EV, E extends LinTag<EV>> ListTag<EV, E> getListTag(String key) {
+        LinListTag<E> tag = linTag.findTag(key, LinTagType.listTag());
+        if (tag == null) {
+            // This is actually hella unsafe. But eh.
+            @SuppressWarnings("unchecked")
+            LinTagType<E> endGenerically = (LinTagType<E>) LinTagType.endTag();
+            return new ListTag<>(LinListTag.empty(endGenerically));
+        }
+        return new ListTag<>(tag);
     }
 
     /**
@@ -247,8 +258,8 @@ public final class CompoundTag extends Tag {
      * @return a list of tags
      */
     @SuppressWarnings("unchecked")
-    public <T extends Tag> List<T> getList(String key, Class<T> listType) {
-        ListTag listTag = getListTag(key);
+    public <T extends Tag<?, ?>> List<T> getList(String key, Class<T> listType) {
+        ListTag<?, ?> listTag = getListTag(key);
         if (listTag.getType().equals(listType)) {
             return (List<T>) listTag.getValue();
         } else {
@@ -266,7 +277,8 @@ public final class CompoundTag extends Tag {
      * @return an int array
      */
     public long[] getLongArray(String key) {
-        return this.innerTag.getLongArray(key);
+        var tag = linTag.findTag(key, LinTagType.longArrayTag());
+        return tag == null ? new long[0] : tag.value();
     }
 
     /**
@@ -279,7 +291,8 @@ public final class CompoundTag extends Tag {
      * @return a long
      */
     public long getLong(String key) {
-        return this.innerTag.getLong(key);
+        var tag = linTag.findTag(key, LinTagType.longTag());
+        return tag == null ? 0 : tag.value();
     }
 
     /**
@@ -293,9 +306,10 @@ public final class CompoundTag extends Tag {
      * @return a long
      */
     public long asLong(String key) {
-        BinaryTag tag = this.innerTag.get(key);
-        if (tag instanceof NumberBinaryTag) {
-            return ((NumberBinaryTag) tag).longValue();
+        var tag = linTag.value().get(key);
+        if (tag instanceof LinNumberTag<?> numberTag) {
+            Number value = numberTag.value();
+            return value.longValue();
         }
         return 0;
     }
@@ -310,7 +324,8 @@ public final class CompoundTag extends Tag {
      * @return a short
      */
     public short getShort(String key) {
-        return this.innerTag.getShort(key);
+        var tag = linTag.findTag(key, LinTagType.shortTag());
+        return tag == null ? 0 : tag.value();
     }
 
     /**
@@ -323,11 +338,7 @@ public final class CompoundTag extends Tag {
      * @return a string
      */
     public String getString(String key) {
-        return this.innerTag.getString(key);
-    }
-
-    @Override
-    public CompoundBinaryTag asBinaryTag() {
-        return this.innerTag;
+        var tag = linTag.findTag(key, LinTagType.stringTag());
+        return tag == null ? "" : tag.value();
     }
 }

@@ -36,7 +36,6 @@ import com.mojang.datafixers.DataFixerBuilder;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.serialization.Dynamic;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.FloatTag;
 import net.minecraft.nbt.ListTag;
@@ -52,6 +51,7 @@ import net.minecraft.util.datafix.fixes.References;
 import net.minecraft.world.item.DyeColor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -91,11 +91,11 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
     @Override
     public <T> T fixUp(FixType<T> type, T original, int srcVer) {
         if (type == FixTypes.CHUNK) {
-            return (T) fixChunk((CompoundBinaryTag) original, srcVer);
+            return (T) fixChunk((LinCompoundTag) original, srcVer);
         } else if (type == FixTypes.BLOCK_ENTITY) {
-            return (T) fixBlockEntity((CompoundBinaryTag) original, srcVer);
+            return (T) fixBlockEntity((LinCompoundTag) original, srcVer);
         } else if (type == FixTypes.ENTITY) {
-            return (T) fixEntity((CompoundBinaryTag) original, srcVer);
+            return (T) fixEntity((LinCompoundTag) original, srcVer);
         } else if (type == FixTypes.BLOCK_STATE) {
             return (T) fixBlockState((String) original, srcVer);
         } else if (type == FixTypes.ITEM_TYPE) {
@@ -106,19 +106,19 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
         return original;
     }
 
-    private CompoundBinaryTag fixChunk(CompoundBinaryTag originalChunk, int srcVer) {
+    private LinCompoundTag fixChunk(LinCompoundTag originalChunk, int srcVer) {
         net.minecraft.nbt.CompoundTag tag = NBTConverter.toNative(originalChunk);
         net.minecraft.nbt.CompoundTag fixed = convert(LegacyType.CHUNK, tag, srcVer);
         return NBTConverter.fromNative(fixed);
     }
 
-    private CompoundBinaryTag fixBlockEntity(CompoundBinaryTag origTileEnt, int srcVer) {
+    private LinCompoundTag fixBlockEntity(LinCompoundTag origTileEnt, int srcVer) {
         net.minecraft.nbt.CompoundTag tag = NBTConverter.toNative(origTileEnt);
         net.minecraft.nbt.CompoundTag fixed = convert(LegacyType.BLOCK_ENTITY, tag, srcVer);
         return NBTConverter.fromNative(fixed);
     }
 
-    private CompoundBinaryTag fixEntity(CompoundBinaryTag origEnt, int srcVer) {
+    private LinCompoundTag fixEntity(LinCompoundTag origEnt, int srcVer) {
         net.minecraft.nbt.CompoundTag tag = NBTConverter.toNative(origEnt);
         net.minecraft.nbt.CompoundTag fixed = convert(LegacyType.ENTITY, tag, srcVer);
         return NBTConverter.fromNative(fixed);
