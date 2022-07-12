@@ -40,4 +40,9 @@ public final class FloatTag extends Tag<Float, LinFloatTag> {
     public FloatTag(LinFloatTag tag) {
         super(tag);
     }
+
+    @Override
+    public Float getValue() {
+        return super.getValue();
+    }
 }

@@ -31,4 +31,9 @@ public final class EndTag extends Tag<Object, LinEndTag> {
     public EndTag() {
         super(LinEndTag.instance());
     }
+
+    @Override
+    public Object getValue() {
+        return super.getValue();
+    }
 }

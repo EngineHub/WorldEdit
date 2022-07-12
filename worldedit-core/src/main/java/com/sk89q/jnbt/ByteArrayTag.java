@@ -40,4 +40,9 @@ public final class ByteArrayTag extends Tag<byte[], LinByteArrayTag> {
     public ByteArrayTag(LinByteArrayTag tag) {
         super(tag);
     }
+
+    @Override
+    public byte[] getValue() {
+        return super.getValue();
+    }
 }

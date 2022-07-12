@@ -40,4 +40,9 @@ public final class ShortTag extends Tag<Short, LinShortTag> {
     public ShortTag(LinShortTag tag) {
         super(tag);
     }
+
+    @Override
+    public Short getValue() {
+        return super.getValue();
+    }
 }

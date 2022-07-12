@@ -9,6 +9,7 @@ class BinaryCompatRule() : AbstractAcceptingRule() {
         JApiCompatibilityChange.METHOD_REMOVED_IN_SUPERCLASS,  // the removal of the method will be reported
         JApiCompatibilityChange.INTERFACE_REMOVED,  // the removed methods will be reported
         JApiCompatibilityChange.INTERFACE_ADDED, // the added methods will be reported
+        JApiCompatibilityChange.ANNOTATION_DEPRECATED_ADDED, // semver detection is broken
     )
 
     override fun maybeViolation(member: JApiCompatibility): Violation? {

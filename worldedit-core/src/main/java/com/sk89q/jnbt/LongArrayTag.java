@@ -42,4 +42,9 @@ public class LongArrayTag extends Tag<long[], LinLongArrayTag> {
     public LongArrayTag(LinLongArrayTag tag) {
         super(tag);
     }
+
+    @Override
+    public long[] getValue() {
+        return super.getValue();
+    }
 }

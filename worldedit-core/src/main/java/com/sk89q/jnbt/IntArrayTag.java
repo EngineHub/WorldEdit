@@ -42,4 +42,9 @@ public final class IntArrayTag extends Tag<int[], LinIntArrayTag> {
     public IntArrayTag(LinIntArrayTag tag) {
         super(tag);
     }
+
+    @Override
+    public int[] getValue() {
+        return super.getValue();
+    }
 }

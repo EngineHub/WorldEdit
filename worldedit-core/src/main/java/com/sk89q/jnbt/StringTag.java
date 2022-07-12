@@ -42,4 +42,9 @@ public final class StringTag extends Tag<String, LinStringTag> {
     public StringTag(LinStringTag tag) {
         super(tag);
     }
+
+    @Override
+    public String getValue() {
+        return super.getValue();
+    }
 }

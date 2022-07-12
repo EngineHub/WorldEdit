@@ -40,4 +40,9 @@ public final class IntTag extends Tag<Integer, LinIntTag> {
     public IntTag(LinIntTag tag) {
         super(tag);
     }
+
+    @Override
+    public Integer getValue() {
+        return super.getValue();
+    }
 }

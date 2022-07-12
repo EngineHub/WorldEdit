@@ -40,4 +40,9 @@ public final class DoubleTag extends Tag<Double, LinDoubleTag> {
     public DoubleTag(LinDoubleTag tag) {
         super(tag);
     }
+
+    @Override
+    public Double getValue() {
+        return super.getValue();
+    }
 }

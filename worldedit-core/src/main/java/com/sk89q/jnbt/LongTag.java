@@ -40,4 +40,9 @@ public final class LongTag extends Tag<Long, LinLongTag> {
     public LongTag(LinLongTag tag) {
         super(tag);
     }
+
+    @Override
+    public Long getValue() {
+        return super.getValue();
+    }
 }
