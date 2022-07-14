@@ -53,7 +53,7 @@ class ForgeEntity implements Entity {
         if (entity == null || entity.isPassenger()) {
             return null;
         }
-        ResourceLocation id = ForgeRegistries.ENTITIES.getKey(entity.getType());
+        ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
         if (id == null) {
             return null;
         }
