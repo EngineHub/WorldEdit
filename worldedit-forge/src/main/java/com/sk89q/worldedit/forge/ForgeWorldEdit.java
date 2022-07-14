@@ -275,13 +275,10 @@ public class ForgeWorldEdit {
             return;
         }
 
-        boolean isLeftDeny = event instanceof PlayerInteractEvent.LeftClickBlock
-            && ((PlayerInteractEvent.LeftClickBlock) event)
-            .getUseItem() == Event.Result.DENY;
-        boolean isRightDeny =
-            event instanceof PlayerInteractEvent.RightClickBlock
-                && ((PlayerInteractEvent.RightClickBlock) event)
-                .getUseItem() == Event.Result.DENY;
+        boolean isLeftDeny = event instanceof PlayerInteractEvent.LeftClickBlock lcb
+            && lcb.getUseItem() == Event.Result.DENY;
+        boolean isRightDeny = event instanceof PlayerInteractEvent.RightClickBlock rcb
+            && rcb.getUseItem() == Event.Result.DENY;
         if (isLeftDeny || isRightDeny || event.getEntity().level.isClientSide || event.getHand() == InteractionHand.OFF_HAND) {
             return;
         }
@@ -323,10 +320,9 @@ public class ForgeWorldEdit {
     @SubscribeEvent
     public void onCommandEvent(CommandEvent event) throws CommandSyntaxException {
         ParseResults<CommandSourceStack> parseResults = event.getParseResults();
-        if (!(parseResults.getContext().getSource().getEntity() instanceof ServerPlayer)) {
+        if (!(parseResults.getContext().getSource().getEntity() instanceof ServerPlayer player)) {
             return;
         }
-        ServerPlayer player = parseResults.getContext().getSource().getPlayerOrException();
         if (player.level.isClientSide) {
             return;
         }
@@ -342,9 +338,9 @@ public class ForgeWorldEdit {
 
     @SubscribeEvent
     public void onPlayerLogOut(PlayerEvent.PlayerLoggedOutEvent event) {
-        if (event.getEntity() instanceof ServerPlayer) {
+        if (event.getEntity() instanceof ServerPlayer player) {
             WorldEdit.getInstance().getEventBus()
-                .post(new SessionIdleEvent(new ForgePlayer.SessionKeyImpl((ServerPlayer) event.getEntity())));
+                .post(new SessionIdleEvent(new ForgePlayer.SessionKeyImpl(player)));
         }
     }
 
