@@ -71,7 +71,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
     /**
      * The internal ID of the block state.
      */
-    private int internalId = BlockStateIdAccess.invalidId();
+    private volatile int internalId = BlockStateIdAccess.invalidId();
 
     BlockState(BlockType blockType) {
         this.blockType = blockType;
