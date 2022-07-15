@@ -47,6 +47,7 @@ import com.sk89q.worldedit.world.gamemode.GameModes;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -57,11 +58,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -361,8 +363,10 @@ public class BukkitAdapter {
         return GameModes.get(gameMode.name().toLowerCase(Locale.ROOT));
     }
 
-    private static final EnumMap<Biome, BiomeType> biomeBiomeTypeCache = new EnumMap<>(Biome.class);
-    private static final Map<BiomeType, Biome> biomeTypeBiomeCache = new HashMap<>();
+    private static final Map<Biome, BiomeType> biomeBiomeTypeCache = Collections.synchronizedMap(
+        new EnumMap<>(Biome.class)
+    );
+    private static final Map<BiomeType, Biome> biomeTypeBiomeCache = new ConcurrentHashMap<>();
 
     /**
      * Create a WorldEdit BiomeType from a Bukkit one.
@@ -408,8 +412,12 @@ public class BukkitAdapter {
         return org.bukkit.entity.EntityType.fromName(entityType.getId().substring(10));
     }
 
-    private static final EnumMap<Material, BlockType> materialBlockTypeCache = new EnumMap<>(Material.class);
-    private static final EnumMap<Material, ItemType> materialItemTypeCache = new EnumMap<>(Material.class);
+    private static final Map<Material, BlockType> materialBlockTypeCache = Collections.synchronizedMap(
+        new EnumMap<>(Material.class)
+    );
+    private static final Map<Material, ItemType> materialItemTypeCache = Collections.synchronizedMap(
+        new EnumMap<>(Material.class)
+    );
 
     /**
      * Converts a Material to a BlockType.
@@ -435,8 +443,10 @@ public class BukkitAdapter {
         return materialItemTypeCache.computeIfAbsent(material, input -> ItemTypes.get(material.getKey().toString()));
     }
 
-    private static final Int2ObjectMap<BlockState> blockStateCache = new Int2ObjectOpenHashMap<>();
-    private static final Map<String, BlockState> blockStateStringCache = new HashMap<>();
+    private static final Int2ObjectMap<BlockState> blockStateCache = Int2ObjectMaps.synchronize(
+        new Int2ObjectOpenHashMap<>()
+    );
+    private static final Map<String, BlockState> blockStateStringCache = new ConcurrentHashMap<>();
 
     /**
      * Create a WorldEdit BlockState from a Bukkit BlockData.
@@ -473,7 +483,7 @@ public class BukkitAdapter {
         }
     }
 
-    private static final Int2ObjectMap<BlockData> blockDataCache = new Int2ObjectOpenHashMap<>();
+    private static final Int2ObjectMap<BlockData> blockDataCache = Int2ObjectMaps.synchronize(new Int2ObjectOpenHashMap<>());
 
     /**
      * Create a Bukkit BlockData from a WorldEdit BlockStateHolder.
