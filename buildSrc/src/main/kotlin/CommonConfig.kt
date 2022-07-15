@@ -25,12 +25,6 @@ fun Project.applyCommonConfiguration() {
                 snapshotsOnly()
             }
         }
-        mavenLocal {
-            content {
-                includeGroup("org.enginehub.lin-bus")
-                includeGroup("org.enginehub.lin-bus.format")
-            }
-        }
     }
 
     configurations.all {
