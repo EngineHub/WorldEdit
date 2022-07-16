@@ -11,6 +11,7 @@ object Versions {
     const val GUAVA = "31.0.1-jre"
     const val GSON = "2.8.9"
     const val LOG4J = "2.17.0"
+    const val LIN_BUS = "0.1.0-SNAPSHOT"
 }
 
 // Properties that need a project reference to resolve:

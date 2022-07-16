@@ -30,7 +30,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class NamedTag {
 
     private final String name;
-    private final Tag tag;
+    private final Tag<?, ?> tag;
 
     /**
      * Create a new named tag.
@@ -38,7 +38,7 @@ public class NamedTag {
      * @param name the name
      * @param tag the tag
      */
-    public NamedTag(String name, Tag tag) {
+    public NamedTag(String name, Tag<?, ?> tag) {
         checkNotNull(name);
         checkNotNull(tag);
         this.name = name;
@@ -59,7 +59,7 @@ public class NamedTag {
      *
      * @return the tag
      */
-    public Tag getTag() {
+    public Tag<?, ?> getTag() {
         return tag;
     }
 

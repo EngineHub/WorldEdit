@@ -20,10 +20,47 @@
 package com.sk89q.worldedit.extent.clipboard.io.legacycompat;
 
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.internal.util.DeprecationUtil;
+import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
 import com.sk89q.worldedit.world.entity.EntityType;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
 public interface EntityNBTCompatibilityHandler {
-    boolean isAffectedEntity(EntityType type, CompoundTag entityTag);
+    /**
+     * Check if this is an entity affected by this handler.
+     *
+     * @deprecated this was never used, just return the same tag from
+     *     {@link #updateNbt(EntityType, LinCompoundTag)} if it's not affected
+     */
+    @Deprecated
+    default boolean isAffectedEntity(EntityType type, CompoundTag entityTag) {
+        var original = entityTag.toLinTag();
+        var updated = updateNbt(type, original);
+        return !original.equals(updated);
+    }
 
-    CompoundTag updateNBT(EntityType type, CompoundTag entityTag);
+    @Deprecated
+    default CompoundTag updateNBT(EntityType type, CompoundTag entityTag) {
+        return new CompoundTag(updateNbt(type, entityTag.toLinTag()));
+    }
+
+    /**
+     * Given an entity type and data, update the data if needed.
+     *
+     * @param type the entity type
+     * @param entityTag the entity tag
+     * @return the updated tag, or the same tag if no update was needed
+     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
+     *          for details
+     */
+    @SuppressWarnings("deprecation")
+    @NonAbstractForCompatibility(
+        delegateName = "updateNBT",
+        delegateParams = { EntityType.class, CompoundTag.class }
+    )
+    default LinCompoundTag updateNbt(EntityType type, LinCompoundTag entityTag) {
+        DeprecationUtil.checkDelegatingOverride(getClass());
+
+        return updateNBT(type, new CompoundTag(entityTag)).toLinTag();
+    }
 }

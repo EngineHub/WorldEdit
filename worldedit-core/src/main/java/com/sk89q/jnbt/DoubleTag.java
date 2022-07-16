@@ -19,41 +19,30 @@
 
 package com.sk89q.jnbt;
 
-import com.sk89q.worldedit.util.nbt.DoubleBinaryTag;
+import org.enginehub.linbus.tree.LinDoubleTag;
 
 /**
  * The {@code TAG_Double} tag.
  *
- * @deprecated Use {@link DoubleBinaryTag}.
+ * @deprecated Use {@link LinDoubleTag}.
  */
 @Deprecated
-public final class DoubleTag extends Tag {
-
-    private final DoubleBinaryTag innerTag;
-
+public final class DoubleTag extends Tag<Double, LinDoubleTag> {
     /**
      * Creates the tag with an empty name.
      *
      * @param value the value of the tag
      */
     public DoubleTag(double value) {
-        super();
-        this.innerTag = DoubleBinaryTag.of(value);
+        this(LinDoubleTag.of(value));
     }
 
-    public DoubleTag(DoubleBinaryTag adventureTag) {
-        super();
-        this.innerTag = adventureTag;
-    }
-
-    @Override
-    public DoubleBinaryTag asBinaryTag() {
-        return this.innerTag;
+    public DoubleTag(LinDoubleTag tag) {
+        super(tag);
     }
 
     @Override
     public Double getValue() {
-        return innerTag.value();
+        return super.getValue();
     }
-
 }

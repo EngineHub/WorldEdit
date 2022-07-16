@@ -38,7 +38,6 @@ import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.component.TextUtils;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -55,6 +54,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
@@ -242,7 +242,7 @@ public class FabricPlayer extends AbstractPlayerActor {
             );
             player.connection.send(packetOut);
             if (block instanceof BaseBlock && block.getBlockType().equals(BlockTypes.STRUCTURE_BLOCK)) {
-                final CompoundBinaryTag nbtData = ((BaseBlock) block).getNbt();
+                final LinCompoundTag nbtData = ((BaseBlock) block).getNbt();
                 if (nbtData != null) {
                     player.connection.send(AccessorClientboundBlockEntityDataPacket.construct(
                             new BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()),

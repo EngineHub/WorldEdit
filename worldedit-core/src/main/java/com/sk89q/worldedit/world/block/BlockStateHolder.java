@@ -26,7 +26,7 @@ import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.util.Locale;
 import java.util.Map;
@@ -96,7 +96,7 @@ public interface BlockStateHolder<B extends BlockStateHolder<B>> extends Pattern
      */
     @Deprecated
     default BaseBlock toBaseBlock(CompoundTag compoundTag) {
-        return toBaseBlock(compoundTag == null ? null : LazyReference.from(compoundTag::asBinaryTag));
+        return toBaseBlock(compoundTag == null ? null : LazyReference.from(compoundTag::toLinTag));
     }
 
     /**
@@ -107,11 +107,12 @@ public interface BlockStateHolder<B extends BlockStateHolder<B>> extends Pattern
      * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
      *          for details
      */
+    @SuppressWarnings("deprecation")
     @NonAbstractForCompatibility(
         delegateName = "toBaseBlock",
         delegateParams = { CompoundTag.class }
     )
-    default BaseBlock toBaseBlock(LazyReference<CompoundBinaryTag> compoundTag) {
+    default BaseBlock toBaseBlock(LazyReference<LinCompoundTag> compoundTag) {
         DeprecationUtil.checkDelegatingOverride(getClass());
 
         return toBaseBlock(compoundTag == null ? null : new CompoundTag(compoundTag.getValue()));
@@ -123,7 +124,7 @@ public interface BlockStateHolder<B extends BlockStateHolder<B>> extends Pattern
      * @param compoundTag The NBT Data to apply
      * @return The BaseBlock
      */
-    default BaseBlock toBaseBlock(CompoundBinaryTag compoundTag) {
+    default BaseBlock toBaseBlock(LinCompoundTag compoundTag) {
         return toBaseBlock(compoundTag == null ? null : LazyReference.computed(compoundTag));
     }
 

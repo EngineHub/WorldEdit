@@ -22,18 +22,16 @@ package com.sk89q.worldedit.world.chunk;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.util.nbt.BinaryTag;
-import com.sk89q.worldedit.util.nbt.BinaryTagTypes;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
-import com.sk89q.worldedit.util.nbt.IntBinaryTag;
-import com.sk89q.worldedit.util.nbt.ListBinaryTag;
-import com.sk89q.worldedit.util.nbt.NbtUtils;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
+import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinIntTag;
+import org.enginehub.linbus.tree.LinListTag;
+import org.enginehub.linbus.tree.LinTagType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,13 +41,13 @@ import java.util.Map;
  */
 public class OldChunk implements Chunk {
 
-    private final CompoundBinaryTag rootTag;
+    private final LinCompoundTag rootTag;
     private final byte[] blocks;
     private final byte[] data;
     private final int rootX;
     private final int rootZ;
 
-    private Map<BlockVector3, CompoundBinaryTag> tileEntities;
+    private Map<BlockVector3, LinCompoundTag> tileEntities;
 
 
     /**
@@ -57,11 +55,11 @@ public class OldChunk implements Chunk {
      *
      * @param tag the tag
      * @throws DataException if there is an error getting the chunk data
-     * @deprecated Use {@link #OldChunk(CompoundBinaryTag)}
+     * @deprecated Use {@link #OldChunk(LinCompoundTag)}
      */
     @Deprecated
     public OldChunk(CompoundTag tag) throws DataException {
-        this(tag.asBinaryTag());
+        this(tag.toLinTag());
     }
 
     /**
@@ -70,13 +68,13 @@ public class OldChunk implements Chunk {
      * @param tag the tag
      * @throws DataException if there is an error getting the chunk data
      */
-    public OldChunk(CompoundBinaryTag tag) throws DataException {
+    public OldChunk(LinCompoundTag tag) throws DataException {
         rootTag = tag;
 
-        blocks = NbtUtils.getChildTag(rootTag, "Blocks", BinaryTagTypes.BYTE_ARRAY).value();
-        data = NbtUtils.getChildTag(rootTag, "Data", BinaryTagTypes.BYTE_ARRAY).value();
-        rootX = NbtUtils.getChildTag(rootTag, "xPos", BinaryTagTypes.INT).value();
-        rootZ = NbtUtils.getChildTag(rootTag, "zPos", BinaryTagTypes.INT).value();
+        blocks = rootTag.getTag("Blocks", LinTagType.byteArrayTag()).value();
+        data = rootTag.getTag("Data", LinTagType.byteArrayTag()).value();
+        rootX = rootTag.getTag("xPos", LinTagType.intTag()).value();
+        rootZ = rootTag.getTag("zPos", LinTagType.intTag()).value();
 
         int size = 16 * 16 * 128;
         if (blocks.length != size) {
@@ -96,43 +94,39 @@ public class OldChunk implements Chunk {
      * @throws DataException if there is an error getting the chunk data
      */
     private void populateTileEntities() throws DataException {
-        ListBinaryTag tags = NbtUtils.getChildTag(rootTag, "TileEntities", BinaryTagTypes.LIST);
+        LinListTag<LinCompoundTag> tags = rootTag.getTag("TileEntities", LinTagType.listTag())
+            .asTypeChecked(LinTagType.compoundTag());
 
         tileEntities = new HashMap<>();
 
-        for (BinaryTag tag : tags) {
-            if (!(tag instanceof CompoundBinaryTag)) {
-                throw new InvalidFormatException("CompoundTag expected in TileEntities");
-            }
-
-            CompoundBinaryTag t = (CompoundBinaryTag) tag;
-
+        for (LinCompoundTag t : tags.value()) {
             int x = 0;
             int y = 0;
             int z = 0;
 
-            CompoundBinaryTag.Builder values = CompoundBinaryTag.builder();
+            LinCompoundTag.Builder values = LinCompoundTag.builder();
 
-            for (String key : t.keySet()) {
-                BinaryTag value = t.get(key);
+            for (String key : t.value().keySet()) {
+                var value = t.value().get(key);
                 switch (key) {
-                    case "x":
-                        if (value instanceof IntBinaryTag) {
-                            x = ((IntBinaryTag) value).value();
+                    case "x" -> {
+                        if (value instanceof LinIntTag v) {
+                            x = v.valueAsInt();
                         }
-                        break;
-                    case "y":
-                        if (value instanceof IntBinaryTag) {
-                            y = ((IntBinaryTag) value).value();
+                    }
+                    case "y" -> {
+                        if (value instanceof LinIntTag v) {
+                            y = v.valueAsInt();
                         }
-                        break;
-                    case "z":
-                        if (value instanceof IntBinaryTag) {
-                            z = ((IntBinaryTag) value).value();
+                    }
+                    case "z" -> {
+                        if (value instanceof LinIntTag v) {
+                            z = v.valueAsInt();
                         }
-                        break;
-                    default:
-                        break;
+                    }
+                    default -> {
+                        // Do nothing.
+                    }
                 }
 
                 values.put(key, value);
@@ -152,16 +146,12 @@ public class OldChunk implements Chunk {
      * @return a tag
      * @throws DataException if there is an error getting the chunk data
      */
-    private CompoundBinaryTag getBlockTileEntity(BlockVector3 position) throws DataException {
+    private LinCompoundTag getBlockTileEntity(BlockVector3 position) throws DataException {
         if (tileEntities == null) {
             populateTileEntities();
         }
 
-        CompoundBinaryTag values = tileEntities.get(position);
-        if (values == null) {
-            return null;
-        }
-        return values;
+        return tileEntities.get(position);
     }
 
     @Override
@@ -201,13 +191,9 @@ public class OldChunk implements Chunk {
             return BlockTypes.AIR.getDefaultState().toBaseBlock();
         }
 
-        CompoundBinaryTag tileEntity = getBlockTileEntity(position);
+        LinCompoundTag tileEntity = getBlockTileEntity(position);
 
-        if (tileEntity != null) {
-            return state.toBaseBlock(tileEntity);
-        }
-
-        return state.toBaseBlock();
+        return state.toBaseBlock(tileEntity);
     }
 
 }

@@ -19,11 +19,11 @@
 
 package com.sk89q.jnbt;
 
-import com.sk89q.worldedit.util.nbt.BinaryTag;
-import com.sk89q.worldedit.util.nbt.BinaryTagType;
-import com.sk89q.worldedit.util.nbt.ListBinaryTag;
+import org.enginehub.linbus.common.LinTagId;
+import org.enginehub.linbus.tree.LinListTag;
+import org.enginehub.linbus.tree.LinTag;
+import org.enginehub.linbus.tree.LinTagType;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -31,12 +31,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Helps create list tags.
  *
- * @deprecated Use {@link com.sk89q.worldedit.util.nbt.ListBinaryTag.Builder}.
+ * @deprecated Use {@link LinListTag.Builder}.
  */
 @Deprecated
-public class ListTagBuilder {
+public class ListTagBuilder<V, LT extends LinTag<V>> {
 
-    private final ListBinaryTag.Builder<BinaryTag> builder;
+    private final LinListTag.Builder<LT> builder;
 
     /**
      * Create a new instance.
@@ -44,11 +44,11 @@ public class ListTagBuilder {
      * @param type of tag contained in this list
      */
     @SuppressWarnings("unchecked")
-    ListTagBuilder(Class<? extends Tag> type) {
+    ListTagBuilder(Class<? extends Tag<V, LT>> type) {
         checkNotNull(type);
-        this.builder = type != EndTag.class
-            ? ListBinaryTag.builder((BinaryTagType<BinaryTag>) AdventureNBTConverter.getAdventureType(type))
-            : ListBinaryTag.builder();
+        this.builder = (LinListTag.Builder<LT>) LinListTag.builder(LinTagType.fromId(LinTagId.fromId(
+            NBTUtils.getTypeCode(type)
+        )));
     }
 
     /**
@@ -57,9 +57,9 @@ public class ListTagBuilder {
      * @param value the tag
      * @return this object
      */
-    public ListTagBuilder add(Tag value) {
+    public ListTagBuilder<V, LT> add(Tag<V, LT> value) {
         checkNotNull(value);
-        builder.add(value.asBinaryTag());
+        builder.add(value.toLinTag());
         return this;
     }
 
@@ -69,9 +69,9 @@ public class ListTagBuilder {
      * @param value a list of tags
      * @return this object
      */
-    public ListTagBuilder addAll(Collection<? extends Tag> value) {
+    public ListTagBuilder<V, LT> addAll(Collection<? extends Tag<V, LT>> value) {
         checkNotNull(value);
-        for (Tag v : value) {
+        for (Tag<V, LT> v : value) {
             add(v);
         }
         return this;
@@ -82,8 +82,8 @@ public class ListTagBuilder {
      *
      * @return the new list tag
      */
-    public ListTag build() {
-        return new ListTag(this.builder.build());
+    public ListTag<V, LT> build() {
+        return new ListTag<>(this.builder.build());
     }
 
     /**
@@ -91,8 +91,8 @@ public class ListTagBuilder {
      *
      * @return a new builder
      */
-    public static ListTagBuilder create(Class<? extends Tag> type) {
-        return new ListTagBuilder(type);
+    public static <V, LT extends LinTag<V>> ListTagBuilder<V, LT> create(Class<? extends Tag<V, LT>> type) {
+        return new ListTagBuilder<>(type);
     }
 
     /**
@@ -100,22 +100,24 @@ public class ListTagBuilder {
      *
      * @return a new builder
      */
-    public static ListTagBuilder createWith(Tag... entries) {
+    @SafeVarargs
+    public static <V, LT extends LinTag<V>> ListTagBuilder<V, LT> createWith(Tag<V, LT>... entries) {
         checkNotNull(entries);
 
         if (entries.length == 0) {
             throw new IllegalArgumentException("This method needs an array of at least one entry");
         }
 
-        Class<? extends Tag> type = entries[0].getClass();
-        for (int i = 1; i < entries.length; i++) {
-            if (!type.isInstance(entries[i])) {
+        @SuppressWarnings("unchecked")
+        Class<? extends Tag<V, LT>> type = (Class<? extends Tag<V, LT>>) entries[0].getClass();
+        ListTagBuilder<V, LT> builder = new ListTagBuilder<>(type);
+        for (Tag<V, LT> entry : entries) {
+            if (!type.isInstance(entry)) {
                 throw new IllegalArgumentException("An array of different tag types was provided");
             }
+            builder.add(entry);
         }
 
-        ListTagBuilder builder = new ListTagBuilder(type);
-        builder.addAll(Arrays.asList(entries));
         return builder;
     }
 

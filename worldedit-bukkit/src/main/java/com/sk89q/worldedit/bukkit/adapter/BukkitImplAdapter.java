@@ -30,10 +30,8 @@ import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.RegenOptions;
-import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -44,6 +42,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.util.Map;
 import java.util.OptionalInt;
@@ -160,7 +159,7 @@ public interface BukkitImplAdapter {
      * @param pos The position
      * @param nbtData The NBT Data
      */
-    void sendFakeNBT(Player player, BlockVector3 pos, CompoundBinaryTag nbtData);
+    void sendFakeNBT(Player player, BlockVector3 pos, LinCompoundTag nbtData);
 
     /**
      * Make the client think it has operator status.

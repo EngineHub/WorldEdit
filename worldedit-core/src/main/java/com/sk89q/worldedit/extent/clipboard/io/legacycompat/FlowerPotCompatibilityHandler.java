@@ -19,64 +19,49 @@
 
 package com.sk89q.worldedit.extent.clipboard.io.legacycompat;
 
-import com.sk89q.jnbt.IntTag;
-import com.sk89q.jnbt.StringTag;
-import com.sk89q.jnbt.Tag;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
-
-import java.util.Map;
+import org.enginehub.linbus.tree.LinTagType;
 
 public class FlowerPotCompatibilityHandler implements NBTCompatibilityHandler {
     @Override
-    public <B extends BlockStateHolder<B>> boolean isAffectedBlock(B block) {
-        return block.getBlockType() == BlockTypes.FLOWER_POT;
-    }
-
-    @Override
-    public <B extends BlockStateHolder<B>> BlockStateHolder<?> updateNBT(B block, Map<String, Tag> values) {
-        Tag item = values.get("Item");
-        if (item instanceof StringTag) {
-            String id = ((StringTag) item).getValue();
-            if (id.isEmpty()) {
-                return BlockTypes.FLOWER_POT.getDefaultState();
-            }
-            int data = 0;
-            Tag dataTag = values.get("Data");
-            if (dataTag instanceof IntTag) {
-                data = ((IntTag) dataTag).getValue();
-            }
-            BlockState newState = convertLegacyBlockType(id, data);
-            if (newState != null) {
-                values.clear();
-                return newState;
-            }
+    public BaseBlock updateNbt(BaseBlock block) {
+        if (block.getBlockType() != BlockTypes.FLOWER_POT) {
+            return block;
         }
-        return block;
+        var tag = block.getNbt();
+        if (tag == null) {
+            return block;
+        }
+        var item = tag.findTag("Item", LinTagType.stringTag());
+        if (item == null) {
+            return block;
+        }
+        String id = item.value();
+        if (id.isEmpty()) {
+            return BlockTypes.FLOWER_POT.getDefaultState().toBaseBlock();
+        }
+        int data = 0;
+        var dataTag = tag.findTag("Data", LinTagType.intTag());
+        if (dataTag != null) {
+            data = dataTag.valueAsInt();
+        }
+        BlockState newState = convertLegacyBlockType(id, data);
+        return newState != null ? newState.toBaseBlock() : block;
     }
 
     private BlockState convertLegacyBlockType(String id, int data) {
-        int newId = 0;
-        switch (id) {
-            case "minecraft:red_flower":
-                newId = 38; // now poppy
-                break;
-            case "minecraft:yellow_flower":
-                newId = 37; // now dandelion
-                break;
-            case "minecraft:sapling":
-                newId = 6; // oak_sapling
-                break;
-            case "minecraft:deadbush":
-            case "minecraft:tallgrass":
-                newId = 31; // dead_bush with fern and grass (not 32!)
-                break;
-            default:
-                break;
-        }
+        int newId = switch (id) {
+            case "minecraft:red_flower" -> 38; // now poppy
+            case "minecraft:yellow_flower" -> 37; // now dandelion
+            case "minecraft:sapling" -> 6; // oak_sapling
+            case "minecraft:deadbush", "minecraft:tallgrass" ->
+                31; // dead_bush with fern and grass (not 32!)
+            default -> 0;
+        };
         String plantedName = null;
         if (newId == 0 && id.startsWith("minecraft:")) {
             plantedName = id.substring(10);

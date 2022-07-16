@@ -23,9 +23,9 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -96,7 +96,7 @@ public class SurvivalModeExtent extends AbstractDelegateExtent {
         } else {
             // Can't be an inlined check due to inconsistent generic return type
             if (stripNbt) {
-                return super.setBlock(location, block.toBaseBlock((CompoundBinaryTag) null));
+                return super.setBlock(location, block.toBaseBlock((LinCompoundTag) null));
             } else {
                 return super.setBlock(location, block);
             }

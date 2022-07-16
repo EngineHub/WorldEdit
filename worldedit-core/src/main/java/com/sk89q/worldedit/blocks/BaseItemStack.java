@@ -24,8 +24,8 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.item.ItemType;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
 /**
  * Represents a stack of BaseItems.
@@ -77,7 +77,7 @@ public class BaseItemStack extends BaseItem {
      * @param tag Tag value
      * @param amount amount in the stack
      */
-    public BaseItemStack(ItemType id, LazyReference<CompoundBinaryTag> tag, int amount) {
+    public BaseItemStack(ItemType id, LazyReference<LinCompoundTag> tag, int amount) {
         super(id, tag);
         this.amount = amount;
     }

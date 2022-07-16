@@ -19,40 +19,30 @@
 
 package com.sk89q.jnbt;
 
-import com.sk89q.worldedit.util.nbt.ByteBinaryTag;
+import org.enginehub.linbus.tree.LinByteTag;
 
 /**
  * The {@code TAG_Byte} tag.
  *
- * @deprecated Use {@link ByteBinaryTag}.
+ * @deprecated Use {@link LinByteTag}.
  */
 @Deprecated
-public final class ByteTag extends Tag {
-
-    private final ByteBinaryTag innerTag;
-
+public final class ByteTag extends Tag<Byte, LinByteTag> {
     /**
      * Creates the tag with an empty name.
      *
      * @param value the value of the tag
      */
     public ByteTag(byte value) {
-        super();
-        this.innerTag = ByteBinaryTag.of(value);
+        this(LinByteTag.of(value));
     }
 
-    public ByteTag(ByteBinaryTag adventureTag) {
-        super();
-        this.innerTag = adventureTag;
+    public ByteTag(LinByteTag tag) {
+        super(tag);
     }
 
     @Override
     public Byte getValue() {
-        return innerTag.value();
-    }
-
-    @Override
-    public ByteBinaryTag asBinaryTag() {
-        return innerTag;
+        return super.getValue();
     }
 }

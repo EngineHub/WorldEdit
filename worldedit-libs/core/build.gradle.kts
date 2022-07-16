@@ -5,13 +5,8 @@ dependencies {
     "shade"("net.kyori:text-serializer-gson:${Versions.TEXT}")
     "shade"("net.kyori:text-serializer-legacy:${Versions.TEXT}")
     "shade"("net.kyori:text-serializer-plain:${Versions.TEXT}")
-    "shade"("com.sk89q:jchronic:0.2.4a") {
-        exclude(group = "junit", module = "junit")
-    }
-    "shade"("com.thoughtworks.paranamer:paranamer:2.6")
-    "shade"("com.sk89q.lib:jlibnoise:1.0.0")
+    // These are here because they use net.kyori:text-api -- so they need to be relocated too
     "shade"("org.enginehub.piston:core:${Versions.PISTON}")
     "shade"("org.enginehub.piston.core-ap:runtime:${Versions.PISTON}")
     "shade"("org.enginehub.piston:default-impl:${Versions.PISTON}")
-    "shade"("net.kyori:adventure-nbt:4.5.0")
 }

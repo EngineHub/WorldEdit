@@ -30,7 +30,7 @@ import com.sk89q.worldedit.extension.platform.Watchdog;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -229,7 +229,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
     }
 
     @Override
-    public BaseBlock toBaseBlock(LazyReference<CompoundBinaryTag> compoundTag) {
+    public BaseBlock toBaseBlock(LazyReference<LinCompoundTag> compoundTag) {
         if (compoundTag == null) {
             return toBaseBlock();
         }

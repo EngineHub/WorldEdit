@@ -39,7 +39,6 @@ import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -50,6 +49,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
@@ -299,7 +299,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
             BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
             if (adapter != null) {
                 if (block.getBlockType() == BlockTypes.STRUCTURE_BLOCK && block instanceof BaseBlock) {
-                    CompoundBinaryTag nbt = ((BaseBlock) block).getNbt();
+                    LinCompoundTag nbt = ((BaseBlock) block).getNbt();
                     if (nbt != null) {
                         adapter.sendFakeNBT(player, pos, nbt);
                         adapter.sendFakeOP(player);

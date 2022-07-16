@@ -113,7 +113,7 @@ public class SpongeSchematicV2Reader extends NBTSchematicReader {
 
     private static Clipboard readVersion2(BlockArrayClipboard version1, CompoundTag schematicTag,
                                           VersionedDataFixer fixer) throws IOException {
-        Map<String, Tag> schematic = schematicTag.getValue();
+        Map<String, Tag<?, ?>> schematic = schematicTag.getValue();
         if (schematic.containsKey("BiomeData")) {
             readBiomes2(version1, schematic, fixer);
         }
@@ -126,7 +126,7 @@ public class SpongeSchematicV2Reader extends NBTSchematicReader {
         return version1;
     }
 
-    private static void readBiomes2(BlockArrayClipboard clipboard, Map<String, Tag> schematic,
+    private static void readBiomes2(BlockArrayClipboard clipboard, Map<String, Tag<?, ?>> schematic,
                                     VersionedDataFixer fixer) throws IOException {
         ByteArrayTag dataTag = requireTag(schematic, "BiomeData", ByteArrayTag.class);
         IntTag maxTag = requireTag(schematic, "BiomePaletteMax", IntTag.class);
@@ -137,7 +137,7 @@ public class SpongeSchematicV2Reader extends NBTSchematicReader {
             throw new IOException("Biome palette size does not match expected size.");
         }
 
-        for (Entry<String, Tag> palettePart : paletteTag.getValue().entrySet()) {
+        for (Entry<String, Tag<?, ?>> palettePart : paletteTag.getValue().entrySet()) {
             String key = palettePart.getKey();
             key = fixer.fixUp(DataFixer.FixTypes.BIOME, key);
             BiomeType biome = BiomeTypes.get(key);
@@ -145,7 +145,7 @@ public class SpongeSchematicV2Reader extends NBTSchematicReader {
                 LOGGER.warn("Unknown biome type :" + key
                     + " in palette. Are you missing a mod or using a schematic made in a newer version of Minecraft?");
             }
-            Tag idTag = palettePart.getValue();
+            Tag<?, ?> idTag = palettePart.getValue();
             if (!(idTag instanceof IntTag)) {
                 throw new IOException("Biome mapped to non-Int tag.");
             }

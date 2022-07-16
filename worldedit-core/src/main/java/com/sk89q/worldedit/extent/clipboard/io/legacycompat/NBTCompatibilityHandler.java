@@ -19,13 +19,79 @@
 
 package com.sk89q.worldedit.extent.clipboard.io.legacycompat;
 
+import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.Tag;
+import com.sk89q.worldedit.internal.util.DeprecationUtil;
+import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public interface NBTCompatibilityHandler {
-    <B extends BlockStateHolder<B>> boolean isAffectedBlock(B block);
+    /**
+     * Check if this is a block affected by this handler.
+     *
+     * @deprecated this is handled by {@link #updateNbt(BaseBlock)} now
+     */
+    @Deprecated
+    default <B extends BlockStateHolder<B>> boolean isAffectedBlock(B block) {
+        BaseBlock state = block.toBaseBlock();
+        BaseBlock updated = updateNbt(state);
+        return state != updated;
+    }
 
-    <B extends BlockStateHolder<B>> BlockStateHolder<?> updateNBT(B block, Map<String, Tag> values);
+    @Deprecated
+    default <B extends BlockStateHolder<B>> BlockStateHolder<?> updateNBT(B block, Map<String, Tag<?, ?>> values) {
+        BaseBlock changed = updateNbt(block.toBaseBlock(LazyReference.from(() -> {
+            var builder = LinCompoundTag.builder();
+            for (var entry : values.entrySet()) {
+                builder.put(entry.getKey(), entry.getValue().toLinTag());
+            }
+            return builder.build();
+        })));
+        CompoundTag data = changed.getNbtData();
+        values.clear();
+        if (data != null) {
+            values.putAll(data.getValue());
+        }
+        return changed;
+    }
+
+    /**
+     * Given a block, update the block's NBT. The NBT may be {@code null}.
+     *
+     * @param block the block to update
+     * @return the updated block, or the same block if no change is necessary
+     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
+     *          for details
+     */
+    @NonAbstractForCompatibility(
+        delegateName = "updateNBT",
+        delegateParams = { BlockStateHolder.class, Map.class }
+    )
+    @SuppressWarnings("deprecated")
+    default BaseBlock updateNbt(BaseBlock block) {
+        DeprecationUtil.checkDelegatingOverride(getClass());
+        if (!isAffectedBlock(block)) {
+            return block;
+        }
+        if (block.getNbt() == null) {
+            return block;
+        }
+        @SuppressWarnings("deprecation")
+        Map<String, Tag<?, ?>> values = new HashMap<>(new CompoundTag(block.getNbt()).getValue());
+        BlockStateHolder<?> changedBlock = updateNBT(block, values);
+        return changedBlock.toBaseBlock(LazyReference.from(() -> {
+            var builder = LinCompoundTag.builder();
+            for (var entry : values.entrySet()) {
+                builder.put(entry.getKey(), entry.getValue().toLinTag());
+            }
+            return builder.build();
+        }));
+    }
+
 }

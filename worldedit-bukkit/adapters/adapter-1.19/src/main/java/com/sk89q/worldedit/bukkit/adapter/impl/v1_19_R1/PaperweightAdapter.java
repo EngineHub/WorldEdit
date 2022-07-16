@@ -27,7 +27,6 @@ import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Futures;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Lifecycle;
-import com.sk89q.jnbt.AdventureNBTConverter;
 import com.sk89q.jnbt.ByteArrayTag;
 import com.sk89q.jnbt.ByteTag;
 import com.sk89q.jnbt.CompoundTag;
@@ -68,7 +67,6 @@ import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.io.file.SafeFiles;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.RegenOptions;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -134,6 +132,7 @@ import org.bukkit.craftbukkit.v1_19_R1.util.CraftMagicNumbers;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.generator.ChunkGenerator;
+import org.enginehub.linbus.tree.LinCompoundTag;
 import org.spigotmc.SpigotConfig;
 import org.spigotmc.WatchdogThread;
 
@@ -526,13 +525,13 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     }
 
     @Override
-    public void sendFakeNBT(Player player, BlockVector3 pos, CompoundBinaryTag nbtData) {
+    public void sendFakeNBT(Player player, BlockVector3 pos, LinCompoundTag nbtData) {
         ((CraftPlayer) player).getHandle().networkManager.send(ClientboundBlockEntityDataPacket.create(
             new StructureBlockEntity(
                 new BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()),
                 Blocks.STRUCTURE_BLOCK.defaultBlockState()
             ),
-            __ -> (net.minecraft.nbt.CompoundTag) fromNative(AdventureNBTConverter.fromAdventure(nbtData))
+            __ -> (net.minecraft.nbt.CompoundTag) fromNative(new CompoundTag(nbtData))
         ));
     }
 
@@ -808,7 +807,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             return null;
         }
         if (foreign instanceof net.minecraft.nbt.CompoundTag) {
-            Map<String, Tag> values = new HashMap<>();
+            Map<String, Tag<?, ?>> values = new HashMap<>();
             Set<String> foreignKeys = ((net.minecraft.nbt.CompoundTag) foreign).getAllKeys();
 
             for (String str : foreignKeys) {
@@ -882,7 +881,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         }
         if (foreign instanceof CompoundTag) {
             net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
-            for (Map.Entry<String, Tag> entry : ((CompoundTag) foreign)
+            for (Map.Entry<String, Tag<?, ?>> entry : ((CompoundTag) foreign)
                 .getValue().entrySet()) {
                 tag.put(entry.getKey(), fromNative(entry.getValue()));
             }
@@ -901,10 +900,9 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             return new net.minecraft.nbt.IntArrayTag(((IntArrayTag) foreign).getValue());
         } else if (foreign instanceof LongArrayTag) {
             return new net.minecraft.nbt.LongArrayTag(((LongArrayTag) foreign).getValue());
-        } else if (foreign instanceof ListTag) {
+        } else if (foreign instanceof ListTag<?, ?> foreignList) {
             net.minecraft.nbt.ListTag tag = new net.minecraft.nbt.ListTag();
-            ListTag foreignList = (ListTag) foreign;
-            for (Tag t : foreignList.getValue()) {
+            for (Tag<?, ?> t : foreignList.getValue()) {
                 tag.add(fromNative(t));
             }
             return tag;

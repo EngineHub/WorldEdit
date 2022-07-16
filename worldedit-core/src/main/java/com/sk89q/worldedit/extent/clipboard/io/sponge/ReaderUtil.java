@@ -46,6 +46,7 @@ import com.sk89q.worldedit.world.entity.EntityType;
 import com.sk89q.worldedit.world.entity.EntityTypes;
 import com.sk89q.worldedit.world.storage.NBTConversions;
 import org.apache.logging.log4j.Logger;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -78,7 +79,7 @@ public class ReaderUtil {
         return requireTag(schematicTag.getValue(), "Version", IntTag.class).getValue();
     }
 
-    static VersionedDataFixer getVersionedDataFixer(Map<String, Tag> schematic, Platform platform,
+    static VersionedDataFixer getVersionedDataFixer(Map<String, Tag<?, ?>> schematic, Platform platform,
                                                     int liveDataVersion) throws IOException {
         DataFixer fixer = null;
         int dataVersion = requireTag(schematic, "DataVersion", IntTag.class).getValue();
@@ -114,7 +115,7 @@ public class ReaderUtil {
     }
 
     static Map<Integer, BlockState> decodePalette(
-        Map<String, Tag> paletteObject, VersionedDataFixer fixer
+        Map<String, Tag<?, ?>> paletteObject, VersionedDataFixer fixer
     ) throws IOException {
         Map<Integer, BlockState> palette = new HashMap<>();
 
@@ -139,20 +140,20 @@ public class ReaderUtil {
     }
 
     static void initializeClipboardFromBlocks(
-        Clipboard clipboard, Map<Integer, BlockState> palette, byte[] blocks, ListTag tileEntities,
+        Clipboard clipboard, Map<Integer, BlockState> palette, byte[] blocks, ListTag<?, ?> tileEntities,
         VersionedDataFixer fixer, boolean dataIsNested
     ) throws IOException {
-        Map<BlockVector3, Map<String, Tag>> tileEntitiesMap = new HashMap<>();
+        Map<BlockVector3, Map<String, Tag<?, ?>>> tileEntitiesMap = new HashMap<>();
         if (tileEntities != null) {
-            List<Map<String, Tag>> tileEntityTags = tileEntities.getValue().stream()
+            List<Map<String, Tag<?, ?>>> tileEntityTags = tileEntities.getValue().stream()
                 .map(tag -> (CompoundTag) tag)
                 .map(CompoundTag::getValue)
                 .collect(Collectors.toList());
 
-            for (Map<String, Tag> tileEntity : tileEntityTags) {
+            for (Map<String, Tag<?, ?>> tileEntity : tileEntityTags) {
                 int[] pos = requireTag(tileEntity, "Pos", IntArrayTag.class).getValue();
                 final BlockVector3 pt = clipboard.getMinimumPoint().add(pos[0], pos[1], pos[2]);
-                Map<String, Tag> values;
+                Map<String, Tag<?, ?>> values;
                 if (dataIsNested) {
                     CompoundTag dataTag = getTag(tileEntity, "Data", CompoundTag.class);
                     if (dataTag != null) {
@@ -170,10 +171,10 @@ public class ReaderUtil {
                 values.put("z", new IntTag(pt.getBlockZ()));
                 values.put("id", tileEntity.get("Id"));
                 if (fixer.isActive()) {
-                    tileEntity = ((CompoundTag) AdventureNBTConverter.fromAdventure(fixer.fixUp(
+                    tileEntity = new CompoundTag(fixer.fixUp(
                         DataFixer.FixTypes.BLOCK_ENTITY,
-                        new CompoundTag(values).asBinaryTag()
-                    ))).getValue();
+                        new CompoundTag(values).toLinTag()
+                    )).getValue();
                 } else {
                     tileEntity = values;
                 }
@@ -191,7 +192,7 @@ public class ReaderUtil {
             BlockVector3 rawPos = decodePositionFromDataIndex(width, length, index);
             try {
                 BlockVector3 offsetPos = clipboard.getMinimumPoint().add(rawPos);
-                Map<String, Tag> tileEntity = tileEntitiesMap.get(offsetPos);
+                Map<String, Tag<?, ?>> tileEntity = tileEntitiesMap.get(offsetPos);
                 if (tileEntity != null) {
                     clipboard.setBlock(
                         offsetPos, state.toBaseBlock(new CompoundTag(tileEntity))
@@ -225,17 +226,17 @@ public class ReaderUtil {
         return BlockVector3.at(parts[0], parts[1], parts[2]);
     }
 
-    static void readEntities(BlockArrayClipboard clipboard, List<Tag> entList,
+    static void readEntities(BlockArrayClipboard clipboard, List<? extends Tag<?, ?>> entList,
                              VersionedDataFixer fixer, boolean positionIsRelative) throws IOException {
         if (entList.isEmpty()) {
             return;
         }
-        for (Tag et : entList) {
+        for (Tag<?, ?> et : entList) {
             if (!(et instanceof CompoundTag)) {
                 continue;
             }
             CompoundTag entityTag = (CompoundTag) et;
-            Map<String, Tag> tags = entityTag.getValue();
+            Map<String, Tag<?, ?>> tags = entityTag.getValue();
             String id = requireTag(tags, "Id", StringTag.class).getValue();
             CompoundTagBuilder dataTagBuilder = CompoundTagBuilder.create();
             if (positionIsRelative) {
@@ -251,10 +252,10 @@ public class ReaderUtil {
                 dataTagBuilder.remove("Pos");
             }
             CompoundTag dataTag = dataTagBuilder.putString("id", id).build();
-            dataTag = ((CompoundTag) AdventureNBTConverter.fromAdventure(fixer.fixUp(
+            dataTag = new CompoundTag(fixer.fixUp(
                 DataFixer.FixTypes.ENTITY,
-                dataTag.asBinaryTag()
-            )));
+                dataTag.toLinTag()
+            ));
 
             EntityType entityType = EntityTypes.get(id);
             if (entityType != null) {

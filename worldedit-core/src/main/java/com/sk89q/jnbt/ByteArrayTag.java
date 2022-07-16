@@ -19,42 +19,30 @@
 
 package com.sk89q.jnbt;
 
-import com.sk89q.worldedit.util.nbt.ByteArrayBinaryTag;
-
-import java.util.Locale;
+import org.enginehub.linbus.tree.LinByteArrayTag;
 
 /**
  * The {@code TAG_Byte_Array} tag.
  *
- * @deprecated Use {@link ByteArrayBinaryTag}.
+ * @deprecated Use {@link LinByteArrayTag}.
  */
 @Deprecated
-public final class ByteArrayTag extends Tag {
-
-    private final ByteArrayBinaryTag innerTag;
-
+public final class ByteArrayTag extends Tag<byte[], LinByteArrayTag> {
     /**
      * Creates the tag with an empty name.
      *
      * @param value the value of the tag
      */
     public ByteArrayTag(byte[] value) {
-        super();
-        this.innerTag = ByteArrayBinaryTag.of(value);
+        this(LinByteArrayTag.of(value));
     }
 
-    public ByteArrayTag(ByteArrayBinaryTag adventureTag) {
-        super();
-        this.innerTag = adventureTag;
+    public ByteArrayTag(LinByteArrayTag tag) {
+        super(tag);
     }
 
     @Override
     public byte[] getValue() {
-        return innerTag.value();
-    }
-
-    @Override
-    public ByteArrayBinaryTag asBinaryTag() {
-        return innerTag;
+        return super.getValue();
     }
 }

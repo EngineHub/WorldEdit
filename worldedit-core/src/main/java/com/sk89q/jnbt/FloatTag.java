@@ -19,41 +19,30 @@
 
 package com.sk89q.jnbt;
 
-import com.sk89q.worldedit.util.nbt.FloatBinaryTag;
+import org.enginehub.linbus.tree.LinFloatTag;
 
 /**
  * The {@code TAG_Float} tag.
  *
- * @deprecated Use {@link FloatBinaryTag}.
+ * @deprecated Use {@link LinFloatTag}.
  */
 @Deprecated
-public final class FloatTag extends Tag {
-
-    private final FloatBinaryTag innerTag;
-
+public final class FloatTag extends Tag<Float, LinFloatTag> {
     /**
      * Creates the tag with an empty name.
      *
      * @param value the value of the tag
      */
     public FloatTag(float value) {
-        super();
-        this.innerTag = FloatBinaryTag.of(value);
+        this(LinFloatTag.of(value));
     }
 
-    public FloatTag(FloatBinaryTag adventureTag) {
-        super();
-        this.innerTag = adventureTag;
-    }
-
-    @Override
-    public FloatBinaryTag asBinaryTag() {
-        return this.innerTag;
+    public FloatTag(LinFloatTag tag) {
+        super(tag);
     }
 
     @Override
     public Float getValue() {
-        return innerTag.value();
+        return super.getValue();
     }
-
 }

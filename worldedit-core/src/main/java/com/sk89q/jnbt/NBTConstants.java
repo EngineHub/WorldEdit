@@ -52,7 +52,6 @@ public final class NBTConstants {
      * Default private constructor.
      */
     private NBTConstants() {
-
     }
 
     /**
@@ -62,37 +61,27 @@ public final class NBTConstants {
      * @return tag class
      * @throws IllegalArgumentException thrown if the tag ID is not valid
      */
-    public static Class<? extends Tag> getClassFromType(int id) {
-        switch (id) {
-            case TYPE_END:
-                return EndTag.class;
-            case TYPE_BYTE:
-                return ByteTag.class;
-            case TYPE_SHORT:
-                return ShortTag.class;
-            case TYPE_INT:
-                return IntTag.class;
-            case TYPE_LONG:
-                return LongTag.class;
-            case TYPE_FLOAT:
-                return FloatTag.class;
-            case TYPE_DOUBLE:
-                return DoubleTag.class;
-            case TYPE_BYTE_ARRAY:
-                return ByteArrayTag.class;
-            case TYPE_STRING:
-                return StringTag.class;
-            case TYPE_LIST:
-                return ListTag.class;
-            case TYPE_COMPOUND:
-                return CompoundTag.class;
-            case TYPE_INT_ARRAY:
-                return IntArrayTag.class;
-            case TYPE_LONG_ARRAY:
-                return LongArrayTag.class;
-            default:
-                throw new IllegalArgumentException("Unknown tag type ID of " + id);
-        }
+    public static Class<? extends Tag<?, ?>> getClassFromType(int id) {
+        return switch (id) {
+            case TYPE_END -> EndTag.class;
+            case TYPE_BYTE -> ByteTag.class;
+            case TYPE_SHORT -> ShortTag.class;
+            case TYPE_INT -> IntTag.class;
+            case TYPE_LONG -> LongTag.class;
+            case TYPE_FLOAT -> FloatTag.class;
+            case TYPE_DOUBLE -> DoubleTag.class;
+            case TYPE_BYTE_ARRAY -> ByteArrayTag.class;
+            case TYPE_STRING -> StringTag.class;
+            case TYPE_LIST -> {
+                @SuppressWarnings("unchecked")
+                var aClass = (Class<? extends Tag<?, ?>>) (Class<?>) ListTag.class;
+                yield aClass;
+            }
+            case TYPE_COMPOUND -> CompoundTag.class;
+            case TYPE_INT_ARRAY -> IntArrayTag.class;
+            case TYPE_LONG_ARRAY -> LongArrayTag.class;
+            default -> throw new IllegalArgumentException("Unknown tag type ID of " + id);
+        };
     }
 
 }

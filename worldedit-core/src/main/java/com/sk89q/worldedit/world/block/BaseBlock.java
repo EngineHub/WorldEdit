@@ -24,10 +24,11 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.TileEntityBlock;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
-import com.sk89q.worldedit.util.nbt.TagStringIO;
+import org.enginehub.linbus.format.snbt.LinStringIO;
+import org.enginehub.linbus.stream.exception.NbtWriteException;
+import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinTagType;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Nullable;
@@ -47,7 +48,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
 
     private final BlockState blockState;
     @Nullable
-    private final LazyReference<CompoundBinaryTag> nbtData;
+    private final LazyReference<LinCompoundTag> nbtData;
 
     /**
      * Construct a block with a state.
@@ -67,7 +68,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
      */
     @Deprecated
     protected BaseBlock(BlockState state, CompoundTag nbtData) {
-        this(state, LazyReference.from(checkNotNull(nbtData)::asBinaryTag));
+        this(state, LazyReference.from(checkNotNull(nbtData)::toLinTag));
     }
 
 
@@ -77,7 +78,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
      * @param state The block state
      * @param nbtData NBT data, which must be provided
      */
-    protected BaseBlock(BlockState state, LazyReference<CompoundBinaryTag> nbtData) {
+    protected BaseBlock(BlockState state, LazyReference<LinCompoundTag> nbtData) {
         checkNotNull(nbtData);
         this.blockState = state;
         this.nbtData = nbtData;
@@ -116,21 +117,21 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
 
     @Override
     public String getNbtId() {
-        LazyReference<CompoundBinaryTag> nbtData = this.nbtData;
+        LazyReference<LinCompoundTag> nbtData = this.nbtData;
         if (nbtData == null) {
             return "";
         }
-        return nbtData.getValue().getString("id");
+        return nbtData.getValue().getTag("id", LinTagType.stringTag()).value();
     }
 
     @Nullable
     @Override
-    public LazyReference<CompoundBinaryTag> getNbtReference() {
+    public LazyReference<LinCompoundTag> getNbtReference() {
         return this.nbtData;
     }
 
     @Override
-    public void setNbtReference(@Nullable LazyReference<CompoundBinaryTag> nbtData) {
+    public void setNbtReference(@Nullable LazyReference<LinCompoundTag> nbtData) {
         throw new UnsupportedOperationException("This class is immutable.");
     }
 
@@ -173,7 +174,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
     }
 
     @Override
-    public BaseBlock toBaseBlock(LazyReference<CompoundBinaryTag> compoundTag) {
+    public BaseBlock toBaseBlock(LazyReference<LinCompoundTag> compoundTag) {
         if (compoundTag == null) {
             return this.blockState.toBaseBlock();
         } else if (compoundTag == this.nbtData) {
@@ -186,7 +187,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
     @Override
     public int hashCode() {
         int ret = toImmutableState().hashCode() << 3;
-        CompoundBinaryTag nbtData = getNbt();
+        LinCompoundTag nbtData = getNbt();
         if (nbtData != null) {
             ret += nbtData.hashCode();
         }
@@ -196,13 +197,8 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
     @Override
     public String toString() {
         String nbtString = "";
-        CompoundBinaryTag nbtData = getNbt();
         if (nbtData != null) {
-            try {
-                nbtString = TagStringIO.get().asString(nbtData);
-            } catch (IOException e) {
-                WorldEdit.logger.error("Failed to serialize NBT of Block", e);
-            }
+            nbtString = LinStringIO.writeToString(nbtData.getValue());
         }
 
         return blockState.getAsString() + nbtString;

@@ -19,18 +19,15 @@
 
 package com.sk89q.worldedit.extent.clipboard.io.legacycompat;
 
-import com.sk89q.jnbt.IntTag;
-import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import org.enginehub.linbus.tree.LinTagType;
 
-import java.util.Map;
-
-@SuppressWarnings("")
 public class BedBlockCompatibilityHandler implements NBTCompatibilityHandler {
 
     private static final Property<Direction> FACING_PROPERTY;
@@ -51,91 +48,62 @@ public class BedBlockCompatibilityHandler implements NBTCompatibilityHandler {
     }
 
     @Override
-    public <B extends BlockStateHolder<B>> boolean isAffectedBlock(B block) {
-        return block.getBlockType() == BlockTypes.RED_BED;
-    }
-
-    @Override
-    public <B extends BlockStateHolder<B>> BlockStateHolder<?> updateNBT(B block, Map<String, Tag> values) {
-        Tag typeTag = values.get("color");
-        if (typeTag instanceof IntTag) {
-            String bedType = convertBedType(((IntTag) typeTag).getValue());
-            if (bedType != null) {
-                BlockType type = BlockTypes.get("minecraft:" + bedType);
-                if (type != null) {
-                    BlockState state = type.getDefaultState();
-
-                    Property<Direction> facingProp = type.getProperty("facing");
-                    state = state.with(facingProp, block.getState(FACING_PROPERTY));
-
-                    Property<Boolean> occupiedProp = type.getProperty("occupied");
-                    state = state.with(occupiedProp, false);
-
-                    Property<String> partProp = type.getProperty("part");
-                    state = state.with(partProp, block.getState(PART_PROPERTY));
-
-                    values.remove("color");
-                    return state;
-                }
-            }
+    public BaseBlock updateNbt(BaseBlock block) {
+        if (block.getBlockType() != BlockTypes.RED_BED) {
+            return block;
         }
-        return block;
+        var tag = block.getNbt();
+        if (tag == null) {
+            return block;
+        }
+        var typeTag = tag.findTag("color", LinTagType.intTag());
+        if (typeTag == null) {
+            return block;
+        }
+        String bedType = convertBedType(typeTag.valueAsInt());
+        if (bedType == null) {
+            return block;
+        }
+        BlockType type = BlockTypes.get("minecraft:" + bedType);
+        if (type == null) {
+            return block;
+        }
+        BlockState state = type.getDefaultState();
+
+        Property<Direction> facingProp = type.getProperty("facing");
+        state = state.with(facingProp, block.getState(FACING_PROPERTY));
+
+        Property<Boolean> occupiedProp = type.getProperty("occupied");
+        state = state.with(occupiedProp, false);
+
+        Property<String> partProp = type.getProperty("part");
+        state = state.with(partProp, block.getState(PART_PROPERTY));
+
+        var newTag = tag.toBuilder();
+        newTag.remove("color");
+        return state.toBaseBlock(LazyReference.computed(newTag.build()));
     }
 
     private String convertBedType(int oldType) {
-        String color;
-        switch (oldType) {
-            case 0:
-                color = "white";
-                break;
-            case 1:
-                color = "orange";
-                break;
-            case 2:
-                color = "magenta";
-                break;
-            case 3:
-                color = "light_blue";
-                break;
-            case 4:
-                color = "yellow";
-                break;
-            case 5:
-                color = "lime";
-                break;
-            case 6:
-                color = "pink";
-                break;
-            case 7:
-                color = "gray";
-                break;
-            case 8:
-                color = "light_gray";
-                break;
-            case 9:
-                color = "cyan";
-                break;
-            case 10:
-                color = "purple";
-                break;
-            case 11:
-                color = "blue";
-                break;
-            case 12:
-                color = "brown";
-                break;
-            case 13:
-                color = "green";
-                break;
-            case 14:
-                color = "red";
-                break;
-            case 15:
-                color = "black";
-                break;
-            default:
-                return null;
-        }
-        return color + "_bed";
+        String color = switch (oldType) {
+            case 0 -> "white";
+            case 1 -> "orange";
+            case 2 -> "magenta";
+            case 3 -> "light_blue";
+            case 4 -> "yellow";
+            case 5 -> "lime";
+            case 6 -> "pink";
+            case 7 -> "gray";
+            case 8 -> "light_gray";
+            case 9 -> "cyan";
+            case 10 -> "purple";
+            case 11 -> "blue";
+            case 12 -> "brown";
+            case 13 -> "green";
+            case 14 -> "red";
+            case 15 -> "black";
+            default -> null;
+        };
+        return color == null ? null : color + "_bed";
     }
 }

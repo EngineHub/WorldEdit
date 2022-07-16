@@ -102,7 +102,7 @@ public class SpongeSchematicV1Reader extends NBTSchematicReader {
     }
 
     static BlockArrayClipboard readVersion1(CompoundTag schematicTag, VersionedDataFixer fixer) throws IOException {
-        Map<String, Tag> schematic = schematicTag.getValue();
+        Map<String, Tag<?, ?>> schematic = schematicTag.getValue();
 
         int width = requireTag(schematic, "Width", ShortTag.class).getValue() & 0xFFFF;
         int height = requireTag(schematic, "Height", ShortTag.class).getValue() & 0xFFFF;
@@ -116,7 +116,7 @@ public class SpongeSchematicV1Reader extends NBTSchematicReader {
         CompoundTag metadataTag = getTag(schematic, "Metadata", CompoundTag.class);
         if (metadataTag != null && metadataTag.containsKey("WEOffsetX")) {
             // We appear to have WorldEdit Metadata
-            Map<String, Tag> metadata = metadataTag.getValue();
+            Map<String, Tag<?, ?>> metadata = metadataTag.getValue();
             int offsetX = requireTag(metadata, "WEOffsetX", IntTag.class).getValue();
             int offsetY = requireTag(metadata, "WEOffsetY", IntTag.class).getValue();
             int offsetZ = requireTag(metadata, "WEOffsetZ", IntTag.class).getValue();
@@ -127,7 +127,7 @@ public class SpongeSchematicV1Reader extends NBTSchematicReader {
         Region region = new CuboidRegion(min, min.add(width, height, length).subtract(BlockVector3.ONE));
 
         IntTag paletteMaxTag = getTag(schematic, "PaletteMax", IntTag.class);
-        Map<String, Tag> paletteObject = requireTag(schematic, "Palette", CompoundTag.class).getValue();
+        Map<String, Tag<?, ?>> paletteObject = requireTag(schematic, "Palette", CompoundTag.class).getValue();
         if (paletteMaxTag != null && paletteObject.size() != paletteMaxTag.getValue()) {
             throw new IOException("Block palette size does not match expected size.");
         }

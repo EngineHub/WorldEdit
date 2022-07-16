@@ -112,7 +112,7 @@ public class SpongeSchematicV3Reader extends NBTSchematicReader {
     }
 
     private Clipboard readVersion3(CompoundTag schematicTag, VersionedDataFixer fixer) throws IOException {
-        Map<String, Tag> schematic = schematicTag.getValue();
+        Map<String, Tag<?, ?>> schematic = schematicTag.getValue();
 
         int width = requireTag(schematic, "Width", ShortTag.class).getValue() & 0xFFFF;
         int height = requireTag(schematic, "Height", ShortTag.class).getValue() & 0xFFFF;
@@ -126,7 +126,7 @@ public class SpongeSchematicV3Reader extends NBTSchematicReader {
         CompoundTag metadataTag = getTag(schematic, "Metadata", CompoundTag.class);
         if (metadataTag != null && metadataTag.containsKey("WorldEdit")) {
             // We appear to have WorldEdit Metadata
-            Map<String, Tag> worldedit =
+            Map<String, Tag<?, ?>> worldedit =
                 requireTag(metadataTag.getValue(), "WorldEdit", CompoundTag.class).getValue();
             origin = ReaderUtil.decodeBlockVector3(
                 SchematicNbtUtil.getTag(worldedit, "Origin", IntArrayTag.class)
@@ -146,7 +146,7 @@ public class SpongeSchematicV3Reader extends NBTSchematicReader {
             readBiomes3(clipboard, biomeContainer.getValue(), fixer);
         }
 
-        ListTag entities = getTag(schematic, "Entities", ListTag.class);
+        ListTag<?, ?> entities = getTag(schematic, "Entities", ListTag.class);
         if (entities != null) {
             ReaderUtil.readEntities(clipboard, entities.getValue(), fixer, true);
         }
@@ -154,30 +154,30 @@ public class SpongeSchematicV3Reader extends NBTSchematicReader {
         return clipboard;
     }
 
-    private void decodeBlocksIntoClipboard(VersionedDataFixer fixer, Map<String, Tag> schematic,
+    private void decodeBlocksIntoClipboard(VersionedDataFixer fixer, Map<String, Tag<?, ?>> schematic,
                                            BlockArrayClipboard clipboard) throws IOException {
-        Map<String, Tag> blockContainer = requireTag(schematic, "Blocks", CompoundTag.class).getValue();
+        Map<String, Tag<?, ?>> blockContainer = requireTag(schematic, "Blocks", CompoundTag.class).getValue();
 
-        Map<String, Tag> paletteObject = requireTag(blockContainer, "Palette", CompoundTag.class).getValue();
+        Map<String, Tag<?, ?>> paletteObject = requireTag(blockContainer, "Palette", CompoundTag.class).getValue();
         Map<Integer, BlockState> palette = ReaderUtil.decodePalette(
             paletteObject, fixer
         );
 
         byte[] blocks = requireTag(blockContainer, "Data", ByteArrayTag.class).getValue();
-        ListTag tileEntities = getTag(blockContainer, "BlockEntities", ListTag.class);
+        ListTag<?, ?> tileEntities = getTag(blockContainer, "BlockEntities", ListTag.class);
 
         ReaderUtil.initializeClipboardFromBlocks(
             clipboard, palette, blocks, tileEntities, fixer, true
         );
     }
 
-    private void readBiomes3(BlockArrayClipboard clipboard, Map<String, Tag> biomeContainer,
+    private void readBiomes3(BlockArrayClipboard clipboard, Map<String, Tag<?, ?>> biomeContainer,
                              VersionedDataFixer fixer) throws IOException {
         CompoundTag paletteTag = requireTag(biomeContainer, "Palette", CompoundTag.class);
 
         Map<Integer, BiomeType> palette = new HashMap<>();
 
-        for (Entry<String, Tag> palettePart : paletteTag.getValue().entrySet()) {
+        for (Entry<String, Tag<?, ?>> palettePart : paletteTag.getValue().entrySet()) {
             String key = palettePart.getKey();
             key = fixer.fixUp(DataFixer.FixTypes.BIOME, key);
             BiomeType biome = BiomeTypes.get(key);
@@ -185,7 +185,7 @@ public class SpongeSchematicV3Reader extends NBTSchematicReader {
                 LOGGER.warn("Unknown biome type `" + key + "` in palette."
                     + " Are you missing a mod or using a schematic made in a newer version of Minecraft?");
             }
-            Tag idTag = palettePart.getValue();
+            Tag<?, ?> idTag = palettePart.getValue();
             if (!(idTag instanceof IntTag)) {
                 throw new IOException("Biome mapped to non-Int tag.");
             }

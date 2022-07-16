@@ -19,41 +19,30 @@
 
 package com.sk89q.jnbt;
 
-import com.sk89q.worldedit.util.nbt.ShortBinaryTag;
+import org.enginehub.linbus.tree.LinShortTag;
 
 /**
  * The {@code TAG_Short} tag.
  *
- * @deprecated Use {@link ShortBinaryTag}.
+ * @deprecated Use {@link LinShortTag}.
  */
 @Deprecated
-public final class ShortTag extends Tag {
-
-    private final ShortBinaryTag innerTag;
-
+public final class ShortTag extends Tag<Short, LinShortTag> {
     /**
      * Creates the tag with an empty name.
      *
      * @param value the value of the tag
      */
     public ShortTag(short value) {
-        super();
-        this.innerTag = ShortBinaryTag.of(value);
+        super(LinShortTag.of(value));
     }
 
-    public ShortTag(ShortBinaryTag adventureTag) {
-        super();
-        this.innerTag = adventureTag;
-    }
-
-    @Override
-    public ShortBinaryTag asBinaryTag() {
-        return this.innerTag;
+    public ShortTag(LinShortTag tag) {
+        super(tag);
     }
 
     @Override
     public Short getValue() {
-        return innerTag.value();
+        return super.getValue();
     }
-
 }

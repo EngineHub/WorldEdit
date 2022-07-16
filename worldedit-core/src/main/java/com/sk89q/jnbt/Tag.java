@@ -19,25 +19,41 @@
 
 package com.sk89q.jnbt;
 
-import com.sk89q.worldedit.util.nbt.BinaryTagLike;
+import org.enginehub.linbus.tree.LinTag;
+import org.enginehub.linbus.tree.ToLinTag;
+
+import javax.annotation.Nonnull;
 
 /**
  * Represents a NBT tag.
  *
- * @deprecated JNBT is being removed for adventure-nbt in WorldEdit 8.
+ * @deprecated JNBT is being removed for lin-bus in WorldEdit 8, use {@link LinTag} instead
  */
 @Deprecated
-public abstract class Tag implements BinaryTagLike {
+public abstract class Tag<V, LT extends LinTag<? extends V>> implements ToLinTag<LT> {
+    protected final LT linTag;
+
+    protected Tag(LT linTag) {
+        this.linTag = linTag;
+    }
 
     /**
      * Gets the value of this tag.
      *
      * @return the value
      */
-    public abstract Object getValue();
+    public V getValue() {
+        return linTag.value();
+    }
 
     @Override
     public String toString() {
-        return asBinaryTag().toString();
+        return toLinTag().toString();
+    }
+
+    @Override
+    @Nonnull
+    public LT toLinTag() {
+        return linTag;
     }
 }

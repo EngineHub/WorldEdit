@@ -19,17 +19,14 @@
 
 package com.sk89q.worldedit.extent.clipboard.io.legacycompat;
 
-import com.sk89q.jnbt.ByteTag;
-import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.registry.state.IntegerProperty;
 import com.sk89q.worldedit.registry.state.Property;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockTypes;
-
-import java.util.Map;
+import org.enginehub.linbus.tree.LinTagType;
 
 public class NoteBlockCompatibilityHandler implements NBTCompatibilityHandler {
-    private static final IntegerProperty NoteProperty;
+    private static final IntegerProperty NOTE_PROPERTY;
 
     static {
         IntegerProperty temp;
@@ -38,26 +35,24 @@ public class NoteBlockCompatibilityHandler implements NBTCompatibilityHandler {
         } catch (NullPointerException | IllegalArgumentException | ClassCastException e) {
             temp = null;
         }
-        NoteProperty = temp;
+        NOTE_PROPERTY = temp;
     }
 
     @Override
-    public <B extends BlockStateHolder<B>> boolean isAffectedBlock(B block) {
-        return NoteProperty != null && block.getBlockType() == BlockTypes.NOTE_BLOCK;
-    }
-
-    @Override
-    public <B extends BlockStateHolder<B>> BlockStateHolder<?> updateNBT(B block, Map<String, Tag> values) {
+    public BaseBlock updateNbt(BaseBlock block) {
+        if (NOTE_PROPERTY == null || block.getBlockType() != BlockTypes.NOTE_BLOCK) {
+            return block;
+        }
+        var tag = block.getNbt();
+        if (tag == null) {
+            return block;
+        }
         // note that instrument was not stored (in state or nbt) previously.
         // it will be updated to the block below when it gets set into the world for the first time
-        Tag noteTag = values.get("note");
-        if (noteTag instanceof ByteTag) {
-            Byte note = ((ByteTag) noteTag).getValue();
-            if (note != null) {
-                values.clear();
-                return block.with(NoteProperty, (int) note).toImmutableState();
-            }
+        var noteTag = tag.findTag("note", LinTagType.byteTag());
+        if (noteTag == null) {
+            return block;
         }
-        return block;
+        return block.with(NOTE_PROPERTY, (int) noteTag.valueAsByte()).toBaseBlock();
     }
 }

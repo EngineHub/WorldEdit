@@ -86,7 +86,7 @@ public class SpongeSchematicV3Writer implements ClipboardWriter {
      * @param clipboard The clipboard
      * @return The schematic map
      */
-    private Map<String, Tag> write3(Clipboard clipboard) {
+    private Map<String, Tag<?, ?>> write3(Clipboard clipboard) {
         Region region = clipboard.getRegion();
         BlockVector3 origin = clipboard.getOrigin();
         BlockVector3 min = region.getMinimumPoint();
@@ -105,22 +105,22 @@ public class SpongeSchematicV3Writer implements ClipboardWriter {
             throw new IllegalArgumentException("Length of region too large for a .schematic");
         }
 
-        Map<String, Tag> schematic = new HashMap<>();
+        Map<String, Tag<?, ?>> schematic = new HashMap<>();
         schematic.put("Version", new IntTag(CURRENT_VERSION));
         schematic.put("DataVersion", new IntTag(
             WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getDataVersion()));
 
-        Map<String, Tag> metadata = new HashMap<>();
+        Map<String, Tag<?, ?>> metadata = new HashMap<>();
         metadata.put("Date", new LongTag(System.currentTimeMillis()));
 
-        Map<String, Tag> worldEditSection = new HashMap<>();
+        Map<String, Tag<?, ?>> worldEditSection = new HashMap<>();
         worldEditSection.put("Version", new StringTag(WorldEdit.getVersion()));
         worldEditSection.put("EditingPlatform", new StringTag(WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getId()));
         worldEditSection.put("Origin", new IntArrayTag(new int[] {
             origin.getBlockX(), origin.getBlockY(), origin.getBlockZ()
         }));
 
-        Map<String, Tag> platformsSection = new HashMap<>();
+        Map<String, Tag<?, ?>> platformsSection = new HashMap<>();
         for (Platform platform : WorldEdit.getInstance().getPlatformManager().getPlatforms()) {
             platformsSection.put(platform.getId(), new CompoundTag(ImmutableMap.of(
                 "Name", new StringTag(platform.getPlatformName()),

@@ -125,7 +125,7 @@ public class MobSpawnerBlock extends BaseBlock {
 
     @Override
     public CompoundTag getNbtData() {
-        Map<String, Tag> values = new HashMap<>();
+        Map<String, Tag<?, ?>> values = new HashMap<>();
         values.put("Delay", new ShortTag(delay));
         values.put("SpawnCount", new ShortTag(spawnCount));
         values.put("SpawnRange", new ShortTag(spawnRange));
@@ -155,7 +155,7 @@ public class MobSpawnerBlock extends BaseBlock {
             return;
         }
 
-        Map<String, Tag> values = rootTag.getValue();
+        Map<String, Tag<?, ?>> values = rootTag.getValue();
 
         Tag t = values.get("id");
         if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals(getNbtId())) {

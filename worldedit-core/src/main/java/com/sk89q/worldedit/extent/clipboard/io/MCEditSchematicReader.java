@@ -20,17 +20,7 @@
 package com.sk89q.worldedit.extent.clipboard.io;
 
 import com.google.common.collect.ImmutableList;
-import com.sk89q.jnbt.AdventureNBTConverter;
-import com.sk89q.jnbt.ByteArrayTag;
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.IntTag;
-import com.sk89q.jnbt.ListTag;
 import com.sk89q.jnbt.NBTInputStream;
-import com.sk89q.jnbt.NamedTag;
-import com.sk89q.jnbt.ShortTag;
-import com.sk89q.jnbt.StringTag;
-import com.sk89q.jnbt.Tag;
-import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
@@ -49,7 +39,7 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.collection.BlockMap;
-import com.sk89q.worldedit.world.DataFixer;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.entity.EntityType;
@@ -57,18 +47,17 @@ import com.sk89q.worldedit.world.entity.EntityTypes;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.storage.NBTConversions;
 import org.apache.logging.log4j.Logger;
+import org.enginehub.linbus.tree.LinByteArrayTag;
+import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinRootEntry;
+import org.enginehub.linbus.tree.LinTagType;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.UncheckedIOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Reads schematic files that are compatible with MCEdit and other editors.
@@ -76,8 +65,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class MCEditSchematicReader extends NBTSchematicReader {
 
     private static final Logger LOGGER = LogManagerCompat.getLogger();
-    private final NBTInputStream inputStream;
-    private final DataFixer fixer;
+    private final LinRootEntry root;
     private static final ImmutableList<NBTCompatibilityHandler> COMPATIBILITY_HANDLERS
             = ImmutableList.of(
                 new SignCompatibilityHandler(),
@@ -98,30 +86,30 @@ public class MCEditSchematicReader extends NBTSchematicReader {
      * @param inputStream the input stream to read from
      */
     public MCEditSchematicReader(NBTInputStream inputStream) {
-        checkNotNull(inputStream);
-        this.inputStream = inputStream;
-        this.fixer = null;
-        //com.sk89q.worldedit.WorldEdit.getInstance().getPlatformManager().queryCapability(
-        //com.sk89q.worldedit.extension.platform.Capability.WORLD_EDITING).getDataFixer();
+        try {
+            var tag = inputStream.readNamedTag();
+            this.root = new LinRootEntry(tag.getName(), (LinCompoundTag) tag.getTag().toLinTag());
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    MCEditSchematicReader(LinRootEntry root) {
+        this.root = root;
     }
 
     @Override
     public Clipboard read() throws IOException {
         // Schematic tag
-        NamedTag rootTag = inputStream.readNamedTag();
-        if (!rootTag.getName().equals("Schematic")) {
+        if (!root.name().equals("Schematic")) {
             throw new IOException("Tag 'Schematic' does not exist or is not first");
         }
-        CompoundTag schematicTag = (CompoundTag) rootTag.getTag();
+        var schematicTag = root.value();
 
-        // Check
-        Map<String, Tag> schematic = schematicTag.getValue();
-        if (!schematic.containsKey("Blocks")) {
+        if (!schematicTag.value().containsKey("Blocks")) {
             throw new IOException("Schematic file is missing a 'Blocks' tag");
         }
-
-        // Check type of Schematic
-        String materials = requireTag(schematic, "Materials", StringTag.class).getValue();
+        String materials = schematicTag.getTag("Materials", LinTagType.stringTag()).value();
         if (!materials.equals("Alpha")) {
             throw new IOException("Schematic file is not an Alpha schematic");
         }
@@ -134,42 +122,38 @@ public class MCEditSchematicReader extends NBTSchematicReader {
         Region region;
 
         // Get information
-        short width = requireTag(schematic, "Width", ShortTag.class).getValue();
-        short height = requireTag(schematic, "Height", ShortTag.class).getValue();
-        short length = requireTag(schematic, "Length", ShortTag.class).getValue();
+        short width = schematicTag.getTag("Width", LinTagType.shortTag()).valueAsShort();
+        short height = schematicTag.getTag("Height", LinTagType.shortTag()).valueAsShort();
+        short length = schematicTag.getTag("Length", LinTagType.shortTag()).valueAsShort();
 
-        try {
-            int originX = requireTag(schematic, "WEOriginX", IntTag.class).getValue();
-            int originY = requireTag(schematic, "WEOriginY", IntTag.class).getValue();
-            int originZ = requireTag(schematic, "WEOriginZ", IntTag.class).getValue();
-            BlockVector3 min = BlockVector3.at(originX, originY, originZ);
+        int originX = schematicTag.getTag("WEOriginX", LinTagType.intTag()).valueAsInt();
+        int originY = schematicTag.getTag("WEOriginY", LinTagType.intTag()).valueAsInt();
+        int originZ = schematicTag.getTag("WEOriginZ", LinTagType.intTag()).valueAsInt();
+        BlockVector3 min = BlockVector3.at(originX, originY, originZ);
 
-            int offsetX = requireTag(schematic, "WEOffsetX", IntTag.class).getValue();
-            int offsetY = requireTag(schematic, "WEOffsetY", IntTag.class).getValue();
-            int offsetZ = requireTag(schematic, "WEOffsetZ", IntTag.class).getValue();
-            BlockVector3 offset = BlockVector3.at(offsetX, offsetY, offsetZ);
+        int offsetX = schematicTag.getTag("WEOffsetX", LinTagType.intTag()).valueAsInt();
+        int offsetY = schematicTag.getTag("WEOffsetY", LinTagType.intTag()).valueAsInt();
+        int offsetZ = schematicTag.getTag("WEOffsetZ", LinTagType.intTag()).valueAsInt();
+        BlockVector3 offset = BlockVector3.at(offsetX, offsetY, offsetZ);
 
-            origin = min.subtract(offset);
-            region = new CuboidRegion(min, min.add(width, height, length).subtract(BlockVector3.ONE));
-        } catch (IOException ignored) {
-            origin = BlockVector3.ZERO;
-            region = new CuboidRegion(origin, origin.add(width, height, length).subtract(BlockVector3.ONE));
-        }
+        origin = min.subtract(offset);
+        region = new CuboidRegion(min, min.add(width, height, length).subtract(BlockVector3.ONE));
 
         // ====================================================================
         // Blocks
         // ====================================================================
 
         // Get blocks
-        byte[] blockId = requireTag(schematic, "Blocks", ByteArrayTag.class).getValue();
-        byte[] blockData = requireTag(schematic, "Data", ByteArrayTag.class).getValue();
+        byte[] blockId = schematicTag.getTag("Blocks", LinTagType.byteArrayTag()).value();
+        byte[] blockData = schematicTag.getTag("Data", LinTagType.byteArrayTag()).value();
         byte[] addId = new byte[0];
         short[] blocks = new short[blockId.length]; // Have to later combine IDs
 
         // We support 4096 block IDs using the same method as vanilla Minecraft, where
         // the highest 4 bits are stored in a separate byte array.
-        if (schematic.containsKey("AddBlocks")) {
-            addId = requireTag(schematic, "AddBlocks", ByteArrayTag.class).getValue();
+        LinByteArrayTag addBlocks = schematicTag.findTag("AddBlocks", LinTagType.byteArrayTag());
+        if (addBlocks != null) {
+            addId = addBlocks.value();
         }
 
         // Combine the AddBlocks data with the first 8-bit block ID
@@ -186,56 +170,31 @@ public class MCEditSchematicReader extends NBTSchematicReader {
         }
 
         // Need to pull out tile entities
-        final ListTag tileEntityTag = getTag(schematic, "TileEntities", ListTag.class);
-        List<Tag> tileEntities = tileEntityTag == null ? new ArrayList<>() : tileEntityTag.getValue();
+        var tileEntityTag = schematicTag.findListTag("TileEntities", LinTagType.compoundTag());
+        List<LinCompoundTag> tileEntities = tileEntityTag == null ? List.of() : tileEntityTag.value();
         BlockMap<BaseBlock> tileEntityBlocks = BlockMap.createForBaseBlock();
 
-        for (Tag tag : tileEntities) {
-            if (!(tag instanceof CompoundTag)) {
-                continue;
-            }
-            CompoundTag t = (CompoundTag) tag;
-            Map<String, Tag> values = new HashMap<>(t.getValue());
-            String id = t.getString("id");
-            values.put("id", new StringTag(convertBlockEntityId(id)));
-            int x = t.getInt("x");
-            int y = t.getInt("y");
-            int z = t.getInt("z");
+        for (LinCompoundTag tag : tileEntities) {
+            var newTag = tag.toBuilder();
+            String id = tag.getTag("id", LinTagType.stringTag()).value();
+            newTag.putString("id", convertBlockEntityId(id));
+            int x = tag.getTag("x", LinTagType.intTag()).valueAsInt();
+            int y = tag.getTag("y", LinTagType.intTag()).valueAsInt();
+            int z = tag.getTag("z", LinTagType.intTag()).valueAsInt();
             int index = y * width * length + z * width + x;
 
             BlockState block = getBlockState(blocks[index], blockData[index]);
-            BlockState newBlock = block;
-            if (newBlock != null) {
-                for (NBTCompatibilityHandler handler : COMPATIBILITY_HANDLERS) {
-                    if (handler.isAffectedBlock(newBlock)) {
-                        newBlock = handler.updateNBT(block, values).toImmutableState();
-                        if (newBlock == null || values.isEmpty()) {
-                            break;
-                        }
-                    }
+            if (block == null) {
+                continue;
+            }
+            var updatedBlock = block.toBaseBlock(LazyReference.from(newTag::build));
+            for (NBTCompatibilityHandler handler : COMPATIBILITY_HANDLERS) {
+                updatedBlock = handler.updateNbt(updatedBlock);
+                if (updatedBlock.getNbtReference() == null) {
+                    break;
                 }
             }
-            if (values.isEmpty()) {
-                t = null;
-            } else {
-                t = new CompoundTag(values);
-            }
-
-            if (fixer != null && t != null) {
-                t = (CompoundTag) AdventureNBTConverter.fromAdventure(fixer.fixUp(DataFixer.FixTypes.BLOCK_ENTITY, t.asBinaryTag(), -1));
-            }
-
-            BlockVector3 vec = BlockVector3.at(x, y, z);
-            // Insert into the map if we have changed the block or have a tag
-            BlockState blockToInsert = newBlock != null
-                ? newBlock
-                : (t != null ? block : null);
-            if (blockToInsert != null) {
-                BaseBlock baseBlock = t != null
-                    ? blockToInsert.toBaseBlock(new CompoundTag(t.getValue()))
-                    : blockToInsert.toBaseBlock();
-                tileEntityBlocks.put(vec, baseBlock);
-            }
+            tileEntityBlocks.put(BlockVector3.at(x, y, z), updatedBlock);
         }
 
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
@@ -248,26 +207,23 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                 for (int z = 0; z < length; ++z) {
                     int index = y * width * length + z * width + x;
                     BlockVector3 pt = BlockVector3.at(x, y, z);
-                    BaseBlock state = Optional.ofNullable(tileEntityBlocks.get(pt))
-                        .orElseGet(() -> {
-                            BlockState blockState = getBlockState(blocks[index], blockData[index]);
-                            return blockState == null ? null : blockState.toBaseBlock();
-                        });
-
-                    try {
-                        if (state != null) {
-                            clipboard.setBlock(region.getMinimumPoint().add(pt), state);
-                        } else {
+                    BaseBlock state = tileEntityBlocks.get(pt);
+                    if (state == null) {
+                        BlockState blockState = getBlockState(blocks[index], blockData[index]);
+                        if (blockState == null) {
                             short block = blocks[index];
                             byte data = blockData[index];
                             int combined = block << 8 | data;
                             if (unknownBlocks.add(combined)) {
                                 LOGGER.warn("Unknown block when loading schematic: "
-                                        + block + ":" + data + ". This is most likely a bad schematic.");
+                                    + block + ":" + data + ". This is most likely a bad schematic.");
                             }
+                            continue;
                         }
-                    } catch (WorldEditException ignored) { // BlockArrayClipboard won't throw this
+                        state = blockState.toBaseBlock();
                     }
+
+                    clipboard.setBlock(region.getMinimumPoint().add(pt), state);
                 }
             }
         }
@@ -276,30 +232,25 @@ public class MCEditSchematicReader extends NBTSchematicReader {
         // Entities
         // ====================================================================
 
-        ListTag entityList = getTag(schematic, "Entities", ListTag.class);
+        var entityList = schematicTag.findListTag("Entities", LinTagType.compoundTag());
         if (entityList != null) {
-            List<Tag> entityTags = entityList.getValue();
-            for (Tag tag : entityTags) {
-                if (tag instanceof CompoundTag) {
-                    CompoundTag compound = (CompoundTag) tag;
-                    if (fixer != null) {
-                        compound = (CompoundTag) AdventureNBTConverter.fromAdventure(fixer.fixUp(DataFixer.FixTypes.ENTITY, compound.asBinaryTag(), -1));
-                    }
-                    String id = convertEntityId(compound.getString("id"));
-                    Location location = NBTConversions.toLocation(clipboard, compound.getListTag("Pos"), compound.getListTag("Rotation"));
-                    if (!id.isEmpty()) {
-                        EntityType entityType = EntityTypes.get(id.toLowerCase(Locale.ROOT));
-                        if (entityType != null) {
-                            for (EntityNBTCompatibilityHandler compatibilityHandler : ENTITY_COMPATIBILITY_HANDLERS) {
-                                if (compatibilityHandler.isAffectedEntity(entityType, compound)) {
-                                    compound = compatibilityHandler.updateNBT(entityType, compound);
-                                }
-                            }
-                            BaseEntity state = new BaseEntity(entityType, compound);
-                            clipboard.createEntity(location, state);
-                        } else {
-                            LOGGER.warn("Unknown entity when pasting schematic: " + id.toLowerCase(Locale.ROOT));
+            for (LinCompoundTag tag : entityList.value()) {
+                String id = convertEntityId(tag.getTag("id", LinTagType.stringTag()).value());
+                Location location = NBTConversions.toLocation(
+                    clipboard,
+                    tag.getListTag("Pos", LinTagType.doubleTag()),
+                    tag.getListTag("Rotation", LinTagType.floatTag())
+                );
+                if (!id.isEmpty()) {
+                    EntityType entityType = EntityTypes.get(id.toLowerCase(Locale.ROOT));
+                    if (entityType != null) {
+                        for (EntityNBTCompatibilityHandler compatibilityHandler : ENTITY_COMPATIBILITY_HANDLERS) {
+                            tag = compatibilityHandler.updateNbt(entityType, tag);
                         }
+                        BaseEntity state = new BaseEntity(entityType, LazyReference.computed(tag));
+                        clipboard.createEntity(location, state);
+                    } else {
+                        LOGGER.warn("Unknown entity when pasting schematic: " + id.toLowerCase(Locale.ROOT));
                     }
                 }
             }
@@ -426,6 +377,5 @@ public class MCEditSchematicReader extends NBTSchematicReader {
 
     @Override
     public void close() throws IOException {
-        inputStream.close();
     }
 }

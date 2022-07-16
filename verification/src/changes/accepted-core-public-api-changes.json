@@ -94,6 +94,34 @@
             "changes": [
                 "METHOD_NEW_DEFAULT"
             ]
+        },
+        {
+            "type": "com.sk89q.worldedit.extent.clipboard.io.legacycompat.EntityNBTCompatibilityHandler",
+            "member": "Method com.sk89q.worldedit.extent.clipboard.io.legacycompat.EntityNBTCompatibilityHandler.updateNbt(com.sk89q.worldedit.world.entity.EntityType,org.enginehub.linbus.tree.LinCompoundTag)",
+            "changes": [
+                "METHOD_NEW_DEFAULT"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.extent.clipboard.io.legacycompat.NBTCompatibilityHandler",
+            "member": "Method com.sk89q.worldedit.extent.clipboard.io.legacycompat.NBTCompatibilityHandler.updateNbt(com.sk89q.worldedit.world.block.BaseBlock)",
+            "changes": [
+                "METHOD_NEW_DEFAULT"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.block.BlockStateHolder",
+            "member": "Method com.sk89q.worldedit.world.block.BlockStateHolder.toBaseBlock(org.enginehub.linbus.tree.LinCompoundTag)",
+            "changes": [
+                "METHOD_NEW_DEFAULT"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.NbtValued",
+            "member": "Method com.sk89q.worldedit.world.NbtValued.setNbt(org.enginehub.linbus.tree.LinCompoundTag)",
+            "changes": [
+                "METHOD_NEW_DEFAULT"
+            ]
         }
     ],
     "LazyReference was never publicly extensible": [
@@ -102,6 +130,59 @@
             "member": "Class com.sk89q.worldedit.util.concurrency.LazyReference",
             "changes": [
                 "CLASS_NOW_FINAL"
+            ]
+        }
+    ],
+    "Extending Tag never made sense": [
+        {
+            "type": "com.sk89q.jnbt.Tag",
+            "member": "Constructor com.sk89q.jnbt.Tag()",
+            "changes": [
+                "CONSTRUCTOR_REMOVED"
+            ]
+        }
+    ],
+    "DataFixer isn't API": [
+        {
+            "type": "com.sk89q.worldedit.world.DataFixer$FixTypes",
+            "member": "Field ENTITY",
+            "changes": [
+                "FIELD_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.DataFixer$FixTypes",
+            "member": "Field BIOME",
+            "changes": [
+                "FIELD_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.DataFixer$FixTypes",
+            "member": "Field BLOCK_STATE",
+            "changes": [
+                "FIELD_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.DataFixer$FixTypes",
+            "member": "Field BLOCK_ENTITY",
+            "changes": [
+                "FIELD_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.DataFixer$FixTypes",
+            "member": "Field ITEM_TYPE",
+            "changes": [
+                "FIELD_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.DataFixer$FixTypes",
+            "member": "Field CHUNK",
+            "changes": [
+                "FIELD_NOW_FINAL"
             ]
         }
     ]

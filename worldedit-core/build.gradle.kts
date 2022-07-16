@@ -42,6 +42,19 @@ dependencies {
     "compileOnlyApi"("com.google.code.findbugs:jsr305:1.3.9")
     "implementation"("com.google.code.gson:gson")
 
+    "implementation"("com.sk89q:jchronic:0.2.4a") {
+        exclude(group = "junit", module = "junit")
+    }
+    "implementation"("com.thoughtworks.paranamer:paranamer:2.6")
+    "implementation"("com.sk89q.lib:jlibnoise:1.0.0")
+    "api"(platform("org.enginehub.lin-bus:lin-bus-bom:${Versions.LIN_BUS}"))
+    "api"("org.enginehub.lin-bus:lin-bus-tree") {
+        exclude(group = "org.jetbrains", module = "annotations")
+    }
+    "api"("org.enginehub.lin-bus.format:lin-bus-format-snbt") {
+        exclude(group = "org.jetbrains", module = "annotations")
+    }
+
     "implementation"("org.apache.logging.log4j:log4j-api:${Versions.LOG4J}") {
         because("Mojang provides Log4J")
     }

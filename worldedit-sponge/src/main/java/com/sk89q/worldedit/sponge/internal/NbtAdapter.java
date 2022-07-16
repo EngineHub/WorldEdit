@@ -157,15 +157,15 @@ public class NbtAdapter {
         // copy to container, no cloning used because it's unlikely to leak
         // and it's cheaper this way
         DataContainer container = DataContainer.createNew(DataView.SafetyMode.NO_DATA_CLONED);
-        for (Map.Entry<String, Tag> entry : tag.getValue().entrySet()) {
+        for (Map.Entry<String, Tag<?, ?>> entry : tag.getValue().entrySet()) {
             container.set(DataQuery.of(entry.getKey()), adaptTagFromWorldEdit(entry.getValue()));
         }
         return container;
     }
 
-    private static Object adaptTagFromWorldEdit(Tag value) {
-        if (value instanceof ListTag) {
-            return ((ListTag) value).getValue().stream()
+    private static Object adaptTagFromWorldEdit(Tag<?, ?> value) {
+        if (value instanceof ListTag<?, ?>) {
+            return ((ListTag<?, ?>) value).getValue().stream()
                 .map(NbtAdapter::adaptTagFromWorldEdit)
                 .collect(Collectors.toList());
         }
@@ -222,9 +222,9 @@ public class NbtAdapter {
         return new net.minecraft.nbt.IntArrayTag(Arrays.copyOf(value, value.length));
     }
 
-    public static net.minecraft.nbt.ListTag adaptNMSToWorldEdit(ListTag tag) {
+    public static net.minecraft.nbt.ListTag adaptNMSToWorldEdit(ListTag<?, ?> tag) {
         net.minecraft.nbt.ListTag list = new net.minecraft.nbt.ListTag();
-        for (Tag child : tag.getValue()) {
+        for (Tag<?, ?> child : tag.getValue()) {
             if (child instanceof EndTag) {
                 continue;
             }
@@ -259,7 +259,7 @@ public class NbtAdapter {
 
     public static net.minecraft.nbt.CompoundTag adaptNMSToWorldEdit(CompoundTag tag) {
         net.minecraft.nbt.CompoundTag compound = new net.minecraft.nbt.CompoundTag();
-        for (Map.Entry<String, Tag> child : tag.getValue().entrySet()) {
+        for (Map.Entry<String, Tag<?, ?>> child : tag.getValue().entrySet()) {
             compound.put(child.getKey(), adaptNMSToWorldEdit(child.getValue()));
         }
         return compound;

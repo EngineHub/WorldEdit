@@ -50,7 +50,7 @@ public class AnvilChunk18 implements Chunk {
     private final int rootX;
     private final int rootZ;
 
-    private Map<BlockVector3, Map<String, Tag>> tileEntities;
+    private Map<BlockVector3, Map<String, Tag<?, ?>>> tileEntities;
 
     /**
      * Construct the chunk with a compound tag.
@@ -162,7 +162,7 @@ public class AnvilChunk18 implements Chunk {
 
             CompoundTag t = (CompoundTag) tag;
 
-            Map<String, Tag> values = new HashMap<>(t.getValue());
+            Map<String, Tag<?, ?>> values = new HashMap<>(t.getValue());
             int x = ((IntTag) values.get("x")).getValue();
             int y = ((IntTag) values.get("y")).getValue();
             int z = ((IntTag) values.get("z")).getValue();
@@ -187,7 +187,7 @@ public class AnvilChunk18 implements Chunk {
             populateTileEntities();
         }
 
-        Map<String, Tag> values = tileEntities.get(position);
+        Map<String, Tag<?, ?>> values = tileEntities.get(position);
         if (values == null) {
             return null;
         }

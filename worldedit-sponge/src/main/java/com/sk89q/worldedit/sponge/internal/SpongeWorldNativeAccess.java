@@ -19,12 +19,10 @@
 
 package com.sk89q.worldedit.sponge.internal;
 
-import com.sk89q.jnbt.AdventureNBTConverter;
 import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
 import com.sk89q.worldedit.sponge.SpongeAdapter;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -34,6 +32,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.lang.ref.WeakReference;
 import java.util.Objects;
@@ -101,8 +100,8 @@ public class SpongeWorldNativeAccess implements WorldNativeAccess<LevelChunk, Bl
     }
 
     @Override
-    public boolean updateTileEntity(BlockPos position, CompoundBinaryTag tag) {
-        CompoundTag nativeTag = (CompoundTag) NbtAdapter.adaptNMSToWorldEdit(AdventureNBTConverter.fromAdventure(tag));
+    public boolean updateTileEntity(BlockPos position, LinCompoundTag tag) {
+        CompoundTag nativeTag = NbtAdapter.adaptNMSToWorldEdit(new com.sk89q.jnbt.CompoundTag(tag));
         BlockEntity tileEntity = getWorld().getChunk(position).getBlockEntity(position);
         if (tileEntity == null) {
             return false;

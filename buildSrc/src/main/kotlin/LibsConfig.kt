@@ -45,11 +45,15 @@ fun Project.applyLibrariesConfiguration() {
         configurations = listOf(project.configurations["shade"])
         archiveClassifier.set("")
 
+        // Yeet module-info's
+        exclude("module-info.class")
+
         dependencies {
             exclude(dependency("com.google.guava:guava"))
             exclude(dependency("com.google.code.gson:gson"))
             exclude(dependency("com.google.errorprone:error_prone_annotations"))
             exclude(dependency("org.checkerframework:checker-qual"))
+            exclude(dependency("org.jetbrains:annotations"))
             exclude(dependency("org.apache.logging.log4j:log4j-api"))
             exclude(dependency("com.google.code.findbugs:jsr305"))
             exclude {

@@ -19,27 +19,27 @@
 
 package com.sk89q.jnbt;
 
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.util.Map;
-import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Helps create compound tags.
  *
- * @deprecated Use {@link com.sk89q.worldedit.util.nbt.CompoundBinaryTag.Builder}.
+ * @deprecated Use {@link LinCompoundTag.Builder}.
  */
 @Deprecated
 public class CompoundTagBuilder {
 
-    private final CompoundBinaryTag.Builder builder = CompoundBinaryTag.builder();
+    private final LinCompoundTag.Builder builder;
 
     /**
      * Create a new instance.
      */
     CompoundTagBuilder() {
+        this.builder = LinCompoundTag.builder();
     }
 
     /**
@@ -47,11 +47,9 @@ public class CompoundTagBuilder {
      *
      * @param source the value
      */
-    CompoundTagBuilder(CompoundBinaryTag source) {
+    CompoundTagBuilder(LinCompoundTag source) {
         checkNotNull(source);
-        for (String key : source.keySet()) {
-            this.builder.put(key, Objects.requireNonNull(source.get(key)));
-        }
+        this.builder = source.toBuilder();
     }
 
     /**
@@ -61,10 +59,10 @@ public class CompoundTagBuilder {
      * @param value the value
      * @return this object
      */
-    public CompoundTagBuilder put(String key, Tag value) {
+    public CompoundTagBuilder put(String key, Tag<?, ?> value) {
         checkNotNull(key);
         checkNotNull(value);
-        this.builder.put(key, value.asBinaryTag());
+        this.builder.put(key, value.toLinTag());
         return this;
     }
 
@@ -215,9 +213,9 @@ public class CompoundTagBuilder {
      * @param value the map of tags
      * @return this object
      */
-    public CompoundTagBuilder putAll(Map<String, ? extends Tag> value) {
+    public CompoundTagBuilder putAll(Map<String, ? extends Tag<?, ?>> value) {
         checkNotNull(value);
-        for (Map.Entry<String, ? extends Tag> entry : value.entrySet()) {
+        for (Map.Entry<String, ? extends Tag<?, ?>> entry : value.entrySet()) {
             put(entry.getKey(), entry.getValue());
         }
         return this;
