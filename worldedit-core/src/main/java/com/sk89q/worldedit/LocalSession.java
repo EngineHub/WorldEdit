@@ -30,6 +30,7 @@ import com.sk89q.worldedit.command.tool.NavigationWand;
 import com.sk89q.worldedit.command.tool.SelectionWand;
 import com.sk89q.worldedit.command.tool.SinglePickaxe;
 import com.sk89q.worldedit.command.tool.Tool;
+import com.sk89q.worldedit.command.tool.brush.Brush;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Locatable;
@@ -678,6 +679,8 @@ public class LocalSession {
      * @param item the item type
      * @return the tool, or {@code null}
      * @throws InvalidToolBindException if the item can't be bound to that item
+     * @deprecated Use {@link #getBrush(ItemType)} or {@link #forceBrush(ItemType, Brush, String)}
+     *     if you need to bind a specific brush
      */
     @Deprecated
     public BrushTool getBrushTool(ItemType item) throws InvalidToolBindException {
@@ -700,6 +703,25 @@ public class LocalSession {
     @Nullable
     public BrushTool getBrush(ItemType item) {
         return getTool(item) instanceof BrushTool tool ? tool : null;
+    }
+
+    /**
+     * Force the tool to become a brush tool with the specified brush and permission.
+     *
+     * @param item the item type
+     * @param brush the brush to bind
+     * @param permission the permission to check before use is allowed
+     * @return the brush tool assigned to the item type
+     */
+    public BrushTool forceBrush(ItemType item, Brush brush, String permission) throws InvalidToolBindException {
+        BrushTool tool = getBrush(item);
+        if (tool == null) {
+            tool = new BrushTool(brush, permission);
+            setTool(item, tool);
+        } else {
+            tool.setBrush(brush, permission);
+        }
+        return tool;
     }
 
     /**

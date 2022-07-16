@@ -27,6 +27,8 @@ import com.sk89q.worldedit.command.argument.HeightConverter;
 import com.sk89q.worldedit.command.factory.ReplaceFactory;
 import com.sk89q.worldedit.command.factory.TreeGeneratorFactory;
 import com.sk89q.worldedit.command.tool.BrushTool;
+import com.sk89q.worldedit.command.tool.InvalidToolBindException;
+import com.sk89q.worldedit.command.tool.brush.Brush;
 import com.sk89q.worldedit.command.tool.brush.ButcherBrush;
 import com.sk89q.worldedit.command.tool.brush.ClipboardBrush;
 import com.sk89q.worldedit.command.tool.brush.CylinderBrush;
@@ -132,15 +134,15 @@ public class BrushCommands {
                                 boolean hollow) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(radius);
 
-        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+        Brush brush = hollow ? new HollowSphereBrush() : new SphereBrush();
+
+        BrushTool tool = session.forceBrush(
+            player.getItemInHand(HandSide.MAIN_HAND).getType(),
+            brush,
+            "worldedit.brush.sphere"
+        );
         tool.setFill(pattern);
         tool.setSize(radius);
-
-        if (hollow) {
-            tool.setBrush(new HollowSphereBrush(), "worldedit.brush.sphere");
-        } else {
-            tool.setBrush(new SphereBrush(), "worldedit.brush.sphere");
-        }
 
         player.printInfo(TranslatableComponent.of("worldedit.brush.sphere.equip", TextComponent.of(String.format("%.0f", radius))));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
@@ -164,15 +166,15 @@ public class BrushCommands {
         worldEdit.checkMaxBrushRadius(radius);
         worldEdit.checkMaxBrushRadius(height);
 
-        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+        Brush brush = hollow ? new HollowCylinderBrush(height) : new CylinderBrush(height);
+
+        BrushTool tool = session.forceBrush(
+            player.getItemInHand(HandSide.MAIN_HAND).getType(),
+            brush,
+            "worldedit.brush.cylinder"
+        );
         tool.setFill(pattern);
         tool.setSize(radius);
-
-        if (hollow) {
-            tool.setBrush(new HollowCylinderBrush(height), "worldedit.brush.cylinder");
-        } else {
-            tool.setBrush(new CylinderBrush(height), "worldedit.brush.cylinder");
-        }
 
         player.printInfo(TranslatableComponent.of("worldedit.brush.cylinder.equip", TextComponent.of((int) radius), TextComponent.of(height)));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
@@ -198,11 +200,13 @@ public class BrushCommands {
             return;
         }
 
-        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+        BrushTool tool = session.forceBrush(
+            player.getItemInHand(HandSide.MAIN_HAND).getType(),
+            new SplatterBrush(decay),
+            "worldedit.brush.splatter"
+        );
         tool.setFill(pattern);
         tool.setSize(radius);
-
-        tool.setBrush(new SplatterBrush(decay), "worldedit.brush.splatter");
 
         player.printInfo(TranslatableComponent.of("worldedit.brush.splatter.equip", TextComponent.of((int) radius), TextComponent.of(decay)));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
@@ -239,8 +243,11 @@ public class BrushCommands {
         worldEdit.checkMaxBrushRadius(size.getBlockY() / 2D - 1);
         worldEdit.checkMaxBrushRadius(size.getBlockZ() / 2D - 1);
 
-        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
-        tool.setBrush(new ClipboardBrush(newHolder, ignoreAir, usingOrigin, pasteEntities, pasteBiomes, sourceMask), "worldedit.brush.clipboard");
+        BrushTool tool = session.forceBrush(
+            player.getItemInHand(HandSide.MAIN_HAND).getType(),
+            new ClipboardBrush(newHolder, ignoreAir, usingOrigin, pasteEntities, pasteBiomes, sourceMask),
+            "worldedit.brush.clipboard"
+        );
 
         player.printInfo(TranslatableComponent.of("worldedit.brush.clipboard.equip"));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
@@ -261,9 +268,12 @@ public class BrushCommands {
                                 Mask mask) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(radius);
 
-        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+        BrushTool tool = session.forceBrush(
+            player.getItemInHand(HandSide.MAIN_HAND).getType(),
+            new SmoothBrush(iterations, mask),
+            "worldedit.brush.smooth"
+        );
         tool.setSize(radius);
-        tool.setBrush(new SmoothBrush(iterations, mask), "worldedit.brush.smooth");
 
         player.printInfo(TranslatableComponent.of(
                 "worldedit.brush.smooth.equip",
@@ -291,9 +301,12 @@ public class BrushCommands {
                                     Mask mask) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(radius);
 
-        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+        BrushTool tool = session.forceBrush(
+            player.getItemInHand(HandSide.MAIN_HAND).getType(),
+            new SnowSmoothBrush(iterations, snowBlockCount, mask),
+            "worldedit.brush.snowsmooth"
+        );
         tool.setSize(radius);
-        tool.setBrush(new SnowSmoothBrush(iterations, snowBlockCount, mask), "worldedit.brush.snowsmooth");
 
         player.printInfo(TranslatableComponent.of(
                 "worldedit.brush.snowsmooth.equip",
@@ -315,11 +328,14 @@ public class BrushCommands {
                                     double radius) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(radius);
 
-        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+        BrushTool tool = session.forceBrush(
+            player.getItemInHand(HandSide.MAIN_HAND).getType(),
+            new SphereBrush(),
+            "worldedit.brush.ex"
+        );
         tool.setFill(BlockTypes.AIR.getDefaultState());
         tool.setSize(radius);
         tool.setMask(new BlockTypeMask(new RequestExtent(), BlockTypes.FIRE));
-        tool.setBrush(new SphereBrush(), "worldedit.brush.ex");
 
         player.printInfo(TranslatableComponent.of("worldedit.brush.extinguish.equip", TextComponent.of((int) radius)));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
@@ -345,9 +361,12 @@ public class BrushCommands {
                                  Integer height) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(radius);
 
-        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+        BrushTool tool = session.forceBrush(
+            player.getItemInHand(HandSide.MAIN_HAND).getType(),
+            new GravityBrush(height),
+            "worldedit.brush.gravity"
+        );
         tool.setSize(radius);
-        tool.setBrush(new GravityBrush(height), "worldedit.brush.gravity");
 
         player.printInfo(TranslatableComponent.of("worldedit.brush.gravity.equip", TextComponent.of((int) radius)));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
@@ -405,9 +424,11 @@ public class BrushCommands {
         flags.or(CreatureButcher.Flags.ARMOR_STAND, killArmorStands, "worldedit.butcher.armorstands");
         flags.or(CreatureButcher.Flags.WATER, killWater, "worldedit.butcher.water");
 
-        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+        BrushTool tool = session.forceBrush(
+            player.getItemInHand(HandSide.MAIN_HAND).getType(),
+            new ButcherBrush(flags), "worldedit.brush.butcher"
+        );
         tool.setSize(radius);
-        tool.setBrush(new ButcherBrush(flags), "worldedit.brush.butcher");
 
         player.printInfo(TranslatableComponent.of("worldedit.brush.butcher.equip", TextComponent.of((int) radius)));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
@@ -435,7 +456,6 @@ public class BrushCommands {
 
         if (loader.isPresent()) {
             worldEdit.checkMaxBrushRadius(radius);
-            BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
 
             AssetLoadTask<ImageHeightmap> task = new AssetLoadTask<>(loader.get(), imageName);
             AsyncCommandBuilder.wrap(task, player)
@@ -443,8 +463,17 @@ public class BrushCommands {
                 .setDelayMessage(TranslatableComponent.of("worldedit.asset.load.loading"))
                 .setWorkingMessage(TranslatableComponent.of("worldedit.asset.load.still-loading"))
                 .onSuccess(TranslatableComponent.of("worldedit.brush.heightmap.equip", TextComponent.of((int) radius)), heightmap -> {
+                    BrushTool tool;
+                    try {
+                        tool = session.forceBrush(
+                            player.getItemInHand(HandSide.MAIN_HAND).getType(),
+                            new ImageHeightmapBrush(heightmap, intensity, erase, flatten, randomize),
+                            "worldedit.brush.heightmap"
+                        );
+                    } catch (InvalidToolBindException e) {
+                        throw new RuntimeException(e);
+                    }
                     tool.setSize(radius);
-                    tool.setBrush(new ImageHeightmapBrush(heightmap, intensity, erase, flatten, randomize), "worldedit.brush.heightmap");
                     ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
                 })
                 .onFailure(TranslatableComponent.of("worldedit.asset.load.failed"), worldEdit.getPlatformManager().getPlatformCommandManager().getExceptionConverter())
@@ -599,9 +628,12 @@ public class BrushCommands {
                       @Arg(desc = "Dilate iterations", def = "1")
                           int numDilateIterations) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(brushSize);
-        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+        BrushTool tool = session.forceBrush(
+            player.getItemInHand(HandSide.MAIN_HAND).getType(),
+            new MorphBrush(minErodeFaces, numErodeIterations, minDilateFaces, numDilateIterations),
+            "worldedit.brush.morph"
+        );
         tool.setSize(brushSize);
-        tool.setBrush(new MorphBrush(minErodeFaces, numErodeIterations, minDilateFaces, numDilateIterations), "worldedit.brush.morph");
 
         player.printInfo(TranslatableComponent.of("worldedit.brush.morph.equip", TextComponent.of((int) brushSize)));
     }
@@ -615,9 +647,12 @@ public class BrushCommands {
                       @Arg(desc = "The size of the brush", def = "5")
                           double brushSize) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(brushSize);
-        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+        BrushTool tool = session.forceBrush(
+            player.getItemInHand(HandSide.MAIN_HAND).getType(),
+            new MorphBrush(2, 1, 5, 1),
+            "worldedit.brush.morph"
+        );
         tool.setSize(brushSize);
-        tool.setBrush(new MorphBrush(2, 1, 5, 1), "worldedit.brush.morph");
 
         player.printInfo(TranslatableComponent.of("worldedit.brush.morph.equip", TextComponent.of((int) brushSize)));
     }
@@ -631,9 +666,12 @@ public class BrushCommands {
                        @Arg(desc = "The size of the brush", def = "5")
                            double brushSize) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(brushSize);
-        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+        BrushTool tool = session.forceBrush(
+            player.getItemInHand(HandSide.MAIN_HAND).getType(),
+            new MorphBrush(5, 1, 2, 1),
+            "worldedit.brush.morph"
+        );
         tool.setSize(brushSize);
-        tool.setBrush(new MorphBrush(5, 1, 2, 1), "worldedit.brush.morph");
 
         player.printInfo(TranslatableComponent.of("worldedit.brush.morph.equip", TextComponent.of((int) brushSize)));
     }
@@ -643,10 +681,13 @@ public class BrushCommands {
                                         RegionFactory shape,
                                         String permission) throws WorldEditException {
         WorldEdit.getInstance().checkMaxBrushRadius(radius);
-        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+        BrushTool tool = session.forceBrush(
+            player.getItemInHand(HandSide.MAIN_HAND).getType(),
+            new OperationFactoryBrush(factory, shape, session),
+            permission
+        );
         tool.setSize(radius);
         tool.setFill(null);
-        tool.setBrush(new OperationFactoryBrush(factory, shape, session), permission);
 
         player.printInfo(TranslatableComponent.of("worldedit.brush.operation.equip", TextComponent.of(factory.toString())));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);

@@ -64,6 +64,19 @@ public class BrushTool implements TraceTool {
         this.permission = permission;
     }
 
+    /**
+     * Construct the tool.
+     *
+     * @param brush the brush to bind
+     * @param permission the permission to check before use is allowed
+     */
+    public BrushTool(Brush brush, String permission) {
+        checkNotNull(brush);
+        checkNotNull(permission);
+        this.brush = brush;
+        this.permission = permission;
+    }
+
     @Override
     public boolean canUse(Actor player) {
         return player.hasPermission(permission);

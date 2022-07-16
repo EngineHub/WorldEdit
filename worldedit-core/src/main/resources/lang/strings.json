@@ -39,6 +39,7 @@
     "worldedit.brush.heightmap.unknown": "Unknown heightmap brush: {0}.",
     "worldedit.brush.morph.equip": "Morph brush shape equipped: {0}.",
     "worldedit.brush.none.equip": "Brush unbound from your current item.",
+    "worldedit.brush.none.equipped": "You have no brush bound to your current item. Try /brush sphere for a basic brush.",
 
     "worldedit.setbiome.changed": "Biomes were changed for approximately {0} blocks.",
     "worldedit.setbiome.warning": "You may have to re-join your game (or close and re-open your world) to see changes.",
