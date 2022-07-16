@@ -47,12 +47,14 @@ import com.sk89q.worldedit.world.entity.EntityTypes;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.storage.NBTConversions;
 import org.apache.logging.log4j.Logger;
+import org.enginehub.linbus.stream.LinStream;
 import org.enginehub.linbus.tree.LinByteArrayTag;
 import org.enginehub.linbus.tree.LinCompoundTag;
 import org.enginehub.linbus.tree.LinRootEntry;
 import org.enginehub.linbus.tree.LinTagType;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.util.HashSet;
 import java.util.List;
@@ -62,10 +64,10 @@ import java.util.Set;
 /**
  * Reads schematic files that are compatible with MCEdit and other editors.
  */
-public class MCEditSchematicReader extends NBTSchematicReader {
+public class MCEditSchematicReader implements ClipboardReader {
 
     private static final Logger LOGGER = LogManagerCompat.getLogger();
-    private final LinRootEntry root;
+    private final LinStream rootStream;
     private static final ImmutableList<NBTCompatibilityHandler> COMPATIBILITY_HANDLERS
             = ImmutableList.of(
                 new SignCompatibilityHandler(),
@@ -84,22 +86,26 @@ public class MCEditSchematicReader extends NBTSchematicReader {
      * Create a new instance.
      *
      * @param inputStream the input stream to read from
+     * @deprecated Use the {@link ClipboardFormat#getReader(InputStream)} API with
+     *     {@link BuiltInClipboardFormat#MCEDIT_SCHEMATIC}
      */
+    @Deprecated
     public MCEditSchematicReader(NBTInputStream inputStream) {
         try {
             var tag = inputStream.readNamedTag();
-            this.root = new LinRootEntry(tag.getName(), (LinCompoundTag) tag.getTag().toLinTag());
+            this.rootStream = new LinRootEntry(tag.getName(), (LinCompoundTag) tag.getTag().toLinTag()).linStream();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
-    MCEditSchematicReader(LinRootEntry root) {
-        this.root = root;
+    MCEditSchematicReader(LinStream rootStream) {
+        this.rootStream = rootStream;
     }
 
     @Override
     public Clipboard read() throws IOException {
+        var root = LinRootEntry.readFrom(rootStream);
         // Schematic tag
         if (!root.name().equals("Schematic")) {
             throw new IOException("Tag 'Schematic' does not exist or is not first");

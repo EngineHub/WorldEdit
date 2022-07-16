@@ -19,69 +19,73 @@
 
 package com.sk89q.worldedit.extent.clipboard.io.sponge;
 
-import com.google.common.collect.ImmutableList;
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.CompoundTagBuilder;
-import com.sk89q.jnbt.DoubleTag;
-import com.sk89q.jnbt.FloatTag;
-import com.sk89q.jnbt.ListTag;
-import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.Location;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinDoubleTag;
+import org.enginehub.linbus.tree.LinFloatTag;
+import org.enginehub.linbus.tree.LinListTag;
+import org.enginehub.linbus.tree.LinTagType;
 
 class WriterUtil {
-    static ListTag encodeEntities(Clipboard clipboard, boolean positionIsRelative) {
-        List<CompoundTag> entities = clipboard.getEntities().stream().map(e -> {
-            BaseEntity state = e.getState();
-            if (state == null) {
-                return null;
+    static LinListTag<LinCompoundTag> encodeEntities(Clipboard clipboard, boolean positionIsRelative) {
+        LinListTag.Builder<LinCompoundTag> entities = LinListTag.builder(LinTagType.compoundTag());
+        for (Entity entity : clipboard.getEntities()) {
+            LinCompoundTag encoded = encodeEntity(clipboard, positionIsRelative, entity);
+            if (encoded != null) {
+                entities.add(encoded);
             }
-            CompoundTagBuilder fullTagBuilder = CompoundTagBuilder.create();
-            CompoundTagBuilder dataTagBuilder = CompoundTagBuilder.create();
-            CompoundTag rawData = state.getNbtData();
-            if (rawData != null) {
-                dataTagBuilder.putAll(rawData.getValue());
-                dataTagBuilder.remove("id");
-            }
-            final Location location = e.getLocation();
-            Vector3 pos = location.toVector();
-            dataTagBuilder.put("Rotation", encodeRotation(location));
-            if (positionIsRelative) {
-                pos = pos.subtract(clipboard.getMinimumPoint().toVector3());
-
-                fullTagBuilder.put("Data", dataTagBuilder.build());
-            } else {
-                fullTagBuilder.putAll(dataTagBuilder.build().getValue());
-            }
-            fullTagBuilder.putString("Id", state.getType().getId());
-            fullTagBuilder.put("Pos", encodeVector(pos));
-
-            return fullTagBuilder.build();
-        }).filter(Objects::nonNull).collect(Collectors.toList());
-        if (entities.isEmpty()) {
+        }
+        var result = entities.build();
+        if (result.value().isEmpty()) {
             return null;
         }
-        return new ListTag(CompoundTag.class, entities);
+        return result;
     }
 
-    static Tag encodeVector(Vector3 vector) {
-        return new ListTag(DoubleTag.class, ImmutableList.of(
-            new DoubleTag(vector.getX()),
-            new DoubleTag(vector.getY()),
-            new DoubleTag(vector.getZ())
-        ));
+    private static LinCompoundTag encodeEntity(Clipboard clipboard, boolean positionIsRelative, Entity e) {
+        BaseEntity state = e.getState();
+        if (state == null) {
+            return null;
+        }
+        LinCompoundTag.Builder fullTagBuilder = LinCompoundTag.builder();
+        LinCompoundTag.Builder dataTagBuilder = LinCompoundTag.builder();
+        LinCompoundTag rawData = state.getNbt();
+        if (rawData != null) {
+            dataTagBuilder.putAll(rawData.value());
+            dataTagBuilder.remove("id");
+        }
+        final Location location = e.getLocation();
+        Vector3 pos = location.toVector();
+        dataTagBuilder.put("Rotation", encodeRotation(location));
+        if (positionIsRelative) {
+            pos = pos.subtract(clipboard.getMinimumPoint().toVector3());
+
+            fullTagBuilder.put("Data", dataTagBuilder.build());
+        } else {
+            fullTagBuilder.putAll(dataTagBuilder.build().value());
+        }
+        fullTagBuilder.putString("Id", state.getType().getId());
+        fullTagBuilder.put("Pos", encodeVector(pos));
+
+        return fullTagBuilder.build();
     }
 
-    static Tag encodeRotation(Location location) {
-        return new ListTag(FloatTag.class, ImmutableList.of(
-            new FloatTag(location.getYaw()),
-            new FloatTag(location.getPitch())
-        ));
+    static LinListTag<LinDoubleTag> encodeVector(Vector3 vector) {
+        return LinListTag.builder(LinTagType.doubleTag())
+            .add(LinDoubleTag.of(vector.getX()))
+            .add(LinDoubleTag.of(vector.getY()))
+            .add(LinDoubleTag.of(vector.getZ()))
+            .build();
+    }
+
+    static LinListTag<LinFloatTag> encodeRotation(Location location) {
+        return LinListTag.builder(LinTagType.floatTag())
+            .add(LinFloatTag.of(location.getYaw()))
+            .add(LinFloatTag.of(location.getPitch()))
+            .build();
     }
 }

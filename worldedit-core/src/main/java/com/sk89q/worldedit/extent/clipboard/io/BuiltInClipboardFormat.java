@@ -20,24 +20,26 @@
 package com.sk89q.worldedit.extent.clipboard.io;
 
 import com.google.common.collect.ImmutableSet;
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.IntTag;
 import com.sk89q.jnbt.NBTInputStream;
 import com.sk89q.jnbt.NBTOutputStream;
-import com.sk89q.jnbt.NamedTag;
-import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.extent.clipboard.io.sponge.SpongeSchematicV1Reader;
 import com.sk89q.worldedit.extent.clipboard.io.sponge.SpongeSchematicV2Reader;
 import com.sk89q.worldedit.extent.clipboard.io.sponge.SpongeSchematicV2Writer;
 import com.sk89q.worldedit.extent.clipboard.io.sponge.SpongeSchematicV3Reader;
 import com.sk89q.worldedit.extent.clipboard.io.sponge.SpongeSchematicV3Writer;
+import org.enginehub.linbus.stream.LinBinaryIO;
+import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinIntTag;
+import org.enginehub.linbus.tree.LinRootEntry;
+import org.enginehub.linbus.tree.LinTagType;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -59,8 +61,9 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
 
         @Override
         public ClipboardReader getReader(InputStream inputStream) throws IOException {
-            NBTInputStream nbtStream = new NBTInputStream(new GZIPInputStream(inputStream));
-            return new MCEditSchematicReader(nbtStream);
+            return new MCEditSchematicReader(LinBinaryIO.read(
+                new DataInputStream(new GZIPInputStream(inputStream))
+            ));
         }
 
         @Override
@@ -70,22 +73,16 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
 
         @Override
         public boolean isFormat(File file) {
-            try (NBTInputStream str = new NBTInputStream(new GZIPInputStream(new FileInputStream(file)))) {
-                NamedTag rootTag = str.readNamedTag();
-                if (!rootTag.getName().equals("Schematic")) {
-                    return false;
-                }
-                CompoundTag schematicTag = (CompoundTag) rootTag.getTag();
-
-                // Check
-                Map<String, Tag<?, ?>> schematic = schematicTag.getValue();
-                if (!schematic.containsKey("Materials")) {
-                    return false;
-                }
+            LinRootEntry rootEntry;
+            try (var stream = new DataInputStream(new GZIPInputStream(new FileInputStream(file)))) {
+                rootEntry = LinBinaryIO.readUsing(stream, LinRootEntry::readFrom);
             } catch (Exception e) {
                 return false;
             }
-            return true;
+            if (!rootEntry.name().equals("Schematic")) {
+                return false;
+            }
+            return rootEntry.value().value().containsKey("Materials");
         }
     },
     SPONGE_V1_SCHEMATIC("sponge.1") {
@@ -97,8 +94,9 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
 
         @Override
         public ClipboardReader getReader(InputStream inputStream) throws IOException {
-            NBTInputStream nbtStream = new NBTInputStream(new GZIPInputStream(inputStream));
-            return new SpongeSchematicV1Reader(nbtStream);
+            return new SpongeSchematicV1Reader(LinBinaryIO.read(
+                new DataInputStream(new GZIPInputStream(inputStream))
+            ));
         }
 
         @Override
@@ -108,24 +106,7 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
 
         @Override
         public boolean isFormat(File file) {
-            try (NBTInputStream str = new NBTInputStream(new GZIPInputStream(new FileInputStream(file)))) {
-                NamedTag rootTag = str.readNamedTag();
-                if (!rootTag.getName().equals("Schematic")) {
-                    return false;
-                }
-                CompoundTag schematicTag = (CompoundTag) rootTag.getTag();
-
-                // Check
-                Map<String, Tag<?, ?>> schematic = schematicTag.getValue();
-                Tag<?, ?> versionTag = schematic.get("Version");
-                if (!(versionTag instanceof IntTag) || ((IntTag) versionTag).getValue() != 1) {
-                    return false;
-                }
-            } catch (Exception e) {
-                return false;
-            }
-
-            return true;
+            return detectOldSpongeSchematic(file, 1);
         }
     },
     SPONGE_V2_SCHEMATIC("sponge.2") {
@@ -137,36 +118,19 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
 
         @Override
         public ClipboardReader getReader(InputStream inputStream) throws IOException {
-            NBTInputStream nbtStream = new NBTInputStream(new GZIPInputStream(inputStream));
-            return new SpongeSchematicV2Reader(nbtStream);
+            return new SpongeSchematicV2Reader(LinBinaryIO.read(
+                new DataInputStream(new GZIPInputStream(inputStream))
+            ));
         }
 
         @Override
         public ClipboardWriter getWriter(OutputStream outputStream) throws IOException {
-            NBTOutputStream nbtStream = new NBTOutputStream(new GZIPOutputStream(outputStream));
-            return new SpongeSchematicV2Writer(nbtStream);
+            return new SpongeSchematicV2Writer(new DataOutputStream(new GZIPOutputStream(outputStream)));
         }
 
         @Override
         public boolean isFormat(File file) {
-            try (NBTInputStream str = new NBTInputStream(new GZIPInputStream(new FileInputStream(file)))) {
-                NamedTag rootTag = str.readNamedTag();
-                if (!rootTag.getName().equals("Schematic")) {
-                    return false;
-                }
-                CompoundTag schematicTag = (CompoundTag) rootTag.getTag();
-
-                // Check
-                Map<String, Tag<?, ?>> schematic = schematicTag.getValue();
-                Tag<?, ?> versionTag = schematic.get("Version");
-                if (!(versionTag instanceof IntTag) || ((IntTag) versionTag).getValue() != 2) {
-                    return false;
-                }
-            } catch (Exception e) {
-                return false;
-            }
-
-            return true;
+            return detectOldSpongeSchematic(file, 2);
         }
     },
     SPONGE_V3_SCHEMATIC("sponge.3", "sponge", "schem") {
@@ -178,44 +142,55 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
 
         @Override
         public ClipboardReader getReader(InputStream inputStream) throws IOException {
-            NBTInputStream nbtStream = new NBTInputStream(new GZIPInputStream(inputStream));
-            return new SpongeSchematicV3Reader(nbtStream);
+            return new SpongeSchematicV3Reader(LinBinaryIO.read(
+                new DataInputStream(new GZIPInputStream(inputStream))
+            ));
         }
 
         @Override
         public ClipboardWriter getWriter(OutputStream outputStream) throws IOException {
-            NBTOutputStream nbtStream = new NBTOutputStream(new GZIPOutputStream(outputStream));
-            return new SpongeSchematicV3Writer(nbtStream);
+            return new SpongeSchematicV3Writer(new DataOutputStream(new GZIPOutputStream(outputStream)));
         }
 
         @Override
         public boolean isFormat(File file) {
-            try (NBTInputStream str = new NBTInputStream(new GZIPInputStream(new FileInputStream(file)))) {
-                NamedTag rootTag = str.readNamedTag();
-                CompoundTag rootCompoundTag = (CompoundTag) rootTag.getTag();
-                if (!rootCompoundTag.containsKey("Schematic")) {
-                    return false;
-                }
-                Tag schematicTag = rootCompoundTag.getValue()
-                    .get("Schematic");
-                if (!(schematicTag instanceof CompoundTag)) {
-                    return false;
-                }
-
-                // Check
-                Map<String, Tag<?, ?>> schematic = ((CompoundTag) schematicTag).getValue();
-                Tag versionTag = schematic.get("Version");
-                if (!(versionTag instanceof IntTag) || ((IntTag) versionTag).getValue() != 3) {
-                    return false;
-                }
+            LinCompoundTag root;
+            try (var stream = new DataInputStream(new GZIPInputStream(new FileInputStream(file)))) {
+                root = LinBinaryIO.readUsing(stream, LinRootEntry::readFrom).value();
             } catch (Exception e) {
                 return false;
             }
-
-            return true;
+            LinCompoundTag schematicTag = root.findTag("Schematic", LinTagType.compoundTag());
+            if (schematicTag == null) {
+                return false;
+            }
+            LinIntTag versionTag = schematicTag.findTag("Version", LinTagType.intTag());
+            if (versionTag == null) {
+                return false;
+            }
+            return versionTag.valueAsInt() == 3;
         }
     },
     ;
+
+    private static boolean detectOldSpongeSchematic(File file, int version) {
+        LinRootEntry rootEntry;
+        try (var stream = new DataInputStream(new GZIPInputStream(new FileInputStream(file)))) {
+            rootEntry = LinBinaryIO.readUsing(stream, LinRootEntry::readFrom);
+        } catch (Exception e) {
+            return false;
+        }
+        if (!rootEntry.name().equals("Schematic")) {
+            return false;
+        }
+        LinCompoundTag schematicTag = rootEntry.value();
+
+        LinIntTag versionTag = schematicTag.findTag("Version", LinTagType.intTag());
+        if (versionTag == null) {
+            return false;
+        }
+        return versionTag.valueAsInt() == version;
+    }
 
     /**
      * For backwards compatibility, this points to the Sponge Schematic Specification (Version 2)

@@ -317,6 +317,7 @@ public class GeneralCommands {
         desc = "Sets the reorder mode of WorldEdit"
     )
     @CommandPermissions("worldedit.reorder")
+    @Deprecated
     public void reorderMode(Actor actor, LocalSession session,
                             @Arg(desc = "The reorder mode", def = "")
                                 EditSession.ReorderMode reorderMode) {

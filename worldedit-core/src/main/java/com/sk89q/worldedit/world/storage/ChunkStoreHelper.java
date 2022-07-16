@@ -34,10 +34,12 @@ import com.sk89q.worldedit.world.chunk.AnvilChunk16;
 import com.sk89q.worldedit.world.chunk.AnvilChunk18;
 import com.sk89q.worldedit.world.chunk.Chunk;
 import com.sk89q.worldedit.world.chunk.OldChunk;
+import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinNumberTag;
+import org.enginehub.linbus.tree.LinTagType;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 
 public class ChunkStoreHelper {
 
@@ -48,6 +50,16 @@ public class ChunkStoreHelper {
 
     }
 
+    /**
+     * Reads a chunk from the given input stream.
+     *
+     * @param input the input stream
+     * @return the chunk
+     * @throws DataException if an error occurs
+     * @throws IOException if an I/O error occurs
+     * @deprecated No replacement, just load the tag yourself
+     */
+    @Deprecated
     public static CompoundTag readCompoundTag(ChunkDataInputSupplier input) throws DataException, IOException {
         try (InputStream stream = input.openInputStream();
              NBTInputStream nbt = new NBTInputStream(stream)) {
@@ -67,19 +79,30 @@ public class ChunkStoreHelper {
      * @param rootTag the root tag of the chunk
      * @return a Chunk implementation
      * @throws DataException if the rootTag is not valid chunk data
+     * @deprecated Use {@link #getChunk(LinCompoundTag)}
      */
+    @Deprecated
     public static Chunk getChunk(CompoundTag rootTag) throws DataException {
-        int dataVersion = rootTag.getInt("DataVersion");
-        if (dataVersion == 0) {
-            dataVersion = -1;
-        }
+        return getChunk(rootTag.toLinTag());
+    }
+
+    /**
+     * Convert a chunk NBT tag into a {@link Chunk} implementation.
+     *
+     * @param rootTag the root tag of the chunk
+     * @return a Chunk implementation
+     * @throws DataException if the rootTag is not valid chunk data
+     */
+    public static Chunk getChunk(LinCompoundTag rootTag) throws DataException {
+        int dataVersion = rootTag.value().get("DataVersion") instanceof LinNumberTag<?> t
+            ? t.value().intValue() : -1;
 
         final Platform platform = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING);
         final int currentDataVersion = platform.getDataVersion();
         if ((dataVersion > 0 || hasLevelSections(rootTag)) && dataVersion < currentDataVersion) { // only fix up MCA format, DFU doesn't support MCR chunks
             final DataFixer dataFixer = platform.getDataFixer();
             if (dataFixer != null) {
-                rootTag = new CompoundTag(dataFixer.fixUp(DataFixer.FixTypes.CHUNK, rootTag.toLinTag(), dataVersion));
+                rootTag = dataFixer.fixUp(DataFixer.FixTypes.CHUNK, rootTag, dataVersion);
                 dataVersion = currentDataVersion;
             }
         }
@@ -88,21 +111,7 @@ public class ChunkStoreHelper {
             return new AnvilChunk18(rootTag);
         }
 
-        Map<String, Tag<?, ?>> children = rootTag.getValue();
-        CompoundTag tag = null;
-
-        // Find Level tag
-        for (Map.Entry<String, Tag<?, ?>> entry : children.entrySet()) {
-            if (entry.getKey().equals("Level")) {
-                if (entry.getValue() instanceof CompoundTag) {
-                    tag = (CompoundTag) entry.getValue();
-                    break;
-                } else {
-                    throw new ChunkStoreException("CompoundTag expected for 'Level'; got " + entry.getValue().getClass().getName());
-                }
-            }
-        }
-
+        LinCompoundTag tag = rootTag.findTag("Level", LinTagType.compoundTag());
         if (tag == null) {
             throw new ChunkStoreException("Missing root 'Level' tag");
         }
@@ -114,21 +123,16 @@ public class ChunkStoreHelper {
             return new AnvilChunk13(tag);
         }
 
-        Map<String, Tag<?, ?>> tags = tag.getValue();
-        if (tags.containsKey("Sections")) {
+        if (tag.value().containsKey("Sections")) {
             return new AnvilChunk(tag);
         }
 
         return new OldChunk(tag);
     }
 
-    private static boolean hasLevelSections(CompoundTag rootTag) {
-        Map<String, Tag<?, ?>> children = rootTag.getValue();
-        Tag<?, ?> levelTag = children.get("Level");
-        if (levelTag instanceof CompoundTag) {
-            return ((CompoundTag) levelTag).getValue().containsKey("Sections");
-        }
-        return false;
+    private static boolean hasLevelSections(LinCompoundTag rootTag) {
+        LinCompoundTag levelTag = rootTag.findTag("Level", LinTagType.compoundTag());
+        return levelTag != null && levelTag.value().containsKey("Sections");
     }
 
     private ChunkStoreHelper() {

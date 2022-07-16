@@ -19,6 +19,8 @@
 
 package com.sk89q.jnbt;
 
+import org.enginehub.linbus.stream.LinBinaryIO;
+import org.enginehub.linbus.stream.LinStream;
 import org.enginehub.linbus.tree.LinByteArrayTag;
 import org.enginehub.linbus.tree.LinByteTag;
 import org.enginehub.linbus.tree.LinCompoundTag;
@@ -33,13 +35,24 @@ import org.enginehub.linbus.tree.LinShortTag;
 import org.enginehub.linbus.tree.LinStringTag;
 import org.enginehub.linbus.tree.LinTag;
 
+import java.io.DataOutputStream;
+
 /**
- * Converts between JNBT and Adventure-NBT classes.
+ * Converts between JNBT and lin-bus classes.
  *
  * @deprecated JNBT is being removed in WE8.
  */
 @Deprecated
-public class AdventureNBTConverter {
+public class LinBusConverter {
+    /**
+     * Convert the given lin-bus tag to a legacy JNBT tag. If you know the specific type of the
+     * lin-bus tag, you should just construct the legacy tag directly.
+     *
+     * @param tag the lin-bus tag
+     * @param <V> the type of the lin-bus tag's value
+     * @param <LT> the type of the lin-bus tag
+     * @return the corresponding legacy JNBT tag
+     */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <V, LT extends LinTag<? extends V>> Tag<V, LT> toJnbtTag(LT tag) {
         return (Tag<V, LT>) switch (tag.type().id()) {
@@ -59,6 +72,28 @@ public class AdventureNBTConverter {
         };
     }
 
-    private AdventureNBTConverter() {
+    /**
+     * Convert the given legacy stream to a {@link LinStream}. The legacy stream should not be used
+     * after this.
+     *
+     * @param inputStream the legacy stream
+     * @return the lin-bus stream
+     */
+    public static LinStream convertStream(NBTInputStream inputStream) {
+        return LinBinaryIO.read(inputStream.is);
+    }
+
+    /**
+     * Convert the given legacy stream to a {@link DataOutputStream}. The legacy stream should not
+     * be used after this.
+     *
+     * @param outputStream the legacy stream
+     * @return the data output stream
+     */
+    public static DataOutputStream convertStream(NBTOutputStream outputStream) {
+        return outputStream.os;
+    }
+
+    private LinBusConverter() {
     }
 }

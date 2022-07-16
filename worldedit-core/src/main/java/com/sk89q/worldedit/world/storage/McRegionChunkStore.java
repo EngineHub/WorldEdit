@@ -19,11 +19,14 @@
 
 package com.sk89q.worldedit.world.storage;
 
-import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.World;
+import org.enginehub.linbus.stream.LinBinaryIO;
+import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinRootEntry;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -64,12 +67,11 @@ public abstract class McRegionChunkStore extends ChunkStore {
     }
 
     @Override
-    public CompoundTag getChunkTag(BlockVector2 position, World world) throws DataException, IOException {
-        return ChunkStoreHelper.readCompoundTag(() -> {
-            McRegionReader reader = getReader(position, world.getName());
-
-            return reader.getChunkInputStream(position);
-        });
+    public LinCompoundTag getChunkData(BlockVector2 position, World world) throws DataException, IOException {
+        McRegionReader reader = getReader(position, world.getName());
+        try (var chunkStream = new DataInputStream(reader.getChunkInputStream(position))) {
+            return LinBinaryIO.readUsing(chunkStream, LinRootEntry::readFrom).toLinTag();
+        }
     }
 
     /**

@@ -25,7 +25,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * A class which holds constant values.
  *
- * @deprecated JNBT is being removed for adventure-nbt in WorldEdit 8.
+ * @deprecated JNBT is being removed for lin-bus in WorldEdit 8.
  */
 @Deprecated
 public final class NBTConstants {

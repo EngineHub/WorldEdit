@@ -22,6 +22,7 @@ package com.sk89q.worldedit.command;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.command.tool.BrushTool;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.entity.Player;
@@ -76,7 +77,12 @@ public class ToolUtilCommands {
     public void mask(Player player, LocalSession session,
                      @Arg(desc = "The mask to set", def = "")
                          Mask mask) throws WorldEditException {
-        session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType()).setMask(mask);
+        BrushTool brushTool = session.getBrush(player.getItemInHand(HandSide.MAIN_HAND).getType());
+        if (brushTool == null) {
+            player.printError(TranslatableComponent.of("worldedit.brush.none.equipped"));
+            return;
+        }
+        brushTool.setMask(mask);
         if (mask == null) {
             player.printInfo(TranslatableComponent.of("worldedit.tool.mask.disabled"));
         } else {
@@ -93,7 +99,12 @@ public class ToolUtilCommands {
     public void material(Player player, LocalSession session,
                          @Arg(desc = "The pattern of blocks to use")
                              Pattern pattern) throws WorldEditException {
-        session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType()).setFill(pattern);
+        BrushTool brushTool = session.getBrush(player.getItemInHand(HandSide.MAIN_HAND).getType());
+        if (brushTool == null) {
+            player.printError(TranslatableComponent.of("worldedit.brush.none.equipped"));
+            return;
+        }
+        brushTool.setFill(pattern);
         player.printInfo(TranslatableComponent.of("worldedit.tool.material.set"));
     }
 
@@ -105,7 +116,12 @@ public class ToolUtilCommands {
     public void range(Player player, LocalSession session,
                       @Arg(desc = "The range of the brush")
                           int range) throws WorldEditException {
-        session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType()).setRange(range);
+        BrushTool brushTool = session.getBrush(player.getItemInHand(HandSide.MAIN_HAND).getType());
+        if (brushTool == null) {
+            player.printError(TranslatableComponent.of("worldedit.brush.none.equipped"));
+            return;
+        }
+        brushTool.setRange(range);
         player.printInfo(TranslatableComponent.of("worldedit.tool.range.set"));
     }
 
@@ -119,7 +135,12 @@ public class ToolUtilCommands {
                          int size) throws WorldEditException {
         we.checkMaxBrushRadius(size);
 
-        session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType()).setSize(size);
+        BrushTool brushTool = session.getBrush(player.getItemInHand(HandSide.MAIN_HAND).getType());
+        if (brushTool == null) {
+            player.printError(TranslatableComponent.of("worldedit.brush.none.equipped"));
+            return;
+        }
+        brushTool.setSize(size);
         player.printInfo(TranslatableComponent.of("worldedit.tool.size.set"));
     }
 
@@ -131,7 +152,12 @@ public class ToolUtilCommands {
     public void traceMask(Player player, LocalSession session,
                           @Arg(desc = "The trace mask to set", def = "")
                              Mask mask) throws WorldEditException {
-        session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType()).setTraceMask(mask);
+        BrushTool brushTool = session.getBrush(player.getItemInHand(HandSide.MAIN_HAND).getType());
+        if (brushTool == null) {
+            player.printError(TranslatableComponent.of("worldedit.brush.none.equipped"));
+            return;
+        }
+        brushTool.setTraceMask(mask);
         if (mask == null) {
             player.printInfo(TranslatableComponent.of("worldedit.tool.tracemask.disabled"));
         } else {

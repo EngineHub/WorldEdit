@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.bukkit.adapter.impl.v1_19_R1;
 
-import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
@@ -27,6 +26,7 @@ import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.world.block.BlockState;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerLevel;
@@ -110,8 +110,8 @@ public class PaperweightWorldNativeAccess implements WorldNativeAccess<LevelChun
         if (tileEntity == null) {
             return false;
         }
-        Tag nativeTag = adapter.fromNative(new CompoundTag(tag));
-        PaperweightAdapter.readTagIntoTileEntity((net.minecraft.nbt.CompoundTag) nativeTag, tileEntity);
+        Tag nativeTag = adapter.fromNative(tag);
+        PaperweightAdapter.readTagIntoTileEntity((CompoundTag) nativeTag, tileEntity);
         return true;
     }
 

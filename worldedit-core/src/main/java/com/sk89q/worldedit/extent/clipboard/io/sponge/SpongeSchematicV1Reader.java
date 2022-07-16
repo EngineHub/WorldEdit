@@ -19,60 +19,49 @@
 
 package com.sk89q.worldedit.extent.clipboard.io.sponge;
 
-import com.sk89q.jnbt.ByteArrayTag;
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.IntArrayTag;
-import com.sk89q.jnbt.IntTag;
-import com.sk89q.jnbt.ListTag;
-import com.sk89q.jnbt.NBTInputStream;
-import com.sk89q.jnbt.NamedTag;
-import com.sk89q.jnbt.ShortTag;
-import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.extent.clipboard.io.NBTSchematicReader;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.block.BlockState;
+import org.enginehub.linbus.stream.LinStream;
+import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinIntTag;
+import org.enginehub.linbus.tree.LinListTag;
+import org.enginehub.linbus.tree.LinRootEntry;
+import org.enginehub.linbus.tree.LinTagType;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.OptionalInt;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * Reads schematic files using the Sponge Schematic Specification (Version 1).
  */
-public class SpongeSchematicV1Reader extends NBTSchematicReader {
+public class SpongeSchematicV1Reader implements ClipboardReader {
 
-    private final NBTInputStream inputStream;
+    private final LinStream rootStream;
 
-    /**
-     * Create a new instance.
-     *
-     * @param inputStream the input stream to read from
-     */
-    public SpongeSchematicV1Reader(NBTInputStream inputStream) {
-        checkNotNull(inputStream);
-        this.inputStream = inputStream;
+    public SpongeSchematicV1Reader(LinStream rootStream) {
+        this.rootStream = rootStream;
     }
 
     @Override
     public Clipboard read() throws IOException {
-        CompoundTag schematicTag = getBaseTag();
+        LinCompoundTag schematicTag = getBaseTag();
         ReaderUtil.checkSchematicVersion(1, getBaseTag());
 
         return doRead(schematicTag);
     }
 
     // For legacy SpongeSchematicReader, can be inlined in WorldEdit 8
-    public static BlockArrayClipboard doRead(CompoundTag schematicTag) throws IOException {
+    public static BlockArrayClipboard doRead(LinCompoundTag schematicTag) throws IOException {
         final Platform platform = WorldEdit.getInstance().getPlatformManager()
             .queryCapability(Capability.WORLD_EDITING);
 
@@ -95,40 +84,36 @@ public class SpongeSchematicV1Reader extends NBTSchematicReader {
         }
     }
 
-    private CompoundTag getBaseTag() throws IOException {
-        NamedTag rootTag = inputStream.readNamedTag();
-
-        return (CompoundTag) rootTag.getTag();
+    private LinCompoundTag getBaseTag() throws IOException {
+        return LinRootEntry.readFrom(rootStream).value();
     }
 
-    static BlockArrayClipboard readVersion1(CompoundTag schematicTag, VersionedDataFixer fixer) throws IOException {
-        Map<String, Tag<?, ?>> schematic = schematicTag.getValue();
-
-        int width = requireTag(schematic, "Width", ShortTag.class).getValue() & 0xFFFF;
-        int height = requireTag(schematic, "Height", ShortTag.class).getValue() & 0xFFFF;
-        int length = requireTag(schematic, "Length", ShortTag.class).getValue() & 0xFFFF;
+    static BlockArrayClipboard readVersion1(LinCompoundTag schematicTag, VersionedDataFixer fixer) throws IOException {
+        int width = schematicTag.getTag("Width", LinTagType.shortTag()).valueAsShort() & 0xFFFF;
+        int height = schematicTag.getTag("Height", LinTagType.shortTag()).valueAsShort() & 0xFFFF;
+        int length = schematicTag.getTag("Length", LinTagType.shortTag()).valueAsShort() & 0xFFFF;
 
         BlockVector3 min = ReaderUtil.decodeBlockVector3(
-            getTag(schematic, "Offset", IntArrayTag.class)
+            schematicTag.findTag("Offset", LinTagType.intArrayTag())
         );
 
         BlockVector3 offset = BlockVector3.ZERO;
-        CompoundTag metadataTag = getTag(schematic, "Metadata", CompoundTag.class);
-        if (metadataTag != null && metadataTag.containsKey("WEOffsetX")) {
-            // We appear to have WorldEdit Metadata
-            Map<String, Tag<?, ?>> metadata = metadataTag.getValue();
-            int offsetX = requireTag(metadata, "WEOffsetX", IntTag.class).getValue();
-            int offsetY = requireTag(metadata, "WEOffsetY", IntTag.class).getValue();
-            int offsetZ = requireTag(metadata, "WEOffsetZ", IntTag.class).getValue();
-            offset = BlockVector3.at(offsetX, offsetY, offsetZ);
+        LinCompoundTag metadataTag = schematicTag.findTag("Metadata", LinTagType.compoundTag());
+        if (metadataTag != null) {
+            LinIntTag offsetX = metadataTag.findTag("WEOffsetX", LinTagType.intTag());
+            if (offsetX != null) {
+                int offsetY = metadataTag.getTag("WEOffsetY", LinTagType.intTag()).valueAsInt();
+                int offsetZ = metadataTag.getTag("WEOffsetZ", LinTagType.intTag()).valueAsInt();
+                offset = BlockVector3.at(offsetX.valueAsInt(), offsetY, offsetZ);
+            }
         }
 
         BlockVector3 origin = min.subtract(offset);
         Region region = new CuboidRegion(min, min.add(width, height, length).subtract(BlockVector3.ONE));
 
-        IntTag paletteMaxTag = getTag(schematic, "PaletteMax", IntTag.class);
-        Map<String, Tag<?, ?>> paletteObject = requireTag(schematic, "Palette", CompoundTag.class).getValue();
-        if (paletteMaxTag != null && paletteObject.size() != paletteMaxTag.getValue()) {
+        LinIntTag paletteMaxTag = schematicTag.findTag("PaletteMax", LinTagType.intTag());
+        LinCompoundTag paletteObject = schematicTag.getTag("Palette", LinTagType.compoundTag());
+        if (paletteMaxTag != null && paletteObject.value().size() != paletteMaxTag.valueAsInt()) {
             throw new IOException("Block palette size does not match expected size.");
         }
 
@@ -136,11 +121,11 @@ public class SpongeSchematicV1Reader extends NBTSchematicReader {
             paletteObject, fixer
         );
 
-        byte[] blocks = requireTag(schematic, "BlockData", ByteArrayTag.class).getValue();
+        byte[] blocks = schematicTag.getTag("BlockData", LinTagType.byteArrayTag()).value();
 
-        ListTag tileEntities = getTag(schematic, "BlockEntities", ListTag.class);
+        LinListTag<LinCompoundTag> tileEntities = schematicTag.findListTag("BlockEntities", LinTagType.compoundTag());
         if (tileEntities == null) {
-            tileEntities = getTag(schematic, "TileEntities", ListTag.class);
+            tileEntities = schematicTag.findListTag("TileEntities", LinTagType.compoundTag());
         }
 
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
@@ -153,6 +138,5 @@ public class SpongeSchematicV1Reader extends NBTSchematicReader {
 
     @Override
     public void close() throws IOException {
-        inputStream.close();
     }
 }

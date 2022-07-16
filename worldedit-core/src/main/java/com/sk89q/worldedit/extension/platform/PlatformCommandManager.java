@@ -134,8 +134,8 @@ import org.enginehub.piston.suggestion.Suggestion;
 import org.enginehub.piston.util.HelpGenerator;
 import org.enginehub.piston.util.ValueProvider;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -444,13 +444,13 @@ public final class PlatformCommandManager {
             dynamicHandler.setHandler(null);
             COMMAND_LOG.setLevel(Level.OFF);
         } else {
-            File file = new File(config.getWorkingDirectory(), path);
+            Path file = config.getWorkingDirectoryPath().resolve(path).toAbsolutePath();
             COMMAND_LOG.setLevel(Level.ALL);
 
-            LOGGER.info("Logging WorldEdit commands to " + file.getAbsolutePath());
+            LOGGER.info("Logging WorldEdit commands to " + file);
 
             try {
-                dynamicHandler.setHandler(new FileHandler(file.getAbsolutePath(), true));
+                dynamicHandler.setHandler(new FileHandler(file.toString(), true));
             } catch (IOException e) {
                 LOGGER.warn("Could not use command log file " + path + ": " + e.getMessage());
             }

@@ -85,13 +85,19 @@ public interface NbtValued {
      * Otherwise, you probably want {@link #getNbt()}.
      * </p>
      *
+     * <p>
+     * Note: This method may be non-null while {@link #getNbt()} returns {@code null}. Do
+     * <em>NOT</em> rely on this method to determine whether the object has NBT data.
+     * </p>
+     *
      * @return compound tag, or null
-     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
-     *          for details
+     * @apiNote This must be overridden by new subclasses. See
+     *     {@link NonAbstractForCompatibility}
+     *     for details
      */
     @NonAbstractForCompatibility(
         delegateName = "getNbtData",
-        delegateParams = { }
+        delegateParams = {}
     )
     @Nullable
     default LazyReference<LinCompoundTag> getNbtReference() {
@@ -106,8 +112,6 @@ public interface NbtValued {
      * Get the object's NBT data (tile entity data).
      *
      * @return compound tag, or null
-     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
-     *          for details
      */
     @Nullable
     default LinCompoundTag getNbt() {
@@ -119,8 +123,9 @@ public interface NbtValued {
      * Set the object's NBT data (tile entity data).
      *
      * @param nbtData NBT data, or null if no data
-     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
-     *          for details
+     * @apiNote This must be overridden by new subclasses. See
+     *     {@link NonAbstractForCompatibility}
+     *     for details
      */
     @SuppressWarnings("deprecation")
     @NonAbstractForCompatibility(

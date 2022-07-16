@@ -19,11 +19,14 @@
 
 package com.sk89q.worldedit.world.storage;
 
-import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.World;
+import org.enginehub.linbus.stream.LinBinaryIO;
+import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinRootEntry;
 
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -67,7 +70,7 @@ public abstract class LegacyChunkStore extends ChunkStore {
     }
 
     @Override
-    public CompoundTag getChunkTag(BlockVector2 position, World world) throws DataException, IOException {
+    public LinCompoundTag getChunkData(BlockVector2 position, World world) throws DataException, IOException {
         int x = position.getBlockX();
         int z = position.getBlockZ();
 
@@ -76,9 +79,9 @@ public abstract class LegacyChunkStore extends ChunkStore {
         String filename = "c." + Integer.toString(x, 36)
                 + "." + Integer.toString(z, 36) + ".dat";
 
-        return ChunkStoreHelper.readCompoundTag(() ->
-            new GZIPInputStream(getInputStream(folder1, folder2, filename))
-        );
+        try (var chunkStream = new DataInputStream(new GZIPInputStream(getInputStream(folder1, folder2, filename)))) {
+            return LinBinaryIO.readUsing(chunkStream, LinRootEntry::readFrom).toLinTag();
+        }
     }
 
     private static int divisorMod(int a, int n) {

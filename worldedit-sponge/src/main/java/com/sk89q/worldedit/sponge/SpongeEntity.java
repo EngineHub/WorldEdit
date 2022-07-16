@@ -25,8 +25,10 @@ import com.sk89q.worldedit.entity.metadata.EntityProperties;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.sponge.internal.NbtAdapter;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.entity.EntityType;
+import org.spongepowered.api.data.persistence.DataView;
 import org.spongepowered.api.registry.RegistryTypes;
 import org.spongepowered.api.world.server.ServerLocation;
 import org.spongepowered.math.vector.Vector3d;
@@ -55,10 +57,11 @@ class SpongeEntity implements Entity {
         if (entityType == null) {
             return null;
         }
-        return new BaseEntity(entityType,
-            entity.toContainer().getView(Constants.Sponge.UNSAFE_NBT)
-                .map(NbtAdapter::adaptToWorldEdit)
-                .orElse(null)
+        DataView dataView = entity.toContainer().getView(Constants.Sponge.UNSAFE_NBT)
+            .orElse(null);
+        return new BaseEntity(
+            entityType,
+            dataView == null ? null : LazyReference.from(() -> NbtAdapter.adaptToWorldEdit(dataView))
         );
     }
 

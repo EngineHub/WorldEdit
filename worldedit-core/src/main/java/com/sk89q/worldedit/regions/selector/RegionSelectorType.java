@@ -21,6 +21,8 @@ package com.sk89q.worldedit.regions.selector;
 
 import com.sk89q.worldedit.regions.RegionSelector;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * An enum of default region selector types.
  */
@@ -56,8 +58,9 @@ public enum RegionSelectorType {
      */
     public RegionSelector createSelector() {
         try {
-            return getSelectorClass().newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+            return getSelectorClass().getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException
+                 | InvocationTargetException e) {
             throw new RuntimeException("Could not create selector", e);
         }
     }

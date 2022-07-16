@@ -19,11 +19,11 @@
 
 package com.sk89q.worldedit.world.snapshot.experimental;
 
-import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.chunk.Chunk;
 import com.sk89q.worldedit.world.storage.ChunkStoreHelper;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -42,13 +42,13 @@ public interface Snapshot extends Closeable {
      * @param position the position of the chunk
      * @return the tag containing chunk data
      */
-    CompoundTag getChunkTag(BlockVector3 position) throws DataException, IOException;
+    LinCompoundTag getChunkTag(BlockVector3 position) throws DataException, IOException;
 
     /**
      * Get the chunk information for the given position.
      *
      * @see #getChunkTag(BlockVector3)
-     * @see ChunkStoreHelper#getChunk(CompoundTag)
+     * @see ChunkStoreHelper#getChunk(LinCompoundTag)
      */
     default Chunk getChunk(BlockVector3 position) throws DataException, IOException {
         return ChunkStoreHelper.getChunk(getChunkTag(position));

@@ -43,7 +43,7 @@ import java.io.InputStream;
 @Deprecated
 public final class NBTInputStream implements Closeable {
 
-    private final DataInputStream is;
+    final DataInputStream is;
 
     /**
      * Creates a new {@code NBTInputStream}, which will source its data

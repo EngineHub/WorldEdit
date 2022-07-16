@@ -26,7 +26,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Streams;
 import com.google.common.util.concurrent.Futures;
-import com.sk89q.jnbt.NBTConstants;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
@@ -101,6 +100,7 @@ import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
+import org.enginehub.linbus.common.LinTagId;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.lang.ref.WeakReference;
@@ -669,8 +669,8 @@ public class FabricWorld extends AbstractWorld {
         }
 
         // Adapted from net.minecraft.world.entity.EntityType#loadEntityRecursive
-        if (tag.contains("Passengers", NBTConstants.TYPE_LIST)) {
-            net.minecraft.nbt.ListTag nbttaglist = tag.getList("Passengers", NBTConstants.TYPE_COMPOUND);
+        if (tag.contains("Passengers", LinTagId.LIST.id())) {
+            net.minecraft.nbt.ListTag nbttaglist = tag.getList("Passengers", LinTagId.COMPOUND.id());
 
             for (int i = 0; i < nbttaglist.size(); ++i) {
                 removeUnwantedEntityTagsRecursively(nbttaglist.getCompound(i));

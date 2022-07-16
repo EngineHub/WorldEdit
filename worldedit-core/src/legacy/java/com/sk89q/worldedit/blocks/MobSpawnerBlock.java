@@ -114,6 +114,7 @@ public class MobSpawnerBlock extends BaseBlock {
     }
 
     @Override
+    @Deprecated
     public boolean hasNbtData() {
         return true;
     }
@@ -124,6 +125,7 @@ public class MobSpawnerBlock extends BaseBlock {
     }
 
     @Override
+    @Deprecated
     public CompoundTag getNbtData() {
         Map<String, Tag<?, ?>> values = new HashMap<>();
         values.put("Delay", new ShortTag(delay));
@@ -150,6 +152,7 @@ public class MobSpawnerBlock extends BaseBlock {
     }
 
     @Override
+    @Deprecated
     public void setNbtData(CompoundTag rootTag) {
         if (rootTag == null) {
             return;

@@ -77,7 +77,7 @@ public final class ListTag<EV, E extends LinTag<EV>> extends Tag<Object, LinList
 
     @Override
     public List<? extends Tag<EV, E>> getValue() {
-        return linTag.value().stream().map(AdventureNBTConverter::toJnbtTag).toList();
+        return linTag.value().stream().map(LinBusConverter::toJnbtTag).toList();
     }
 
     /**
@@ -122,7 +122,7 @@ public final class ListTag<EV, E extends LinTag<EV>> extends Tag<Object, LinList
         return accessIfExists(
             index,
             () -> null,
-            i -> AdventureNBTConverter.toJnbtTag(this.linTag.get(i))
+            i -> LinBusConverter.toJnbtTag(this.linTag.get(i))
         );
     }
 

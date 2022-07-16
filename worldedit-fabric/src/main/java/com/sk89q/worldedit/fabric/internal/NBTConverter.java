@@ -50,7 +50,7 @@ public final class NBTConverter {
     public static net.minecraft.nbt.Tag toNative(LinTag<?> tag) {
         if (tag instanceof LinIntArrayTag t) {
             return toNative(t);
-        } else if (tag instanceof LinListTag t) {
+        } else if (tag instanceof LinListTag<?> t) {
             return toNative(t);
         } else if (tag instanceof LinLongTag t) {
             return toNative(t);

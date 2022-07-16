@@ -203,6 +203,7 @@ public class EditSession implements Extent, AutoCloseable {
     private final SurvivalModeExtent survivalExtent;
     private @Nullable ChunkBatchingExtent chunkBatchingExtent;
     private final BlockBagExtent blockBagExtent;
+    @SuppressWarnings("deprecation")
     private final MultiStageReorder reorderExtent;
     private final MaskingExtent maskingExtent;
     private final BlockChangeLimiter changeLimiter;
@@ -268,7 +269,9 @@ public class EditSession implements Extent, AutoCloseable {
             this.bypassReorderHistory = traceIfNeeded(new DataValidatorExtent(extent, world));
 
             // This extent can be skipped by calling rawSetBlock()
-            extent = traceIfNeeded(reorderExtent = new MultiStageReorder(extent, false));
+            @SuppressWarnings("deprecation")
+            MultiStageReorder reorder = new MultiStageReorder(extent, false);
+            extent = traceIfNeeded(reorderExtent = reorder);
             extent = traceIfNeeded(chunkBatchingExtent = new ChunkBatchingExtent(extent));
             extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_REORDER);
             if (watchdog != null) {
@@ -290,7 +293,9 @@ public class EditSession implements Extent, AutoCloseable {
             Extent extent = new NullExtent();
             extent = traceIfNeeded(survivalExtent = new SurvivalModeExtent(extent, NullWorld.getInstance()));
             extent = traceIfNeeded(blockBagExtent = new BlockBagExtent(extent, blockBag));
-            extent = traceIfNeeded(reorderExtent = new MultiStageReorder(extent, false));
+            @SuppressWarnings("deprecation")
+            MultiStageReorder reorder = new MultiStageReorder(extent, false);
+            extent = traceIfNeeded(reorderExtent = reorder);
             extent = traceIfNeeded(maskingExtent = new MaskingExtent(extent, Masks.alwaysTrue()));
             extent = traceIfNeeded(changeLimiter = new BlockChangeLimiter(extent, maxBlocks));
             this.bypassReorderHistory = extent;

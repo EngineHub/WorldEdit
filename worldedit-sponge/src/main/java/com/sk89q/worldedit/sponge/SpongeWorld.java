@@ -38,6 +38,7 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.RegenOptions;
 import com.sk89q.worldedit.world.World;
@@ -54,11 +55,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import org.apache.logging.log4j.Logger;
+import org.enginehub.linbus.tree.LinCompoundTag;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.entity.BlockEntityArchetype;
 import org.spongepowered.api.block.entity.BlockEntityType;
+import org.spongepowered.api.data.persistence.DataContainer;
 import org.spongepowered.api.entity.EntityArchetype;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.EntityTypes;
@@ -152,11 +155,13 @@ public final class SpongeWorld extends AbstractWorld {
 
     @Override
     public BaseBlock getFullBlock(BlockVector3 position) {
-        CompoundTag entity = getWorld()
+        DataContainer entity = getWorld()
             .blockEntity(position.getX(), position.getY(), position.getZ())
-            .map(e -> NbtAdapter.adaptToWorldEdit(e.createArchetype().blockEntityData()))
+            .map(e -> e.createArchetype().blockEntityData())
             .orElse(null);
-        return getBlock(position).toBaseBlock(entity);
+        return getBlock(position).toBaseBlock(
+            entity == null ? null : LazyReference.from(() -> NbtAdapter.adaptToWorldEdit(entity))
+        );
     }
 
     @Override
@@ -186,22 +191,24 @@ public final class SpongeWorld extends AbstractWorld {
         if (!didSet) {
             // still update NBT if the block is the same
             if (world.block(position.getX(), position.getY(), position.getZ()) == newState) {
-                didSet = block.toBaseBlock().hasNbtData();
+                didSet = block.toBaseBlock().getNbt() != null;
             }
         }
 
         // Create the TileEntity
-        if (didSet && block instanceof BaseBlock && ((BaseBlock) block).getNbtReference() != null) {
-            BaseBlock baseBlock = (BaseBlock) block;
-            BlockEntityArchetype.builder()
-                .blockEntity((BlockEntityType)
-                    world.engine().registry(RegistryTypes.BLOCK_ENTITY_TYPE)
-                        .value(ResourceKey.resolve(baseBlock.getNbtId()))
-                )
-                .blockEntityData(NbtAdapter.adaptFromWorldEdit(new CompoundTag(baseBlock.getNbt())))
-                .state(newState)
-                .build()
-                .apply(ServerLocation.of(world, position.getX(), position.getY(), position.getZ()));
+        if (didSet && block instanceof BaseBlock baseBlock) {
+            LinCompoundTag nbt = baseBlock.getNbt();
+            if (nbt != null) {
+                BlockEntityArchetype.builder()
+                    .blockEntity((BlockEntityType)
+                        world.engine().registry(RegistryTypes.BLOCK_ENTITY_TYPE)
+                            .value(ResourceKey.resolve(baseBlock.getNbtId()))
+                    )
+                    .blockEntityData(NbtAdapter.adaptFromWorldEdit(nbt))
+                    .state(newState)
+                    .build()
+                    .apply(ServerLocation.of(world, position.getX(), position.getY(), position.getZ()));
+            }
         }
 
         return true;
@@ -466,7 +473,7 @@ public final class SpongeWorld extends AbstractWorld {
         EntityArchetype.Builder builder = EntityArchetype.builder().type(entityType.get());
         var nativeTag = entity.getNbt();
         if (nativeTag != null) {
-            builder.entityData(NbtAdapter.adaptFromWorldEdit(new CompoundTag(nativeTag)));
+            builder.entityData(NbtAdapter.adaptFromWorldEdit(nativeTag));
         }
         return builder.build().apply(SpongeAdapter.adapt(location)).map(SpongeEntity::new).orElse(null);
     }
