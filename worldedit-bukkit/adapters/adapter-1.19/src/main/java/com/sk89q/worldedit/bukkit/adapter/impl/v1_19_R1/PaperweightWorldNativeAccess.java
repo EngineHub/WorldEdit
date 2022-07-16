@@ -26,6 +26,7 @@ import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.world.block.BlockState;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerLevel;
@@ -110,7 +111,7 @@ public class PaperweightWorldNativeAccess implements WorldNativeAccess<LevelChun
             return false;
         }
         Tag nativeTag = adapter.fromNative(tag);
-        PaperweightAdapter.readTagIntoTileEntity((net.minecraft.nbt.CompoundTag) nativeTag, tileEntity);
+        PaperweightAdapter.readTagIntoTileEntity((CompoundTag) nativeTag, tileEntity);
         return true;
     }
 
