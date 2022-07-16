@@ -32,6 +32,7 @@ import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -74,8 +75,8 @@ public class ScriptingCommands {
 
         session.setLastScript(filename);
 
-        File dir = worldEdit.getWorkingDirectoryFile(worldEdit.getConfiguration().scriptsDir);
-        File f = worldEdit.getSafeOpenFile(player, dir, filename, "js", "js");
+        Path dir = worldEdit.getWorkingDirectoryPath(worldEdit.getConfiguration().scriptsDir);
+        File f = worldEdit.getSafeOpenFile(player, dir.toFile(), filename, "js", "js");
 
         worldEdit.runScript(player, f, Stream.concat(Stream.of(filename), args.stream())
             .toArray(String[]::new));

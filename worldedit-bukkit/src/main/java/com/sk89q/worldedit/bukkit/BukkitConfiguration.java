@@ -19,13 +19,15 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import com.google.common.base.Throwables;
 import com.sk89q.util.yaml.YAMLProcessor;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.util.YAMLConfiguration;
 import com.sk89q.worldedit.util.report.Unreported;
 import org.apache.logging.log4j.LogManager;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
@@ -64,14 +66,20 @@ public class BukkitConfiguration extends YAMLConfiguration {
     }
 
     private void migrate(String file, String name) {
-        File fromDir = new File(".", file);
-        File toDir = new File(getWorkingDirectory(), file);
-        if (fromDir.exists() & !toDir.exists()) {
-            if (fromDir.renameTo(toDir)) {
+        Path fromDir = Path.of(file);
+        if (!fromDir.toAbsolutePath().startsWith(Path.of(".").toAbsolutePath())) {
+            throw new IllegalArgumentException("Legacy folder must be below the current working directory");
+        }
+        Path toDir = getWorkingDirectoryPath().resolve(file);
+        if (Files.exists(fromDir) & !Files.exists(toDir)) {
+            try {
+                Files.move(fromDir, toDir);
                 plugin.getLogger().info("Migrated " + name + " folder '" + file
                     + "' from server root to plugin data folder.");
-            } else {
-                plugin.getLogger().warning("Error while migrating " + name + " folder!");
+            } catch (IOException e) {
+                plugin.getLogger().warning(() ->
+                    "Error while migrating " + name + " folder! " + Throwables.getStackTraceAsString(e)
+                );
             }
         }
     }

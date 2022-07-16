@@ -96,6 +96,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
         return player.getName();
     }
 
+    @SuppressWarnings("deprecation") // Paper's deprecation, we need to support Spigot still
     @Override
     public String getDisplayName() {
         return player.getDisplayName();
@@ -226,6 +227,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
         return player.teleport(BukkitAdapter.adapt(location));
     }
 
+    @SuppressWarnings("deprecation") // Paper's deprecation, we need to support Spigot still
     @Override
     public Locale getLocale() {
         return TextUtils.getLocaleByMinecraftTag(player.getLocale());

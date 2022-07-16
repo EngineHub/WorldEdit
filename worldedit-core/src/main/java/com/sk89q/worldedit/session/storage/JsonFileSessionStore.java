@@ -26,16 +26,14 @@ import com.google.gson.JsonParseException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.util.gson.GsonUtil;
-import com.sk89q.worldedit.util.io.Closer;
 import org.apache.logging.log4j.Logger;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -49,20 +47,31 @@ public class JsonFileSessionStore implements SessionStore {
 
     private static final Logger LOGGER = LogManagerCompat.getLogger();
     private final Gson gson;
-    private final File dir;
+    private final Path dir;
+
+    /**
+     * Create a new session store.
+     *
+     * @param dir the directory
+     * @deprecated Use {@link #JsonFileSessionStore(Path)}
+     */
+    @Deprecated
+    public JsonFileSessionStore(File dir) {
+        this(dir.toPath());
+    }
 
     /**
      * Create a new session store.
      *
      * @param dir the directory
      */
-    public JsonFileSessionStore(File dir) {
+    public JsonFileSessionStore(Path dir) {
         checkNotNull(dir);
 
-        if (!dir.isDirectory()) {
-            if (!dir.mkdirs()) {
-                LOGGER.warn("Failed to create directory '" + dir.getPath() + "' for sessions");
-            }
+        try {
+            Files.createDirectories(dir);
+        } catch (IOException e) {
+            LOGGER.warn("Failed to create directory '" + dir + "' for sessions", e);
         }
 
         this.dir = dir;
@@ -77,21 +86,19 @@ public class JsonFileSessionStore implements SessionStore {
      * @param id the ID
      * @return the file
      */
-    private File getPath(UUID id) {
+    private Path getPath(UUID id) {
         checkNotNull(id);
-        return new File(dir, id + ".json");
+        return dir.resolve(id + ".json");
     }
 
     @Override
     public LocalSession load(UUID id) throws IOException {
-        File file = getPath(id);
-        try (Closer closer = Closer.create()) {
-            FileReader fr = closer.register(new FileReader(file));
-            BufferedReader br = closer.register(new BufferedReader(fr));
-            LocalSession session = gson.fromJson(br, LocalSession.class);
+        Path file = getPath(id);
+        try (var reader = Files.newBufferedReader(file)) {
+            LocalSession session = gson.fromJson(reader, LocalSession.class);
             if (session == null) {
                 LOGGER.warn("Loaded a null session from {}, creating new session", file);
-                if (!file.delete()) {
+                if (!Files.deleteIfExists(file)) {
                     LOGGER.warn("Failed to delete corrupted session {}", file);
                 }
                 session = new LocalSession();
@@ -107,29 +114,26 @@ public class JsonFileSessionStore implements SessionStore {
     @Override
     public void save(UUID id, LocalSession session) throws IOException {
         checkNotNull(session);
-        File finalFile = getPath(id);
-        File tempFile = new File(finalFile.getParentFile(), finalFile.getName() + ".tmp");
+        Path finalFile = getPath(id);
+        Path tempFile = finalFile.getParent().resolve(finalFile.getFileName() + ".tmp");
 
-        try (Closer closer = Closer.create()) {
-            FileWriter fr = closer.register(new FileWriter(tempFile));
-            BufferedWriter bw = closer.register(new BufferedWriter(fr));
-            gson.toJson(session, bw);
+        try (var writer = Files.newBufferedWriter(tempFile)) {
+            gson.toJson(session, writer);
         } catch (JsonIOException e) {
             throw new IOException(e);
         }
 
-        if (finalFile.exists()) {
-            if (!finalFile.delete()) {
-                LOGGER.warn("Failed to delete " + finalFile.getPath() + " so the .tmp file can replace it");
-            }
-        }
-
-        if (tempFile.length() == 0) {
+        if (Files.size(tempFile) == 0) {
             throw new IllegalStateException("Gson wrote zero bytes");
         }
 
-        if (!tempFile.renameTo(finalFile)) {
-            LOGGER.warn("Failed to rename temporary session file to " + finalFile.getPath());
+        try {
+            Files.move(
+                tempFile, finalFile,
+                StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING
+            );
+        } catch (IOException e) {
+            LOGGER.warn("Failed to rename temporary session file to " + finalFile.toAbsolutePath(), e);
         }
     }
 
