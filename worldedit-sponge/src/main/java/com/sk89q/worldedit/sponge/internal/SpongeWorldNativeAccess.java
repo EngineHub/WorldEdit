@@ -101,7 +101,7 @@ public class SpongeWorldNativeAccess implements WorldNativeAccess<LevelChunk, Bl
 
     @Override
     public boolean updateTileEntity(BlockPos position, LinCompoundTag tag) {
-        CompoundTag nativeTag = NbtAdapter.adaptNMSToWorldEdit(new com.sk89q.jnbt.CompoundTag(tag));
+        CompoundTag nativeTag = NbtAdapter.adaptNMSToWorldEdit(tag);
         BlockEntity tileEntity = getWorld().getChunk(position).getBlockEntity(position);
         if (tileEntity == null) {
             return false;

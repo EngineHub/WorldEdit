@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.bukkit.adapter.impl.v1_19_R1;
 
-import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
@@ -110,7 +109,7 @@ public class PaperweightWorldNativeAccess implements WorldNativeAccess<LevelChun
         if (tileEntity == null) {
             return false;
         }
-        Tag nativeTag = adapter.fromNative(new CompoundTag(tag));
+        Tag nativeTag = adapter.fromNative(tag);
         PaperweightAdapter.readTagIntoTileEntity((net.minecraft.nbt.CompoundTag) nativeTag, tileEntity);
         return true;
     }

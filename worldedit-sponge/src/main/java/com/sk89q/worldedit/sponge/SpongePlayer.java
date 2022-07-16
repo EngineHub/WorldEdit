@@ -40,6 +40,7 @@ import com.sk89q.worldedit.world.gamemode.GameModes;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.enginehub.linbus.tree.LinCompoundTag;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.Keys;
@@ -231,9 +232,9 @@ public class SpongePlayer extends AbstractPlayerActor {
             player.resetBlockChange(pos.getX(), pos.getY(), pos.getZ());
         } else {
             player.sendBlockChange(pos.getX(), pos.getY(), pos.getZ(), SpongeAdapter.adapt(block.toImmutableState()));
-            if (block instanceof BaseBlock && block.getBlockType().equals(com.sk89q.worldedit.world.block.BlockTypes.STRUCTURE_BLOCK)) {
-                final BaseBlock baseBlock = (BaseBlock) block;
-                final CompoundTag nbtData = baseBlock.getNbtData();
+            if (block instanceof final BaseBlock baseBlock
+                && block.getBlockType().equals(com.sk89q.worldedit.world.block.BlockTypes.STRUCTURE_BLOCK)) {
+                final LinCompoundTag nbtData = baseBlock.getNbt();
                 if (nbtData != null) {
                     net.minecraft.server.level.ServerPlayer mcPlayer =
                         ((net.minecraft.server.level.ServerPlayer) player);

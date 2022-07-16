@@ -20,11 +20,14 @@
 package com.sk89q.worldedit.world.storage;
 
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.internal.util.DeprecationUtil;
+import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.chunk.Chunk;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -81,8 +84,31 @@ public abstract class ChunkStore implements Closeable {
      * @return tag
      * @throws DataException thrown on data error
      * @throws IOException thrown on I/O error
+     * @deprecated Use {@link #getChunkData(BlockVector2, World)}
      */
-    public abstract CompoundTag getChunkTag(BlockVector2 position, World world) throws DataException, IOException;
+    @Deprecated
+    public CompoundTag getChunkTag(BlockVector2 position, World world) throws DataException, IOException {
+        return new CompoundTag(getChunkData(position, world));
+    }
+
+    /**
+     * Get the tag for a chunk.
+     *
+     * @param position the position of the chunk
+     * @return tag
+     * @throws DataException thrown on data error
+     * @throws IOException thrown on I/O error
+     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
+     *          for details
+     */
+    @NonAbstractForCompatibility(
+        delegateName = "getChunkTag",
+        delegateParams = {BlockVector2.class, World.class}
+    )
+    public LinCompoundTag getChunkData(BlockVector2 position, World world) throws DataException, IOException {
+        DeprecationUtil.checkDelegatingOverride(getClass());
+        return getChunkTag(position, world).toLinTag();
+    }
 
     /**
      * Get a chunk at a location.
@@ -94,7 +120,7 @@ public abstract class ChunkStore implements Closeable {
      * @throws IOException thrown on I/O error
      */
     public Chunk getChunk(BlockVector2 position, World world) throws DataException, IOException {
-        CompoundTag rootTag = getChunkTag(position, world);
+        LinCompoundTag rootTag = getChunkData(position, world);
         return ChunkStoreHelper.getChunk(rootTag);
     }
 

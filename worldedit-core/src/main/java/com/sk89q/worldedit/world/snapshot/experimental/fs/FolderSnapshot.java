@@ -19,19 +19,21 @@
 
 package com.sk89q.worldedit.world.snapshot.experimental.fs;
 
-import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
 import com.sk89q.worldedit.world.snapshot.experimental.SnapshotInfo;
-import com.sk89q.worldedit.world.storage.ChunkStoreHelper;
 import com.sk89q.worldedit.world.storage.LegacyChunkStore;
 import com.sk89q.worldedit.world.storage.McRegionChunkStore;
 import com.sk89q.worldedit.world.storage.McRegionReader;
 import com.sk89q.worldedit.world.storage.MissingChunkException;
+import org.enginehub.linbus.stream.LinBinaryIO;
+import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinRootEntry;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -129,7 +131,7 @@ public class FolderSnapshot implements Snapshot {
     }
 
     @Override
-    public CompoundTag getChunkTag(BlockVector3 position) throws DataException, IOException {
+    public LinCompoundTag getChunkTag(BlockVector3 position) throws DataException, IOException {
         BlockVector2 pos = position.toBlockVector2();
         Optional<Path> regFolder = getRegionFolder();
         if (!regFolder.isPresent()) {
@@ -137,9 +139,9 @@ public class FolderSnapshot implements Snapshot {
             if (!Files.exists(chunkFile)) {
                 throw new MissingChunkException();
             }
-            return ChunkStoreHelper.readCompoundTag(() ->
-                new GZIPInputStream(Files.newInputStream(chunkFile))
-            );
+            try (var chunkStream = new DataInputStream(new GZIPInputStream(Files.newInputStream(chunkFile)))) {
+                return LinBinaryIO.readUsing(chunkStream, LinRootEntry::readFrom).value();
+            }
         }
         Path regionFile = regFolder.get().resolve(McRegionChunkStore.getFilename(pos));
         if (!Files.exists(regionFile)) {
@@ -153,7 +155,9 @@ public class FolderSnapshot implements Snapshot {
         }
         try (InputStream stream = Files.newInputStream(regionFile)) {
             McRegionReader regionReader = new McRegionReader(stream);
-            return ChunkStoreHelper.readCompoundTag(() -> regionReader.getChunkInputStream(pos));
+            try (var chunkStream = new DataInputStream(regionReader.getChunkInputStream(pos))) {
+                return LinBinaryIO.readUsing(chunkStream, LinRootEntry::readFrom).value();
+            }
         }
     }
 

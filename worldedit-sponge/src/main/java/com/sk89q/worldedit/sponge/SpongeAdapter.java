@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.sponge;
 
-import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -28,11 +27,13 @@ import com.sk89q.worldedit.sponge.internal.NbtAdapter;
 import com.sk89q.worldedit.sponge.internal.SpongeTransmogrifier;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import net.minecraft.world.level.block.Block;
+import org.enginehub.linbus.tree.LinCompoundTag;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.persistence.DataContainer;
@@ -201,12 +202,11 @@ public class SpongeAdapter {
     }
 
     public static BaseItemStack adapt(ItemStack itemStack) {
-        CompoundTag tag = itemStack.toContainer().getView(Constants.Sponge.UNSAFE_NBT)
-            .map(NbtAdapter::adaptToWorldEdit)
+        DataView tag = itemStack.toContainer().getView(Constants.Sponge.UNSAFE_NBT)
             .orElse(null);
         return new BaseItemStack(
             ItemTypes.get(itemStack.type().key(RegistryTypes.ITEM_TYPE).asString()),
-            tag,
+            tag == null ? null : LazyReference.from(() -> NbtAdapter.adaptToWorldEdit(tag)),
             itemStack.quantity()
         );
     }
@@ -217,10 +217,11 @@ public class SpongeAdapter {
                 .value(ResourceKey.resolve(itemStack.getType().getId())))
             .quantity(itemStack.getAmount())
             .build();
-        if (itemStack.getNbtData() != null) {
+        LinCompoundTag nbt = itemStack.getNbt();
+        if (nbt != null) {
             stack.setRawData(
                 DataContainer.createNew(DataView.SafetyMode.NO_DATA_CLONED)
-                    .set(Constants.Sponge.UNSAFE_NBT, NbtAdapter.adaptFromWorldEdit(itemStack.getNbtData()))
+                    .set(Constants.Sponge.UNSAFE_NBT, NbtAdapter.adaptFromWorldEdit(nbt))
             );
         }
         return stack;

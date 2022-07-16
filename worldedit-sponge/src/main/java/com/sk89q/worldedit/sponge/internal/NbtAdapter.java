@@ -19,29 +19,38 @@
 
 package com.sk89q.worldedit.sponge.internal;
 
-import com.sk89q.jnbt.ByteArrayTag;
-import com.sk89q.jnbt.ByteTag;
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.CompoundTagBuilder;
-import com.sk89q.jnbt.DoubleTag;
-import com.sk89q.jnbt.EndTag;
-import com.sk89q.jnbt.FloatTag;
-import com.sk89q.jnbt.IntArrayTag;
-import com.sk89q.jnbt.IntTag;
-import com.sk89q.jnbt.ListTag;
-import com.sk89q.jnbt.ListTagBuilder;
-import com.sk89q.jnbt.LongArrayTag;
-import com.sk89q.jnbt.LongTag;
-import com.sk89q.jnbt.ShortTag;
-import com.sk89q.jnbt.StringTag;
-import com.sk89q.jnbt.Tag;
+import net.minecraft.nbt.ByteArrayTag;
+import net.minecraft.nbt.ByteTag;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.DoubleTag;
+import net.minecraft.nbt.FloatTag;
+import net.minecraft.nbt.IntArrayTag;
+import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.LongArrayTag;
+import net.minecraft.nbt.LongTag;
+import net.minecraft.nbt.ShortTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
+import org.enginehub.linbus.tree.LinByteArrayTag;
+import org.enginehub.linbus.tree.LinByteTag;
+import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinDoubleTag;
+import org.enginehub.linbus.tree.LinFloatTag;
+import org.enginehub.linbus.tree.LinIntArrayTag;
+import org.enginehub.linbus.tree.LinIntTag;
+import org.enginehub.linbus.tree.LinListTag;
+import org.enginehub.linbus.tree.LinLongArrayTag;
+import org.enginehub.linbus.tree.LinLongTag;
+import org.enginehub.linbus.tree.LinShortTag;
+import org.enginehub.linbus.tree.LinStringTag;
+import org.enginehub.linbus.tree.LinTag;
+import org.enginehub.linbus.tree.LinTagType;
 import org.spongepowered.api.data.persistence.DataContainer;
 import org.spongepowered.api.data.persistence.DataQuery;
 import org.spongepowered.api.data.persistence.DataSerializable;
 import org.spongepowered.api.data.persistence.DataView;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -53,8 +62,8 @@ public class NbtAdapter {
      */
     private static final String BREAKING_SEPARATOR = "if you see this, something is wrong";
 
-    public static CompoundTag adaptToWorldEdit(DataView view) {
-        CompoundTagBuilder builder = CompoundTagBuilder.create();
+    public static LinCompoundTag adaptToWorldEdit(DataView view) {
+        LinCompoundTag.Builder builder = LinCompoundTag.builder();
         for (Map.Entry<DataQuery, Object> entry : view.values(false).entrySet()) {
             builder.put(
                 entry.getKey().asString(BREAKING_SEPARATOR),
@@ -64,81 +73,80 @@ public class NbtAdapter {
         return builder.build();
     }
 
-    private static Tag adaptUnknownToWorldEdit(Object object) {
+    private static LinTag<?> adaptUnknownToWorldEdit(Object object) {
         if (object instanceof DataView) {
             return adaptToWorldEdit((DataView) object);
         }
         if (object instanceof Boolean) {
-            return new ByteTag((byte) ((Boolean) object ? 1 : 0));
+            return LinByteTag.of((byte) ((Boolean) object ? 1 : 0));
         }
         if (object instanceof Byte) {
-            return new ByteTag((Byte) object);
+            return LinByteTag.of((Byte) object);
         }
         if (object instanceof Short) {
-            return new ShortTag(((Short) object));
+            return LinShortTag.of(((Short) object));
         }
         if (object instanceof Integer) {
-            return new IntTag(((Integer) object));
+            return LinIntTag.of(((Integer) object));
         }
         if (object instanceof Long) {
-            return new LongTag(((Long) object));
+            return LinLongTag.of(((Long) object));
         }
         if (object instanceof Float) {
-            return new FloatTag(((Float) object));
+            return LinFloatTag.of(((Float) object));
         }
         if (object instanceof Double) {
-            return new DoubleTag(((Double) object));
+            return LinDoubleTag.of(((Double) object));
         }
         if (object instanceof String) {
-            return new StringTag((String) object);
+            return LinStringTag.of((String) object);
         }
         if (object instanceof byte[]) {
-            return new ByteArrayTag(((byte[]) object));
+            return LinByteArrayTag.of(((byte[]) object));
         }
-        if (object instanceof Byte[]) {
-            Byte[] array = (Byte[]) object;
+        if (object instanceof Byte[] array) {
             byte[] copy = new byte[array.length];
             for (int i = 0; i < copy.length; i++) {
                 copy[i] = array[i];
             }
-            return new ByteArrayTag(copy);
+            return LinByteArrayTag.of(copy);
         }
         if (object instanceof int[]) {
-            return new IntArrayTag(((int[]) object));
+            return LinIntArrayTag.of(((int[]) object));
         }
-        if (object instanceof Integer[]) {
-            Integer[] array = (Integer[]) object;
+        if (object instanceof Integer[] array) {
             int[] copy = new int[array.length];
             for (int i = 0; i < copy.length; i++) {
                 copy[i] = array[i];
             }
-            return new IntArrayTag(copy);
+            return LinIntArrayTag.of(copy);
         }
         if (object instanceof long[]) {
-            return new LongArrayTag(((long[]) object));
+            return LinLongArrayTag.of(((long[]) object));
         }
-        if (object instanceof Long[]) {
-            Long[] array = (Long[]) object;
+        if (object instanceof Long[] array) {
             long[] copy = new long[array.length];
             for (int i = 0; i < copy.length; i++) {
                 copy[i] = array[i];
             }
-            return new LongArrayTag(copy);
+            return LinLongArrayTag.of(copy);
         }
-        if (object instanceof List) {
-            List<?> objects = (List<?>) object;
+        if (object instanceof List<?> objects) {
             if (objects.isEmpty()) {
-                return new ListTag(EndTag.class, Collections.emptyList());
+                return LinListTag.empty(LinTagType.endTag());
             }
-            Tag[] entries = new Tag[objects.size()];
-            for (int i = 0; i < objects.size(); i++) {
+            LinTag<?> first = adaptUnknownToWorldEdit(objects.get(0));
+            @SuppressWarnings("unchecked")
+            LinListTag.Builder<LinTag<?>> builder = LinListTag.builder((LinTagType<LinTag<?>>) first.type());
+            builder.add(first);
+            for (int i = 1; i < objects.size(); i++) {
                 Object value = objects.get(i);
-                entries[i] = adaptUnknownToWorldEdit(value);
+                builder.add(adaptUnknownToWorldEdit(value));
             }
-            return ListTagBuilder.createWith(entries).build();
+            return builder.build();
         }
         if (object instanceof Map) {
-            CompoundTagBuilder builder = CompoundTagBuilder.create();
+            LinCompoundTag.Builder builder = LinCompoundTag.builder();
             for (Map.Entry<?, ?> entry : ((Map<?, ?>) object).entrySet()) {
                 String key = entry.getKey() instanceof DataQuery
                     ? ((DataQuery) entry.getKey()).asString(BREAKING_SEPARATOR)
@@ -153,127 +161,112 @@ public class NbtAdapter {
         throw new UnsupportedOperationException("Unable to translate into NBT: " + object.getClass());
     }
 
-    public static DataContainer adaptFromWorldEdit(CompoundTag tag) {
+    public static DataContainer adaptFromWorldEdit(LinCompoundTag tag) {
         // copy to container, no cloning used because it's unlikely to leak
         // and it's cheaper this way
         DataContainer container = DataContainer.createNew(DataView.SafetyMode.NO_DATA_CLONED);
-        for (Map.Entry<String, Tag<?, ?>> entry : tag.getValue().entrySet()) {
+        for (var entry : tag.value().entrySet()) {
             container.set(DataQuery.of(entry.getKey()), adaptTagFromWorldEdit(entry.getValue()));
         }
         return container;
     }
 
-    private static Object adaptTagFromWorldEdit(Tag<?, ?> value) {
-        if (value instanceof ListTag<?, ?>) {
-            return ((ListTag<?, ?>) value).getValue().stream()
+    private static Object adaptTagFromWorldEdit(LinTag<?> value) {
+        if (value instanceof LinListTag<?> listTag) {
+            return listTag.value().stream()
                 .map(NbtAdapter::adaptTagFromWorldEdit)
                 .collect(Collectors.toList());
         }
-        if (value instanceof CompoundTag) {
-            return adaptFromWorldEdit(((CompoundTag) value));
+        if (value instanceof LinCompoundTag compoundTag) {
+            return adaptFromWorldEdit(compoundTag);
         }
         // everything else is raw JDK types, so we can use it directly
-        return value.getValue();
+        return value.value();
     }
 
-    public static net.minecraft.nbt.Tag adaptNMSToWorldEdit(Tag tag) {
-        if (tag instanceof IntArrayTag) {
-            return adaptNMSToWorldEdit((IntArrayTag) tag);
-
-        } else if (tag instanceof ListTag) {
-            return adaptNMSToWorldEdit((ListTag) tag);
-
-        } else if (tag instanceof LongTag) {
-            return adaptNMSToWorldEdit((LongTag) tag);
-
-        } else if (tag instanceof LongArrayTag) {
-            return adaptNMSToWorldEdit((LongArrayTag) tag);
-
-        } else if (tag instanceof StringTag) {
-            return adaptNMSToWorldEdit((StringTag) tag);
-
-        } else if (tag instanceof IntTag) {
-            return adaptNMSToWorldEdit((IntTag) tag);
-
-        } else if (tag instanceof ByteTag) {
-            return adaptNMSToWorldEdit((ByteTag) tag);
-
-        } else if (tag instanceof ByteArrayTag) {
-            return adaptNMSToWorldEdit((ByteArrayTag) tag);
-
-        } else if (tag instanceof CompoundTag) {
-            return adaptNMSToWorldEdit((CompoundTag) tag);
-
-        } else if (tag instanceof FloatTag) {
-            return adaptNMSToWorldEdit((FloatTag) tag);
-
-        } else if (tag instanceof ShortTag) {
-            return adaptNMSToWorldEdit((ShortTag) tag);
-
-        } else if (tag instanceof DoubleTag) {
-            return adaptNMSToWorldEdit((DoubleTag) tag);
+    public static Tag adaptNMSToWorldEdit(LinTag<?> tag) {
+        if (tag instanceof LinIntArrayTag intArrayTag) {
+            return adaptNMSToWorldEdit(intArrayTag);
+        } else if (tag instanceof LinListTag<?> listTag) {
+            return adaptNMSToWorldEdit(listTag);
+        } else if (tag instanceof LinLongTag longTag) {
+            return adaptNMSToWorldEdit(longTag);
+        } else if (tag instanceof LinLongArrayTag longArrayTag) {
+            return adaptNMSToWorldEdit(longArrayTag);
+        } else if (tag instanceof LinStringTag stringTag) {
+            return adaptNMSToWorldEdit(stringTag);
+        } else if (tag instanceof LinIntTag intTag) {
+            return adaptNMSToWorldEdit(intTag);
+        } else if (tag instanceof LinByteTag byteTag) {
+            return adaptNMSToWorldEdit(byteTag);
+        } else if (tag instanceof LinByteArrayTag byteArrayTag) {
+            return adaptNMSToWorldEdit(byteArrayTag);
+        } else if (tag instanceof LinCompoundTag compoundTag) {
+            return adaptNMSToWorldEdit(compoundTag);
+        } else if (tag instanceof LinFloatTag floatTag) {
+            return adaptNMSToWorldEdit(floatTag);
+        } else if (tag instanceof LinShortTag shortTag) {
+            return adaptNMSToWorldEdit(shortTag);
+        } else if (tag instanceof LinDoubleTag doubleTag) {
+            return adaptNMSToWorldEdit(doubleTag);
         } else {
             throw new IllegalArgumentException("Can't convert tag of type " + tag.getClass().getCanonicalName());
         }
     }
 
-    public static net.minecraft.nbt.IntArrayTag adaptNMSToWorldEdit(IntArrayTag tag) {
-        int[] value = tag.getValue();
-        return new net.minecraft.nbt.IntArrayTag(Arrays.copyOf(value, value.length));
+    public static IntArrayTag adaptNMSToWorldEdit(LinIntArrayTag tag) {
+        return new IntArrayTag(tag.value());
     }
 
-    public static net.minecraft.nbt.ListTag adaptNMSToWorldEdit(ListTag<?, ?> tag) {
-        net.minecraft.nbt.ListTag list = new net.minecraft.nbt.ListTag();
-        for (Tag<?, ?> child : tag.getValue()) {
-            if (child instanceof EndTag) {
-                continue;
-            }
+    public static ListTag adaptNMSToWorldEdit(LinListTag<?> tag) {
+        ListTag list = new ListTag();
+        for (LinTag<?> child : tag.value()) {
             list.add(adaptNMSToWorldEdit(child));
         }
         return list;
     }
 
-    public static net.minecraft.nbt.LongTag adaptNMSToWorldEdit(LongTag tag) {
-        return net.minecraft.nbt.LongTag.valueOf(tag.getValue());
+    public static LongTag adaptNMSToWorldEdit(LinLongTag tag) {
+        return LongTag.valueOf(tag.valueAsLong());
     }
 
-    public static net.minecraft.nbt.LongArrayTag adaptNMSToWorldEdit(LongArrayTag tag) {
-        return new net.minecraft.nbt.LongArrayTag(tag.getValue().clone());
+    public static LongArrayTag adaptNMSToWorldEdit(LinLongArrayTag tag) {
+        return new LongArrayTag(tag.value());
     }
 
-    public static net.minecraft.nbt.StringTag adaptNMSToWorldEdit(StringTag tag) {
-        return net.minecraft.nbt.StringTag.valueOf(tag.getValue());
+    public static StringTag adaptNMSToWorldEdit(LinStringTag tag) {
+        return StringTag.valueOf(tag.value());
     }
 
-    public static net.minecraft.nbt.IntTag adaptNMSToWorldEdit(IntTag tag) {
-        return net.minecraft.nbt.IntTag.valueOf(tag.getValue());
+    public static IntTag adaptNMSToWorldEdit(LinIntTag tag) {
+        return IntTag.valueOf(tag.valueAsInt());
     }
 
-    public static net.minecraft.nbt.ByteTag adaptNMSToWorldEdit(ByteTag tag) {
-        return net.minecraft.nbt.ByteTag.valueOf(tag.getValue());
+    public static ByteTag adaptNMSToWorldEdit(LinByteTag tag) {
+        return ByteTag.valueOf(tag.valueAsByte());
     }
 
-    public static net.minecraft.nbt.ByteArrayTag adaptNMSToWorldEdit(ByteArrayTag tag) {
-        return new net.minecraft.nbt.ByteArrayTag(tag.getValue().clone());
+    public static ByteArrayTag adaptNMSToWorldEdit(LinByteArrayTag tag) {
+        return new ByteArrayTag(tag.value());
     }
 
-    public static net.minecraft.nbt.CompoundTag adaptNMSToWorldEdit(CompoundTag tag) {
-        net.minecraft.nbt.CompoundTag compound = new net.minecraft.nbt.CompoundTag();
-        for (Map.Entry<String, Tag<?, ?>> child : tag.getValue().entrySet()) {
+    public static CompoundTag adaptNMSToWorldEdit(LinCompoundTag tag) {
+        CompoundTag compound = new CompoundTag();
+        for (var child : tag.value().entrySet()) {
             compound.put(child.getKey(), adaptNMSToWorldEdit(child.getValue()));
         }
         return compound;
     }
 
-    public static net.minecraft.nbt.FloatTag adaptNMSToWorldEdit(FloatTag tag) {
-        return net.minecraft.nbt.FloatTag.valueOf(tag.getValue());
+    public static FloatTag adaptNMSToWorldEdit(LinFloatTag tag) {
+        return FloatTag.valueOf(tag.valueAsFloat());
     }
 
-    public static net.minecraft.nbt.ShortTag adaptNMSToWorldEdit(ShortTag tag) {
-        return net.minecraft.nbt.ShortTag.valueOf(tag.getValue());
+    public static ShortTag adaptNMSToWorldEdit(LinShortTag tag) {
+        return ShortTag.valueOf(tag.valueAsShort());
     }
 
-    public static net.minecraft.nbt.DoubleTag adaptNMSToWorldEdit(DoubleTag tag) {
-        return net.minecraft.nbt.DoubleTag.valueOf(tag.getValue());
+    public static DoubleTag adaptNMSToWorldEdit(LinDoubleTag tag) {
+        return DoubleTag.valueOf(tag.valueAsDouble());
     }
 }

@@ -21,15 +21,16 @@ package com.sk89q.worldedit.world.snapshot.experimental.fs;
 
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Resources;
-import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.io.file.ArchiveNioSupport;
 import com.sk89q.worldedit.util.io.file.ArchiveNioSupports;
 import com.sk89q.worldedit.util.io.file.ZipArchiveNioSupport;
 import com.sk89q.worldedit.world.DataException;
-import com.sk89q.worldedit.world.storage.ChunkStoreHelper;
 import com.sk89q.worldedit.world.storage.McRegionReader;
+import org.enginehub.linbus.stream.LinBinaryIO;
+import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinRootEntry;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -39,6 +40,7 @@ import org.junit.jupiter.api.TestFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -65,7 +67,7 @@ class FileSystemSnapshotDatabaseTest {
 
     static byte[] REGION_DATA;
     static byte[] CHUNK_DATA;
-    static CompoundTag CHUNK_TAG;
+    static LinCompoundTag CHUNK_TAG;
     static BlockVector3 CHUNK_POS;
     static final String WORLD_ALPHA = "World Alpha";
     static final String WORLD_BETA = "World Beta";
@@ -99,9 +101,9 @@ class FileSystemSnapshotDatabaseTest {
                 ByteStreams.copy(in, gzOut);
             }
             CHUNK_DATA = cap.toByteArray();
-            CHUNK_TAG = ChunkStoreHelper.readCompoundTag(() -> new GZIPInputStream(
-                new ByteArrayInputStream(CHUNK_DATA)
-            ));
+            try (var chunkStream = new DataInputStream(new GZIPInputStream(new ByteArrayInputStream(CHUNK_DATA)))) {
+                CHUNK_TAG = LinBinaryIO.readUsing(chunkStream, LinRootEntry::readFrom).value();
+            }
             CHUNK_POS = chunkPos.toBlockVector3();
         } finally {
             reader.close();
