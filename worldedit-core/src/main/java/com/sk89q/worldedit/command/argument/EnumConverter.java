@@ -38,6 +38,7 @@ import javax.annotation.Nullable;
 
 public final class EnumConverter {
 
+    @SuppressWarnings("deprecation")
     public static void register(CommandManager commandManager) {
         commandManager.registerConverter(Key.of(TreeGenerator.TreeType.class),
             full(TreeGenerator.TreeType.class,

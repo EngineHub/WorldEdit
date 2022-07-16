@@ -108,6 +108,7 @@ public class LocalSession {
     private transient Mask mask;
     private transient ZoneId timezone = ZoneId.systemDefault();
     private transient BlockVector3 cuiTemporaryBlock;
+    @SuppressWarnings("deprecation")
     private transient EditSession.ReorderMode reorderMode = EditSession.ReorderMode.FAST;
     private transient List<Countable<BlockState>> lastDistribution;
     private transient World worldOverride;
@@ -1068,6 +1069,7 @@ public class LocalSession {
         return editSession;
     }
 
+    @SuppressWarnings("deprecation")
     private void prepareEditingExtents(EditSession editSession, Actor actor) {
         editSession.setSideEffectApplier(sideEffectSet);
         editSession.setReorderMode(reorderMode);
