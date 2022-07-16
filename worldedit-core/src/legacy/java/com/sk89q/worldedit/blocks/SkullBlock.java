@@ -85,6 +85,7 @@ public class SkullBlock extends BaseBlock {
     }
 
     @Override
+    @Deprecated
     public boolean hasNbtData() {
         return true;
     }
@@ -95,6 +96,7 @@ public class SkullBlock extends BaseBlock {
     }
 
     @Override
+    @Deprecated
     public CompoundTag getNbtData() {
         Map<String, Tag<?, ?>> values = new HashMap<>();
         Map<String, Tag<?, ?>> inner = new HashMap<>();
@@ -104,6 +106,7 @@ public class SkullBlock extends BaseBlock {
     }
 
     @Override
+    @Deprecated
     public void setNbtData(CompoundTag rootTag) {
         if (rootTag == null) {
             return;

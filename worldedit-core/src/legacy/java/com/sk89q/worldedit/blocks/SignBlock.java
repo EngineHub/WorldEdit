@@ -86,6 +86,7 @@ public class SignBlock extends BaseBlock {
     }
 
     @Override
+    @Deprecated
     public boolean hasNbtData() {
         return true;
     }
@@ -96,6 +97,7 @@ public class SignBlock extends BaseBlock {
     }
 
     @Override
+    @Deprecated
     public CompoundTag getNbtData() {
         Map<String, Tag<?, ?>> values = new HashMap<>();
         values.put("Text1", new StringTag(text[0]));
@@ -106,6 +108,7 @@ public class SignBlock extends BaseBlock {
     }
 
     @Override
+    @Deprecated
     public void setNbtData(CompoundTag rootTag) {
         if (rootTag == null) {
             return;

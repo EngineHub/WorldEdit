@@ -384,11 +384,14 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
             text[1] = blockAndExtraData.length > 2 ? blockAndExtraData[2] : "";
             text[2] = blockAndExtraData.length > 3 ? blockAndExtraData[3] : "";
             text[3] = blockAndExtraData.length > 4 ? blockAndExtraData[4] : "";
-            return new SignBlock(state, text);
+            @SuppressWarnings("deprecation")
+            SignBlock signBlock = new SignBlock(state, text);
+            return signBlock;
         } else if (blockType == BlockTypes.SPAWNER) {
             // Allow setting mob spawn type
+            String mobName;
             if (blockAndExtraData.length > 1) {
-                String mobName = blockAndExtraData[1];
+                mobName = blockAndExtraData[1];
                 EntityType ent = EntityTypes.get(mobName.toLowerCase(Locale.ROOT));
                 if (ent == null) {
                     throw new NoMatchException(TranslatableComponent.of("worldedit.error.unknown-entity", TextComponent.of(mobName)));
@@ -397,20 +400,25 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                 if (!worldEdit.getPlatformManager().queryCapability(Capability.USER_COMMANDS).isValidMobType(mobName)) {
                     throw new NoMatchException(TranslatableComponent.of("worldedit.error.unknown-mob", TextComponent.of(mobName)));
                 }
-                return new MobSpawnerBlock(state, mobName);
             } else {
-                //noinspection ConstantConditions
-                return new MobSpawnerBlock(state, EntityTypes.PIG.getId());
+                mobName = EntityTypes.PIG.getId();
             }
+            @SuppressWarnings("deprecation")
+            MobSpawnerBlock mobSpawnerBlock = new MobSpawnerBlock(state, mobName);
+            return mobSpawnerBlock;
         } else if (blockType == BlockTypes.PLAYER_HEAD || blockType == BlockTypes.PLAYER_WALL_HEAD) {
             // allow setting type/player/rotation
             if (blockAndExtraData.length <= 1) {
-                return new SkullBlock(state);
+                @SuppressWarnings("deprecation")
+                SkullBlock skullBlock = new SkullBlock(state);
+                return skullBlock;
             }
 
             String type = blockAndExtraData[1];
 
-            return new SkullBlock(state, type.replace(" ", "_")); // valid MC usernames
+            @SuppressWarnings("deprecation")
+            SkullBlock skullBlock = new SkullBlock(state, type.replace(" ", "_")); // valid MC usernames
+            return skullBlock;
         } else {
             return state.toBaseBlock();
         }
