@@ -89,7 +89,6 @@ import java.util.function.Supplier;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.forge.ForgeAdapter.adaptPlayer;
 import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAME;
-import static java.util.stream.Collectors.toList;
 
 /**
  * The Forge implementation of WorldEdit.
@@ -189,7 +188,7 @@ public class ForgeWorldEdit {
             }
         }
         // Entities
-        for (ResourceLocation name : ForgeRegistries.ENTITIES.getKeys()) {
+        for (ResourceLocation name : ForgeRegistries.ENTITY_TYPES.getKeys()) {
             if (EntityType.REGISTRY.get(name.toString()) == null) {
                 EntityType.REGISTRY.register(name.toString(), new EntityType(name.toString()));
             }
@@ -225,7 +224,7 @@ public class ForgeWorldEdit {
         }
 
         List<Command> commands = manager.getPlatformCommandManager().getCommandManager()
-            .getAllCommands().collect(toList());
+            .getAllCommands().toList();
         for (Command command : commands) {
             CommandWrapper.register(event.getDispatcher(), command);
             Set<String> perms = command.getCondition().as(PermissionCondition.class)
@@ -270,26 +269,23 @@ public class ForgeWorldEdit {
             return; // We have to be told to catch these events
         }
 
-        if (event.getWorld().isClientSide && event instanceof LeftClickEmpty) {
+        if (event.getLevel().isClientSide && event instanceof LeftClickEmpty) {
             // catch LCE, pass it to server
             InternalPacketHandler.getHandler().sendToServer(LeftClickAirEventMessage.INSTANCE);
             return;
         }
 
-        boolean isLeftDeny = event instanceof PlayerInteractEvent.LeftClickBlock
-                && ((PlayerInteractEvent.LeftClickBlock) event)
-                        .getUseItem() == Event.Result.DENY;
-        boolean isRightDeny =
-                event instanceof PlayerInteractEvent.RightClickBlock
-                        && ((PlayerInteractEvent.RightClickBlock) event)
-                                .getUseItem() == Event.Result.DENY;
+        boolean isLeftDeny = event instanceof PlayerInteractEvent.LeftClickBlock lcb
+            && lcb.getUseItem() == Event.Result.DENY;
+        boolean isRightDeny = event instanceof PlayerInteractEvent.RightClickBlock rcb
+            && rcb.getUseItem() == Event.Result.DENY;
         if (isLeftDeny || isRightDeny || event.getEntity().level.isClientSide || event.getHand() == InteractionHand.OFF_HAND) {
             return;
         }
 
         WorldEdit we = WorldEdit.getInstance();
-        ForgePlayer player = adaptPlayer((ServerPlayer) event.getPlayer());
-        ForgeWorld world = getWorld((ServerLevel) event.getPlayer().level);
+        ForgePlayer player = adaptPlayer((ServerPlayer) event.getEntity());
+        ForgeWorld world = getWorld((ServerLevel) event.getEntity().level);
         Direction direction = ForgeAdapter.adaptEnumFacing(event.getFace());
 
         if (event instanceof PlayerInteractEvent.LeftClickEmpty) {
@@ -324,10 +320,9 @@ public class ForgeWorldEdit {
     @SubscribeEvent
     public void onCommandEvent(CommandEvent event) throws CommandSyntaxException {
         ParseResults<CommandSourceStack> parseResults = event.getParseResults();
-        if (!(parseResults.getContext().getSource().getEntity() instanceof ServerPlayer)) {
+        if (!(parseResults.getContext().getSource().getEntity() instanceof ServerPlayer player)) {
             return;
         }
-        ServerPlayer player = parseResults.getContext().getSource().getPlayerOrException();
         if (player.level.isClientSide) {
             return;
         }
@@ -343,9 +338,9 @@ public class ForgeWorldEdit {
 
     @SubscribeEvent
     public void onPlayerLogOut(PlayerEvent.PlayerLoggedOutEvent event) {
-        if (event.getPlayer() instanceof ServerPlayer) {
+        if (event.getEntity() instanceof ServerPlayer player) {
             WorldEdit.getInstance().getEventBus()
-                    .post(new SessionIdleEvent(new ForgePlayer.SessionKeyImpl((ServerPlayer) event.getPlayer())));
+                .post(new SessionIdleEvent(new ForgePlayer.SessionKeyImpl(player)));
         }
     }
 

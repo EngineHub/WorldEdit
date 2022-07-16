@@ -148,8 +148,8 @@ public class SpongeAdapter {
         return new Location(
             adapt(location.world()),
             position,
-            (float) rotation.x(),
-            (float) rotation.y()
+            (float) rotation.y(),
+            (float) rotation.x()
         );
     }
 

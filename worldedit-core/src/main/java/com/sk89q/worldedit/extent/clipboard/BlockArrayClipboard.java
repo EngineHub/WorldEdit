@@ -70,7 +70,7 @@ public class BlockArrayClipboard implements Clipboard {
 
     @Override
     public Region getRegion() {
-        return region;
+        return region.clone();
     }
 
     @Override

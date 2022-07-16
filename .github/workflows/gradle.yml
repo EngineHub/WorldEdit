@@ -11,18 +11,25 @@ jobs:
         os: [ubuntu-latest, windows-latest]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up JDK
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v3
       with:
         java-version: 17
         cache: 'gradle'
         distribution: 'temurin'
     - name: Build with Gradle
       run: ./gradlew build -s
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       name: Archive Reports
       if: always()
       with:
         name: reports for ${{ matrix.os }}
         path: '**/build/reports/**'
+    - uses: actions/upload-artifact@v3
+      name: Archive Logs
+      if: always()
+      with:
+        name: logs for ${{ matrix.os }}
+        path: '**/*.log'
+
