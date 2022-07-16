@@ -33,7 +33,7 @@ import java.io.IOException;
 import java.util.OptionalInt;
 
 /**
- * Legacy multi-version reader. Do not use, pick a versioned one instead.
+ * Legacy multi-version reader. Do not use, pick a versioned one from {@link BuiltInClipboardFormat}.
  */
 @Deprecated
 public class SpongeSchematicReader extends NBTSchematicReader {
@@ -52,10 +52,10 @@ public class SpongeSchematicReader extends NBTSchematicReader {
     @Override
     public Clipboard read() throws IOException {
         CompoundTag schematicTag = getBaseTag();
-        int version = ReaderUtil.getSchematicVersion(schematicTag);
+        int version = ReaderUtil.getSchematicVersion(schematicTag.toLinTag());
         return switch (version) {
-            case 1 -> SpongeSchematicV1Reader.doRead(schematicTag);
-            case 2 -> SpongeSchematicV2Reader.doRead(schematicTag);
+            case 1 -> SpongeSchematicV1Reader.doRead(schematicTag.toLinTag());
+            case 2 -> SpongeSchematicV2Reader.doRead(schematicTag.toLinTag());
             default -> throw new IllegalStateException("Unsupported schematic version: " + version);
         };
     }
@@ -64,7 +64,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
     public OptionalInt getDataVersion() {
         try {
             CompoundTag schematicTag = getBaseTag();
-            int version = ReaderUtil.getSchematicVersion(schematicTag);
+            int version = ReaderUtil.getSchematicVersion(schematicTag.toLinTag());
             return switch (version) {
                 case 1 -> OptionalInt.of(Constants.DATA_VERSION_MC_1_13_2);
                 case 2 -> {

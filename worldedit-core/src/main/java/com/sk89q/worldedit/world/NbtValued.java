@@ -106,8 +106,6 @@ public interface NbtValued {
      * Get the object's NBT data (tile entity data).
      *
      * @return compound tag, or null
-     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
-     *          for details
      */
     @Nullable
     default LinCompoundTag getNbt() {

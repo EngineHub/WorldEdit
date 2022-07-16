@@ -19,19 +19,6 @@
 
 package com.sk89q.worldedit.extent.clipboard.io.sponge;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
-import com.sk89q.jnbt.ByteArrayTag;
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.CompoundTagBuilder;
-import com.sk89q.jnbt.IntArrayTag;
-import com.sk89q.jnbt.IntTag;
-import com.sk89q.jnbt.ListTag;
-import com.sk89q.jnbt.LongTag;
-import com.sk89q.jnbt.NBTOutputStream;
-import com.sk89q.jnbt.ShortTag;
-import com.sk89q.jnbt.StringTag;
-import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
@@ -40,17 +27,19 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.block.BaseBlock;
+import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMaps;
+import org.enginehub.linbus.stream.LinBinaryIO;
+import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinListTag;
+import org.enginehub.linbus.tree.LinRootEntry;
+import org.enginehub.linbus.tree.LinTagType;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Writes schematic files using the Sponge Schematic Specification (Version 3).
@@ -60,23 +49,22 @@ public class SpongeSchematicV3Writer implements ClipboardWriter {
     private static final int CURRENT_VERSION = 3;
 
     private static final int MAX_SIZE = Short.MAX_VALUE - Short.MIN_VALUE;
-    private final NBTOutputStream outputStream;
+    private final DataOutputStream outputStream;
 
-    /**
-     * Create a new schematic writer.
-     *
-     * @param outputStream the output stream to write to
-     */
-    public SpongeSchematicV3Writer(NBTOutputStream outputStream) {
-        checkNotNull(outputStream);
+    public SpongeSchematicV3Writer(DataOutputStream outputStream) {
         this.outputStream = outputStream;
     }
 
     @Override
     public void write(Clipboard clipboard) throws IOException {
-        // For now always write the latest version. Maybe provide support for earlier if more appear.
-        outputStream.writeNamedTag("",
-            new CompoundTag(ImmutableMap.of("Schematic", new CompoundTag(write3(clipboard))))
+        LinBinaryIO.write(
+            outputStream,
+            new LinRootEntry(
+                "",
+                LinCompoundTag.builder()
+                .put("Schematic", write3(clipboard))
+                .build()
+            )
         );
     }
 
@@ -86,7 +74,7 @@ public class SpongeSchematicV3Writer implements ClipboardWriter {
      * @param clipboard The clipboard
      * @return The schematic map
      */
-    private Map<String, Tag<?, ?>> write3(Clipboard clipboard) {
+    private LinCompoundTag write3(Clipboard clipboard) {
         Region region = clipboard.getRegion();
         BlockVector3 origin = clipboard.getOrigin();
         BlockVector3 min = region.getMinimumPoint();
@@ -105,43 +93,51 @@ public class SpongeSchematicV3Writer implements ClipboardWriter {
             throw new IllegalArgumentException("Length of region too large for a .schematic");
         }
 
-        Map<String, Tag<?, ?>> schematic = new HashMap<>();
-        schematic.put("Version", new IntTag(CURRENT_VERSION));
-        schematic.put("DataVersion", new IntTag(
-            WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getDataVersion()));
+        LinCompoundTag.Builder schematic = LinCompoundTag.builder();
+        schematic.putInt("Version", CURRENT_VERSION);
+        schematic.putInt(
+            "DataVersion",
+            WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getDataVersion()
+        );
 
-        Map<String, Tag<?, ?>> metadata = new HashMap<>();
-        metadata.put("Date", new LongTag(System.currentTimeMillis()));
+        LinCompoundTag.Builder metadata = LinCompoundTag.builder();
+        metadata.putLong("Date", System.currentTimeMillis());
 
-        Map<String, Tag<?, ?>> worldEditSection = new HashMap<>();
-        worldEditSection.put("Version", new StringTag(WorldEdit.getVersion()));
-        worldEditSection.put("EditingPlatform", new StringTag(WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getId()));
-        worldEditSection.put("Origin", new IntArrayTag(new int[] {
+        LinCompoundTag.Builder worldEditSection = LinCompoundTag.builder();
+        worldEditSection.putString("Version", WorldEdit.getVersion());
+        worldEditSection.putString(
+            "EditingPlatform",
+            WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getId()
+        );
+        worldEditSection.putIntArray("Origin", new int[] {
             origin.getBlockX(), origin.getBlockY(), origin.getBlockZ()
-        }));
+        });
 
-        Map<String, Tag<?, ?>> platformsSection = new HashMap<>();
+        LinCompoundTag.Builder platformsSection = LinCompoundTag.builder();
         for (Platform platform : WorldEdit.getInstance().getPlatformManager().getPlatforms()) {
-            platformsSection.put(platform.getId(), new CompoundTag(ImmutableMap.of(
-                "Name", new StringTag(platform.getPlatformName()),
-                "Version", new StringTag(platform.getPlatformVersion())
-            )));
+            platformsSection.put(
+                platform.getId(),
+                LinCompoundTag.builder()
+                    .putString("Name", platform.getPlatformName())
+                    .putString("Version", platform.getPlatformVersion())
+                    .build()
+            );
         }
-        worldEditSection.put("Platforms", new CompoundTag(platformsSection));
+        worldEditSection.put("Platforms", platformsSection.build());
 
-        metadata.put("WorldEdit", new CompoundTag(worldEditSection));
+        metadata.put("WorldEdit", worldEditSection.build());
 
-        schematic.put("Metadata", new CompoundTag(metadata));
+        schematic.put("Metadata", metadata.build());
 
-        schematic.put("Width", new ShortTag((short) width));
-        schematic.put("Height", new ShortTag((short) height));
-        schematic.put("Length", new ShortTag((short) length));
+        schematic.putShort("Width", (short) width);
+        schematic.putShort("Height", (short) height);
+        schematic.putShort("Length", (short) length);
 
-        schematic.put("Offset", new IntArrayTag(new int[] {
+        schematic.putIntArray("Offset", new int[] {
             offset.getBlockX(),
             offset.getBlockY(),
             offset.getBlockZ(),
-        }));
+        });
 
         schematic.put("Blocks", encodeBlocks(clipboard));
 
@@ -150,22 +146,22 @@ public class SpongeSchematicV3Writer implements ClipboardWriter {
         }
 
         if (!clipboard.getEntities().isEmpty()) {
-            ListTag value = WriterUtil.encodeEntities(clipboard, true);
+            LinListTag<LinCompoundTag> value = WriterUtil.encodeEntities(clipboard, true);
             if (value != null) {
                 schematic.put("Entities", value);
             }
         }
 
-        return schematic;
+        return schematic.build();
     }
 
     private static final class PaletteMap {
-        private final Map<String, Integer> contents = new LinkedHashMap<>();
+        private final Object2IntMap<String> contents = new Object2IntLinkedOpenHashMap<>();
         private int nextId = 0;
 
         public int getId(String key) {
-            Integer result = contents.get(key);
-            if (result != null) {
+            int result = contents.getOrDefault(key, -1);
+            if (result != -1) {
                 return result;
             }
             int newValue = nextId;
@@ -174,20 +170,21 @@ public class SpongeSchematicV3Writer implements ClipboardWriter {
             return newValue;
         }
 
-        public CompoundTag toNbt() {
-            return new CompoundTag(ImmutableMap.copyOf(Maps.transformValues(
-                contents, IntTag::new
-            )));
+        public LinCompoundTag toNbt() {
+            LinCompoundTag.Builder result = LinCompoundTag.builder();
+            Object2IntMaps.fastForEach(contents, e -> result.putInt(e.getKey(), e.getIntValue()));
+            return result.build();
         }
     }
 
-    private CompoundTag encodeBlocks(Clipboard clipboard) {
-        List<CompoundTag> blockEntities = new ArrayList<>();
-        CompoundTag result = encodePalettedData(clipboard, point -> {
+    private LinCompoundTag encodeBlocks(Clipboard clipboard) {
+        LinListTag.Builder<LinCompoundTag> blockEntities = LinListTag.builder(LinTagType.compoundTag());
+        LinCompoundTag.Builder result = encodePalettedData(clipboard, point -> {
             BaseBlock block = clipboard.getFullBlock(point);
             // Also compute block entity side-effect here
-            if (block.getNbtData() != null) {
-                CompoundTagBuilder builder = CompoundTagBuilder.create();
+            LinCompoundTag nbt = block.getNbt();
+            if (nbt != null) {
+                LinCompoundTag.Builder builder = LinCompoundTag.builder();
 
                 builder.putString("Id", block.getNbtId());
                 BlockVector3 adjustedPos = point.subtract(clipboard.getMinimumPoint());
@@ -196,23 +193,23 @@ public class SpongeSchematicV3Writer implements ClipboardWriter {
                     adjustedPos.getBlockY(),
                     adjustedPos.getBlockZ()
                 });
-                builder.put("Data", block.getNbtData());
+                builder.put("Data", nbt);
 
                 blockEntities.add(builder.build());
             }
             return block.toImmutableState().getAsString();
         });
 
-        return result.createBuilder()
-            .put("BlockEntities", new ListTag(CompoundTag.class, blockEntities))
+        return result
+            .put("BlockEntities", blockEntities.build())
             .build();
     }
 
-    private CompoundTag encodeBiomes(Clipboard clipboard) {
-        return encodePalettedData(clipboard, point -> clipboard.getBiome(point).getId());
+    private LinCompoundTag encodeBiomes(Clipboard clipboard) {
+        return encodePalettedData(clipboard, point -> clipboard.getBiome(point).getId()).build();
     }
 
-    private CompoundTag encodePalettedData(Clipboard clipboard,
+    private LinCompoundTag.Builder encodePalettedData(Clipboard clipboard,
                                            Function<BlockVector3, String> keyFunction) {
         BlockVector3 min = clipboard.getMinimumPoint();
         int width = clipboard.getRegion().getWidth();
@@ -240,10 +237,9 @@ public class SpongeSchematicV3Writer implements ClipboardWriter {
             }
         }
 
-        return new CompoundTag(ImmutableMap.of(
-            "Palette", paletteMap.toNbt(),
-            "Data", new ByteArrayTag(buffer.toByteArray())
-        ));
+        return LinCompoundTag.builder()
+            .put("Palette", paletteMap.toNbt())
+            .putByteArray("Data", buffer.toByteArray());
     }
 
     @Override

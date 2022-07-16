@@ -19,70 +19,62 @@
 
 package com.sk89q.worldedit.extent.clipboard.io.sponge;
 
-import com.sk89q.jnbt.ByteArrayTag;
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.IntTag;
-import com.sk89q.jnbt.ListTag;
-import com.sk89q.jnbt.NBTInputStream;
-import com.sk89q.jnbt.NamedTag;
-import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.extent.clipboard.io.NBTSchematicReader;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.internal.util.VarIntIterator;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.biome.BiomeTypes;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import org.apache.logging.log4j.Logger;
+import org.enginehub.linbus.stream.LinStream;
+import org.enginehub.linbus.tree.LinByteArrayTag;
+import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinIntTag;
+import org.enginehub.linbus.tree.LinListTag;
+import org.enginehub.linbus.tree.LinRootEntry;
+import org.enginehub.linbus.tree.LinTagType;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.OptionalInt;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Reads schematic files using the Sponge Schematic Specification (Version 2).
  */
-public class SpongeSchematicV2Reader extends NBTSchematicReader {
+public class SpongeSchematicV2Reader implements ClipboardReader {
 
     private static final Logger LOGGER = LogManagerCompat.getLogger();
 
-    private final NBTInputStream inputStream;
+    private final LinStream rootStream;
 
-    /**
-     * Create a new instance.
-     *
-     * @param inputStream the input stream to read from
-     */
-    public SpongeSchematicV2Reader(NBTInputStream inputStream) {
-        checkNotNull(inputStream);
-        this.inputStream = inputStream;
+    public SpongeSchematicV2Reader(LinStream rootStream) {
+        this.rootStream = rootStream;
     }
 
     @Override
     public Clipboard read() throws IOException {
-        CompoundTag schematicTag = getBaseTag();
+        LinCompoundTag schematicTag = getBaseTag();
         ReaderUtil.checkSchematicVersion(2, schematicTag);
 
         return doRead(schematicTag);
     }
 
     // For legacy SpongeSchematicReader, can be inlined in WorldEdit 8
-    public static Clipboard doRead(CompoundTag schematicTag) throws IOException {
+    public static Clipboard doRead(LinCompoundTag schematicTag) throws IOException {
         final Platform platform = WorldEdit.getInstance().getPlatformManager()
             .queryCapability(Capability.WORLD_EDITING);
         int liveDataVersion = platform.getDataVersion();
 
         VersionedDataFixer fixer = ReaderUtil.getVersionedDataFixer(
-            schematicTag.getValue(), platform, liveDataVersion
+            schematicTag, platform, liveDataVersion
         );
         BlockArrayClipboard clip = SpongeSchematicV1Reader.readVersion1(schematicTag, fixer);
         return readVersion2(clip, schematicTag, fixer);
@@ -91,11 +83,11 @@ public class SpongeSchematicV2Reader extends NBTSchematicReader {
     @Override
     public OptionalInt getDataVersion() {
         try {
-            CompoundTag schematicTag = getBaseTag();
+            LinCompoundTag schematicTag = getBaseTag();
             ReaderUtil.checkSchematicVersion(2, schematicTag);
 
-            int dataVersion = requireTag(schematicTag.getValue(), "DataVersion", IntTag.class)
-                .getValue();
+            int dataVersion = schematicTag.getTag("DataVersion", LinTagType.intTag())
+                .valueAsInt();
             if (dataVersion < 0) {
                 return OptionalInt.empty();
             }
@@ -105,56 +97,39 @@ public class SpongeSchematicV2Reader extends NBTSchematicReader {
         }
     }
 
-    private CompoundTag getBaseTag() throws IOException {
-        NamedTag rootTag = inputStream.readNamedTag();
-
-        return (CompoundTag) rootTag.getTag();
+    private LinCompoundTag getBaseTag() throws IOException {
+        return LinRootEntry.readFrom(rootStream).value();
     }
 
-    private static Clipboard readVersion2(BlockArrayClipboard version1, CompoundTag schematicTag,
+    private static Clipboard readVersion2(BlockArrayClipboard version1, LinCompoundTag schematicTag,
                                           VersionedDataFixer fixer) throws IOException {
-        Map<String, Tag<?, ?>> schematic = schematicTag.getValue();
-        if (schematic.containsKey("BiomeData")) {
-            readBiomes2(version1, schematic, fixer);
+        if (schematicTag.value().containsKey("BiomeData")) {
+            readBiomes2(version1, schematicTag, fixer);
         }
-        ListTag entities = getTag(schematic, "Entities", ListTag.class);
+        LinListTag<LinCompoundTag> entities = schematicTag.findListTag("Entities", LinTagType.compoundTag());
         if (entities != null) {
             ReaderUtil.readEntities(
-                version1, entities.getValue(), fixer, false
+                version1, entities.value(), fixer, false
             );
         }
         return version1;
     }
 
-    private static void readBiomes2(BlockArrayClipboard clipboard, Map<String, Tag<?, ?>> schematic,
+    private static void readBiomes2(BlockArrayClipboard clipboard, LinCompoundTag schematic,
                                     VersionedDataFixer fixer) throws IOException {
-        ByteArrayTag dataTag = requireTag(schematic, "BiomeData", ByteArrayTag.class);
-        IntTag maxTag = requireTag(schematic, "BiomePaletteMax", IntTag.class);
-        CompoundTag paletteTag = requireTag(schematic, "BiomePalette", CompoundTag.class);
+        LinByteArrayTag dataTag = schematic.getTag("BiomeData", LinTagType.byteArrayTag());
+        LinIntTag maxTag = schematic.getTag("BiomePaletteMax", LinTagType.intTag());
+        LinCompoundTag paletteTag = schematic.getTag("BiomePalette", LinTagType.compoundTag());
 
-        Map<Integer, BiomeType> palette = new HashMap<>();
-        if (maxTag.getValue() != paletteTag.getValue().size()) {
+        if (maxTag.valueAsInt() != paletteTag.value().size()) {
             throw new IOException("Biome palette size does not match expected size.");
         }
 
-        for (Entry<String, Tag<?, ?>> palettePart : paletteTag.getValue().entrySet()) {
-            String key = palettePart.getKey();
-            key = fixer.fixUp(DataFixer.FixTypes.BIOME, key);
-            BiomeType biome = BiomeTypes.get(key);
-            if (biome == null) {
-                LOGGER.warn("Unknown biome type :" + key
-                    + " in palette. Are you missing a mod or using a schematic made in a newer version of Minecraft?");
-            }
-            Tag<?, ?> idTag = palettePart.getValue();
-            if (!(idTag instanceof IntTag)) {
-                throw new IOException("Biome mapped to non-Int tag.");
-            }
-            palette.put(((IntTag) idTag).getValue(), biome);
-        }
+        Int2ObjectMap<BiomeType> palette = ReaderUtil.readBiomePalette(fixer, paletteTag, LOGGER);
 
         int width = clipboard.getDimensions().getX();
 
-        byte[] biomes = dataTag.getValue();
+        byte[] biomes = dataTag.value();
         BlockVector3 min = clipboard.getMinimumPoint();
         int index = 0;
         for (VarIntIterator iter = new VarIntIterator(biomes); iter.hasNext(); index++) {
@@ -174,6 +149,5 @@ public class SpongeSchematicV2Reader extends NBTSchematicReader {
 
     @Override
     public void close() throws IOException {
-        inputStream.close();
     }
 }

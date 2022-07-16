@@ -66,7 +66,7 @@ public final class CompoundTag extends Tag<Object, LinCompoundTag> {
     public Map<String, Tag<?, ?>> getValue() {
         return ImmutableMap.copyOf(Maps.transformValues(
             linTag.value(),
-            tag -> (Tag<?, ?>) AdventureNBTConverter.toJnbtTag((LinTag) tag)
+            tag -> (Tag<?, ?>) LinBusConverter.toJnbtTag((LinTag) tag)
         ));
     }
 
