@@ -104,6 +104,8 @@ for (projectFragment in listOf("bukkit", "cli", "core", "fabric", "forge", "spon
         packageExcludes.add("com.sk89q.worldedit*.internal*")
         // Mixins are not API
         packageExcludes.add("com.sk89q.worldedit*.mixin*")
+        // Experimental is not API
+        packageExcludes.add("com.sk89q.worldedit*.experimental*")
     }
 
     checkApiCompatibility {
