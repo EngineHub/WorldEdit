@@ -34,6 +34,29 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * An axis-aligned cuboid. It can be defined using two corners of the cuboid.
+ *
+ * Example usage:
+ * <pre>
+ * <code>
+ * Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
+ *    for (final Pair<Cuboid, List<WantedMaterial>> mine : mines.values()) {
+ *        final World world = BukkitAdapter.adapt(mine.getKey().getWorld());
+ *
+ *        final CuboidRegion selection = new CuboidRegion(
+ *            world,
+ *            toBlockVector(mine.getKey().getLowerNE()),
+ *            toBlockVector(mine.getKey().getUpperSW())
+ *        );
+ *
+ *        try (final EditSession session = WorldEdit.getInstance().newEditSessionBuilder().world(world).build()) {
+ *            RandomPattern pattern = toRandomPattern(mine.getValue());
+ *            session.setBlocks((Region) selection, pattern);
+ *        }
+ *
+ *    }
+ * },  0, 10 * 60 * 20);
+ * </code>
+ * </pre>
  */
 public class CuboidRegion extends AbstractRegion implements FlatRegion {
 
