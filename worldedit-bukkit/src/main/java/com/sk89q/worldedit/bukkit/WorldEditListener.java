@@ -28,6 +28,10 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
+import io.papermc.lib.PaperLib;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
@@ -45,11 +49,14 @@ import org.enginehub.piston.inject.Key;
 import org.enginehub.piston.inject.MapBackedValueStore;
 
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Handles all events thrown in relation to a Player.
  */
 public class WorldEditListener implements Listener {
+
+    private final Object2IntMap<UUID> lastInteractionTicks = new Object2IntOpenHashMap<>();
 
     private final WorldEditPlugin plugin;
 
@@ -84,6 +91,19 @@ public class WorldEditListener implements Listener {
                 .filter(command -> !command.getCondition().satisfied(store))
                 .isPresent()
         );
+    }
+
+    private static int getCurrentTick() {
+        if (PaperLib.isPaper()) {
+            return Bukkit.getCurrentTick();
+        }
+        return (int) (System.currentTimeMillis() / 50);
+    }
+
+    private boolean isDuplicateInteraction(Player player) {
+        int now = getCurrentTick();
+        int last = lastInteractionTicks.getInt(player.getUniqueId());
+        return now - last <= 1;
     }
 
     /**
@@ -124,31 +144,36 @@ public class WorldEditListener implements Listener {
             }
 
         } else if (action == Action.LEFT_CLICK_AIR) {
-
-            if (we.handleArmSwing(player)) {
+            if (!isDuplicateInteraction(player) && we.handleArmSwing(player)) {
                 event.setCancelled(true);
             }
 
         } else if (action == Action.RIGHT_CLICK_BLOCK) {
-            final Block clickedBlock = event.getClickedBlock();
-            final Location pos = new Location(world, clickedBlock.getX(), clickedBlock.getY(), clickedBlock.getZ());
+            if (!isDuplicateInteraction(player)) {
+                final Block clickedBlock = event.getClickedBlock();
+                final Location pos = new Location(world, clickedBlock.getX(), clickedBlock.getY(), clickedBlock.getZ());
 
-            if (we.handleBlockRightClick(player, pos, direction)) {
-                event.setCancelled(true);
-            }
+                if (we.handleBlockRightClick(player, pos, direction)) {
+                    event.setCancelled(true);
+                }
 
-            if (we.handleRightClick(player)) {
-                event.setCancelled(true);
+                if (we.handleRightClick(player)) {
+                    event.setCancelled(true);
+                }
             }
         } else if (action == Action.RIGHT_CLICK_AIR) {
-            if (we.handleRightClick(player)) {
+            if (!isDuplicateInteraction(player) && we.handleRightClick(player)) {
                 event.setCancelled(true);
             }
         }
+
+        lastInteractionTicks.put(player.getUniqueId(), getCurrentTick());
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
+        lastInteractionTicks.removeInt(event.getPlayer().getUniqueId());
+
         plugin.getWorldEdit().getEventBus().post(new SessionIdleEvent(new BukkitPlayer.SessionKeyImpl(event.getPlayer())));
     }
 }

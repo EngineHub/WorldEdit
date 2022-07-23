@@ -39,6 +39,8 @@ import com.sk89q.worldedit.sponge.config.SpongeConfiguration;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.item.ItemCategory;
+import it.unimi.dsi.fastutil.objects.Object2LongMap;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import net.kyori.adventure.audience.Audience;
 import org.apache.logging.log4j.Logger;
 import org.bstats.sponge.Metrics;
@@ -56,8 +58,11 @@ import org.spongepowered.api.command.CommandCompletion;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.parameter.ArgumentReader;
 import org.spongepowered.api.config.ConfigDir;
+import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+import org.spongepowered.api.event.EventContextKeys;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.action.InteractEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
@@ -82,6 +87,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAME;
@@ -106,6 +112,8 @@ public class SpongeWorldEdit {
     private final PluginContainer container;
     private final SpongeConfiguration config;
     private final Path workingDir;
+
+    private final Object2LongMap<UUID> lastInteractionTicks = new Object2LongOpenHashMap<>();
 
     private SpongePermissionsProvider provider;
     private SpongePlatform platform;
@@ -279,84 +287,125 @@ public class SpongeWorldEdit {
         );
     }
 
-    private boolean isHookingEvents() {
-        return platform != null && platform.isHookingEvents();
+    private boolean skipEvents() {
+        return platform == null || !platform.isHookingEvents();
+    }
+
+    private boolean isDuplicateInteraction(ServerPlayer player) {
+        long now = Sponge.server().runningTimeTicks().ticks();
+        long last = lastInteractionTicks.getLong(player.uniqueId());
+        return now - last <= 1;
+    }
+
+    private void saveInteractionTick(ServerPlayer player) {
+        long now = Sponge.server().runningTimeTicks().ticks();
+        lastInteractionTicks.put(player.uniqueId(), now);
+    }
+
+    private void removeInteractionTick(ServerPlayer player) {
+        lastInteractionTicks.removeLong(player.uniqueId());
+    }
+
+    private boolean skipInteractionEvent(InteractEvent event) {
+        return skipEvents() || event.context().get(EventContextKeys.USED_HAND).orElse(null) != HandTypes.MAIN_HAND.get();
     }
 
     @Listener
-    public void onPlayerItemInteract(InteractItemEvent.Secondary event, @Root ServerPlayer spongePlayer) {
-        if (!isHookingEvents()) {
+    public void onPlayerInteractItemPrimary(InteractItemEvent.Primary event, @Root ServerPlayer spongePlayer) {
+        if (skipInteractionEvent(event) || isDuplicateInteraction(spongePlayer)) {
             return;
         }
 
-        WorldEdit we = WorldEdit.getInstance();
+        saveInteractionTick(spongePlayer);
 
+        WorldEdit we = WorldEdit.getInstance();
         SpongePlayer player = SpongeAdapter.adapt(spongePlayer);
+
+        we.handleArmSwing(player);
+    }
+
+    @Listener
+    public void onPlayerInteractItemSecondary(InteractItemEvent.Secondary event, @Root ServerPlayer spongePlayer) {
+        if (skipInteractionEvent(event) || isDuplicateInteraction(spongePlayer)) {
+            return;
+        }
+
+        saveInteractionTick(spongePlayer);
+
+        WorldEdit we = WorldEdit.getInstance();
+        SpongePlayer player = SpongeAdapter.adapt(spongePlayer);
+
         if (we.handleRightClick(player)) {
             event.setCancelled(true);
         }
     }
 
     @Listener
-    public void onPlayerInteract(InteractBlockEvent event, @Root ServerPlayer spongePlayer) {
-        if (platform == null) {
+    public void onPlayerInteractBlockPrimary(InteractBlockEvent.Primary.Start event, @Root ServerPlayer spongePlayer) {
+        if (skipInteractionEvent(event)) {
             return;
         }
 
-        if (!platform.isHookingEvents()) {
-            return; // We have to be told to catch these events
-        }
+        saveInteractionTick(spongePlayer);
 
         WorldEdit we = WorldEdit.getInstance();
+        SpongePlayer player = SpongeAdapter.adapt(spongePlayer);
 
+        BlockSnapshot targetBlock = event.block();
+        BlockType interactedType = targetBlock.state().type();
+
+        if (interactedType != BlockTypes.AIR.get()) {
+            Optional<ServerLocation> optLoc = targetBlock.location();
+            if (!optLoc.isPresent()) {
+                return;
+            }
+
+            ServerLocation loc = optLoc.get();
+            com.sk89q.worldedit.util.Location pos = SpongeAdapter.adapt(loc, Vector3d.ZERO);
+
+            if (we.handleBlockLeftClick(player, pos, SpongeAdapter.adapt(event.targetSide()))) {
+                event.setCancelled(true);
+            }
+        }
+
+        if (we.handleArmSwing(player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @Listener
+    public void onPlayerInteractBlockSecondary(InteractBlockEvent.Secondary event, @Root ServerPlayer spongePlayer) {
+        if (skipInteractionEvent(event)) {
+            return;
+        }
+
+        saveInteractionTick(spongePlayer);
+
+        WorldEdit we = WorldEdit.getInstance();
         SpongePlayer player = SpongeAdapter.adapt(spongePlayer);
 
         BlockSnapshot targetBlock = event.block();
         Optional<ServerLocation> optLoc = targetBlock.location();
+        if (!optLoc.isPresent()) {
+            return;
+        }
 
-        BlockType interactedType = targetBlock.state().type();
-        if (event instanceof InteractBlockEvent.Primary.Start) {
-            InteractBlockEvent.Primary.Start eventCast = ((InteractBlockEvent.Primary.Start) event);
-            if (interactedType != BlockTypes.AIR.get()) {
-                if (!optLoc.isPresent()) {
-                    return;
-                }
+        ServerLocation loc = optLoc.get();
+        com.sk89q.worldedit.util.Location pos = SpongeAdapter.adapt(loc, Vector3d.ZERO);
 
-                ServerLocation loc = optLoc.get();
-                com.sk89q.worldedit.util.Location pos = SpongeAdapter.adapt(
-                    loc, Vector3d.ZERO
-                );
+        if (we.handleBlockRightClick(player, pos, SpongeAdapter.adapt(event.targetSide()))) {
+            event.setCancelled(true);
+        }
 
-                if (we.handleBlockLeftClick(player, pos, SpongeAdapter.adapt(eventCast.targetSide()))) {
-                    eventCast.setCancelled(true);
-                }
-            }
-            if (we.handleArmSwing(player)) {
-                eventCast.setCancelled(true);
-            }
-        } else if (event instanceof InteractBlockEvent.Secondary) {
-            if (!optLoc.isPresent()) {
-                return;
-            }
-            InteractBlockEvent.Secondary eventCast = ((InteractBlockEvent.Secondary) event);
-
-            ServerLocation loc = optLoc.get();
-            com.sk89q.worldedit.util.Location pos = SpongeAdapter.adapt(
-                loc, Vector3d.ZERO
-            );
-
-            if (we.handleBlockRightClick(player, pos, SpongeAdapter.adapt(eventCast.targetSide()))) {
-                eventCast.setCancelled(true);
-            }
-
-            if (we.handleRightClick(player)) {
-                eventCast.setCancelled(true);
-            }
+        if (we.handleRightClick(player)) {
+            event.setCancelled(true);
         }
     }
 
     @Listener
     public void onPlayerQuit(ServerSideConnectionEvent.Disconnect event) {
+        removeInteractionTick(event.player());
+
         WorldEdit.getInstance().getEventBus()
             .post(new SessionIdleEvent(new SpongePlayer.SessionKeyImpl(event.player())));
     }
