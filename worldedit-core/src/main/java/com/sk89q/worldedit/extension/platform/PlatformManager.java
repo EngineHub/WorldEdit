@@ -70,8 +70,7 @@ public class PlatformManager {
     private final WorldEdit worldEdit;
     private final PlatformCommandManager platformCommandManager;
     private final List<Platform> platforms = new ArrayList<>();
-    private final Capability[] preferences_keys = Capability.class.getEnumConstants();
-    private final Platform[] preferences_values = new Platform[ preferences_keys.length ];
+    private final Map<Capability, Platform> preferences = new EnumMap<>(Capability.class);
     private @Nullable String firstSeenVersion;
     private final AtomicBoolean initialized = new AtomicBoolean();
     private final AtomicBoolean configured = new AtomicBoolean();
@@ -136,14 +135,12 @@ public class PlatformManager {
 
             // Check whether this platform was chosen to be the preferred one
             // for any capability and be sure to remove it
-            for (int i=0, len=preferences_keys.length; i < len; i++) {
-                Capability key = preferences_keys[i];
-                Platform value = preferences_values[i];
-                if (value == null) continue;
-                
-                if (value.equals(platform)) {
-                    key.uninitialize(this, value);
-                    preferences_values[i] = null;
+            Iterator<Entry<Capability, Platform>> it = preferences.entrySet().iterator();
+            while (it.hasNext()) {
+                Entry<Capability, Platform> entry = it.next();
+                if (entry.getValue().equals(platform)) {
+                    entry.getKey().uninitialize(this, entry.getValue());
+                    it.remove();
                     choosePreferred = true; // Have to choose new favorites
                 }
             }
@@ -164,22 +161,18 @@ public class PlatformManager {
      * @throws NoCapablePlatformException thrown if no platform is capable
      */
     public Platform queryCapability(Capability capability) throws NoCapablePlatformException {
-        Platform platform = preferences_values[capability.ordinal()];
+        Platform platform = preferences.get(checkNotNull(capability));
+
         if (platform == null) {
             synchronized(this) {
-                // handle race condition gracefully
-                platform = preferences_values[capability.ordinal()];
+                platform = preferences.get(checkNotNull(capability));
             }
         }
+
         if (platform != null) {
             return platform;
         } else {
-            boolean isEmpty = true;
-            for (int i=0, len=preferences_keys.length; i < len; i++) {
-                isEmpty = isEmpty && preferences_values[i] == null;
-            }
-            
-            if (isEmpty) {
+            if (preferences.isEmpty()) {
                 // Not all platforms registered, this is being called too early!
                 throw new NoCapablePlatformException(
                     "Not all platforms have been registered yet!"
@@ -197,9 +190,7 @@ public class PlatformManager {
         for (Capability capability : Capability.values()) {
             Platform preferred = findMostPreferred(capability);
             if (preferred != null) {
-                Platform oldPreferred = preferences_values[capability.ordinal()];
-                preferences_values[capability.ordinal()] = preferred;
-
+                Platform oldPreferred = preferences.put(capability, preferred);
                 // only (re)initialize if it changed
                 if (preferred != oldPreferred) {
                     // uninitialize if needed
@@ -212,7 +203,7 @@ public class PlatformManager {
         }
 
         // Fire configuration event
-        if (preferences_values[Capability.CONFIGURATION.ordinal()] != null && configured.compareAndSet(false, true)) {
+        if (preferences.containsKey(Capability.CONFIGURATION) && configured.compareAndSet(false, true)) {
             worldEdit.getEventBus().post(new ConfigurationLoadEvent(queryCapability(Capability.CONFIGURATION).getConfiguration()));
         }
     }
@@ -343,13 +334,7 @@ public class PlatformManager {
      */
     @Subscribe
     public void handleNewPlatformReady(PlatformReadyEvent event) {
-        for (int i=0, len=preferences_keys.length; i < len; i++) {
-            Capability cap = preferences_keys[i];
-            Platform platform = preferences_values[i];
-            if (platform == null) continue;
-            
-            cap.ready(this, platform);
-        }
+        preferences.forEach((cap, platform) -> cap.ready(this, platform));
     }
 
     /**
@@ -357,13 +342,7 @@ public class PlatformManager {
      */
     @Subscribe
     public void handleNewPlatformUnready(PlatformUnreadyEvent event) {
-        for (int i=0, len=preferences_keys.length; i < len; i++) {
-            Capability cap = preferences_keys[i];
-            Platform platform = preferences_values[i];
-            if (platform == null) continue;
-            
-            cap.unready(this, platform);
-        }
+        preferences.forEach((cap, platform) -> cap.unready(this, platform));
     }
 
     @Subscribe
