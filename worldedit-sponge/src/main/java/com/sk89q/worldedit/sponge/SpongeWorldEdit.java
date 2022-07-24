@@ -129,12 +129,6 @@ public class SpongeWorldEdit {
 
         this.provider = new SpongePermissionsProvider();
 
-        Task.builder()
-            .plugin(container)
-            .interval(30, TimeUnit.SECONDS)
-            .execute(ThreadSafeCache.getInstance())
-            .build();
-
         event.game().eventManager().registerListeners(
             container,
             new CUIChannelHandler.RegistrationHandler()
@@ -152,6 +146,12 @@ public class SpongeWorldEdit {
 
     @Listener
     public void serverStarted(StartedEngineEvent<Server> event) {
+        event.engine().scheduler().submit(Task.builder()
+                .plugin(container)
+                .interval(30, TimeUnit.SECONDS)
+                .execute(ThreadSafeCache.getInstance())
+                .build());
+
         event.game().registry(RegistryTypes.BLOCK_TYPE).streamEntries().forEach(blockType -> {
             String id = blockType.key().asString();
             if (!com.sk89q.worldedit.world.block.BlockType.REGISTRY.keySet().contains(id)) {
