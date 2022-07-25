@@ -54,6 +54,7 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     private final SpongeWorldEdit mod;
     private boolean hookingEvents = false;
+    private int nextTaskId = 0;
 
     SpongePlatform(SpongeWorldEdit mod) {
         this.mod = mod;
@@ -87,13 +88,13 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public int schedule(long delay, long period, Runnable task) {
-        Task t = Task.builder()
+        Sponge.server().scheduler().submit(Task.builder()
             .delay(Ticks.of(delay))
             .interval(Ticks.of(period))
             .execute(task)
             .plugin(SpongeWorldEdit.inst().getPluginContainer())
-            .build();
-        return Math.abs(t.hashCode()); // TODO This isn't right, but we only check for -1 values
+            .build());
+        return nextTaskId++;
     }
 
     @Override
