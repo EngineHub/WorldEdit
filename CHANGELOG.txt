@@ -1,3 +1,7 @@
+7.2.12
+- [Bukkit] Add support for 1.19.2
+- Fixed b/back directions not working along the Y axis
+
 7.2.11
 - [Bukkit] Improve thread safety of some API adapter methods
 - [Sponge] Fixed adapters incorrectly handling rotation
