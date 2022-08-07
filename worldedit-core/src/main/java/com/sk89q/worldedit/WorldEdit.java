@@ -555,7 +555,12 @@ public final class WorldEdit {
 
             case "b":
             case "back":
-                return getDirectionRelative(player, 180);
+                Direction dir = getDirectionRelative(player, 180);
+                if (dir.isUpright()) {
+                    // If this is an upright direction, flip it.
+                    dir = dir == Direction.UP ? Direction.DOWN : Direction.UP;
+                }
+                return dir;
 
             case "l":
             case "left":
