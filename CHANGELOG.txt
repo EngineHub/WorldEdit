@@ -1,8 +1,16 @@
+7.2.12
+- [Bukkit] Add support for 1.19.2
+- Fixed b/back directions not working along the Y axis
+
 7.2.11
-- Update to 1.19
+- [Bukkit] Improve thread safety of some API adapter methods
+- [Sponge] Fixed adapters incorrectly handling rotation
+- [Sponge] Ensure tasks are actually scheduled
+- Update to 1.19.1
 - Fixed block state mask not working with string/enum properties
 - Fixed //stack causing an error when given a count of 0
 - Reduced initial memory usage on load
+- Clone the returned region of BlockArrayClipboard for API doc accuracy
 
 7.2.10
 - [Forge] Fixed a bug where the max world height would not always be read correctly
