@@ -178,7 +178,12 @@ public final class LegacyMapper {
 
     @Nullable
     public BlockState getBlockFromLegacy(int legacyId, int data) {
-        return stringToBlockMap.get(legacyId + ":" + data);
+        BlockState foundBlock = stringToBlockMap.get(legacyId + ":" + data);
+        if (foundBlock == null) {
+            // Some schematics contain invalid data values, so try without the data value
+            return stringToBlockMap.get(legacyId + ":" + 0);
+        }
+        return foundBlock;
     }
 
     @Nullable
