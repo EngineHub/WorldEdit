@@ -153,7 +153,12 @@ public final class LegacyMapper {
 
     @Nullable
     public ItemType getItemFromLegacy(int legacyId, int data) {
-        return stringToItemMap.get(legacyId + ":" + data);
+        ItemType foundItem = stringToItemMap.get(legacyId + ":" + data);
+        if (foundItem == null) {
+            // Some schematics contain invalid data values, so try without the data value
+            return stringToItemMap.get(legacyId + ":" + 0);
+        }
+        return foundItem;
     }
 
     @Nullable
