@@ -89,11 +89,11 @@ public class DefaultItemParser extends InputParser<BaseItem> {
             } else {
                 typeString = input.substring(0, nbtStart);
                 if (nbtStart + 1 >= input.length()) {
-                    throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.hanging-lbracket", TextComponent.of(nbtStart)));
+                    throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.hanging-lbrace", TextComponent.of(nbtStart)));
                 }
                 int stateEnd = input.lastIndexOf('}');
                 if (stateEnd < 0) {
-                    throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.missing-rbracket"));
+                    throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.missing-rbrace"));
                 }
                 nbtString = input.substring(nbtStart);
             }
