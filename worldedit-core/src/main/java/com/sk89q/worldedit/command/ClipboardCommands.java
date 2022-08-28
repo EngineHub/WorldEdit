@@ -151,6 +151,8 @@ public class ClipboardCommands {
     public void paste(Actor actor, World world, LocalSession session, EditSession editSession,
                       @Switch(name = 'a', desc = "Skip air blocks")
                           boolean ignoreAirBlocks,
+                      @Switch(name = 'v', desc = "Include structure void blocks")
+                          boolean pasteStructureVoid,
                       @Switch(name = 'o', desc = "Paste at the original position")
                           boolean atOrigin,
                       @Switch(name = 's', desc = "Select the region after pasting")
@@ -176,6 +178,7 @@ public class ClipboardCommands {
                     .createPaste(editSession)
                     .to(to)
                     .ignoreAirBlocks(ignoreAirBlocks)
+                    .ignoreStructureVoidBlocks(!pasteStructureVoid)
                     .copyBiomes(pasteBiomes)
                     .copyEntities(pasteEntities)
                     .maskSource(sourceMask)

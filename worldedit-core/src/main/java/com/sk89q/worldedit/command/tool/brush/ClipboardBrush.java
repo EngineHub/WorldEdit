@@ -34,6 +34,7 @@ public class ClipboardBrush implements Brush {
 
     private final ClipboardHolder holder;
     private final boolean ignoreAirBlocks;
+    private final boolean ignoreStructureVoidBlocks;
     private final boolean usingOrigin;
     private final boolean pasteEntities;
     private final boolean pasteBiomes;
@@ -42,16 +43,30 @@ public class ClipboardBrush implements Brush {
     public ClipboardBrush(ClipboardHolder holder, boolean ignoreAirBlocks, boolean usingOrigin) {
         this.holder = holder;
         this.ignoreAirBlocks = ignoreAirBlocks;
+        this.ignoreStructureVoidBlocks = true;
         this.usingOrigin = usingOrigin;
         this.pasteBiomes = false;
         this.pasteEntities = false;
         this.sourceMask = null;
     }
 
+    @Deprecated
     public ClipboardBrush(ClipboardHolder holder, boolean ignoreAirBlocks, boolean usingOrigin, boolean pasteEntities,
                           boolean pasteBiomes, Mask sourceMask) {
         this.holder = holder;
         this.ignoreAirBlocks = ignoreAirBlocks;
+        this.ignoreStructureVoidBlocks = true;
+        this.usingOrigin = usingOrigin;
+        this.pasteEntities = pasteEntities;
+        this.pasteBiomes = pasteBiomes;
+        this.sourceMask = sourceMask;
+    }
+
+    public ClipboardBrush(ClipboardHolder holder, boolean ignoreAirBlocks, boolean ignoreStructureVoidBlocks,
+                          boolean usingOrigin, boolean pasteEntities, boolean pasteBiomes, Mask sourceMask) {
+        this.holder = holder;
+        this.ignoreAirBlocks = ignoreAirBlocks;
+        this.ignoreStructureVoidBlocks = ignoreStructureVoidBlocks;
         this.usingOrigin = usingOrigin;
         this.pasteEntities = pasteEntities;
         this.pasteBiomes = pasteBiomes;
@@ -68,6 +83,7 @@ public class ClipboardBrush implements Brush {
                 .createPaste(editSession)
                 .to(usingOrigin ? position : position.subtract(centerOffset))
                 .ignoreAirBlocks(ignoreAirBlocks)
+                .ignoreStructureVoidBlocks(ignoreStructureVoidBlocks)
                 .copyEntities(pasteEntities)
                 .copyBiomes(pasteBiomes)
                 .maskSource(sourceMask)
