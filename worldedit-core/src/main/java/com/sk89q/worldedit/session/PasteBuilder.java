@@ -48,7 +48,7 @@ public class PasteBuilder {
 
     private BlockVector3 to = BlockVector3.ZERO;
     private boolean ignoreAirBlocks;
-    private boolean ignoreStructureVoidBlocks = true; // default to true as it's their intended purpose
+    private boolean ignoreStructureVoidBlocks; // TODO Make true in WE8
     private boolean copyEntities = true; // default because it used to be this way
     private boolean copyBiomes;
 
