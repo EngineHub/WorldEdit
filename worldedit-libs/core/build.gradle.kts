@@ -9,4 +9,9 @@ dependencies {
     "shade"("org.enginehub.piston:core:${Versions.PISTON}")
     "shade"("org.enginehub.piston.core-ap:runtime:${Versions.PISTON}")
     "shade"("org.enginehub.piston:default-impl:${Versions.PISTON}")
+    // Linbus
+    "shade"("org.enginehub.lin-bus:lin-bus-common:${Versions.LIN_BUS}")
+    "shade"("org.enginehub.lin-bus:lin-bus-stream:${Versions.LIN_BUS}")
+    "shade"("org.enginehub.lin-bus:lin-bus-tree:${Versions.LIN_BUS}")
+    "shade"("org.enginehub.lin-bus.format:lin-bus-format-snbt:${Versions.LIN_BUS}")
 }

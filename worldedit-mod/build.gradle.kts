@@ -25,6 +25,7 @@ tasks.register<Jar>("jar") {
         exclude("com/thoughtworks/")
         exclude("net/royawesome/")
         exclude("org/enginehub/piston/")
+        exclude("org/enginehub/linbus/")
         exclude("net/kyori/examination/")
         // Exclude worldedit-core
         exclude {

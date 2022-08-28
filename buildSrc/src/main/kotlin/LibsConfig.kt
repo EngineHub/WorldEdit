@@ -16,6 +16,7 @@ import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.exclude
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.invoke
 import org.gradle.kotlin.dsl.named
@@ -87,6 +88,10 @@ fun Project.applyLibrariesConfiguration() {
         from({
             altConfigFiles("sources")
         })
+
+        // Yeet module-info's
+        exclude("module-info.java")
+
         relocations.forEach { (from, to) ->
             val filePattern = Regex("(.*)${from.replace('.', '/')}((?:/|$).*)")
             val textPattern = Regex.fromLiteral(from)
