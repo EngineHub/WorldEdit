@@ -420,7 +420,12 @@ public class MCEditSchematicReader extends NBTSchematicReader {
     }
 
     private BlockState getBlockState(int id, int data) {
-        return LegacyMapper.getInstance().getBlockFromLegacy(id, data);
+        BlockState foundBlock = LegacyMapper.getInstance().getBlockFromLegacy(id, data);
+        if (foundBlock == null && data != 0) {
+            // Some schematics contain invalid data values, so try without the data value
+            return LegacyMapper.getInstance().getBlockFromLegacy(id, 0);
+        }
+        return foundBlock;
     }
 
     @Override

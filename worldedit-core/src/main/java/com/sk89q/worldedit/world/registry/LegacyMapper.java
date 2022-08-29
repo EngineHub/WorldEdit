@@ -153,12 +153,7 @@ public final class LegacyMapper {
 
     @Nullable
     public ItemType getItemFromLegacy(int legacyId, int data) {
-        ItemType foundItem = stringToItemMap.get(legacyId + ":" + data);
-        if (foundItem == null && data != 0) {
-            // Some schematics contain invalid data values, so try without the data value
-            return stringToItemMap.get(legacyId + ":" + 0);
-        }
-        return foundItem;
+        return stringToItemMap.get(legacyId + ":" + data);
     }
 
     @Nullable
@@ -178,12 +173,7 @@ public final class LegacyMapper {
 
     @Nullable
     public BlockState getBlockFromLegacy(int legacyId, int data) {
-        BlockState foundBlock = stringToBlockMap.get(legacyId + ":" + data);
-        if (foundBlock == null && data != 0) {
-            // Some schematics contain invalid data values, so try without the data value
-            return stringToBlockMap.get(legacyId + ":" + 0);
-        }
-        return foundBlock;
+        return stringToBlockMap.get(legacyId + ":" + data);
     }
 
     @Nullable
