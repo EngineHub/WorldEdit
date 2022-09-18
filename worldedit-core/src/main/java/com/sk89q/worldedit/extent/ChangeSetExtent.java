@@ -63,6 +63,7 @@ public class ChangeSetExtent extends AbstractDelegateExtent {
      *
      * @param extent the extent
      * @param changeSet the change set
+     * @param enabled if the extent is enabled
      */
     public ChangeSetExtent(Extent extent, ChangeSet changeSet, boolean enabled) {
         super(extent);
