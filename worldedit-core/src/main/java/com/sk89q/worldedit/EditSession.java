@@ -207,6 +207,7 @@ public class EditSession implements Extent, AutoCloseable {
     private final MultiStageReorder reorderExtent;
     private final MaskingExtent maskingExtent;
     private final BlockChangeLimiter changeLimiter;
+    private @Nullable ChangeSetExtent changeSetExtent;
     private final List<WatchdogTickingExtent> watchdogExtents = new ArrayList<>(2);
 
     private final Extent bypassReorderHistory;
@@ -284,7 +285,7 @@ public class EditSession implements Extent, AutoCloseable {
             this.bypassHistory = traceIfNeeded(new DataValidatorExtent(extent, world));
 
             // These extents can be skipped by calling smartSetBlock()
-            extent = traceIfNeeded(new ChangeSetExtent(extent, changeSet));
+            extent = traceIfNeeded(changeSetExtent = new ChangeSetExtent(extent, changeSet));
             extent = traceIfNeeded(maskingExtent = new MaskingExtent(extent, Masks.alwaysTrue()));
             extent = traceIfNeeded(changeLimiter = new BlockChangeLimiter(extent, maxBlocks));
             extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_HISTORY);
@@ -862,6 +863,28 @@ public class EditSession implements Extent, AutoCloseable {
         context.setExtent(editSession.bypassHistory);
         Operations.completeBlindly(ChangeSetExecutor.createRedo(changeSet, context));
         editSession.internalFlushSession();
+    }
+
+    /**
+     * Gets whether this EditSession will track history.
+     *
+     * @return whether history is tracked
+     */
+    public boolean isTrackingHistory() {
+        return changeSetExtent != null && changeSetExtent.isEnabled();
+    }
+
+    /**
+     * Sets whether this EditSession will track history.
+     *
+     * @param trackHistory whether to track history
+     */
+    public void setTrackingHistory(boolean trackHistory) {
+        if (changeSetExtent != null) {
+            changeSetExtent.setEnabled(trackHistory);
+        } else if (trackHistory) {
+            throw new IllegalStateException("No ChangeSetExtent is available");
+        }
     }
 
     /**
