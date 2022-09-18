@@ -67,7 +67,7 @@ public class BukkitConfiguration extends YAMLConfiguration {
 
     private void migrate(String file, String name) {
         Path fromDir = Path.of(file);
-        if (!fromDir.toAbsolutePath().startsWith(Path.of(".").toAbsolutePath())) {
+        if (!fromDir.toAbsolutePath().startsWith(Path.of("").toAbsolutePath())) {
             throw new IllegalArgumentException("Legacy folder must be below the current working directory");
         }
         Path toDir = getWorkingDirectoryPath().resolve(file);
