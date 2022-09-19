@@ -22,6 +22,7 @@ package com.sk89q.worldedit.session;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.transform.BlockTransformExtent;
+import com.sk89q.worldedit.function.mask.BlockTypeMask;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.MaskIntersection;
@@ -30,6 +31,7 @@ import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.transform.Transform;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -46,6 +48,7 @@ public class PasteBuilder {
 
     private BlockVector3 to = BlockVector3.ZERO;
     private boolean ignoreAirBlocks;
+    private boolean ignoreStructureVoidBlocks; // TODO Make true in WE8
     private boolean copyEntities = true; // default because it used to be this way
     private boolean copyBiomes;
 
@@ -102,6 +105,23 @@ public class PasteBuilder {
     }
 
     /**
+     * Set whether structure void blocks in the source are skipped over when pasting.
+     *
+     * <p>
+     * This currently defaults to false. In the next major version this will default to true, to better align to how
+     * Minecraft intends these blocks to function. It's recommended to set this if the value of this matters for you,
+     * even if it currently matches the default.
+     * </p>
+     *
+     * @param ignoreStructureVoidBlocks value to set it to
+     * @return This builder instance
+     */
+    public PasteBuilder ignoreStructureVoidBlocks(boolean ignoreStructureVoidBlocks) {
+        this.ignoreStructureVoidBlocks = ignoreStructureVoidBlocks;
+        return this;
+    }
+
+    /**
      * Set whether the copy should include source entities.
      * Note that this is true by default for legacy reasons.
      *
@@ -133,12 +153,19 @@ public class PasteBuilder {
         BlockTransformExtent extent = new BlockTransformExtent(clipboard, transform);
         ForwardExtentCopy copy = new ForwardExtentCopy(extent, clipboard.getRegion(), clipboard.getOrigin(), targetExtent, to);
         copy.setTransform(transform);
+
+        Mask combinedMask = sourceMask;
         if (ignoreAirBlocks) {
-            copy.setSourceMask(sourceMask == Masks.alwaysTrue() ? new ExistingBlockMask(clipboard)
-                    : new MaskIntersection(sourceMask, new ExistingBlockMask(clipboard)));
-        } else {
-            copy.setSourceMask(sourceMask);
+            combinedMask = combinedMask == Masks.alwaysTrue() ? new ExistingBlockMask(clipboard)
+                : new MaskIntersection(combinedMask, new ExistingBlockMask(clipboard));
         }
+        if (ignoreStructureVoidBlocks) {
+            Mask structureVoidMask = Masks.negate(new BlockTypeMask(clipboard, BlockTypes.STRUCTURE_VOID));
+            combinedMask = combinedMask == Masks.alwaysTrue() ? structureVoidMask
+                : new MaskIntersection(combinedMask, structureVoidMask);
+        }
+
+        copy.setSourceMask(combinedMask);
         copy.setCopyingEntities(copyEntities);
         copy.setCopyingBiomes(copyBiomes && clipboard.hasBiomes());
         return copy;

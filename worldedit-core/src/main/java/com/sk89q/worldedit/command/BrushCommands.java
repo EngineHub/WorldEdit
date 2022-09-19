@@ -222,6 +222,8 @@ public class BrushCommands {
     public void clipboardBrush(Player player, LocalSession session,
                                @Switch(name = 'a', desc = "Don't paste air from the clipboard")
                                    boolean ignoreAir,
+                               @Switch(name = 'v', desc = "Include structure void blocks")
+                                   boolean pasteStructureVoid,
                                @Switch(name = 'o', desc = "Paste starting at the target location, instead of centering on it")
                                    boolean usingOrigin,
                                @Switch(name = 'e', desc = "Paste entities if available")
@@ -243,9 +245,9 @@ public class BrushCommands {
         worldEdit.checkMaxBrushRadius(size.getBlockY() / 2D - 1);
         worldEdit.checkMaxBrushRadius(size.getBlockZ() / 2D - 1);
 
-        BrushTool tool = session.forceBrush(
+        session.forceBrush(
             player.getItemInHand(HandSide.MAIN_HAND).getType(),
-            new ClipboardBrush(newHolder, ignoreAir, usingOrigin, pasteEntities, pasteBiomes, sourceMask),
+            new ClipboardBrush(newHolder, ignoreAir, !pasteStructureVoid, usingOrigin, pasteEntities, pasteBiomes, sourceMask),
             "worldedit.brush.clipboard"
         );
 
