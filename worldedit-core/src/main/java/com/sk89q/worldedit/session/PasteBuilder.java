@@ -108,7 +108,9 @@ public class PasteBuilder {
      * Set whether structure void blocks in the source are skipped over when pasting.
      *
      * <p>
-     * This defaults to true, to better align to how Minecraft intends these blocks to function.
+     * This currently defaults to false. In the next major version this will default to true, to better align to how
+     * Minecraft intends these blocks to function. It's recommended to set this if the value of this matters for you,
+     * even if it currently matches the default.
      * </p>
      *
      * @param ignoreStructureVoidBlocks value to set it to

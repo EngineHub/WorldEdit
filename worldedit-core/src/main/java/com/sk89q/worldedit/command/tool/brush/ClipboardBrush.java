@@ -41,25 +41,13 @@ public class ClipboardBrush implements Brush {
     private final Mask sourceMask;
 
     public ClipboardBrush(ClipboardHolder holder, boolean ignoreAirBlocks, boolean usingOrigin) {
-        this.holder = holder;
-        this.ignoreAirBlocks = ignoreAirBlocks;
-        this.ignoreStructureVoidBlocks = true;
-        this.usingOrigin = usingOrigin;
-        this.pasteBiomes = false;
-        this.pasteEntities = false;
-        this.sourceMask = null;
+        this(holder, ignoreAirBlocks, usingOrigin, false, false, null);
     }
 
     @Deprecated
     public ClipboardBrush(ClipboardHolder holder, boolean ignoreAirBlocks, boolean usingOrigin, boolean pasteEntities,
                           boolean pasteBiomes, Mask sourceMask) {
-        this.holder = holder;
-        this.ignoreAirBlocks = ignoreAirBlocks;
-        this.ignoreStructureVoidBlocks = true;
-        this.usingOrigin = usingOrigin;
-        this.pasteEntities = pasteEntities;
-        this.pasteBiomes = pasteBiomes;
-        this.sourceMask = sourceMask;
+        this(holder, ignoreAirBlocks, false, usingOrigin, pasteEntities, pasteBiomes, sourceMask);
     }
 
     public ClipboardBrush(ClipboardHolder holder, boolean ignoreAirBlocks, boolean ignoreStructureVoidBlocks,
