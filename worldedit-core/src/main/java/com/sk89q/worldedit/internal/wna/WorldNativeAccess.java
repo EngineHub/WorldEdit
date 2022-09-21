@@ -67,12 +67,14 @@ public interface WorldNativeAccess<NC, NBS, NP> {
             if (block instanceof BaseBlock baseBlock) {
                 LinCompoundTag tag = baseBlock.getNbt();
                 if (tag != null) {
-                    tag = tag.toBuilder()
-                        .putString("id", baseBlock.getNbtId())
+                    LinCompoundTag.Builder tagBuilder = tag.toBuilder()
                         .putInt("x", position.getX())
                         .putInt("y", position.getY())
-                        .putInt("z", position.getZ())
-                        .build();
+                        .putInt("z", position.getZ());
+                    if (!baseBlock.getNbtId().isBlank()) {
+                        tagBuilder.putString("id", baseBlock.getNbtId());
+                    }
+                    tag = tagBuilder.build();
 
                     // update if TE changed as well
                     successful = updateTileEntity(pos, tag);
