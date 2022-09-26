@@ -21,6 +21,7 @@ package com.sk89q.util.yaml;
 
 import com.sk89q.util.StringUtil;
 import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.nodes.Tag;
@@ -89,13 +90,21 @@ public class YAMLProcessor extends YAMLNode {
         super(new LinkedHashMap<>(), writeDefaults);
         this.format = format;
 
-        DumperOptions options = new DumperOptions();
-        options.setIndent(4);
-        options.setDefaultFlowStyle(format.getStyle());
+        DumperOptions dumperOptions = new DumperOptions();
+        dumperOptions.setIndent(4);
+        dumperOptions.setDefaultFlowStyle(format.getStyle());
         Representer representer = new FancyRepresenter();
         representer.setDefaultFlowStyle(format.getStyle());
+        LoaderOptions loaderOptions = new LoaderOptions();
+        try {
+            // 64 MB default
+            int yamlCodePointLimit = Integer.getInteger("worldedit.yaml.codePointLimit", 64 * 1024 * 1024);
+            loaderOptions.setCodePointLimit(yamlCodePointLimit);
+        } catch (NoSuchMethodError ignored) {
+            // pre-1.32 snakeyaml
+        }
 
-        yaml = new Yaml(new SafeConstructor(), representer, options);
+        yaml = new Yaml(new SafeConstructor(), representer, dumperOptions, loaderOptions);
 
         this.file = file;
     }
