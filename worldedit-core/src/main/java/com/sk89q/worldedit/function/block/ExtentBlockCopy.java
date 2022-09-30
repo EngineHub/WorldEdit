@@ -92,7 +92,7 @@ public class ExtentBlockCopy implements RegionFunction {
         if (tag != null) {
             // Handle blocks which store their rotation in NBT
             LinTag<?> rotTag = tag.value().get("Rot");
-            if (rotTag.value() instanceof Number number) {
+            if (rotTag != null && rotTag.value() instanceof Number number) {
                 int rot = number.intValue();
 
                 Direction direction = MCDirections.fromRotation(rot);
