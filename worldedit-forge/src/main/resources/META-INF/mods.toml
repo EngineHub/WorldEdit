@@ -9,7 +9,7 @@ displayURL="https://enginehub.org/worldedit/"
 # A file name (in the root of the mod JAR) containing a logo for display
 logoFile="worldedit-icon.png"
 # A text field displayed in the mod UI
-authors="EngineHub, sk89q, wizjany, TomyLobo, octylFractal, Me4502"
+authors="EngineHub"
 license="GPL"
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]]
