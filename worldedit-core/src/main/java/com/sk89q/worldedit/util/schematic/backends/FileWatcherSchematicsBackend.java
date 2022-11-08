@@ -21,7 +21,7 @@ package com.sk89q.worldedit.util.schematic.backends;
 
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.util.io.file.RecursiveDirectoryWatcher;
-import com.sk89q.worldedit.util.schematic.Schematic;
+import com.sk89q.worldedit.util.schematic.SchematicPath;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
@@ -41,7 +41,7 @@ public class FileWatcherSchematicsBackend implements SchematicsBackend {
     private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-    private final Set<Schematic> schematics = new HashSet<>();
+    private final Set<SchematicPath> schematics = new HashSet<>();
     private final RecursiveDirectoryWatcher directoryWatcher;
 
     private FileWatcherSchematicsBackend(RecursiveDirectoryWatcher directoryWatcher) {
@@ -64,9 +64,9 @@ public class FileWatcherSchematicsBackend implements SchematicsBackend {
         directoryWatcher.start(event -> {
             lock.writeLock().lock();
             if (event instanceof RecursiveDirectoryWatcher.FileCreatedEvent) {
-                schematics.add(new Schematic(event.getPath()));
+                schematics.add(new SchematicPath(event.getPath()));
             } else if (event instanceof RecursiveDirectoryWatcher.FileDeletedEvent) {
-                schematics.remove(new Schematic(event.getPath()));
+                schematics.remove(new SchematicPath(event.getPath()));
             }
             lock.writeLock().unlock();
             if (event instanceof RecursiveDirectoryWatcher.FileCreatedEvent) {
@@ -84,9 +84,9 @@ public class FileWatcherSchematicsBackend implements SchematicsBackend {
     }
 
     @Override
-    public List<Schematic> getList() {
+    public List<SchematicPath> getList() {
         lock.readLock().lock();
-        List<Schematic> result = new ArrayList<>(schematics);
+        List<SchematicPath> result = new ArrayList<>(schematics);
         lock.readLock().unlock();
         return result;
     }
