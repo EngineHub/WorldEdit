@@ -21,6 +21,7 @@ package com.sk89q.worldedit.extension.platform;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockRegistry;
@@ -53,10 +54,12 @@ public enum Capability {
         @Override
         void initialize(PlatformManager platformManager, Platform platform) {
             WorldEdit.getInstance().getAssetLoaders().init();
+            WorldEdit.getInstance().getSchematicsManager().init();
         }
 
         @Override
         void uninitialize(PlatformManager platformManager, Platform platform) {
+            WorldEdit.getInstance().getSchematicsManager().uninit();
             WorldEdit.getInstance().getAssetLoaders().uninit();
         }
     },

@@ -65,6 +65,7 @@ import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
 import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
 import com.sk89q.worldedit.util.io.file.InvalidFilenameException;
+import com.sk89q.worldedit.util.schematic.SchematicsManager;
 import com.sk89q.worldedit.util.task.SimpleSupervisor;
 import com.sk89q.worldedit.util.task.Supervisor;
 import com.sk89q.worldedit.util.translation.TranslationManager;
@@ -126,6 +127,7 @@ public final class WorldEdit {
             EvenMoreExecutors.newBoundedCachedThreadPool(0, 1, 20, "WorldEdit Task Executor - %s"));
     private final Supervisor supervisor = new SimpleSupervisor();
     private final AssetLoaders assetLoaders = new AssetLoaders(this);
+    private final SchematicsManager schematicsManager = new SchematicsManager(this);
 
     private final BlockFactory blockFactory = new BlockFactory(this);
     private final ItemFactory itemFactory = new ItemFactory(this);
@@ -259,6 +261,15 @@ public final class WorldEdit {
      */
     public AssetLoaders getAssetLoaders() {
         return assetLoaders;
+    }
+
+    /**
+     * Return the Schematics Manager instance.
+     *
+     * @return the schematics manager instance
+     */
+    public SchematicsManager getSchematicsManager() {
+        return schematicsManager;
     }
 
     /**
