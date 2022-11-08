@@ -111,13 +111,15 @@ public class SchematicCommands {
     @CommandPermissions({"worldedit.clipboard.load", "worldedit.schematic.load"})
     public void load(Actor actor, LocalSession session,
                      @Arg(desc = "File name.")
-                         String filename,
+                         Schematic schematic,
                      @Arg(desc = "Format name.", def = "sponge")
                          ClipboardFormat format) throws FilenameException {
         LocalConfiguration config = worldEdit.getConfiguration();
 
-        File dir = worldEdit.getWorkingDirectoryPath(config.saveDir).toFile();
-        File f = worldEdit.getSafeOpenFile(actor, dir, filename,
+        // Schematic.path is relative, so treat it as filename
+        String filename = schematic.getPath().toString();
+        File schematicsRoot = worldEdit.getSchematicsManager().getRoot().toFile();
+        File f = worldEdit.getSafeOpenFile(actor, schematicsRoot, filename,
                 BuiltInClipboardFormat.SPONGE_V3_SCHEMATIC.getPrimaryFileExtension(),
                 ClipboardFormats.getFileExtensionArray());
 
@@ -249,10 +251,12 @@ public class SchematicCommands {
     @CommandPermissions("worldedit.schematic.delete")
     public void delete(Actor actor,
                        @Arg(desc = "File name.")
-                           String filename) throws WorldEditException {
+                           Schematic schematic) throws WorldEditException {
         LocalConfiguration config = worldEdit.getConfiguration();
         File dir = worldEdit.getWorkingDirectoryPath(config.saveDir).toFile();
 
+        // Schematic.path is relative, so treat it as filename
+        String filename = schematic.getPath().toString();
         File f = worldEdit.getSafeOpenFile(actor,
                 dir, filename, "schematic", ClipboardFormats.getFileExtensionArray());
 
