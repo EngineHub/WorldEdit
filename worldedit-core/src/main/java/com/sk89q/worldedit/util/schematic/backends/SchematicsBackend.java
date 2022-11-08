@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.util.schematic.backends;
 
-import com.sk89q.worldedit.util.schematic.Schematic;
+import com.sk89q.worldedit.util.schematic.SchematicPath;
 
 import java.util.List;
 
@@ -43,7 +43,7 @@ public interface SchematicsBackend {
      *
      * @return List of known schematics.
      */
-    List<Schematic> getList();
+    List<SchematicPath> getList();
 
     /**
      * Tells the backend that there are changes it should take into account.

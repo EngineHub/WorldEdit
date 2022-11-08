@@ -102,7 +102,7 @@ public class SchematicsManager {
      * Get a list of all known schematics.
      * @return List of all known schematics.
      */
-    public List<Schematic> getList() {
+    public List<SchematicPath> getList() {
         return backend.getList();
     }
 

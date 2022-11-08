@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.util.schematic.backends;
 
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
-import com.sk89q.worldedit.util.schematic.Schematic;
+import com.sk89q.worldedit.util.schematic.SchematicPath;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
@@ -46,7 +46,7 @@ public class PollingSchematicsBackend implements SchematicsBackend {
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private final Path schematicsDir;
     private Instant lastUpdateTs = Instant.EPOCH;
-    private List<Schematic> schematics = new ArrayList<>();
+    private List<SchematicPath> schematics = new ArrayList<>();
 
     private PollingSchematicsBackend(Path schematicsDir) {
         this.schematicsDir = schematicsDir;
@@ -61,14 +61,14 @@ public class PollingSchematicsBackend implements SchematicsBackend {
         return new PollingSchematicsBackend(schematicsFolder);
     }
 
-    private List<Schematic> scanFolder(Path root) {
-        List<Schematic> pathList = new ArrayList<>();
+    private List<SchematicPath> scanFolder(Path root) {
+        List<SchematicPath> pathList = new ArrayList<>();
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(root)) {
             for (Path path : stream) {
                 if (Files.isDirectory(path)) {
                     pathList.addAll(scanFolder(path));
                 } else {
-                    pathList.add(new Schematic(path));
+                    pathList.add(new SchematicPath(path));
                 }
             }
         } catch (IOException e) {
@@ -94,7 +94,7 @@ public class PollingSchematicsBackend implements SchematicsBackend {
     }
 
     @Override
-    public synchronized List<Schematic> getList() {
+    public synchronized List<SchematicPath> getList() {
         // udpate internal cache if requried (determined by age)
         Duration age = Duration.between(lastUpdateTs, Instant.now());
         if (age.compareTo(MAX_RESULT_AGE) >= 0) {
