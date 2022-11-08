@@ -55,6 +55,8 @@ import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldedit.util.io.file.MorePaths;
+import com.sk89q.worldedit.util.schematic.Schematic;
+import com.sk89q.worldedit.util.schematic.SchematicsManager;
 import org.apache.logging.log4j.Logger;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
@@ -314,7 +316,6 @@ public class SchematicCommands {
         if (oldFirst && newFirst) {
             throw new StopExecutionException(TextComponent.of("Cannot sort by oldest and newest."));
         }
-        final String saveDir = worldEdit.getConfiguration().saveDir;
         Comparator<Path> pathComparator;
         String flag;
         if (oldFirst) {
@@ -330,8 +331,10 @@ public class SchematicCommands {
         final String pageCommand = actor.isPlayer()
                 ? "//schem list -p %page%" + flag : null;
 
+        Comparator<Schematic> schematicComparator = (s0, s1) -> pathComparator.compare(s0.getPath(), s1.getPath());
+
         WorldEditAsyncCommandBuilder.createAndSendMessage(actor,
-                new SchematicListTask(saveDir, pathComparator, page, pageCommand),
+                new SchematicListTask(schematicComparator, page, pageCommand),
                 SubtleFormat.wrap("(Please wait... gathering schematic list.)"));
     }
 
@@ -399,6 +402,7 @@ public class SchematicCommands {
         public Void call() throws Exception {
             try {
                 writeToOutputStream(new FileOutputStream(file));
+                WorldEdit.getInstance().getSchematicsManager().update();
                 LOGGER.info(actor.getName() + " saved " + file.getCanonicalPath() + (overwrite ? " (overwriting previous file)" : ""));
             } catch (IOException e) {
                 file.delete();
@@ -437,22 +441,20 @@ public class SchematicCommands {
     }
 
     private static class SchematicListTask implements Callable<Component> {
-        private final Comparator<Path> pathComparator;
+        private final Comparator<Schematic> pathComparator;
         private final int page;
-        private final Path rootDir;
         private final String pageCommand;
 
-        SchematicListTask(String prefix, Comparator<Path> pathComparator, int page, String pageCommand) {
+        SchematicListTask(Comparator<Schematic> pathComparator, int page, String pageCommand) {
             this.pathComparator = pathComparator;
             this.page = page;
-            this.rootDir = WorldEdit.getInstance().getWorkingDirectoryPath(prefix);
             this.pageCommand = pageCommand;
         }
 
         @Override
         public Component call() throws Exception {
-            Path resolvedRoot = rootDir.toRealPath();
-            List<Path> fileList = allFiles(resolvedRoot);
+            SchematicsManager schematicsManager = WorldEdit.getInstance().getSchematicsManager();
+            List<Schematic> fileList = schematicsManager.getList();
 
             if (fileList.isEmpty()) {
                 return ErrorFormat.wrap("No schematics found.");
@@ -460,30 +462,16 @@ public class SchematicCommands {
 
             fileList.sort(pathComparator);
 
-            PaginationBox paginationBox = new SchematicPaginationBox(resolvedRoot, fileList, pageCommand);
+            PaginationBox paginationBox = new SchematicPaginationBox(schematicsManager.getRoot(), fileList, pageCommand);
             return paginationBox.create(page);
         }
     }
 
-    private static List<Path> allFiles(Path root) throws IOException {
-        List<Path> pathList = new ArrayList<>();
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(root)) {
-            for (Path path : stream) {
-                if (Files.isDirectory(path)) {
-                    pathList.addAll(allFiles(path));
-                } else {
-                    pathList.add(path);
-                }
-            }
-        }
-        return pathList;
-    }
-
     private static class SchematicPaginationBox extends PaginationBox {
         private final Path rootDir;
-        private final List<Path> files;
+        private final List<Schematic> files;
 
-        SchematicPaginationBox(Path rootDir, List<Path> files, String pageCommand) {
+        SchematicPaginationBox(Path rootDir, List<Schematic> files, String pageCommand) {
             super("Available schematics", pageCommand);
             this.rootDir = rootDir;
             this.files = files;
@@ -492,7 +480,7 @@ public class SchematicCommands {
         @Override
         public Component getComponent(int number) {
             checkArgument(number < files.size() && number >= 0);
-            Path file = files.get(number);
+            Path file = files.get(number).getPath();
 
             String format = ClipboardFormats.getFileExtensionMap()
                 .get(MoreFiles.getFileExtension(file))
