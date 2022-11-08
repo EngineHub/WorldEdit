@@ -24,30 +24,11 @@ import java.nio.file.Path;
 /**
  * Record representing one Schematic file.
  */
-public record Schematic(Path path) {
-
-    /**
-     * Get this Schematic's path.
-     * @return This Schematic's path.
-     */
-    public Path getPath() {
-        return path;
-    }
+public record SchematicPath(Path path) {
 
     @Override
     public String toString() {
         return path.toString();
     }
 
-    @Override
-    public int hashCode() {
-        return path.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        Schematic other = (Schematic) obj;
-        if (other == null) { return false; }
-        return path.equals(other.getPath());
-    }
 }

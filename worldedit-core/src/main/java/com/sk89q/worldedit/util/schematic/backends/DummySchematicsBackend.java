@@ -19,9 +19,8 @@
 
 package com.sk89q.worldedit.util.schematic.backends;
 
-import com.sk89q.worldedit.util.schematic.Schematic;
+import com.sk89q.worldedit.util.schematic.SchematicPath;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +38,7 @@ public class DummySchematicsBackend implements SchematicsBackend {
     }
 
     @Override
-    public List<Schematic> getList() {
+    public List<SchematicPath> getList() {
         return new ArrayList<>();
     }
 
