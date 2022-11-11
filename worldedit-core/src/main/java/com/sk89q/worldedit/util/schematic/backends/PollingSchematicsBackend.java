@@ -85,12 +85,10 @@ public class PollingSchematicsBackend implements SchematicsBackend {
 
     @Override
     public void init() {
-        LOGGER.debug("init");
     }
 
     @Override
     public void uninit() {
-        LOGGER.debug("uninit");
     }
 
     @Override

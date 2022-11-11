@@ -79,7 +79,6 @@ public class FileWatcherSchematicsBackend implements SchematicsBackend {
 
     @Override
     public void uninit() {
-        LOGGER.debug("uninit");
         directoryWatcher.stop();
     }
 
