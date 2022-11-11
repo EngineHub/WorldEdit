@@ -229,7 +229,9 @@ public class CommandUtil {
             return suggestion;
         }
         String substr = suggestion.getSubstring();
-        int sp = substr.lastIndexOf(' ');
+        // Ignore if suggestion ends with a " ", since that signals the end of
+        // the completed command.
+        int sp = substr.trim().lastIndexOf(' ');
         if (sp < 0) {
             return suggestion;
         }
