@@ -49,7 +49,8 @@ import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
 import net.minecraft.core.BlockPos;
-import net.minecraft.data.worldgen.Features;
+import net.minecraft.data.worldgen.features.EndFeatures;
+import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
@@ -285,43 +286,43 @@ public final class SpongeWorld extends AbstractWorld {
         switch (type) {
             // Based off of the SaplingGenerator class, as well as uses of DefaultBiomeFeatures fields
             case TREE:
-                return Features.OAK;
+                return TreeFeatures.OAK.value();
             case BIG_TREE:
-                return Features.FANCY_OAK;
+                return TreeFeatures.FANCY_OAK.value();
             case REDWOOD:
-                return Features.SPRUCE;
+                return TreeFeatures.SPRUCE.value();
             case TALL_REDWOOD:
-                return Features.MEGA_SPRUCE;
+                return TreeFeatures.MEGA_SPRUCE.value();
             case MEGA_REDWOOD:
-                return Features.MEGA_PINE;
+                return TreeFeatures.MEGA_PINE.value();
             case BIRCH:
-                return Features.BIRCH;
+                return TreeFeatures.BIRCH.value();
             case JUNGLE:
-                return Features.MEGA_JUNGLE_TREE;
+                return TreeFeatures.MEGA_JUNGLE_TREE.value();
             case SMALL_JUNGLE:
-                return Features.JUNGLE_TREE;
+                return TreeFeatures.JUNGLE_TREE.value();
             case SHORT_JUNGLE:
-                return Features.JUNGLE_TREE_NO_VINE;
+                return TreeFeatures.JUNGLE_TREE_NO_VINE.value();
             case JUNGLE_BUSH:
-                return Features.JUNGLE_BUSH;
+                return TreeFeatures.JUNGLE_BUSH.value();
             case SWAMP:
-                return Features.SWAMP_TREE;
+                return TreeFeatures.SWAMP_OAK.value();
             case ACACIA:
-                return Features.ACACIA;
+                return TreeFeatures.ACACIA.value();
             case DARK_OAK:
-                return Features.DARK_OAK;
+                return TreeFeatures.DARK_OAK.value();
             case TALL_BIRCH:
-                return Features.BIRCH_TALL;
+                return TreeFeatures.SUPER_BIRCH_BEES.value(); // TODO Bees???
             case RED_MUSHROOM:
-                return Features.HUGE_RED_MUSHROOM;
+                return TreeFeatures.HUGE_RED_MUSHROOM.value();
             case BROWN_MUSHROOM:
-                return Features.HUGE_BROWN_MUSHROOM;
+                return TreeFeatures.HUGE_BROWN_MUSHROOM.value();
             case WARPED_FUNGUS:
-                return Features.WARPED_FUNGI;
+                return TreeFeatures.WARPED_FUNGUS.value();
             case CRIMSON_FUNGUS:
-                return Features.CRIMSON_FUNGI;
+                return TreeFeatures.CRIMSON_FUNGUS.value();
             case CHORUS_PLANT:
-                return Features.CHORUS_PLANT;
+                return EndFeatures.CHORUS_PLANT.value();
             case RANDOM:
                 return createTreeFeatureGenerator(TreeGenerator.TreeType.values()[ThreadLocalRandom.current().nextInt(TreeGenerator.TreeType.values().length)]);
             default:

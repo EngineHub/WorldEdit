@@ -105,8 +105,8 @@ public class SpongeWorldNativeAccess implements WorldNativeAccess<LevelChunk, Bl
         if (tileEntity == null) {
             return false;
         }
-        tileEntity.setLevelAndPosition(getWorld(), position);
-        tileEntity.load(getWorld().getBlockState(position), nativeTag);
+        tileEntity.setLevel(getWorld());
+        tileEntity.load(nativeTag);
         return true;
     }
 

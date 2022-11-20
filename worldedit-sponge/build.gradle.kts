@@ -7,7 +7,7 @@ plugins {
     id("org.spongepowered.gradle.vanilla")
 }
 
-applyPlatformAndCoreConfiguration()
+applyPlatformAndCoreConfiguration(javaRelease = 17)
 applyShadowConfiguration()
 
 repositories {
@@ -15,10 +15,10 @@ repositories {
 }
 
 minecraft {
-    version("1.16.5")
+    version("1.18.2")
 }
 
-val spongeApiVersion = "8.1.0";
+val spongeApiVersion = "9.0.0";
 
 sponge {
     apiVersion(spongeApiVersion)

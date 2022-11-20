@@ -23,21 +23,22 @@ import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.registry.Registry;
 import org.spongepowered.api.registry.RegistryTypes;
+import org.spongepowered.api.tag.Tag;
 
-import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SpongeBlockCategoryRegistry implements BlockCategoryRegistry {
     @Override
     public Set<BlockType> getCategorisedByName(String category) {
-        return Sponge.game().registry(RegistryTypes.BLOCK_TYPE_TAGS)
-            .findValue(ResourceKey.resolve(category))
-            .map(org.spongepowered.api.tag.Tag::values)
-            .orElse(Collections.emptyList())
-            .stream()
-            .map(b -> BlockType.REGISTRY.get(Sponge.game().registry(RegistryTypes.BLOCK_TYPE).valueKey(b).formatted()))
-            .collect(Collectors.toSet());
+        Registry<org.spongepowered.api.block.BlockType> blockTypeRegistry =
+                Sponge.game().registry(RegistryTypes.BLOCK_TYPE);
+
+        return blockTypeRegistry.taggedValues(Tag.of(RegistryTypes.BLOCK_TYPE, ResourceKey.resolve(category)))
+                .stream()
+                .map(blockType -> BlockType.REGISTRY.get(blockTypeRegistry.valueKey(blockType).formatted()))
+                .collect(Collectors.toSet());
     }
 }
