@@ -35,9 +35,6 @@ import net.minecraft.util.StringRepresentable;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.registry.RegistryTypes;
-import org.spongepowered.api.state.BooleanStateProperty;
-import org.spongepowered.api.state.EnumStateProperty;
-import org.spongepowered.api.state.IntegerStateProperty;
 import org.spongepowered.api.state.StateProperty;
 
 import java.util.Comparator;
@@ -51,26 +48,32 @@ import java.util.stream.Collectors;
  */
 public class SpongeTransmogrifier {
 
-    private static final LoadingCache<StateProperty<?>, Property<?>> PROPERTY_CACHE = CacheBuilder.newBuilder().build(new CacheLoader<StateProperty<?>, Property<?>>() {
+    private static final LoadingCache<StateProperty<?>, Property<?>> PROPERTY_CACHE = CacheBuilder.newBuilder().build(new CacheLoader<>() {
         @Override
-        public Property<?> load(StateProperty<?> property) throws Exception {
-            if (property instanceof BooleanStateProperty) {
-                return new BooleanProperty(property.name(), ImmutableList.copyOf(((BooleanStateProperty) property).possibleValues()));
+        public Property<?> load(StateProperty<?> property) {
+            net.minecraft.world.level.block.state.properties.Property<?> nativeProperty =
+                    (net.minecraft.world.level.block.state.properties.Property<?>) property;
+            String propertyName = nativeProperty.getName();
+            if (nativeProperty instanceof net.minecraft.world.level.block.state.properties.BooleanProperty) {
+                return new BooleanProperty(propertyName,
+                    ImmutableList.copyOf(((net.minecraft.world.level.block.state.properties.BooleanProperty) nativeProperty).getPossibleValues()));
             }
-            if (property instanceof IntegerStateProperty) {
-                return new IntegerProperty(property.name(), ImmutableList.copyOf(((IntegerStateProperty) property).possibleValues()));
+            if (nativeProperty instanceof net.minecraft.world.level.block.state.properties.IntegerProperty) {
+                return new IntegerProperty(propertyName,
+                    ImmutableList.copyOf(((net.minecraft.world.level.block.state.properties.IntegerProperty) nativeProperty).getPossibleValues()));
             }
-            if (isDirectionProperty(property)) {
-                return new DirectionalProperty(property.name(),
-                    ((EnumStateProperty<?>) property).possibleValues().stream()
+            if (isDirectionProperty(nativeProperty)) {
+                return new DirectionalProperty(propertyName,
+                    ((net.minecraft.world.level.block.state.properties.EnumProperty<?>) nativeProperty).getPossibleValues().stream()
                         .map(x -> adaptDirection((net.minecraft.core.Direction) x))
                         .collect(Collectors.toList())
                 );
             }
-            if (property instanceof EnumStateProperty) {
-                return new EnumProperty(property.name(), ((EnumStateProperty<?>) property).possibleValues().stream()
-                    .map(x -> ((StringRepresentable) x).getSerializedName())
-                    .collect(Collectors.toList()));
+            if (nativeProperty instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
+                return new EnumProperty(propertyName,
+                    ((net.minecraft.world.level.block.state.properties.EnumProperty<?>) nativeProperty).getPossibleValues().stream()
+                        .map(StringRepresentable::getSerializedName)
+                        .collect(Collectors.toList()));
             }
             throw new IllegalStateException("Unknown property type");
         }
@@ -80,23 +83,27 @@ public class SpongeTransmogrifier {
         return PROPERTY_CACHE.getUnchecked(property);
     }
 
-    private static Map<Property<?>, Object> transmogToWorldEditProperties(BlockType block, Map<StateProperty<?>, ?> mcProps) {
-        Map<Property<?>, Object> props = new TreeMap<>(Comparator.comparing(Property::getName));
-        for (Map.Entry<StateProperty<?>, ?> prop : mcProps.entrySet()) {
-            Object value = prop.getValue();
-            if (isDirectionProperty(prop.getKey())) {
-                value = adaptDirection((net.minecraft.core.Direction) value);
-            } else if (prop.getKey() instanceof EnumStateProperty) {
+    private static Map<Property<?>, Object> transmogToWorldEditProperties(
+        BlockType block,
+        net.minecraft.world.level.block.state.BlockState blockState
+    ) {
+        Map<Property<?>, Object> properties = new TreeMap<>(Comparator.comparing(Property::getName));
+        for (net.minecraft.world.level.block.state.properties.Property<?> nativeProperty: blockState.getProperties()) {
+            Object value = blockState.getValue(nativeProperty);
+            if (isDirectionProperty(nativeProperty)) {
+                net.minecraft.core.Direction nativeDirectionValue = (net.minecraft.core.Direction) value;
+                value = adaptDirection(nativeDirectionValue);
+            } else if (nativeProperty instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
                 value = ((StringRepresentable) value).getSerializedName();
             }
-            props.put(block.getProperty(prop.getKey().name()), value);
+            properties.put(block.getProperty(nativeProperty.getName()), value);
         }
-        return props;
+        return properties;
     }
 
-    private static boolean isDirectionProperty(StateProperty<?> property) {
-        return property instanceof EnumStateProperty
-            && property.valueClass().isAssignableFrom(net.minecraft.core.Direction.class);
+    private static boolean isDirectionProperty(net.minecraft.world.level.block.state.properties.Property<?> property) {
+        return property instanceof net.minecraft.world.level.block.state.properties.EnumProperty
+            && property.getValueClass().isAssignableFrom(net.minecraft.core.Direction.class);
     }
 
     private static Direction adaptDirection(net.minecraft.core.Direction direction) {
@@ -137,36 +144,50 @@ public class SpongeTransmogrifier {
         }
     }
 
+    private static net.minecraft.world.level.block.state.properties.Property<?> findPropertyByName(
+        net.minecraft.world.level.block.state.BlockState blockState,
+        String propertyName
+    ) {
+        for (net.minecraft.world.level.block.state.properties.Property<?> property: blockState.getProperties()) {
+            if (property.getName().equals(propertyName)) {
+                return property;
+            }
+        }
+
+        throw new IllegalStateException("Missing property in " + blockState.getBlock() + ": " + propertyName);
+    }
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private static org.spongepowered.api.block.BlockState transmogToMinecraftProperties(
-        org.spongepowered.api.block.BlockState newState,
+        org.spongepowered.api.block.BlockState blockState,
         Map<Property<?>, Object> states
     ) {
-        org.spongepowered.api.block.BlockType type = newState.type();
-        for (Map.Entry<Property<?>, Object> state : states.entrySet()) {
-            StateProperty<?> property = type.findStateProperty(state.getKey().getName())
-                .orElseThrow(() -> new IllegalStateException(
-                    "Missing property in " + type + ": " + state.getKey().getName())
-                );
-            Comparable value = (Comparable) state.getValue();
-            // we may need to adapt this value, depending on the source prop
-            if (state.getKey() instanceof DirectionalProperty) {
-                Direction dir = (Direction) value;
-                value = adaptDirection(dir);
-            } else if (state.getKey() instanceof EnumProperty) {
-                String enumName = (String) value;
-                value = property.parseValue(enumName).orElseThrow(() -> new IllegalStateException(
-                    "Failed to parse '" + enumName + "' into " + state.getKey().getName()
-                ));
+        net.minecraft.world.level.block.state.BlockState nativeBlockState =
+            (net.minecraft.world.level.block.state.BlockState) blockState;
+        for (Map.Entry<Property<?>, Object> stateEntry: states.entrySet()) {
+            Property<?> property = stateEntry.getKey();
+            Object value = stateEntry.getValue();
+            net.minecraft.world.level.block.state.properties.Property<?> nativeProperty =
+                findPropertyByName(nativeBlockState, property.getName());
+            Comparable<?> nativeValue;
+            if (property instanceof DirectionalProperty) {
+                Direction directionValue = (Direction) value;
+                nativeValue = adaptDirection(directionValue);
+            } else if (property instanceof EnumProperty) {
+                String valueName = (String) value;
+                Optional<? extends Comparable<?>> nativeValueOpt = nativeProperty.getValue(valueName);
+                if (nativeValueOpt.isEmpty()) {
+                    throw new IllegalStateException("Failed to parse " + valueName + " into " + property.getName());
+                }
+                nativeValue = nativeValueOpt.get();
+            } else {
+                nativeValue = (Comparable<?>) value;
             }
-
-            Optional<org.spongepowered.api.block.BlockState> optional =
-                newState.withStateProperty((StateProperty) property, value);
-            newState = optional.orElseThrow(() -> new IllegalStateException(
-                "Failed to change state property " + property.name()
-            ));
+            nativeBlockState = nativeBlockState.setValue(
+                (net.minecraft.world.level.block.state.properties.Property) nativeProperty, (Comparable) nativeValue);
         }
-        return newState;
+
+        return (org.spongepowered.api.block.BlockState) nativeBlockState;
     }
 
     public static org.spongepowered.api.block.BlockState transmogToMinecraft(BlockState blockState) {
@@ -181,7 +202,8 @@ public class SpongeTransmogrifier {
         BlockType blockType = BlockType.REGISTRY.get(
             blockState.type().key(RegistryTypes.BLOCK_TYPE).asString()
         );
-        return blockType.getState(transmogToWorldEditProperties(blockType, blockState.statePropertyMap()));
+        return blockType.getState(transmogToWorldEditProperties(blockType,
+            (net.minecraft.world.level.block.state.BlockState) blockState));
     }
 
     private SpongeTransmogrifier() {
