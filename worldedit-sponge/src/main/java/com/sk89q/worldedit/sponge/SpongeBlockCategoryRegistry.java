@@ -34,11 +34,11 @@ public class SpongeBlockCategoryRegistry implements BlockCategoryRegistry {
     @Override
     public Set<BlockType> getCategorisedByName(String category) {
         Registry<org.spongepowered.api.block.BlockType> blockTypeRegistry =
-                Sponge.game().registry(RegistryTypes.BLOCK_TYPE);
+            Sponge.game().registry(RegistryTypes.BLOCK_TYPE);
 
         return blockTypeRegistry.taggedValues(Tag.of(RegistryTypes.BLOCK_TYPE, ResourceKey.resolve(category)))
-                .stream()
-                .map(blockType -> BlockType.REGISTRY.get(blockTypeRegistry.valueKey(blockType).formatted()))
-                .collect(Collectors.toSet());
+            .stream()
+            .map(blockType -> BlockType.REGISTRY.get(blockTypeRegistry.valueKey(blockType).formatted()))
+            .collect(Collectors.toSet());
     }
 }

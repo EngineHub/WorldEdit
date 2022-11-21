@@ -36,11 +36,11 @@ public class SpongeItemCategoryRegistry implements ItemCategoryRegistry {
     @Override
     public Set<ItemType> getCategorisedByName(String category) {
         Registry<org.spongepowered.api.item.ItemType> itemTypeRegistry =
-                Sponge.game().registry(RegistryTypes.ITEM_TYPE);
+            Sponge.game().registry(RegistryTypes.ITEM_TYPE);
 
         return itemTypeRegistry.taggedValues(Tag.of(RegistryTypes.ITEM_TYPE, ResourceKey.resolve(category)))
-                .stream()
-                .map(itemType -> ItemType.REGISTRY.get(itemTypeRegistry.valueKey(itemType).formatted()))
-                .collect(Collectors.toSet());
+            .stream()
+            .map(itemType -> ItemType.REGISTRY.get(itemTypeRegistry.valueKey(itemType).formatted()))
+            .collect(Collectors.toSet());
     }
 }

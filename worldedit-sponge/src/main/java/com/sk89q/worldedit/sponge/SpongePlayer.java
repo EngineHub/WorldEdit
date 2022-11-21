@@ -241,16 +241,16 @@ public class SpongePlayer extends AbstractPlayerActor {
                 final CompoundTag nbtData = baseBlock.getNbtData();
                 if (nbtData != null) {
                     net.minecraft.world.level.block.state.BlockState nativeBlock =
-                            (net.minecraft.world.level.block.state.BlockState) spongeBlock;
+                        (net.minecraft.world.level.block.state.BlockState) spongeBlock;
                     net.minecraft.nbt.CompoundTag nativeNbtData = NbtAdapter.adaptNMSToWorldEdit(nbtData);
                     net.minecraft.server.level.ServerPlayer nativePlayer =
                         ((net.minecraft.server.level.ServerPlayer) player);
 
                     StructureBlockEntity structureBlockEntity =
-                            new StructureBlockEntity(new BlockPos(pos.getX(), pos.getY(), pos.getZ()), nativeBlock);
+                        new StructureBlockEntity(new BlockPos(pos.getX(), pos.getY(), pos.getZ()), nativeBlock);
                     structureBlockEntity.load(nativeNbtData);
                     nativePlayer.connection.send(
-                            ClientboundBlockEntityDataPacket.create(structureBlockEntity, it -> nativeNbtData));
+                        ClientboundBlockEntityDataPacket.create(structureBlockEntity, it -> nativeNbtData));
                 }
             }
         }
