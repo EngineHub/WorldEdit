@@ -195,7 +195,7 @@ public final class SpongeWorld extends AbstractWorld {
             BaseBlock baseBlock = (BaseBlock) block;
             BlockEntityArchetype.builder()
                 .blockEntity((BlockEntityType)
-                    world.engine().registry(RegistryTypes.BLOCK_ENTITY_TYPE)
+                    Sponge.game().registry(RegistryTypes.BLOCK_ENTITY_TYPE)
                         .value(ResourceKey.resolve(baseBlock.getNbtId()))
                 )
                 .blockEntityData(NbtAdapter.adaptFromWorldEdit(baseBlock.getNbtData()))
