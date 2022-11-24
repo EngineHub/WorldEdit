@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.fabric.mixin;
 
-import net.minecraft.world.level.levelgen.WorldGenSettings;
+import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.storage.PrimaryLevelData;
 import net.minecraft.world.level.storage.WorldData;
 import org.spongepowered.asm.mixin.Mixin;
@@ -31,6 +31,6 @@ public interface AccessorPrimaryLevelData extends WorldData {
 
     @Accessor
     @Mutable
-    void setWorldGenSettings(WorldGenSettings options);
+    void setWorldOptions(WorldOptions worldOptions);
 
 }

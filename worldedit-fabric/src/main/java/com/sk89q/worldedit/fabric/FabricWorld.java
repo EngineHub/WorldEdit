@@ -67,7 +67,7 @@ import com.sk89q.worldedit.world.weather.WeatherTypes;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.features.EndFeatures;
 import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraft.resources.ResourceKey;
@@ -94,7 +94,7 @@ import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.level.dimension.LevelStem;
-import net.minecraft.world.level.levelgen.WorldGenSettings;
+import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.level.storage.LevelStorageSource;
@@ -132,7 +132,7 @@ public class FabricWorld extends AbstractWorld {
     private static ResourceLocation getDimensionRegistryKey(Level world) {
         return Objects.requireNonNull(world.getServer(), "server cannot be null")
             .registryAccess()
-            .registryOrThrow(Registry.DIMENSION_TYPE_REGISTRY)
+            .registryOrThrow(Registries.DIMENSION_TYPE)
             .getKey(world.dimensionType());
     }
 
@@ -237,9 +237,9 @@ public class FabricWorld extends AbstractWorld {
         var biomeArray = (PalettedContainer<Holder<Biome>>) chunk.getSection(chunk.getSectionIndex(position.getY())).getBiomes();
         biomeArray.getAndSetUnchecked(
             position.getX() & 3, position.getY() & 3, position.getZ() & 3,
-            getWorld().registryAccess().registry(Registry.BIOME_REGISTRY)
+            getWorld().registryAccess().registry(Registries.BIOME)
                 .orElseThrow()
-                .getHolderOrThrow(ResourceKey.create(Registry.BIOME_REGISTRY, new ResourceLocation(biome.getId())))
+                .getHolderOrThrow(ResourceKey.create(Registries.BIOME, new ResourceLocation(biome.getId())))
         );
         chunk.setUnsaved(true);
         return true;
@@ -329,24 +329,22 @@ public class FabricWorld extends AbstractWorld {
             } else {
                 levelProperties = (AccessorPrimaryLevelData) originalWorld.getLevelData();
             }
-            WorldGenSettings originalOpts = levelProperties.worldGenSettings();
+            WorldOptions originalOpts = levelProperties.worldGenOptions();
 
             long seed = options.getSeed().orElse(originalWorld.getSeed());
-            WorldGenSettings newOpts = options.getSeed().isPresent()
-                ? originalOpts.withSeed(levelProperties.isHardcore(), OptionalLong.of(seed))
+            WorldOptions newOpts = options.getSeed().isPresent()
+                ? originalOpts.withSeed(OptionalLong.of(seed))
                 : originalOpts;
 
-            levelProperties.setWorldGenSettings(newOpts);
+            levelProperties.setWorldOptions(newOpts);
             ResourceKey<Level> worldRegKey = originalWorld.dimension();
-            LevelStem dimGenOpts = newOpts.dimensions().get(worldRegKey.location());
-            checkNotNull(dimGenOpts, "No DimensionOptions for %s", worldRegKey);
             try (ServerLevel serverWorld = new ServerLevel(
                 originalWorld.getServer(), Util.backgroundExecutor(), session,
                 ((ServerLevelData) originalWorld.getLevelData()),
                 worldRegKey,
                 new LevelStem(
                     originalWorld.dimensionTypeRegistration(),
-                    dimGenOpts.generator()
+                    originalWorld.getChunkSource().getGenerator()
                 ),
                 new WorldEditGenListener(),
                 originalWorld.isDebug(),
@@ -363,7 +361,7 @@ public class FabricWorld extends AbstractWorld {
                     Thread.yield();
                 }
             } finally {
-                levelProperties.setWorldGenSettings(originalOpts);
+                levelProperties.setWorldOptions(originalOpts);
             }
         } finally {
             SafeFiles.tryHardToDeleteDir(tempDir);
@@ -425,7 +423,7 @@ public class FabricWorld extends AbstractWorld {
     }
 
     @Nullable
-    private static Holder<? extends ConfiguredFeature<?, ?>> createTreeFeatureGenerator(TreeType type) {
+    private static ResourceKey<ConfiguredFeature<?, ?>> createTreeFeatureGenerator(TreeType type) {
         return switch (type) {
             // Based off of the SaplingGenerator class, as well as uses of DefaultBiomeFeatures fields
             case TREE -> TreeFeatures.OAK;
@@ -454,10 +452,10 @@ public class FabricWorld extends AbstractWorld {
 
     @Override
     public boolean generateTree(TreeType type, EditSession editSession, BlockVector3 position) {
-        ConfiguredFeature<?, ?> generator = Optional.ofNullable(createTreeFeatureGenerator(type))
-            .map(Holder::value)
-            .orElse(null);
         ServerLevel world = (ServerLevel) getWorld();
+        ConfiguredFeature<?, ?> generator = Optional.ofNullable(createTreeFeatureGenerator(type))
+            .map(k -> world.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).get(k))
+            .orElse(null);
         ServerChunkCache chunkManager = world.getChunkSource();
         if (type == TreeType.CHORUS_PLANT) {
             position = position.add(0, 1, 0);
