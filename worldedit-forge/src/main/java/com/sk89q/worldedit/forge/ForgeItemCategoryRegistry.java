@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.ItemCategoryRegistry;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -40,7 +41,7 @@ public class ForgeItemCategoryRegistry implements ItemCategoryRegistry {
         );
         return tags
             .getTag(TagKey.create(
-                Registry.ITEM_REGISTRY,
+                Registries.ITEM,
                 new ResourceLocation(category)
             ))
             .stream()
