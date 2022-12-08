@@ -12,11 +12,11 @@ plugins {
 applyPlatformAndCoreConfiguration(javaRelease = 17)
 applyShadowConfiguration()
 
-val minecraftVersion = "1.19.2"
+val minecraftVersion = "1.19.3"
 val nextMajorMinecraftVersion: String = minecraftVersion.split('.').let { (useless, major) ->
     "$useless.${major.toInt() + 1}"
 }
-val forgeVersion = "43.0.0"
+val forgeVersion = "44.0.0"
 
 val apiClasspath = configurations.create("apiClasspath") {
     isCanBeResolved = true

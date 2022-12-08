@@ -64,7 +64,7 @@ import com.sk89q.worldedit.world.weather.WeatherTypes;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.features.EndFeatures;
 import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraft.resources.ResourceKey;
@@ -90,7 +90,7 @@ import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.level.dimension.LevelStem;
-import net.minecraft.world.level.levelgen.WorldGenSettings;
+import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.level.storage.LevelStorageSource;
@@ -128,7 +128,7 @@ public class ForgeWorld extends AbstractWorld {
     private static ResourceLocation getDimensionRegistryKey(ServerLevel world) {
         return Objects.requireNonNull(world.getServer(), "server cannot be null")
             .registryAccess()
-            .registryOrThrow(Registry.DIMENSION_TYPE_REGISTRY)
+            .registryOrThrow(Registries.DIMENSION_TYPE)
             .getKey(world.dimensionType());
     }
 
@@ -230,9 +230,9 @@ public class ForgeWorld extends AbstractWorld {
         var biomes = (PalettedContainer<Holder<Biome>>) chunk.getSection(chunk.getSectionIndex(position.getY())).getBiomes();
         biomes.getAndSetUnchecked(
             position.getX() & 3, position.getY() & 3, position.getZ() & 3,
-            getWorld().registryAccess().registry(Registry.BIOME_REGISTRY)
+            getWorld().registryAccess().registry(Registries.BIOME)
                 .orElseThrow()
-                .getHolderOrThrow(ResourceKey.create(Registry.BIOME_REGISTRY, new ResourceLocation(biome.getId())))
+                .getHolderOrThrow(ResourceKey.create(Registries.BIOME, new ResourceLocation(biome.getId())))
         );
         chunk.setUnsaved(true);
         return true;
@@ -317,24 +317,22 @@ public class ForgeWorld extends AbstractWorld {
             ServerLevel originalWorld = getWorld();
             PrimaryLevelData levelProperties = (PrimaryLevelData) originalWorld.getServer()
                 .getWorldData().overworldData();
-            WorldGenSettings originalOpts = levelProperties.worldGenSettings();
+            WorldOptions originalOpts = levelProperties.worldGenOptions();
 
             long seed = options.getSeed().orElse(originalWorld.getSeed());
-            WorldGenSettings newOpts = options.getSeed().isPresent()
-                ? originalOpts.withSeed(levelProperties.isHardcore(), OptionalLong.of(seed))
+            WorldOptions newOpts = options.getSeed().isPresent()
+                ? originalOpts.withSeed(OptionalLong.of(seed))
                 : originalOpts;
 
-            levelProperties.worldGenSettings = newOpts;
+            levelProperties.worldOptions = newOpts;
             ResourceKey<Level> worldRegKey = originalWorld.dimension();
-            LevelStem dimGenOpts = newOpts.dimensions().get(worldRegKey.location());
-            checkNotNull(dimGenOpts, "No DimensionOptions for %s", worldRegKey);
             try (ServerLevel serverWorld = new ServerLevel(
                 originalWorld.getServer(), Util.backgroundExecutor(), session,
                 ((ServerLevelData) originalWorld.getLevelData()),
                 worldRegKey,
                 new LevelStem(
                     originalWorld.dimensionTypeRegistration(),
-                    dimGenOpts.generator()
+                    originalWorld.getChunkSource().getGenerator()
                 ),
                 new WorldEditGenListener(),
                 originalWorld.isDebug(),
@@ -351,7 +349,7 @@ public class ForgeWorld extends AbstractWorld {
                     Thread.yield();
                 }
             } finally {
-                levelProperties.worldGenSettings = originalOpts;
+                levelProperties.worldOptions = originalOpts;
             }
         } finally {
             SafeFiles.tryHardToDeleteDir(tempDir);
@@ -412,7 +410,7 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Nullable
-    private static Holder<? extends ConfiguredFeature<?, ?>> createTreeFeatureGenerator(TreeType type) {
+    private static ResourceKey<ConfiguredFeature<?, ?>> createTreeFeatureGenerator(TreeType type) {
         return switch (type) {
             case TREE -> TreeFeatures.OAK;
             case BIG_TREE -> TreeFeatures.FANCY_OAK;
@@ -440,10 +438,10 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public boolean generateTree(TreeType type, EditSession editSession, BlockVector3 position) {
-        ConfiguredFeature<?, ?> generator = Optional.ofNullable(createTreeFeatureGenerator(type))
-            .map(Holder::value)
-            .orElse(null);
         ServerLevel world = getWorld();
+        ConfiguredFeature<?, ?> generator = Optional.ofNullable(createTreeFeatureGenerator(type))
+            .map(k -> world.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).get(k))
+            .orElse(null);
         ServerChunkCache chunkManager = world.getChunkSource();
         if (type == TreeType.CHORUS_PLANT) {
             position = position.add(0, 1, 0);
