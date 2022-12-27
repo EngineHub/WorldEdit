@@ -21,6 +21,9 @@ package com.sk89q.worldedit.sponge;
 
 import com.google.common.collect.Sets;
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.CompoundTagBuilder;
+import com.sk89q.jnbt.IntTag;
+import com.sk89q.jnbt.StringTag;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
@@ -57,6 +60,7 @@ import org.apache.logging.log4j.Logger;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.entity.BlockEntity;
 import org.spongepowered.api.block.entity.BlockEntityArchetype;
 import org.spongepowered.api.block.entity.BlockEntityType;
 import org.spongepowered.api.entity.EntityArchetype;
@@ -152,11 +156,25 @@ public final class SpongeWorld extends AbstractWorld {
 
     @Override
     public BaseBlock getFullBlock(BlockVector3 position) {
-        CompoundTag entity = getWorld()
-            .blockEntity(position.getX(), position.getY(), position.getZ())
-            .map(e -> NbtAdapter.adaptToWorldEdit(e.createArchetype().blockEntityData()))
-            .orElse(null);
-        return getBlock(position).toBaseBlock(entity);
+        BlockEntity blockEntity = getWorld().blockEntity(
+                position.getX(), position.getY(), position.getZ()
+        ).orElse(null);
+        CompoundTag blockEntityData = null;
+        if (blockEntity != null) {
+            BlockEntityArchetype blockEntityArchetype = blockEntity.createArchetype();
+            BlockEntityType blockEntityType = blockEntityArchetype.blockEntityType();
+            ResourceKey blockEntityId = blockEntityType.key(RegistryTypes.BLOCK_ENTITY_TYPE);
+            blockEntityData = NbtAdapter.adaptToWorldEdit(blockEntityArchetype.blockEntityData());
+
+            // Add ID and position since Sponge's #blockEntityData does not save metadata
+            CompoundTagBuilder fullBlockEntityDataBuilder = blockEntityData.createBuilder();
+            fullBlockEntityDataBuilder.put("id", new StringTag(blockEntityId.formatted()));
+            fullBlockEntityDataBuilder.put("x", new IntTag(position.getX()));
+            fullBlockEntityDataBuilder.put("y", new IntTag(position.getY()));
+            fullBlockEntityDataBuilder.put("z", new IntTag(position.getZ()));
+            blockEntityData = fullBlockEntityDataBuilder.build();
+        }
+        return getBlock(position).toBaseBlock(blockEntityData);
     }
 
     @Override
@@ -195,7 +213,7 @@ public final class SpongeWorld extends AbstractWorld {
             BaseBlock baseBlock = (BaseBlock) block;
             BlockEntityArchetype.builder()
                 .blockEntity((BlockEntityType)
-                    world.engine().registry(RegistryTypes.BLOCK_ENTITY_TYPE)
+                    Sponge.game().registry(RegistryTypes.BLOCK_ENTITY_TYPE)
                         .value(ResourceKey.resolve(baseBlock.getNbtId()))
                 )
                 .blockEntityData(NbtAdapter.adaptFromWorldEdit(baseBlock.getNbtData()))
