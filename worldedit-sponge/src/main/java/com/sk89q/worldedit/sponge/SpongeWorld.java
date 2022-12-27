@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.sponge;
 
 import com.google.common.collect.Sets;
-import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
@@ -38,7 +37,6 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator;
-import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.RegenOptions;
 import com.sk89q.worldedit.world.World;
@@ -56,12 +54,14 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import org.apache.logging.log4j.Logger;
 import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinIntTag;
+import org.enginehub.linbus.tree.LinStringTag;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.entity.BlockEntity;
 import org.spongepowered.api.block.entity.BlockEntityArchetype;
 import org.spongepowered.api.block.entity.BlockEntityType;
-import org.spongepowered.api.data.persistence.DataContainer;
 import org.spongepowered.api.entity.EntityArchetype;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.EntityTypes;
@@ -155,13 +155,25 @@ public final class SpongeWorld extends AbstractWorld {
 
     @Override
     public BaseBlock getFullBlock(BlockVector3 position) {
-        DataContainer entity = getWorld()
-            .blockEntity(position.getX(), position.getY(), position.getZ())
-            .map(e -> e.createArchetype().blockEntityData())
-            .orElse(null);
-        return getBlock(position).toBaseBlock(
-            entity == null ? null : LazyReference.from(() -> NbtAdapter.adaptToWorldEdit(entity))
-        );
+        BlockEntity blockEntity = getWorld().blockEntity(
+                position.getX(), position.getY(), position.getZ()
+        ).orElse(null);
+        LinCompoundTag blockEntityData = null;
+        if (blockEntity != null) {
+            BlockEntityArchetype blockEntityArchetype = blockEntity.createArchetype();
+            BlockEntityType blockEntityType = blockEntityArchetype.blockEntityType();
+            ResourceKey blockEntityId = blockEntityType.key(RegistryTypes.BLOCK_ENTITY_TYPE);
+            blockEntityData = NbtAdapter.adaptToWorldEdit(blockEntityArchetype.blockEntityData());
+
+            // Add ID and position since Sponge's #blockEntityData does not save metadata
+            LinCompoundTag.Builder fullBlockEntityDataBuilder = blockEntityData.toBuilder();
+            fullBlockEntityDataBuilder.put("id", LinStringTag.of(blockEntityId.formatted()));
+            fullBlockEntityDataBuilder.put("x", LinIntTag.of(position.getX()));
+            fullBlockEntityDataBuilder.put("y", LinIntTag.of(position.getY()));
+            fullBlockEntityDataBuilder.put("z", LinIntTag.of(position.getZ()));
+            blockEntityData = fullBlockEntityDataBuilder.build();
+        }
+        return getBlock(position).toBaseBlock(blockEntityData);
     }
 
     @Override
@@ -201,7 +213,7 @@ public final class SpongeWorld extends AbstractWorld {
             if (nbt != null) {
                 BlockEntityArchetype.builder()
                     .blockEntity((BlockEntityType)
-                        world.engine().registry(RegistryTypes.BLOCK_ENTITY_TYPE)
+                        Sponge.game().registry(RegistryTypes.BLOCK_ENTITY_TYPE)
                             .value(ResourceKey.resolve(baseBlock.getNbtId()))
                     )
                     .blockEntityData(NbtAdapter.adaptFromWorldEdit(nbt))
