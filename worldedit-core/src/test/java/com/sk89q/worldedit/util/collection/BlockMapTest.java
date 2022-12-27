@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.util.collection;
 
 import com.google.common.collect.ImmutableMap;
+import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.event.platform.PlatformsRegisteredEvent;
 import com.sk89q.worldedit.extension.platform.Capability;
@@ -86,9 +87,16 @@ class BlockMapTest {
             Stream.of(Capability.values())
                 .collect(Collectors.toMap(Function.identity(), __ -> Preference.NORMAL))
         );
+        when(MOCKED_PLATFORM.getConfiguration()).thenReturn(new LocalConfiguration() {
+            @Override
+            public void load() {
+            }
+        });
         PlatformManager platformManager = WorldEdit.getInstance().getPlatformManager();
         platformManager.register(MOCKED_PLATFORM);
         WorldEdit.getInstance().getEventBus().post(new PlatformsRegisteredEvent());
+
+        assertTrue(WorldEdit.getInstance().getPlatformManager().isInitialized(), "Platform is not initialized");
 
         registerBlock("minecraft:air");
         registerBlock("minecraft:oak_wood");

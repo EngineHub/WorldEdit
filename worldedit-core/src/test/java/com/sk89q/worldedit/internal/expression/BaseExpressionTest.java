@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -63,6 +64,7 @@ class BaseExpressionTest {
         });
         WorldEdit.getInstance().getPlatformManager().register(mockPlat);
         WorldEdit.getInstance().getEventBus().post(new PlatformsRegisteredEvent());
+        assertTrue(WorldEdit.getInstance().getPlatformManager().isInitialized(), "Platform is not initialized");
         WorldEdit.getInstance().getConfiguration().calculationTimeout = 1_000;
     }
 
