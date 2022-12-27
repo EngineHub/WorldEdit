@@ -525,7 +525,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
     @Override
     public void sendFakeNBT(Player player, BlockVector3 pos, CompoundTag nbtData) {
-        ((CraftPlayer) player).getHandle().networkManager.send(ClientboundBlockEntityDataPacket.create(
+        ((CraftPlayer) player).getHandle().connection.send(ClientboundBlockEntityDataPacket.create(
             new StructureBlockEntity(
                 new BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()),
                 Blocks.STRUCTURE_BLOCK.defaultBlockState()
@@ -536,7 +536,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
     @Override
     public void sendFakeOP(Player player) {
-        ((CraftPlayer) player).getHandle().networkManager.send(new ClientboundEntityEventPacket(
+        ((CraftPlayer) player).getHandle().connection.send(new ClientboundEntityEventPacket(
             ((CraftPlayer) player).getHandle(), (byte) 28
         ));
     }
