@@ -23,7 +23,7 @@ import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.ItemCategoryRegistry;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 
@@ -33,7 +33,8 @@ import java.util.stream.Collectors;
 public class FabricItemCategoryRegistry implements ItemCategoryRegistry {
     @Override
     public Set<ItemType> getCategorisedByName(String category) {
-        return Registry.ITEM.getTag(TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(category)))
+        return FabricWorldEdit.getRegistry(Registries.ITEM)
+            .getTag(TagKey.create(Registries.ITEM, new ResourceLocation(category)))
             .stream()
             .flatMap(HolderSet.Named::stream)
             .map(Holder::value)

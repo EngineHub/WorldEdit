@@ -1,3 +1,9 @@
+7.2.13
+- Update to 1.19.3
+- Show a friendlier error when trying to access filenames the filesystem doesn't support, such as question marks on Windows
+- Improve handling for invalid block types in legacy (<1.13) schematics
+- Update SnakeYAML and allow 64MB files to load by default. Can be set via -Dworldedit.yaml.codePointLimit
+
 7.2.12
 - [Bukkit] Add support for 1.19.2
 - Fixed b/back directions not working along the Y axis

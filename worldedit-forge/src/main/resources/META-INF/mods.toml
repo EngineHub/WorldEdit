@@ -5,11 +5,11 @@ loaderVersion="[24,)"
 # A URL to refer people to when problems occur with this mod
 issueTrackerURL="https://discord.gg/enginehub"
 # A URL for the "homepage" for this mod, displayed in the mod UI
-displayURL="https://worldedit.enginehub.org/"
+displayURL="https://enginehub.org/worldedit/"
 # A file name (in the root of the mod JAR) containing a logo for display
 logoFile="worldedit-icon.png"
 # A text field displayed in the mod UI
-authors="sk89q, wizjany, TomyLobo, kenzierocks, Me4502"
+authors="EngineHub"
 license="GPL"
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]]
@@ -35,9 +35,3 @@ WorldEdit is an easy-to-use in-game world editor for Minecraft, supporting both 
     versionRange="[${forgeVersion},)"
     ordering="NONE"
     side="BOTH"
-[[dependencies.worldedit]]
-    modId="sponge"
-    mandatory=false
-    versionRange="[1.13]"
-    ordering="BEFORE"
-    side="SERVER"

@@ -38,6 +38,8 @@ import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.StringRepresentable;
@@ -82,15 +84,12 @@ public final class FabricAdapter {
     }
 
     public static Biome adapt(BiomeType biomeType) {
-        return FabricWorldEdit.LIFECYCLED_SERVER.valueOrThrow()
-            .registryAccess()
-            .registryOrThrow(Registry.BIOME_REGISTRY)
+        return FabricWorldEdit.getRegistry(Registries.BIOME)
             .get(new ResourceLocation(biomeType.getId()));
     }
 
     public static BiomeType adapt(Biome biome) {
-        ResourceLocation id = FabricWorldEdit.LIFECYCLED_SERVER.valueOrThrow().registryAccess()
-            .registryOrThrow(Registry.BIOME_REGISTRY).getKey(biome);
+        ResourceLocation id = FabricWorldEdit.getRegistry(Registries.BIOME).getKey(biome);
         Objects.requireNonNull(id, "biome is not registered");
         return BiomeTypes.get(id.toString());
     }
@@ -198,19 +197,19 @@ public final class FabricAdapter {
     }
 
     public static Block adapt(BlockType blockType) {
-        return Registry.BLOCK.get(new ResourceLocation(blockType.getId()));
+        return FabricWorldEdit.getRegistry(Registries.BLOCK).get(new ResourceLocation(blockType.getId()));
     }
 
     public static BlockType adapt(Block block) {
-        return BlockTypes.get(Registry.BLOCK.getKey(block).toString());
+        return BlockTypes.get(FabricWorldEdit.getRegistry(Registries.BLOCK).getKey(block).toString());
     }
 
     public static Item adapt(ItemType itemType) {
-        return Registry.ITEM.get(new ResourceLocation(itemType.getId()));
+        return FabricWorldEdit.getRegistry(Registries.ITEM).get(new ResourceLocation(itemType.getId()));
     }
 
     public static ItemType adapt(Item item) {
-        return ItemTypes.get(Registry.ITEM.getKey(item).toString());
+        return ItemTypes.get(FabricWorldEdit.getRegistry(Registries.ITEM).getKey(item).toString());
     }
 
     public static ItemStack adapt(BaseItemStack baseItemStack) {

@@ -58,6 +58,8 @@ import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -101,6 +103,10 @@ public class FabricWorldEdit implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTED.register(lifecycledServer::newValue);
         ServerLifecycleEvents.SERVER_STOPPING.register(__ -> lifecycledServer.invalidate());
         LIFECYCLED_SERVER = lifecycledServer;
+    }
+
+    public static <T> Registry<T> getRegistry(ResourceKey<Registry<T>> key) {
+        return LIFECYCLED_SERVER.valueOrThrow().registryAccess().registryOrThrow(key);
     }
 
     private FabricPermissionsProvider provider;
@@ -187,37 +193,37 @@ public class FabricWorldEdit implements ModInitializer {
 
     private void setupRegistries(MinecraftServer server) {
         // Blocks
-        for (ResourceLocation name : Registry.BLOCK.keySet()) {
+        for (ResourceLocation name : server.registryAccess().registryOrThrow(Registries.BLOCK).keySet()) {
             if (BlockType.REGISTRY.get(name.toString()) == null) {
                 BlockType.REGISTRY.register(name.toString(), new BlockType(name.toString(),
                     input -> FabricAdapter.adapt(FabricAdapter.adapt(input.getBlockType()).defaultBlockState())));
             }
         }
         // Items
-        for (ResourceLocation name : Registry.ITEM.keySet()) {
+        for (ResourceLocation name : server.registryAccess().registryOrThrow(Registries.ITEM).keySet()) {
             if (ItemType.REGISTRY.get(name.toString()) == null) {
                 ItemType.REGISTRY.register(name.toString(), new ItemType(name.toString()));
             }
         }
         // Entities
-        for (ResourceLocation name : Registry.ENTITY_TYPE.keySet()) {
+        for (ResourceLocation name : server.registryAccess().registryOrThrow(Registries.ENTITY_TYPE).keySet()) {
             if (EntityType.REGISTRY.get(name.toString()) == null) {
                 EntityType.REGISTRY.register(name.toString(), new EntityType(name.toString()));
             }
         }
         // Biomes
-        for (ResourceLocation name : server.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).keySet()) {
+        for (ResourceLocation name : server.registryAccess().registryOrThrow(Registries.BIOME).keySet()) {
             if (BiomeType.REGISTRY.get(name.toString()) == null) {
                 BiomeType.REGISTRY.register(name.toString(), new BiomeType(name.toString()));
             }
         }
         // Tags
-        Registry.BLOCK.getTagNames().map(TagKey::location).forEach(name -> {
+        server.registryAccess().registryOrThrow(Registries.BLOCK).getTagNames().map(TagKey::location).forEach(name -> {
             if (BlockCategory.REGISTRY.get(name.toString()) == null) {
                 BlockCategory.REGISTRY.register(name.toString(), new BlockCategory(name.toString()));
             }
         });
-        Registry.ITEM.getTagNames().map(TagKey::location).forEach(name -> {
+        server.registryAccess().registryOrThrow(Registries.ITEM).getTagNames().map(TagKey::location).forEach(name -> {
             if (ItemCategory.REGISTRY.get(name.toString()) == null) {
                 ItemCategory.REGISTRY.register(name.toString(), new ItemCategory(name.toString()));
             }
@@ -261,9 +267,9 @@ public class FabricWorldEdit implements ModInitializer {
         FabricPlayer player = adaptPlayer((ServerPlayer) playerEntity);
         FabricWorld localWorld = getWorld(world);
         Location pos = new Location(localWorld,
-                blockPos.getX(),
-                blockPos.getY(),
-                blockPos.getZ()
+            blockPos.getX(),
+            blockPos.getY(),
+            blockPos.getZ()
         );
         com.sk89q.worldedit.util.Direction weDirection = FabricAdapter.adaptEnumFacing(direction);
 
@@ -287,9 +293,9 @@ public class FabricWorldEdit implements ModInitializer {
         FabricPlayer player = adaptPlayer((ServerPlayer) playerEntity);
         FabricWorld localWorld = getWorld(world);
         Location pos = new Location(localWorld,
-                blockHitResult.getBlockPos().getX(),
-                blockHitResult.getBlockPos().getY(),
-                blockHitResult.getBlockPos().getZ()
+            blockHitResult.getBlockPos().getX(),
+            blockHitResult.getBlockPos().getY(),
+            blockHitResult.getBlockPos().getZ()
         );
         com.sk89q.worldedit.util.Direction direction = FabricAdapter.adaptEnumFacing(blockHitResult.getDirection());
 
@@ -324,7 +330,7 @@ public class FabricWorldEdit implements ModInitializer {
 
     private void onPlayerDisconnect(ServerGamePacketListenerImpl handler, MinecraftServer server) {
         WorldEdit.getInstance().getEventBus()
-                .post(new SessionIdleEvent(new FabricPlayer.SessionKeyImpl(handler.player)));
+            .post(new SessionIdleEvent(new FabricPlayer.SessionKeyImpl(handler.player)));
     }
 
     /**

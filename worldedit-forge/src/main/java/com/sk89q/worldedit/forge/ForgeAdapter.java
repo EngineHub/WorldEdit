@@ -37,7 +37,7 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -87,7 +87,7 @@ public final class ForgeAdapter {
     public static Biome adapt(BiomeType biomeType) {
         return ServerLifecycleHooks.getCurrentServer()
             .registryAccess()
-            .registryOrThrow(Registry.BIOME_REGISTRY)
+            .registryOrThrow(Registries.BIOME)
             .getOptional(new ResourceLocation(biomeType.getId()))
             .orElseThrow(() -> new IllegalStateException("No biome for " + biomeType.getId()));
     }
@@ -95,7 +95,7 @@ public final class ForgeAdapter {
     public static BiomeType adapt(Biome biome) {
         ResourceLocation id = ServerLifecycleHooks.getCurrentServer()
             .registryAccess()
-            .registryOrThrow(Registry.BIOME_REGISTRY)
+            .registryOrThrow(Registries.BIOME)
             .getKey(biome);
         Objects.requireNonNull(id, "biome is not registered");
         return BiomeTypes.get(id.toString());

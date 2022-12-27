@@ -6,11 +6,7 @@
     "name": "WorldEdit",
     "description": "WorldEdit is an easy-to-use in-game world editor for Minecraft, supporting both single- and multi-player.",
     "authors": [
-        "sk89q",
-        "wizjany",
-        "TomyLobo",
-        "octylFractal",
-        "Me4502"
+        "EngineHub"
     ],
     "contact": {
         "homepage": "https://enginehub.org/worldedit/",
