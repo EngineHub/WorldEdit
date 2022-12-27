@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.registry;
 
+import com.sk89q.worldedit.WorldEdit;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,9 +36,15 @@ import static java.util.Objects.requireNonNull;
 public class Registry<V extends Keyed> implements Iterable<V> {
     private final Map<String, V> map = new HashMap<>();
     private final String name;
+    private final boolean checkInitialized;
 
     public Registry(final String name) {
+        this(name, false);
+    }
+
+    public Registry(final String name, final boolean checkInitialized) {
         this.name = name;
+        this.checkInitialized = checkInitialized;
     }
 
     public String getName() {
@@ -46,6 +54,10 @@ public class Registry<V extends Keyed> implements Iterable<V> {
     @Nullable
     public V get(final String key) {
         checkState(key.equals(key.toLowerCase(Locale.ROOT)), "key must be lowercase: %s", key);
+        if (this.checkInitialized) {
+            checkState(WorldEdit.getInstance().getPlatformManager().isInitialized(),
+                    "WorldEdit is not enabled yet.");
+        }
         return this.map.get(key);
     }
 
