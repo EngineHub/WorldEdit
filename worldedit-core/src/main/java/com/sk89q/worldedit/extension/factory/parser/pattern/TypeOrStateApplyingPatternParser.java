@@ -45,7 +45,7 @@ public class TypeOrStateApplyingPatternParser extends InputParser<Pattern> {
     }
 
     @Override
-    public Stream<String> getSuggestions(String input) {
+    public Stream<String> getSuggestions(String input, ParserContext context) {
         if (input.isEmpty()) {
             return Stream.of("^");
         }
@@ -58,7 +58,7 @@ public class TypeOrStateApplyingPatternParser extends InputParser<Pattern> {
         String type = parts[0];
 
         if (parts.length == 1) {
-            return worldEdit.getBlockFactory().getSuggestions(input).stream().map(s -> "^" + s);
+            return worldEdit.getBlockFactory().getSuggestions(input, context).stream().map(s -> "^" + s);
         } else {
             if (type.isEmpty()) {
                 return Stream.empty(); // without knowing a type, we can't really suggest states

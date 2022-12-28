@@ -41,7 +41,7 @@ public class RandomPatternParser extends InputParser<Pattern> {
     }
 
     @Override
-    public Stream<String> getSuggestions(String input) {
+    public Stream<String> getSuggestions(String input, ParserContext context) {
         String[] splits = input.split(",", -1);
         List<String> patterns = StringUtil.parseListInQuotes(splits, ',', '[', ']', true);
         // get suggestions for the last token only
@@ -56,7 +56,7 @@ public class RandomPatternParser extends InputParser<Pattern> {
         }
         String previous = patterns.size() == 1 ? "" : String.join(",", patterns.subList(0, patterns.size() - 1)) + ",";
         String prefix = previous + (percent == null ? "" : percent + "%");
-        final List<String> innerSuggestions = worldEdit.getPatternFactory().getSuggestions(token);
+        final List<String> innerSuggestions = worldEdit.getPatternFactory().getSuggestions(token, context);
         return innerSuggestions.stream().map(s -> prefix + s);
     }
 

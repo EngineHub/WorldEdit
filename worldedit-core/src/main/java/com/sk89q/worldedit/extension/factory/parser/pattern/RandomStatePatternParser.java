@@ -36,7 +36,7 @@ public class RandomStatePatternParser extends InputParser<Pattern> {
     }
 
     @Override
-    public Stream<String> getSuggestions(String input) {
+    public Stream<String> getSuggestions(String input, ParserContext context) {
         if (input.isEmpty()) {
             return Stream.of("*");
         }
@@ -44,7 +44,7 @@ public class RandomStatePatternParser extends InputParser<Pattern> {
             return Stream.empty();
         }
 
-        return worldEdit.getBlockFactory().getSuggestions(input.substring(1)).stream().map(s -> "*" + s);
+        return worldEdit.getBlockFactory().getSuggestions(input.substring(1), context).stream().map(s -> "*" + s);
     }
 
     @Override

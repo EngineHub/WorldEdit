@@ -41,8 +41,8 @@ public class BlocksMaskParser extends InputParser<Mask> {
     }
 
     @Override
-    public Stream<String> getSuggestions(String input) {
-        return worldEdit.getBlockFactory().getSuggestions(input).stream();
+    public Stream<String> getSuggestions(String input, ParserContext context) {
+        return worldEdit.getBlockFactory().getSuggestions(input, context).stream();
     }
 
     @Override

@@ -45,8 +45,22 @@ public abstract class InputParser<E> {
      * Gets a stream of suggestions of input to this parser.
      *
      * @return a stream of suggestions
+     * @deprecated Use the version that takes a {@link ParserContext}, {@link #getSuggestions(String, ParserContext)}
      */
+    @Deprecated
     public Stream<String> getSuggestions(String input) {
         return Stream.empty();
+    }
+
+    /**
+     * Gets a stream of suggestions of input to this parser.
+     *
+     * @param input The string input
+     * @param context The parser context
+     *
+     * @return a stream of suggestions
+     */
+    public Stream<String> getSuggestions(String input, ParserContext context) {
+        return getSuggestions(input);
     }
 }
