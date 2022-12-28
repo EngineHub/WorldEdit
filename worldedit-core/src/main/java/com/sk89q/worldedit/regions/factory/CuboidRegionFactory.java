@@ -25,9 +25,24 @@ import com.sk89q.worldedit.regions.Region;
 
 public class CuboidRegionFactory implements RegionFactory {
 
+    private final double height;
+
+    public CuboidRegionFactory() {
+        this(-1);
+    }
+
+    public CuboidRegionFactory(double height) {
+        this.height = height;
+    }
+
     @Override
     public Region createCenteredAt(BlockVector3 position, double size) {
-        return CuboidRegion.fromCenter(position, (int) size);
+        CuboidRegion region = CuboidRegion.fromCenter(position, (int) size);
+        if (height > 0) {
+            region.setPos1(region.getPos1().withY(position.getBlockY() - (int) (height / 2)));
+            region.setPos2(region.getPos2().withY(position.getBlockY() + (int) (height / 2)));
+        }
+        return region;
     }
 
 }
