@@ -17,27 +17,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.generation;
+package com.sk89q.worldedit.command.factory;
 
-import com.sk89q.worldedit.registry.Keyed;
-import com.sk89q.worldedit.registry.NamespacedRegistry;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.function.Contextual;
+import com.sk89q.worldedit.function.EditContext;
+import com.sk89q.worldedit.function.generator.FeatureGenerator;
+import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 
-public class ConfiguredFeatureType implements Keyed  {
-    public static final NamespacedRegistry<ConfiguredFeatureType> REGISTRY = new NamespacedRegistry<>("configured feature type");
+public final class FeatureGeneratorFactory implements Contextual<FeatureGenerator> {
+    private final ConfiguredFeatureType type;
 
-    private final String id;
-
-    public ConfiguredFeatureType(String id) {
-        this.id = id;
+    public FeatureGeneratorFactory(ConfiguredFeatureType type) {
+        this.type = type;
     }
 
     @Override
-    public String getId() {
-        return this.id;
+    public FeatureGenerator createFromContext(EditContext input) {
+        return new FeatureGenerator((EditSession) input.getDestination(), type);
     }
 
     @Override
     public String toString() {
-        return this.id;
+        return "feature of type " + type;
     }
 }

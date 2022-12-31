@@ -33,7 +33,7 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.forge.internal.ForgeEditSessionDelegate;
+import com.sk89q.worldedit.forge.internal.ForgeServerLevelDelegateProxy;
 import com.sk89q.worldedit.forge.internal.ForgeWorldNativeAccess;
 import com.sk89q.worldedit.forge.internal.NBTConverter;
 import com.sk89q.worldedit.forge.internal.TileEntityUtils;
@@ -83,6 +83,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -449,8 +450,9 @@ public class ForgeWorld extends AbstractWorld {
         if (type == TreeType.CHORUS_PLANT) {
             position = position.add(0, 1, 0);
         }
+        WorldGenLevel levelProxy = ForgeServerLevelDelegateProxy.newInstance(editSession, world);
         return generator != null && generator.place(
-            new ForgeEditSessionDelegate(editSession, world), chunkManager.getGenerator(), random, ForgeAdapter.toBlockPos(position)
+            levelProxy, chunkManager.getGenerator(), random, ForgeAdapter.toBlockPos(position)
         );
     }
 
@@ -458,7 +460,8 @@ public class ForgeWorld extends AbstractWorld {
         ServerLevel world = getWorld();
         ConfiguredFeature<?, ?> k = world.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).get(ResourceLocation.tryParse(type.getId()));
         ServerChunkCache chunkManager = world.getChunkSource();
-        return k != null && k.place(new ForgeEditSessionDelegate(editSession, world), chunkManager.getGenerator(), random, ForgeAdapter.toBlockPos(position));
+        WorldGenLevel levelProxy = ForgeServerLevelDelegateProxy.newInstance(editSession, world);
+        return k != null && k.place(levelProxy, chunkManager.getGenerator(), random, ForgeAdapter.toBlockPos(position));
     }
 
     @Override
