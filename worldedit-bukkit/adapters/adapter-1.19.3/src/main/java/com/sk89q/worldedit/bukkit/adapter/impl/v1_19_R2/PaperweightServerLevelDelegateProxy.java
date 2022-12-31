@@ -17,13 +17,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.fabric.internal;
+package com.sk89q.worldedit.bukkit.adapter.impl.v1_19_R2;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.fabric.FabricAdapter;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -33,23 +34,24 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Arrays;
 
-public class FabricServerLevelDelegateProxy implements InvocationHandler {
+public class PaperweightServerLevelDelegateProxy implements InvocationHandler {
 
     private final EditSession editSession;
     private final ServerLevel serverLevel;
+    private final PaperweightAdapter adapter;
 
-    private FabricServerLevelDelegateProxy(EditSession editSession, ServerLevel serverLevel) {
+    private PaperweightServerLevelDelegateProxy(EditSession editSession, ServerLevel serverLevel, PaperweightAdapter adapter) {
         this.editSession = editSession;
         this.serverLevel = serverLevel;
+        this.adapter = adapter;
     }
 
-    public static WorldGenLevel newInstance(EditSession editSession, ServerLevel serverLevel) {
+    public static WorldGenLevel newInstance(EditSession editSession, ServerLevel serverLevel, PaperweightAdapter adapter) {
         return (WorldGenLevel) Proxy.newProxyInstance(
             serverLevel.getClass().getClassLoader(),
             serverLevel.getClass().getInterfaces(),
-            new FabricServerLevelDelegateProxy(editSession, serverLevel)
+            new PaperweightServerLevelDelegateProxy(editSession, serverLevel, adapter)
         );
     }
 
@@ -60,18 +62,18 @@ public class FabricServerLevelDelegateProxy implements InvocationHandler {
             return null;
         }
         BlockEntity newEntity = tileEntity.getType().create(blockPos, getBlockState(blockPos));
-        newEntity.load(NBTConverter.toNative(this.editSession.getFullBlock(FabricAdapter.adapt(blockPos)).getNbtReference().getValue()));
+        newEntity.load((CompoundTag) adapter.fromNative(this.editSession.getFullBlock(BlockVector3.at(blockPos.getX(), blockPos.getY(), blockPos.getZ())).getNbtReference().getValue()));
 
         return newEntity;
     }
 
     private BlockState getBlockState(BlockPos blockPos) {
-        return FabricAdapter.adapt(this.editSession.getBlock(FabricAdapter.adapt(blockPos)));
+        return adapter.adapt(this.editSession.getBlock(BlockVector3.at(blockPos.getX(), blockPos.getY(), blockPos.getZ())));
     }
 
     private boolean setBlock(BlockPos blockPos, BlockState blockState) {
         try {
-            return editSession.setBlock(FabricAdapter.adapt(blockPos), FabricAdapter.adapt(blockState));
+            return editSession.setBlock(BlockVector3.at(blockPos.getX(), blockPos.getY(), blockPos.getZ()), adapter.adapt(blockState));
         } catch (MaxChangedBlocksException e) {
             throw new RuntimeException(e);
         }
@@ -79,7 +81,7 @@ public class FabricServerLevelDelegateProxy implements InvocationHandler {
 
     private boolean removeBlock(BlockPos blockPos, boolean bl) {
         try {
-            return editSession.setBlock(FabricAdapter.adapt(blockPos), BlockTypes.AIR.getDefaultState());
+            return editSession.setBlock(BlockVector3.at(blockPos.getX(), blockPos.getY(), blockPos.getZ()), BlockTypes.AIR.getDefaultState());
         } catch (MaxChangedBlocksException e) {
             throw new RuntimeException(e);
         }
@@ -88,23 +90,24 @@ public class FabricServerLevelDelegateProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         switch (method.getName()) {
-            case "getBlockState", "method_8320" -> {
+            case "a_", "getBlockState" -> {
                 if (args.length == 1 && args[0] instanceof BlockPos blockPos) {
+                    // getBlockState
                     return getBlockState(blockPos);
                 }
             }
-            case "getBlockEntity", "method_8321" -> {
+            case "c_", "getBlockEntity" -> {
                 if (args.length == 1 && args[0] instanceof BlockPos blockPos) {
+                    // getBlockEntity
                     return getBlockEntity(blockPos);
                 }
             }
-            case "setBlock", "method_8652" -> {
+            case "a", "setBlock", "removeBlock", "destroyBlock" -> {
                 if (args.length >= 2 && args[0] instanceof BlockPos blockPos && args[1] instanceof BlockState blockState) {
+                    // setBlock
                     return setBlock(blockPos, blockState);
-                }
-            }
-            case "removeBlock", "destroyBlock", "method_8650", "method_8651" -> {
-                if (args.length >= 2 && args[0] instanceof BlockPos blockPos && args[1] instanceof Boolean bl) {
+                } else if (args.length >= 2 && args[0] instanceof BlockPos blockPos && args[1] instanceof Boolean bl) {
+                    // removeBlock (and also matches destroyBlock)
                     return removeBlock(blockPos, bl);
                 }
             }

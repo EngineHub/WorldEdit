@@ -25,7 +25,6 @@ import com.sk89q.worldedit.forge.ForgeAdapter;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -34,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Arrays;
 
 public class ForgeServerLevelDelegateProxy implements InvocationHandler {
 
@@ -85,25 +85,33 @@ public class ForgeServerLevelDelegateProxy implements InvocationHandler {
         }
     }
 
-    private boolean destroyBlock(BlockPos blockPos, boolean bl, @Nullable Entity entity, int i) {
-        return removeBlock(blockPos, bl);
-    }
-
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        if (method.getName().equals("getBlockState") && args.length == 1 && args[0] instanceof BlockPos blockPos) {
-            return getBlockState(blockPos);
-        } else if (method.getName().equals("getBlockEntity") && args.length == 1 && args[0] instanceof BlockPos blockPos) {
-            return getBlockEntity(blockPos);
-        } else if (method.getName().equals("setBlock") && args.length >= 2 && args[0] instanceof BlockPos blockPos && args[1] instanceof BlockState blockState) {
-            return setBlock(blockPos, blockState);
-        } else if (method.getName().equals("removeBlock") && args.length == 2 && args[0] instanceof BlockPos blockPos && args[1] instanceof Boolean bl) {
-            return removeBlock(blockPos, bl);
-        } else if (method.getName().equals("destroyBlock") && args.length == 4 && args[0] instanceof BlockPos blockPos && args[1] instanceof Boolean bl && args[2] instanceof Entity entity && args[3] instanceof Integer i) {
-            return destroyBlock(blockPos, bl, entity, i);
-        } else {
-            return method.invoke(this.serverLevel, args);
+        switch (method.getName()) {
+            case "getBlockState", "m_8055_" -> {
+                if (args.length == 1 && args[0] instanceof BlockPos blockPos) {
+                    return getBlockState(blockPos);
+                }
+            }
+            case "getBlockEntity", "m_7702_" -> {
+                if (args.length == 1 && args[0] instanceof BlockPos blockPos) {
+                    return getBlockEntity(blockPos);
+                }
+            }
+            case "setBlock", "m_7731_" -> {
+                if (args.length >= 2 && args[0] instanceof BlockPos blockPos && args[1] instanceof BlockState blockState) {
+                    return setBlock(blockPos, blockState);
+                }
+            }
+            case "removeBlock", "destroyBlock", "m_7471_", "m_7740_" -> {
+                if (args.length >= 2 && args[0] instanceof BlockPos blockPos && args[1] instanceof Boolean bl) {
+                    return removeBlock(blockPos, bl);
+                }
+            }
+            default -> { }
         }
+
+        return method.invoke(this.serverLevel, args);
     }
 
 }
