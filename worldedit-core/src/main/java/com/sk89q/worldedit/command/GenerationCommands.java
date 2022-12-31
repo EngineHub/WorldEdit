@@ -39,6 +39,7 @@ import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.biome.BiomeType;
+import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
@@ -233,6 +234,23 @@ public class GenerationCommands {
         int affected = editSession.makePumpkinPatches(session.getPlacementPosition(actor), size);
         actor.printInfo(TranslatableComponent.of("worldedit.pumpkins.created", TextComponent.of(affected)));
         return affected;
+    }
+
+    @Command(
+        name = "/feature",
+        desc = "Generate Minecraft features"
+    )
+    @CommandPermissions("worldedit.generation.feature")
+    @Logging(POSITION)
+    public int feature(Actor actor, LocalSession session, EditSession editSession,
+                       @Arg(desc = "The feature")
+                       ConfiguredFeatureType feature) throws WorldEditException {
+        if (editSession.getWorld().generateFeature(feature, editSession, session.getPlacementPosition(actor))) {
+            actor.printInfo(TranslatableComponent.of("worldedit.feature.created"));
+        } else {
+            actor.printError(TranslatableComponent.of("worldedit.feature.failed"));
+        }
+        return 0;
     }
 
     @Command(

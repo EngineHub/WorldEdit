@@ -31,6 +31,7 @@ import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.biome.BiomeTypes;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
@@ -47,6 +48,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.Vec3;
 
@@ -194,6 +196,15 @@ public final class FabricAdapter {
             return FabricTransmogrifier.transmogToWorldEdit(blockState);
         }
         return worldEdit;
+    }
+
+    public static BaseBlock adapt(BlockEntity blockEntity) {
+        int blockStateId = Block.getId(blockEntity.getBlockState());
+        BlockState worldEdit = BlockStateIdAccess.getBlockStateById(blockStateId);
+        if (worldEdit == null) {
+            worldEdit = FabricTransmogrifier.transmogToWorldEdit(blockEntity.getBlockState());
+        }
+        return worldEdit.toBaseBlock(LazyReference.from(() -> NBTConverter.fromNative(blockEntity.saveWithId())));
     }
 
     public static Block adapt(BlockType blockType) {

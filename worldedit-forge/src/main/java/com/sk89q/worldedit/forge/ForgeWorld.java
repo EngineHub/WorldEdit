@@ -33,6 +33,7 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.forge.internal.ForgeEditSessionDelegate;
 import com.sk89q.worldedit.forge.internal.ForgeWorldNativeAccess;
 import com.sk89q.worldedit.forge.internal.NBTConverter;
 import com.sk89q.worldedit.forge.internal.TileEntityUtils;
@@ -57,6 +58,7 @@ import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
@@ -448,8 +450,15 @@ public class ForgeWorld extends AbstractWorld {
             position = position.add(0, 1, 0);
         }
         return generator != null && generator.place(
-            world, chunkManager.getGenerator(), random, ForgeAdapter.toBlockPos(position)
+            new ForgeEditSessionDelegate(editSession, world), chunkManager.getGenerator(), random, ForgeAdapter.toBlockPos(position)
         );
+    }
+
+    public boolean generateFeature(ConfiguredFeatureType type, EditSession editSession, BlockVector3 position) {
+        ServerLevel world = getWorld();
+        ConfiguredFeature<?, ?> k = world.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).get(ResourceLocation.tryParse(type.getId()));
+        ServerChunkCache chunkManager = world.getChunkSource();
+        return k != null && k.place(new ForgeEditSessionDelegate(editSession, world), chunkManager.getGenerator(), random, ForgeAdapter.toBlockPos(position));
     }
 
     @Override
