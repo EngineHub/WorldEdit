@@ -17,28 +17,56 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.cli;
+ package com.sk89q.worldedit.cli;
 
-public interface CLIWorld {
-
-    /**
-     * Saves this world back to file if dirty or forced.
-     *
-     * @param force Force a save
-     */
-    void save(boolean force);
-
-    /**
-     * Gets whether the world is dirty.
-     *
-     * @return If it's dirty
-     */
-    boolean isDirty();
-
-    /**
-     * Set the world's dirty status.
-     *
-     * @param dirty if dirty
-     */
-    void setDirty(boolean dirty);
-}
+ import java.util.List;
+ 
+ public interface CLIWorld {
+ 
+     /**
+      * Saves this world to the specified file if dirty or forced.
+      *
+      * @param force Force a save
+      * @param filePath The file path to save to
+      */
+     void save(boolean force, String filePath);
+ 
+     /**
+      * Saves the specified changes to this world to the specified file if dirty or forced.
+      *
+      * @param force Force a save
+      * @param filePath The file path to save to
+      * @param changes The changes to save
+      */
+     void save(boolean force, String filePath, List<Change> changes);
+ 
+     /**
+      * Performs a dirty check and saves this world to the specified file if necessary.
+      *
+      * @param filePath The file path to save to
+      */
+     void saveIfDirty(String filePath);
+ 
+     /**
+      * Performs a dirty check and saves the specified changes to this world to the specified file if necessary.
+      *
+      * @param filePath The file path to save to
+      * @param changes The changes to save
+      */
+     void saveIfDirty(String filePath, List<Change> changes);
+ 
+     /**
+      * Gets whether the world is dirty.
+      *
+      * @return If it's dirty
+      */
+     boolean isDirty();
+ 
+     /**
+      * Set the world's dirty status.
+      *
+      * @param dirty if dirty
+      */
+     void setDirty(boolean dirty);
+ }
+ 
