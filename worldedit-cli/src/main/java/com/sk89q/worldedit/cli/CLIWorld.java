@@ -2,6 +2,7 @@
  * WorldEdit, a Minecraft world manipulation toolkit
  * Copyright (C) sk89q <http://www.sk89q.com>
  * Copyright (C) WorldEdit team and contributors
+ * Copyright (C) miguelgargallo to Optimize and improve the code
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
