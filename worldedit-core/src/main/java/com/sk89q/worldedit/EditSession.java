@@ -2588,7 +2588,7 @@ public class EditSession implements Extent, AutoCloseable {
         Interpolation interpol = new KochanekBartelsInterpolation();
 
         for (BlockVector3 nodevector : nodevectors) {
-            Node n = new Node(nodevector.toVector3());
+            Node n = new Node(nodevector.toVector3().add(Vector3.at(0.5D, 0.5D, 0.5D)));
             n.setTension(tension);
             n.setBias(bias);
             n.setContinuity(continuity);
