@@ -6,7 +6,7 @@
 
 * With selections, schematics, copy and paste, brushes, and scripting!
 * Use it in creative, survival in single player or on your server.
-* Use it on your Minecraft server to fix grieving and mistakes.
+* Use it on your Minecraft server to fix griefing and mistakes.
 
 Java Edition required. WorldEdit is compatible with Forge, Fabric, Bukkit, Spigot, Paper, and Sponge.
 
