@@ -41,7 +41,6 @@ import java.lang.invoke.MethodType;
 import java.util.List;
 import java.util.function.DoubleBinaryOperator;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import static com.sk89q.worldedit.antlr.ExpressionLexer.ASSIGN;
 import static com.sk89q.worldedit.antlr.ExpressionLexer.DIVIDE;
@@ -96,7 +95,7 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
         List<TerminalNode> children = ctx.children.stream()
             .filter(TerminalNode.class::isInstance)
             .map(TerminalNode.class::cast)
-            .collect(Collectors.toList());
+            .toList();
         ExpressionHelper.check(children.size() == 1, ctx, "Expected exactly one token, got " + children.size());
         return children.get(0).getSymbol();
     }

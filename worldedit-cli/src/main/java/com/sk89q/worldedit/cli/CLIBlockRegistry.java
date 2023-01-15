@@ -33,30 +33,28 @@ import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 public class CLIBlockRegistry extends BundledBlockRegistry {
 
     private Property<?> createProperty(String type, String key, List<String> values) {
         switch (type) {
-            case "int": {
-                List<Integer> fixedValues = values.stream().map(Integer::parseInt).collect(Collectors.toList());
+            case "int" -> {
+                List<Integer> fixedValues = values.stream().map(Integer::parseInt).toList();
                 return new IntegerProperty(key, fixedValues);
             }
-            case "bool": {
-                List<Boolean> fixedValues = values.stream().map(Boolean::parseBoolean).collect(Collectors.toList());
+            case "bool" -> {
+                List<Boolean> fixedValues = values.stream().map(Boolean::parseBoolean).toList();
                 return new BooleanProperty(key, fixedValues);
             }
-            case "enum": {
+            case "enum" -> {
                 return new EnumProperty(key, values);
             }
-            case "direction": {
-                List<Direction> fixedValues = values.stream().map(String::toUpperCase).map(Direction::valueOf).collect(Collectors.toList());
+            case "direction" -> {
+                List<Direction> fixedValues = values.stream().map(String::toUpperCase).map(Direction::valueOf).toList();
                 return new DirectionalProperty(key, fixedValues);
             }
-            default:
-                throw new RuntimeException("Failed to create property");
+            default -> throw new RuntimeException("Failed to create property");
         }
     }
 

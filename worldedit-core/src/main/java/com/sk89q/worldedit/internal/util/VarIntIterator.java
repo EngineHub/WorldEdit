@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.internal.util;
 
-import it.unimi.dsi.fastutil.ints.IntIterator;
-
 import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;
 

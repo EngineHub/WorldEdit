@@ -84,7 +84,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
     private YAMLProcessor config;
     private final List<Class<? extends PermissionsResolver>> enabledResolvers = new ArrayList<>();
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({ "unchecked" })
     protected Class<? extends PermissionsResolver>[] availableResolvers = new Class[] {
         PluginPermissionsResolver.class,
         PermissionsExResolver.class,

@@ -52,8 +52,7 @@ public class BlockOptimizedHistory extends ArrayListHistory {
     public void add(Change change) {
         checkNotNull(change);
 
-        if (change instanceof BlockChange) {
-            BlockChange blockChange = (BlockChange) change;
+        if (change instanceof BlockChange blockChange) {
             BlockVector3 position = blockChange.getPosition();
             if (!previous.containsLocation(position)) {
                 previous.add(position, blockChange.getPrevious());

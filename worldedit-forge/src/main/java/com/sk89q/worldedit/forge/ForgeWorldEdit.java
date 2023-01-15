@@ -172,7 +172,6 @@ public class ForgeWorldEdit {
     }
 
     // TODO clean this up once Forge adds a proper API for this
-    @SuppressWarnings("deprecation")
     private void setupRegistries(MinecraftServer server) {
         // Blocks
         for (ResourceLocation name : ForgeRegistries.BLOCKS.getKeys()) {

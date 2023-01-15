@@ -61,7 +61,7 @@ public final class CompoundTag extends Tag<Object, LinCompoundTag> {
         return linTag.value().containsKey(key);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({ "rawtypes" })
     @Override
     public Map<String, Tag<?, ?>> getValue() {
         return ImmutableMap.copyOf(Maps.transformValues(

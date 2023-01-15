@@ -172,7 +172,7 @@ public class MobSpawnerBlock extends BaseBlock {
         try {
             spawnDataTag = NBTUtils.getChildTag(values, "SpawnData", CompoundTag.class);
             mobType = spawnDataTag.getString("id");
-            if (mobType.equals("")) {
+            if (mobType.isEmpty()) {
                 throw new InvalidFormatException("No spawn id.");
             }
             this.mobType = mobType;

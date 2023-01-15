@@ -174,7 +174,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -558,10 +557,10 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
                 return new BooleanProperty(state.getName(), ImmutableList.copyOf(state.getPossibleValues()));
             } else if (state instanceof DirectionProperty) {
                 return new DirectionalProperty(state.getName(),
-                    (List<Direction>) state.getPossibleValues().stream().map(e -> Direction.valueOf(((StringRepresentable) e).getSerializedName().toUpperCase(Locale.ROOT))).collect(Collectors.toList()));
+                    (List<Direction>) state.getPossibleValues().stream().map(e -> Direction.valueOf(((StringRepresentable) e).getSerializedName().toUpperCase(Locale.ROOT))).toList());
             } else if (state instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
                 return new EnumProperty(state.getName(),
-                    (List<String>) state.getPossibleValues().stream().map(e -> ((StringRepresentable) e).getSerializedName()).collect(Collectors.toList()));
+                    (List<String>) state.getPossibleValues().stream().map(e -> ((StringRepresentable) e).getSerializedName()).toList());
             } else if (state instanceof net.minecraft.world.level.block.state.properties.IntegerProperty) {
                 return new IntegerProperty(state.getName(), ImmutableList.copyOf(state.getPossibleValues()));
             } else {

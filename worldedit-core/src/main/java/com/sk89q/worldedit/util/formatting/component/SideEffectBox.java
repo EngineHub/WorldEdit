@@ -48,7 +48,7 @@ public class SideEffectBox extends PaginationBox {
                     Locale.US
                 )
             ))
-            .collect(Collectors.toList())
+            .toList()
     );
 
     private final SideEffectSet sideEffectSet;
