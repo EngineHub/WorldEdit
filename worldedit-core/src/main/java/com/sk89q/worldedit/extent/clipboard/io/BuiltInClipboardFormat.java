@@ -20,8 +20,6 @@
 package com.sk89q.worldedit.extent.clipboard.io;
 
 import com.google.common.collect.ImmutableSet;
-import com.sk89q.jnbt.NBTInputStream;
-import com.sk89q.jnbt.NBTOutputStream;
 import com.sk89q.worldedit.extent.clipboard.io.sponge.SpongeSchematicV1Reader;
 import com.sk89q.worldedit.extent.clipboard.io.sponge.SpongeSchematicV2Reader;
 import com.sk89q.worldedit.extent.clipboard.io.sponge.SpongeSchematicV2Writer;
@@ -35,8 +33,6 @@ import org.enginehub.linbus.tree.LinTagType;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -72,9 +68,9 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
         }
 
         @Override
-        public boolean isFormat(File file) {
+        public boolean isFormat(InputStream inputStream) {
             LinRootEntry rootEntry;
-            try (var stream = new DataInputStream(new GZIPInputStream(new FileInputStream(file)))) {
+            try (var stream = new DataInputStream(new GZIPInputStream(inputStream))) {
                 rootEntry = LinBinaryIO.readUsing(stream, LinRootEntry::readFrom);
             } catch (Exception e) {
                 return false;
@@ -105,8 +101,8 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
         }
 
         @Override
-        public boolean isFormat(File file) {
-            return detectOldSpongeSchematic(file, 1);
+        public boolean isFormat(InputStream inputStream) {
+            return detectOldSpongeSchematic(inputStream, 1);
         }
     },
     SPONGE_V2_SCHEMATIC("sponge.2") {
@@ -129,8 +125,8 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
         }
 
         @Override
-        public boolean isFormat(File file) {
-            return detectOldSpongeSchematic(file, 2);
+        public boolean isFormat(InputStream inputStream) {
+            return detectOldSpongeSchematic(inputStream, 2);
         }
     },
     SPONGE_V3_SCHEMATIC("sponge.3", "sponge", "schem") {
@@ -153,9 +149,9 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
         }
 
         @Override
-        public boolean isFormat(File file) {
+        public boolean isFormat(InputStream inputStream) {
             LinCompoundTag root;
-            try (var stream = new DataInputStream(new GZIPInputStream(new FileInputStream(file)))) {
+            try (var stream = new DataInputStream(new GZIPInputStream(inputStream))) {
                 root = LinBinaryIO.readUsing(stream, LinRootEntry::readFrom).value();
             } catch (Exception e) {
                 return false;
@@ -173,9 +169,9 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
     },
     ;
 
-    private static boolean detectOldSpongeSchematic(File file, int version) {
+    private static boolean detectOldSpongeSchematic(InputStream inputStream, int version) {
         LinRootEntry rootEntry;
-        try (var stream = new DataInputStream(new GZIPInputStream(new FileInputStream(file)))) {
+        try (var stream = new DataInputStream(new GZIPInputStream(inputStream))) {
             rootEntry = LinBinaryIO.readUsing(stream, LinRootEntry::readFrom);
         } catch (Exception e) {
             return false;

@@ -20,6 +20,8 @@
 package com.sk89q.worldedit.extent.clipboard.io;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -68,7 +70,23 @@ public interface ClipboardFormat {
      * @param file the file
      * @return true if the given file is of this format
      */
-    boolean isFormat(File file);
+    default boolean isFormat(File file) {
+        try {
+            return isFormat(new FileInputStream(file));
+        } catch (FileNotFoundException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Return whether the given stream is of this format.
+     *
+     * @param inputStream The stream
+     * @return true if the given stream is of this format
+     */
+    default boolean isFormat(InputStream inputStream) {
+        return false;
+    }
 
     /**
      * Get the file extension this format primarily uses.
