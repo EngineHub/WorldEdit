@@ -1,4 +1,3 @@
-
 import org.gradle.api.Project
 
 object Versions {
