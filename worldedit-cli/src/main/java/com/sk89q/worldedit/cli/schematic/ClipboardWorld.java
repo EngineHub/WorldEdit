@@ -79,8 +79,11 @@ public class ClipboardWorld extends AbstractWorld implements Clipboard, CLIWorld
 
     @Override
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectSet sideEffects) throws WorldEditException {
-        dirty = true;
-        return clipboard.setBlock(position, block);
+        boolean retValue = clipboard.setBlock(position, block);
+        if (retValue) {
+            dirty = true;
+        }
+        return retValue;
     }
 
     @Override
@@ -135,8 +138,11 @@ public class ClipboardWorld extends AbstractWorld implements Clipboard, CLIWorld
     @Nullable
     @Override
     public Entity createEntity(Location location, BaseEntity entity) {
-        dirty = true;
-        return clipboard.createEntity(location, entity);
+        Entity createdEntity = clipboard.createEntity(location, entity);
+        if (createdEntity != null) {
+            dirty = true;
+        }
+        return createdEntity;
     }
 
     @Override
@@ -156,8 +162,11 @@ public class ClipboardWorld extends AbstractWorld implements Clipboard, CLIWorld
 
     @Override
     public boolean setBiome(BlockVector3 position, BiomeType biome) {
-        dirty = true;
-        return clipboard.setBiome(position, biome);
+        boolean retValue = clipboard.setBiome(position, biome);
+        if (retValue) {
+            dirty = true;
+        }
+        return retValue;
     }
 
     @Override
