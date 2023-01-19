@@ -1777,6 +1777,81 @@ public class EditSession implements Extent, AutoCloseable {
     }
 
     /**
+     * Makes a cone.
+     *
+     * @param pos     Center of the cone
+     * @param block   The block pattern to use
+     * @param radiusX The cone's largest north/south extent
+     * @param radiusZ The cone's largest east/west extent
+     * @param height  The cone's up/down extent. If negative, extend downward.
+     * @param filled  If false, only a shell will be generated.
+     * @param thickness  The cone's wall thickness, if it's hollow.
+     * @param tipOffset  Offsets the cone's tip in the y direction by this amount.
+     * @return number of blocks changed
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+
+    public int makeCone(BlockVector3 pos, Pattern block, double radiusX, double radiusZ, int height, boolean filled,
+                        double thickness) throws MaxChangedBlocksException {
+        int affected = 0;
+
+        final int ceilRadiusX = (int) Math.ceil(radiusX);
+        final int ceilRadiusZ = (int) Math.ceil(radiusZ);
+
+        for (int y = 0; y < height; ++y) {
+            forX:
+            for (int x = 0; x <= ceilRadiusX; ++x) {
+
+                forZ:
+                for (int z = 0; z <= ceilRadiusZ; ++z) {
+
+                    double xSquaredOverRadiusX = Math.pow(x, 2) /  Math.pow(radiusX, 2);
+                    double zSquaredOverRadiusZ = Math.pow(z, 2) / Math.pow(radiusZ, 2);
+                    double ySquaredMinusHeightOverHeightSquared = Math.pow(y - height, 2)
+                            / Math.pow(height, 2);
+                    double distanceFromOriginMinusHeightSquared = xSquaredOverRadiusX + zSquaredOverRadiusZ
+                            - ySquaredMinusHeightOverHeightSquared;
+
+                    if (distanceFromOriginMinusHeightSquared > 1) {
+                        if (z == 0) {
+                            break forX;
+                        }
+                        break forZ;
+                    }
+
+                    if (!filled) {
+                        double xNext = Math.pow(x + thickness, 2) /  Math.pow(radiusX, 2)
+                                + zSquaredOverRadiusZ - ySquaredMinusHeightOverHeightSquared;
+                        double yNext = xSquaredOverRadiusX + zSquaredOverRadiusZ
+                                - Math.pow(y + thickness - height, 2) / Math.pow(height, 2);
+                        double zNext = xSquaredOverRadiusX + Math.pow(z + thickness, 2)
+                                / Math.pow(radiusZ, 2) - ySquaredMinusHeightOverHeightSquared;
+                        if (xNext <= 0 && zNext <= 0 && (yNext <= 0 && y + thickness != height)) {
+                            continue;
+                        }
+                    }
+
+                    if (distanceFromOriginMinusHeightSquared <= 0) {
+                        if (setBlock(pos.add(x, y, z), block)) {
+                            ++affected;
+                        }
+                        if (setBlock(pos.add(-x, y, z), block)) {
+                            ++affected;
+                        }
+                        if (setBlock(pos.add(x, y, -z), block)) {
+                            ++affected;
+                        }
+                        if (setBlock(pos.add(-x, y, -z), block)) {
+                            ++affected;
+                        }
+                    }
+                }
+            }
+        }
+        return affected;
+    }
+
+    /**
     * Makes a sphere.
     *
     * @param pos Center of the sphere or ellipsoid
