@@ -79,6 +79,7 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.item.ItemType;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.network.protocol.game.ClientboundEntityEventPacket;
@@ -142,6 +143,7 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -347,6 +349,45 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         }
 
         return state.toBaseBlock();
+    }
+
+    @Override
+    public boolean hasCustomBiomeSupport() {
+        return true;
+    }
+
+    private static final HashMap<BiomeType, Holder<Biome>> biomeTypeToNMSCache = new HashMap<>();
+    private static final HashMap<Holder<Biome>, BiomeType> biomeTypeFromNMSCache = new HashMap<>();
+
+    @Override
+    public BiomeType getBiome(Location location) {
+        checkNotNull(location);
+
+        CraftWorld craftWorld = ((CraftWorld) location.getWorld());
+        int x = location.getBlockX();
+        int y = location.getBlockY();
+        int z = location.getBlockZ();
+
+        final ServerLevel handle = craftWorld.getHandle();
+        LevelChunk chunk = handle.getChunk(x >> 4, z >> 4);
+
+        return biomeTypeFromNMSCache.computeIfAbsent(chunk.getNoiseBiome(x >> 2, y >> 2, z >> 2), b -> BiomeType.REGISTRY.get(b.unwrapKey().get().location().toString()));
+    }
+
+    @Override
+    public void setBiome(Location location, BiomeType biome) {
+        checkNotNull(location);
+        checkNotNull(biome);
+
+        CraftWorld craftWorld = ((CraftWorld) location.getWorld());
+        int x = location.getBlockX();
+        int y = location.getBlockY();
+        int z = location.getBlockZ();
+
+        final ServerLevel handle = craftWorld.getHandle();
+        LevelChunk chunk = handle.getChunk(x >> 4, z >> 4);
+        chunk.setBiome(x >> 2, y >> 2, z >> 2, biomeTypeToNMSCache.computeIfAbsent(biome, b -> ((CraftServer) Bukkit.getServer()).getServer().registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getHolderOrThrow(ResourceKey.create(Registry.BIOME_REGISTRY, new ResourceLocation(b.getId())))));
+        chunk.setUnsaved(true);
     }
 
     @Override
@@ -786,6 +827,17 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void initializeRegistries() {
+        DedicatedServer server = ((CraftServer) Bukkit.getServer()).getServer();
+        // Biomes
+        for (ResourceLocation name : server.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).keySet()) {
+            if (BiomeType.REGISTRY.get(name.toString()) == null) {
+                BiomeType.REGISTRY.register(name.toString(), new BiomeType(name.toString()));
+            }
+        }
     }
 
     // ------------------------------------------------------------------------
