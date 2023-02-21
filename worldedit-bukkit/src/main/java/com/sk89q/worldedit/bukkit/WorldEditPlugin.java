@@ -172,7 +172,6 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             getServer().getPluginManager().registerEvents(new AsyncTabCompleteListener(), this);
         }
 
-        initializeRegistries(); // this creates the objects matching Bukkit's enums - but doesn't fill them with data yet
         if (Bukkit.getWorlds().isEmpty()) {
             setupPreWorldData();
             // register this so we can load world-dependent data right as the first world is loading
@@ -194,6 +193,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
     private void setupPreWorldData() {
         loadAdapter();
+        initializeRegistries(); // this creates the objects matching Bukkit's enums - but doesn't fill them with data yet
         config.load();
         WorldEdit.getInstance().loadMappings();
     }
@@ -210,8 +210,10 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     private void initializeRegistries() {
         // Biome
         for (Biome biome : Biome.values()) {
-            String lowerCaseBiomeName = biome.name().toLowerCase(Locale.ROOT);
-            BiomeType.REGISTRY.register("minecraft:" + lowerCaseBiomeName, new BiomeType("minecraft:" + lowerCaseBiomeName));
+            if (!biome.name().equals("CUSTOM")) {
+                String lowerCaseBiomeName = biome.name().toLowerCase(Locale.ROOT);
+                BiomeType.REGISTRY.register("minecraft:" + lowerCaseBiomeName, new BiomeType("minecraft:" + lowerCaseBiomeName));
+            }
         }
         // Block & Item
         for (Material material : Material.values()) {
@@ -253,6 +255,11 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         // ... :|
         GameModes.get("");
         WeatherTypes.get("");
+
+        BukkitImplAdapter adapter = getBukkitImplAdapter();
+        if (adapter != null) {
+            adapter.initializeRegistries();
+        }
     }
 
     private void setupTags() {

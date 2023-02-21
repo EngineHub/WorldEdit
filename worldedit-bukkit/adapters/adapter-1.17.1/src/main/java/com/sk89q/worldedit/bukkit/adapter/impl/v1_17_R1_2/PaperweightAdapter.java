@@ -377,6 +377,44 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     }
 
     @Override
+    public boolean hasCustomBiomeSupport() {
+        return true;
+    }
+
+    private static final HashMap<BiomeType, Biome> biomeTypeToNMSCache = new HashMap<>();
+    private static final HashMap<Biome, BiomeType> biomeTypeFromNMSCache = new HashMap<>();
+
+    @Override
+    public BiomeType getBiome(Location location) {
+        checkNotNull(location);
+
+        CraftWorld craftWorld = ((CraftWorld) location.getWorld());
+        int x = location.getBlockX();
+        int y = location.getBlockY();
+        int z = location.getBlockZ();
+
+        final ServerLevel handle = craftWorld.getHandle();
+        LevelChunk chunk = handle.getChunk(x >> 4, z >> 4);
+        return biomeTypeFromNMSCache.computeIfAbsent(chunk.getBiomes().getNoiseBiome(x >> 2, y >> 2, z >> 2), b -> BiomeType.REGISTRY.get(((CraftServer) Bukkit.getServer()).getServer().registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getKey(b).toString()));
+    }
+
+    @Override
+    public void setBiome(Location location, BiomeType biome) {
+        checkNotNull(location);
+        checkNotNull(biome);
+
+        CraftWorld craftWorld = ((CraftWorld) location.getWorld());
+        int x = location.getBlockX();
+        int y = location.getBlockY();
+        int z = location.getBlockZ();
+
+        final ServerLevel handle = craftWorld.getHandle();
+        LevelChunk chunk = handle.getChunk(x >> 4, z >> 4);
+        chunk.getBiomes().setBiome(x >> 2, y >> 2, z >> 2, biomeTypeToNMSCache.computeIfAbsent(biome, b -> ((CraftServer) Bukkit.getServer()).getServer().registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).get(ResourceKey.create(Registry.BIOME_REGISTRY, new ResourceLocation(b.getId())))));
+        chunk.setUnsaved(true);
+    }
+
+    @Override
     public WorldNativeAccess<?, ?, ?> createWorldNativeAccess(World world) {
         return new PaperweightWorldNativeAccess(this,
             new WeakReference<>(((CraftWorld) world).getHandle()));
@@ -818,6 +856,17 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void initializeRegistries() {
+        DedicatedServer server = ((CraftServer) Bukkit.getServer()).getServer();
+        // Biomes
+        for (ResourceLocation name : server.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).keySet()) {
+            if (BiomeType.REGISTRY.get(name.toString()) == null) {
+                BiomeType.REGISTRY.register(name.toString(), new BiomeType(name.toString()));
+            }
+        }
     }
 
     // ------------------------------------------------------------------------

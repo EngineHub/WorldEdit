@@ -32,6 +32,7 @@ import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.RegenOptions;
+import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -250,5 +251,38 @@ public interface BukkitImplAdapter {
      */
     default boolean clearContainerBlockContents(World world, BlockVector3 pt) {
         throw new UnsupportedOperationException("This adapter does not support clearing block contents.");
+    }
+
+    /**
+     * Checks if this adapter supports custom biomes.
+     * @return if custom biomes are supported
+     */
+    default boolean hasCustomBiomeSupport() {
+        return false;
+    }
+
+    /**
+     * Set the biome at a location.
+     * @param location the location
+     * @param biome the new biome
+     */
+    default void setBiome(Location location, BiomeType biome) {
+        throw new UnsupportedOperationException("This adapter does not support custom biomes.");
+    }
+
+    /**
+     * Gets the current biome at a location.
+     * @param location the location
+     * @return the biome
+     */
+    default BiomeType getBiome(Location location) {
+        throw new UnsupportedOperationException("This adapter does not support custom biomes.");
+    }
+
+    /**
+     * Initialize registries that require NMS access.
+     */
+    default void initializeRegistries() {
+
     }
 }
