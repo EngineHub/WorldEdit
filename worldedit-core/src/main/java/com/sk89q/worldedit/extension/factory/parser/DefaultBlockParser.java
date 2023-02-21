@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.extension.factory.parser;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.ImmutableMap;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.NotABlockException;
 import com.sk89q.worldedit.WorldEdit;
@@ -117,47 +117,25 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
      */
     @SuppressWarnings("ConstantConditions")
     private String woolMapper(String string) {
-        switch (string.toLowerCase(Locale.ROOT)) {
-            case "white":
-                return BlockTypes.WHITE_WOOL.getId();
-            case "black":
-                return BlockTypes.BLACK_WOOL.getId();
-            case "blue":
-                return BlockTypes.BLUE_WOOL.getId();
-            case "brown":
-                return BlockTypes.BROWN_WOOL.getId();
-            case "cyan":
-                return BlockTypes.CYAN_WOOL.getId();
-            case "gray":
-            case "grey":
-                return BlockTypes.GRAY_WOOL.getId();
-            case "green":
-                return BlockTypes.GREEN_WOOL.getId();
-            case "light_blue":
-            case "lightblue":
-                return BlockTypes.LIGHT_BLUE_WOOL.getId();
-            case "light_gray":
-            case "light_grey":
-            case "lightgray":
-            case "lightgrey":
-                return BlockTypes.LIGHT_GRAY_WOOL.getId();
-            case "lime":
-                return BlockTypes.LIME_WOOL.getId();
-            case "magenta":
-                return BlockTypes.MAGENTA_WOOL.getId();
-            case "orange":
-                return BlockTypes.ORANGE_WOOL.getId();
-            case "pink":
-                return BlockTypes.PINK_WOOL.getId();
-            case "purple":
-                return BlockTypes.PURPLE_WOOL.getId();
-            case "yellow":
-                return BlockTypes.YELLOW_WOOL.getId();
-            case "red":
-                return BlockTypes.RED_WOOL.getId();
-            default:
-                return string;
-        }
+        return switch (string.toLowerCase(Locale.ROOT)) {
+            case "white" -> BlockTypes.WHITE_WOOL.getId();
+            case "black" -> BlockTypes.BLACK_WOOL.getId();
+            case "blue" -> BlockTypes.BLUE_WOOL.getId();
+            case "brown" -> BlockTypes.BROWN_WOOL.getId();
+            case "cyan" -> BlockTypes.CYAN_WOOL.getId();
+            case "gray", "grey" -> BlockTypes.GRAY_WOOL.getId();
+            case "green" -> BlockTypes.GREEN_WOOL.getId();
+            case "light_blue", "lightblue" -> BlockTypes.LIGHT_BLUE_WOOL.getId();
+            case "light_gray", "light_grey", "lightgray", "lightgrey" -> BlockTypes.LIGHT_GRAY_WOOL.getId();
+            case "lime" -> BlockTypes.LIME_WOOL.getId();
+            case "magenta" -> BlockTypes.MAGENTA_WOOL.getId();
+            case "orange" -> BlockTypes.ORANGE_WOOL.getId();
+            case "pink" -> BlockTypes.PINK_WOOL.getId();
+            case "purple" -> BlockTypes.PURPLE_WOOL.getId();
+            case "yellow" -> BlockTypes.YELLOW_WOOL.getId();
+            case "red" -> BlockTypes.RED_WOOL.getId();
+            default -> string;
+        };
     }
 
     private static Map<Property<?>, Object> parseProperties(BlockType type, String[] stateProperties, ParserContext context) throws InputParseException {
@@ -186,7 +164,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                     } else {
                         WorldEdit.logger.debug("Unknown property " + parts[0] + " for block " + type.getId());
                     }
-                    return Maps.newHashMap();
+                    return Map.of();
                 }
                 if (blockStates.containsKey(propertyKey)) {
                     throw new InputParseException(TranslatableComponent.of(
@@ -216,7 +194,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
             }
         }
 
-        return blockStates;
+        return ImmutableMap.copyOf(blockStates);
     }
 
     @Override

@@ -38,24 +38,14 @@ import javax.annotation.Nullable;
 public class CLIBlockRegistry extends BundledBlockRegistry {
 
     private Property<?> createProperty(String type, String key, List<String> values) {
-        switch (type) {
-            case "int" -> {
-                List<Integer> fixedValues = values.stream().map(Integer::parseInt).toList();
-                return new IntegerProperty(key, fixedValues);
-            }
-            case "bool" -> {
-                List<Boolean> fixedValues = values.stream().map(Boolean::parseBoolean).toList();
-                return new BooleanProperty(key, fixedValues);
-            }
-            case "enum" -> {
-                return new EnumProperty(key, values);
-            }
-            case "direction" -> {
-                List<Direction> fixedValues = values.stream().map(String::toUpperCase).map(Direction::valueOf).toList();
-                return new DirectionalProperty(key, fixedValues);
-            }
+        return switch (type) {
+            case "int" -> new IntegerProperty(key, values.stream().map(Integer::parseInt).toList());
+            case "bool" -> new BooleanProperty(key, values.stream().map(Boolean::parseBoolean).toList());
+            case "enum" -> new EnumProperty(key, values);
+            case "direction" ->
+                new DirectionalProperty(key, values.stream().map(String::toUpperCase).map(Direction::valueOf).toList());
             default -> throw new RuntimeException("Failed to create property");
-        }
+        };
     }
 
     @Nullable

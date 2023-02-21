@@ -29,11 +29,11 @@ public class LogManagerCompat {
     }
 
     private static String getCallerCallerClassName() {
-        StackTraceElement[] lazyStack = new Throwable().getStackTrace();
         // 0 - this method
         // 1 - caller
         // 2 - caller caller
-        return lazyStack[2].getClassName();
+        StackWalker.StackFrame caller = StackWalker.getInstance().walk(s -> s.skip(2).findFirst()).orElseThrow(() -> new AssertionError("No caller found"));
+        return caller.getClassName();
     }
 
     private LogManagerCompat() {
