@@ -81,6 +81,8 @@ public interface ClipboardFormat {
     /**
      * Return whether the given stream is of this format.
      *
+     * @apiNote The caller is responsible for closing the given InputStream.
+     *
      * @param inputStream The stream
      * @return true if the given stream is of this format
      */

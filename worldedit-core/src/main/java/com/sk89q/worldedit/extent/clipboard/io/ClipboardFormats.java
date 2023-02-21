@@ -25,6 +25,7 @@ import com.google.common.collect.Multimaps;
 import com.sk89q.worldedit.WorldEdit;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -112,9 +113,11 @@ public class ClipboardFormats {
         checkNotNull(inputStreamSupplier);
 
         for (ClipboardFormat format : registeredFormats) {
-            if (format.isFormat(inputStreamSupplier.get())) {
-                return format;
-            }
+            try (var stream = inputStreamSupplier.get()) {
+                if (format.isFormat(stream)) {
+                    return format;
+                }
+            } catch (IOException ignored) {}
         }
 
         return null;
