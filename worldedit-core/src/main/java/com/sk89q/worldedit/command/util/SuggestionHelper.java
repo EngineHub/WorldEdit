@@ -90,11 +90,14 @@ public final class SuggestionHelper {
                             .filter(p -> !matchedProperties.contains(p.getKey()) && p.getKey().startsWith(matchProp))
                             .map(Map.Entry::getValue).toList();
                     return switch (matchingProps.size()) {
-                        case 0 -> propertyMap.keySet().stream().filter(p -> !matchedProperties.contains(p)).map(prop ->
-                            lastValidInput + prop + "=");
-                        case 1 -> matchingProps.get(0).getValues().stream().map(val ->
-                            lastValidInput + matchingProps.get(0).getName() + "="
-                                + val.toString().toLowerCase(Locale.ROOT));
+                        case 0 -> propertyMap.keySet().stream()
+                            .filter(p -> !matchedProperties.contains(p))
+                            .map(prop -> lastValidInput + prop + "=");
+                        case 1 -> matchingProps.get(0).getValues().stream()
+                            .map(val ->
+                                lastValidInput + matchingProps.get(0).getName() + "="
+                                    + val.toString().toLowerCase(Locale.ROOT)
+                            );
                         default -> matchingProps.stream().map(p -> lastValidInput + p.getName() + "=");
                     };
                 } else {
