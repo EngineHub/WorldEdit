@@ -525,20 +525,30 @@ public class BukkitWorld extends AbstractWorld {
     @SuppressWarnings("deprecation")
     @Override
     public BiomeType getBiome(BlockVector3 position) {
-        if (HAS_3D_BIOMES) {
-            return BukkitAdapter.adapt(getWorld().getBiome(position.getBlockX(), position.getBlockY(), position.getBlockZ()));
+        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+        if (adapter != null && adapter.hasCustomBiomeSupport()) {
+            return adapter.getBiome(BukkitAdapter.adapt(getWorld(), position));
         } else {
-            return BukkitAdapter.adapt(getWorld().getBiome(position.getBlockX(), position.getBlockZ()));
+            if (HAS_3D_BIOMES) {
+                return BukkitAdapter.adapt(getWorld().getBiome(position.getBlockX(), position.getBlockY(), position.getBlockZ()));
+            } else {
+                return BukkitAdapter.adapt(getWorld().getBiome(position.getBlockX(), position.getBlockZ()));
+            }
         }
     }
 
     @SuppressWarnings("deprecation")
     @Override
     public boolean setBiome(BlockVector3 position, BiomeType biome) {
-        if (HAS_3D_BIOMES) {
-            getWorld().setBiome(position.getBlockX(), position.getBlockY(), position.getBlockZ(), BukkitAdapter.adapt(biome));
+        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+        if (adapter != null && adapter.hasCustomBiomeSupport()) {
+            adapter.setBiome(BukkitAdapter.adapt(getWorld(), position), biome);
         } else {
-            getWorld().setBiome(position.getBlockX(), position.getBlockZ(), BukkitAdapter.adapt(biome));
+            if (HAS_3D_BIOMES) {
+                getWorld().setBiome(position.getBlockX(), position.getBlockY(), position.getBlockZ(), BukkitAdapter.adapt(biome));
+            } else {
+                getWorld().setBiome(position.getBlockX(), position.getBlockZ(), BukkitAdapter.adapt(biome));
+            }
         }
         return true;
     }

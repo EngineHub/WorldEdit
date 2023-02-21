@@ -45,6 +45,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.OptionalInt;
 import java.util.Set;
@@ -251,5 +252,38 @@ public interface BukkitImplAdapter {
      */
     default boolean clearContainerBlockContents(World world, BlockVector3 pt) {
         throw new UnsupportedOperationException("This adapter does not support clearing block contents.");
+    }
+
+    /**
+     * Checks if this adapter supports custom biomes.
+     * @return if custom biomes are supported
+     */
+    default boolean hasCustomBiomeSupport() {
+        return false;
+    }
+
+    /**
+     * Set the biome at a location.
+     * @param location the location
+     * @param biome the new biome
+     */
+    default void setBiome(Location location, BiomeType biome) {
+        throw new UnsupportedOperationException("This adapter does not support custom biomes.");
+    }
+
+    /**
+     * Gets the current biome at a location.
+     * @param location the location
+     * @return the biome
+     */
+    default BiomeType getBiome(Location location) {
+        throw new UnsupportedOperationException("This adapter does not support custom biomes.");
+    }
+
+    /**
+     * Initialize registries that require NMS access.
+     */
+    default void initializeRegistries() {
+
     }
 }
