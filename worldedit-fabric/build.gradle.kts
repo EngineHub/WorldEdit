@@ -22,7 +22,8 @@ apply(plugin = "fabric-loom")
 apply(plugin = "java-library")
 
 val minecraftVersion = "1.19.4-pre1"
-val loaderVersion = "0.14.15"
+// Loader held back on 0.14.14 - See https://github.com/FabricMC/Mixin/issues/107 for details.
+val loaderVersion = "0.14.14"
 
 val fabricApiConfiguration: Configuration = configurations.create("fabricApi")
 
