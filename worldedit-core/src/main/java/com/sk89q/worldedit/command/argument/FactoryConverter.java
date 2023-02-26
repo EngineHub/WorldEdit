@@ -96,8 +96,7 @@ public class FactoryConverter<T> implements ArgumentConverter<T> {
         this.contextTweaker = contextTweaker;
     }
 
-    @Override
-    public ConversionResult<T> convert(String argument, InjectedValueAccess context) {
+    private ParserContext createContext(InjectedValueAccess context) {
         Actor actor = context.injectedValue(Key.of(Actor.class))
             .orElseThrow(() -> new IllegalStateException("No actor"));
         LocalSession session = WorldEdit.getInstance().getSessionManager().get(actor);
@@ -121,6 +120,13 @@ public class FactoryConverter<T> implements ArgumentConverter<T> {
             contextTweaker.accept(parserContext);
         }
 
+        return parserContext;
+    }
+
+    @Override
+    public ConversionResult<T> convert(String argument, InjectedValueAccess context) {
+        ParserContext parserContext = createContext(context);
+
         try {
             return SuccessfulConversion.fromSingle(
                 factoryExtractor.apply(worldEdit).parseFromInput(argument, parserContext)
@@ -132,7 +138,9 @@ public class FactoryConverter<T> implements ArgumentConverter<T> {
 
     @Override
     public List<String> getSuggestions(String input, InjectedValueAccess context) {
-        return factoryExtractor.apply(worldEdit).getSuggestions(input);
+        ParserContext parserContext = createContext(context);
+
+        return factoryExtractor.apply(worldEdit).getSuggestions(input, parserContext);
     }
 
     @Override
