@@ -602,7 +602,7 @@ public final class PlatformCommandManager {
     public void handleCommandSuggestion(CommandSuggestionEvent event) {
         try {
             String arguments = event.getArguments();
-            List<Substring> split = parseArgs(arguments).collect(Collectors.toList());
+            List<Substring> split = parseArgs(arguments).toList();
             List<String> argStrings = split.stream()
                 .map(Substring::getSubstring)
                 .collect(Collectors.toList());

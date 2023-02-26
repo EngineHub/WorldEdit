@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.internal.util;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Throwables;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.internal.Constants;
@@ -44,7 +43,7 @@ public class DeprecationUtil {
      */
     public static void checkDelegatingOverride(Class<?> implementingClass) {
         // pull the information about the caller
-        StackTraceElement caller = Throwables.lazyStackTrace(new Throwable()).get(1);
+        StackWalker.StackFrame caller = StackWalker.getInstance().walk(s -> s.skip(1).findFirst()).orElseThrow(() -> new AssertionError("No caller found"));
         // find the matching caller method
         Method callingMethod = getCallingMethod(caller);
         NonAbstractForCompatibility annotation =
@@ -71,7 +70,7 @@ public class DeprecationUtil {
         }
     }
 
-    private static Method getCallingMethod(StackTraceElement callerInfo) {
+    private static Method getCallingMethod(StackWalker.StackFrame callerInfo) {
         Method[] declaredMethods;
         try {
             declaredMethods = Class.forName(callerInfo.getClassName()).getDeclaredMethods();

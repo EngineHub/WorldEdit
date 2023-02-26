@@ -19,11 +19,8 @@
 
 package com.sk89q.worldedit.internal.util;
 
-import com.google.common.base.Throwables;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.List;
 
 public class LogManagerCompat {
 
@@ -32,11 +29,11 @@ public class LogManagerCompat {
     }
 
     private static String getCallerCallerClassName() {
-        List<StackTraceElement> lazyStack = Throwables.lazyStackTrace(new Throwable());
         // 0 - this method
         // 1 - caller
         // 2 - caller caller
-        return lazyStack.get(2).getClassName();
+        StackWalker.StackFrame caller = StackWalker.getInstance().walk(s -> s.skip(2).findFirst()).orElseThrow(() -> new AssertionError("No caller found"));
+        return caller.getClassName();
     }
 
     private LogManagerCompat() {

@@ -50,7 +50,7 @@ public class SafeFiles {
      */
     public static Stream<Path> noLeakFileList(Path dir) throws IOException {
         try (Stream<Path> stream = Files.list(dir)) {
-            return stream.collect(Collectors.toList()).stream();
+            return stream.toList().stream();
         }
     }
 

@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.extension.factory.parser;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.ImmutableMap;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.NotABlockException;
@@ -118,108 +118,84 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
      */
     @SuppressWarnings("ConstantConditions")
     private String woolMapper(String string) {
-        switch (string.toLowerCase(Locale.ROOT)) {
-            case "white":
-                return BlockTypes.WHITE_WOOL.getId();
-            case "black":
-                return BlockTypes.BLACK_WOOL.getId();
-            case "blue":
-                return BlockTypes.BLUE_WOOL.getId();
-            case "brown":
-                return BlockTypes.BROWN_WOOL.getId();
-            case "cyan":
-                return BlockTypes.CYAN_WOOL.getId();
-            case "gray":
-            case "grey":
-                return BlockTypes.GRAY_WOOL.getId();
-            case "green":
-                return BlockTypes.GREEN_WOOL.getId();
-            case "light_blue":
-            case "lightblue":
-                return BlockTypes.LIGHT_BLUE_WOOL.getId();
-            case "light_gray":
-            case "light_grey":
-            case "lightgray":
-            case "lightgrey":
-                return BlockTypes.LIGHT_GRAY_WOOL.getId();
-            case "lime":
-                return BlockTypes.LIME_WOOL.getId();
-            case "magenta":
-                return BlockTypes.MAGENTA_WOOL.getId();
-            case "orange":
-                return BlockTypes.ORANGE_WOOL.getId();
-            case "pink":
-                return BlockTypes.PINK_WOOL.getId();
-            case "purple":
-                return BlockTypes.PURPLE_WOOL.getId();
-            case "yellow":
-                return BlockTypes.YELLOW_WOOL.getId();
-            case "red":
-                return BlockTypes.RED_WOOL.getId();
-            default:
-                return string;
-        }
+        return switch (string.toLowerCase(Locale.ROOT)) {
+            case "white" -> BlockTypes.WHITE_WOOL.getId();
+            case "black" -> BlockTypes.BLACK_WOOL.getId();
+            case "blue" -> BlockTypes.BLUE_WOOL.getId();
+            case "brown" -> BlockTypes.BROWN_WOOL.getId();
+            case "cyan" -> BlockTypes.CYAN_WOOL.getId();
+            case "gray", "grey" -> BlockTypes.GRAY_WOOL.getId();
+            case "green" -> BlockTypes.GREEN_WOOL.getId();
+            case "light_blue", "lightblue" -> BlockTypes.LIGHT_BLUE_WOOL.getId();
+            case "light_gray", "light_grey", "lightgray", "lightgrey" -> BlockTypes.LIGHT_GRAY_WOOL.getId();
+            case "lime" -> BlockTypes.LIME_WOOL.getId();
+            case "magenta" -> BlockTypes.MAGENTA_WOOL.getId();
+            case "orange" -> BlockTypes.ORANGE_WOOL.getId();
+            case "pink" -> BlockTypes.PINK_WOOL.getId();
+            case "purple" -> BlockTypes.PURPLE_WOOL.getId();
+            case "yellow" -> BlockTypes.YELLOW_WOOL.getId();
+            case "red" -> BlockTypes.RED_WOOL.getId();
+            default -> string;
+        };
     }
 
     private static Map<Property<?>, Object> parseProperties(BlockType type, String[] stateProperties, ParserContext context) throws InputParseException {
         Map<Property<?>, Object> blockStates = new HashMap<>();
 
-        if (stateProperties.length > 0) { // Block data not yet detected
-            // Parse the block data (optional)
-            for (String parseableData : stateProperties) {
-                try {
-                    String[] parts = parseableData.split("=");
-                    if (parts.length != 2) {
-                        throw new InputParseException(
-                                TranslatableComponent.of("worldedit.error.parser.bad-state-format",
-                                TextComponent.of(parseableData))
-                        );
-                    }
+        // Parse the block data (optional)
+        for (String parseableData : stateProperties) {
+            try {
+                String[] parts = parseableData.split("=");
+                if (parts.length != 2) {
+                    throw new InputParseException(
+                            TranslatableComponent.of("worldedit.error.parser.bad-state-format",
+                            TextComponent.of(parseableData))
+                    );
+                }
 
-                    @SuppressWarnings("unchecked")
-                    Property<Object> propertyKey = (Property<Object>) type.getPropertyMap().get(parts[0]);
-                    if (propertyKey == null) {
-                        if (context.getActor() != null) {
-                            throw new NoMatchException(TranslatableComponent.of(
-                                    "worldedit.error.parser.unknown-property",
-                                    TextComponent.of(parts[0]),
-                                    TextComponent.of(type.getId())
-                            ));
-                        } else {
-                            WorldEdit.logger.debug("Unknown property " + parts[0] + " for block " + type.getId());
-                        }
-                        return Maps.newHashMap();
-                    }
-                    if (blockStates.containsKey(propertyKey)) {
-                        throw new InputParseException(TranslatableComponent.of(
-                                "worldedit.error.parser.duplicate-property",
-                                TextComponent.of(parts[0])
-                        ));
-                    }
-                    Object value;
-                    try {
-                        value = propertyKey.getValueFor(parts[1]);
-                    } catch (IllegalArgumentException e) {
+                @SuppressWarnings("unchecked")
+                Property<Object> propertyKey = (Property<Object>) type.getPropertyMap().get(parts[0]);
+                if (propertyKey == null) {
+                    if (context.getActor() != null) {
                         throw new NoMatchException(TranslatableComponent.of(
-                                "worldedit.error.parser.unknown-value",
-                                TextComponent.of(parts[1]),
-                                TextComponent.of(propertyKey.getName())
+                                "worldedit.error.parser.unknown-property",
+                                TextComponent.of(parts[0]),
+                                TextComponent.of(type.getId())
                         ));
+                    } else {
+                        WorldEdit.logger.debug("Unknown property " + parts[0] + " for block " + type.getId());
                     }
-
-                    blockStates.put(propertyKey, value);
-                } catch (InputParseException e) {
-                    throw e; // Pass-through
-                } catch (Exception e) {
+                    return Map.of();
+                }
+                if (blockStates.containsKey(propertyKey)) {
                     throw new InputParseException(TranslatableComponent.of(
-                            "worldedit.error.parser.bad-state-format",
-                            TextComponent.of(parseableData)
+                            "worldedit.error.parser.duplicate-property",
+                            TextComponent.of(parts[0])
                     ));
                 }
+                Object value;
+                try {
+                    value = propertyKey.getValueFor(parts[1]);
+                } catch (IllegalArgumentException e) {
+                    throw new NoMatchException(TranslatableComponent.of(
+                            "worldedit.error.parser.unknown-value",
+                            TextComponent.of(parts[1]),
+                            TextComponent.of(propertyKey.getName())
+                    ));
+                }
+
+                blockStates.put(propertyKey, value);
+            } catch (InputParseException e) {
+                throw e; // Pass-through
+            } catch (Exception e) {
+                throw new InputParseException(TranslatableComponent.of(
+                        "worldedit.error.parser.bad-state-format",
+                        TextComponent.of(parseableData)
+                ));
             }
         }
 
-        return blockStates;
+        return ImmutableMap.copyOf(blockStates);
     }
 
     @Override

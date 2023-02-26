@@ -371,7 +371,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     }
 
     private String rebuildArguments(String commandLabel, String[] args) {
-        int plSep = commandLabel.indexOf(":");
+        int plSep = commandLabel.indexOf(':');
         if (plSep >= 0 && plSep < commandLabel.length() + 1) {
             commandLabel = commandLabel.substring(plSep + 1);
         }
@@ -555,7 +555,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             if (owner != WorldEditPlugin.this) {
                 return;
             }
-            int plSep = label.indexOf(":");
+            int plSep = label.indexOf(':');
             if (plSep >= 0 && plSep < label.length() + 1) {
                 label = label.substring(plSep + 1);
                 buffer = "/" + buffer.substring(plSep + 2);

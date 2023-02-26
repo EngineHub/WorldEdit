@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 
 @Deprecated
-@SuppressWarnings("deprecation")
 public class CommandsManagerRegistration extends CommandRegistration {
 
     protected CommandsManager<?> commands;

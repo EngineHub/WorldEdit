@@ -66,7 +66,6 @@ public class MultiStageReorder extends AbstractBufferingExtent implements Reorde
         BlockCategories.ANVIL.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
         BlockCategories.WOODEN_PRESSURE_PLATES.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
         // Keeping CARPETS for pre-1.19 compatibility
-        @SuppressWarnings("deprecation")
         BlockCategory carpets = BlockCategories.CARPETS;
         carpets.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
         BlockCategories.WOOL_CARPETS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
@@ -142,10 +141,8 @@ public class MultiStageReorder extends AbstractBufferingExtent implements Reorde
         BlockCategories.BANNERS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.FINAL));
         BlockCategories.SIGNS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.FINAL));
         // Keeping sign and wall_sign for 1.13 compatibility
-        @SuppressWarnings("deprecation")
         BlockType sign = BlockTypes.SIGN;
         priorityMap.put(sign, PlacementPriority.FINAL);
-        @SuppressWarnings("deprecation")
         BlockType wallSign = BlockTypes.WALL_SIGN;
         priorityMap.put(wallSign, PlacementPriority.FINAL);
         priorityMap.put(BlockTypes.CACTUS, PlacementPriority.FINAL);

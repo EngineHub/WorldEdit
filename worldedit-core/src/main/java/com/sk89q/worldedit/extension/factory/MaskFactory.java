@@ -85,7 +85,7 @@ public final class MaskFactory extends AbstractFactory<Mask> {
     public List<String> getSuggestions(String input, ParserContext context) {
         final String[] split = input.split(" ");
         if (split.length > 1) {
-            String prev = input.substring(0, input.lastIndexOf(" ")) + " ";
+            String prev = input.substring(0, input.lastIndexOf(' ')) + " ";
             return super.getSuggestions(split[split.length - 1], context).stream()
                 .map(s -> prev + s)
                 .collect(Collectors.toList());

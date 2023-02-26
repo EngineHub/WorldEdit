@@ -225,7 +225,7 @@ public class SpongeWorldEdit {
         }
 
         List<org.enginehub.piston.Command> commands = manager.getPlatformCommandManager().getCommandManager()
-            .getAllCommands().collect(toList());
+            .getAllCommands().toList();
         for (org.enginehub.piston.Command command : commands) {
             registerAdaptedCommand(event, command);
 
@@ -239,7 +239,7 @@ public class SpongeWorldEdit {
     }
 
     private String rebuildArguments(String commandLabel, String args) {
-        int plSep = commandLabel.indexOf(":");
+        int plSep = commandLabel.indexOf(':');
         if (plSep >= 0 && plSep < commandLabel.length() + 1) {
             commandLabel = commandLabel.substring(plSep + 1);
         }

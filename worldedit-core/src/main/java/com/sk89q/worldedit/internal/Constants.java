@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.internal;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public final class Constants {
@@ -35,11 +33,11 @@ public final class Constants {
     public static final List<String> NO_COPY_ENTITY_NBT_FIELDS;
 
     static {
-        NO_COPY_ENTITY_NBT_FIELDS = Collections.unmodifiableList(Arrays.asList(
-                "UUIDLeast", "UUIDMost", "UUID", // Bukkit and Vanilla
-                "WorldUUIDLeast", "WorldUUIDMost", // Bukkit and Vanilla
-                "PersistentIDMSB", "PersistentIDLSB" // Forge
-        ));
+        NO_COPY_ENTITY_NBT_FIELDS = List.of(
+            "UUIDLeast", "UUIDMost", "UUID", // Bukkit and Vanilla
+            "WorldUUIDLeast", "WorldUUIDMost", // Bukkit and Vanilla
+            "PersistentIDMSB", "PersistentIDLSB" // Forge
+        );
     }
 
     /**

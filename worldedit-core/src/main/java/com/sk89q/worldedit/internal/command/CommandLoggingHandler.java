@@ -76,7 +76,7 @@ public class CommandLoggingHandler implements CommandCallListener, AutoCloseable
 
         Optional<Actor> actorOpt = parameters.injectedValue(Key.of(Actor.class));
 
-        if (!actorOpt.isPresent()) {
+        if (actorOpt.isEmpty()) {
             return;
         }
         Actor actor = actorOpt.get();
@@ -84,7 +84,7 @@ public class CommandLoggingHandler implements CommandCallListener, AutoCloseable
         World world;
         try {
             Optional<World> worldOpt = parameters.injectedValue(Key.of(World.class));
-            if (!worldOpt.isPresent()) {
+            if (worldOpt.isEmpty()) {
                 return;
             }
             world = worldOpt.get();
@@ -103,8 +103,7 @@ public class CommandLoggingHandler implements CommandCallListener, AutoCloseable
                 parameters.getMetadata().getArguments().stream()
             ).collect(Collectors.joining(" ")));
 
-        if (logMode != null && actor instanceof Player) {
-            Player player = (Player) actor;
+        if (logMode != null && actor instanceof Player player) {
             Vector3 position = player.getLocation().toVector();
             LocalSession session = worldEdit.getSessionManager().get(actor);
 

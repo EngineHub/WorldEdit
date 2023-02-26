@@ -28,7 +28,6 @@ import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -109,7 +108,7 @@ public class OperationQueue implements Operation {
 
     @Override
     public Iterable<Component> getStatusMessages() {
-        return Iterables.concat(operations.stream().map(Operation::getStatusMessages).collect(Collectors.toList()));
+        return Iterables.concat(operations.stream().map(Operation::getStatusMessages).toList());
     }
 
 }

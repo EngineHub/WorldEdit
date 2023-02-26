@@ -35,7 +35,7 @@ public class RandomStatePattern implements Pattern {
 
     public RandomStatePattern(FuzzyBlockState state) {
         blocks = state.getBlockType().getAllStates().stream().filter(state::equalsFuzzy)
-                .map(BlockState::toBaseBlock).collect(Collectors.toList());
+                .map(BlockState::toBaseBlock).toList();
     }
 
     @Override

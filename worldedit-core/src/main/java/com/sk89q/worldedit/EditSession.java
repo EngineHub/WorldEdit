@@ -352,7 +352,7 @@ public class EditSession implements Extent, AutoCloseable {
         }
         return tracingExtents.stream()
             .filter(TracingExtent::isActive)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     /**
@@ -946,7 +946,7 @@ public class EditSession implements Extent, AutoCloseable {
         for (BlockVector3 loc : touchedLocations) {
             List<TracingExtent> stack = tracingExtents.stream()
                     .filter(it -> it.getTouchedLocations().contains(loc))
-                    .collect(Collectors.toList());
+                    .toList();
             boolean anyFailed = stack.stream()
                 .anyMatch(it -> it.getFailedActions().containsKey(loc));
             if (anyFailed && stacks.add(stack)) {

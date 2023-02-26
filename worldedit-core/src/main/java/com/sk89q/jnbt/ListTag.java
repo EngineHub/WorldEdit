@@ -38,7 +38,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 /**
@@ -57,7 +56,7 @@ public final class ListTag<EV, E extends LinTag<EV>> extends Tag<Object, LinList
     public ListTag(Class<? extends Tag<EV, E>> type, List<? extends Tag<EV, E>> value) {
         this(LinListTag.of(
             LinTagType.fromId(LinTagId.fromId(NBTUtils.getTypeCode(type))),
-            value.stream().map(Tag::toLinTag).collect(Collectors.toList())
+            value.stream().map(Tag::toLinTag).toList()
         ));
     }
 

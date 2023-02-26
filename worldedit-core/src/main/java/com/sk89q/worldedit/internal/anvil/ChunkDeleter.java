@@ -64,7 +64,7 @@ public final class ChunkDeleter {
             .create();
 
     public static ChunkDeletionInfo readInfo(Path chunkFile) throws IOException, JsonSyntaxException {
-        String json = new String(Files.readAllBytes(chunkFile), StandardCharsets.UTF_8);
+        String json = Files.readString(chunkFile, StandardCharsets.UTF_8);
         return chunkDeleterGson.fromJson(json, ChunkDeletionInfo.class);
     }
 
@@ -221,26 +221,24 @@ public final class ChunkDeleter {
             } catch (NumberFormatException e) {
                 throw new IllegalStateException("Modification time predicate specified invalid time: " + deletionPredicate.value);
             }
-            switch (deletionPredicate.comparison) {
-                case "<":
-                    return (r, p) -> {
-                        try {
-                            return r.getModificationTime(p) < time;
-                        } catch (IOException e) {
-                            return false;
-                        }
-                    };
-                case ">":
-                    return (r, p) -> {
-                        try {
-                            return r.getModificationTime(p) > time;
-                        } catch (IOException e) {
-                            return false;
-                        }
-                    };
-                default:
+            return switch (deletionPredicate.comparison) {
+                case "<" -> (r, p) -> {
+                    try {
+                        return r.getModificationTime(p) < time;
+                    } catch (IOException e) {
+                        return false;
+                    }
+                };
+                case ">" -> (r, p) -> {
+                    try {
+                        return r.getModificationTime(p) > time;
+                    } catch (IOException e) {
+                        return false;
+                    }
+                };
+                default ->
                     throw new IllegalStateException("Unexpected comparison value: " + deletionPredicate.comparison);
-            }
+            };
         }
         throw new IllegalStateException("Unexpected property value: " + deletionPredicate.property);
     }
