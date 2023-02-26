@@ -65,8 +65,7 @@ public final class SuggestionHelper {
         return Stream.empty();
     }
 
-    public static Stream<String> getBlockPropertySuggestions(String blockType, String props) {
-        BlockType type = BlockTypes.get(blockType.toLowerCase(Locale.ROOT));
+    public static Stream<String> getBlockPropertySuggestions(String blockTypeString, BlockType type, String props) {
         if (type == null) {
             return Stream.empty();
         }
@@ -83,7 +82,7 @@ public final class SuggestionHelper {
                 // suggest for next property
                 String previous = Arrays.stream(propParts, 0, propParts.length - 1).collect(Collectors.joining(","))
                         + (propParts.length == 1 ? "" : ",");
-                String lastValidInput = (blockType + "[" + previous).toLowerCase(Locale.ROOT);
+                String lastValidInput = (blockTypeString + "[" + previous).toLowerCase(Locale.ROOT);
                 if (propVal.length == 1) {
                     // only property, no value yet
                     final List<? extends Property<?>> matchingProps = propertyMap.entrySet().stream()

@@ -21,6 +21,7 @@ package com.sk89q.worldedit.extension.factory.parser;
 
 import com.google.common.collect.Maps;
 import com.sk89q.worldedit.IncompleteRegionException;
+import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.NotABlockException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
@@ -222,7 +223,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
     }
 
     @Override
-    public Stream<String> getSuggestions(String input) {
+    public Stream<String> getSuggestions(String input, ParserContext context) {
         final int idx = input.lastIndexOf('[');
         if (idx < 0) {
             return SuggestionHelper.getNamespacedRegistrySuggestions(BlockType.REGISTRY, input);
@@ -230,7 +231,36 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
         String blockType = input.substring(0, idx);
         BlockType type = BlockTypes.get(blockType.toLowerCase(Locale.ROOT));
         if (type == null) {
-            return Stream.empty();
+            var lowerBlockType = blockType.toLowerCase(Locale.ROOT);
+            switch (lowerBlockType) {
+                case "hand", "offhand" -> {
+                    var actor = context.getActor();
+                    if (actor instanceof Player player) {
+                        var itemInHand = player.getItemInHand(lowerBlockType.equals("hand") ? HandSide.MAIN_HAND : HandSide.OFF_HAND);
+                        if (itemInHand.getType().hasBlockType()) {
+                            type = itemInHand.getType().getBlockType();
+                        }
+                    }
+                }
+                case "pos1" -> {
+                    // Get the block type from the "primary position"
+                    World world = context.getWorld();
+                    LocalSession session = context.getSession();
+                    if (world != null && session != null) {
+                        try {
+                            BlockVector3 primaryPosition = session.getRegionSelector(world).getPrimaryPosition();
+                            type = world.getBlock(primaryPosition).getBlockType();
+                        } catch (IncompleteRegionException ignored) {
+                        }
+                    }
+                }
+                default -> {
+                }
+            }
+
+            if (type == null) {
+                return Stream.empty();
+            }
         }
 
         String props = input.substring(idx + 1);
@@ -238,7 +268,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
             return type.getProperties().stream().map(p -> input + p.getName() + "=");
         }
 
-        return SuggestionHelper.getBlockPropertySuggestions(blockType, props);
+        return SuggestionHelper.getBlockPropertySuggestions(blockType, type, props);
     }
 
     private BaseBlock parseLogic(String input, ParserContext context) throws InputParseException {

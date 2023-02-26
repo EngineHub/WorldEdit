@@ -86,13 +86,13 @@ public abstract class AbstractFactory<E> {
 
     @Deprecated
     public List<String> getSuggestions(String input) {
-        return parsers.stream().flatMap(
-            p -> p.getSuggestions(input)
-        ).collect(Collectors.toList());
+        return getSuggestions(input, new ParserContext());
     }
 
     public List<String> getSuggestions(String input, ParserContext context) {
-        return getSuggestions(input);
+        return parsers.stream().flatMap(
+            p -> p.getSuggestions(input, context)
+        ).collect(Collectors.toList());
     }
 
     /**
