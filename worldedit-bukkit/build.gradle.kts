@@ -10,7 +10,7 @@ applyShadowConfiguration()
 
 repositories {
     maven { url = uri("https://hub.spigotmc.org/nexus/content/groups/public") }
-    maven { url = uri("https://papermc.io/repo/repository/maven-public/") }
+    maven { url = uri("https://repo.papermc.io/repository/maven-public/") }
 }
 
 val localImplementation = configurations.create("localImplementation") {
