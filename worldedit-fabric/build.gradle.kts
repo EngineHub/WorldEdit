@@ -21,9 +21,8 @@ applyShadowConfiguration()
 apply(plugin = "fabric-loom")
 apply(plugin = "java-library")
 
-val minecraftVersion = "1.19.4-pre1"
-// Loader held back on 0.14.14 - See https://github.com/FabricMC/Mixin/issues/107 for details.
-val loaderVersion = "0.14.14"
+val minecraftVersion = "1.19.4-pre3"
+val loaderVersion = "0.14.17"
 
 val fabricApiConfiguration: Configuration = configurations.create("fabricApi")
 
@@ -49,7 +48,7 @@ dependencies {
     "modImplementation"("net.fabricmc:fabric-loader:$loaderVersion")
 
     // [1] declare fabric-api dependency...
-    "fabricApi"("net.fabricmc.fabric-api:fabric-api:0.75.0+1.19.4")
+    "fabricApi"("net.fabricmc.fabric-api:fabric-api:0.75.2+1.19.4")
 
     // [2] Load the API dependencies from the fabric mod json...
     @Suppress("UNCHECKED_CAST")
