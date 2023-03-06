@@ -35,4 +35,5 @@ import java.lang.annotation.Target;
 @InjectAnnotation
 public @interface Offset {
     String FORWARD = "forward";
+    String ZERO = "0,0,0";
 }

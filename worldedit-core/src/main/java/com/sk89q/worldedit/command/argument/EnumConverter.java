@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.command.util.HookMode;
 import com.sk89q.worldedit.extent.TracingExtent;
+import com.sk89q.worldedit.session.PlacementType;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.TreeGenerator;
 import org.enginehub.piston.CommandManager;
@@ -57,6 +58,8 @@ public final class EnumConverter {
             basic(HookMode.class));
         commandManager.registerConverter(Key.of(TracingExtent.Action.class),
             basic(TracingExtent.Action.class));
+        commandManager.registerConverter(Key.of(PlacementType.class),
+            basic(PlacementType.class));
     }
 
     private static <E extends Enum<E>> ArgumentConverter<E> basic(Class<E> enumClass) {
