@@ -28,6 +28,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.HookMode;
+import com.sk89q.worldedit.command.util.Placement;
 import com.sk89q.worldedit.command.util.WorldEditAsyncCommandBuilder;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -425,12 +426,19 @@ public class GeneralCommands {
         aliases = {"/toggleplace"},
         desc = "Switch between your position and pos1 for placement"
     )
-    public void togglePlace(Actor actor, LocalSession session) {
+    public void togglePlace(Actor actor, LocalSession session,
+                            @Arg(desc = "Which placement to use, toggle if absent", def = "")
+                            Placement placement) {
         if (!(actor instanceof Locatable)) {
             actor.printError(TranslatableComponent.of("worldedit.toggleplace.not-locatable"));
             return;
         }
-        if (session.togglePlacementPosition()) {
+        if (placement == null) {
+            session.togglePlacementPosition();
+        } else {
+            session.setPlaceAtPos1(placement == Placement.POS1);
+        }
+        if (session.isPlaceAtPos1()) {
             actor.printInfo(TranslatableComponent.of("worldedit.toggleplace.pos1"));
         } else {
             actor.printInfo(TranslatableComponent.of("worldedit.toggleplace.player"));
