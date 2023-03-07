@@ -56,7 +56,7 @@ public class Registry<V extends Keyed> implements Iterable<V> {
         checkState(key.equals(key.toLowerCase(Locale.ROOT)), "key must be lowercase: %s", key);
         if (this.checkInitialized) {
             checkState(WorldEdit.getInstance().getPlatformManager().isInitialized(),
-                    "WorldEdit is not enabled yet.");
+                    "WorldEdit is not initialized yet.");
         }
         return this.map.get(key);
     }
