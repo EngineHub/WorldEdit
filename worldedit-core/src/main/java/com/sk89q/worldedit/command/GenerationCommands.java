@@ -370,7 +370,7 @@ public class GenerationCommands {
                         @Switch(name = 'r', desc = "Use the game's coordinate origin")
                             boolean useRawCoords,
                         @Switch(name = 'o', desc = "Use the placement's coordinate origin")
-                            boolean offset,
+                            boolean offsetPlacement,
                         @Switch(name = 'c', desc = "Use the selection's center as origin")
                             boolean offsetCenter) throws WorldEditException {
 
@@ -380,7 +380,7 @@ public class GenerationCommands {
         if (useRawCoords) {
             zero = Vector3.ZERO;
             unit = Vector3.ONE;
-        } else if (offset) {
+        } else if (offsetPlacement) {
             zero = session.getPlacementPosition(actor).toVector3();
             unit = Vector3.ONE;
         } else if (offsetCenter) {
@@ -439,7 +439,7 @@ public class GenerationCommands {
                              @Switch(name = 'r', desc = "Use the game's coordinate origin")
                                  boolean useRawCoords,
                              @Switch(name = 'o', desc = "Use the placement's coordinate origin")
-                                 boolean offset,
+                                 boolean offsetPlacement,
                              @Switch(name = 'c', desc = "Use the selection's center as origin")
                                  boolean offsetCenter) throws WorldEditException {
         final Vector3 zero;
@@ -448,7 +448,7 @@ public class GenerationCommands {
         if (useRawCoords) {
             zero = Vector3.ZERO;
             unit = Vector3.ONE;
-        } else if (offset) {
+        } else if (offsetPlacement) {
             zero = session.getPlacementPosition(actor).toVector3();
             unit = Vector3.ONE;
         } else if (offsetCenter) {
