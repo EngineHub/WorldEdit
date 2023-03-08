@@ -2481,12 +2481,13 @@ public class EditSession implements Extent, AutoCloseable {
             final Vector3 targetPosition = targetBlockPosition.toVector3();
             environment.setCurrentBlock(targetPosition);
 
-            // offset, scale
+            // transform from target coordinates
             final Vector3 scaled = targetPosition.subtract(zero).divide(unit);
 
-            // transform
+            // deform
             expression.evaluate(new double[]{ scaled.x(), scaled.y(), scaled.z() }, timeout);
 
+            // transform to source coordinates, round-nearest
             final BlockVector3 sourcePosition = environment.toWorld(x.value(), y.value(), z.value());
 
             // read block from world

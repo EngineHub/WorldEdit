@@ -39,7 +39,6 @@ public class WorldEditExpressionEnvironment implements ExpressionEnvironment {
     }
 
     public BlockVector3 toWorld(double x, double y, double z) {
-        // unscale, unoffset, round-nearest
         return Vector3.at(x, y, z).multiply(unit).add(zero2).toBlockPoint();
     }
 
