@@ -235,6 +235,11 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
     }
 
     @Override
+    public long getTickCount() {
+        return ServerLifecycleHooks.getCurrentServer().getTickCount();
+    }
+
+    @Override
     public Collection<Actor> getConnectedUsers() {
         List<Actor> users = new ArrayList<>();
         PlayerList scm = server.getPlayerList();

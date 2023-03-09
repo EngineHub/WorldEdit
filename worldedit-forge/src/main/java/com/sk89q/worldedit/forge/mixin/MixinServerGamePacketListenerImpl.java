@@ -51,13 +51,9 @@ public class MixinServerGamePacketListenerImpl {
     @Inject(method = "handlePlayerAction", at = @At("HEAD"))
     private void onAction(ServerboundPlayerActionPacket packet, CallbackInfo ci) {
         switch (packet.getAction()) {
-            case DROP_ITEM:
-            case DROP_ALL_ITEMS:
-            case START_DESTROY_BLOCK:
-                this.ignoreSwingPackets++;
-                break;
-            default:
-                break;
+            case DROP_ITEM, DROP_ALL_ITEMS, START_DESTROY_BLOCK -> this.ignoreSwingPackets++;
+            default -> {
+            }
         }
     }
 }

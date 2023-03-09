@@ -33,6 +33,7 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.forge.net.handler.WECUIPacketHandler;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
+import com.sk89q.worldedit.internal.event.InteractionDebouncer;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
@@ -42,8 +43,6 @@ import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.entity.EntityType;
 import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -84,8 +83,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Supplier;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -107,8 +106,7 @@ public class ForgeWorldEdit {
 
     public static ForgeWorldEdit inst;
 
-    private final Object2IntMap<UUID> lastInteractionTicks = new Object2IntOpenHashMap<>();
-
+    private InteractionDebouncer debouncer;
     private ForgePlatform platform;
     private ForgeConfiguration config;
     private Path workingDir;
@@ -163,6 +161,7 @@ public class ForgeWorldEdit {
 
     private void setupPlatform() {
         this.platform = new ForgePlatform(this);
+        debouncer = new InteractionDebouncer(platform);
 
         WorldEdit.getInstance().getPlatformManager().register(platform);
 
@@ -267,21 +266,6 @@ public class ForgeWorldEdit {
         return platform == null || !platform.isHookingEvents();
     }
 
-    private boolean isDuplicateInteraction(ServerPlayer player) {
-        int now = player.server.getTickCount();
-        int last = lastInteractionTicks.getInt(player.getUUID());
-        return now - last <= 1;
-    }
-
-    private void saveInteractionTick(ServerPlayer player) {
-        int now = player.server.getTickCount();
-        lastInteractionTicks.put(player.getUUID(), now);
-    }
-
-    private void removeInteractionTick(ServerPlayer player) {
-        lastInteractionTicks.removeInt(player.getUUID());
-    }
-
     private boolean skipInteractionEvent(Player player, InteractionHand hand) {
         return skipEvents() || hand != InteractionHand.MAIN_HAND || player.level().isClientSide || !(player instanceof ServerPlayer);
     }
@@ -293,8 +277,6 @@ public class ForgeWorldEdit {
         }
 
         ServerPlayer playerEntity = (ServerPlayer) event.getEntity();
-        saveInteractionTick(playerEntity);
-
         WorldEdit we = WorldEdit.getInstance();
         ForgePlayer player = adaptPlayer(playerEntity);
         ForgeWorld world = getWorld((ServerLevel) playerEntity.level());
@@ -303,11 +285,10 @@ public class ForgeWorldEdit {
         BlockPos blockPos = event.getPos();
         Location pos = new Location(world, blockPos.getX(), blockPos.getY(), blockPos.getZ());
 
-        if (we.handleBlockLeftClick(player, pos, direction)) {
-            event.setCanceled(true);
-        }
+        boolean result = we.handleBlockLeftClick(player, pos, direction) || we.handleArmSwing(player);
+        debouncer.setLastInteraction(player, result);
 
-        if (we.handleArmSwing(player)) {
+        if (result) {
             event.setCanceled(true);
         }
     }
@@ -319,8 +300,6 @@ public class ForgeWorldEdit {
         }
 
         ServerPlayer playerEntity = (ServerPlayer) event.getEntity();
-        saveInteractionTick(playerEntity);
-
         WorldEdit we = WorldEdit.getInstance();
         ForgePlayer player = adaptPlayer(playerEntity);
         ForgeWorld world = getWorld((ServerLevel) playerEntity.level());
@@ -329,41 +308,53 @@ public class ForgeWorldEdit {
         BlockPos blockPos = event.getPos();
         Location pos = new Location(world, blockPos.getX(), blockPos.getY(), blockPos.getZ());
 
-        if (we.handleBlockRightClick(player, pos, direction)) {
-            event.setCanceled(true);
-        }
+        boolean result = we.handleBlockRightClick(player, pos, direction) || we.handleRightClick(player);
+        debouncer.setLastInteraction(player, result);
 
-        if (we.handleRightClick(player)) {
+        if (result) {
             event.setCanceled(true);
         }
     }
 
     public void onLeftClickAir(ServerPlayer playerEntity, InteractionHand hand) {
-        if (skipInteractionEvent(playerEntity, hand) || isDuplicateInteraction(playerEntity)) {
+        if (skipInteractionEvent(playerEntity, hand)) {
             return;
         }
-
-        saveInteractionTick(playerEntity);
 
         WorldEdit we = WorldEdit.getInstance();
         ForgePlayer player = adaptPlayer(playerEntity);
 
-        we.handleArmSwing(player);
+        Optional<Boolean> previousResult = debouncer.getDuplicateInteractionResult(player);
+        if (previousResult.isPresent()) {
+            return;
+        }
+
+        boolean result = we.handleArmSwing(player);
+        debouncer.setLastInteraction(player, result);
     }
 
     @SubscribeEvent
     public void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
-        if (skipInteractionEvent(event.getEntity(), event.getHand()) || isDuplicateInteraction((ServerPlayer) event.getEntity())) {
+        if (skipInteractionEvent(event.getEntity(), event.getHand())) {
             return;
         }
 
         ServerPlayer playerEntity = (ServerPlayer) event.getEntity();
-        saveInteractionTick(playerEntity);
-
         WorldEdit we = WorldEdit.getInstance();
         ForgePlayer player = adaptPlayer(playerEntity);
 
-        if (we.handleRightClick(player)) {
+        Optional<Boolean> previousResult = debouncer.getDuplicateInteractionResult(player);
+        if (previousResult.isPresent()) {
+            if (previousResult.get()) {
+                event.setCanceled(true);
+            }
+            return;
+        }
+
+        boolean result = we.handleRightClick(player);
+        debouncer.setLastInteraction(player, result);
+
+        if (result) {
             event.setCanceled(true);
         }
     }
@@ -387,7 +378,7 @@ public class ForgeWorldEdit {
     @SubscribeEvent
     public void onPlayerLogOut(PlayerEvent.PlayerLoggedOutEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            removeInteractionTick(player);
+            debouncer.clearInteraction(adaptPlayer(player));
 
             WorldEdit.getInstance().getEventBus()
                 .post(new SessionIdleEvent(new ForgePlayer.SessionKeyImpl(player)));

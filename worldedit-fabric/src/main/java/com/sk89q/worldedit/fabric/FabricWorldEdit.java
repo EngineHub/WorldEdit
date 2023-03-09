@@ -32,6 +32,7 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.fabric.net.handler.WECUIPacketHandler;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
+import com.sk89q.worldedit.internal.event.InteractionDebouncer;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.lifecycle.Lifecycled;
@@ -42,8 +43,6 @@ import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.entity.EntityType;
 import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -83,8 +82,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.fabric.FabricAdapter.adaptPlayer;
@@ -116,8 +115,7 @@ public class FabricWorldEdit implements ModInitializer {
 
     public static FabricWorldEdit inst;
 
-    private final Object2IntMap<UUID> lastInteractionTicks = new Object2IntOpenHashMap<>();
-
+    private InteractionDebouncer debouncer;
     private FabricPlatform platform;
     private FabricConfiguration config;
     private Path workingDir;
@@ -144,6 +142,7 @@ public class FabricWorldEdit implements ModInitializer {
             }
         }
         this.platform = new FabricPlatform(this);
+        debouncer = new InteractionDebouncer(platform);
 
         WorldEdit.getInstance().getPlatformManager().register(platform);
 
@@ -259,21 +258,6 @@ public class FabricWorldEdit implements ModInitializer {
         return platform == null || !platform.isHookingEvents();
     }
 
-    private boolean isDuplicateInteraction(ServerPlayer player) {
-        int now = player.server.getTickCount();
-        int last = lastInteractionTicks.getInt(player.getUUID());
-        return now - last <= 1;
-    }
-
-    private void saveInteractionTick(ServerPlayer player) {
-        int now = player.server.getTickCount();
-        lastInteractionTicks.put(player.getUUID(), now);
-    }
-
-    private void removeInteractionTick(ServerPlayer player) {
-        lastInteractionTicks.removeInt(player.getUUID());
-    }
-
     private boolean skipInteractionEvent(Player player, InteractionHand hand) {
         return skipEvents() || hand != InteractionHand.MAIN_HAND || player.level().isClientSide || !(player instanceof ServerPlayer);
     }
@@ -282,8 +266,6 @@ public class FabricWorldEdit implements ModInitializer {
         if (skipInteractionEvent(playerEntity, hand)) {
             return InteractionResult.PASS;
         }
-
-        saveInteractionTick((ServerPlayer) playerEntity);
 
         WorldEdit we = WorldEdit.getInstance();
         FabricPlayer player = adaptPlayer((ServerPlayer) playerEntity);
@@ -295,23 +277,16 @@ public class FabricWorldEdit implements ModInitializer {
         );
         com.sk89q.worldedit.util.Direction weDirection = FabricAdapter.adaptEnumFacing(direction);
 
-        if (we.handleBlockLeftClick(player, pos, weDirection)) {
-            return InteractionResult.SUCCESS;
-        }
+        boolean result = we.handleBlockLeftClick(player, pos, weDirection) || we.handleArmSwing(player);
+        debouncer.setLastInteraction(player, result);
 
-        if (we.handleArmSwing(player)) {
-            return InteractionResult.SUCCESS;
-        }
-
-        return InteractionResult.PASS;
+        return result ? InteractionResult.SUCCESS : InteractionResult.PASS;
     }
 
     private InteractionResult onRightClickBlock(Player playerEntity, Level world, InteractionHand hand, BlockHitResult blockHitResult) {
         if (skipInteractionEvent(playerEntity, hand)) {
             return InteractionResult.PASS;
         }
-
-        saveInteractionTick((ServerPlayer) playerEntity);
 
         WorldEdit we = WorldEdit.getInstance();
         FabricPlayer player = adaptPlayer((ServerPlayer) playerEntity);
@@ -323,50 +298,51 @@ public class FabricWorldEdit implements ModInitializer {
         );
         com.sk89q.worldedit.util.Direction direction = FabricAdapter.adaptEnumFacing(blockHitResult.getDirection());
 
-        if (we.handleBlockRightClick(player, pos, direction)) {
-            return InteractionResult.SUCCESS;
-        }
+        boolean result = we.handleBlockRightClick(player, pos, direction) || we.handleRightClick(player);
+        debouncer.setLastInteraction(player, result);
 
-        if (we.handleRightClick(player)) {
-            return InteractionResult.SUCCESS;
-        }
-
-        return InteractionResult.PASS;
+        return result ? InteractionResult.SUCCESS : InteractionResult.PASS;
     }
 
     public void onLeftClickAir(ServerPlayer playerEntity, InteractionHand hand) {
-        if (skipInteractionEvent(playerEntity, hand) || isDuplicateInteraction(playerEntity)) {
+        if (skipInteractionEvent(playerEntity, hand)) {
             return;
         }
-
-        saveInteractionTick(playerEntity);
 
         WorldEdit we = WorldEdit.getInstance();
         FabricPlayer player = adaptPlayer(playerEntity);
 
-        we.handleArmSwing(player);
+        Optional<Boolean> previousResult = debouncer.getDuplicateInteractionResult(player);
+        if (previousResult.isPresent()) {
+            return;
+        }
+
+        boolean result = we.handleArmSwing(player);
+        debouncer.setLastInteraction(player, result);
     }
 
     private InteractionResultHolder<ItemStack> onRightClickAir(Player playerEntity, Level world, InteractionHand hand) {
         ItemStack stackInHand = playerEntity.getItemInHand(hand);
-        if (skipInteractionEvent(playerEntity, hand) || isDuplicateInteraction((ServerPlayer) playerEntity)) {
+        if (skipInteractionEvent(playerEntity, hand)) {
             return InteractionResultHolder.pass(stackInHand);
         }
-
-        saveInteractionTick((ServerPlayer) playerEntity);
 
         WorldEdit we = WorldEdit.getInstance();
         FabricPlayer player = adaptPlayer((ServerPlayer) playerEntity);
 
-        if (we.handleRightClick(player)) {
-            return InteractionResultHolder.success(stackInHand);
+        Optional<Boolean> previousResult = debouncer.getDuplicateInteractionResult(player);
+        if (previousResult.isPresent()) {
+            return previousResult.get() ? InteractionResultHolder.success(stackInHand) : InteractionResultHolder.pass(stackInHand);
         }
 
-        return InteractionResultHolder.pass(stackInHand);
+        boolean result = we.handleRightClick(player);
+        debouncer.setLastInteraction(player, result);
+
+        return result ? InteractionResultHolder.success(stackInHand) : InteractionResultHolder.pass(stackInHand);
     }
 
     private void onPlayerDisconnect(ServerGamePacketListenerImpl handler, MinecraftServer server) {
-        removeInteractionTick(handler.player);
+        debouncer.clearInteraction(adaptPlayer(handler.player));
 
         WorldEdit.getInstance().getEventBus()
             .post(new SessionIdleEvent(new FabricPlayer.SessionKeyImpl(handler.player)));
