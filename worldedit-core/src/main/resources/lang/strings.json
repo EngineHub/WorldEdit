@@ -150,6 +150,8 @@
     "worldedit.shift.shifted": "Region shifted.",
     "worldedit.outset.outset": "Region outset.",
     "worldedit.inset.inset": "Region inset.",
+    "worldedit.trim.trim": "Region trimmed.",
+    "worldedit.trim.no-blocks": "No blocks matched the trim mask.",
     "worldedit.size.offset": "Offset: {0}",
     "worldedit.size.type": "Type: {0}",
     "worldedit.size.size": "Size: {0}",
