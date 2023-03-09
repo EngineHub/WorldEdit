@@ -23,6 +23,7 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.expression.ExpressionEnvironment;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 
 public class WorldEditExpressionEnvironment implements ExpressionEnvironment {
 
@@ -46,40 +47,39 @@ public class WorldEditExpressionEnvironment implements ExpressionEnvironment {
         return current.add(x, y, z);
     }
 
-    @SuppressWarnings("deprecation")
+    private int getLegacy(BlockVector3 position, int index) {
+        final int[] legacy = LegacyMapper.getInstance().getLegacyFromBlock(extent.getBlock(position).toImmutableState());
+        return legacy == null ? 0 : legacy[index];
+    }
+
     @Override
     public int getBlockType(double x, double y, double z) {
-        return extent.getBlock(toWorld(x, y, z)).getBlockType().getLegacyId();
+        return getLegacy(toWorld(x, y, z), 0);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public int getBlockData(double x, double y, double z) {
-        return extent.getBlock(toWorld(x, y, z)).getBlockType().getLegacyData();
+        return getLegacy(toWorld(x, y, z), 1);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public int getBlockTypeAbs(double x, double y, double z) {
-        return extent.getBlock(BlockVector3.at(x, y, z)).getBlockType().getLegacyId();
+        return getLegacy(BlockVector3.at(x, y, z), 0);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public int getBlockDataAbs(double x, double y, double z) {
-        return extent.getBlock(BlockVector3.at(x, y, z)).getBlockType().getLegacyData();
+        return getLegacy(BlockVector3.at(x, y, z), 1);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public int getBlockTypeRel(double x, double y, double z) {
-        return extent.getBlock(toWorldRel(x, y, z).toBlockPoint()).getBlockType().getLegacyId();
+        return getLegacy(toWorldRel(x, y, z).toBlockPoint(), 0);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public int getBlockDataRel(double x, double y, double z) {
-        return extent.getBlock(toWorldRel(x, y, z).toBlockPoint()).getBlockType().getLegacyData();
+        return getLegacy(toWorldRel(x, y, z).toBlockPoint(), 1);
     }
 
     public void setCurrentBlock(Vector3 current) {
