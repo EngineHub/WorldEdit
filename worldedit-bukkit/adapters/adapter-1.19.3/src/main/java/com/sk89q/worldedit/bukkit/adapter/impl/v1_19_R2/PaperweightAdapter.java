@@ -905,7 +905,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         return k != null && k.place(proxyLevel, chunkManager.getGenerator(), random, new BlockPos(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()));
     }
 
-                // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     // Code that is less likely to break
     // ------------------------------------------------------------------------
 
