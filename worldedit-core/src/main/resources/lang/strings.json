@@ -245,6 +245,8 @@
     "worldedit.sphere.created": "{0} blocks have been created.",
     "worldedit.forestgen.created": "{0} trees created.",
     "worldedit.pumpkins.created": "{0} pumpkin patches created.",
+    "worldedit.feature.created": "Feature created.",
+    "worldedit.feature.failed": "Failed to generate feature. Is it a valid spot for it?",
     "worldedit.pyramid.created": "{0} blocks have been created.",
     "worldedit.generate.created": "{0} blocks have been created.",
     "worldedit.generatebiome.changed": "{0} biomes affected.",

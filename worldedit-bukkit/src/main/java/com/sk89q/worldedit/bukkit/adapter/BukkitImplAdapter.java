@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.bukkit.adapter;
 
+import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
@@ -36,6 +37,7 @@ import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.item.ItemType;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -254,6 +256,7 @@ public interface BukkitImplAdapter {
     }
 
     /**
+<<<<<<< HEAD
      * Checks if this adapter supports custom biomes.
      * @return if custom biomes are supported
      */
@@ -277,6 +280,19 @@ public interface BukkitImplAdapter {
      */
     default BiomeType getBiome(Location location) {
         throw new UnsupportedOperationException("This adapter does not support custom biomes.");
+    }
+
+    /**
+     * Generates a Minecraft feature at the given location.
+     *
+     * @param feature The feature
+     * @param world The world
+     * @param session The EditSession
+     * @param pt The location
+     * @return If it succeeded
+     */
+    default boolean generateFeature(ConfiguredFeatureType feature, World world, EditSession session, BlockVector3 pt) {
+        throw new UnsupportedOperationException("This adapter does not support generating features.");
     }
 
     /**

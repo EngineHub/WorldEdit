@@ -24,6 +24,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.argument.HeightConverter;
+import com.sk89q.worldedit.command.factory.FeatureGeneratorFactory;
 import com.sk89q.worldedit.command.factory.ReplaceFactory;
 import com.sk89q.worldedit.command.factory.TreeGeneratorFactory;
 import com.sk89q.worldedit.command.tool.BrushTool;
@@ -78,6 +79,7 @@ import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
@@ -544,6 +546,24 @@ public class BrushCommands {
                            TreeGenerator.TreeType type) throws WorldEditException {
         setOperationBasedBrush(player, localSession, radius,
             new Paint(new TreeGeneratorFactory(type), density / 100), shape, "worldedit.brush.forest");
+    }
+
+    @Command(
+        name = "feature",
+        desc = "Feature brush, paints Minecraft generation features"
+    )
+    @CommandPermissions("worldedit.brush.feature")
+    public void feature(Player player, LocalSession localSession,
+                       @Arg(desc = "The shape of the region")
+                       RegionFactory shape,
+                       @Arg(desc = "The size of the brush", def = "5")
+                       double radius,
+                       @Arg(desc = "The density of the brush", def = "5")
+                       double density,
+                       @Arg(desc = "The type of feature to use")
+                       ConfiguredFeatureType type) throws WorldEditException {
+        setOperationBasedBrush(player, localSession, radius,
+            new Paint(new FeatureGeneratorFactory(type), density / 100), shape, "worldedit.brush.feature");
     }
 
     @Command(

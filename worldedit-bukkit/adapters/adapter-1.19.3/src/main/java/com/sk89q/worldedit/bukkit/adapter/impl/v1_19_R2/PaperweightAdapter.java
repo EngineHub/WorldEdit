@@ -27,6 +27,7 @@ import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Futures;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Lifecycle;
+import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
@@ -63,6 +64,7 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.entity.EntityTypes;
+import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.item.ItemType;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -92,6 +94,7 @@ import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.progress.ChunkProgressListener;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.Clearable;
@@ -104,6 +107,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelSettings;
+import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -116,6 +120,7 @@ import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.WorldOptions;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.PrimaryLevelData;
 import net.minecraft.world.phys.BlockHitResult;
@@ -187,6 +192,8 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     private final Method getChunkFutureMethod;
     private final Field chunkProviderExecutorField;
     private final Watchdog watchdog;
+
+    private static final RandomSource random = RandomSource.create();
 
     // ------------------------------------------------------------------------
     // Code that may break between versions of Minecraft
@@ -320,6 +327,21 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         return combinedId == 0 && state.getBlockType() != BlockTypes.AIR ? OptionalInt.empty() : OptionalInt.of(combinedId);
     }
 
+    public BlockState adapt(net.minecraft.world.level.block.state.BlockState blockState) {
+        int internalId = Block.getId(blockState);
+        BlockState state = BlockStateIdAccess.getBlockStateById(internalId);
+        if (state == null) {
+            state = BukkitAdapter.adapt(CraftBlockData.createData(blockState));
+        }
+
+        return state;
+    }
+
+    public net.minecraft.world.level.block.state.BlockState adapt(BlockState blockState) {
+        int internalId = BlockStateIdAccess.getBlockStateId(blockState);
+        return Block.stateById(internalId);
+    }
+
     @Override
     public BlockState getBlock(Location location) {
         checkNotNull(location);
@@ -333,14 +355,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         LevelChunk chunk = handle.getChunk(x >> 4, z >> 4);
         final BlockPos blockPos = new BlockPos(x, y, z);
         final net.minecraft.world.level.block.state.BlockState blockData = chunk.getBlockState(blockPos);
-        int internalId = Block.getId(blockData);
-        BlockState state = BlockStateIdAccess.getBlockStateById(internalId);
-        if (state == null) {
-            org.bukkit.block.Block bukkitBlock = location.getBlock();
-            state = BukkitAdapter.adapt(bukkitBlock.getBlockData());
-        }
-
-        return state;
+        return adapt(blockData);
     }
 
     @Override
@@ -873,6 +888,21 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
                 BiomeType.REGISTRY.register(name.toString(), new BiomeType(name.toString()));
             }
         }
+
+        // Features
+        for (ResourceLocation name: server.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).keySet()) {
+            if (ConfiguredFeatureType.REGISTRY.get(name.toString()) == null) {
+                ConfiguredFeatureType.REGISTRY.register(name.toString(), new ConfiguredFeatureType(name.toString()));
+            }
+        }
+    }
+
+    public boolean generateFeature(ConfiguredFeatureType type, World world, EditSession session, BlockVector3 pt) {
+        ServerLevel originalWorld = ((CraftWorld) world).getHandle();
+        ConfiguredFeature<?, ?> k = originalWorld.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).get(ResourceLocation.tryParse(type.getId()));
+        ServerChunkCache chunkManager = originalWorld.getChunkSource();
+        WorldGenLevel proxyLevel = PaperweightServerLevelDelegateProxy.newInstance(session, originalWorld, this);
+        return k != null && k.place(proxyLevel, chunkManager.getGenerator(), random, new BlockPos(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()));
     }
 
     // ------------------------------------------------------------------------

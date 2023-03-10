@@ -34,6 +34,7 @@ import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.fabric.internal.ExtendedMinecraftServer;
+import com.sk89q.worldedit.fabric.internal.FabricServerLevelDelegateProxy;
 import com.sk89q.worldedit.fabric.internal.FabricWorldNativeAccess;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
 import com.sk89q.worldedit.fabric.mixin.AccessorDerivedLevelData;
@@ -60,6 +61,7 @@ import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
@@ -84,6 +86,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -462,10 +465,19 @@ public class FabricWorld extends AbstractWorld {
         if (type == TreeType.CHORUS_PLANT) {
             position = position.add(0, 1, 0);
         }
+        WorldGenLevel proxyLevel = FabricServerLevelDelegateProxy.newInstance(editSession, world);
         return generator != null && generator.place(
-            world, chunkManager.getGenerator(), random,
+            proxyLevel, chunkManager.getGenerator(), random,
             FabricAdapter.toBlockPos(position)
         );
+    }
+
+    public boolean generateFeature(ConfiguredFeatureType type, EditSession editSession, BlockVector3 position) {
+        ServerLevel world = (ServerLevel) getWorld();
+        ConfiguredFeature<?, ?> k = world.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).get(ResourceLocation.tryParse(type.getId()));
+        ServerChunkCache chunkManager = world.getChunkSource();
+        WorldGenLevel proxyLevel = FabricServerLevelDelegateProxy.newInstance(editSession, world);
+        return k != null && k.place(proxyLevel, chunkManager.getGenerator(), random, FabricAdapter.toBlockPos(position));
     }
 
     @Override
