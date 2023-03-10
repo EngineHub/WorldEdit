@@ -20,12 +20,12 @@
 package com.sk89q.worldedit.extent.clipboard.io;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
 
 /**
  * A collection of supported clipboard formats.
@@ -71,9 +71,9 @@ public interface ClipboardFormat {
      * @return true if the given file is of this format
      */
     default boolean isFormat(File file) {
-        try {
-            return isFormat(new FileInputStream(file));
-        } catch (FileNotFoundException e) {
+        try (InputStream stream = new GZIPInputStream(Files.newInputStream(file.toPath()))) {
+            return isFormat(stream);
+        } catch (IOException e) {
             return false;
         }
     }
@@ -81,7 +81,11 @@ public interface ClipboardFormat {
     /**
      * Return whether the given stream is of this format.
      *
-     * @apiNote The caller is responsible for closing the given InputStream.
+     * @apiNote The caller is responsible for the following:
+     * <ul>
+     *   <li>Closing the input stream</li>
+     *   <li>Ensuring the data is directly readable, such as not being in GZip format</li>
+     * </ul>
      *
      * @param inputStream The stream
      * @return true if the given stream is of this format
