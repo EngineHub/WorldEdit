@@ -119,7 +119,7 @@ public class ClipboardFormats {
                 if (format.isFormat(stream)) {
                     return format;
                 }
-            } catch (IOException ignored) {}
+            } catch (IOException ignored) { }
         }
 
         return null;
