@@ -35,6 +35,7 @@ import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
 import com.sk89q.worldedit.event.platform.SessionIdleEvent;
 import com.sk89q.worldedit.extension.platform.Locatable;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.session.storage.JsonFileSessionStore;
 import com.sk89q.worldedit.session.storage.SessionStore;
@@ -213,7 +214,7 @@ public class SessionManager {
 
         // Force non-locatable actors to use placeAtPos1
         if (!(owner instanceof Locatable)) {
-            session.setPlaceAtPos1(true);
+            session.setPlacement(new Placement(PlacementType.POS1, BlockVector3.ZERO));
         }
 
         return session;

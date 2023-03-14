@@ -46,6 +46,8 @@ import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
 import com.sk89q.worldedit.regions.selector.RegionSelectorType;
 import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.session.Placement;
+import com.sk89q.worldedit.session.PlacementType;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.util.SideEffectSet;
@@ -93,7 +95,7 @@ public class LocalSession {
 
     // Session related
     private transient RegionSelector selector = new CuboidRegionSelector();
-    private transient boolean placeAtPos1 = false;
+    private transient Placement placement = new Placement(PlacementType.PLAYER, BlockVector3.ZERO);
     private final transient LinkedList<EditSession> history = new LinkedList<>();
     private transient int historyPointer = 0;
     private transient ClipboardHolder clipboard;
@@ -559,34 +561,70 @@ public class LocalSession {
      * @throws IncompleteRegionException thrown if a region is not fully selected
      */
     public BlockVector3 getPlacementPosition(Actor actor) throws IncompleteRegionException {
-        checkNotNull(actor);
-        if (!placeAtPos1) {
-            if (actor instanceof Locatable) {
-                return ((Locatable) actor).getBlockLocation().toVector().toBlockPoint();
-            } else {
-                throw new IncompleteRegionException();
-            }
-        }
-
-        return selector.getPrimaryPosition();
-    }
-
-    public void setPlaceAtPos1(boolean placeAtPos1) {
-        this.placeAtPos1 = placeAtPos1;
-    }
-
-    public boolean isPlaceAtPos1() {
-        return placeAtPos1;
+        return this.placement.getPlacementPosition(selector, actor);
     }
 
     /**
-     * Toggle placement position.
+     * Returns the current placement used for many operations, like <code>//sphere</code>.
      *
-     * @return whether "place at position 1" is now enabled
+     * @return the placement.
      */
+    public Placement getPlacement() {
+        return this.placement;
+    }
+
+    /**
+     * Sets the current placement used for many operations, like <code>//sphere</code>.
+     * <p>
+     * Example usage: <code>session.setPlacement(new Placement(PlacementType.WORLD, BlockVector3.at(123, 456, 789)</code>
+     * </p>
+     *
+     * @param placement the placement.
+     */
+    public void setPlacement(Placement placement) {
+        this.placement = placement;
+    }
+
+    /**
+     * Sets whether placement is at POS1 or PLAYER.
+     *
+     * @param placeAtPos1 true=POS1, false=PLAYER
+     *
+     * @deprecated Use {@link #setPlacement(Placement)}
+     */
+    @Deprecated
+    public void setPlaceAtPos1(boolean placeAtPos1) {
+        this.placement = new Placement(placeAtPos1 ? PlacementType.POS1 : PlacementType.PLAYER, BlockVector3.ZERO);
+    }
+
+    /**
+     * Gets whether placement is at POS1 or PLAYER.
+     *
+     * @return true=POS1, false=PLAYER
+     *
+     * @deprecated Use {@link #getPlacement()}
+     */
+    @Deprecated
+    public boolean isPlaceAtPos1() {
+        return this.placement.getPlacementType() == PlacementType.POS1;
+    }
+
+    /**
+     * Toggle placement position between POS1 and PLAYER.
+     * If placement was POS1, it is set to PLAYER.
+     * If it was set to anything else, it is set to POS1.
+     *
+     * @return whether placement is now at position 1
+     * @deprecated Use {@link #setPlacement(Placement)}
+     */
+    @Deprecated
     public boolean togglePlacementPosition() {
-        placeAtPos1 = !placeAtPos1;
-        return placeAtPos1;
+        if (this.placement.getPlacementType() == PlacementType.POS1) {
+            this.placement = new Placement(PlacementType.PLAYER, BlockVector3.ZERO);
+        } else {
+            this.placement = new Placement(PlacementType.POS1, BlockVector3.ZERO);
+        }
+        return this.placement.getPlacementType() == PlacementType.POS1;
     }
 
     /**
