@@ -22,6 +22,7 @@ package com.sk89q.worldedit.session;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
@@ -38,6 +39,17 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 class PlacementTypeTest {
+    @Test
+    void testPlacementWORLD() throws Exception {
+        final RegionSelector regionSelector = mock(RegionSelector.class, Answers.RETURNS_SMART_NULLS);
+        final Player player = mock(Player.class, Answers.RETURNS_SMART_NULLS);
+
+        assertEquals(BlockVector3.ZERO, PlacementType.WORLD.getPlacementPosition(regionSelector, player));
+
+        verifyNoInteractions(regionSelector);
+        verifyNoInteractions(player);
+    }
+
     @Test
     void testPlacementPLAYER() throws Exception {
         final RegionSelector regionSelector = mock(RegionSelector.class, Answers.RETURNS_SMART_NULLS);
@@ -67,6 +79,44 @@ class PlacementTypeTest {
         assertEquals(pos1, PlacementType.POS1.getPlacementPosition(regionSelector, actor));
 
         verify(regionSelector, times(1)).getPrimaryPosition();
+        verifyNoMoreInteractions(regionSelector);
+        verifyNoInteractions(actor);
+    }
+
+    @Test
+    void testPlacementMIN() throws Exception {
+        final Region region = mock(Region.class, Answers.RETURNS_SMART_NULLS);
+        final RegionSelector regionSelector = mock(RegionSelector.class, Answers.RETURNS_SMART_NULLS);
+        final Actor actor = mock(Actor.class, Answers.RETURNS_SMART_NULLS);
+
+        final BlockVector3 min = BlockVector3.at(1337, 42, 23);
+        doReturn(min).when(region).getMinimumPoint();
+        doReturn(region).when(regionSelector).getRegion();
+
+        assertEquals(min, PlacementType.MIN.getPlacementPosition(regionSelector, actor));
+
+        verify(region, times(1)).getMinimumPoint();
+        verifyNoMoreInteractions(region);
+        verify(regionSelector, times(1)).getRegion();
+        verifyNoMoreInteractions(regionSelector);
+        verifyNoInteractions(actor);
+    }
+
+    @Test
+    void testPlacementMAX() throws Exception {
+        final Region region = mock(Region.class, Answers.RETURNS_SMART_NULLS);
+        final RegionSelector regionSelector = mock(RegionSelector.class, Answers.RETURNS_SMART_NULLS);
+        final Actor actor = mock(Actor.class, Answers.RETURNS_SMART_NULLS);
+
+        final BlockVector3 max = BlockVector3.at(1337, 42, 23);
+        doReturn(max).when(region).getMaximumPoint();
+        doReturn(region).when(regionSelector).getRegion();
+
+        assertEquals(max, PlacementType.MAX.getPlacementPosition(regionSelector, actor));
+
+        verify(region, times(1)).getMaximumPoint();
+        verifyNoMoreInteractions(region);
+        verify(regionSelector, times(1)).getRegion();
         verifyNoMoreInteractions(regionSelector);
         verifyNoInteractions(actor);
     }

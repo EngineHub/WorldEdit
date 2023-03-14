@@ -50,6 +50,11 @@ class PlacementTest {
     @ParameterizedTest
     @EnumSource(PlacementType.class)
     void testPlacementGeneric(PlacementType placementType) throws Exception {
+        if (placementType == PlacementType.HERE) {
+            // HERE is a special case that's handled in command code and doesn't have an actual implementation
+            return;
+        }
+
         final ActorSelectorLimits limits = mock(ActorSelectorLimits.class, Answers.RETURNS_SMART_NULLS);
         final RegionSelector regionSelector = new CuboidRegionSelector();
 

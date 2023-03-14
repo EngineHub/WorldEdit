@@ -32,6 +32,7 @@ import com.sk89q.worldedit.command.util.WorldEditAsyncCommandBuilder;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.extension.platform.Locatable;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.RegionMaskingFilter;
 import com.sk89q.worldedit.function.block.ApplySideEffect;
@@ -460,6 +461,15 @@ public class GeneralCommands {
                           @Offset
                           BlockVector3 offset) {
         offset = offset.multiply(multiplier);
+        if (placementType == PlacementType.HERE) {
+            if (!placementType.canBeUsedBy(actor)) {
+                actor.printError(TranslatableComponent.of("worldedit.toggleplace.not-locatable"));
+                return;
+            }
+            // Replace "//placement here" by "//placement <current player coordinates>"
+            placementType = PlacementType.WORLD;
+            offset = offset.add(((Locatable) actor).getBlockLocation().toVector().toBlockPoint());
+        }
         placementImpl(actor, session, new Placement(placementType, offset));
     }
 

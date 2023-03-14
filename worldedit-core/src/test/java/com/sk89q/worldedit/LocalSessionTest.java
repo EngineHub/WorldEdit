@@ -131,6 +131,11 @@ class LocalSessionTest extends BaseWorldEditTest {
     @ParameterizedTest
     @EnumSource(PlacementType.class)
     void testPlacementGeneric(PlacementType placementType) throws Exception {
+        if (placementType == PlacementType.HERE) {
+            // HERE is a special case that's handled in command code and doesn't have an actual implementation
+            return;
+        }
+
         final ActorSelectorLimits limits = ActorSelectorLimits.forActor(player);
         final RegionSelector regionSelector = session.getRegionSelector(world);
 
