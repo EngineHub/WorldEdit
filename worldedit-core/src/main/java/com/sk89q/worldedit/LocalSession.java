@@ -582,6 +582,10 @@ public class LocalSession {
      * @param placement the placement.
      */
     public void setPlacement(Placement placement) {
+        if (placement.getPlacementType() == PlacementType.HERE) {
+            throw new IllegalStateException("PlacementType.HERE cannot be used. Use PLAYER or WORLD instead.");
+        }
+
         this.placement = placement;
     }
 

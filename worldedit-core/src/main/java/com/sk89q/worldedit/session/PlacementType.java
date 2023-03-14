@@ -28,6 +28,13 @@ import com.sk89q.worldedit.regions.RegionSelector;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public enum PlacementType {
+    WORLD("worldedit.toggleplace.world", "worldedit.toggleplace.world-offset") {
+        @Override
+        public BlockVector3 getPlacementPosition(RegionSelector selector, Actor actor) throws IncompleteRegionException {
+            return BlockVector3.ZERO;
+        }
+    },
+
     PLAYER("worldedit.toggleplace.player", "worldedit.toggleplace.player-offset") {
         @Override
         public BlockVector3 getPlacementPosition(RegionSelector selector, Actor actor) throws IncompleteRegionException {
@@ -44,10 +51,46 @@ public enum PlacementType {
         }
     },
 
+    HERE(null, null) {
+        @Override
+        public BlockVector3 getPlacementPosition(RegionSelector selector, Actor actor) throws IncompleteRegionException {
+            throw new IllegalStateException("PlacementType.HERE cannot be used. Use PLAYER or WORLD instead.");
+        }
+
+        @Override
+        public boolean canBeUsedBy(Actor actor) {
+            return PLAYER.canBeUsedBy(actor);
+        }
+
+        @Override
+        public String getTranslationKey() {
+            throw new IllegalStateException("PlacementType.HERE cannot be used. Use PLAYER or WORLD instead.");
+        }
+
+        @Override
+        public String getTranslationKeyWithOffset() {
+            throw new IllegalStateException("PlacementType.HERE cannot be used. Use PLAYER or WORLD instead.");
+        }
+    },
+
     POS1("worldedit.toggleplace.pos1", "worldedit.toggleplace.pos1-offset") {
         @Override
         public BlockVector3 getPlacementPosition(RegionSelector selector, Actor actor) throws IncompleteRegionException {
             return selector.getPrimaryPosition();
+        }
+    },
+
+    MIN("worldedit.toggleplace.min", "worldedit.toggleplace.min-offset") {
+        @Override
+        public BlockVector3 getPlacementPosition(RegionSelector selector, Actor actor) throws IncompleteRegionException {
+            return selector.getRegion().getMinimumPoint();
+        }
+    },
+
+    MAX("worldedit.toggleplace.max", "worldedit.toggleplace.max-offset") {
+        @Override
+        public BlockVector3 getPlacementPosition(RegionSelector selector, Actor actor) throws IncompleteRegionException {
+            return selector.getRegion().getMaximumPoint();
         }
     };
 
