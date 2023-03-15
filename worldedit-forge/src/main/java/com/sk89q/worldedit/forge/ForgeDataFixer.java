@@ -29,6 +29,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DSL.TypeReference;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.DataFixerBuilder;
@@ -225,7 +226,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
     }
 
     @Override
-    public DataFixer buildOptimized(Executor executor) {
+    public DataFixer buildOptimized(final Set<DSL.TypeReference> requiredTypes, final Executor executor) {
         return fixer;
     }
 
