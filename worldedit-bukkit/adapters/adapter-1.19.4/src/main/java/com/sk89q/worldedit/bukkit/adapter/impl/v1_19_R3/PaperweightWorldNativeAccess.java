@@ -168,8 +168,6 @@ public class PaperweightWorldNativeAccess implements WorldNativeAccess<LevelChun
     @Override
     public void updateNeighbors(BlockPos pos, net.minecraft.world.level.block.state.BlockState oldState, net.minecraft.world.level.block.state.BlockState newState, int recursionLimit) {
         ServerLevel world = getWorld();
-        // a == updateNeighbors
-        // b == updateDiagonalNeighbors
         oldState.updateIndirectNeighbourShapes(world, pos, NOTIFY, recursionLimit);
         if (sideEffectSet.shouldApply(SideEffect.EVENTS)) {
             CraftWorld craftWorld = world.getWorld();
