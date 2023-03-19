@@ -1,3 +1,9 @@
+7.2.14
+- Update to 1.19.4
+- Fixed some data values not being returned correctly in expression query functions
+- Improve error handling and message shown when other mods/plugins break WorldEdit due to too early registry access
+- [Bukkit] Bypass Bukkit API to allow custom biome support
+
 7.2.13
 - Update to 1.19.3
 - Show a friendlier error when trying to access filenames the filesystem doesn't support, such as question marks on Windows

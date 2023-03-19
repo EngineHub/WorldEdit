@@ -29,7 +29,7 @@ import com.sk89q.worldedit.registry.NamespacedRegistry;
  */
 public class BiomeType implements Keyed, BiomePattern {
 
-    public static final NamespacedRegistry<BiomeType> REGISTRY = new NamespacedRegistry<>("biome type");
+    public static final NamespacedRegistry<BiomeType> REGISTRY = new NamespacedRegistry<>("biome type", true);
 
     private final String id;
 

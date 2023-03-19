@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.forge;
+package com.sk89q.worldedit.bukkit.adapter.impl.v1_19_R3;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -35,8 +35,8 @@ import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.DataFixerBuilder;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.serialization.Dynamic;
-import com.sk89q.worldedit.forge.internal.NBTConverter;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.FloatTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
@@ -72,22 +72,16 @@ import javax.annotation.Nullable;
 /**
  * Handles converting all Pre 1.13.2 data using the Legacy DataFix System (ported to 1.13.2)
  *
- * <p>
  * We register a DFU Fixer per Legacy Data Version and apply the fixes using legacy strategy
  * which is safer, faster and cleaner code.
- * </p>
  *
- * <p>
  * The pre DFU code did not fail when the Source version was unknown.
- * </p>
  *
- * <p>
  * This class also provides util methods for converting compounds to wrap the update call to
- * receive the source version in the compound.
- * </p>
+ * receive the source version in the compound
  */
-@SuppressWarnings({ "UnnecessarilyQualifiedStaticUsage", "unchecked", "rawtypes" })
-class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.world.DataFixer {
+@SuppressWarnings({ "rawtypes", "unchecked" })
+class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.worldedit.world.DataFixer {
 
     @SuppressWarnings("unchecked")
     @Override
@@ -109,21 +103,21 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
     }
 
     private LinCompoundTag fixChunk(LinCompoundTag originalChunk, int srcVer) {
-        net.minecraft.nbt.CompoundTag tag = NBTConverter.toNative(originalChunk);
+        net.minecraft.nbt.CompoundTag tag = (net.minecraft.nbt.CompoundTag) adapter.fromNative(originalChunk);
         net.minecraft.nbt.CompoundTag fixed = convert(LegacyType.CHUNK, tag, srcVer);
-        return NBTConverter.fromNative(fixed);
+        return (LinCompoundTag) adapter.toNative(fixed);
     }
 
     private LinCompoundTag fixBlockEntity(LinCompoundTag origTileEnt, int srcVer) {
-        net.minecraft.nbt.CompoundTag tag = NBTConverter.toNative(origTileEnt);
+        net.minecraft.nbt.CompoundTag tag = (net.minecraft.nbt.CompoundTag) adapter.fromNative(origTileEnt);
         net.minecraft.nbt.CompoundTag fixed = convert(LegacyType.BLOCK_ENTITY, tag, srcVer);
-        return NBTConverter.fromNative(fixed);
+        return (LinCompoundTag) adapter.toNative(fixed);
     }
 
     private LinCompoundTag fixEntity(LinCompoundTag origEnt, int srcVer) {
-        net.minecraft.nbt.CompoundTag tag = NBTConverter.toNative(origEnt);
+        net.minecraft.nbt.CompoundTag tag = (net.minecraft.nbt.CompoundTag) adapter.fromNative(origEnt);
         net.minecraft.nbt.CompoundTag fixed = convert(LegacyType.ENTITY, tag, srcVer);
-        return NBTConverter.fromNative(fixed);
+        return (LinCompoundTag) adapter.toNative(fixed);
     }
 
     private String fixBlockState(String blockState, int srcVer) {
@@ -174,19 +168,21 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static String fixName(String key, int srcVer, TypeReference type) {
         return INSTANCE.fixer.update(type, new Dynamic<>(OPS_NBT, StringTag.valueOf(key)), srcVer, DATA_VERSION)
-            .asString().result().orElse(key);
+            .getValue().getAsString();
     }
+
+    private final PaperweightAdapter adapter;
 
     private static final NbtOps OPS_NBT = NbtOps.INSTANCE;
     private static final int LEGACY_VERSION = 1343;
     private static int DATA_VERSION;
-    private static ForgeDataFixer INSTANCE;
+    static PaperweightDataConverters INSTANCE;
 
     private final Map<LegacyType, List<DataConverter>> converters = new EnumMap<>(LegacyType.class);
     private final Map<LegacyType, List<DataInspector>> inspectors = new EnumMap<>(LegacyType.class);
 
     // Set on build
-    private final DataFixer fixer;
+    private DataFixer fixer;
     private static final Map<String, LegacyType> DFU_TO_LEGACY = new HashMap<>();
 
     public enum LegacyType {
@@ -211,25 +207,28 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
         }
     }
 
-    ForgeDataFixer(int dataVersion) {
+    PaperweightDataConverters(int dataVersion, PaperweightAdapter adapter) {
         super(dataVersion);
         DATA_VERSION = dataVersion;
         INSTANCE = this;
+        this.adapter = adapter;
         registerConverters();
         registerInspectors();
-        this.fixer = new WrappedDataFixer(DataFixers.getDataFixer());
     }
 
+
+    // Called after fixers are built and ready for FIXING
     @Override
     public DataFixer buildUnoptimized() {
-        return fixer;
+        return this.fixer = new WrappedDataFixer(DataFixers.getDataFixer());
     }
 
     @Override
-    public DataFixer buildOptimized(final Set<DSL.TypeReference> requiredTypes, final Executor executor) {
-        return fixer;
+    public DataFixer buildOptimized(final Set<DSL.TypeReference> requiredTypes, Executor executor) {
+        return buildUnoptimized();
     }
 
+    @SuppressWarnings("unchecked")
     private class WrappedDataFixer implements DataFixer {
         private final DataFixer realFixer;
 
@@ -252,7 +251,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
         }
 
         private net.minecraft.nbt.CompoundTag convert(LegacyType type, net.minecraft.nbt.CompoundTag cmp, int sourceVer, int desiredVersion) {
-            List<DataConverter> converters = ForgeDataFixer.this.converters.get(type);
+            List<DataConverter> converters = PaperweightDataConverters.this.converters.get(type);
             if (converters != null && !converters.isEmpty()) {
                 for (DataConverter converter : converters) {
                     int dataVersion = converter.getDataVersion();
@@ -262,7 +261,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
                 }
             }
 
-            List<DataInspector> inspectors = ForgeDataFixer.this.inspectors.get(type);
+            List<DataInspector> inspectors = PaperweightDataConverters.this.inspectors.get(type);
             if (inspectors != null && !inspectors.isEmpty()) {
                 for (DataInspector inspector : inspectors) {
                     cmp = inspector.inspect(cmp, sourceVer, desiredVersion);
@@ -608,7 +607,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             ListTag nbttaglist = nbttagcompound.getList(key, 10);
 
             for (int j = 0; j < nbttaglist.size(); ++j) {
-                nbttaglist.add(j, convert(LegacyType.ITEM_INSTANCE, nbttaglist.getCompound(j), sourceVer, targetVer));
+                nbttaglist.set(j, convert(LegacyType.ITEM_INSTANCE, nbttaglist.getCompound(j), sourceVer, targetVer));
             }
         }
 
@@ -619,12 +618,10 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
         DataConverterEquipment() {
         }
 
-        @Override
         public int getDataVersion() {
             return 100;
         }
 
-        @Override
         public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
             ListTag nbttaglist = cmp.getList("Equipment", 10);
             ListTag nbttaglist1;
@@ -691,7 +688,6 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             }
         }
 
-        @Override
         public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
             if (!cmp.contains("tag", 10)) {
                 return cmp;
@@ -818,12 +814,9 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataInspectorEntity implements DataInspector {
 
-        private static final Logger a = LogManager.getLogger(ForgeDataFixer.class);
-
         DataInspectorEntity() {
         }
 
-        @Override
         public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
             net.minecraft.nbt.CompoundTag nbttagcompound1 = cmp.getCompound("tag");
 
@@ -844,13 +837,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
                 boolean flag;
 
-                if (s1 == null) {
-                    DataInspectorEntity.a.warn("Unable to resolve Entity for ItemInstance: {}", s);
-                    flag = false;
-                } else {
-                    flag = !nbttagcompound2.contains("id", 8);
-                    nbttagcompound2.putString("id", s1);
-                }
+                flag = !nbttagcompound2.contains("id", 8);
+                nbttagcompound2.putString("id", s1);
 
                 convert(LegacyType.ENTITY, nbttagcompound2, sourceVer, targetVer);
                 if (flag) {
@@ -893,7 +881,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
         net.minecraft.nbt.CompoundTag inspectChecked(net.minecraft.nbt.CompoundTag nbttagcompound, int sourceVer, int targetVer) {
             for (String s : this.keys) {
-                ForgeDataFixer.convertItems(nbttagcompound, s, sourceVer, targetVer);
+                PaperweightDataConverters.convertItems(nbttagcompound, s, sourceVer, targetVer);
             }
 
             return nbttagcompound;
@@ -911,7 +899,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
         net.minecraft.nbt.CompoundTag inspectChecked(net.minecraft.nbt.CompoundTag nbttagcompound, int sourceVer, int targetVer) {
             for (String key : this.keys) {
-                ForgeDataFixer.convertItem(nbttagcompound, key, sourceVer, targetVer);
+                PaperweightDataConverters.convertItem(nbttagcompound, key, sourceVer, targetVer);
             }
 
             return nbttagcompound;
@@ -1257,6 +1245,46 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             materials[2265] = "minecraft:record_ward";
             materials[2266] = "minecraft:record_11";
             materials[2267] = "minecraft:record_wait";
+            // Paper start
+            materials[409] = "minecraft:prismarine_shard";
+            materials[410] = "minecraft:prismarine_crystals";
+            materials[411] = "minecraft:rabbit";
+            materials[412] = "minecraft:cooked_rabbit";
+            materials[413] = "minecraft:rabbit_stew";
+            materials[414] = "minecraft:rabbit_foot";
+            materials[415] = "minecraft:rabbit_hide";
+            materials[416] = "minecraft:armor_stand";
+            materials[423] = "minecraft:mutton";
+            materials[424] = "minecraft:cooked_mutton";
+            materials[425] = "minecraft:banner";
+            materials[426] = "minecraft:end_crystal";
+            materials[427] = "minecraft:spruce_door";
+            materials[428] = "minecraft:birch_door";
+            materials[429] = "minecraft:jungle_door";
+            materials[430] = "minecraft:acacia_door";
+            materials[431] = "minecraft:dark_oak_door";
+            materials[432] = "minecraft:chorus_fruit";
+            materials[433] = "minecraft:chorus_fruit_popped";
+            materials[434] = "minecraft:beetroot";
+            materials[435] = "minecraft:beetroot_seeds";
+            materials[436] = "minecraft:beetroot_soup";
+            materials[437] = "minecraft:dragon_breath";
+            materials[438] = "minecraft:splash_potion";
+            materials[439] = "minecraft:spectral_arrow";
+            materials[440] = "minecraft:tipped_arrow";
+            materials[441] = "minecraft:lingering_potion";
+            materials[442] = "minecraft:shield";
+            materials[443] = "minecraft:elytra";
+            materials[444] = "minecraft:spruce_boat";
+            materials[445] = "minecraft:birch_boat";
+            materials[446] = "minecraft:jungle_boat";
+            materials[447] = "minecraft:acacia_boat";
+            materials[448] = "minecraft:dark_oak_boat";
+            materials[449] = "minecraft:totem_of_undying";
+            materials[450] = "minecraft:shulker_shell";
+            materials[452] = "minecraft:iron_nugget";
+            materials[453] = "minecraft:knowledge_book";
+            // Paper end
         }
     }
 
@@ -1599,7 +1627,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterMinecart implements DataConverter {
 
-        private static final List<String> a = Lists.newArrayList(new String[] { "MinecartRideable", "MinecartChest", "MinecartFurnace", "MinecartTNT", "MinecartSpawner", "MinecartHopper", "MinecartCommandBlock" });
+        private static final List<String> a = Lists.newArrayList("MinecartRideable", "MinecartChest", "MinecartFurnace", "MinecartTNT", "MinecartSpawner", "MinecartHopper", "MinecartCommandBlock");
 
         DataConverterMinecart() {
         }
@@ -1689,7 +1717,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterHealth implements DataConverter {
 
-        private static final Set<String> a = Sets.newHashSet(new String[] { "ArmorStand", "Bat", "Blaze", "CaveSpider", "Chicken", "Cow", "Creeper", "EnderDragon", "Enderman", "Endermite", "EntityHorse", "Ghast", "Giant", "Guardian", "LavaSlime", "MushroomCow", "Ozelot", "Pig", "PigZombie", "Rabbit", "Sheep", "Shulker", "Silverfish", "Skeleton", "Slime", "SnowMan", "Spider", "Squid", "Villager", "VillagerGolem", "Witch", "WitherBoss", "Wolf", "Zombie" });
+        private static final Set<String> a = Sets.newHashSet("ArmorStand", "Bat", "Blaze", "CaveSpider", "Chicken", "Cow", "Creeper", "EnderDragon", "Enderman", "Endermite", "EntityHorse", "Ghast", "Giant", "Guardian", "LavaSlime", "MushroomCow", "Ozelot", "Pig", "PigZombie", "Rabbit", "Sheep", "Shulker", "Silverfish", "Skeleton", "Slime", "SnowMan", "Spider", "Squid", "Villager", "VillagerGolem", "Witch", "WitherBoss", "Wolf", "Zombie");
 
         DataConverterHealth() {
         }
@@ -1865,7 +1893,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
                     for (int i = 0; i < nbttaglist.size(); ++i) {
                         String s = nbttaglist.getString(i);
-                        Object object = null;
+                        Component object = null;
 
                         if (!"null".equals(s) && !StringUtil.isNullOrEmpty(s)) {
                             if ((s.charAt(0) != 34 || s.charAt(s.length() - 1) != 34) && (s.charAt(0) != 123 || s.charAt(s.length() - 1) != 125)) {
@@ -1904,7 +1932,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
                             object = Component.literal("");
                         }
 
-                        nbttaglist.set(i, StringTag.valueOf(Component.Serializer.toJson((Component) object)));
+                        nbttaglist.set(i, StringTag.valueOf(Component.Serializer.toJson(object)));
                     }
 
                     nbttagcompound1.put("pages", nbttaglist);
@@ -2056,6 +2084,10 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
                 int i = cmp.getInt("ZombieType");
 
                 switch (i) {
+                    case 0:
+                    default:
+                        break;
+
                     case 1:
                     case 2:
                     case 3:
@@ -2064,11 +2096,9 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
                         cmp.putString("id", "ZombieVillager");
                         cmp.putInt("Profession", i - 1);
                         break;
+
                     case 6:
                         cmp.putString("id", "Husk");
-                    case 0:
-                    default:
-                        break;
                 }
 
                 cmp.remove("ZombieType");
@@ -2092,6 +2122,11 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
                 int i = cmp.getInt("Type");
 
                 switch (i) {
+                    case 0:
+                    default:
+                        cmp.putString("id", "Horse");
+                        break;
+
                     case 1:
                         cmp.putString("id", "Donkey");
                         break;
@@ -2106,12 +2141,6 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
                     case 4:
                         cmp.putString("id", "SkeletonHorse");
-                        break;
-
-                    case 0:
-                    default:
-                        cmp.putString("id", "Horse");
-                        break;
                 }
 
                 cmp.remove("Type");
@@ -2412,7 +2441,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterBedBlock implements DataConverter {
 
-        private static final Logger a = LogManager.getLogger(ForgeDataFixer.class);
+        private static final Logger a = LogManager.getLogger(PaperweightDataConverters.class);
 
         DataConverterBedBlock() {
         }
@@ -2422,8 +2451,6 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
         }
 
         public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
-            boolean flag = true;
-
             try {
                 net.minecraft.nbt.CompoundTag nbttagcompound1 = cmp.getCompound("Level");
                 int i = nbttagcompound1.getInt("xPos");
@@ -2485,23 +2512,23 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
                     return Component.literal(jsonelement.getAsString());
                 } else if (jsonelement.isJsonArray()) {
                     JsonArray jsonarray = jsonelement.getAsJsonArray();
-                    MutableComponent iTextComponent = null;
+                    MutableComponent ichatbasecomponent = null;
                     Iterator iterator = jsonarray.iterator();
 
                     while (iterator.hasNext()) {
                         JsonElement jsonelement1 = (JsonElement) iterator.next();
-                        MutableComponent iTextComponent1 = this.a(jsonelement1, jsonelement1.getClass(), jsondeserializationcontext);
+                        MutableComponent ichatbasecomponent1 = this.a(jsonelement1, jsonelement1.getClass(), jsondeserializationcontext);
 
-                        if (iTextComponent == null) {
-                            iTextComponent = iTextComponent1;
+                        if (ichatbasecomponent == null) {
+                            ichatbasecomponent = ichatbasecomponent1;
                         } else {
-                            iTextComponent.append(iTextComponent1);
+                            ichatbasecomponent.append(ichatbasecomponent1);
                         }
                     }
 
-                    return iTextComponent;
+                    return ichatbasecomponent;
                 } else {
-                    throw new JsonParseException("Don\'t know how to turn " + jsonelement + " into a Component");
+                    throw new JsonParseException("Don't know how to turn " + jsonelement + " into a Component");
                 }
             }
 
@@ -2530,7 +2557,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
         private void convert(net.minecraft.nbt.CompoundTag nbttagcompound, String s) {
             String s1 = nbttagcompound.getString(s);
-            Object object = null;
+            Component object = null;
 
             if (!"null".equals(s1) && !StringUtil.isNullOrEmpty(s1)) {
                 if ((s1.charAt(0) != 34 || s1.charAt(s1.length() - 1) != 34) && (s1.charAt(0) != 123 || s1.charAt(s1.length() - 1) != 125)) {
@@ -2569,7 +2596,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
                 object = Component.literal("");
             }
 
-            nbttagcompound.putString(s, Component.Serializer.toJson((Component) object));
+            nbttagcompound.putString(s, Component.Serializer.toJson(object));
         }
     }
 
@@ -2763,7 +2790,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
         ResourceLocation tileEntityCommand = getKey("TileEntityCommand");
 
         @Override
-        public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
+        public net.minecraft.nbt.CompoundTag inspect(CompoundTag cmp, int sourceVer, int targetVer) {
             if (tileEntityCommand.equals(new ResourceLocation(cmp.getString("id")))) {
                 cmp.putString("id", "Control");
                 convert(LegacyType.BLOCK_ENTITY, cmp, sourceVer, targetVer);

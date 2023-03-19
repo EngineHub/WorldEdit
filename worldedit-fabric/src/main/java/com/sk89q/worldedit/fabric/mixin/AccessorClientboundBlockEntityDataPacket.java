@@ -29,7 +29,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(ClientboundBlockEntityDataPacket.class)
 public interface AccessorClientboundBlockEntityDataPacket {
     @Invoker("<init>")
-    static ClientboundBlockEntityDataPacket construct(BlockPos pos, BlockEntityType<?> blockEntityType, CompoundTag compoundTag) {
+    static ClientboundBlockEntityDataPacket construct(BlockPos blockPos, BlockEntityType<?> blockEntityType, CompoundTag compoundTag) {
         throw new AssertionError("This is replaced by Mixin to call the constructor.");
     }
 }
