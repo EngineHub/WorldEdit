@@ -298,8 +298,22 @@ public class PlatformManager {
         return queryCapability(Capability.CONFIGURATION).getConfiguration();
     }
 
+    /**
+     * Get the current supported {@link SideEffect}s.
+     *
+     * @return the supported side effects
+     * @throws NoCapablePlatformException thrown if no platform is capable
+     */
     public Collection<SideEffect> getSupportedSideEffects() {
         return queryCapability(Capability.WORLD_EDITING).getSupportedSideEffects();
+    }
+
+    /**
+     * Get the initialized state of the Platform.
+     * {@return if the platform manager is initialized}
+     */
+    public boolean isInitialized() {
+        return initialized.get();
     }
 
     /**

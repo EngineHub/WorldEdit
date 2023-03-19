@@ -24,7 +24,7 @@ import com.sk89q.worldedit.registry.NamespacedRegistry;
 
 public class EntityType implements Keyed {
 
-    public static final NamespacedRegistry<EntityType> REGISTRY = new NamespacedRegistry<>("entity type");
+    public static final NamespacedRegistry<EntityType> REGISTRY = new NamespacedRegistry<>("entity type", true);
 
     private final String id;
 

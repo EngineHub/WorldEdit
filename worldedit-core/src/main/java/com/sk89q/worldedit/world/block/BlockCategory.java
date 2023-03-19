@@ -33,7 +33,7 @@ import java.util.Set;
  */
 public class BlockCategory extends Category<BlockType> implements Keyed {
 
-    public static final NamespacedRegistry<BlockCategory> REGISTRY = new NamespacedRegistry<>("block tag");
+    public static final NamespacedRegistry<BlockCategory> REGISTRY = new NamespacedRegistry<>("block tag", true);
 
     public BlockCategory(final String id) {
         super(id);

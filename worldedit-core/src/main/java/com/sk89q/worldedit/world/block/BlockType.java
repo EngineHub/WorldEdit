@@ -43,7 +43,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 public class BlockType implements Keyed {
 
-    public static final NamespacedRegistry<BlockType> REGISTRY = new NamespacedRegistry<>("block type");
+    public static final NamespacedRegistry<BlockType> REGISTRY = new NamespacedRegistry<>("block type", true);
 
     private final String id;
     private final Function<BlockState, BlockState> values;
