@@ -256,7 +256,6 @@ public interface BukkitImplAdapter {
     }
 
     /**
-<<<<<<< HEAD
      * Checks if this adapter supports custom biomes.
      * @return if custom biomes are supported
      */

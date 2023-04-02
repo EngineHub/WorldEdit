@@ -192,5 +192,23 @@
                 "FIELD_NOW_FINAL"
             ]
         }
+    ],
+    "This now delegates to the InputStream method if not implemented": [
+        {
+            "type": "com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat",
+            "member": "Method com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat.isFormat(java.io.File)",
+            "changes": [
+                "METHOD_ABSTRACT_NOW_DEFAULT"
+            ]
+        }
+    ],
+    "New method added with default implementation": [
+        {
+            "type": "com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat",
+            "member": "Method com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat.isFormat(java.io.InputStream)",
+            "changes": [
+                "METHOD_NEW_DEFAULT"
+            ]
+        }
     ]
 }

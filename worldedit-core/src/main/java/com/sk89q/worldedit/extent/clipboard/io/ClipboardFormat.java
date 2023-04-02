@@ -23,7 +23,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
 
 /**
  * A collection of supported clipboard formats.
@@ -68,7 +70,29 @@ public interface ClipboardFormat {
      * @param file the file
      * @return true if the given file is of this format
      */
-    boolean isFormat(File file);
+    default boolean isFormat(File file) {
+        try (InputStream stream = new GZIPInputStream(Files.newInputStream(file.toPath()))) {
+            return isFormat(stream);
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Return whether the given stream is of this format.
+     *
+     * @apiNote The caller is responsible for the following:
+     *     <ul>
+     *         <li>Closing the input stream</li>
+     *         <li>Ensuring the data is directly readable, such as not being in GZip format</li>
+     *     </ul>
+     *
+     * @param inputStream The stream
+     * @return true if the given stream is of this format
+     */
+    default boolean isFormat(InputStream inputStream) {
+        return false;
+    }
 
     /**
      * Get the file extension this format primarily uses.

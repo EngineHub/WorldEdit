@@ -25,6 +25,8 @@ import com.google.common.collect.Multimaps;
 import com.sk89q.worldedit.WorldEdit;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -80,7 +83,7 @@ public class ClipboardFormats {
     }
 
     /**
-     * Detect the format of given a file.
+     * Detect the format of a given file.
      *
      * @param file
      *            the file
@@ -94,6 +97,29 @@ public class ClipboardFormats {
             if (format.isFormat(file)) {
                 return format;
             }
+        }
+
+        return null;
+    }
+
+    /**
+     * Detect the format of a given input stream.
+     *
+     * @apiNote The caller is responsible for ensuring the stream is in a readable format, such as removing GZip compression.
+     *
+     * @param inputStreamSupplier The input stream supplier
+     * @return the format, otherwise null if one cannot be detected
+     */
+    @Nullable
+    public static ClipboardFormat findByInputStream(Supplier<InputStream> inputStreamSupplier) {
+        checkNotNull(inputStreamSupplier);
+
+        for (ClipboardFormat format : registeredFormats) {
+            try (var stream = inputStreamSupplier.get()) {
+                if (format.isFormat(stream)) {
+                    return format;
+                }
+            } catch (IOException ignored) { }
         }
 
         return null;
