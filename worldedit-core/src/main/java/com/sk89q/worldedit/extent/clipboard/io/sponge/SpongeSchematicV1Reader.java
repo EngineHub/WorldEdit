@@ -55,7 +55,7 @@ public class SpongeSchematicV1Reader implements ClipboardReader {
     @Override
     public Clipboard read() throws IOException {
         LinCompoundTag schematicTag = getBaseTag();
-        ReaderUtil.checkSchematicVersion(1, getBaseTag());
+        ReaderUtil.checkSchematicVersion(1, schematicTag);
 
         return doRead(schematicTag);
     }
