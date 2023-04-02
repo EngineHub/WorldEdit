@@ -84,7 +84,6 @@ public interface ClipboardFormat {
      * @apiNote The caller is responsible for the following:
      *     <ul>
      *         <li>Closing the input stream</li>
-     *         <li>Ensuring the data is directly readable, such as not being in GZip format</li>
      *     </ul>
      *
      * @param inputStream The stream

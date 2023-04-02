@@ -105,8 +105,6 @@ public class ClipboardFormats {
     /**
      * Detect the format of a given input stream.
      *
-     * @apiNote The caller is responsible for ensuring the stream is in a readable format, such as removing GZip compression.
-     *
      * @param inputStreamSupplier The input stream supplier
      * @return the format, otherwise null if one cannot be detected
      */

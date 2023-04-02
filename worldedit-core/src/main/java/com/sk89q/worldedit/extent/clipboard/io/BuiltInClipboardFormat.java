@@ -71,9 +71,7 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
         public boolean isFormat(InputStream inputStream) {
             LinRootEntry rootEntry;
             try {
-                DataInputStream stream = inputStream instanceof DataInputStream dataInputStream
-                    ? dataInputStream
-                    : new DataInputStream(inputStream);
+                DataInputStream stream = new DataInputStream(new GZIPInputStream(inputStream));
                 rootEntry = LinBinaryIO.readUsing(stream, LinRootEntry::readFrom);
             } catch (Exception e) {
                 return false;
@@ -155,9 +153,7 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
         public boolean isFormat(InputStream inputStream) {
             LinCompoundTag root;
             try {
-                DataInputStream stream = inputStream instanceof DataInputStream dataInputStream
-                    ? dataInputStream
-                    : new DataInputStream(inputStream);
+                DataInputStream stream = new DataInputStream(new GZIPInputStream(inputStream));
                 root = LinBinaryIO.readUsing(stream, LinRootEntry::readFrom).value();
             } catch (Exception e) {
                 return false;
@@ -178,9 +174,7 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
     private static boolean detectOldSpongeSchematic(InputStream inputStream, int version) {
         LinRootEntry rootEntry;
         try {
-            DataInputStream stream = inputStream instanceof DataInputStream dataInputStream
-                ? dataInputStream
-                : new DataInputStream(inputStream);
+            DataInputStream stream = new DataInputStream(new GZIPInputStream(inputStream));
             rootEntry = LinBinaryIO.readUsing(stream, LinRootEntry::readFrom);
         } catch (Exception e) {
             return false;
