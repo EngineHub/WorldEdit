@@ -104,11 +104,7 @@ public class BukkitServerInterface extends AbstractPlatform implements MultiUser
 
     @Override
     public boolean isValidMobType(String type) {
-        if (!type.startsWith("minecraft:")) {
-            return false;
-        }
-        @SuppressWarnings("deprecation")
-        final EntityType entityType = EntityType.fromName(type.substring(10));
+        final EntityType entityType = BukkitAdapter.adapt(com.sk89q.worldedit.world.entity.EntityType.REGISTRY.get(type));
         return entityType != null && entityType.isAlive();
     }
 

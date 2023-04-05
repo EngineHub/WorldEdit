@@ -332,10 +332,7 @@ public class BukkitAdapter {
      */
     public static Material adapt(ItemType itemType) {
         checkNotNull(itemType);
-        if (!itemType.getId().startsWith("minecraft:")) {
-            throw new IllegalArgumentException("Bukkit only supports Minecraft items");
-        }
-        return Material.getMaterial(itemType.getId().substring(10).toUpperCase(Locale.ROOT));
+        return Material.matchMaterial(itemType.getId());
     }
 
     /**
@@ -346,10 +343,7 @@ public class BukkitAdapter {
      */
     public static Material adapt(BlockType blockType) {
         checkNotNull(blockType);
-        if (!blockType.getId().startsWith("minecraft:")) {
-            throw new IllegalArgumentException("Bukkit only supports Minecraft blocks");
-        }
-        return Material.getMaterial(blockType.getId().substring(10).toUpperCase(Locale.ROOT));
+        return Material.matchMaterial(blockType.getId());
     }
 
     /**
@@ -363,6 +357,7 @@ public class BukkitAdapter {
         return GameModes.get(gameMode.name().toLowerCase(Locale.ROOT));
     }
 
+    private static final Biome[] biomeValuesCache = Biome.values();
     private static final Map<Biome, BiomeType> biomeBiomeTypeCache = Collections.synchronizedMap(
         new EnumMap<>(Biome.class)
     );
@@ -375,19 +370,25 @@ public class BukkitAdapter {
      * @return WorldEdit BiomeType
      */
     public static BiomeType adapt(Biome biome) {
-        return biomeBiomeTypeCache.computeIfAbsent(biome, b -> BiomeTypes.get(b.name().toLowerCase(Locale.ROOT)));
+        return biomeBiomeTypeCache.computeIfAbsent(biome, input -> BiomeTypes.get(input.getKey().toString()));
     }
 
     public static Biome adapt(BiomeType biomeType) {
-        if (!biomeType.getId().startsWith("minecraft:")) {
-            throw new IllegalArgumentException("Bukkit only supports vanilla biomes");
-        }
-        try {
-            return biomeTypeBiomeCache.computeIfAbsent(biomeType, type -> Biome.valueOf(type.getId().substring(10).toUpperCase(Locale.ROOT)));
-        } catch (IllegalArgumentException e) {
+        return biomeTypeBiomeCache.computeIfAbsent(biomeType, type -> {
+            for (Biome bukkitType : biomeValuesCache) {
+                if (bukkitType.getKey().toString().equals(biomeType.getId())) {
+                    return bukkitType;
+                }
+            }
             return null;
-        }
+        });
     }
+
+    private static final org.bukkit.entity.EntityType[] bukkitEntityTypesCache = org.bukkit.entity.EntityType.values();
+    private static final Map<org.bukkit.entity.EntityType, EntityType> bukkitEntityTypeEntityType = Collections.synchronizedMap(
+            new EnumMap<>(org.bukkit.entity.EntityType.class)
+    );
+    private static final Map<EntityType, org.bukkit.entity.EntityType> entityTypeBukkitEntityType = new ConcurrentHashMap<>();
 
     /**
      * Create a WorldEdit EntityType from a Bukkit one.
@@ -396,20 +397,29 @@ public class BukkitAdapter {
      * @return WorldEdit EntityType
      */
     public static EntityType adapt(org.bukkit.entity.EntityType entityType) {
-        @SuppressWarnings("deprecation")
-        final String name = entityType.getName();
-        if (name == null) {
+        return bukkitEntityTypeEntityType.computeIfAbsent(entityType, input -> {
+            try {
+                return EntityTypes.get(input.getKey().toString());
+            } catch (IllegalArgumentException e) {
+                // EntityType.UNKNOWN has no key
+            }
             return null;
-        }
-        return EntityTypes.get(name.toLowerCase(Locale.ROOT));
+        });
     }
 
-    @SuppressWarnings("deprecation")
     public static org.bukkit.entity.EntityType adapt(EntityType entityType) {
-        if (!entityType.getId().startsWith("minecraft:")) {
-            throw new IllegalArgumentException("Bukkit only supports vanilla entities");
-        }
-        return org.bukkit.entity.EntityType.fromName(entityType.getId().substring(10));
+        return entityTypeBukkitEntityType.computeIfAbsent(entityType, type -> {
+            for (org.bukkit.entity.EntityType bukkitType : bukkitEntityTypesCache) {
+                try {
+                    if (bukkitType.getKey().toString().equals(type.getId())) {
+                        return bukkitType;
+                    }
+                } catch (IllegalArgumentException e) {
+                    // EntityType.UNKNOWN has no key
+                }
+            }
+            return null;
+        });
     }
 
     private static final Map<Material, BlockType> materialBlockTypeCache = Collections.synchronizedMap(

@@ -211,8 +211,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         // Biome
         for (Biome biome : Biome.values()) {
             if (!biome.name().equals("CUSTOM")) {
-                String lowerCaseBiomeName = biome.name().toLowerCase(Locale.ROOT);
-                BiomeType.REGISTRY.register("minecraft:" + lowerCaseBiomeName, new BiomeType("minecraft:" + lowerCaseBiomeName));
+                BiomeType.REGISTRY.register(biome.getKey().toString(), new BiomeType(biome.getKey().toString()));
             }
         }
         // Block & Item
@@ -246,10 +245,11 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         }
         // Entity
         for (org.bukkit.entity.EntityType entityType : org.bukkit.entity.EntityType.values()) {
-            String mcid = entityType.getName();
-            if (mcid != null) {
-                String lowerCaseMcId = mcid.toLowerCase(Locale.ROOT);
-                EntityType.REGISTRY.register("minecraft:" + lowerCaseMcId, new EntityType("minecraft:" + lowerCaseMcId));
+            try {
+                String entityTypeKey = entityType.getKey().toString();
+                EntityType.REGISTRY.register(entityTypeKey, new EntityType(entityTypeKey));
+            } catch (IllegalArgumentException e) {
+                // EntityType.UNKNOWN has no key
             }
         }
         // ... :|
