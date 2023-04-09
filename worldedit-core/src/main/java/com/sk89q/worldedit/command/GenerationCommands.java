@@ -40,6 +40,7 @@ import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
+import com.sk89q.worldedit.world.generation.StructureType;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
@@ -249,6 +250,23 @@ public class GenerationCommands {
             actor.printInfo(TranslatableComponent.of("worldedit.feature.created"));
         } else {
             actor.printError(TranslatableComponent.of("worldedit.feature.failed"));
+        }
+        return 0;
+    }
+
+    @Command(
+        name = "/structure",
+        desc = "Generate Minecraft structures"
+    )
+    @CommandPermissions("worldedit.generation.structure")
+    @Logging(POSITION)
+    public int structure(Actor actor, LocalSession session, EditSession editSession,
+                        @Arg(desc = "The structure")
+                        StructureType feature) throws WorldEditException {
+        if (editSession.getWorld().generateStructure(feature, editSession, session.getPlacementPosition(actor))) {
+            actor.printInfo(TranslatableComponent.of("worldedit.structure.created"));
+        } else {
+            actor.printError(TranslatableComponent.of("worldedit.structure.failed"));
         }
         return 0;
     }

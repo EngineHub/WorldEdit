@@ -129,6 +129,13 @@
             "changes": [
                 "METHOD_NEW_DEFAULT"
             ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.World",
+            "member": "Method com.sk89q.worldedit.world.World.generateStructure(com.sk89q.worldedit.world.generation.StructureType,com.sk89q.worldedit.EditSession,com.sk89q.worldedit.math.BlockVector3)",
+            "changes": [
+                "METHOD_NEW_DEFAULT"
+            ]
         }
     ],
     "LazyReference was never publicly extensible": [
