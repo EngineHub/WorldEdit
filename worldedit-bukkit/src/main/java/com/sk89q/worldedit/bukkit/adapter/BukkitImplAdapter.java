@@ -38,6 +38,7 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
+import com.sk89q.worldedit.world.generation.StructureType;
 import com.sk89q.worldedit.world.item.ItemType;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -291,6 +292,19 @@ public interface BukkitImplAdapter {
      * @return If it succeeded
      */
     default boolean generateFeature(ConfiguredFeatureType feature, World world, EditSession session, BlockVector3 pt) {
+        throw new UnsupportedOperationException("This adapter does not support generating features.");
+    }
+
+    /**
+     * Generates a Minecraft structure at the given location.
+     *
+     * @param feature The feature
+     * @param world The world
+     * @param session The EditSession
+     * @param pt The location
+     * @return If it succeeded
+     */
+    default boolean generateStructure(StructureType feature, World world, EditSession session, BlockVector3 pt) {
         throw new UnsupportedOperationException("This adapter does not support generating features.");
     }
 
