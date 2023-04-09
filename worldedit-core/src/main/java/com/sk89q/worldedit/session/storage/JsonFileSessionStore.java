@@ -29,9 +29,9 @@ import com.sk89q.worldedit.util.gson.GsonUtil;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
@@ -106,7 +106,7 @@ public class JsonFileSessionStore implements SessionStore {
             return session;
         } catch (JsonParseException e) {
             throw new IOException(e);
-        } catch (FileNotFoundException e) {
+        } catch (NoSuchFileException e) {
             return new LocalSession();
         }
     }
