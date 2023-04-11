@@ -927,7 +927,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         ServerChunkCache chunkManager = originalWorld.getChunkSource();
         WorldGenLevel proxyLevel = PaperweightServerLevelDelegateProxy.newInstance(session, originalWorld, this);
         ChunkPos chunkPos = new ChunkPos(new BlockPos(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()));
-        StructureStart structureStart = k.generate(originalWorld.registryAccess(), chunkManager.getGenerator(), chunkManager.getGenerator().getBiomeSource(), chunkManager.randomState(), chunkManager.chunkMap.structureTemplateManager, originalWorld.getSeed(), chunkPos, 0, proxyLevel, biome -> true);
+        StructureStart structureStart = k.generate(originalWorld.registryAccess(), chunkManager.getGenerator(), chunkManager.getGenerator().getBiomeSource(), chunkManager.randomState(), originalWorld.getStructureManager(), originalWorld.getSeed(), chunkPos, 0, proxyLevel, biome -> true);
 
         if (!structureStart.isValid()) {
             return false;

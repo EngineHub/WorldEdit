@@ -250,6 +250,8 @@
     "worldedit.pyramid.created": "{0} blocks have been created.",
     "worldedit.generate.created": "{0} blocks have been created.",
     "worldedit.generatebiome.changed": "{0} biomes affected.",
+    "worldedit.structure.created": "Structure created.",
+    "worldedit.structure.failed": "Failed to generate structure. Is it a valid spot for it?",
 
     "worldedit.reload.config": "Configuration reloaded!",
     "worldedit.report.written": "WorldEdit report written to {0}",
