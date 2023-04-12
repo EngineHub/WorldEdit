@@ -23,11 +23,23 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 
-public class CuboidRegionFactory implements RegionFactory {
+/**
+ * A factory for a cuboid region, with a fixed minimum and maximum Y position.
+ */
+public class FixedCuboidRegionFactory implements RegionFactory {
+    private final int minY;
+    private final int maxY;
+
+    public FixedCuboidRegionFactory(int minY, int maxY) {
+        this.minY = minY;
+        this.maxY = maxY;
+    }
 
     @Override
     public Region createCenteredAt(BlockVector3 position, double size) {
-        return CuboidRegion.fromCenter(position, (int) size);
+        CuboidRegion region = CuboidRegion.fromCenter(position, (int) size);
+        region.setPos1(region.getPos1().withY(minY));
+        region.setPos2(region.getPos2().withY(maxY));
+        return region;
     }
-
 }

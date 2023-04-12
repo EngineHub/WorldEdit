@@ -63,9 +63,10 @@ import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.annotation.ClipboardMask;
 import com.sk89q.worldedit.internal.annotation.VertHeight;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.factory.CuboidRegionFactory;
 import com.sk89q.worldedit.regions.factory.CylinderRegionFactory;
+import com.sk89q.worldedit.regions.factory.FixedCuboidRegionFactory;
+import com.sk89q.worldedit.regions.factory.FixedCylinderRegionFactory;
 import com.sk89q.worldedit.regions.factory.RegionFactory;
 import com.sk89q.worldedit.regions.factory.SphereRegionFactory;
 import com.sk89q.worldedit.session.ClipboardHolder;
@@ -634,12 +635,12 @@ public class BrushCommands {
                           boolean column) throws WorldEditException {
 
         if (column) {
-            int height = Math.abs(player.getWorld().getMaxY()) + Math.abs(player.getWorld().getMinY());
+            // Convert this shape factory to a column-based one, if possible
             if (shape instanceof CylinderRegionFactory || shape instanceof SphereRegionFactory) {
                 // Sphere regions that are Y-expended are just cylinders
-                shape = new CylinderRegionFactory(height);
+                shape = new FixedCylinderRegionFactory(player.getWorld().getMinY(), player.getWorld().getMaxY());
             } else if (shape instanceof CuboidRegionFactory) {
-                shape = new CuboidRegionFactory(height);
+                shape = new FixedCuboidRegionFactory(player.getWorld().getMinY(), player.getWorld().getMaxY());
             } else {
                 player.printError(TranslatableComponent.of("worldedit.brush.biome.column-supported-types"));
                 return;

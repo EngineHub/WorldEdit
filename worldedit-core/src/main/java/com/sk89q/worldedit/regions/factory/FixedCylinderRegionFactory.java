@@ -20,14 +20,24 @@
 package com.sk89q.worldedit.regions.factory;
 
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.math.Vector2;
+import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Region;
 
-public class CuboidRegionFactory implements RegionFactory {
+/**
+ * A factory for a cylinder region, with a fixed minimum and maximum Y position.
+ */
+public class FixedCylinderRegionFactory implements RegionFactory {
+    private final int minY;
+    private final int maxY;
+
+    public FixedCylinderRegionFactory(int minY, int maxY) {
+        this.minY = minY;
+        this.maxY = maxY;
+    }
 
     @Override
     public Region createCenteredAt(BlockVector3 position, double size) {
-        return CuboidRegion.fromCenter(position, (int) size);
+        return new CylinderRegion(position, Vector2.at(size, size), minY, maxY);
     }
-
 }
