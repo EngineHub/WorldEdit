@@ -73,8 +73,8 @@ configure<org.spongepowered.asm.gradle.plugins.MixinExtension> {
     config("worldedit-forge.mixins.json")
 }
 
-configure<BasePluginConvention> {
-    archivesBaseName = "$archivesBaseName-mc$minecraftVersion"
+configure<BasePluginExtension> {
+    archivesName.set("${archivesName.get()}-mc$minecraftVersion")
 }
 
 val javaComponent = components["java"] as AdhocComponentWithVariants
@@ -138,7 +138,7 @@ javaComponent.addVariantsFromConfiguration(reobfRuntimeElements.get()) {
 
 configure<PublishingExtension> {
     publications.named<MavenPublication>("maven") {
-        artifactId = the<BasePluginConvention>().archivesBaseName
+        artifactId = the<BasePluginExtension>().archivesName.get()
         from(components["java"])
     }
 }

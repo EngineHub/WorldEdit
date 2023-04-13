@@ -123,7 +123,7 @@ tasks.named<Copy>("processResources") {
 
 configure<PublishingExtension> {
     publications.named<MavenPublication>("maven") {
-        artifactId = the<BasePluginConvention>().archivesBaseName
+        artifactId = the<BasePluginExtension>().archivesName.get()
         from(components["java"])
     }
 }
