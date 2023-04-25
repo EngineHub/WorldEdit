@@ -17,33 +17,35 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.forge;
+package com.sk89q.worldedit.fabric.internal;
 
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.metadata.EntityProperties;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.forge.internal.NBTConverter;
+import com.sk89q.worldedit.fabric.FabricAdapter;
+import com.sk89q.worldedit.fabric.FabricEntityProperties;
+import com.sk89q.worldedit.fabric.FabricWorldEdit;
+import com.sk89q.worldedit.fabric.internal.NBTConverter;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.entity.EntityTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.lang.ref.WeakReference;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-class ForgeEntity implements Entity {
+public class FabricEntity implements Entity {
 
     private final WeakReference<net.minecraft.world.entity.Entity> entityRef;
 
-    ForgeEntity(net.minecraft.world.entity.Entity entity) {
+    public FabricEntity(net.minecraft.world.entity.Entity entity) {
         checkNotNull(entity);
         this.entityRef = new WeakReference<>(entity);
     }
@@ -54,10 +56,7 @@ class ForgeEntity implements Entity {
         if (entity == null || entity.isPassenger()) {
             return null;
         }
-        ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
-        if (id == null) {
-            return null;
-        }
+        ResourceLocation id = FabricWorldEdit.getRegistry(Registries.ENTITY_TYPE).getKey(entity.getType());
         CompoundTag tag = new CompoundTag();
         entity.saveWithoutId(tag);
         return new BaseEntity(EntityTypes.get(id.toString()), LazyReference.from(() -> NBTConverter.fromNative(tag)));
@@ -71,7 +70,7 @@ class ForgeEntity implements Entity {
             float yaw = entity.getYRot();
             float pitch = entity.getXRot();
 
-            return new Location(ForgeAdapter.adapt((ServerLevel) entity.level), position, yaw, pitch);
+            return new Location(FabricAdapter.adapt(entity.level), position, yaw, pitch);
         } else {
             return new Location(NullWorld.getInstance());
         }
@@ -87,7 +86,7 @@ class ForgeEntity implements Entity {
     public Extent getExtent() {
         net.minecraft.world.entity.Entity entity = entityRef.get();
         if (entity != null) {
-            return ForgeAdapter.adapt((ServerLevel) entity.level);
+            return FabricAdapter.adapt(entity.level);
         } else {
             return NullWorld.getInstance();
         }
@@ -109,7 +108,7 @@ class ForgeEntity implements Entity {
         net.minecraft.world.entity.Entity entity = entityRef.get();
         if (entity != null) {
             if (EntityProperties.class.isAssignableFrom(cls)) {
-                return (T) new ForgeEntityProperties(entity);
+                return (T) new FabricEntityProperties(entity);
             } else {
                 return null;
             }
