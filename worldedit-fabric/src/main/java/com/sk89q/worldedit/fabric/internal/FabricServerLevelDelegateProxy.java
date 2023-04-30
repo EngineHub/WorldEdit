@@ -118,7 +118,7 @@ public class FabricServerLevelDelegateProxy implements InvocationHandler {
                     return removeBlock(blockPos, bl);
                 }
             }
-            case "addEntity", "method_14175", "j" -> {
+            case "addEntity", "method_14175", "addFreshEntityWithPassengers", "method_30771" -> {
                 if (args.length >= 1 && args[0] instanceof Entity entity) {
                     return addEntity(entity);
                 }

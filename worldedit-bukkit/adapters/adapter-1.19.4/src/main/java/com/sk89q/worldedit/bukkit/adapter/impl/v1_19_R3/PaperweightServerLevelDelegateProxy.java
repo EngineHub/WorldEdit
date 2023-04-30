@@ -112,10 +112,13 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         switch (method.getName()) {
-            case "a_", "getBlockState" -> {
+            case "a_", "getBlockState", "addFreshEntityWithPassengers" -> {
                 if (args.length == 1 && args[0] instanceof BlockPos blockPos) {
                     // getBlockState
                     return getBlockState(blockPos);
+                } else if (args.length >= 1 && args[0] instanceof Entity entity) {
+                    // addFreshEntityWithPassengers
+                    return addEntity(entity);
                 }
             }
             case "c_", "getBlockEntity" -> {

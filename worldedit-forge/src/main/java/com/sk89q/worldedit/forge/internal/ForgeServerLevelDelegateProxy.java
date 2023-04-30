@@ -118,7 +118,7 @@ public class ForgeServerLevelDelegateProxy implements InvocationHandler {
                     return removeBlock(blockPos, bl);
                 }
             }
-            case "addEntity", "m_8872_", "j" -> {
+            case "addEntity", "m_8872_", "addFreshEntityWithPassengers", "m_47205_" -> {
                 if (args.length >= 1 && args[0] instanceof Entity entity) {
                     return addEntity(entity);
                 }
