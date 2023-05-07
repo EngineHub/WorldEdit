@@ -33,6 +33,7 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.forge.internal.ForgeEntity;
 import com.sk89q.worldedit.forge.internal.ForgeServerLevelDelegateProxy;
 import com.sk89q.worldedit.forge.internal.ForgeWorldNativeAccess;
 import com.sk89q.worldedit.forge.internal.NBTConverter;

@@ -21,14 +21,24 @@ package com.sk89q.worldedit.bukkit.adapter.impl.v1_19_R3;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.entity.EntityTypes;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
+import org.enginehub.linbus.tree.LinCompoundTag;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationHandler;
@@ -87,13 +97,28 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler {
         }
     }
 
+    private boolean addEntity(Entity entity) {
+        Vec3 pos = entity.getPosition(0.0f);
+        Location location = new Location(BukkitAdapter.adapt(serverLevel.getWorld()), pos.x(), pos.y(), pos.z());
+
+        ResourceLocation id = serverLevel.registryAccess().registryOrThrow(Registries.ENTITY_TYPE).getKey(entity.getType());
+        CompoundTag tag = new CompoundTag();
+        entity.saveWithoutId(tag);
+        BaseEntity baseEntity = new BaseEntity(EntityTypes.get(id.toString()), LazyReference.from(() -> (LinCompoundTag) adapter.toNative(tag)));
+
+        return editSession.createEntity(location, baseEntity) != null;
+    }
+
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         switch (method.getName()) {
-            case "a_", "getBlockState" -> {
+            case "a_", "getBlockState", "addFreshEntityWithPassengers" -> {
                 if (args.length == 1 && args[0] instanceof BlockPos blockPos) {
                     // getBlockState
                     return getBlockState(blockPos);
+                } else if (args.length >= 1 && args[0] instanceof Entity entity) {
+                    // addFreshEntityWithPassengers
+                    return addEntity(entity);
                 }
             }
             case "c_", "getBlockEntity" -> {
@@ -109,6 +134,11 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler {
                 } else if (args.length >= 2 && args[0] instanceof BlockPos blockPos && args[1] instanceof Boolean bl) {
                     // removeBlock (and also matches destroyBlock)
                     return removeBlock(blockPos, bl);
+                }
+            }
+            case "j", "addEntity" -> {
+                if (args.length >= 1 && args[0] instanceof Entity entity) {
+                    return addEntity(entity);
                 }
             }
             default -> { }

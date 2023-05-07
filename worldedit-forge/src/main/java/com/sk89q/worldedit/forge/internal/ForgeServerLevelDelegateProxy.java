@@ -21,10 +21,14 @@ package com.sk89q.worldedit.forge.internal;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.forge.ForgeAdapter;
+import com.sk89q.worldedit.math.Vector3;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -33,7 +37,6 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Arrays;
 
 public class ForgeServerLevelDelegateProxy implements InvocationHandler {
 
@@ -85,6 +88,13 @@ public class ForgeServerLevelDelegateProxy implements InvocationHandler {
         }
     }
 
+    private boolean addEntity(Entity entity) {
+        Vector3 pos = ForgeAdapter.adapt(entity.getPosition(0.0f));
+        Location location = new Location(ForgeAdapter.adapt(serverLevel), pos.getX(), pos.getY(), pos.getZ());
+        BaseEntity baseEntity = new ForgeEntity(entity).getState();
+        return editSession.createEntity(location, baseEntity) != null;
+    }
+
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         switch (method.getName()) {
@@ -106,6 +116,11 @@ public class ForgeServerLevelDelegateProxy implements InvocationHandler {
             case "removeBlock", "destroyBlock", "m_7471_", "m_7740_" -> {
                 if (args.length >= 2 && args[0] instanceof BlockPos blockPos && args[1] instanceof Boolean bl) {
                     return removeBlock(blockPos, bl);
+                }
+            }
+            case "addEntity", "m_8872_", "addFreshEntityWithPassengers", "m_47205_" -> {
+                if (args.length >= 1 && args[0] instanceof Entity entity) {
+                    return addEntity(entity);
                 }
             }
             default -> { }

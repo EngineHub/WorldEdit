@@ -34,6 +34,7 @@ import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.fabric.internal.ExtendedMinecraftServer;
+import com.sk89q.worldedit.fabric.internal.FabricEntity;
 import com.sk89q.worldedit.fabric.internal.FabricServerLevelDelegateProxy;
 import com.sk89q.worldedit.fabric.internal.FabricWorldNativeAccess;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
