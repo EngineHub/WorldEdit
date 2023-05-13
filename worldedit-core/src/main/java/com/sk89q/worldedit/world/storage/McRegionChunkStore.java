@@ -70,7 +70,7 @@ public abstract class McRegionChunkStore extends ChunkStore {
     public LinCompoundTag getChunkData(BlockVector2 position, World world) throws DataException, IOException {
         McRegionReader reader = getReader(position, world.getName());
         try (var chunkStream = new DataInputStream(reader.getChunkInputStream(position))) {
-            return LinBinaryIO.readUsing(chunkStream, LinRootEntry::readFrom).toLinTag();
+            return LinBinaryIO.readUsing(chunkStream, LinRootEntry::readFrom).value();
         }
     }
 
