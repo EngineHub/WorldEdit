@@ -20,6 +20,8 @@
 package com.sk89q.worldedit.util.collection;
 
 import com.google.common.collect.ImmutableMap;
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.StringTag;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.event.platform.PlatformsRegisteredEvent;
@@ -100,6 +102,7 @@ class BlockMapTest {
 
         registerBlock("minecraft:air");
         registerBlock("minecraft:oak_wood");
+        registerBlock("minecraft:chest");
     }
 
     @AfterAll
@@ -123,6 +126,7 @@ class BlockMapTest {
 
     private final BaseBlock air = checkNotNull(BlockTypes.AIR).getDefaultState().toBaseBlock();
     private final BaseBlock oakWood = checkNotNull(BlockTypes.OAK_WOOD).getDefaultState().toBaseBlock();
+    private final BaseBlock chestWithNbt = checkNotNull(BlockTypes.CHEST).getDefaultState().toBaseBlock(new CompoundTag(ImmutableMap.of("dummy", new StringTag("value"))));
 
     private AutoCloseable mocks;
 
@@ -745,6 +749,22 @@ class BlockMapTest {
                 }));
                 assertEquals(1, map.size());
                 assertEquals(oakWood, map.get(vec));
+            });
+        }
+
+        @SuppressWarnings("OverwrittenKey")
+        @Test
+        @DisplayName("put with valid and invalid keys doesn't duplicate")
+        void putWithInvalidAndValid() {
+            generator.makeVectorsStream().forEach(vec -> {
+                BlockMap<BaseBlock> map = BlockMap.createForBaseBlock();
+                // This tests https://github.com/EngineHub/WorldEdit/issues/2250
+                // Due to two internal maps, a bug existed where both could have the same value
+                map.put(vec, chestWithNbt);
+                map.put(vec, air);
+
+                assertEquals(1, map.size());
+                assertEquals(air, map.get(vec));
             });
         }
 
