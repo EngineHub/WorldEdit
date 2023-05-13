@@ -35,6 +35,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static com.google.common.base.Preconditions.checkState;
@@ -113,66 +115,22 @@ public final class Functions {
             .asVarargsCollector(double[].class));
     }
 
-    private static void addStaticFunctionHandles(
+    private void addFunctionHandles(
         SetMultimap<String, MethodHandle> map,
         MethodHandles.Lookup lookup
     ) throws NoSuchMethodException, IllegalAccessException {
-        map.put("rotate", lookup.findStatic(Functions.class, "rotate",
-            methodType(double.class, Variable.class, Variable.class, double.class)));
-        map.put("swap", lookup.findStatic(Functions.class, "swap",
-            methodType(double.class, Variable.class, Variable.class)));
-        map.put("gmegabuf", lookup.findStatic(Functions.class, "gmegabuf",
-            methodType(double.class, double.class)));
-        map.put("gmegabuf", lookup.findStatic(Functions.class, "gmegabuf",
-            methodType(double.class, double.class, double.class)));
-        map.put("gclosest", lookup.findStatic(Functions.class, "gclosest",
-            methodType(double.class, double.class, double.class, double.class, double.class,
-                double.class, double.class)));
-        map.put("random", lookup.findStatic(Functions.class, "random",
-            methodType(double.class)));
-        map.put("randint", lookup.findStatic(Functions.class, "randint",
-            methodType(double.class, double.class)));
-        map.put("perlin", lookup.findStatic(Functions.class, "perlin",
-            methodType(double.class, double.class, double.class, double.class, double.class,
-                double.class, double.class, double.class)));
-        map.put("voronoi", lookup.findStatic(Functions.class, "voronoi",
-            methodType(double.class, double.class, double.class, double.class, double.class,
-                double.class)));
-        map.put("ridgedmulti", lookup.findStatic(Functions.class, "ridgedmulti",
-            methodType(double.class, double.class, double.class, double.class, double.class,
-                double.class, double.class)));
+        for (Method method : Functions.class.getDeclaredMethods()) {
+            if (method.isAnnotationPresent(ExpressionFunction.class)) {
+                if (Modifier.isStatic(method.getModifiers())) {
+                    map.put(method.getName(), lookup.unreflect(method));
+                } else {
+                    map.put(method.getName(), lookup.unreflectSpecial(method, Functions.class).bindTo(this));
+                }
+            }
+        }
     }
 
-    private void addInstanceFunctionHandles(
-        SetMultimap<String, MethodHandle> map,
-        MethodHandles.Lookup lookup
-    ) throws NoSuchMethodException, IllegalAccessException {
-        map.put("megabuf", lookup.findSpecial(Functions.class, "megabuf",
-            methodType(double.class, double.class), Functions.class)
-            .bindTo(this));
-        map.put("megabuf", lookup.findSpecial(Functions.class, "megabuf",
-            methodType(double.class, double.class, double.class), Functions.class)
-            .bindTo(this));
-        map.put("closest", lookup.findSpecial(Functions.class, "closest",
-            methodType(double.class, double.class, double.class, double.class, double.class,
-                double.class, double.class), Functions.class)
-            .bindTo(this));
-
-        // rely on expression field
-        map.put("query", lookup.findSpecial(Functions.class, "query",
-            methodType(double.class, double.class, double.class, double.class, LocalSlot.class,
-                LocalSlot.class), Functions.class)
-            .bindTo(this));
-        map.put("queryAbs", lookup.findSpecial(Functions.class, "queryAbs",
-            methodType(double.class, double.class, double.class, double.class, LocalSlot.class,
-                LocalSlot.class), Functions.class)
-            .bindTo(this));
-        map.put("queryRel", lookup.findSpecial(Functions.class, "queryRel",
-            methodType(double.class, double.class, double.class, double.class, LocalSlot.class,
-                LocalSlot.class), Functions.class)
-            .bindTo(this));
-    }
-
+    @ExpressionFunction
     private static double rotate(Variable x, Variable y, double angle) {
         final double cosF = Math.cos(angle);
         final double sinF = Math.sin(angle);
@@ -186,6 +144,7 @@ public final class Functions {
         return 0.0;
     }
 
+    @ExpressionFunction
     private static double swap(Variable x, Variable y) {
         final double tmp = x.getValue();
 
@@ -206,8 +165,7 @@ public final class Functions {
         SetMultimap<String, MethodHandle> map = HashMultimap.create();
         try {
             addMathHandles(map, lookup);
-            addStaticFunctionHandles(map, lookup);
-            addInstanceFunctionHandles(map, lookup);
+            addFunctionHandles(map, lookup);
         } catch (NoSuchMethodException | IllegalAccessException e) {
             throw new IllegalStateException(e);
         }
@@ -240,28 +198,34 @@ public final class Functions {
         return getSubBuffer(megabuf, index & ~1023)[index & 1023] = value;
     }
 
+    @ExpressionFunction
     private static double gmegabuf(double index) {
         return getBufferItem(globalMegaBuffer, (int) index);
     }
 
+    @ExpressionFunction
     private static double gmegabuf(double index, double value) {
         return setBufferItem(globalMegaBuffer, (int) index, value);
     }
 
+    @ExpressionFunction
     private double megabuf(double index) {
         return getBufferItem(megaBuffer, (int) index);
     }
 
+    @ExpressionFunction
     private double megabuf(double index, double value) {
         return setBufferItem(megaBuffer, (int) index, value);
     }
 
+    @ExpressionFunction
     private double closest(double x, double y, double z, double index, double count, double stride) {
         return findClosest(
             megaBuffer, x, y, z, (int) index, (int) count, (int) stride
         );
     }
 
+    @ExpressionFunction
     private static double gclosest(double x, double y, double z, double index, double count, double stride) {
         return findClosest(
             globalMegaBuffer, x, y, z, (int) index, (int) count, (int) stride
@@ -290,16 +254,19 @@ public final class Functions {
         return closestIndex;
     }
 
+    @ExpressionFunction
     private static double random() {
         return ThreadLocalRandom.current().nextDouble();
     }
 
+    @ExpressionFunction
     private static double randint(double max) {
         return ThreadLocalRandom.current().nextInt((int) Math.floor(max));
     }
 
     private static final ThreadLocal<PerlinNoise> localPerlin = ThreadLocal.withInitial(PerlinNoise::new);
 
+    @ExpressionFunction
     private static double perlin(double seed, double x, double y, double z,
                                  double frequency, double octaves, double persistence) {
         PerlinNoise perlin = localPerlin.get();
@@ -316,6 +283,7 @@ public final class Functions {
 
     private static final ThreadLocal<VoronoiNoise> localVoronoi = ThreadLocal.withInitial(VoronoiNoise::new);
 
+    @ExpressionFunction
     private static double voronoi(double seed, double x, double y, double z, double frequency) {
         VoronoiNoise voronoi = localVoronoi.get();
         try {
@@ -329,6 +297,7 @@ public final class Functions {
 
     private static final ThreadLocal<RidgedMultiFractalNoise> localRidgedMulti = ThreadLocal.withInitial(RidgedMultiFractalNoise::new);
 
+    @ExpressionFunction
     private static double ridgedmulti(double seed, double x, double y, double z,
                                       double frequency, double octaves) {
         RidgedMultiFractalNoise ridgedMulti = localRidgedMulti.get();
@@ -358,6 +327,7 @@ public final class Functions {
         return ret;
     }
 
+    @ExpressionFunction
     private double query(double x, double y, double z, LocalSlot type, LocalSlot data) {
         // Read values from world
         final double typeId = environment.getBlockType(x, y, z);
@@ -366,6 +336,7 @@ public final class Functions {
         return queryInternal(type, data, typeId, dataValue);
     }
 
+    @ExpressionFunction
     private double queryAbs(double x, double y, double z, LocalSlot type, LocalSlot data) {
         // Read values from world
         final double typeId = environment.getBlockTypeAbs(x, y, z);
@@ -374,6 +345,7 @@ public final class Functions {
         return queryInternal(type, data, typeId, dataValue);
     }
 
+    @ExpressionFunction
     private double queryRel(double x, double y, double z, LocalSlot type, LocalSlot data) {
         // Read values from world
         final double typeId = environment.getBlockTypeRel(x, y, z);
