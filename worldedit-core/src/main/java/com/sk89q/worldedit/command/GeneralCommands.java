@@ -32,16 +32,19 @@ import com.sk89q.worldedit.command.util.WorldEditAsyncCommandBuilder;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
-import com.sk89q.worldedit.extension.platform.Locatable;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.RegionMaskingFilter;
 import com.sk89q.worldedit.function.block.ApplySideEffect;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.visitor.RegionVisitor;
+import com.sk89q.worldedit.internal.annotation.Offset;
 import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.internal.cui.ServerCUIHandler;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.session.Placement;
+import com.sk89q.worldedit.session.PlacementType;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
@@ -420,21 +423,44 @@ public class GeneralCommands {
         }
     }
 
+    private static void placementImpl(Actor actor, LocalSession session, Placement placement) {
+        if (!placement.canUseActor(actor)) {
+            actor.printError(TranslatableComponent.of("worldedit.toggleplace.not-locatable"));
+            return;
+        }
+
+        session.setPlacement(placement);
+        actor.printInfo(placement.getInfo());
+    }
+
     @Command(
         name = "toggleplace",
         aliases = {"/toggleplace"},
         desc = "Switch between your position and pos1 for placement"
     )
     public void togglePlace(Actor actor, LocalSession session) {
-        if (!(actor instanceof Locatable)) {
-            actor.printError(TranslatableComponent.of("worldedit.toggleplace.not-locatable"));
-            return;
-        }
-        if (session.togglePlacementPosition()) {
-            actor.printInfo(TranslatableComponent.of("worldedit.toggleplace.pos1"));
+        if (session.getPlacement().getPlacementType() == PlacementType.POS1) {
+            placementImpl(actor, session, new Placement(PlacementType.PLAYER, BlockVector3.ZERO));
         } else {
-            actor.printInfo(TranslatableComponent.of("worldedit.toggleplace.player"));
+            placementImpl(actor, session, new Placement(PlacementType.POS1, BlockVector3.ZERO));
         }
+    }
+
+    @Command(
+        name = "placement",
+        aliases = {"/placement"},
+        desc = "Select which placement to use"
+    )
+    public void placement(Actor actor, LocalSession session,
+                          @Arg(desc = "Which placement type to use")
+                          PlacementType placementType,
+                          @Arg(desc = "number of times to apply the offset", def = "1")
+                          int multiplier,
+                          @Arg(desc = "How much to offset from it placement to use", def = Offset.ZERO)
+                          @Offset
+                          BlockVector3 offset) {
+        offset = offset.multiply(multiplier);
+        placementImpl(actor, session, new Placement(placementType, offset));
     }
 
     @Command(

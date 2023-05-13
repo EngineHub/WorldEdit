@@ -20,13 +20,9 @@
 package com.sk89q.worldedit.util.collection;
 
 import com.google.common.collect.ImmutableMap;
-import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.BaseWorldEditTest;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.event.platform.PlatformsRegisteredEvent;
-import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
-import com.sk89q.worldedit.extension.platform.PlatformManager;
-import com.sk89q.worldedit.extension.platform.Preference;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.Registry;
 import com.sk89q.worldedit.util.test.ResourceLockKeys;
@@ -34,7 +30,6 @@ import com.sk89q.worldedit.util.test.VariedVectorGenerator;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
-import com.sk89q.worldedit.world.registry.BundledRegistries;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -55,9 +50,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -70,41 +63,18 @@ import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
 @Execution(ExecutionMode.CONCURRENT)
-@ResourceLock(ResourceLockKeys.WORLDEDIT_PLATFORM)
 @DisplayName("An ordered block map")
-class BlockMapTest {
-
-    private static final Platform MOCKED_PLATFORM = mock(Platform.class);
-
+class BlockMapTest extends BaseWorldEditTest {
     @BeforeAll
     static void setupFakePlatform() {
-        when(MOCKED_PLATFORM.getRegistries()).thenReturn(new BundledRegistries() {
-        });
-        when(MOCKED_PLATFORM.getCapabilities()).thenReturn(
-            Stream.of(Capability.values())
-                .collect(Collectors.toMap(Function.identity(), __ -> Preference.NORMAL))
-        );
-        when(MOCKED_PLATFORM.getConfiguration()).thenReturn(new LocalConfiguration() {
-            @Override
-            public void load() {
-            }
-        });
-        PlatformManager platformManager = WorldEdit.getInstance().getPlatformManager();
-        platformManager.register(MOCKED_PLATFORM);
-        WorldEdit.getInstance().getEventBus().post(new PlatformsRegisteredEvent());
-
-        assertTrue(WorldEdit.getInstance().getPlatformManager().isInitialized(), "Platform is not initialized");
-
         registerBlock("minecraft:air");
         registerBlock("minecraft:oak_wood");
     }
 
     @AfterAll
     static void tearDownFakePlatform() throws Exception {
-        WorldEdit.getInstance().getPlatformManager().unregister(MOCKED_PLATFORM);
         Field map = Registry.class.getDeclaredField("map");
         map.setAccessible(true);
         ((Map<?, ?>) map.get(BlockType.REGISTRY)).clear();

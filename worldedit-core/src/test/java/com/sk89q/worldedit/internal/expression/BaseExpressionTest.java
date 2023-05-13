@@ -19,58 +19,23 @@
 
 package com.sk89q.worldedit.internal.expression;
 
-import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.BaseWorldEditTest;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.event.platform.PlatformsRegisteredEvent;
-import com.sk89q.worldedit.extension.platform.Capability;
-import com.sk89q.worldedit.extension.platform.Platform;
-import com.sk89q.worldedit.extension.platform.Preference;
-import com.sk89q.worldedit.util.test.ResourceLockKeys;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.parallel.ResourceLock;
-
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Common setup code for expression tests.
  */
-@ResourceLock(ResourceLockKeys.WORLDEDIT_PLATFORM)
-class BaseExpressionTest {
-
-    static double readSlot(Expression expr, String name) {
-        return expr.getSlots().getSlotValue(name).orElseThrow(IllegalStateException::new);
-    }
-
-    private final Platform mockPlat = mock(Platform.class);
-
+class BaseExpressionTest extends BaseWorldEditTest {
     @BeforeEach
     void setup() {
-        when(mockPlat.getCapabilities()).thenReturn(
-            Stream.of(Capability.values())
-                .collect(Collectors.toMap(Function.identity(), __ -> Preference.NORMAL))
-        );
-        when(mockPlat.getConfiguration()).thenReturn(new LocalConfiguration() {
-            @Override
-            public void load() {
-            }
-        });
-        WorldEdit.getInstance().getPlatformManager().register(mockPlat);
-        WorldEdit.getInstance().getEventBus().post(new PlatformsRegisteredEvent());
-        assertTrue(WorldEdit.getInstance().getPlatformManager().isInitialized(), "Platform is not initialized");
         WorldEdit.getInstance().getConfiguration().calculationTimeout = 1_000;
     }
 
-    @AfterEach
-    void tearDown() {
-        WorldEdit.getInstance().getPlatformManager().unregister(mockPlat);
+    static double readSlot(Expression expr, String name) {
+        return expr.getSlots().getSlotValue(name).orElseThrow(IllegalStateException::new);
     }
 
     void checkTestCase(String expression, double result) {

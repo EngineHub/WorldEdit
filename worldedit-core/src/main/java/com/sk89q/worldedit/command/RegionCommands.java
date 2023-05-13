@@ -29,6 +29,8 @@ import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extent.InputExtent;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.GroundFunction;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.block.BlockReplace;
@@ -51,6 +53,9 @@ import com.sk89q.worldedit.math.convolution.HeightMap;
 import com.sk89q.worldedit.math.convolution.HeightMapFilter;
 import com.sk89q.worldedit.math.convolution.SnowHeightMap;
 import com.sk89q.worldedit.math.noise.RandomNoise;
+import com.sk89q.worldedit.math.transform.Identity;
+import com.sk89q.worldedit.math.transform.SimpleTransform;
+import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.regions.ConvexPolyhedralRegion;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
@@ -464,6 +469,44 @@ public class RegionCommands {
         }
     }
 
+    /**
+     * Creates a {@link Transform} for the //deform command.
+     *
+     * @param useRawCoords    Use the game's coordinate origin
+     * @param offsetPlacement Use the placement's coordinate origin
+     * @param offsetCenter    Use the selection's center as origin
+     * @param min             Minimum of the selection/clipboard
+     * @param max             Maximum of the selection/clipboard
+     * @param placement       Placement position
+     * @return                A transform from the expression coordinate sytem to the world/clipboard coordinate system
+     */
+    private static Transform createTransform(boolean useRawCoords, boolean offsetPlacement, boolean offsetCenter, Vector3 min, Vector3 max, Vector3 placement) {
+        if (useRawCoords) {
+            return new Identity();
+        } else if (offsetPlacement) {
+            return new SimpleTransform(placement, Vector3.ONE);
+        } else {
+            final Vector3 offset = max.add(min).multiply(0.5);
+
+            if (offsetCenter) {
+                return new SimpleTransform(offset, Vector3.ONE);
+            }
+
+            Vector3 scale = max.subtract(offset);
+
+            if (scale.getX() == 0) {
+                scale = scale.withX(1.0);
+            }
+            if (scale.getY() == 0) {
+                scale = scale.withY(1.0);
+            }
+            if (scale.getZ() == 0) {
+                scale = scale.withZ(1.0);
+            }
+            return new SimpleTransform(offset, scale);
+        }
+    }
+
     @Command(
         name = "/deform",
         desc = "Deforms a selected region with an expression",
@@ -480,44 +523,35 @@ public class RegionCommands {
                       @Switch(name = 'r', desc = "Use the game's coordinate origin")
                           boolean useRawCoords,
                       @Switch(name = 'o', desc = "Use the placement's coordinate origin")
-                          boolean offset,
+                          boolean offsetPlacement,
                       @Switch(name = 'c', desc = "Use the selection's center as origin")
-                          boolean offsetCenter) throws WorldEditException {
-        final Vector3 zero;
-        Vector3 unit;
+                          boolean offsetCenter,
+                      @Switch(name = 'l', desc = "Fetch from the clipboard instead of the world")
+                          boolean useClipboard) throws WorldEditException {
 
-        if (useRawCoords) {
-            zero = Vector3.ZERO;
-            unit = Vector3.ONE;
-        } else if (offset) {
-            zero = session.getPlacementPosition(actor).toVector3();
-            unit = Vector3.ONE;
-        } else if (offsetCenter) {
-            final Vector3 min = region.getMinimumPoint().toVector3();
-            final Vector3 max = region.getMaximumPoint().toVector3();
+        final Vector3 min = region.getMinimumPoint().toVector3();
+        final Vector3 max = region.getMaximumPoint().toVector3();
+        final Vector3 placement = session.getPlacementPosition(actor).toVector3();
 
-            zero = max.add(min).multiply(0.5);
-            unit = Vector3.ONE;
+        final Transform outputTransform = createTransform(useRawCoords, offsetPlacement, offsetCenter, min, max, placement);
+
+        final InputExtent inputExtent;
+        final Transform inputTransform;
+        if (useClipboard) {
+            final Clipboard clipboard = session.getClipboard().getClipboard();
+            inputExtent = clipboard;
+
+            final Vector3 clipboardMin = clipboard.getMinimumPoint().toVector3();
+            final Vector3 clipboardMax = clipboard.getMaximumPoint().toVector3();
+
+            inputTransform = createTransform(useRawCoords, offsetPlacement, offsetCenter, clipboardMin, clipboardMax, clipboardMin);
         } else {
-            final Vector3 min = region.getMinimumPoint().toVector3();
-            final Vector3 max = region.getMaximumPoint().toVector3();
-
-            zero = max.add(min).divide(2);
-            unit = max.subtract(zero);
-
-            if (unit.getX() == 0) {
-                unit = unit.withX(1.0);
-            }
-            if (unit.getY() == 0) {
-                unit = unit.withY(1.0);
-            }
-            if (unit.getZ() == 0) {
-                unit = unit.withZ(1.0);
-            }
+            inputExtent = editSession.getWorld();
+            inputTransform = outputTransform;
         }
 
         try {
-            final int affected = editSession.deformRegion(region, zero, unit, String.join(" ", expression), session.getTimeout());
+            final int affected = editSession.deformRegion(region, outputTransform, String.join(" ", expression), session.getTimeout(), inputExtent, inputTransform);
             if (actor instanceof Player) {
                 ((Player) actor).findFreePosition();
             }

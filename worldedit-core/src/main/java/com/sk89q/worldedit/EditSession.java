@@ -28,6 +28,7 @@ import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Watchdog;
 import com.sk89q.worldedit.extent.ChangeSetExtent;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extent.InputExtent;
 import com.sk89q.worldedit.extent.MaskingExtent;
 import com.sk89q.worldedit.extent.NullExtent;
 import com.sk89q.worldedit.extent.TracingExtent;
@@ -95,6 +96,8 @@ import com.sk89q.worldedit.math.interpolation.KochanekBartelsInterpolation;
 import com.sk89q.worldedit.math.interpolation.Node;
 import com.sk89q.worldedit.math.noise.RandomNoise;
 import com.sk89q.worldedit.math.transform.AffineTransform;
+import com.sk89q.worldedit.math.transform.SimpleTransform;
+import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.EllipsoidRegion;
@@ -136,7 +139,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -427,6 +429,16 @@ public class EditSession implements Extent, AutoCloseable {
      */
     public World getWorld() {
         return world;
+    }
+
+    /**
+     * Get the actor associated with this EditSession.
+     *
+     * @return the actor
+     */
+    @Nullable
+    public Actor getActor() {
+        return actor;
     }
 
     /**
@@ -2248,7 +2260,7 @@ public class EditSession implements Extent, AutoCloseable {
         final Variable dataVariable = expression.getSlots().getVariable("data")
             .orElseThrow(IllegalStateException::new);
 
-        final WorldEditExpressionEnvironment environment = new WorldEditExpressionEnvironment(this, unit, zero);
+        final WorldEditExpressionEnvironment environment = new WorldEditExpressionEnvironment(this, new SimpleTransform(zero, unit));
         expression.setEnvironment(environment);
 
         final int[] timedOut = {0};
@@ -2315,7 +2327,8 @@ public class EditSession implements Extent, AutoCloseable {
      */
     public int deformRegion(final Region region, final Vector3 zero, final Vector3 unit, final String expressionString)
             throws ExpressionException, MaxChangedBlocksException {
-        return deformRegion(region, zero, unit, expressionString, WorldEdit.getInstance().getConfiguration().calculationTimeout);
+        final Transform transform = new SimpleTransform(zero, unit);
+        return deformRegion(region, transform, expressionString, WorldEdit.getInstance().getConfiguration().calculationTimeout, world, transform);
     }
 
     /**
@@ -2334,11 +2347,33 @@ public class EditSession implements Extent, AutoCloseable {
      * @throws ExpressionException thrown on invalid expression input
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
+    @Deprecated
     public int deformRegion(final Region region, final Vector3 zero, final Vector3 unit, final String expressionString,
                             final int timeout) throws ExpressionException, MaxChangedBlocksException {
+        final Transform transform = new SimpleTransform(zero, unit);
+        return deformRegion(region, transform, expressionString, timeout, world, transform);
+    }
+
+    /**
+     * Deforms the region by a given expression. A deform provides a block's x, y, and z coordinates (possibly scaled)
+     * to an expression, and then sets the block to the block given by the resulting values of the variables, if they
+     * have changed.
+     *
+     * @param region           the region to deform
+     * @param outputTransform  the output coordinate system
+     * @param expressionString the expression to evaluate for each block
+     * @param timeout          maximum time for the expression to evaluate for each block. -1 for unlimited.
+     * @param inputExtent      the InputExtent to fetch blocks from, for instance a World or a Clipboard
+     * @param inputTransform   the input coordinate system
+     * @return number of blocks changed
+     * @throws ExpressionException       thrown on invalid expression input
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    public int deformRegion(final Region region, final Transform outputTransform, final String expressionString,
+                            final int timeout, final InputExtent inputExtent, final Transform inputTransform) throws ExpressionException, MaxChangedBlocksException {
         final Expression expression = Expression.compile(expressionString, "x", "y", "z");
         expression.optimize();
-        return deformRegion(region, zero, unit, expression, timeout);
+        return deformRegion(region, outputTransform, expression, timeout, inputExtent, inputTransform);
     }
 
     /**
@@ -2348,8 +2383,22 @@ public class EditSession implements Extent, AutoCloseable {
      * The Expression class is subject to change. Expressions should be provided via the string overload.
      * </p>
      */
+    @Deprecated
     public int deformRegion(final Region region, final Vector3 zero, final Vector3 unit, final Expression expression,
                             final int timeout) throws ExpressionException, MaxChangedBlocksException {
+        final Transform transform = new SimpleTransform(zero, unit);
+        return deformRegion(region, transform, expression, timeout, world, transform);
+    }
+
+    /**
+     * Internal version of {@link EditSession#deformRegion(Region, Vector3, Vector3, String, int)}.
+     *
+     * <p>
+     * The Expression class is subject to change. Expressions should be provided via the string overload.
+     * </p>
+     */
+    public int deformRegion(final Region region, final Transform outputTransform, final Expression expression,
+                            final int timeout, InputExtent inputExtent, final Transform inputTransform) throws ExpressionException, MaxChangedBlocksException {
         final Variable x = expression.getSlots().getVariable("x")
             .orElseThrow(IllegalStateException::new);
         final Variable y = expression.getSlots().getVariable("y")
@@ -2357,22 +2406,24 @@ public class EditSession implements Extent, AutoCloseable {
         final Variable z = expression.getSlots().getVariable("z")
             .orElseThrow(IllegalStateException::new);
 
-        final WorldEditExpressionEnvironment environment = new WorldEditExpressionEnvironment(this, unit, zero);
+        final WorldEditExpressionEnvironment environment = new WorldEditExpressionEnvironment(this, outputTransform);
         expression.setEnvironment(environment);
 
         final DoubleArrayList<BlockVector3, BaseBlock> queue = new DoubleArrayList<>(false);
 
+        final Transform outputTransformInverse = outputTransform.inverse();
         for (BlockVector3 position : region) {
-            // offset, scale
-            final Vector3 scaled = position.toVector3().subtract(zero).divide(unit);
-
             // transform
+            final Vector3 scaled = outputTransformInverse.apply(position.toVector3());
+
+            // deform
             expression.evaluate(new double[]{scaled.getX(), scaled.getY(), scaled.getZ()}, timeout);
 
-            final BlockVector3 sourcePosition = environment.toWorld(x.getValue(), y.getValue(), z.getValue());
+            // untransform, round-nearest
+            final BlockVector3 sourcePosition = inputTransform.apply(Vector3.at(x.getValue(), y.getValue(), z.getValue())).add(0.5, 0.5, 0.5).toBlockPoint();
 
-            // read block from world
-            final BaseBlock material = world.getFullBlock(sourcePosition);
+            // read block from world/clipboard
+            final BaseBlock material = inputExtent.getFullBlock(sourcePosition);
 
             // queue operation
             queue.put(position, material);

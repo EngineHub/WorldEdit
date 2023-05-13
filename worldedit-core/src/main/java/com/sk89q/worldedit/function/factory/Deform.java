@@ -25,16 +25,24 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extent.InputExtent;
 import com.sk89q.worldedit.extent.NullExtent;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.EditContext;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
+import com.sk89q.worldedit.math.transform.Identity;
+import com.sk89q.worldedit.math.transform.SimpleTransform;
+import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.regions.NullRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.session.Placement;
+import com.sk89q.worldedit.session.PlacementType;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
@@ -49,7 +57,8 @@ public class Deform implements Contextual<Operation> {
     private Region region;
     private final Expression expression;
     private Mode mode;
-    private Vector3 offset = Vector3.ZERO;
+    Placement placement;
+    private boolean useClipboard;
 
     public Deform(String expression) {
         this(new NullExtent(), new NullRegion(), expression);
@@ -74,6 +83,17 @@ public class Deform implements Contextual<Operation> {
         this.region = region;
         this.mode = mode;
     }
+
+    public Deform(Placement placement, String expression, Mode mode) {
+        checkNotNull(mode, "mode");
+        checkNotNull(expression, "expression");
+
+        this.placement = placement;
+        this.expression = Expression.compile(expression, "x", "y", "z");
+        this.expression.optimize();
+        this.mode = mode;
+    }
+
 
     public Extent getDestination() {
         return destination;
@@ -102,13 +122,17 @@ public class Deform implements Contextual<Operation> {
         this.mode = mode;
     }
 
+    @Deprecated
     public Vector3 getOffset() {
-        return offset;
+        if (this.placement.getPlacementType() != PlacementType.WORLD) {
+            throw new IllegalStateException("Deform.getOffset is deprecated and only supported after using setOffset.");
+        }
+        return placement.getOffset().toVector3();
     }
 
     public void setOffset(Vector3 offset) {
         checkNotNull(offset, "offset");
-        this.offset = offset;
+        this.placement = new Placement(PlacementType.WORLD, offset.toBlockPoint());
     }
 
     @Override
@@ -116,20 +140,11 @@ public class Deform implements Contextual<Operation> {
         return "deformation of " + expression.getSource();
     }
 
-    @Override
-    public Operation createFromContext(final EditContext context) {
-        final Vector3 zero;
-        Vector3 unit;
-
-        Region region = firstNonNull(context.getRegion(), this.region);
-
+    private Transform createTransform(Vector3 min, Vector3 max, Vector3 placement) {
         switch (mode) {
             case UNIT_CUBE:
-                final Vector3 min = region.getMinimumPoint().toVector3();
-                final Vector3 max = region.getMaximumPoint().toVector3();
-
-                zero = max.add(min).multiply(0.5);
-                unit = max.subtract(zero);
+                final Vector3 zero = max.add(min).multiply(0.5);
+                Vector3 unit = max.subtract(zero);
 
                 if (unit.getX() == 0) {
                     unit = unit.withX(1.0);
@@ -140,45 +155,63 @@ public class Deform implements Contextual<Operation> {
                 if (unit.getZ() == 0) {
                     unit = unit.withZ(1.0);
                 }
-                break;
+
+                return new SimpleTransform(zero, unit);
+
             case RAW_COORD:
-                zero = Vector3.ZERO;
-                unit = Vector3.ONE;
-                break;
+                return new Identity();
+
             case OFFSET:
             default:
-                zero = offset;
-                unit = Vector3.ONE;
+                return new SimpleTransform(placement, Vector3.ONE);
         }
-
-        LocalSession session = context.getSession();
-        return new DeformOperation(context.getDestination(), region, zero, unit, expression,
-                session == null ? WorldEdit.getInstance().getConfiguration().calculationTimeout : session.getTimeout());
     }
 
-    private static final class DeformOperation implements Operation {
-        private final Extent destination;
-        private final Region region;
-        private final Vector3 zero;
-        private final Vector3 unit;
-        private final Expression expression;
-        private final int timeout;
+    @Override
+    public Operation createFromContext(final EditContext context) {
+        return new DeformOperation(context);
+    }
 
-        private DeformOperation(Extent destination, Region region, Vector3 zero, Vector3 unit, Expression expression,
-                                int timeout) {
-            this.destination = destination;
-            this.region = region;
-            this.zero = zero;
-            this.unit = unit;
-            this.expression = expression;
-            this.timeout = timeout;
+    private class DeformOperation implements Operation {
+        private final EditContext context;
+
+        private DeformOperation(EditContext context) {
+            this.context = context;
         }
 
         @Override
         public Operation resume(RunContext run) throws WorldEditException {
             try {
+                final Region region = firstNonNull(context.getRegion(), Deform.this.region);
+
+                final Vector3 min = region.getMinimumPoint().toVector3();
+                final Vector3 max = region.getMaximumPoint().toVector3();
+
+                final LocalSession session = context.getSession();
+                final EditSession editSession = (EditSession) context.getDestination();
+
+                // TODO: deal with session == null
+                final BlockVector3 placement = Deform.this.placement.getPlacementPosition(session.getRegionSelector(editSession.getWorld()), editSession.getActor());
+                final Transform outputTransform = createTransform(min, max, placement.toVector3());
+
+                final InputExtent inputExtent;
+                final Transform inputTransform;
+                if (Deform.this.useClipboard && session != null) {
+                    final Clipboard clipboard = session.getClipboard().getClipboard();
+                    inputExtent = clipboard;
+
+                    final Vector3 clipboardMin = clipboard.getMinimumPoint().toVector3();
+                    final Vector3 clipboardMax = clipboard.getMaximumPoint().toVector3();
+
+                    inputTransform = createTransform(clipboardMin, clipboardMax, clipboardMin);
+                } else {
+                    inputExtent = editSession.getWorld();
+                    inputTransform = outputTransform;
+                }
+                final int timeout = session == null ? WorldEdit.getInstance().getConfiguration().calculationTimeout : session.getTimeout();
+
                 // TODO: Move deformation code
-                ((EditSession) destination).deformRegion(region, zero, unit, expression, timeout);
+                editSession.deformRegion(region, outputTransform, Deform.this.expression, timeout, inputExtent, inputTransform);
                 return null;
             } catch (ExpressionException e) {
                 throw new RuntimeException("Failed to execute expression", e); // TODO: Better exception to throw here?
@@ -193,7 +226,7 @@ public class Deform implements Contextual<Operation> {
         @Override
         public Iterable<Component> getStatusMessages() {
             return ImmutableList.of(TranslatableComponent.of("worldedit.operation.deform.expression",
-                    TextComponent.of(expression.getSource()).color(TextColor.LIGHT_PURPLE)));
+                    TextComponent.of(Deform.this.expression.getSource()).color(TextColor.LIGHT_PURPLE)));
         }
 
     }
