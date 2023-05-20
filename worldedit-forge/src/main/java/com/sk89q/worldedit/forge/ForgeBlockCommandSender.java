@@ -20,9 +20,7 @@
 package com.sk89q.worldedit.forge;
 
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.extension.platform.AbstractNonPlayerActor;
-import com.sk89q.worldedit.extension.platform.Locatable;
-import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extension.platform.AbstractCommandBlockActor;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
@@ -44,19 +42,14 @@ import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class ForgeBlockCommandSender extends AbstractNonPlayerActor implements Locatable {
-
-    private static final String UUID_PREFIX = "CMD";
-
+public class ForgeBlockCommandSender extends AbstractCommandBlockActor {
     private final BaseCommandBlock sender;
-    private final Location location;
     private final UUID uuid;
 
     public ForgeBlockCommandSender(BaseCommandBlock sender) {
-        checkNotNull(sender);
+        super(new Location(ForgeAdapter.adapt(checkNotNull(sender).getLevel()), ForgeAdapter.adapt(sender.getPosition())));
 
         this.sender = sender;
-        this.location = new Location(ForgeAdapter.adapt(sender.getLevel()), ForgeAdapter.adapt(sender.getPosition()));
         this.uuid = UUID.nameUUIDFromBytes((UUID_PREFIX + sender.getName()).getBytes(StandardCharsets.UTF_8));
     }
 
@@ -113,21 +106,6 @@ public class ForgeBlockCommandSender extends AbstractNonPlayerActor implements L
     @Override
     public Locale getLocale() {
         return WorldEdit.getInstance().getConfiguration().defaultLocale;
-    }
-
-    @Override
-    public Location getLocation() {
-        return this.location;
-    }
-
-    @Override
-    public boolean setLocation(Location location) {
-        return false;
-    }
-
-    @Override
-    public Extent getExtent() {
-        return this.location.getExtent();
     }
 
     @Override

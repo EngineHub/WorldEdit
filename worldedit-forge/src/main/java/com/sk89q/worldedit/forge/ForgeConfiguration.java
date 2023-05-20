@@ -28,7 +28,6 @@ public class ForgeConfiguration extends PropertiesConfiguration {
 
     public boolean creativeEnable = false;
     public boolean cheatMode = false;
-    public boolean commandBlockSupport = false;
 
     public ForgeConfiguration(ForgeWorldEdit mod) {
         super(mod.getWorkingDir().resolve("worldedit.properties"));
@@ -38,7 +37,6 @@ public class ForgeConfiguration extends PropertiesConfiguration {
     protected void loadExtra() {
         creativeEnable = getBool("use-in-creative", false);
         cheatMode = getBool("cheat-mode", false);
-        commandBlockSupport = getBool("command-block-support", false);
     }
 
     @Override

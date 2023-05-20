@@ -20,11 +20,8 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.extension.platform.AbstractNonPlayerActor;
-import com.sk89q.worldedit.extension.platform.Locatable;
-import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extension.platform.AbstractCommandBlockActor;
 import com.sk89q.worldedit.session.SessionKey;
-import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
@@ -42,22 +39,17 @@ import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements Locatable {
-
-    private static final String UUID_PREFIX = "CMD";
-
+public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
     private final BlockCommandSender sender;
     private final WorldEditPlugin plugin;
-    private final Location location;
     private final UUID uuid;
 
     public BukkitBlockCommandSender(WorldEditPlugin plugin, BlockCommandSender sender) {
+        super(BukkitAdapter.adapt(checkNotNull(sender).getBlock().getLocation()));
         checkNotNull(plugin);
-        checkNotNull(sender);
 
         this.plugin = plugin;
         this.sender = sender;
-        this.location = BukkitAdapter.adapt(sender.getBlock().getLocation());
         this.uuid = UUID.nameUUIDFromBytes((UUID_PREFIX + sender.getName()).getBytes(StandardCharsets.UTF_8));
     }
 
@@ -106,21 +98,6 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
     @Override
     public Locale getLocale() {
         return WorldEdit.getInstance().getConfiguration().defaultLocale;
-    }
-
-    @Override
-    public Location getLocation() {
-        return this.location;
-    }
-
-    @Override
-    public boolean setLocation(Location location) {
-        return false;
-    }
-
-    @Override
-    public Extent getExtent() {
-        return this.location.getExtent();
     }
 
     @Override

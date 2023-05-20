@@ -17,29 +17,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.fabric;
+package com.sk89q.worldedit.extension.platform;
 
-import com.sk89q.worldedit.util.PropertiesConfiguration;
+import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.util.Location;
 
-import java.nio.file.Path;
+public abstract class AbstractCommandBlockActor extends AbstractNonPlayerActor implements Locatable {
+    protected static final String UUID_PREFIX = "CMD";
 
-public class FabricConfiguration extends PropertiesConfiguration {
+    private final Location location;
 
-    public boolean creativeEnable = false;
-    public boolean cheatMode = false;
-
-    public FabricConfiguration(FabricWorldEdit mod) {
-        super(mod.getWorkingDir().resolve("worldedit.properties"));
+    public AbstractCommandBlockActor(Location location) {
+        this.location = location;
     }
 
     @Override
-    protected void loadExtra() {
-        creativeEnable = getBool("use-in-creative", false);
-        cheatMode = getBool("cheat-mode", false);
+    public Location getLocation() {
+        return this.location;
     }
 
     @Override
-    public Path getWorkingDirectoryPath() {
-        return FabricWorldEdit.inst.getWorkingDir();
+    public boolean setLocation(Location location) {
+        // Can't move a CommandBlock
+        return false;
+    }
+
+    @Override
+    public Extent getExtent() {
+        return this.location.getExtent();
     }
 }

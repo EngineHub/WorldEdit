@@ -20,9 +20,7 @@
 package com.sk89q.worldedit.fabric;
 
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.extension.platform.AbstractNonPlayerActor;
-import com.sk89q.worldedit.extension.platform.Locatable;
-import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extension.platform.AbstractCommandBlockActor;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
@@ -42,19 +40,14 @@ import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class FabricBlockCommandSender extends AbstractNonPlayerActor implements Locatable {
-
-    private static final String UUID_PREFIX = "CMD";
-
+public class FabricBlockCommandSender extends AbstractCommandBlockActor {
     private final BaseCommandBlock sender;
-    private final Location location;
     private final UUID uuid;
 
     public FabricBlockCommandSender(BaseCommandBlock sender) {
-        checkNotNull(sender);
+        super(new Location(FabricAdapter.adapt(checkNotNull(sender).getLevel()), FabricAdapter.adapt(sender.getPosition())));
 
         this.sender = sender;
-        this.location = new Location(FabricAdapter.adapt(sender.getLevel()), FabricAdapter.adapt(sender.getPosition()));
         this.uuid = UUID.nameUUIDFromBytes((UUID_PREFIX + sender.getName()).getBytes(StandardCharsets.UTF_8));
     }
 
@@ -111,21 +104,6 @@ public class FabricBlockCommandSender extends AbstractNonPlayerActor implements 
     @Override
     public Locale getLocale() {
         return WorldEdit.getInstance().getConfiguration().defaultLocale;
-    }
-
-    @Override
-    public Location getLocation() {
-        return this.location;
-    }
-
-    @Override
-    public boolean setLocation(Location location) {
-        return false;
-    }
-
-    @Override
-    public Extent getExtent() {
-        return this.location.getExtent();
     }
 
     @Override
