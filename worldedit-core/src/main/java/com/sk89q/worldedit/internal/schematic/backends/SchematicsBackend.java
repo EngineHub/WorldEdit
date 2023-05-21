@@ -17,18 +17,37 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.schematic;
+package com.sk89q.worldedit.internal.schematic.backends;
+
+import com.sk89q.worldedit.internal.schematic.SchematicsManager;
 
 import java.nio.file.Path;
+import java.util.Set;
 
 /**
- * Record representing one Schematic file.
+ * {@link SchematicsManager} backend interface.
  */
-public record SchematicPath(Path path) {
+public interface SchematicsBackend {
 
-    @Override
-    public String toString() {
-        return path.toString();
-    }
+    /**
+     * Initialize the backend.
+     */
+    void init();
 
+    /**
+     * Uninitialize the backend.
+     */
+    void uninit();
+
+    /**
+     * Gets the set of known schematic paths.
+     *
+     * @return the set of known schematics
+     */
+    Set<Path> getPaths();
+
+    /**
+     * Tells the backend that there are changes it should take into account.
+     */
+    void update();
 }

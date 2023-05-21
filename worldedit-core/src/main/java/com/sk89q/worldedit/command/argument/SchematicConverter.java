@@ -20,11 +20,11 @@
 package com.sk89q.worldedit.command.argument;
 
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.internal.annotation.SchematicPath;
+import com.sk89q.worldedit.internal.schematic.SchematicsManager;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.io.file.FilenameException;
-import com.sk89q.worldedit.util.schematic.SchematicPath;
-import com.sk89q.worldedit.util.schematic.SchematicsManager;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
 import org.enginehub.piston.converter.ConversionResult;
@@ -39,10 +39,10 @@ import java.util.List;
 
 import static org.enginehub.piston.converter.SuggestionHelper.limitByPrefix;
 
-public class SchematicConverter implements ArgumentConverter<SchematicPath> {
+public class SchematicConverter implements ArgumentConverter<Path> {
 
     public static void register(WorldEdit worldEdit, CommandManager commandManager) {
-        commandManager.registerConverter(Key.of(SchematicPath.class), new SchematicConverter(worldEdit));
+        commandManager.registerConverter(Key.of(Path.class, SchematicPath.class), new SchematicConverter(worldEdit));
     }
 
     private final WorldEdit worldEdit;
@@ -63,12 +63,12 @@ public class SchematicConverter implements ArgumentConverter<SchematicPath> {
         SchematicsManager schematicsManager = worldEdit.getSchematicsManager();
         Path schematicsRootPath = schematicsManager.getRoot();
 
-        return limitByPrefix(schematicsManager.getList().stream()
-                .map(s -> schematicsRootPath.relativize(s.path()).toString()), input);
+        return limitByPrefix(schematicsManager.getSchematicPaths().stream()
+                .map(s -> schematicsRootPath.relativize(s).toString()), input);
     }
 
     @Override
-    public ConversionResult<SchematicPath> convert(String s, InjectedValueAccess injectedValueAccess) {
+    public ConversionResult<Path> convert(String s, InjectedValueAccess injectedValueAccess) {
         Path schematicsRoot = worldEdit.getSchematicsManager().getRoot();
         // resolve as subpath of schematicsRoot
         Path schematicPath = schematicsRoot.resolve(s).toAbsolutePath();
@@ -80,7 +80,7 @@ public class SchematicConverter implements ArgumentConverter<SchematicPath> {
         if (Files.exists(schematicPath)) {
             // continue as relative path to schematicsRoot
             schematicPath = schematicsRoot.relativize(schematicPath);
-            return SuccessfulConversion.fromSingle(new SchematicPath(schematicPath));
+            return SuccessfulConversion.fromSingle(schematicPath);
         } else {
             return FailedConversion.from(new FilenameException(s));
         }
