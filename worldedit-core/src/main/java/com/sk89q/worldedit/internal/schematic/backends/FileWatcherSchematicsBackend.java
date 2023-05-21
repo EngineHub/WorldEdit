@@ -17,31 +17,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.schematic.backends;
+package com.sk89q.worldedit.internal.schematic.backends;
 
+import com.google.common.collect.Sets;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
-import com.sk89q.worldedit.util.io.file.RecursiveDirectoryWatcher;
-import com.sk89q.worldedit.util.schematic.SchematicPath;
+import com.sk89q.worldedit.internal.util.RecursiveDirectoryWatcher;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * SchematicsBackend making use of the RecursiveDirectoryWatcher.
- * This backend initially scans all schematics in the folder tree and then registers for file change events to
- * avoid manually polling / rescanning the folder structure for every query.
+ * A backend that efficiently scans for file changes using {@link RecursiveDirectoryWatcher}.
  */
 public class FileWatcherSchematicsBackend implements SchematicsBackend {
     private static final Logger LOGGER = LogManagerCompat.getLogger();
 
-    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-    private final Set<SchematicPath> schematics = new HashSet<>();
+    private final Set<Path> schematics = Sets.newConcurrentHashSet();
     private final RecursiveDirectoryWatcher directoryWatcher;
 
     private FileWatcherSchematicsBackend(RecursiveDirectoryWatcher directoryWatcher) {
@@ -55,39 +48,30 @@ public class FileWatcherSchematicsBackend implements SchematicsBackend {
      * @throws IOException When creation of the filesystem watcher fails.
      */
     public static FileWatcherSchematicsBackend create(Path schematicsFolder) throws IOException {
-        RecursiveDirectoryWatcher watcher = RecursiveDirectoryWatcher.create(schematicsFolder);
-        return new FileWatcherSchematicsBackend(watcher);
+        return new FileWatcherSchematicsBackend(RecursiveDirectoryWatcher.create(schematicsFolder));
     }
 
     @Override
     public void init() {
         directoryWatcher.start(event -> {
-            lock.writeLock().lock();
             if (event instanceof RecursiveDirectoryWatcher.FileCreatedEvent) {
-                schematics.add(new SchematicPath(event.getPath()));
+                schematics.add(event.path());
+                LOGGER.debug("New Schematic found: " + event.path());
             } else if (event instanceof RecursiveDirectoryWatcher.FileDeletedEvent) {
-                schematics.remove(new SchematicPath(event.getPath()));
-            }
-            lock.writeLock().unlock();
-            if (event instanceof RecursiveDirectoryWatcher.FileCreatedEvent) {
-                LOGGER.info("New Schematic found: " + event.getPath());
-            } else if (event instanceof RecursiveDirectoryWatcher.FileDeletedEvent) {
-                LOGGER.info("Schematic deleted: " + event.getPath());
+                schematics.remove(event.path());
+                LOGGER.debug("Schematic deleted: " + event.path());
             }
         });
     }
 
     @Override
     public void uninit() {
-        directoryWatcher.stop();
+        directoryWatcher.close();
     }
 
     @Override
-    public List<SchematicPath> getList() {
-        lock.readLock().lock();
-        List<SchematicPath> result = new ArrayList<>(schematics);
-        lock.readLock().unlock();
-        return result;
+    public Set<Path> getPaths() {
+        return Set.copyOf(schematics);
     }
 
     @Override

@@ -17,10 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.schematic.backends;
+package com.sk89q.worldedit.internal.schematic.backends;
 
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
-import com.sk89q.worldedit.util.schematic.SchematicPath;
+import com.sk89q.worldedit.util.io.file.FilenameException;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
@@ -31,11 +32,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.Set;
 
 /**
- * SchematicsBackend implementation that scans the folder tree, then caches the result for a certain amount of time.
- * This essentially is an eventually consistent cache that is used as fallback.
+ * A backend that scans the folder tree, then caches the result for a certain amount of time.
  */
 public class PollingSchematicsBackend implements SchematicsBackend {
 
@@ -43,10 +43,9 @@ public class PollingSchematicsBackend implements SchematicsBackend {
 
     private static final Duration MAX_RESULT_AGE = Duration.ofSeconds(10);
 
-    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private final Path schematicsDir;
     private Instant lastUpdateTs = Instant.EPOCH;
-    private List<SchematicPath> schematics = new ArrayList<>();
+    private List<Path> schematics = new ArrayList<>();
 
     private PollingSchematicsBackend(Path schematicsDir) {
         this.schematicsDir = schematicsDir;
@@ -61,24 +60,27 @@ public class PollingSchematicsBackend implements SchematicsBackend {
         return new PollingSchematicsBackend(schematicsFolder);
     }
 
-    private List<SchematicPath> scanFolder(Path root) {
-        List<SchematicPath> pathList = new ArrayList<>();
+    private List<Path> scanFolder(Path root) {
+        List<Path> pathList = new ArrayList<>();
+        Path schematicRoot = WorldEdit.getInstance().getSchematicsManager().getRoot();
+
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(root)) {
             for (Path path : stream) {
+                path = WorldEdit.getInstance().getSafeOpenFile(null, schematicRoot.toFile(), schematicRoot.relativize(path).toString(), null).toPath();
                 if (Files.isDirectory(path)) {
                     pathList.addAll(scanFolder(path));
                 } else {
-                    pathList.add(new SchematicPath(path));
+                    pathList.add(path);
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException | FilenameException e) {
+            LOGGER.error(e);
         }
         return pathList;
     }
 
     private void runRescan() {
-        LOGGER.debug("Rescanning Schematics");
+        LOGGER.debug("Rescanning schematics");
         this.schematics = scanFolder(schematicsDir);
         lastUpdateTs = Instant.now();
     }
@@ -92,13 +94,13 @@ public class PollingSchematicsBackend implements SchematicsBackend {
     }
 
     @Override
-    public synchronized List<SchematicPath> getList() {
-        // udpate internal cache if requried (determined by age)
+    public synchronized Set<Path> getPaths() {
+        // Update internal cache if required (determined by age)
         Duration age = Duration.between(lastUpdateTs, Instant.now());
         if (age.compareTo(MAX_RESULT_AGE) >= 0) {
             runRescan();
         }
-        return new ArrayList<>(schematics);
+        return Set.copyOf(schematics);
     }
 
     @Override

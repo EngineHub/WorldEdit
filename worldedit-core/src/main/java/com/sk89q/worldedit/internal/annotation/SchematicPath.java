@@ -17,32 +17,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.schematic.backends;
+package com.sk89q.worldedit.internal.annotation;
 
-import com.sk89q.worldedit.util.schematic.SchematicPath;
+import org.enginehub.piston.inject.InjectAnnotation;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * DummyBackend for the SchematicsManager.
- * This is only used in the error-case. For example when creating the schematics folder failed for whatever reason.
+ * Annotation to denote an argument as a schematic path.
  */
-public class DummySchematicsBackend implements SchematicsBackend {
-    @Override
-    public void init() {
-    }
-
-    @Override
-    public void uninit() {
-    }
-
-    @Override
-    public List<SchematicPath> getList() {
-        return new ArrayList<>();
-    }
-
-    @Override
-    public void update() {
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PARAMETER)
+@InjectAnnotation
+public @interface SchematicPath {
 }

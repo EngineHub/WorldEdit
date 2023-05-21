@@ -17,15 +17,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.io.file;
+package com.sk89q.worldedit.internal.util;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.sk89q.worldedit.internal.util.LogManagerCompat;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.util.io.file.FilenameException;
 import org.apache.logging.log4j.Logger;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.ClosedWatchServiceException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
@@ -35,62 +38,42 @@ import java.nio.file.WatchService;
 import java.util.function.Consumer;
 
 /**
- * Helper class that allows to recursively monitor a directory for changed (created / deleted) files / folders.
+ * Helper class that recursively monitors a directory for changes to files and folders, including creation, deletion, and modification.
  *
- * @warning File- and Folder events might be sent multiple times. Users of this class need to employ their own
+ * @apiNote File and folder events might be sent multiple times. Users of this class need to employ their own
  *      deduplication!
  */
-public class RecursiveDirectoryWatcher {
+public class RecursiveDirectoryWatcher implements Closeable {
 
     /**
-     * Base-Class for all DirEntry change events.
+     * Base interface for all change events.
      */
-    public static class DirEntryChangeEvent {
-        private Path path;
-
-        public DirEntryChangeEvent(Path path) {
-            this.path = path;
-        }
-
-        public Path getPath() {
-            return path;
-        }
+    public interface DirEntryChangeEvent {
+        Path path();
     }
 
     /**
      * Event signaling the creation of a new file.
      */
-    public static class FileCreatedEvent extends DirEntryChangeEvent {
-        public FileCreatedEvent(Path path) {
-            super(path);
-        }
+    public record FileCreatedEvent(Path path) implements DirEntryChangeEvent {
     }
 
     /**
      * Event signaling the deletion of a file.
      */
-    public static class FileDeletedEvent extends DirEntryChangeEvent {
-        public FileDeletedEvent(Path path) {
-            super(path);
-        }
+    public record FileDeletedEvent(Path path) implements DirEntryChangeEvent {
     }
 
     /**
      * Event signaling the creation of a new directory.
      */
-    public static class DirectoryCreatedEvent extends DirEntryChangeEvent {
-        public DirectoryCreatedEvent(Path path) {
-            super(path);
-        }
+    public record DirectoryCreatedEvent(Path path) implements DirEntryChangeEvent {
     }
 
     /**
      * Event signaling the deletion of a directory.
      */
-    public static class DirectoryDeletedEvent extends DirEntryChangeEvent {
-        public DirectoryDeletedEvent(Path path) {
-            super(path);
-        }
+    public record DirectoryDeletedEvent(Path path) implements DirEntryChangeEvent {
     }
 
 
@@ -100,7 +83,7 @@ public class RecursiveDirectoryWatcher {
     private final WatchService watchService;
     private Thread watchThread;
     private Consumer<DirEntryChangeEvent> eventConsumer;
-    private BiMap<WatchKey, Path> watchRootMap = HashBiMap.create();
+    private final BiMap<WatchKey, Path> watchRootMap = HashBiMap.create();
 
     private RecursiveDirectoryWatcher(Path root, WatchService watchService) {
         this.root = root;
@@ -109,27 +92,39 @@ public class RecursiveDirectoryWatcher {
 
     /**
      * Create a new recursive directory watcher for the given root folder.
-     * You have to call @see start() before the instance starts monitoring.
+     * You have to call {@link #start(Consumer)} before the instance starts monitoring.
      *
      * @param root Folder to watch for changed files recursively.
-     * @return A new RecursiveDirectoryWatcher instance, monitoring the given root folder.
+     * @return a new instance that will monitor the given root folder
      * @throws IOException If creating the watcher failed, e.g. due to root not existing.
      */
     public static RecursiveDirectoryWatcher create(Path root) throws IOException {
-        WatchService watchService = root.getFileSystem().newWatchService();
+        WatchService watchService;
+        try {
+            watchService = root.getFileSystem().newWatchService();
+        } catch (UnsupportedOperationException e) {
+            throw new IllegalArgumentException("Root must support file watching", e);
+        }
         return new RecursiveDirectoryWatcher(root, watchService);
     }
 
-    private void registerFolderWatchAndScanInitially(Path root) throws IOException {
-        WatchKey watchKey = root.register(watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE);
+    private void registerFolderWatcher(Path root) throws IOException {
+        WatchKey watchKey = root.register(watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
         LOGGER.debug("Watch registered: " + root);
         watchRootMap.put(watchKey, root);
+    }
+
+    private void triggerInitialEvents(Path root) throws IOException, FilenameException {
+        Path schematicRoot = WorldEdit.getInstance().getSchematicsManager().getRoot();
         eventConsumer.accept(new DirectoryCreatedEvent(root));
-        for (Path path : Files.newDirectoryStream(root)) {
-            if (Files.isDirectory(path)) {
-                registerFolderWatchAndScanInitially(path);
-            } else {
-                eventConsumer.accept(new FileCreatedEvent(path));
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(root)) {
+            for (Path path : directoryStream) {
+                path = WorldEdit.getInstance().getSafeOpenFile(null, schematicRoot.toFile(), schematicRoot.relativize(path).toString(), null).toPath();
+                if (Files.isDirectory(path)) {
+                    triggerInitialEvents(path);
+                } else {
+                    eventConsumer.accept(new FileCreatedEvent(path));
+                }
             }
         }
     }
@@ -141,25 +136,44 @@ public class RecursiveDirectoryWatcher {
      * @param eventConsumer The lambda that's fired for every file event.
      */
     public void start(Consumer<DirEntryChangeEvent> eventConsumer) {
+        Path schematicRoot = WorldEdit.getInstance().getSchematicsManager().getRoot();
+
         this.eventConsumer = eventConsumer;
+
+        if (watchThread != null) {
+            // We have an existing thread, interrupt it first to trigger a clean shutdown
+            watchThread.interrupt();
+
+            try {
+                watchThread.join();
+            } catch (InterruptedException e) {
+                LOGGER.error(e);
+            }
+        }
+
         watchThread = new Thread(() -> {
             LOGGER.debug("RecursiveDirectoryWatcher::EventConsumer started");
 
             try {
-                registerFolderWatchAndScanInitially(root);
-            } catch (IOException e) { e.printStackTrace(); }
+                registerFolderWatcher(root);
+                triggerInitialEvents(root);
+            } catch (IOException | FilenameException e) {
+                LOGGER.error(e);
+            }
 
             try {
                 WatchKey watchKey;
-                while (true) {
+                while (!Thread.interrupted()) {
                     try {
                         watchKey = watchService.take();
-                    } catch (InterruptedException e) { break; }
+                    } catch (InterruptedException e) {
+                        break;
+                    }
 
                     for (WatchEvent<?> event : watchKey.pollEvents()) {
                         WatchEvent.Kind<?> kind = event.kind();
                         if (kind.equals(StandardWatchEventKinds.OVERFLOW)) {
-                            LOGGER.warn("RecursiveDirectoryWatcher Seems like we can't keep up with updates");
+                            LOGGER.warn("Seems like we can't keep up with updates");
                             continue;
                         }
                         // make sure to work with an absolute path
@@ -168,10 +182,15 @@ public class RecursiveDirectoryWatcher {
                         path = parentPath.resolve(path);
 
                         if (kind.equals(StandardWatchEventKinds.ENTRY_CREATE)) {
+                            path = WorldEdit.getInstance().getSafeOpenFile(null, schematicRoot.toFile(), schematicRoot.relativize(path).toString(), null).toPath();
+
                             if (Files.isDirectory(path)) { // new subfolder created, create watch for it
                                 try {
-                                    registerFolderWatchAndScanInitially(path);
-                                } catch (IOException e) { e.printStackTrace(); }
+                                    registerFolderWatcher(path);
+                                    triggerInitialEvents(path);
+                                } catch (IOException | FilenameException e) {
+                                    LOGGER.error(e);
+                                }
                             } else { // new file created
                                 eventConsumer.accept(new FileCreatedEvent(path));
                             }
@@ -199,25 +218,33 @@ public class RecursiveDirectoryWatcher {
                         }
                     }
                 }
-            } catch (ClosedWatchServiceException ignored) { }
+            } catch (ClosedWatchServiceException | FilenameException ignored) {
+            }
             LOGGER.debug("RecursiveDirectoryWatcher::EventConsumer exited");
         });
-        watchThread.setName("RecursiveDirectoryWatcher");
+        watchThread.setName("WorldEdit-RecursiveDirectoryWatcher");
         watchThread.start();
     }
 
     /**
-     * Stop this RecursiveDirectoryWatcher instance and wait for it to be completely shut down.
-     * @warning RecursiveDirectoryWatcher is not reusable!
+     * Close this RecursiveDirectoryWatcher instance and wait for it to be completely shut down.
+     * @apiNote RecursiveDirectoryWatcher is not reusable!
      */
-    public void stop() {
+    @Override
+    public void close() {
         try {
             watchService.close();
-        } catch (IOException e) { e.printStackTrace(); }
+        } catch (IOException e) {
+            LOGGER.error(e);
+        }
         if (watchThread != null) {
+            watchThread.interrupt();
+
             try {
                 watchThread.join();
-            } catch (InterruptedException e) { e.printStackTrace(); }
+            } catch (InterruptedException e) {
+                LOGGER.error(e);
+            }
             watchThread = null;
         }
         eventConsumer = null;

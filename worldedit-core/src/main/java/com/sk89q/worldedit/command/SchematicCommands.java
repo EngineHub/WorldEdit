@@ -39,6 +39,8 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.extent.clipboard.io.share.ClipboardShareDestination;
 import com.sk89q.worldedit.extent.clipboard.io.share.ClipboardShareMetadata;
+import com.sk89q.worldedit.internal.annotation.SchematicPath;
+import com.sk89q.worldedit.internal.schematic.SchematicsManager;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.session.ClipboardHolder;
@@ -55,8 +57,6 @@ import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldedit.util.io.file.MorePaths;
-import com.sk89q.worldedit.util.schematic.SchematicPath;
-import com.sk89q.worldedit.util.schematic.SchematicsManager;
 import org.apache.logging.log4j.Logger;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
@@ -74,6 +74,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -107,14 +108,15 @@ public class SchematicCommands {
     )
     @CommandPermissions({"worldedit.clipboard.load", "worldedit.schematic.load"})
     public void load(Actor actor, LocalSession session,
+                     @SchematicPath
                      @Arg(desc = "File name.")
-                     SchematicPath schematic,
+                     Path schematic,
                      @Arg(desc = "Format name.", def = "sponge")
                          ClipboardFormat format) throws FilenameException {
         LocalConfiguration config = worldEdit.getConfiguration();
 
         // Schematic.path is relative, so treat it as filename
-        String filename = schematic.path().toString();
+        String filename = schematic.toString();
         File schematicsRoot = worldEdit.getSchematicsManager().getRoot().toFile();
         File f = worldEdit.getSafeOpenFile(actor, schematicsRoot, filename,
                 BuiltInClipboardFormat.SPONGE_V3_SCHEMATIC.getPrimaryFileExtension(),
@@ -247,13 +249,14 @@ public class SchematicCommands {
     )
     @CommandPermissions("worldedit.schematic.delete")
     public void delete(Actor actor,
+                       @SchematicPath
                        @Arg(desc = "File name.")
-                       SchematicPath schematic) throws WorldEditException {
+                       Path schematic) throws WorldEditException {
         LocalConfiguration config = worldEdit.getConfiguration();
         File dir = worldEdit.getWorkingDirectoryPath(config.saveDir).toFile();
 
         // Schematic.path is relative, so treat it as filename
-        String filename = schematic.path().toString();
+        String filename = schematic.toString();
         File f = worldEdit.getSafeOpenFile(actor,
                 dir, filename, "schematic", ClipboardFormats.getFileExtensionArray());
 
@@ -332,10 +335,8 @@ public class SchematicCommands {
         final String pageCommand = actor.isPlayer()
                 ? "//schem list -p %page%" + flag : null;
 
-        Comparator<SchematicPath> schematicComparator = (s0, s1) -> pathComparator.compare(s0.path(), s1.path());
-
         WorldEditAsyncCommandBuilder.createAndSendMessage(actor,
-                new SchematicListTask(schematicComparator, page, pageCommand),
+                new SchematicListTask(pathComparator::compare, page, pageCommand),
                 SubtleFormat.wrap("(Please wait... gathering schematic list.)"));
     }
 
@@ -442,11 +443,11 @@ public class SchematicCommands {
     }
 
     private static class SchematicListTask implements Callable<Component> {
-        private final Comparator<SchematicPath> pathComparator;
+        private final Comparator<Path> pathComparator;
         private final int page;
         private final String pageCommand;
 
-        SchematicListTask(Comparator<SchematicPath> pathComparator, int page, String pageCommand) {
+        SchematicListTask(Comparator<Path> pathComparator, int page, String pageCommand) {
             this.pathComparator = pathComparator;
             this.page = page;
             this.pageCommand = pageCommand;
@@ -455,7 +456,8 @@ public class SchematicCommands {
         @Override
         public Component call() throws Exception {
             SchematicsManager schematicsManager = WorldEdit.getInstance().getSchematicsManager();
-            List<SchematicPath> fileList = schematicsManager.getList();
+            // Copy this to a mutable list, we're sorting it below.
+            List<Path> fileList = new ArrayList<>(schematicsManager.getSchematicPaths());
 
             if (fileList.isEmpty()) {
                 return ErrorFormat.wrap("No schematics found.");
@@ -470,9 +472,9 @@ public class SchematicCommands {
 
     private static class SchematicPaginationBox extends PaginationBox {
         private final Path rootDir;
-        private final List<SchematicPath> files;
+        private final List<Path> files;
 
-        SchematicPaginationBox(Path rootDir, List<SchematicPath> files, String pageCommand) {
+        SchematicPaginationBox(Path rootDir, List<Path> files, String pageCommand) {
             super("Available schematics", pageCommand);
             this.rootDir = rootDir;
             this.files = files;
@@ -481,7 +483,7 @@ public class SchematicCommands {
         @Override
         public Component getComponent(int number) {
             checkArgument(number < files.size() && number >= 0);
-            Path file = files.get(number).path();
+            Path file = files.get(number);
 
             String format = ClipboardFormats.getFileExtensionMap()
                 .get(MoreFiles.getFileExtension(file))

@@ -46,6 +46,7 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.SchematicsEventListener;
 import com.sk89q.worldedit.internal.expression.invoke.ReturnException;
+import com.sk89q.worldedit.internal.schematic.SchematicsManager;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.scripting.CraftScriptContext;
@@ -65,7 +66,6 @@ import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
 import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
 import com.sk89q.worldedit.util.io.file.InvalidFilenameException;
-import com.sk89q.worldedit.util.schematic.SchematicsManager;
 import com.sk89q.worldedit.util.task.SimpleSupervisor;
 import com.sk89q.worldedit.util.task.Supervisor;
 import com.sk89q.worldedit.util.translation.TranslationManager;
@@ -406,8 +406,10 @@ public final class WorldEdit {
         return new File(dir, filename);
     }
 
+    private static final java.util.regex.Pattern SAFE_FILENAME_REGEX = java.util.regex.Pattern.compile("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+\\.[A-Za-z0-9]+$");
+
     private boolean checkFilename(String filename) {
-        return filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+\\.[A-Za-z0-9]+$");
+        return SAFE_FILENAME_REGEX.matcher(filename).matches();
     }
 
     /**
