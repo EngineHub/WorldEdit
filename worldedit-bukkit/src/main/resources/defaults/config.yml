@@ -123,6 +123,7 @@ snapshots:
 navigation-wand:
     item: minecraft:compass
     max-distance: 100
+    teleport-past-world-border: false
 
 scripting:
     timeout: 3000

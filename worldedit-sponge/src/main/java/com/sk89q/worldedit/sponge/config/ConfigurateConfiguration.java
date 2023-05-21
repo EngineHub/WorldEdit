@@ -120,6 +120,7 @@ public class ConfigurateConfiguration extends LocalConfiguration {
         } catch (Throwable ignored) {
         }
         navigationWandMaxDistance = node.node("navigation-wand", "max-distance").getInt(navigationWandMaxDistance);
+        teleportPastWorldBorder = node.node("navigation-wand", "teleport-past-world-border").getBoolean(teleportPastWorldBorder);
         navigationUseGlass = node.node("navigation", "use-glass").getBoolean(navigationUseGlass);
 
         scriptTimeout = node.node("scripting", "timeout").getInt(scriptTimeout);

@@ -121,6 +121,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         } catch (Throwable ignored) {
         }
         navigationWandMaxDistance = getInt("nav-wand-distance", navigationWandMaxDistance);
+        teleportPastWorldBorder = getBool("teleport-past-world-border", teleportPastWorldBorder);
         navigationUseGlass = getBool("nav-use-glass", navigationUseGlass);
         scriptTimeout = getInt("scripting-timeout", scriptTimeout);
         calculationTimeout = getInt("calculation-timeout", calculationTimeout);

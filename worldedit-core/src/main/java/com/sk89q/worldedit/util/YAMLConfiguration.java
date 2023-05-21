@@ -102,6 +102,7 @@ public class YAMLConfiguration extends LocalConfiguration {
 
         navigationWand = convertLegacyItem(config.getString("navigation-wand.item", navigationWand)).toLowerCase(Locale.ROOT);
         navigationWandMaxDistance = config.getInt("navigation-wand.max-distance", navigationWandMaxDistance);
+        teleportPastWorldBorder = config.getBoolean("navigation-wand.teleport-past-world-border", teleportPastWorldBorder);
         navigationUseGlass = config.getBoolean("navigation.use-glass", navigationUseGlass);
 
         scriptTimeout = config.getInt("scripting.timeout", scriptTimeout);

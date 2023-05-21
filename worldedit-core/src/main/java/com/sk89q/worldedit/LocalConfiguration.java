@@ -77,6 +77,7 @@ public abstract class LocalConfiguration {
     public boolean useInventoryOverride = false;
     public boolean useInventoryCreativeOverride = false;
     public boolean navigationUseGlass = true;
+    public boolean teleportPastWorldBorder = false;
     public String navigationWand = "minecraft:compass";
     public int navigationWandMaxDistance = 50;
     public int scriptTimeout = 3000;

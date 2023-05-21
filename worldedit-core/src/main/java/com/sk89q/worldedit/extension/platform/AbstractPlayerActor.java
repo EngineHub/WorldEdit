@@ -482,6 +482,18 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         }
 
         Location foundBlock = hitBlox.getCurrentBlock();
+        //actual max and min points of the world are 17 blocks away from the visible border
+        final int maxX = getWorld().getMaximumPoint().getX() - 17;
+        final int maxZ = getWorld().getMaximumPoint().getZ() - 17;
+        final int minX = getWorld().getMinimumPoint().getX() + 17;
+        final int minZ = getWorld().getMinimumPoint().getZ() + 17;
+
+        if(!WorldEdit.getInstance().getConfiguration().teleportPastWorldBorder) {
+            if (foundBlock.getX() < minX || foundBlock.getZ() < minZ || foundBlock.getX() > maxX || foundBlock.getZ() > maxZ) {
+                return false;
+            }
+        }
+
         if (foundBlock != null) {
             setOnGround(foundBlock);
             return true;
