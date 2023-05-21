@@ -17,18 +17,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.schematic;
+package com.sk89q.worldedit.internal.annotation;
 
-import java.nio.file.Path;
+import org.enginehub.piston.inject.InjectAnnotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Record representing one Schematic file.
+ * Annotation to denote an argument as a schematic path.
  */
-public record SchematicPath(Path path) {
-
-    @Override
-    public String toString() {
-        return path.toString();
-    }
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PARAMETER)
+@InjectAnnotation
+public @interface SchematicPath {
 }

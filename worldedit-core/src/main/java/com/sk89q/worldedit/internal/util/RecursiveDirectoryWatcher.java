@@ -17,11 +17,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.io.file;
+package com.sk89q.worldedit.internal.util;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
@@ -32,65 +31,46 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
  * Helper class that recursively monitors a directory for changes to files and folders, including creation, deletion, and modification.
  *
- * @warning File and folder events might be sent multiple times. Users of this class need to employ their own
+ * @apiNote File and folder events might be sent multiple times. Users of this class need to employ their own
  *      deduplication!
  */
 public class RecursiveDirectoryWatcher {
 
     /**
-     * Base class for all change events.
+     * Base interface for all change events.
      */
-    public static class DirEntryChangeEvent {
-        private Path path;
-
-        public DirEntryChangeEvent(Path path) {
-            this.path = path;
-        }
-
-        public Path getPath() {
-            return path;
-        }
+    public interface DirEntryChangeEvent {
+        Path path();
     }
 
     /**
      * Event signaling the creation of a new file.
      */
-    public static class FileCreatedEvent extends DirEntryChangeEvent {
-        public FileCreatedEvent(Path path) {
-            super(path);
-        }
+    public record FileCreatedEvent(Path path) implements DirEntryChangeEvent {
     }
 
     /**
      * Event signaling the deletion of a file.
      */
-    public static class FileDeletedEvent extends DirEntryChangeEvent {
-        public FileDeletedEvent(Path path) {
-            super(path);
-        }
+    public record FileDeletedEvent(Path path) implements DirEntryChangeEvent {
     }
 
     /**
      * Event signaling the creation of a new directory.
      */
-    public static class DirectoryCreatedEvent extends DirEntryChangeEvent {
-        public DirectoryCreatedEvent(Path path) {
-            super(path);
-        }
+    public record DirectoryCreatedEvent(Path path) implements DirEntryChangeEvent {
     }
 
     /**
      * Event signaling the deletion of a directory.
      */
-    public static class DirectoryDeletedEvent extends DirEntryChangeEvent {
-        public DirectoryDeletedEvent(Path path) {
-            super(path);
-        }
+    public record DirectoryDeletedEvent(Path path) implements DirEntryChangeEvent {
     }
 
 
@@ -109,19 +89,23 @@ public class RecursiveDirectoryWatcher {
 
     /**
      * Create a new recursive directory watcher for the given root folder.
-     * You have to call {@link #start()} before the instance starts monitoring.
+     * You have to call {@link #start(Consumer)} before the instance starts monitoring.
      *
      * @param root Folder to watch for changed files recursively.
      * @return a new instance that will monitor the given root folder
      * @throws IOException If creating the watcher failed, e.g. due to root not existing.
      */
-    public static RecursiveDirectoryWatcher create(Path root) throws IOException {
-        WatchService watchService = root.getFileSystem().newWatchService();
-        return new RecursiveDirectoryWatcher(root, watchService);
+    public static Optional<RecursiveDirectoryWatcher> create(Path root) throws IOException {
+        try {
+            WatchService watchService = root.getFileSystem().newWatchService();
+            return Optional.of(new RecursiveDirectoryWatcher(root, watchService));
+        } catch (UnsupportedOperationException ignored) {
+            return Optional.empty();
+        }
     }
 
     private void registerFolderWatchAndScanInitially(Path root) throws IOException {
-        WatchKey watchKey = root.register(watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE);
+        WatchKey watchKey = root.register(watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
         LOGGER.debug("Watch registered: " + root);
         watchRootMap.put(watchKey, root);
         eventConsumer.accept(new DirectoryCreatedEvent(root));
@@ -208,7 +192,7 @@ public class RecursiveDirectoryWatcher {
 
     /**
      * Stop this RecursiveDirectoryWatcher instance and wait for it to be completely shut down.
-     * @warning RecursiveDirectoryWatcher is not reusable!
+     * @apiNote RecursiveDirectoryWatcher is not reusable!
      */
     public void stop() {
         try {

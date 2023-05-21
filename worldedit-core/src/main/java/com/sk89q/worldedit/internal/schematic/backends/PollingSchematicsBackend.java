@@ -17,10 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.schematic.backends;
+package com.sk89q.worldedit.internal.schematic.backends;
 
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
-import com.sk89q.worldedit.util.schematic.SchematicPath;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
@@ -45,7 +44,7 @@ public class PollingSchematicsBackend implements SchematicsBackend {
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private final Path schematicsDir;
     private Instant lastUpdateTs = Instant.EPOCH;
-    private List<SchematicPath> schematics = new ArrayList<>();
+    private List<Path> schematics = new ArrayList<>();
 
     private PollingSchematicsBackend(Path schematicsDir) {
         this.schematicsDir = schematicsDir;
@@ -60,14 +59,14 @@ public class PollingSchematicsBackend implements SchematicsBackend {
         return new PollingSchematicsBackend(schematicsFolder);
     }
 
-    private List<SchematicPath> scanFolder(Path root) {
-        List<SchematicPath> pathList = new ArrayList<>();
+    private List<Path> scanFolder(Path root) {
+        List<Path> pathList = new ArrayList<>();
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(root)) {
             for (Path path : stream) {
                 if (Files.isDirectory(path)) {
                     pathList.addAll(scanFolder(path));
                 } else {
-                    pathList.add(new SchematicPath(path));
+                    pathList.add(path);
                 }
             }
         } catch (IOException e) {
@@ -91,7 +90,7 @@ public class PollingSchematicsBackend implements SchematicsBackend {
     }
 
     @Override
-    public synchronized List<SchematicPath> getList() {
+    public synchronized List<Path> getList() {
         // udpate internal cache if requried (determined by age)
         Duration age = Duration.between(lastUpdateTs, Instant.now());
         if (age.compareTo(MAX_RESULT_AGE) >= 0) {

@@ -17,34 +17,32 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.schematic.backends;
+package com.sk89q.worldedit.internal.schematic.backends;
 
-import com.sk89q.worldedit.util.schematic.SchematicPath;
+import com.sk89q.worldedit.internal.annotation.SchematicPath;
 
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * {@link SchematicsManager} backend interface.
+ * A backend that never lists any files.
  */
-public interface SchematicsBackend {
+public class DummySchematicsBackend implements SchematicsBackend {
+    @Override
+    public void init() {
+    }
 
-    /**
-     * Initialize the backend.
-     */
-    void init();
+    @Override
+    public void uninit() {
+    }
 
-    /**
-     * Uninitialize the backend.
-     */
-    void uninit();
+    @Override
+    public List<Path> getList() {
+        return List.of();
+    }
 
-    /**
-     * {@return the list of known schematics}
-     */
-    List<SchematicPath> getList();
-
-    /**
-     * Tells the backend that there are changes it should take into account.
-     */
-    void update();
+    @Override
+    public void update() {
+    }
 }

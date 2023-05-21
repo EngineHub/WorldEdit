@@ -17,20 +17,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.schematic;
+package com.sk89q.worldedit.internal.schematic;
 
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.internal.schematic.backends.DummySchematicsBackend;
+import com.sk89q.worldedit.internal.schematic.backends.FileWatcherSchematicsBackend;
+import com.sk89q.worldedit.internal.schematic.backends.PollingSchematicsBackend;
+import com.sk89q.worldedit.internal.schematic.backends.SchematicsBackend;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
-import com.sk89q.worldedit.util.schematic.backends.DummySchematicsBackend;
-import com.sk89q.worldedit.util.schematic.backends.FileWatcherSchematicsBackend;
-import com.sk89q.worldedit.util.schematic.backends.PollingSchematicsBackend;
-import com.sk89q.worldedit.util.schematic.backends.SchematicsBackend;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Class that manages the known schematic files.
@@ -52,12 +54,21 @@ public class SchematicsManager {
         this.worldEdit = worldEdit;
     }
 
+    private void createFallbackBackend() {
+        LOGGER.warn("Failed to initialize file-monitoring based schematics backend. Falling back to polling.");
+        backend = PollingSchematicsBackend.create(schematicsDir);
+    }
+
     private void setupBackend() {
         try {
-            backend = FileWatcherSchematicsBackend.create(schematicsDir);
+            var fileWatcherBackend = FileWatcherSchematicsBackend.create(schematicsDir);
+            if (fileWatcherBackend.isPresent()) {
+                backend = fileWatcherBackend.get();
+            } else {
+                createFallbackBackend();
+            }
         } catch (IOException e) {
-            LOGGER.warn("Failed to initialize file-monitoring based schematics backend. Falling back to polling.", e);
-            backend = PollingSchematicsBackend.create(schematicsDir);
+            createFallbackBackend();
         }
     }
 
@@ -92,13 +103,15 @@ public class SchematicsManager {
      * {@return the root folder where schematics are stored}
      */
     public Path getRoot() {
+        checkNotNull(schematicsDir, "not initialized");
         return schematicsDir;
     }
 
     /**
      * {@return a list of all known schematics}
      */
-    public List<SchematicPath> getList() {
+    public List<Path> getList() {
+        checkNotNull(backend);
         return backend.getList();
     }
 
