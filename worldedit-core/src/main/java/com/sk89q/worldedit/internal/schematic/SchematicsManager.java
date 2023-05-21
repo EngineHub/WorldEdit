@@ -30,7 +30,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -45,7 +45,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class SchematicsManager {
 
     private static final Logger LOGGER = LogManagerCompat.getLogger();
-    private WorldEdit worldEdit;
+    private final WorldEdit worldEdit;
 
     private Path schematicsDir;
     private SchematicsBackend backend;
@@ -100,7 +100,9 @@ public class SchematicsManager {
     }
 
     /**
-     * {@return the root folder where schematics are stored}
+     * Gets the root folder in which the schematics are stored.
+     *
+     * @return the root folder where schematics are stored
      */
     public Path getRoot() {
         checkNotNull(schematicsDir, "not initialized");
@@ -108,11 +110,13 @@ public class SchematicsManager {
     }
 
     /**
-     * {@return a list of all known schematics}
+     * Gets a set of known schematics.
+     *
+     * @return a set of all known schematics
      */
-    public List<Path> getList() {
+    public Set<Path> getSchematicPaths() {
         checkNotNull(backend);
-        return backend.getList();
+        return backend.getPaths();
     }
 
     /**

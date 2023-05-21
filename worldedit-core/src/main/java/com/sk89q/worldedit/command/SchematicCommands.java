@@ -39,6 +39,8 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.extent.clipboard.io.share.ClipboardShareDestination;
 import com.sk89q.worldedit.extent.clipboard.io.share.ClipboardShareMetadata;
+import com.sk89q.worldedit.internal.annotation.SchematicPath;
+import com.sk89q.worldedit.internal.schematic.SchematicsManager;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.session.ClipboardHolder;
@@ -55,8 +57,6 @@ import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldedit.util.io.file.MorePaths;
-import com.sk89q.worldedit.internal.annotation.SchematicPath;
-import com.sk89q.worldedit.internal.schematic.SchematicsManager;
 import org.apache.logging.log4j.Logger;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
@@ -74,6 +74,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -455,7 +456,8 @@ public class SchematicCommands {
         @Override
         public Component call() throws Exception {
             SchematicsManager schematicsManager = WorldEdit.getInstance().getSchematicsManager();
-            List<Path> fileList = schematicsManager.getList();
+            // Copy this to a mutable list, we're sorting it below.
+            List<Path> fileList = new ArrayList<>(schematicsManager.getSchematicPaths());
 
             if (fileList.isEmpty()) {
                 return ErrorFormat.wrap("No schematics found.");

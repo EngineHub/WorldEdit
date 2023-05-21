@@ -26,7 +26,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -82,10 +81,10 @@ public class FileWatcherSchematicsBackend implements SchematicsBackend {
     }
 
     @Override
-    public List<Path> getList() {
+    public Set<Path> getPaths() {
         lock.readLock().lock();
         try {
-            return List.copyOf(schematics);
+            return Set.copyOf(schematics);
         } finally {
             lock.readLock().unlock();
         }

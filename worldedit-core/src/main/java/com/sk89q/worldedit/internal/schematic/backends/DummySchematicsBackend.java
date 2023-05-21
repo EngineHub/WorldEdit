@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.internal.schematic.backends;
 
 import java.nio.file.Path;
-import java.util.List;
+import java.util.Set;
 
 /**
  * A backend that never lists any files.
@@ -35,8 +35,8 @@ public class DummySchematicsBackend implements SchematicsBackend {
     }
 
     @Override
-    public List<Path> getList() {
-        return List.of();
+    public Set<Path> getPaths() {
+        return Set.of();
     }
 
     @Override

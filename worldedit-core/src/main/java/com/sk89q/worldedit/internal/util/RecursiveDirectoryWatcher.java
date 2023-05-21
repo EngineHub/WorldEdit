@@ -21,6 +21,8 @@ package com.sk89q.worldedit.internal.util;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.util.io.file.FilenameException;
 import org.apache.logging.log4j.Logger;
 
 import java.io.Closeable;
@@ -105,14 +107,19 @@ public class RecursiveDirectoryWatcher implements Closeable {
         }
     }
 
-    private void registerFolderWatchAndScanInitially(Path root) throws IOException {
+    private void registerFolderWatcher(Path root) throws IOException {
         WatchKey watchKey = root.register(watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
         LOGGER.debug("Watch registered: " + root);
         watchRootMap.put(watchKey, root);
+    }
+
+    private void triggerInitialEvents(Path root) throws IOException, FilenameException {
+        Path schematicRoot = WorldEdit.getInstance().getSchematicsManager().getRoot();
         eventConsumer.accept(new DirectoryCreatedEvent(root));
         for (Path path : Files.newDirectoryStream(root)) {
+            path = WorldEdit.getInstance().getSafeOpenFile(null, schematicRoot.toFile(), path.toString(), null).toPath();
             if (Files.isDirectory(path)) {
-                registerFolderWatchAndScanInitially(path);
+                triggerInitialEvents(path);
             } else {
                 eventConsumer.accept(new FileCreatedEvent(path));
             }
@@ -126,13 +133,16 @@ public class RecursiveDirectoryWatcher implements Closeable {
      * @param eventConsumer The lambda that's fired for every file event.
      */
     public void start(Consumer<DirEntryChangeEvent> eventConsumer) {
+        Path schematicRoot = WorldEdit.getInstance().getSchematicsManager().getRoot();
+
         this.eventConsumer = eventConsumer;
         watchThread = new Thread(() -> {
             LOGGER.debug("RecursiveDirectoryWatcher::EventConsumer started");
 
             try {
-                registerFolderWatchAndScanInitially(root);
-            } catch (IOException e) {
+                registerFolderWatcher(root);
+                triggerInitialEvents(root);
+            } catch (IOException | FilenameException e) {
                 LOGGER.error(e);
             }
 
@@ -155,10 +165,13 @@ public class RecursiveDirectoryWatcher implements Closeable {
                         path = parentPath.resolve(path);
 
                         if (kind.equals(StandardWatchEventKinds.ENTRY_CREATE)) {
+                            path = WorldEdit.getInstance().getSafeOpenFile(null, schematicRoot.toFile(), path.toString(), null).toPath();
+
                             if (Files.isDirectory(path)) { // new subfolder created, create watch for it
                                 try {
-                                    registerFolderWatchAndScanInitially(path);
-                                } catch (IOException e) {
+                                    registerFolderWatcher(path);
+                                    triggerInitialEvents(path);
+                                } catch (IOException | FilenameException e) {
                                     LOGGER.error(e);
                                 }
                             } else { // new file created
@@ -188,7 +201,8 @@ public class RecursiveDirectoryWatcher implements Closeable {
                         }
                     }
                 }
-            } catch (ClosedWatchServiceException ignored) { }
+            } catch (ClosedWatchServiceException | FilenameException ignored) {
+            }
             LOGGER.debug("RecursiveDirectoryWatcher::EventConsumer exited");
         });
         watchThread.setName("RecursiveDirectoryWatcher");

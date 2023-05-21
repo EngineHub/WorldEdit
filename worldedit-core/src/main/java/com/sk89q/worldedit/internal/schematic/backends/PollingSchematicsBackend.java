@@ -19,7 +19,9 @@
 
 package com.sk89q.worldedit.internal.schematic.backends;
 
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
+import com.sk89q.worldedit.util.io.file.FilenameException;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
@@ -30,6 +32,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -41,7 +44,6 @@ public class PollingSchematicsBackend implements SchematicsBackend {
 
     private static final Duration MAX_RESULT_AGE = Duration.ofSeconds(10);
 
-    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private final Path schematicsDir;
     private Instant lastUpdateTs = Instant.EPOCH;
     private List<Path> schematics = new ArrayList<>();
@@ -61,15 +63,18 @@ public class PollingSchematicsBackend implements SchematicsBackend {
 
     private List<Path> scanFolder(Path root) {
         List<Path> pathList = new ArrayList<>();
+        Path schematicRoot = WorldEdit.getInstance().getSchematicsManager().getRoot();
+
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(root)) {
             for (Path path : stream) {
+                path = WorldEdit.getInstance().getSafeOpenFile(null, schematicRoot.toFile(), path.toString(), null).toPath();
                 if (Files.isDirectory(path)) {
                     pathList.addAll(scanFolder(path));
                 } else {
                     pathList.add(path);
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | FilenameException e) {
             LOGGER.error(e);
         }
         return pathList;
@@ -90,13 +95,13 @@ public class PollingSchematicsBackend implements SchematicsBackend {
     }
 
     @Override
-    public synchronized List<Path> getList() {
-        // udpate internal cache if requried (determined by age)
+    public synchronized Set<Path> getPaths() {
+        // Update internal cache if required (determined by age)
         Duration age = Duration.between(lastUpdateTs, Instant.now());
         if (age.compareTo(MAX_RESULT_AGE) >= 0) {
             runRescan();
         }
-        return List.copyOf(schematics);
+        return Set.copyOf(schematics);
     }
 
     @Override

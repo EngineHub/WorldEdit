@@ -20,11 +20,11 @@
 package com.sk89q.worldedit.command.argument;
 
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.internal.annotation.SchematicPath;
+import com.sk89q.worldedit.internal.schematic.SchematicsManager;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.io.file.FilenameException;
-import com.sk89q.worldedit.internal.annotation.SchematicPath;
-import com.sk89q.worldedit.internal.schematic.SchematicsManager;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
 import org.enginehub.piston.converter.ConversionResult;
@@ -63,7 +63,7 @@ public class SchematicConverter implements ArgumentConverter<Path> {
         SchematicsManager schematicsManager = worldEdit.getSchematicsManager();
         Path schematicsRootPath = schematicsManager.getRoot();
 
-        return limitByPrefix(schematicsManager.getList().stream()
+        return limitByPrefix(schematicsManager.getSchematicPaths().stream()
                 .map(s -> schematicsRootPath.relativize(s).toString()), input);
     }
 

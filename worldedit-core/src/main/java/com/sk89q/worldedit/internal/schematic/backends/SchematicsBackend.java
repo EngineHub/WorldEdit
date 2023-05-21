@@ -19,11 +19,10 @@
 
 package com.sk89q.worldedit.internal.schematic.backends;
 
-import com.sk89q.worldedit.internal.annotation.SchematicPath;
 import com.sk89q.worldedit.internal.schematic.SchematicsManager;
 
 import java.nio.file.Path;
-import java.util.List;
+import java.util.Set;
 
 /**
  * {@link SchematicsManager} backend interface.
@@ -41,9 +40,11 @@ public interface SchematicsBackend {
     void uninit();
 
     /**
-     * {@return the list of known schematics}
+     * Gets the set of known schematic paths.
+     *
+     * @return the set of known schematics
      */
-    List<Path> getList();
+    Set<Path> getPaths();
 
     /**
      * Tells the backend that there are changes it should take into account.
