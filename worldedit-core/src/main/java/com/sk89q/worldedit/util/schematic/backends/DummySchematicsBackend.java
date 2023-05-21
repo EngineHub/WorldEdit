@@ -25,8 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * DummyBackend for the SchematicsManager.
- * This is only used in the error-case. For example when creating the schematics folder failed for whatever reason.
+ * A backend that never lists any files.
  */
 public class DummySchematicsBackend implements SchematicsBackend {
     @Override

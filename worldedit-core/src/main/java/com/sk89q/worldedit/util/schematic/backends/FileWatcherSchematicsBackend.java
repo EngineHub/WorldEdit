@@ -33,9 +33,7 @@ import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * SchematicsBackend making use of the RecursiveDirectoryWatcher.
- * This backend initially scans all schematics in the folder tree and then registers for file change events to
- * avoid manually polling / rescanning the folder structure for every query.
+ * A backend that efficiently scans for file changes using {@link RecursiveDirectoryWatcher}.
  */
 public class FileWatcherSchematicsBackend implements SchematicsBackend {
     private static final Logger LOGGER = LogManagerCompat.getLogger();
@@ -63,12 +61,15 @@ public class FileWatcherSchematicsBackend implements SchematicsBackend {
     public void init() {
         directoryWatcher.start(event -> {
             lock.writeLock().lock();
-            if (event instanceof RecursiveDirectoryWatcher.FileCreatedEvent) {
-                schematics.add(new SchematicPath(event.getPath()));
-            } else if (event instanceof RecursiveDirectoryWatcher.FileDeletedEvent) {
-                schematics.remove(new SchematicPath(event.getPath()));
+            try {
+                if (event instanceof RecursiveDirectoryWatcher.FileCreatedEvent) {
+                    schematics.add(new SchematicPath(event.getPath()));
+                } else if (event instanceof RecursiveDirectoryWatcher.FileDeletedEvent) {
+                    schematics.remove(new SchematicPath(event.getPath()));
+                }
+            } finally {
+                lock.writeLock().unlock();
             }
-            lock.writeLock().unlock();
             if (event instanceof RecursiveDirectoryWatcher.FileCreatedEvent) {
                 LOGGER.info("New Schematic found: " + event.getPath());
             } else if (event instanceof RecursiveDirectoryWatcher.FileDeletedEvent) {
@@ -85,9 +86,11 @@ public class FileWatcherSchematicsBackend implements SchematicsBackend {
     @Override
     public List<SchematicPath> getList() {
         lock.readLock().lock();
-        List<SchematicPath> result = new ArrayList<>(schematics);
-        lock.readLock().unlock();
-        return result;
+        try {
+            return List.copyOf(schematics);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override

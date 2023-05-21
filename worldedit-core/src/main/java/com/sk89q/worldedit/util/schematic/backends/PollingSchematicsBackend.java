@@ -34,8 +34,7 @@ import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * SchematicsBackend implementation that scans the folder tree, then caches the result for a certain amount of time.
- * This essentially is an eventually consistent cache that is used as fallback.
+ * A backend that scans the folder tree, then caches the result for a certain amount of time.
  */
 public class PollingSchematicsBackend implements SchematicsBackend {
 
@@ -78,7 +77,7 @@ public class PollingSchematicsBackend implements SchematicsBackend {
     }
 
     private void runRescan() {
-        LOGGER.debug("Rescanning Schematics");
+        LOGGER.debug("Rescanning schematics");
         this.schematics = scanFolder(schematicsDir);
         lastUpdateTs = Instant.now();
     }
@@ -98,7 +97,7 @@ public class PollingSchematicsBackend implements SchematicsBackend {
         if (age.compareTo(MAX_RESULT_AGE) >= 0) {
             runRescan();
         }
-        return new ArrayList<>(schematics);
+        return List.copyOf(schematics);
     }
 
     @Override

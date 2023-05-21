@@ -24,24 +24,22 @@ import com.sk89q.worldedit.util.schematic.SchematicPath;
 import java.util.List;
 
 /**
- * SchematicsManager backend interface.
+ * {@link SchematicsManager} backend interface.
  */
 public interface SchematicsBackend {
 
     /**
-     * Initialize the SchematicsManager backend.
+     * Initialize the backend.
      */
     void init();
 
     /**
-     * Uninitialize the SchematicsManager backend.
+     * Uninitialize the backend.
      */
     void uninit();
 
     /**
-     * Get the list of known schematics.
-     *
-     * @return List of known schematics.
+     * {@return the list of known schematics}
      */
     List<SchematicPath> getList();
 

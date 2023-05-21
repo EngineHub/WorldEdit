@@ -33,14 +33,12 @@ import java.nio.file.Path;
 import java.util.List;
 
 /**
- * Class that manages the known Schematic files.
+ * Class that manages the known schematic files.
  *
- * <p>This class monitors the schematics folder for changes and keeps an always-up-to-date list of known
- * schematics in RAM in order to speed up queries.
- * This further also allows more convenient features like supporting command suggestions for known schematics.
+ * <p>This class monitors the schematics folder for changes and maintains an up-to-date list of known
+ * schematics in order to speed up queries.
  *
- * <p>If initialization of the inotify Backend fails, SchematicsManager is going to fall back to a polled variant, where
- * the result is cached for a certain amount of time, before a rescan is performed. (Eventual Consistency Cache)
+ * <p>If initialization of the file-watching backend fails, a polling backend is used instead.
  */
 public class SchematicsManager {
 
@@ -58,7 +56,7 @@ public class SchematicsManager {
         try {
             backend = FileWatcherSchematicsBackend.create(schematicsDir);
         } catch (IOException e) {
-            LOGGER.warn("Failed to initialize folder-monitoring based Schematics backend. Falling back to scanning.");
+            LOGGER.warn("Failed to initialize file-monitoring based schematics backend. Falling back to polling.", e);
             backend = PollingSchematicsBackend.create(schematicsDir);
         }
     }
@@ -91,25 +89,21 @@ public class SchematicsManager {
     }
 
     /**
-     * Get the RootPath for schematics.
-     * @return The root folder where schematics are stored.
+     * {@return the root folder where schematics are stored}
      */
     public Path getRoot() {
         return schematicsDir;
     }
 
     /**
-     * Get a list of all known schematics.
-     * @return List of all known schematics.
+     * {@return a list of all known schematics}
      */
     public List<SchematicPath> getList() {
         return backend.getList();
     }
 
     /**
-     * Tell SchematicManager that an update is in order.
-     * This should be used whenever WorldEdit code adds a new Schematic, to make sure the next list
-     * response is up-to-date for better user-experience.
+     * Force an update of the list.
      */
     public void update() {
         backend.update();

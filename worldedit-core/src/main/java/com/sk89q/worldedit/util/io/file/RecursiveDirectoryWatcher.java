@@ -35,15 +35,15 @@ import java.nio.file.WatchService;
 import java.util.function.Consumer;
 
 /**
- * Helper class that allows to recursively monitor a directory for changed (created / deleted) files / folders.
+ * Helper class that recursively monitors a directory for changes to files and folders, including creation, deletion, and modification.
  *
- * @warning File- and Folder events might be sent multiple times. Users of this class need to employ their own
+ * @warning File and folder events might be sent multiple times. Users of this class need to employ their own
  *      deduplication!
  */
 public class RecursiveDirectoryWatcher {
 
     /**
-     * Base-Class for all DirEntry change events.
+     * Base class for all change events.
      */
     public static class DirEntryChangeEvent {
         private Path path;
@@ -109,10 +109,10 @@ public class RecursiveDirectoryWatcher {
 
     /**
      * Create a new recursive directory watcher for the given root folder.
-     * You have to call @see start() before the instance starts monitoring.
+     * You have to call {@link #start()} before the instance starts monitoring.
      *
      * @param root Folder to watch for changed files recursively.
-     * @return A new RecursiveDirectoryWatcher instance, monitoring the given root folder.
+     * @return a new instance that will monitor the given root folder
      * @throws IOException If creating the watcher failed, e.g. due to root not existing.
      */
     public static RecursiveDirectoryWatcher create(Path root) throws IOException {
@@ -159,7 +159,7 @@ public class RecursiveDirectoryWatcher {
                     for (WatchEvent<?> event : watchKey.pollEvents()) {
                         WatchEvent.Kind<?> kind = event.kind();
                         if (kind.equals(StandardWatchEventKinds.OVERFLOW)) {
-                            LOGGER.warn("RecursiveDirectoryWatcher Seems like we can't keep up with updates");
+                            LOGGER.warn("Seems like we can't keep up with updates");
                             continue;
                         }
                         // make sure to work with an absolute path
