@@ -63,8 +63,12 @@ import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.annotation.ClipboardMask;
 import com.sk89q.worldedit.internal.annotation.VertHeight;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.regions.factory.CuboidRegionFactory;
 import com.sk89q.worldedit.regions.factory.CylinderRegionFactory;
+import com.sk89q.worldedit.regions.factory.FixedHeightCuboidRegionFactory;
+import com.sk89q.worldedit.regions.factory.FixedHeightCylinderRegionFactory;
 import com.sk89q.worldedit.regions.factory.RegionFactory;
+import com.sk89q.worldedit.regions.factory.SphereRegionFactory;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.request.RequestExtent;
 import com.sk89q.worldedit.util.HandSide;
@@ -626,7 +630,22 @@ public class BrushCommands {
                       @Arg(desc = "The size of the brush", def = "5")
                           double radius,
                       @Arg(desc = "The biome type")
-                          BiomeType biomeType) throws WorldEditException {
+                          BiomeType biomeType,
+                      @Switch(name = 'c', desc = "Whether to set the full column")
+                          boolean column) throws WorldEditException {
+
+        if (column) {
+            // Convert this shape factory to a column-based one, if possible
+            if (shape instanceof CylinderRegionFactory || shape instanceof SphereRegionFactory) {
+                // Sphere regions that are Y-expended are just cylinders
+                shape = new FixedHeightCylinderRegionFactory(player.getWorld().getMinY(), player.getWorld().getMaxY());
+            } else if (shape instanceof CuboidRegionFactory) {
+                shape = new FixedHeightCuboidRegionFactory(player.getWorld().getMinY(), player.getWorld().getMaxY());
+            } else {
+                player.printError(TranslatableComponent.of("worldedit.brush.biome.column-supported-types"));
+                return;
+            }
+        }
 
         setOperationBasedBrush(player, localSession, radius,
             new ApplyRegion(new BiomeFactory(biomeType)), shape, "worldedit.brush.biome");

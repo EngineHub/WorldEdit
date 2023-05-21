@@ -38,6 +38,7 @@
     "worldedit.brush.heightmap.equip": "Heightmap brush equipped ({0}).",
     "worldedit.brush.heightmap.unknown": "Unknown heightmap brush: {0}.",
     "worldedit.brush.morph.equip": "Morph brush shape equipped: {0}.",
+    "worldedit.brush.biome.column-supported-types": "This brush shape is not supported with whole-column brushing, try the cylinder shape.",
     "worldedit.brush.none.equip": "Brush unbound from your current item.",
     "worldedit.brush.none.equipped": "You have no brush bound to your current item. Try /brush sphere for a basic brush.",
 
