@@ -407,8 +407,10 @@ public final class WorldEdit {
         return new File(dir, filename);
     }
 
+    private static final java.util.regex.Pattern SAFE_FILENAME_REGEX = java.util.regex.Pattern.compile("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+\\.[A-Za-z0-9]+$");
+
     private boolean checkFilename(String filename) {
-        return filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+\\.[A-Za-z0-9]+$");
+        return SAFE_FILENAME_REGEX.matcher(filename).matches();
     }
 
     /**

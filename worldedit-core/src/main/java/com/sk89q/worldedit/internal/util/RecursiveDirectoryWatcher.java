@@ -117,7 +117,7 @@ public class RecursiveDirectoryWatcher implements Closeable {
         Path schematicRoot = WorldEdit.getInstance().getSchematicsManager().getRoot();
         eventConsumer.accept(new DirectoryCreatedEvent(root));
         for (Path path : Files.newDirectoryStream(root)) {
-            path = WorldEdit.getInstance().getSafeOpenFile(null, schematicRoot.toFile(), path.toString(), null).toPath();
+            path = WorldEdit.getInstance().getSafeOpenFile(null, schematicRoot.toFile(), schematicRoot.relativize(path).toString(), null).toPath();
             if (Files.isDirectory(path)) {
                 triggerInitialEvents(path);
             } else {
@@ -165,7 +165,7 @@ public class RecursiveDirectoryWatcher implements Closeable {
                         path = parentPath.resolve(path);
 
                         if (kind.equals(StandardWatchEventKinds.ENTRY_CREATE)) {
-                            path = WorldEdit.getInstance().getSafeOpenFile(null, schematicRoot.toFile(), path.toString(), null).toPath();
+                            path = WorldEdit.getInstance().getSafeOpenFile(null, schematicRoot.toFile(), schematicRoot.relativize(path).toString(), null).toPath();
 
                             if (Files.isDirectory(path)) { // new subfolder created, create watch for it
                                 try {

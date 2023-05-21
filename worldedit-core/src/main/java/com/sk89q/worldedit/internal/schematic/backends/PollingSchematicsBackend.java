@@ -33,7 +33,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * A backend that scans the folder tree, then caches the result for a certain amount of time.
@@ -67,7 +66,7 @@ public class PollingSchematicsBackend implements SchematicsBackend {
 
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(root)) {
             for (Path path : stream) {
-                path = WorldEdit.getInstance().getSafeOpenFile(null, schematicRoot.toFile(), path.toString(), null).toPath();
+                path = WorldEdit.getInstance().getSafeOpenFile(null, schematicRoot.toFile(), schematicRoot.relativize(path).toString(), null).toPath();
                 if (Files.isDirectory(path)) {
                     pathList.addAll(scanFolder(path));
                 } else {
