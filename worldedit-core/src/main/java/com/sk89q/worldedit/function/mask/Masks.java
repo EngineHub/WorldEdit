@@ -56,6 +56,28 @@ public final class Masks {
     }
 
     /**
+     * Memoize the given mask.
+     *
+     * @param mask the mask
+     * @return a memoized mask
+     */
+    public static Mask memoize(final Mask mask) {
+        checkNotNull(mask);
+        return new MaskMemoizer(mask);
+    }
+
+    /**
+     * Memoize the given mask.
+     *
+     * @param mask the mask
+     * @return a memoized mask
+     */
+    public static Mask2D memoize(final Mask2D mask) {
+        checkNotNull(mask);
+        return new MaskMemoizer2D(mask);
+    }
+
+    /**
      * Negate the given mask.
      *
      * @param mask the mask
