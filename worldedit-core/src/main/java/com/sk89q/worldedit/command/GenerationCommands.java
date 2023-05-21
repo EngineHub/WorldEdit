@@ -146,8 +146,8 @@ public class GenerationCommands {
                        int height,
                    @Switch(name = 'h', desc = "Make a hollow cone")
                        boolean hollow,
-                    @Arg(desc = "Thickness of the hollow cone", def = "1")
-                        double thickness
+                   @Arg(desc = "Thickness of the hollow cone", def = "1")
+                       double thickness
     ) throws WorldEditException {
         double radiusX;
         double radiusZ;

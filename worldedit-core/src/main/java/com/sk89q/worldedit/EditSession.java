@@ -1779,18 +1779,16 @@ public class EditSession implements Extent, AutoCloseable {
     /**
      * Makes a cone.
      *
-     * @param pos     Center of the cone
-     * @param block   The block pattern to use
+     * @param pos Center of the cone
+     * @param block The block pattern to use
      * @param radiusX The cone's largest north/south extent
      * @param radiusZ The cone's largest east/west extent
-     * @param height  The cone's up/down extent. If negative, extend downward.
-     * @param filled  If false, only a shell will be generated.
-     * @param thickness  The cone's wall thickness, if it's hollow.
-     * @param tipOffset  Offsets the cone's tip in the y direction by this amount.
+     * @param height The cone's up/down extent. If negative, extend downward.
+     * @param filled If false, only a shell will be generated.
+     * @param thickness The cone's wall thickness, if it's hollow.
      * @return number of blocks changed
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-
     public int makeCone(BlockVector3 pos, Pattern block, double radiusX, double radiusZ, int height, boolean filled,
                         double thickness) throws MaxChangedBlocksException {
         int affected = 0;
