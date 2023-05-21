@@ -27,11 +27,11 @@ import com.sk89q.worldedit.regions.Region;
 /**
  * A factory for a cylinder region, with a fixed minimum and maximum Y position.
  */
-public class FixedCylinderRegionFactory implements RegionFactory {
+public class FixedHeightCylinderRegionFactory implements RegionFactory {
     private final int minY;
     private final int maxY;
 
-    public FixedCylinderRegionFactory(int minY, int maxY) {
+    public FixedHeightCylinderRegionFactory(int minY, int maxY) {
         this.minY = minY;
         this.maxY = maxY;
     }

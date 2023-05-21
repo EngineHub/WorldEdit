@@ -26,11 +26,11 @@ import com.sk89q.worldedit.regions.Region;
 /**
  * A factory for a cuboid region, with a fixed minimum and maximum Y position.
  */
-public class FixedCuboidRegionFactory implements RegionFactory {
+public class FixedHeightCuboidRegionFactory implements RegionFactory {
     private final int minY;
     private final int maxY;
 
-    public FixedCuboidRegionFactory(int minY, int maxY) {
+    public FixedHeightCuboidRegionFactory(int minY, int maxY) {
         this.minY = minY;
         this.maxY = maxY;
     }

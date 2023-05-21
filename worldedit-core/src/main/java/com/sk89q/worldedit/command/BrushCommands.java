@@ -65,8 +65,8 @@ import com.sk89q.worldedit.internal.annotation.VertHeight;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.factory.CuboidRegionFactory;
 import com.sk89q.worldedit.regions.factory.CylinderRegionFactory;
-import com.sk89q.worldedit.regions.factory.FixedCuboidRegionFactory;
-import com.sk89q.worldedit.regions.factory.FixedCylinderRegionFactory;
+import com.sk89q.worldedit.regions.factory.FixedHeightCuboidRegionFactory;
+import com.sk89q.worldedit.regions.factory.FixedHeightCylinderRegionFactory;
 import com.sk89q.worldedit.regions.factory.RegionFactory;
 import com.sk89q.worldedit.regions.factory.SphereRegionFactory;
 import com.sk89q.worldedit.session.ClipboardHolder;
@@ -638,9 +638,9 @@ public class BrushCommands {
             // Convert this shape factory to a column-based one, if possible
             if (shape instanceof CylinderRegionFactory || shape instanceof SphereRegionFactory) {
                 // Sphere regions that are Y-expended are just cylinders
-                shape = new FixedCylinderRegionFactory(player.getWorld().getMinY(), player.getWorld().getMaxY());
+                shape = new FixedHeightCylinderRegionFactory(player.getWorld().getMinY(), player.getWorld().getMaxY());
             } else if (shape instanceof CuboidRegionFactory) {
-                shape = new FixedCuboidRegionFactory(player.getWorld().getMinY(), player.getWorld().getMaxY());
+                shape = new FixedHeightCuboidRegionFactory(player.getWorld().getMinY(), player.getWorld().getMaxY());
             } else {
                 player.printError(TranslatableComponent.of("worldedit.brush.biome.column-supported-types"));
                 return;
