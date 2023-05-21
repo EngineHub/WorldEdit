@@ -19,10 +19,7 @@
 
 package com.sk89q.worldedit.internal.schematic.backends;
 
-import com.sk89q.worldedit.internal.annotation.SchematicPath;
-
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

@@ -70,7 +70,7 @@ public class PollingSchematicsBackend implements SchematicsBackend {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e);
         }
         return pathList;
     }

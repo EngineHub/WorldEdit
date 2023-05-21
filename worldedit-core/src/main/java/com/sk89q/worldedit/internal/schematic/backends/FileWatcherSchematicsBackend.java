@@ -69,16 +69,16 @@ public class FileWatcherSchematicsBackend implements SchematicsBackend {
                 lock.writeLock().unlock();
             }
             if (event instanceof RecursiveDirectoryWatcher.FileCreatedEvent) {
-                LOGGER.info("New Schematic found: " + event.path());
+                LOGGER.debug("New Schematic found: " + event.path());
             } else if (event instanceof RecursiveDirectoryWatcher.FileDeletedEvent) {
-                LOGGER.info("Schematic deleted: " + event.path());
+                LOGGER.debug("Schematic deleted: " + event.path());
             }
         });
     }
 
     @Override
     public void uninit() {
-        directoryWatcher.stop();
+        directoryWatcher.close();
     }
 
     @Override

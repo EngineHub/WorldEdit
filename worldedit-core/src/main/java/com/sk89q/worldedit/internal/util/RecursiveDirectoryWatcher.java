@@ -23,6 +23,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.apache.logging.log4j.Logger;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.Files;
@@ -40,7 +41,7 @@ import java.util.function.Consumer;
  * @apiNote File and folder events might be sent multiple times. Users of this class need to employ their own
  *      deduplication!
  */
-public class RecursiveDirectoryWatcher {
+public class RecursiveDirectoryWatcher implements Closeable {
 
     /**
      * Base interface for all change events.
@@ -131,7 +132,9 @@ public class RecursiveDirectoryWatcher {
 
             try {
                 registerFolderWatchAndScanInitially(root);
-            } catch (IOException e) { e.printStackTrace(); }
+            } catch (IOException e) {
+                LOGGER.error(e);
+            }
 
             try {
                 WatchKey watchKey;
@@ -155,7 +158,9 @@ public class RecursiveDirectoryWatcher {
                             if (Files.isDirectory(path)) { // new subfolder created, create watch for it
                                 try {
                                     registerFolderWatchAndScanInitially(path);
-                                } catch (IOException e) { e.printStackTrace(); }
+                                } catch (IOException e) {
+                                    LOGGER.error(e);
+                                }
                             } else { // new file created
                                 eventConsumer.accept(new FileCreatedEvent(path));
                             }
@@ -191,17 +196,22 @@ public class RecursiveDirectoryWatcher {
     }
 
     /**
-     * Stop this RecursiveDirectoryWatcher instance and wait for it to be completely shut down.
+     * Close this RecursiveDirectoryWatcher instance and wait for it to be completely shut down.
      * @apiNote RecursiveDirectoryWatcher is not reusable!
      */
-    public void stop() {
+    @Override
+    public void close() {
         try {
             watchService.close();
-        } catch (IOException e) { e.printStackTrace(); }
+        } catch (IOException e) {
+            LOGGER.error(e);
+        }
         if (watchThread != null) {
             try {
                 watchThread.join();
-            } catch (InterruptedException e) { e.printStackTrace(); }
+            } catch (InterruptedException e) {
+                LOGGER.error(e);
+            }
             watchThread = null;
         }
         eventConsumer = null;
