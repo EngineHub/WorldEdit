@@ -72,6 +72,7 @@ public final class Functions {
                 "Function does not return a number");
             handle = handle.asType(handle.type().changeReturnType(Number.class));
             handle = filterReturnValue(handle, DOUBLE_VALUE);
+            handle = handle.asType(handle.type().wrap());
         }
         // return vararg-ity
         if (wasVarargs) {
