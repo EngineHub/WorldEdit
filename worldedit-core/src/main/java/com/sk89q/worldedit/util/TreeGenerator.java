@@ -26,6 +26,7 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
 import java.util.Collections;
@@ -101,6 +102,14 @@ public final class TreeGenerator {
                 return true;
             }
         },
+        BAMBOO("Bamboo plant", "bamboo") {
+            @Override
+            public boolean generate(EditSession editSession, BlockVector3 pos) throws MaxChangedBlocksException {
+                makeBamboo(editSession, pos);
+                return true;
+            }
+        },
+
         CHORUS_PLANT("Chorus plant", "chorusplant") {
             @Override
             public boolean generate(EditSession editSession, BlockVector3 pos) throws MaxChangedBlocksException {
@@ -208,7 +217,7 @@ public final class TreeGenerator {
 
             // Less leaves at these levels
             double chance = ((i == 0 || i == height - 1) ? 0.6 : 1);
-
+            //*
             // Inner leaves
             setChanceBlockIfAir(editSession, basePosition.add(-1, i, 0), leavesBlock, chance);
             setChanceBlockIfAir(editSession, basePosition.add(1, i, 0), leavesBlock, chance);
@@ -233,9 +242,59 @@ public final class TreeGenerator {
                     setChanceBlockIfAir(editSession, basePosition.add(j, i, 2), leavesBlock, 0.6);
                 }
             }
+
         }
 
         setBlockIfAir(editSession, basePosition.add(0, height, 0), leavesBlock);
+    }
+    private static void makeBamboo(EditSession editSession, BlockVector3 basePosition)
+            throws MaxChangedBlocksException {
+        int trunkHeight = (int) Math.floor(Math.random() * 15) +2 ;  //plant will get a random height between 2 and 16
+        /**
+         * bamboo spawns naturally with a height between 2 and 16 blocks, please note that for heights :2,3,4 the generation is unique
+         * If the height of the plant exceeds 3 blocks high the stems of the plant will get bigger
+         * for height = 2 => 1 small stem + 1 small leaf
+         * for height = 3 => 1 small stem +2 small leaf
+         * for height = 4 => 1 big stem + 2 small leaves (with big stems) +1 big leaves
+         * from height >4 => always big stems and the top three layers are: 1 small leaf (with big a stem) +2 big leaves
+         * Big leaves are always used with a big stem
+         * This is all based on natural generation
+         */
+
+        BlockState smallBamboo = BlockTypes.BAMBOO.getDefaultState(); //Standard small bamboo
+        /**
+         * The next 4 statements are for making the 4 different kinds of bamboo stems
+         */
+
+        BlockState bigBamboo = smallBamboo.with(BlockTypes.BAMBOO.getProperty("age"), BlockTypes.BAMBOO.getProperty("age").getValueFor("1"));
+        BlockState withSmallLeaves = smallBamboo.with(BlockTypes.BAMBOO.getProperty("leaves"), BlockTypes.BAMBOO.getProperty("leaves").getValueFor("small"));
+        BlockState withLargeLeaves = bigBamboo.with(BlockTypes.BAMBOO.getProperty("leaves"), BlockTypes.BAMBOO.getProperty("leaves").getValueFor("large"));
+        BlockState withSmallLeavesbigBamboo = withSmallLeaves.with(BlockTypes.BAMBOO.getProperty("age"), BlockTypes.BAMBOO.getProperty("age").getValueFor("1"));
+
+        if(trunkHeight==2){
+            setBlockIfAir(editSession, basePosition.add(0, 0, 0), smallBamboo);
+            setBlockIfAir(editSession, basePosition.add(0, 1, 0), withSmallLeaves);
+        }
+        if(trunkHeight==3){
+            setBlockIfAir(editSession, basePosition.add(0, 0, 0), smallBamboo);
+            setBlockIfAir(editSession, basePosition.add(0, 1, 0), withSmallLeaves);
+            setBlockIfAir(editSession, basePosition.add(0, 2, 0), withSmallLeaves);
+        }
+        if(trunkHeight==4){
+            setBlockIfAir(editSession, basePosition.add(0, 0, 0), bigBamboo);
+            setBlockIfAir(editSession, basePosition.add(0, 1, 0), withSmallLeavesbigBamboo);
+            setBlockIfAir(editSession, basePosition.add(0, 2, 0), withSmallLeavesbigBamboo);
+            setBlockIfAir(editSession, basePosition.add(0, 3, 0), withLargeLeaves);
+        }
+        if(trunkHeight>4)
+            for (int i = 0; i < trunkHeight-3; ++i) {
+            if (!setBlockIfAir(editSession, basePosition.add(0, i, 0), bigBamboo)) {
+                    return;
+            }
+            setBlockIfAir(editSession, basePosition.add(0, i+1, 0), withSmallLeavesbigBamboo);
+            setBlockIfAir(editSession, basePosition.add(0, i+2, 0), withLargeLeaves);
+            setBlockIfAir(editSession, basePosition.add(0, i+3, 0), withLargeLeaves);
+        }
     }
 
     /**
