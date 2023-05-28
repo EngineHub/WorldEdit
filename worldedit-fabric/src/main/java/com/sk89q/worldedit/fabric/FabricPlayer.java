@@ -95,7 +95,7 @@ public class FabricPlayer extends AbstractPlayerActor {
     public Location getLocation() {
         Vector3 position = Vector3.at(this.player.getX(), this.player.getY(), this.player.getZ());
         return new Location(
-                FabricWorldEdit.inst.getWorld(this.player.level),
+                FabricWorldEdit.inst.getWorld(this.player.serverLevel()),
                 position,
                 this.player.getYRot(),
                 this.player.getXRot());
@@ -112,12 +112,12 @@ public class FabricPlayer extends AbstractPlayerActor {
         // This check doesn't really ever get to be false in Fabric
         // Since Fabric API doesn't allow cancelling the teleport.
         // However, other mods could theoretically mix this in, so allow the detection.
-        return this.player.getLevel() == level;
+        return this.player.serverLevel() == level;
     }
 
     @Override
     public World getWorld() {
-        return FabricWorldEdit.inst.getWorld(this.player.level);
+        return FabricWorldEdit.inst.getWorld(this.player.serverLevel());
     }
 
     @Override

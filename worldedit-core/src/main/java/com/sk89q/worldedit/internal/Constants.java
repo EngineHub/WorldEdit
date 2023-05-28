@@ -81,4 +81,10 @@ public final class Constants {
      * The DataVersion for Minecraft 1.19
      */
     public static final int DATA_VERSION_MC_1_19 = 3105;
+
+    /**
+     * The DataVersion for Minecraft 1.20
+     */
+    public static final int DATA_VERSION_MC_1_20 = 3460;
+
 }
