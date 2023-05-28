@@ -36,6 +36,7 @@ public final class BiomeTypes {
     @Nullable public static final BiomeType BEACH = get("minecraft:beach");
     @Nullable public static final BiomeType BIRCH_FOREST = get("minecraft:birch_forest");
     @Deprecated @Nullable public static final BiomeType BIRCH_FOREST_HILLS = get("minecraft:birch_forest_hills");
+    @Nullable public static final BiomeType CHERRY_GROVE = get("minecraft:cherry_grove");
     @Nullable public static final BiomeType COLD_OCEAN = get("minecraft:cold_ocean");
     @Nullable public static final BiomeType CRIMSON_FOREST = get("minecraft:crimson_forest");
     @Nullable public static final BiomeType DARK_FOREST = get("minecraft:dark_forest");
@@ -76,6 +77,7 @@ public final class BiomeTypes {
     @Nullable public static final BiomeType MEADOW = get("minecraft:meadow");
     @Deprecated @Nullable public static final BiomeType MODIFIED_BADLANDS_PLATEAU = get("minecraft:modified_badlands_plateau");
     @Deprecated @Nullable public static final BiomeType MODIFIED_GRAVELLY_HILLS = get("minecraft:modified_gravelly_hills");
+    @Deprecated @Nullable public static final BiomeType MODIFIED_GRAVELLY_MOUNTAINS = get("minecraft:modified_gravelly_mountains");
     @Deprecated @Nullable public static final BiomeType MODIFIED_JUNGLE = get("minecraft:modified_jungle");
     @Deprecated @Nullable public static final BiomeType MODIFIED_JUNGLE_EDGE = get("minecraft:modified_jungle_edge");
     @Deprecated @Nullable public static final BiomeType MODIFIED_WOODED_BADLANDS_PLATEAU = get("minecraft:modified_wooded_badlands_plateau");
