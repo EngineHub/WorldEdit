@@ -87,7 +87,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -206,18 +205,18 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent(platform));
     }
 
-    @SuppressWarnings({ "deprecation", "unchecked" })
+    @SuppressWarnings({ "unchecked" })
     private void initializeRegistries() {
         // Biome
         for (Biome biome : Biome.values()) {
             if (!biome.name().equals("CUSTOM")) {
-                String lowerCaseBiomeName = biome.name().toLowerCase(Locale.ROOT);
-                BiomeType.REGISTRY.register("minecraft:" + lowerCaseBiomeName, new BiomeType("minecraft:" + lowerCaseBiomeName));
+                String key = biome.getKey().toString();
+                BiomeType.REGISTRY.register(key, new BiomeType(key));
             }
         }
         // Block & Item
         for (Material material : Material.values()) {
-            if (material.isBlock() && !material.isLegacy()) {
+            if (material.isBlock()) {
                 BlockType.REGISTRY.register(material.getKey().toString(), new BlockType(material.getKey().toString(), blockState -> {
                     // TODO Use something way less hacky than this.
                     ParserContext context = new ParserContext();
@@ -240,17 +239,18 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
                     }
                 }));
             }
-            if (material.isItem() && !material.isLegacy()) {
+            if (material.isItem()) {
                 ItemType.REGISTRY.register(material.getKey().toString(), new ItemType(material.getKey().toString()));
             }
         }
         // Entity
         for (org.bukkit.entity.EntityType entityType : org.bukkit.entity.EntityType.values()) {
-            String mcid = entityType.getName();
-            if (mcid != null) {
-                String lowerCaseMcId = mcid.toLowerCase(Locale.ROOT);
-                EntityType.REGISTRY.register("minecraft:" + lowerCaseMcId, new EntityType("minecraft:" + lowerCaseMcId));
+            if (entityType == org.bukkit.entity.EntityType.UNKNOWN) {
+                // This doesn't have a key - skip it
+                continue;
             }
+            String key = entityType.getKey().toString();
+            EntityType.REGISTRY.register(key, new EntityType(key));
         }
         // ... :|
         GameModes.get("");
@@ -272,6 +272,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
                 ItemCategory.REGISTRY.register(itemTag.getKey().toString(), new ItemCategory(itemTag.getKey().toString()));
             }
         } catch (NoSuchMethodError ignored) {
+            // TODO Remove this catch once we drop older version support
             getLogger().warning("The version of Spigot/Paper you are using doesn't support Tags. The usage of tags with WorldEdit will not work until you update.");
         }
     }

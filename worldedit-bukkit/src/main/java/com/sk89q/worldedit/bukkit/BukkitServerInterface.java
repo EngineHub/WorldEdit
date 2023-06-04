@@ -38,9 +38,10 @@ import com.sk89q.worldedit.util.lifecycle.Lifecycled;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.registry.Registries;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.Server;
 import org.bukkit.World;
-import org.bukkit.entity.EntityType;
 import org.enginehub.piston.CommandManager;
 
 import java.util.ArrayList;
@@ -104,12 +105,11 @@ public class BukkitServerInterface extends AbstractPlatform implements MultiUser
 
     @Override
     public boolean isValidMobType(String type) {
-        if (!type.startsWith("minecraft:")) {
+        NamespacedKey entityKey = NamespacedKey.fromString(type);
+        if (entityKey == null) {
             return false;
         }
-        @SuppressWarnings("deprecation")
-        final EntityType entityType = EntityType.fromName(type.substring(10));
-        return entityType != null && entityType.isAlive();
+        return Registry.ENTITY_TYPE.get(entityKey) != null;
     }
 
     @Override
