@@ -55,7 +55,7 @@ dependencies {
     implementation("net.minecraftforge.gradle:ForgeGradle:6.0.4")
     implementation("net.fabricmc:fabric-loom:$loomVersion")
     implementation("net.fabricmc:sponge-mixin:$mixinVersion")
-    implementation("org.enginehub.gradle:gradle-codecov-plugin:0.1.1-SNAPSHOT")
+    implementation("org.enginehub.gradle:gradle-codecov-plugin:0.2.0")
     implementation("io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:1.5.5")
     implementation("org.spongepowered:mixingradle:0.7.33")
 }
