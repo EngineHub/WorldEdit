@@ -29,15 +29,6 @@ if (!project.hasProperty("gitCommitHash")) {
     }
 }
 
-// Work around https://github.com/gradle/gradle/issues/4823
-subprojects {
-    if (buildscript.sourceFile?.extension?.toLowerCase() == "kts"
-        && parent != rootProject) {
-        generateSequence(parent) { project -> project.parent.takeIf { it != rootProject } }
-            .forEach { evaluationDependsOn(it.path) }
-    }
-}
-
 logger.lifecycle("""
 *******************************************
  You are building WorldEdit!

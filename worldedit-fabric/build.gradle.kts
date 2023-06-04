@@ -22,7 +22,7 @@ apply(plugin = "fabric-loom")
 apply(plugin = "java-library")
 
 val minecraftVersion = "1.19.4"
-val loaderVersion = "0.14.17"
+val loaderVersion = "0.14.21"
 
 val fabricApiConfiguration: Configuration = configurations.create("fabricApi")
 
@@ -34,6 +34,11 @@ repositories {
     maven {
         name = "Fabric"
         url = uri("https://maven.fabricmc.net/")
+    }
+    getByName("Mojang") {
+        content {
+            includeGroupByRegex("com\\.mojang\\..*")
+        }
     }
 }
 
@@ -48,7 +53,7 @@ dependencies {
     "modImplementation"("net.fabricmc:fabric-loader:$loaderVersion")
 
     // [1] declare fabric-api dependency...
-    "fabricApi"("net.fabricmc.fabric-api:fabric-api:0.75.2+1.19.4")
+    "fabricApi"("net.fabricmc.fabric-api:fabric-api:0.83.0+1.19.4")
 
     // [2] Load the API dependencies from the fabric mod json...
     @Suppress("UNCHECKED_CAST")
