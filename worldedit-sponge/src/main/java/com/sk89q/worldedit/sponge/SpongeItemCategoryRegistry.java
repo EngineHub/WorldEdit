@@ -23,7 +23,10 @@ import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.ItemCategoryRegistry;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.BlockType;
+import org.spongepowered.api.registry.Registry;
 import org.spongepowered.api.registry.RegistryTypes;
+import org.spongepowered.api.tag.Tag;
 
 import java.util.Collections;
 import java.util.Set;
@@ -32,12 +35,12 @@ import java.util.stream.Collectors;
 public class SpongeItemCategoryRegistry implements ItemCategoryRegistry {
     @Override
     public Set<ItemType> getCategorisedByName(String category) {
-        return Sponge.game().registry(RegistryTypes.ITEM_TYPE_TAGS)
-            .findValue(ResourceKey.resolve(category))
-            .map(org.spongepowered.api.tag.Tag::values)
-            .orElse(Collections.emptyList())
+        Registry<org.spongepowered.api.item.ItemType> itemTypeRegistry =
+            Sponge.game().registry(RegistryTypes.ITEM_TYPE);
+
+        return itemTypeRegistry.taggedValues(Tag.of(RegistryTypes.ITEM_TYPE, ResourceKey.resolve(category)))
             .stream()
-            .map(b -> ItemType.REGISTRY.get(Sponge.game().registry(RegistryTypes.ITEM_TYPE).valueKey(b).formatted()))
+            .map(itemType -> ItemType.REGISTRY.get(itemTypeRegistry.valueKey(itemType).formatted()))
             .collect(Collectors.toSet());
     }
 }

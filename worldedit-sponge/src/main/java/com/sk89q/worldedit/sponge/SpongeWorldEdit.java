@@ -190,13 +190,13 @@ public class SpongeWorldEdit {
             });
         }
 
-        event.game().registry(RegistryTypes.BLOCK_TYPE_TAGS).streamEntries().forEach(blockTypeTag -> {
+        event.game().registry(RegistryTypes.BLOCK_TYPE).tags().forEach(blockTypeTag -> {
             String id = blockTypeTag.key().asString();
             if (!BlockCategory.REGISTRY.keySet().contains(id)) {
                 BlockCategory.REGISTRY.register(id, new BlockCategory(id));
             }
         });
-        event.game().registry(RegistryTypes.ITEM_TYPE_TAGS).streamEntries().forEach(itemTypeTag -> {
+        event.game().registry(RegistryTypes.ITEM_TYPE).tags().forEach(itemTypeTag -> {
             String id = itemTypeTag.key().asString();
             if (!ItemCategory.REGISTRY.keySet().contains(id)) {
                 ItemCategory.REGISTRY.register(id, new ItemCategory(id));
