@@ -26,7 +26,7 @@ import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ChunkHolder;
+import net.minecraft.server.level.FullChunkStatus;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -119,7 +119,7 @@ public class SpongeWorldNativeAccess implements WorldNativeAccess<LevelChunk, Bl
 
     @Override
     public boolean isChunkTicking(LevelChunk chunk) {
-        return chunk.getFullStatus().isOrAfter(ChunkHolder.FullChunkStatus.TICKING);
+        return chunk.getFullStatus().isOrAfter(FullChunkStatus.BLOCK_TICKING);
     }
 
     @Override

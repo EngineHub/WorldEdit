@@ -15,10 +15,10 @@ repositories {
 }
 
 minecraft {
-    version("1.18.2")
+    version("1.20")
 }
 
-val spongeApiVersion = "9.0.0";
+val spongeApiVersion = "11.0.0-SNAPSHOT";
 
 sponge {
     apiVersion(spongeApiVersion)
