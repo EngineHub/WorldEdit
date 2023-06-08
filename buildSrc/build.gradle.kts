@@ -52,7 +52,7 @@ dependencies {
     implementation("org.jfrog.buildinfo:build-info-extractor-gradle:4.32.0")
     implementation("org.spongepowered:spongegradle-plugin-development:2.0.2")
     implementation("org.spongepowered:vanillagradle:0.2.1-20220619.210040-41")
-    implementation("net.minecraftforge.gradle:ForgeGradle:6.0.4")
+    implementation("net.minecraftforge.gradle:ForgeGradle:6.0.6")
     implementation("net.fabricmc:fabric-loom:$loomVersion")
     implementation("net.fabricmc:sponge-mixin:$mixinVersion")
     implementation("org.enginehub.gradle:gradle-codecov-plugin:0.2.0")

@@ -98,7 +98,7 @@ public class ForgePlayer extends AbstractPlayerActor {
     public Location getLocation() {
         Vector3 position = Vector3.at(this.player.getX(), this.player.getY(), this.player.getZ());
         return new Location(
-            ForgeWorldEdit.inst.getWorld((ServerLevel) this.player.level),
+            ForgeWorldEdit.inst.getWorld(this.player.serverLevel()),
             position,
             this.player.getYRot(),
             this.player.getXRot());
@@ -113,12 +113,12 @@ public class ForgePlayer extends AbstractPlayerActor {
             location.getYaw(), location.getPitch()
         );
         // This may be false if the teleport was cancelled by a mod
-        return this.player.getLevel() == level;
+        return this.player.serverLevel() == level;
     }
 
     @Override
     public World getWorld() {
-        return ForgeWorldEdit.inst.getWorld((ServerLevel) this.player.level);
+        return ForgeWorldEdit.inst.getWorld(this.player.serverLevel());
     }
 
     @Override

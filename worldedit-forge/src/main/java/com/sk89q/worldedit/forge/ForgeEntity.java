@@ -70,7 +70,7 @@ class ForgeEntity implements Entity {
             float yaw = entity.getYRot();
             float pitch = entity.getXRot();
 
-            return new Location(ForgeAdapter.adapt((ServerLevel) entity.level), position, yaw, pitch);
+            return new Location(ForgeAdapter.adapt((ServerLevel) entity.level()), position, yaw, pitch);
         } else {
             return new Location(NullWorld.getInstance());
         }
@@ -86,7 +86,7 @@ class ForgeEntity implements Entity {
     public Extent getExtent() {
         net.minecraft.world.entity.Entity entity = entityRef.get();
         if (entity != null) {
-            return ForgeAdapter.adapt((ServerLevel) entity.level);
+            return ForgeAdapter.adapt((ServerLevel) entity.level());
         } else {
             return NullWorld.getInstance();
         }

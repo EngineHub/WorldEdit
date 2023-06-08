@@ -52,7 +52,7 @@ public class ForgeBlockRegistry extends BundledBlockRegistry {
         }
         return materialMap.computeIfAbsent(
             block.defaultBlockState(),
-            s -> new ForgeBlockMaterial(s.getMaterial(), s, super.getMaterial(blockType))
+            s -> new ForgeBlockMaterial(s, super.getMaterial(blockType))
         );
     }
 
