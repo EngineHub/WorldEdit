@@ -52,9 +52,11 @@ import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.features.EndFeatures;
 import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import org.apache.logging.log4j.Logger;
@@ -64,6 +66,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.entity.BlockEntity;
 import org.spongepowered.api.block.entity.BlockEntityArchetype;
 import org.spongepowered.api.block.entity.BlockEntityType;
+import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.entity.EntityArchetype;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.EntityTypes;
@@ -73,7 +76,6 @@ import org.spongepowered.api.util.Ticks;
 import org.spongepowered.api.world.BlockChangeFlags;
 import org.spongepowered.api.world.LightTypes;
 import org.spongepowered.api.world.SerializationBehavior;
-import org.spongepowered.api.world.generation.config.WorldGenerationConfig;
 import org.spongepowered.api.world.server.ServerLocation;
 import org.spongepowered.api.world.server.ServerWorld;
 import org.spongepowered.api.world.server.WorldTemplate;
@@ -85,7 +87,6 @@ import java.lang.ref.WeakReference;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
@@ -99,7 +100,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class SpongeWorld extends AbstractWorld {
 
-    private static final Random random = new Random();
+    private static final RandomSource random = RandomSource.create();
     private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     private final WeakReference<ServerWorld> worldRef;
@@ -210,8 +211,7 @@ public final class SpongeWorld extends AbstractWorld {
         }
 
         // Create the TileEntity
-        if (didSet && block instanceof BaseBlock && ((BaseBlock) block).hasNbtData()) {
-            BaseBlock baseBlock = (BaseBlock) block;
+        if (didSet && block instanceof BaseBlock baseBlock && ((BaseBlock) block).hasNbtData()) {
             BlockEntityArchetype.builder()
                 .blockEntity((BlockEntityType)
                     Sponge.game().registry(RegistryTypes.BLOCK_ENTITY_TYPE)
@@ -250,19 +250,11 @@ public final class SpongeWorld extends AbstractWorld {
 
         final String id = "worldedittemp_" + getWorld().key().value();
 
-        WorldGenerationConfig baseConfig = getWorld().asTemplate().generationConfig();
-
-        WorldTemplate tempWorldProperties = getWorld().asTemplate().asBuilder()
+        WorldTemplate tempWorldProperties = WorldTemplate.builder().from(getWorld())
             .key(ResourceKey.of("worldedit", id))
-            .loadOnStartup(false)
-            .serializationBehavior(SerializationBehavior.NONE)
-            .generationConfig(options.getSeed().isPresent()
-                ? WorldGenerationConfig.Mutable.builder()
-                    .generateBonusChest(baseConfig.generateBonusChest())
-                    .generateFeatures(baseConfig.generateFeatures())
-                    .seed(options.getSeed().getAsLong())
-                    .build()
-                : baseConfig)
+            .add(Keys.IS_LOAD_ON_STARTUP, false)
+            .add(Keys.SERIALIZATION_BEHAVIOR, SerializationBehavior.NONE)
+            .add(Keys.SEED, options.getSeed().orElse(getWorld().properties().worldGenerationConfig().seed()))
             .build();
 
         ServerWorld tempWorld;
@@ -300,58 +292,39 @@ public final class SpongeWorld extends AbstractWorld {
 
 
     @Nullable
-    private static ConfiguredFeature<?, ?> createTreeFeatureGenerator(TreeGenerator.TreeType type) {
-        switch (type) {
+    private static net.minecraft.resources.ResourceKey<ConfiguredFeature<?, ?>> createTreeFeatureGenerator(TreeGenerator.TreeType type) {
+        return switch (type) {
             // Based off of the SaplingGenerator class, as well as uses of DefaultBiomeFeatures fields
-            case TREE:
-                return TreeFeatures.OAK.value();
-            case BIG_TREE:
-                return TreeFeatures.FANCY_OAK.value();
-            case REDWOOD:
-                return TreeFeatures.SPRUCE.value();
-            case TALL_REDWOOD:
-                return TreeFeatures.MEGA_SPRUCE.value();
-            case MEGA_REDWOOD:
-                return TreeFeatures.MEGA_PINE.value();
-            case BIRCH:
-                return TreeFeatures.BIRCH.value();
-            case JUNGLE:
-                return TreeFeatures.MEGA_JUNGLE_TREE.value();
-            case SMALL_JUNGLE:
-                return TreeFeatures.JUNGLE_TREE.value();
-            case SHORT_JUNGLE:
-                return TreeFeatures.JUNGLE_TREE_NO_VINE.value();
-            case JUNGLE_BUSH:
-                return TreeFeatures.JUNGLE_BUSH.value();
-            case SWAMP:
-                return TreeFeatures.SWAMP_OAK.value();
-            case ACACIA:
-                return TreeFeatures.ACACIA.value();
-            case DARK_OAK:
-                return TreeFeatures.DARK_OAK.value();
-            case TALL_BIRCH:
-                return TreeFeatures.SUPER_BIRCH_BEES.value(); // TODO Bees???
-            case RED_MUSHROOM:
-                return TreeFeatures.HUGE_RED_MUSHROOM.value();
-            case BROWN_MUSHROOM:
-                return TreeFeatures.HUGE_BROWN_MUSHROOM.value();
-            case WARPED_FUNGUS:
-                return TreeFeatures.WARPED_FUNGUS.value();
-            case CRIMSON_FUNGUS:
-                return TreeFeatures.CRIMSON_FUNGUS.value();
-            case CHORUS_PLANT:
-                return EndFeatures.CHORUS_PLANT.value();
-            case RANDOM:
-                return createTreeFeatureGenerator(TreeGenerator.TreeType.values()[ThreadLocalRandom.current().nextInt(TreeGenerator.TreeType.values().length)]);
-            default:
-                return null;
-        }
+            case TREE -> TreeFeatures.OAK;
+            case BIG_TREE -> TreeFeatures.FANCY_OAK;
+            case REDWOOD -> TreeFeatures.SPRUCE;
+            case TALL_REDWOOD -> TreeFeatures.MEGA_SPRUCE;
+            case MEGA_REDWOOD -> TreeFeatures.MEGA_PINE;
+            case BIRCH -> TreeFeatures.BIRCH;
+            case JUNGLE -> TreeFeatures.MEGA_JUNGLE_TREE;
+            case SMALL_JUNGLE -> TreeFeatures.JUNGLE_TREE;
+            case SHORT_JUNGLE -> TreeFeatures.JUNGLE_TREE_NO_VINE;
+            case JUNGLE_BUSH -> TreeFeatures.JUNGLE_BUSH;
+            case SWAMP -> TreeFeatures.SWAMP_OAK;
+            case ACACIA -> TreeFeatures.ACACIA;
+            case DARK_OAK -> TreeFeatures.DARK_OAK;
+            case TALL_BIRCH -> TreeFeatures.SUPER_BIRCH_BEES_0002;
+            case RED_MUSHROOM -> TreeFeatures.HUGE_RED_MUSHROOM;
+            case BROWN_MUSHROOM -> TreeFeatures.HUGE_BROWN_MUSHROOM;
+            case WARPED_FUNGUS -> TreeFeatures.WARPED_FUNGUS;
+            case CRIMSON_FUNGUS -> TreeFeatures.CRIMSON_FUNGUS;
+            case CHORUS_PLANT -> EndFeatures.CHORUS_PLANT;
+            case RANDOM -> createTreeFeatureGenerator(TreeGenerator.TreeType.values()[ThreadLocalRandom.current().nextInt(TreeGenerator.TreeType.values().length)]);
+            default -> null;
+        };
     }
 
     @Override
     public boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, BlockVector3 position) {
-        ConfiguredFeature<?, ?> generator = createTreeFeatureGenerator(type);
         ServerLevel world = (ServerLevel) getWorld();
+        ConfiguredFeature<?, ?> generator = Optional.ofNullable(createTreeFeatureGenerator(type))
+            .map(k -> world.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).get(k))
+            .orElse(null);
         return generator != null && generator.place(
             world, world.getChunkSource().getGenerator(), random,
             new BlockPos(position.getX(), position.getY(), position.getZ())
@@ -439,8 +412,7 @@ public final class SpongeWorld extends AbstractWorld {
     public boolean equals(Object o) {
         if (o == null) {
             return false;
-        } else if ((o instanceof SpongeWorld)) {
-            SpongeWorld other = ((SpongeWorld) o);
+        } else if ((o instanceof SpongeWorld other)) {
             ServerWorld otherWorld = other.worldRef.get();
             ServerWorld thisWorld = worldRef.get();
             return otherWorld != null && otherWorld.equals(thisWorld);
@@ -479,7 +451,7 @@ public final class SpongeWorld extends AbstractWorld {
     public Entity createEntity(Location location, BaseEntity entity) {
         Optional<EntityType<?>> entityType = Sponge.game().registry(RegistryTypes.ENTITY_TYPE)
                 .findValue(ResourceKey.resolve(entity.getType().getId()));
-        if (!entityType.isPresent()) {
+        if (entityType.isEmpty()) {
             return null;
         }
         EntityArchetype.Builder builder = EntityArchetype.builder().type(entityType.get());

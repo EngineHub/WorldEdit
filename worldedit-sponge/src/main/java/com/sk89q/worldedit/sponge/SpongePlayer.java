@@ -236,8 +236,7 @@ public class SpongePlayer extends AbstractPlayerActor {
         } else {
             BlockState spongeBlock = SpongeAdapter.adapt(block.toImmutableState());
             player.sendBlockChange(pos.getX(), pos.getY(), pos.getZ(), spongeBlock);
-            if (block instanceof BaseBlock && block.getBlockType().equals(com.sk89q.worldedit.world.block.BlockTypes.STRUCTURE_BLOCK)) {
-                final BaseBlock baseBlock = block.toBaseBlock();
+            if (block instanceof BaseBlock baseBlock && block.getBlockType().equals(com.sk89q.worldedit.world.block.BlockTypes.STRUCTURE_BLOCK)) {
                 final CompoundTag nbtData = baseBlock.getNbtData();
                 if (nbtData != null) {
                     net.minecraft.world.level.block.state.BlockState nativeBlock =
