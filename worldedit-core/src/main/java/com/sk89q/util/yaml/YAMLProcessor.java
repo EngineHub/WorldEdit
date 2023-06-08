@@ -104,7 +104,7 @@ public class YAMLProcessor extends YAMLNode {
             // pre-1.32 snakeyaml
         }
 
-        yaml = new Yaml(new SafeConstructor(), representer, dumperOptions, loaderOptions);
+        yaml = new Yaml(new SafeConstructor(new LoaderOptions()), representer, dumperOptions, loaderOptions);
 
         this.file = file;
     }
@@ -308,6 +308,7 @@ public class YAMLProcessor extends YAMLNode {
 
     private static class FancyRepresenter extends Representer {
         private FancyRepresenter() {
+            super(new DumperOptions());
             this.nullRepresenter = o -> representScalar(Tag.NULL, "");
         }
     }
