@@ -50,11 +50,7 @@ sponge {
 dependencies {
     api(project(":worldedit-core"))
     api(project(":worldedit-libs:sponge"))
-    // TODO remove after VG merges and releases my patch
-    // https://github.com/SpongePowered/VanillaGradle/pull/66
-    minecraft(minecraft.platform().get().moduleName() + ":" + minecraft.version().get()) {
-        exclude("it.unimi.dsi", "fastutil")
-    }
+
     implementation(platform("org.apache.logging.log4j:log4j-bom:${Versions.LOG4J}") {
         because("Sponge 8 (will?) provides Log4J")
     })
@@ -74,11 +70,9 @@ tasks.named<ShadowJar>("shadowJar") {
     dependencies {
         include(dependency("org.bstats:"))
         include(dependency("org.antlr:antlr4-runtime"))
-        include(dependency("it.unimi.dsi:fastutil"))
 
         relocate("org.antlr.v4", "com.sk89q.worldedit.antlr4")
         relocate("org.bstats", "com.sk89q.worldedit.sponge.bstats")
-        relocate("it.unimi.dsi.fastutil", "com.sk89q.worldedit.sponge.fastutil")
     }
 }
 tasks.named("assemble").configure {
