@@ -27,21 +27,8 @@ import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Futures;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Lifecycle;
-import com.sk89q.jnbt.ByteArrayTag;
-import com.sk89q.jnbt.ByteTag;
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.DoubleTag;
-import com.sk89q.jnbt.EndTag;
-import com.sk89q.jnbt.FloatTag;
-import com.sk89q.jnbt.IntArrayTag;
-import com.sk89q.jnbt.IntTag;
-import com.sk89q.jnbt.ListTag;
-import com.sk89q.jnbt.LongArrayTag;
-import com.sk89q.jnbt.LongTag;
 import com.sk89q.jnbt.NBTConstants;
-import com.sk89q.jnbt.ShortTag;
-import com.sk89q.jnbt.StringTag;
-import com.sk89q.jnbt.Tag;
+import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
@@ -64,6 +51,7 @@ import com.sk89q.worldedit.registry.state.IntegerProperty;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.SideEffect;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.io.file.SafeFiles;
@@ -76,11 +64,28 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.entity.EntityTypes;
+import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
+import com.sk89q.worldedit.world.generation.StructureType;
 import com.sk89q.worldedit.world.item.ItemType;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.ByteArrayTag;
+import net.minecraft.nbt.ByteTag;
+import net.minecraft.nbt.DoubleTag;
+import net.minecraft.nbt.EndTag;
+import net.minecraft.nbt.FloatTag;
+import net.minecraft.nbt.IntArrayTag;
+import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.LongArrayTag;
+import net.minecraft.nbt.LongTag;
+import net.minecraft.nbt.ShortTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.network.protocol.game.ClientboundEntityEventPacket;
 import net.minecraft.resources.ResourceKey;
@@ -91,6 +96,7 @@ import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.progress.ChunkProgressListener;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.Clearable;
@@ -103,6 +109,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelSettings;
+import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -115,12 +122,17 @@ import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.WorldOptions;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.PrimaryLevelData;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.craftbukkit.v1_20_R1.CraftServer;
@@ -133,6 +145,22 @@ import org.bukkit.craftbukkit.v1_20_R1.util.CraftMagicNumbers;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.generator.ChunkGenerator;
+import org.enginehub.linbus.common.LinTagId;
+import org.enginehub.linbus.tree.LinByteArrayTag;
+import org.enginehub.linbus.tree.LinByteTag;
+import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinDoubleTag;
+import org.enginehub.linbus.tree.LinEndTag;
+import org.enginehub.linbus.tree.LinFloatTag;
+import org.enginehub.linbus.tree.LinIntArrayTag;
+import org.enginehub.linbus.tree.LinIntTag;
+import org.enginehub.linbus.tree.LinListTag;
+import org.enginehub.linbus.tree.LinLongArrayTag;
+import org.enginehub.linbus.tree.LinLongTag;
+import org.enginehub.linbus.tree.LinShortTag;
+import org.enginehub.linbus.tree.LinStringTag;
+import org.enginehub.linbus.tree.LinTag;
+import org.enginehub.linbus.tree.LinTagType;
 import org.spigotmc.SpigotConfig;
 import org.spigotmc.WatchdogThread;
 
@@ -170,6 +198,8 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     private final Method getChunkFutureMethod;
     private final Field chunkProviderExecutorField;
     private final Watchdog watchdog;
+
+    private static final RandomSource random = RandomSource.create();
 
     // ------------------------------------------------------------------------
     // Code that may break between versions of Minecraft
@@ -304,6 +334,21 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         return combinedId == 0 && state.getBlockType() != BlockTypes.AIR ? OptionalInt.empty() : OptionalInt.of(combinedId);
     }
 
+    public BlockState adapt(net.minecraft.world.level.block.state.BlockState blockState) {
+        int internalId = Block.getId(blockState);
+        BlockState state = BlockStateIdAccess.getBlockStateById(internalId);
+        if (state == null) {
+            state = BukkitAdapter.adapt(CraftBlockData.createData(blockState));
+        }
+
+        return state;
+    }
+
+    public net.minecraft.world.level.block.state.BlockState adapt(BlockState blockState) {
+        int internalId = BlockStateIdAccess.getBlockStateId(blockState);
+        return Block.stateById(internalId);
+    }
+
     @Override
     public BlockState getBlock(Location location) {
         checkNotNull(location);
@@ -344,7 +389,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         BlockEntity te = chunk.getBlockEntity(blockPos);
         if (te != null) {
             net.minecraft.nbt.CompoundTag tag = te.saveWithId();
-            return state.toBaseBlock((CompoundTag) toNative(tag));
+            return state.toBaseBlock(LazyReference.from(() -> (LinCompoundTag) toNative(tag)));
         }
 
         return state.toBaseBlock();
@@ -371,6 +416,37 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         LevelChunk chunk = handle.getChunk(x >> 4, z >> 4);
 
         return biomeTypeFromNMSCache.computeIfAbsent(chunk.getNoiseBiome(x >> 2, y >> 2, z >> 2), b -> BiomeType.REGISTRY.get(b.unwrapKey().get().location().toString()));
+    }
+
+    public boolean generateFeature(ConfiguredFeatureType type, World world, EditSession session, BlockVector3 pt) {
+        ServerLevel originalWorld = ((CraftWorld) world).getHandle();
+        ConfiguredFeature<?, ?> k = originalWorld.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).get(ResourceLocation.tryParse(type.getId()));
+        ServerChunkCache chunkManager = originalWorld.getChunkSource();
+        WorldGenLevel proxyLevel = PaperweightServerLevelDelegateProxy.newInstance(session, originalWorld, this);
+        return k != null && k.place(proxyLevel, chunkManager.getGenerator(), random, new BlockPos(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()));
+    }
+
+    public boolean generateStructure(StructureType type, World world, EditSession session, BlockVector3 pt) {
+        ServerLevel originalWorld = ((CraftWorld) world).getHandle();
+        Structure k = originalWorld.registryAccess().registryOrThrow(Registries.STRUCTURE).get(ResourceLocation.tryParse(type.getId()));
+        if (k == null) {
+            return false;
+        }
+
+        ServerChunkCache chunkManager = originalWorld.getChunkSource();
+        WorldGenLevel proxyLevel = PaperweightServerLevelDelegateProxy.newInstance(session, originalWorld, this);
+        ChunkPos chunkPos = new ChunkPos(new BlockPos(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()));
+        StructureStart structureStart = k.generate(originalWorld.registryAccess(), chunkManager.getGenerator(), chunkManager.getGenerator().getBiomeSource(), chunkManager.randomState(), originalWorld.getStructureManager(), originalWorld.getSeed(), chunkPos, 0, proxyLevel, biome -> true);
+
+        if (!structureStart.isValid()) {
+            return false;
+        } else {
+            BoundingBox boundingBox = structureStart.getBoundingBox();
+            ChunkPos min = new ChunkPos(SectionPos.blockToSectionCoord(boundingBox.minX()), SectionPos.blockToSectionCoord(boundingBox.minZ()));
+            ChunkPos max = new ChunkPos(SectionPos.blockToSectionCoord(boundingBox.maxX()), SectionPos.blockToSectionCoord(boundingBox.maxZ()));
+            ChunkPos.rangeClosed(min, max).forEach((chunkPosx) -> structureStart.placeInChunk(proxyLevel, originalWorld.structureManager(), chunkManager.getGenerator(), originalWorld.getRandom(), new BoundingBox(chunkPosx.getMinBlockX(), originalWorld.getMinBuildHeight(), chunkPosx.getMinBlockZ(), chunkPosx.getMaxBlockX(), originalWorld.getMaxBuildHeight(), chunkPosx.getMaxBlockZ()), chunkPosx));
+            return true;
+        }
     }
 
     @Override
@@ -461,7 +537,10 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
         net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
         readEntityIntoTag(mcEntity, tag);
-        return new BaseEntity(com.sk89q.worldedit.world.entity.EntityTypes.get(id), (CompoundTag) toNative(tag));
+        return new BaseEntity(
+            EntityTypes.get(id),
+            LazyReference.from(() -> (LinCompoundTag) toNative(tag))
+        );
     }
 
     @Nullable
@@ -475,7 +554,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
         String entityId = state.getType().getId();
 
-        CompoundTag nativeTag = state.getNbtData();
+        LinCompoundTag nativeTag = state.getNbt();
         net.minecraft.nbt.CompoundTag tag;
         if (nativeTag != null) {
             tag = (net.minecraft.nbt.CompoundTag) fromNative(nativeTag);
@@ -565,7 +644,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     }
 
     @Override
-    public void sendFakeNBT(Player player, BlockVector3 pos, CompoundTag nbtData) {
+    public void sendFakeNBT(Player player, BlockVector3 pos, LinCompoundTag nbtData) {
         ((CraftPlayer) player).getHandle().connection.send(ClientboundBlockEntityDataPacket.create(
             new StructureBlockEntity(
                 new BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()),
@@ -588,7 +667,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             DedicatedServer.getServer().registryAccess().registryOrThrow(Registries.ITEM).get(ResourceLocation.tryParse(item.getType().getId())),
             item.getAmount()
         );
-        stack.setTag(((net.minecraft.nbt.CompoundTag) fromNative(item.getNbtData())));
+        stack.setTag(((net.minecraft.nbt.CompoundTag) fromNative(item.getNbt())));
         return CraftItemStack.asCraftMirror(stack);
     }
 
@@ -596,7 +675,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     public BaseItemStack adapt(org.bukkit.inventory.ItemStack itemStack) {
         final ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
         final BaseItemStack weStack = new BaseItemStack(BukkitAdapter.asItemType(itemStack.getType()), itemStack.getAmount());
-        weStack.setNbtData(((CompoundTag) toNative(nmsStack.getTag())));
+        weStack.setNbtReference(LazyReference.from(() -> (LinCompoundTag) toNative(nmsStack.getTag())));
         return weStack;
     }
 
@@ -607,9 +686,12 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     public boolean simulateItemUse(org.bukkit.World world, BlockVector3 position, BaseItem item, Direction face) {
         CraftWorld craftWorld = (CraftWorld) world;
         ServerLevel worldServer = craftWorld.getHandle();
-        ItemStack stack = CraftItemStack.asNMSCopy(BukkitAdapter.adapt(item instanceof BaseItemStack
-            ? ((BaseItemStack) item) : new BaseItemStack(item.getType(), item.getNbtData(), 1)));
-        stack.setTag((net.minecraft.nbt.CompoundTag) fromNative(item.getNbtData()));
+        ItemStack stack = CraftItemStack.asNMSCopy(BukkitAdapter.adapt(
+            item instanceof BaseItemStack
+                ? ((BaseItemStack) item)
+                : new BaseItemStack(item.getType(), item.getNbtReference(), 1)
+        ));
+        stack.setTag((net.minecraft.nbt.CompoundTag) fromNative(item.getNbt()));
 
         PaperweightFakePlayer fakePlayer;
         try {
@@ -772,7 +854,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             BlockEntity blockEntity = chunk.getBlockEntity(pos);
             if (blockEntity != null) {
                 net.minecraft.nbt.CompoundTag tag = blockEntity.saveWithId();
-                state = state.toBaseBlock(((CompoundTag) toNative(tag)));
+                state = state.toBaseBlock(LazyReference.from(() -> (LinCompoundTag) toNative(tag)));
             }
             extent.setBlock(vec, state.toBaseBlock());
             if (options.shouldRegenBiomes()) {
@@ -865,48 +947,45 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
      * @param foreign non-native NMS NBT structure
      * @return native WorldEdit NBT structure
      */
-    Tag toNative(net.minecraft.nbt.Tag foreign) {
+    LinTag<?> toNative(net.minecraft.nbt.Tag foreign) {
         if (foreign == null) {
             return null;
         }
-        if (foreign instanceof net.minecraft.nbt.CompoundTag) {
-            Map<String, Tag> values = new HashMap<>();
-            Set<String> foreignKeys = ((net.minecraft.nbt.CompoundTag) foreign).getAllKeys();
-
-            for (String str : foreignKeys) {
-                net.minecraft.nbt.Tag base = ((net.minecraft.nbt.CompoundTag) foreign).get(str);
-                values.put(str, toNative(base));
+        if (foreign instanceof net.minecraft.nbt.CompoundTag compoundTag) {
+            LinCompoundTag.Builder builder = LinCompoundTag.builder();
+            for (var entry : compoundTag.tags.entrySet()) {
+                builder.put(entry.getKey(), toNative(entry.getValue()));
             }
-            return new CompoundTag(values);
-        } else if (foreign instanceof net.minecraft.nbt.ByteTag) {
-            return new ByteTag(((net.minecraft.nbt.ByteTag) foreign).getAsByte());
-        } else if (foreign instanceof net.minecraft.nbt.ByteArrayTag) {
-            return new ByteArrayTag(((net.minecraft.nbt.ByteArrayTag) foreign).getAsByteArray());
-        } else if (foreign instanceof net.minecraft.nbt.DoubleTag) {
-            return new DoubleTag(((net.minecraft.nbt.DoubleTag) foreign).getAsDouble());
-        } else if (foreign instanceof net.minecraft.nbt.FloatTag) {
-            return new FloatTag(((net.minecraft.nbt.FloatTag) foreign).getAsFloat());
-        } else if (foreign instanceof net.minecraft.nbt.IntTag) {
-            return new IntTag(((net.minecraft.nbt.IntTag) foreign).getAsInt());
-        } else if (foreign instanceof net.minecraft.nbt.IntArrayTag) {
-            return new IntArrayTag(((net.minecraft.nbt.IntArrayTag) foreign).getAsIntArray());
-        } else if (foreign instanceof net.minecraft.nbt.LongArrayTag) {
-            return new LongArrayTag(((net.minecraft.nbt.LongArrayTag) foreign).getAsLongArray());
-        } else if (foreign instanceof net.minecraft.nbt.ListTag) {
+            return builder.build();
+        } else if (foreign instanceof net.minecraft.nbt.ByteTag byteTag) {
+            return LinByteTag.of(byteTag.getAsByte());
+        } else if (foreign instanceof net.minecraft.nbt.ByteArrayTag byteArrayTag) {
+            return LinByteArrayTag.of(byteArrayTag.getAsByteArray());
+        } else if (foreign instanceof net.minecraft.nbt.DoubleTag doubleTag) {
+            return LinDoubleTag.of(doubleTag.getAsDouble());
+        } else if (foreign instanceof net.minecraft.nbt.FloatTag floatTag) {
+            return LinFloatTag.of(floatTag.getAsFloat());
+        } else if (foreign instanceof net.minecraft.nbt.IntTag intTag) {
+            return LinIntTag.of(intTag.getAsInt());
+        } else if (foreign instanceof net.minecraft.nbt.IntArrayTag intArrayTag) {
+            return LinIntArrayTag.of(intArrayTag.getAsIntArray());
+        } else if (foreign instanceof net.minecraft.nbt.LongArrayTag longArrayTag) {
+            return LinLongArrayTag.of(longArrayTag.getAsLongArray());
+        } else if (foreign instanceof net.minecraft.nbt.ListTag listTag) {
             try {
-                return toNativeList((net.minecraft.nbt.ListTag) foreign);
+                return toNativeList(listTag);
             } catch (Throwable e) {
                 logger.log(Level.WARNING, "Failed to convert net.minecraft.nbt.ListTag", e);
-                return new ListTag(ByteTag.class, new ArrayList<ByteTag>());
+                return LinListTag.empty(LinTagType.endTag());
             }
-        } else if (foreign instanceof net.minecraft.nbt.LongTag) {
-            return new LongTag(((net.minecraft.nbt.LongTag) foreign).getAsLong());
-        } else if (foreign instanceof net.minecraft.nbt.ShortTag) {
-            return new ShortTag(((net.minecraft.nbt.ShortTag) foreign).getAsShort());
-        } else if (foreign instanceof net.minecraft.nbt.StringTag) {
-            return new StringTag(foreign.getAsString());
+        } else if (foreign instanceof net.minecraft.nbt.LongTag longTag) {
+            return LinLongTag.of(longTag.getAsLong());
+        } else if (foreign instanceof net.minecraft.nbt.ShortTag shortTag) {
+            return LinShortTag.of(shortTag.getAsShort());
+        } else if (foreign instanceof net.minecraft.nbt.StringTag stringTag) {
+            return LinStringTag.of(stringTag.getAsString());
         } else if (foreign instanceof net.minecraft.nbt.EndTag) {
-            return new EndTag();
+            return LinEndTag.instance();
         } else {
             throw new IllegalArgumentException("Don't know how to make native " + foreign.getClass().getCanonicalName());
         }
@@ -920,16 +999,16 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
      * @throws SecurityException on error
      * @throws IllegalArgumentException on error
      */
-    private ListTag toNativeList(net.minecraft.nbt.ListTag foreign) throws SecurityException, IllegalArgumentException {
-        List<Tag> values = new ArrayList<>();
-        int type = foreign.getElementType();
+    private LinListTag<?> toNativeList(net.minecraft.nbt.ListTag foreign) throws SecurityException, IllegalArgumentException {
+        LinListTag.Builder<LinTag<?>> builder = LinListTag.builder(
+            LinTagType.fromId(LinTagId.fromId(foreign.getElementType()))
+        );
 
         for (net.minecraft.nbt.Tag tag : foreign) {
-            values.add(toNative(tag));
+            builder.add(toNative(tag));
         }
 
-        Class<? extends Tag> cls = NBTConstants.getClassFromType(type);
-        return new ListTag(cls, values);
+        return builder.build();
     }
 
     /**
@@ -938,46 +1017,44 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
      * @param foreign structure to convert
      * @return non-native structure
      */
-    net.minecraft.nbt.Tag fromNative(Tag foreign) {
+    Tag fromNative(LinTag<?> foreign) {
         if (foreign == null) {
             return null;
         }
-        if (foreign instanceof CompoundTag) {
+        if (foreign instanceof LinCompoundTag compoundTag) {
             net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
-            for (Map.Entry<String, Tag> entry : ((CompoundTag) foreign)
-                .getValue().entrySet()) {
+            for (var entry : compoundTag.value().entrySet()) {
                 tag.put(entry.getKey(), fromNative(entry.getValue()));
             }
             return tag;
-        } else if (foreign instanceof ByteTag) {
-            return net.minecraft.nbt.ByteTag.valueOf(((ByteTag) foreign).getValue());
-        } else if (foreign instanceof ByteArrayTag) {
-            return new net.minecraft.nbt.ByteArrayTag(((ByteArrayTag) foreign).getValue());
-        } else if (foreign instanceof DoubleTag) {
-            return net.minecraft.nbt.DoubleTag.valueOf(((DoubleTag) foreign).getValue());
-        } else if (foreign instanceof FloatTag) {
-            return net.minecraft.nbt.FloatTag.valueOf(((FloatTag) foreign).getValue());
-        } else if (foreign instanceof IntTag) {
-            return net.minecraft.nbt.IntTag.valueOf(((IntTag) foreign).getValue());
-        } else if (foreign instanceof IntArrayTag) {
-            return new net.minecraft.nbt.IntArrayTag(((IntArrayTag) foreign).getValue());
-        } else if (foreign instanceof LongArrayTag) {
-            return new net.minecraft.nbt.LongArrayTag(((LongArrayTag) foreign).getValue());
-        } else if (foreign instanceof ListTag) {
-            net.minecraft.nbt.ListTag tag = new net.minecraft.nbt.ListTag();
-            ListTag foreignList = (ListTag) foreign;
-            for (Tag t : foreignList.getValue()) {
+        } else if (foreign instanceof LinByteTag byteTag) {
+            return ByteTag.valueOf(byteTag.valueAsByte());
+        } else if (foreign instanceof LinByteArrayTag byteArrayTag) {
+            return new ByteArrayTag(byteArrayTag.value());
+        } else if (foreign instanceof LinDoubleTag doubleTag) {
+            return DoubleTag.valueOf(doubleTag.valueAsDouble());
+        } else if (foreign instanceof LinFloatTag floatTag) {
+            return FloatTag.valueOf(floatTag.valueAsFloat());
+        } else if (foreign instanceof LinIntTag intTag) {
+            return IntTag.valueOf(intTag.valueAsInt());
+        } else if (foreign instanceof LinIntArrayTag intArrayTag) {
+            return new IntArrayTag(intArrayTag.value());
+        } else if (foreign instanceof LinLongArrayTag longArrayTag) {
+            return new LongArrayTag(longArrayTag.value());
+        } else if (foreign instanceof LinListTag<?> listTag) {
+            net.minecraft.nbt.ListTag tag = new ListTag();
+            for (var t : listTag.value()) {
                 tag.add(fromNative(t));
             }
             return tag;
-        } else if (foreign instanceof LongTag) {
-            return net.minecraft.nbt.LongTag.valueOf(((LongTag) foreign).getValue());
-        } else if (foreign instanceof ShortTag) {
-            return net.minecraft.nbt.ShortTag.valueOf(((ShortTag) foreign).getValue());
-        } else if (foreign instanceof StringTag) {
-            return net.minecraft.nbt.StringTag.valueOf(((StringTag) foreign).getValue());
-        } else if (foreign instanceof EndTag) {
-            return net.minecraft.nbt.EndTag.INSTANCE;
+        } else if (foreign instanceof LinLongTag longTag) {
+            return LongTag.valueOf(longTag.valueAsLong());
+        } else if (foreign instanceof LinShortTag shortTag) {
+            return ShortTag.valueOf(shortTag.valueAsShort());
+        } else if (foreign instanceof LinStringTag stringTag) {
+            return StringTag.valueOf(stringTag.value());
+        } else if (foreign instanceof LinEndTag) {
+            return EndTag.INSTANCE;
         } else {
             throw new IllegalArgumentException("Don't know how to make NMS " + foreign.getClass().getCanonicalName());
         }
@@ -1027,7 +1104,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         MojangWatchdog(DedicatedServer server) throws NoSuchFieldException {
             this.server = server;
             Field tickField = MinecraftServer.class.getDeclaredField(
-                Refraction.pickName("nextTickTime", "ah")
+                Refraction.pickName("nextTickTime", "ag")
             );
             if (tickField.getType() != long.class) {
                 throw new IllegalStateException("nextTickTime is not a long field, mapping is likely incorrect");

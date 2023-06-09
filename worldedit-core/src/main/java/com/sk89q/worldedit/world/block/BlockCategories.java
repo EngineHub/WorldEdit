@@ -128,6 +128,7 @@ public final class BlockCategories {
     public static final BlockCategory NEEDS_IRON_TOOL = get("minecraft:needs_iron_tool");
     public static final BlockCategory NEEDS_STONE_TOOL = get("minecraft:needs_stone_tool");
     public static final BlockCategory NETHER_CARVER_REPLACEABLES = get("minecraft:nether_carver_replaceables");
+    @Deprecated public static final BlockCategory NON_FLAMMABLE_WOOD = get("minecraft:non_flammable_wood");
     public static final BlockCategory NYLIUM = get("minecraft:nylium");
     public static final BlockCategory OAK_LOGS = get("minecraft:oak_logs");
     public static final BlockCategory OCCLUDES_VIBRATION_SIGNALS = get("minecraft:occludes_vibration_signals");

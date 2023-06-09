@@ -35,9 +35,13 @@ import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.DataFixerBuilder;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.serialization.Dynamic;
-import com.sk89q.jnbt.CompoundTag;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.FloatTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -48,6 +52,7 @@ import net.minecraft.util.datafix.fixes.References;
 import net.minecraft.world.item.DyeColor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -82,11 +87,11 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
     @Override
     public <T> T fixUp(FixType<T> type, T original, int srcVer) {
         if (type == FixTypes.CHUNK) {
-            return (T) fixChunk((CompoundTag) original, srcVer);
+            return (T) fixChunk((LinCompoundTag) original, srcVer);
         } else if (type == FixTypes.BLOCK_ENTITY) {
-            return (T) fixBlockEntity((CompoundTag) original, srcVer);
+            return (T) fixBlockEntity((LinCompoundTag) original, srcVer);
         } else if (type == FixTypes.ENTITY) {
-            return (T) fixEntity((CompoundTag) original, srcVer);
+            return (T) fixEntity((LinCompoundTag) original, srcVer);
         } else if (type == FixTypes.BLOCK_STATE) {
             return (T) fixBlockState((String) original, srcVer);
         } else if (type == FixTypes.ITEM_TYPE) {
@@ -97,27 +102,27 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
         return original;
     }
 
-    private CompoundTag fixChunk(CompoundTag originalChunk, int srcVer) {
+    private LinCompoundTag fixChunk(LinCompoundTag originalChunk, int srcVer) {
         net.minecraft.nbt.CompoundTag tag = (net.minecraft.nbt.CompoundTag) adapter.fromNative(originalChunk);
         net.minecraft.nbt.CompoundTag fixed = convert(LegacyType.CHUNK, tag, srcVer);
-        return (CompoundTag) adapter.toNative(fixed);
+        return (LinCompoundTag) adapter.toNative(fixed);
     }
 
-    private CompoundTag fixBlockEntity(CompoundTag origTileEnt, int srcVer) {
+    private LinCompoundTag fixBlockEntity(LinCompoundTag origTileEnt, int srcVer) {
         net.minecraft.nbt.CompoundTag tag = (net.minecraft.nbt.CompoundTag) adapter.fromNative(origTileEnt);
         net.minecraft.nbt.CompoundTag fixed = convert(LegacyType.BLOCK_ENTITY, tag, srcVer);
-        return (CompoundTag) adapter.toNative(fixed);
+        return (LinCompoundTag) adapter.toNative(fixed);
     }
 
-    private CompoundTag fixEntity(CompoundTag origEnt, int srcVer) {
+    private LinCompoundTag fixEntity(LinCompoundTag origEnt, int srcVer) {
         net.minecraft.nbt.CompoundTag tag = (net.minecraft.nbt.CompoundTag) adapter.fromNative(origEnt);
         net.minecraft.nbt.CompoundTag fixed = convert(LegacyType.ENTITY, tag, srcVer);
-        return (CompoundTag) adapter.toNative(fixed);
+        return (LinCompoundTag) adapter.toNative(fixed);
     }
 
     private String fixBlockState(String blockState, int srcVer) {
         net.minecraft.nbt.CompoundTag stateNBT = stateToNBT(blockState);
-        Dynamic<net.minecraft.nbt.Tag> dynamic = new Dynamic<>(OPS_NBT, stateNBT);
+        Dynamic<Tag> dynamic = new Dynamic<>(OPS_NBT, stateNBT);
         net.minecraft.nbt.CompoundTag fixed = (net.minecraft.nbt.CompoundTag) INSTANCE.fixer.update(References.BLOCK_STATE, dynamic, srcVer, DATA_VERSION).getValue();
         return nbtToState(fixed);
     }
@@ -162,7 +167,7 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
     }
 
     private static String fixName(String key, int srcVer, TypeReference type) {
-        return INSTANCE.fixer.update(type, new Dynamic<>(OPS_NBT, net.minecraft.nbt.StringTag.valueOf(key)), srcVer, DATA_VERSION)
+        return INSTANCE.fixer.update(type, new Dynamic<>(OPS_NBT, StringTag.valueOf(key)), srcVer, DATA_VERSION)
             .getValue().getAsString();
     }
 
@@ -599,7 +604,7 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
 
     private static void convertItems(net.minecraft.nbt.CompoundTag nbttagcompound, String key, int sourceVer, int targetVer) {
         if (nbttagcompound.contains(key, 9)) {
-            net.minecraft.nbt.ListTag nbttaglist = nbttagcompound.getList(key, 10);
+            ListTag nbttaglist = nbttagcompound.getList(key, 10);
 
             for (int j = 0; j < nbttaglist.size(); ++j) {
                 nbttaglist.set(j, convert(LegacyType.ITEM_INSTANCE, nbttaglist.getCompound(j), sourceVer, targetVer));
@@ -618,18 +623,18 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
         }
 
         public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
-            net.minecraft.nbt.ListTag nbttaglist = cmp.getList("Equipment", 10);
-            net.minecraft.nbt.ListTag nbttaglist1;
+            ListTag nbttaglist = cmp.getList("Equipment", 10);
+            ListTag nbttaglist1;
 
             if (!nbttaglist.isEmpty() && !cmp.contains("HandItems", 10)) {
-                nbttaglist1 = new net.minecraft.nbt.ListTag();
+                nbttaglist1 = new ListTag();
                 nbttaglist1.add(nbttaglist.get(0));
                 nbttaglist1.add(new net.minecraft.nbt.CompoundTag());
                 cmp.put("HandItems", nbttaglist1);
             }
 
             if (nbttaglist.size() > 1 && !cmp.contains("ArmorItem", 10)) {
-                nbttaglist1 = new net.minecraft.nbt.ListTag();
+                nbttaglist1 = new ListTag();
                 nbttaglist1.add(nbttaglist.get(1));
                 nbttaglist1.add(nbttaglist.get(2));
                 nbttaglist1.add(nbttaglist.get(3));
@@ -640,21 +645,21 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
             cmp.remove("Equipment");
             if (cmp.contains("DropChances", 9)) {
                 nbttaglist1 = cmp.getList("DropChances", 5);
-                net.minecraft.nbt.ListTag nbttaglist2;
+                ListTag nbttaglist2;
 
                 if (!cmp.contains("HandDropChances", 10)) {
-                    nbttaglist2 = new net.minecraft.nbt.ListTag();
-                    nbttaglist2.add(net.minecraft.nbt.FloatTag.valueOf(nbttaglist1.getFloat(0)));
-                    nbttaglist2.add(net.minecraft.nbt.FloatTag.valueOf(0.0F));
+                    nbttaglist2 = new ListTag();
+                    nbttaglist2.add(FloatTag.valueOf(nbttaglist1.getFloat(0)));
+                    nbttaglist2.add(FloatTag.valueOf(0.0F));
                     cmp.put("HandDropChances", nbttaglist2);
                 }
 
                 if (!cmp.contains("ArmorDropChances", 10)) {
-                    nbttaglist2 = new net.minecraft.nbt.ListTag();
-                    nbttaglist2.add(net.minecraft.nbt.FloatTag.valueOf(nbttaglist1.getFloat(1)));
-                    nbttaglist2.add(net.minecraft.nbt.FloatTag.valueOf(nbttaglist1.getFloat(2)));
-                    nbttaglist2.add(net.minecraft.nbt.FloatTag.valueOf(nbttaglist1.getFloat(3)));
-                    nbttaglist2.add(net.minecraft.nbt.FloatTag.valueOf(nbttaglist1.getFloat(4)));
+                    nbttaglist2 = new ListTag();
+                    nbttaglist2.add(FloatTag.valueOf(nbttaglist1.getFloat(1)));
+                    nbttaglist2.add(FloatTag.valueOf(nbttaglist1.getFloat(2)));
+                    nbttaglist2.add(FloatTag.valueOf(nbttaglist1.getFloat(3)));
+                    nbttaglist2.add(FloatTag.valueOf(nbttaglist1.getFloat(4)));
                     cmp.put("ArmorDropChances", nbttaglist2);
                 }
 
@@ -1323,7 +1328,7 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
                             net.minecraft.nbt.CompoundTag nbttagcompound3 = nbttagcompound1.getCompound("display");
 
                             if (nbttagcompound3.contains("Lore", 9)) {
-                                net.minecraft.nbt.ListTag nbttaglist = nbttagcompound3.getList("Lore", 8);
+                                ListTag nbttaglist = nbttagcompound3.getList("Lore", 8);
 
                                 if (nbttaglist.size() == 1 && "(+NBT)".equals(nbttaglist.getString(0))) {
                                     return cmp;
@@ -1671,7 +1676,7 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
                 }
 
                 if (cmp.contains("SpawnPotentials", 9)) {
-                    net.minecraft.nbt.ListTag nbttaglist = cmp.getList("SpawnPotentials", 10);
+                    ListTag nbttaglist = cmp.getList("SpawnPotentials", 10);
 
                     for (int i = 0; i < nbttaglist.size(); ++i) {
                         net.minecraft.nbt.CompoundTag nbttagcompound2 = nbttaglist.getCompound(i);
@@ -1815,7 +1820,7 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
         }
 
         public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
-            net.minecraft.nbt.ListTag nbttaglist;
+            ListTag nbttaglist;
 
             if (cmp.contains("HandDropChances", 9)) {
                 nbttaglist = cmp.getList("HandDropChances", 5);
@@ -1856,7 +1861,7 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
         }
 
         protected void convert(net.minecraft.nbt.CompoundTag nbttagcompound, net.minecraft.nbt.CompoundTag nbttagcompound1) {
-            net.minecraft.nbt.ListTag nbttaglist = new net.minecraft.nbt.ListTag();
+            ListTag nbttaglist = new ListTag();
 
             nbttaglist.add(nbttagcompound);
             nbttagcompound1.put("Passengers", nbttaglist);
@@ -1884,7 +1889,7 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
                 net.minecraft.nbt.CompoundTag nbttagcompound1 = cmp.getCompound("tag");
 
                 if (nbttagcompound1.contains("pages", 9)) {
-                    net.minecraft.nbt.ListTag nbttaglist = nbttagcompound1.getList("pages", 8);
+                    ListTag nbttaglist = nbttagcompound1.getList("pages", 8);
 
                     for (int i = 0; i < nbttaglist.size(); ++i) {
                         String s = nbttaglist.getString(i);
@@ -1927,7 +1932,7 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
                             object = Component.literal("");
                         }
 
-                        nbttaglist.set(i, net.minecraft.nbt.StringTag.valueOf(Component.Serializer.toJson(object)));
+                        nbttaglist.set(i, StringTag.valueOf(Component.Serializer.toJson(object)));
                     }
 
                     nbttagcompound1.put("pages", nbttaglist);
@@ -2450,8 +2455,8 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
                 net.minecraft.nbt.CompoundTag nbttagcompound1 = cmp.getCompound("Level");
                 int i = nbttagcompound1.getInt("xPos");
                 int j = nbttagcompound1.getInt("zPos");
-                net.minecraft.nbt.ListTag nbttaglist = nbttagcompound1.getList("TileEntities", 10);
-                net.minecraft.nbt.ListTag nbttaglist1 = nbttagcompound1.getList("Sections", 10);
+                ListTag nbttaglist = nbttagcompound1.getList("TileEntities", 10);
+                ListTag nbttaglist1 = nbttagcompound1.getList("Sections", 10);
 
                 for (int k = 0; k < nbttaglist1.size(); ++k) {
                     net.minecraft.nbt.CompoundTag nbttagcompound2 = nbttaglist1.getCompound(k);
@@ -2624,7 +2629,7 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
     private static class DataInspectorStructure implements DataInspector {
         @Override
         public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
-            net.minecraft.nbt.ListTag nbttaglist;
+            ListTag nbttaglist;
             int j;
             net.minecraft.nbt.CompoundTag nbttagcompound1;
 
@@ -2659,7 +2664,7 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
         public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
             if (cmp.contains("Level", 10)) {
                 net.minecraft.nbt.CompoundTag nbttagcompound1 = cmp.getCompound("Level");
-                net.minecraft.nbt.ListTag nbttaglist;
+                ListTag nbttaglist;
                 int j;
 
                 if (nbttagcompound1.contains("Entities", 9)) {
@@ -2687,7 +2692,7 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
         @Override
         public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
             if (cmp.contains("Passengers", 9)) {
-                net.minecraft.nbt.ListTag nbttaglist = cmp.getList("Passengers", 10);
+                ListTag nbttaglist = cmp.getList("Passengers", 10);
 
                 for (int j = 0; j < nbttaglist.size(); ++j) {
                     nbttaglist.set(j, convert(LegacyType.ENTITY, nbttaglist.getCompound(j), sourceVer, targetVer));
@@ -2724,7 +2729,7 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
                 net.minecraft.nbt.CompoundTag nbttagcompound1 = cmp.getCompound("Offers");
 
                 if (nbttagcompound1.contains("Recipes", 9)) {
-                    net.minecraft.nbt.ListTag nbttaglist = nbttagcompound1.getList("Recipes", 10);
+                    ListTag nbttaglist = nbttagcompound1.getList("Recipes", 10);
 
                     for (int j = 0; j < nbttaglist.size(); ++j) {
                         net.minecraft.nbt.CompoundTag nbttagcompound2 = nbttaglist.getCompound(j);
@@ -2765,7 +2770,7 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
         public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
             if (tileEntityMobSpawner.equals(new ResourceLocation(cmp.getString("id")))) {
                 if (cmp.contains("SpawnPotentials", 9)) {
-                    net.minecraft.nbt.ListTag nbttaglist = cmp.getList("SpawnPotentials", 10);
+                    ListTag nbttaglist = cmp.getList("SpawnPotentials", 10);
 
                     for (int j = 0; j < nbttaglist.size(); ++j) {
                         net.minecraft.nbt.CompoundTag nbttagcompound1 = nbttaglist.getCompound(j);
@@ -2785,7 +2790,7 @@ class PaperweightDataConverters extends DataFixerBuilder implements com.sk89q.wo
         ResourceLocation tileEntityCommand = getKey("TileEntityCommand");
 
         @Override
-        public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
+        public net.minecraft.nbt.CompoundTag inspect(CompoundTag cmp, int sourceVer, int targetVer) {
             if (tileEntityCommand.equals(new ResourceLocation(cmp.getString("id")))) {
                 cmp.putString("id", "Control");
                 convert(LegacyType.BLOCK_ENTITY, cmp, sourceVer, targetVer);

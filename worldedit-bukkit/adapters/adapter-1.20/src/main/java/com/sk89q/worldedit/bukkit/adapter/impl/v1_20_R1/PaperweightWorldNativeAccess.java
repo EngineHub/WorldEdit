@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.bukkit.adapter.impl.v1_20_R1;
 
-import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
@@ -36,6 +35,7 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import org.bukkit.craftbukkit.v1_20_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_20_R1.block.data.CraftBlockData;
 import org.bukkit.event.block.BlockPhysicsEvent;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.lang.ref.WeakReference;
 import java.util.Objects;
@@ -103,7 +103,7 @@ public class PaperweightWorldNativeAccess implements WorldNativeAccess<LevelChun
     }
 
     @Override
-    public boolean updateTileEntity(BlockPos position, CompoundTag tag) {
+    public boolean updateTileEntity(BlockPos position, LinCompoundTag tag) {
         // We will assume that the tile entity was created for us
         BlockEntity tileEntity = getWorld().getBlockEntity(position);
         if (tileEntity == null) {
