@@ -34,7 +34,6 @@ import java.nio.file.Path;
 public class BukkitConfiguration extends YAMLConfiguration {
 
     public boolean noOpPermissions = false;
-    public boolean commandBlockSupport = false;
     public boolean unsupportedVersionEditing = false;
     @Unreported private final WorldEditPlugin plugin;
 
@@ -47,7 +46,6 @@ public class BukkitConfiguration extends YAMLConfiguration {
     public void load() {
         super.load();
         noOpPermissions = config.getBoolean("no-op-permissions", false);
-        commandBlockSupport = config.getBoolean("command-block-support", false);
         unsupportedVersionEditing = "I accept that I will receive no support with this flag enabled.".equals(
                 config.getString("allow-editing-on-unsupported-versions", "false"));
         if (unsupportedVersionEditing) {

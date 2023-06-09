@@ -133,6 +133,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         serverSideCUI = getBool("server-side-cui", serverSideCUI);
         extendedYLimit = getBool("extended-y-limit", extendedYLimit);
         setDefaultLocaleName(getString("default-locale", defaultLocaleName));
+        commandBlockSupport = getBool("command-block-support", commandBlockSupport);
 
         LocalSession.MAX_HISTORY_SIZE = Math.max(15, getInt("history-size", 15));
 

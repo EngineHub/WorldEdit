@@ -35,8 +35,6 @@ import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.util.Substring;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
 import org.enginehub.piston.inject.InjectedValueStore;
 import org.enginehub.piston.inject.Key;
 import org.enginehub.piston.inject.MapBackedValueStore;
@@ -77,11 +75,7 @@ public final class CommandWrapper {
 
     private static Predicate<CommandSourceStack> requirementsFor(org.enginehub.piston.Command mapping) {
         return ctx -> {
-            final Entity entity = ctx.getEntity();
-            if (!(entity instanceof ServerPlayer)) {
-                return true;
-            }
-            final Actor actor = ForgeAdapter.adaptPlayer(((ServerPlayer) entity));
+            final Actor actor = ForgeAdapter.adaptCommandSource(ctx);
             InjectedValueStore store = MapBackedValueStore.create();
             store.injectValue(Key.of(Actor.class), context -> Optional.of(actor));
             return mapping.getCondition().satisfied(store);
@@ -91,7 +85,7 @@ public final class CommandWrapper {
     private static CompletableFuture<Suggestions> suggest(CommandContext<CommandSourceStack> context,
                                                           SuggestionsBuilder builder) throws CommandSyntaxException {
         CommandSuggestionEvent event = new CommandSuggestionEvent(
-            ForgeAdapter.adaptPlayer(context.getSource().getPlayerOrException()),
+            ForgeAdapter.adaptCommandSource(context.getSource()),
             builder.getInput()
         );
         WorldEdit.getInstance().getEventBus().post(event);

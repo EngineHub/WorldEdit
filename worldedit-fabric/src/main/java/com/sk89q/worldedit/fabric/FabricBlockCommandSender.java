@@ -17,21 +17,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.bukkit;
+package com.sk89q.worldedit.fabric;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.AbstractCommandBlockActor;
 import com.sk89q.worldedit.session.SessionKey;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.command.BlockCommandSender;
+import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
+import net.minecraft.world.level.BaseCommandBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
@@ -39,60 +40,65 @@ import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
-    private final BlockCommandSender sender;
-    private final WorldEditPlugin plugin;
+public class FabricBlockCommandSender extends AbstractCommandBlockActor {
+    private final BaseCommandBlock sender;
     private final UUID uuid;
 
-    public BukkitBlockCommandSender(WorldEditPlugin plugin, BlockCommandSender sender) {
-        super(BukkitAdapter.adapt(checkNotNull(sender).getBlock().getLocation()));
-        checkNotNull(plugin);
+    public FabricBlockCommandSender(BaseCommandBlock sender) {
+        super(new Location(FabricAdapter.adapt(checkNotNull(sender).getLevel()), FabricAdapter.adapt(sender.getPosition())));
 
-        this.plugin = plugin;
         this.sender = sender;
         this.uuid = UUID.nameUUIDFromBytes((UUID_PREFIX + sender.getName()).getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
     public String getName() {
-        return sender.getName();
+        return sender.getName().getString();
     }
 
     @Override
     @Deprecated
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
-            sender.sendMessage(part);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void print(String msg) {
-        for (String part : msg.split("\n")) {
-            print(TextComponent.of(part, TextColor.LIGHT_PURPLE));
+            sendMessage(net.minecraft.network.chat.Component.literal(part));
         }
     }
 
     @Override
     @Deprecated
     public void printDebug(String msg) {
-        for (String part : msg.split("\n")) {
-            print(TextComponent.of(part, TextColor.GRAY));
-        }
+        sendColorized(msg, ChatFormatting.GRAY);
+    }
+
+    @Override
+    @Deprecated
+    public void print(String msg) {
+        sendColorized(msg, ChatFormatting.LIGHT_PURPLE);
     }
 
     @Override
     @Deprecated
     public void printError(String msg) {
-        for (String part : msg.split("\n")) {
-            print(TextComponent.of(part, TextColor.RED));
-        }
+        sendColorized(msg, ChatFormatting.RED);
     }
 
     @Override
     public void print(Component component) {
-        TextAdapter.sendMessage(sender, WorldEditText.format(component, getLocale()));
+        sendMessage(net.minecraft.network.chat.Component.Serializer.fromJson(
+            GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale()))
+        ));
+    }
+
+    private void sendColorized(String msg, ChatFormatting formatting) {
+        for (String part : msg.split("\n")) {
+            var component = net.minecraft.network.chat.Component.literal(part);
+            component.withStyle(formatting);
+            sendMessage(component);
+        }
+    }
+
+    private void sendMessage(net.minecraft.network.chat.Component textComponent) {
+        this.sender.sendSystemMessage(textComponent);
     }
 
     @Override
@@ -119,10 +125,10 @@ public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
 
     @Override
     public boolean hasPermission(String permission) {
-        return sender.hasPermission(permission);
+        return true;
     }
 
-    public BlockCommandSender getSender() {
+    public BaseCommandBlock getSender() {
         return this.sender;
     }
 
@@ -133,35 +139,27 @@ public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
             private volatile boolean active = true;
 
             private void updateActive() {
-                Block block = sender.getBlock();
-                if (!block.getWorld().isChunkLoaded(block.getX() >> 4, block.getZ() >> 4)) {
+                BlockPos pos = new BlockPos((int) sender.getPosition().x, (int) sender.getPosition().y, (int) sender.getPosition().z);
+                int chunkX = SectionPos.blockToSectionCoord(pos.getX());
+                int chunkZ = SectionPos.blockToSectionCoord(pos.getZ());
+                if (!sender.getLevel().getChunkSource().hasChunk(chunkX, chunkZ)) {
                     active = false;
                     return;
                 }
-                Material type = block.getType();
-                active = type == Material.COMMAND_BLOCK
-                    || type == Material.CHAIN_COMMAND_BLOCK
-                    || type == Material.REPEATING_COMMAND_BLOCK;
+                Block type = sender.getLevel().getBlockState(pos).getBlock();
+                active = type == Blocks.COMMAND_BLOCK
+                    || type == Blocks.CHAIN_COMMAND_BLOCK
+                    || type == Blocks.REPEATING_COMMAND_BLOCK;
             }
 
             @Override
             public String getName() {
-                return sender.getName();
+                return sender.getName().getString();
             }
 
             @Override
             public boolean isActive() {
-                if (Bukkit.isPrimaryThread()) {
-                    // we can update eagerly
-                    updateActive();
-                } else {
-                    // we should update it eventually
-                    Bukkit.getScheduler().callSyncMethod(plugin,
-                        () -> {
-                            updateActive();
-                            return null;
-                        });
-                }
+                getSender().getLevel().getServer().execute(this::updateActive);
                 return active;
             }
 
