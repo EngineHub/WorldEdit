@@ -36,7 +36,9 @@ public final class EntityTypes {
     @Nullable public static final EntityType BAT = get("minecraft:bat");
     @Nullable public static final EntityType BEE = get("minecraft:bee");
     @Nullable public static final EntityType BLAZE = get("minecraft:blaze");
+    @Nullable public static final EntityType BLOCK_DISPLAY = get("minecraft:block_display");
     @Nullable public static final EntityType BOAT = get("minecraft:boat");
+    @Nullable public static final EntityType CAMEL = get("minecraft:camel");
     @Nullable public static final EntityType CAT = get("minecraft:cat");
     @Nullable public static final EntityType CAVE_SPIDER = get("minecraft:cave_spider");
     @Nullable public static final EntityType CHEST_BOAT = get("minecraft:chest_boat");
@@ -80,8 +82,10 @@ public final class EntityTypes {
     @Nullable public static final EntityType HORSE = get("minecraft:horse");
     @Nullable public static final EntityType HUSK = get("minecraft:husk");
     @Nullable public static final EntityType ILLUSIONER = get("minecraft:illusioner");
+    @Nullable public static final EntityType INTERACTION = get("minecraft:interaction");
     @Nullable public static final EntityType IRON_GOLEM = get("minecraft:iron_golem");
     @Nullable public static final EntityType ITEM = get("minecraft:item");
+    @Nullable public static final EntityType ITEM_DISPLAY = get("minecraft:item_display");
     @Nullable public static final EntityType ITEM_FRAME = get("minecraft:item_frame");
     @Nullable public static final EntityType LEASH_KNOT = get("minecraft:leash_knot");
     @Nullable public static final EntityType LIGHTNING_BOLT = get("minecraft:lightning_bolt");
@@ -116,6 +120,7 @@ public final class EntityTypes {
     @Nullable public static final EntityType SKELETON_HORSE = get("minecraft:skeleton_horse");
     @Nullable public static final EntityType SLIME = get("minecraft:slime");
     @Nullable public static final EntityType SMALL_FIREBALL = get("minecraft:small_fireball");
+    @Nullable public static final EntityType SNIFFER = get("minecraft:sniffer");
     @Nullable public static final EntityType SNOW_GOLEM = get("minecraft:snow_golem");
     @Nullable public static final EntityType SNOWBALL = get("minecraft:snowball");
     @Nullable public static final EntityType SPAWNER_MINECART = get("minecraft:spawner_minecart");
@@ -125,6 +130,7 @@ public final class EntityTypes {
     @Nullable public static final EntityType STRAY = get("minecraft:stray");
     @Nullable public static final EntityType STRIDER = get("minecraft:strider");
     @Nullable public static final EntityType TADPOLE = get("minecraft:tadpole");
+    @Nullable public static final EntityType TEXT_DISPLAY = get("minecraft:text_display");
     @Nullable public static final EntityType TNT = get("minecraft:tnt");
     @Nullable public static final EntityType TNT_MINECART = get("minecraft:tnt_minecart");
     @Nullable public static final EntityType TRADER_LLAMA = get("minecraft:trader_llama");

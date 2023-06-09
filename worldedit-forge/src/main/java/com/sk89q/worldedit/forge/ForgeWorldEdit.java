@@ -291,13 +291,13 @@ public class ForgeWorldEdit {
             && lcb.getUseItem() == Event.Result.DENY;
         boolean isRightDeny = event instanceof PlayerInteractEvent.RightClickBlock rcb
             && rcb.getUseItem() == Event.Result.DENY;
-        if (isLeftDeny || isRightDeny || event.getEntity().level.isClientSide || event.getHand() == InteractionHand.OFF_HAND) {
+        if (isLeftDeny || isRightDeny || event.getEntity().level().isClientSide || event.getHand() == InteractionHand.OFF_HAND) {
             return;
         }
 
         WorldEdit we = WorldEdit.getInstance();
         ForgePlayer player = adaptPlayer((ServerPlayer) event.getEntity());
-        ForgeWorld world = getWorld((ServerLevel) event.getEntity().level);
+        ForgeWorld world = getWorld((ServerLevel) event.getEntity().level());
         Direction direction = ForgeAdapter.adaptEnumFacing(event.getFace());
 
         if (event instanceof PlayerInteractEvent.LeftClickEmpty) {
@@ -335,7 +335,7 @@ public class ForgeWorldEdit {
         if (!(parseResults.getContext().getSource().getEntity() instanceof ServerPlayer player)) {
             return;
         }
-        if (player.level.isClientSide) {
+        if (player.level().isClientSide) {
             return;
         }
         if (parseResults.getContext().getCommand() != CommandWrapper.FAKE_COMMAND) {

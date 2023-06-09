@@ -350,7 +350,8 @@ public class ForgeWorld extends AbstractWorld {
                 // No spawners are needed for this world.
                 ImmutableList.of(),
                 // This controls ticking, we don't need it so set it to false.
-                false
+                false,
+                originalWorld.getRandomSequences()
             )) {
                 regenForWorld(region, extent, serverWorld, options);
 
@@ -508,7 +509,11 @@ public class ForgeWorld extends AbstractWorld {
     public void fixLighting(Iterable<BlockVector2> chunks) {
         ServerLevel world = getWorld();
         for (BlockVector2 chunk : chunks) {
-            world.getChunkSource().getLightEngine().retainData(new ChunkPos(chunk.getBlockX(), chunk.getBlockZ()), true);
+            // Fetch the chunk after light initialization at least
+            // We'll be doing a full relight anyways, so we don't need to be LIGHT yet
+            world.getChunkSource().getLightEngine().lightChunk(world.getChunk(
+                chunk.getBlockX(), chunk.getBlockZ(), ChunkStatus.INITIALIZE_LIGHT
+            ), false);
         }
     }
 

@@ -29,15 +29,6 @@ if (!project.hasProperty("gitCommitHash")) {
     }
 }
 
-// Work around https://github.com/gradle/gradle/issues/4823
-subprojects {
-    if (buildscript.sourceFile?.extension?.toLowerCase() == "kts"
-        && parent != rootProject) {
-        generateSequence(parent) { project -> project.parent.takeIf { it != rootProject } }
-            .forEach { evaluationDependsOn(it.path) }
-    }
-}
-
 logger.lifecycle("""
 *******************************************
  You are building WorldEdit!
@@ -62,11 +53,11 @@ val totalReport = tasks.register<JacocoReport>("jacocoTotalReport") {
             executionData(
                     fileTree(proj.buildDir.absolutePath).include("**/jacoco/*.exec")
             )
-            sourceSets(proj.the<JavaPluginConvention>().sourceSets["main"])
+            sourceSets(proj.the<JavaPluginExtension>().sourceSets["main"])
             reports {
-                xml.isEnabled = true
-                xml.destination = rootProject.buildDir.resolve("reports/jacoco/report.xml")
-                html.isEnabled = true
+                xml.required.set(true)
+                xml.outputLocation.set(rootProject.buildDir.resolve("reports/jacoco/report.xml"))
+                html.required.set(true)
             }
             dependsOn(proj.tasks.named("test"))
         }

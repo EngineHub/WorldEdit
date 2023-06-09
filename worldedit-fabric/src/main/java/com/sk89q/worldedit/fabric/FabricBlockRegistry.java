@@ -49,7 +49,7 @@ public class FabricBlockRegistry extends BundledBlockRegistry {
         Block block = FabricAdapter.adapt(blockType);
         return materialMap.computeIfAbsent(
             block.defaultBlockState(),
-            m -> new FabricBlockMaterial(m.getMaterial(), m, super.getMaterial(blockType))
+            m -> new FabricBlockMaterial(m, super.getMaterial(blockType))
         );
     }
 

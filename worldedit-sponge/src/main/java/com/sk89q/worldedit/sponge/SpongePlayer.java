@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.sponge;
 
-import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
@@ -40,9 +39,13 @@ import com.sk89q.worldedit.world.gamemode.GameModes;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.entity.StructureBlockEntity;
 import org.enginehub.linbus.tree.LinCompoundTag;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
@@ -231,18 +234,23 @@ public class SpongePlayer extends AbstractPlayerActor {
         if (block == null) {
             player.resetBlockChange(pos.getX(), pos.getY(), pos.getZ());
         } else {
-            player.sendBlockChange(pos.getX(), pos.getY(), pos.getZ(), SpongeAdapter.adapt(block.toImmutableState()));
+            BlockState spongeBlock = SpongeAdapter.adapt(block.toImmutableState());
+            player.sendBlockChange(pos.getX(), pos.getY(), pos.getZ(), spongeBlock);
             if (block instanceof final BaseBlock baseBlock
                 && block.getBlockType().equals(com.sk89q.worldedit.world.block.BlockTypes.STRUCTURE_BLOCK)) {
                 final LinCompoundTag nbtData = baseBlock.getNbt();
                 if (nbtData != null) {
-                    net.minecraft.server.level.ServerPlayer mcPlayer =
+                    net.minecraft.world.level.block.state.BlockState nativeBlock =
+                        (net.minecraft.world.level.block.state.BlockState) spongeBlock;
+                    net.minecraft.nbt.CompoundTag nativeNbtData = NbtAdapter.adaptNMSToWorldEdit(nbtData);
+                    net.minecraft.server.level.ServerPlayer nativePlayer =
                         ((net.minecraft.server.level.ServerPlayer) player);
-                    mcPlayer.connection.send(new net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket(
-                        new net.minecraft.core.BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()),
-                        STRUCTURE_BLOCK_PACKET_ID,
-                        NbtAdapter.adaptNMSToWorldEdit(nbtData))
-                    );
+
+                    StructureBlockEntity structureBlockEntity =
+                        new StructureBlockEntity(new BlockPos(pos.getX(), pos.getY(), pos.getZ()), nativeBlock);
+                    structureBlockEntity.load(nativeNbtData);
+                    nativePlayer.connection.send(
+                        ClientboundBlockEntityDataPacket.create(structureBlockEntity, it -> nativeNbtData));
                 }
             }
         }

@@ -25,7 +25,7 @@ import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ChunkHolder;
+import net.minecraft.server.level.FullChunkStatus;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -115,7 +115,7 @@ public class ForgeWorldNativeAccess implements WorldNativeAccess<LevelChunk, Blo
 
     @Override
     public boolean isChunkTicking(LevelChunk chunk) {
-        return chunk.getFullStatus().isOrAfter(ChunkHolder.FullChunkStatus.TICKING);
+        return chunk.getFullStatus().isOrAfter(FullChunkStatus.BLOCK_TICKING);
     }
 
     @Override
@@ -162,5 +162,6 @@ public class ForgeWorldNativeAccess implements WorldNativeAccess<LevelChunk, Blo
     @Override
     public void onBlockStateChange(BlockPos pos, BlockState oldState, BlockState newState) {
         getWorld().onBlockStateChange(pos, oldState, newState);
+        newState.onBlockStateChange(getWorld(), pos, oldState);
     }
 }

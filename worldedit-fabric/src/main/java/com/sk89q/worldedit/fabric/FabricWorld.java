@@ -362,7 +362,8 @@ public class FabricWorld extends AbstractWorld {
                 // No spawners are needed for this world.
                 ImmutableList.of(),
                 // This controls ticking, we don't need it so set it to false.
-                false
+                false,
+                originalWorld.getRandomSequences()
             )) {
                 regenForWorld(region, extent, serverWorld, options);
 
@@ -524,7 +525,7 @@ public class FabricWorld extends AbstractWorld {
     public void fixLighting(Iterable<BlockVector2> chunks) {
         Level world = getWorld();
         for (BlockVector2 chunk : chunks) {
-            world.getChunkSource().getLightEngine().enableLightSources(
+            world.getChunkSource().getLightEngine().setLightEnabled(
                 new ChunkPos(chunk.getBlockX(), chunk.getBlockZ()), true
             );
         }

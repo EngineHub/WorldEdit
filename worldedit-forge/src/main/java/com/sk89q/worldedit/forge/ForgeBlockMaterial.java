@@ -22,7 +22,6 @@ package com.sk89q.worldedit.forge;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.PassthroughBlockMaterial;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.PushReaction;
 
 import javax.annotation.Nullable;
@@ -34,53 +33,54 @@ import javax.annotation.Nullable;
  */
 public class ForgeBlockMaterial extends PassthroughBlockMaterial {
 
-    private final Material delegate;
     private final BlockState block;
 
-    public ForgeBlockMaterial(Material delegate, BlockState block, @Nullable BlockMaterial secondary) {
+    public ForgeBlockMaterial(BlockState block, @Nullable BlockMaterial secondary) {
         super(secondary);
-        this.delegate = delegate;
         this.block = block;
     }
 
     @Override
     public boolean isAir() {
-        return delegate == Material.AIR || super.isAir();
+        return block.isAir() || super.isAir();
     }
 
     @Override
     public boolean isOpaque() {
-        return delegate.isSolidBlocking();
+        return block.canOcclude();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean isLiquid() {
-        return delegate.isLiquid();
+        return block.liquid();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean isSolid() {
-        return delegate.isSolid();
+        return block.isSolid();
     }
 
     @Override
     public boolean isFragileWhenPushed() {
-        return delegate.getPushReaction() == PushReaction.DESTROY;
+        return block.getPistonPushReaction() == PushReaction.DESTROY;
     }
 
     @Override
     public boolean isUnpushable() {
-        return delegate.getPushReaction() == PushReaction.BLOCK;
+        return block.getPistonPushReaction() == PushReaction.BLOCK;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean isMovementBlocker() {
-        return delegate.blocksMotion();
+        return block.blocksMotion();
     }
 
     @Override
     public boolean isBurnable() {
-        return delegate.isFlammable();
+        return block.ignitedByLava();
     }
 
     @Override
@@ -90,7 +90,7 @@ public class ForgeBlockMaterial extends PassthroughBlockMaterial {
 
     @Override
     public boolean isReplacedDuringPlacement() {
-        return delegate.isReplaceable();
+        return block.canBeReplaced();
     }
 
 }

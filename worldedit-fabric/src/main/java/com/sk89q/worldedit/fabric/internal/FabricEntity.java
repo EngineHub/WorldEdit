@@ -70,7 +70,7 @@ public class FabricEntity implements Entity {
             float yaw = entity.getYRot();
             float pitch = entity.getXRot();
 
-            return new Location(FabricAdapter.adapt(entity.level), position, yaw, pitch);
+            return new Location(FabricAdapter.adapt(entity.level()), position, yaw, pitch);
         } else {
             return new Location(NullWorld.getInstance());
         }
@@ -86,7 +86,7 @@ public class FabricEntity implements Entity {
     public Extent getExtent() {
         net.minecraft.world.entity.Entity entity = entityRef.get();
         if (entity != null) {
-            return FabricAdapter.adapt(entity.level);
+            return FabricAdapter.adapt(entity.level());
         } else {
             return NullWorld.getInstance();
         }

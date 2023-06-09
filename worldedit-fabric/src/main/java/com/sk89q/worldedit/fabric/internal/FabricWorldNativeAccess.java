@@ -26,7 +26,7 @@ import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ChunkHolder;
+import net.minecraft.server.level.FullChunkStatus;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -124,7 +124,7 @@ public class FabricWorldNativeAccess implements WorldNativeAccess<LevelChunk, Bl
 
     @Override
     public boolean isChunkTicking(LevelChunk chunk) {
-        return chunk.getFullStatus().isOrAfter(ChunkHolder.FullChunkStatus.TICKING);
+        return chunk.getFullStatus().isOrAfter(FullChunkStatus.BLOCK_TICKING);
     }
 
     @Override

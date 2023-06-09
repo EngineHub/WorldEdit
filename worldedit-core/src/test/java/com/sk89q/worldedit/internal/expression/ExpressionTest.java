@@ -427,4 +427,13 @@ class ExpressionTest extends BaseExpressionTest {
         assertTrue(e.getMessage().contains("Calculations exceeded time limit"));
     }
 
+    @Test
+    public void testRound() {
+        checkTestCase("round(1.3)", 1);
+        checkTestCase("round(0.9)", 1);
+        checkTestCase("round(-1.1)", -1);
+        checkTestCase("round(-0.9)", -1);
+        checkTestCase("round(1.5)", 2);
+        checkTestCase("round(-1.5)", -1);
+    }
 }

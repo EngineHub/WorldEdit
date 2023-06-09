@@ -36,6 +36,7 @@ public final class BiomeTypes {
     @Nullable public static final BiomeType BEACH = get("minecraft:beach");
     @Nullable public static final BiomeType BIRCH_FOREST = get("minecraft:birch_forest");
     @Deprecated @Nullable public static final BiomeType BIRCH_FOREST_HILLS = get("minecraft:birch_forest_hills");
+    @Nullable public static final BiomeType CHERRY_GROVE = get("minecraft:cherry_grove");
     @Nullable public static final BiomeType COLD_OCEAN = get("minecraft:cold_ocean");
     @Nullable public static final BiomeType CRIMSON_FOREST = get("minecraft:crimson_forest");
     @Nullable public static final BiomeType DARK_FOREST = get("minecraft:dark_forest");

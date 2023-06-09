@@ -20,12 +20,11 @@
 package com.sk89q.worldedit.util.collection;
 
 import com.google.common.collect.ImmutableMap;
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.StringTag;
 import com.sk89q.worldedit.BaseWorldEditTest;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.Registry;
-import com.sk89q.worldedit.util.test.ResourceLockKeys;
 import com.sk89q.worldedit.util.test.VariedVectorGenerator;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -39,7 +38,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.junit.jupiter.api.parallel.ResourceLock;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -60,7 +58,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -71,6 +68,7 @@ class BlockMapTest extends BaseWorldEditTest {
     static void setupFakePlatform() {
         registerBlock("minecraft:air");
         registerBlock("minecraft:oak_wood");
+        registerBlock("minecraft:chest");
     }
 
     @AfterAll
@@ -93,6 +91,7 @@ class BlockMapTest extends BaseWorldEditTest {
 
     private final BaseBlock air = checkNotNull(BlockTypes.AIR).getDefaultState().toBaseBlock();
     private final BaseBlock oakWood = checkNotNull(BlockTypes.OAK_WOOD).getDefaultState().toBaseBlock();
+    private final BaseBlock chestWithNbt = checkNotNull(BlockTypes.CHEST).getDefaultState().toBaseBlock(new CompoundTag(ImmutableMap.of("dummy", new StringTag("value"))));
 
     private AutoCloseable mocks;
 
@@ -715,6 +714,22 @@ class BlockMapTest extends BaseWorldEditTest {
                 }));
                 assertEquals(1, map.size());
                 assertEquals(oakWood, map.get(vec));
+            });
+        }
+
+        @SuppressWarnings("OverwrittenKey")
+        @Test
+        @DisplayName("put with valid and invalid keys doesn't duplicate")
+        void putWithInvalidAndValid() {
+            generator.makeVectorsStream().forEach(vec -> {
+                BlockMap<BaseBlock> map = BlockMap.createForBaseBlock();
+                // This tests https://github.com/EngineHub/WorldEdit/issues/2250
+                // Due to two internal maps, a bug existed where both could have the same value
+                map.put(vec, chestWithNbt);
+                map.put(vec, air);
+
+                assertEquals(1, map.size());
+                assertEquals(air, map.get(vec));
             });
         }
 

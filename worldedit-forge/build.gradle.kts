@@ -12,11 +12,11 @@ plugins {
 applyPlatformAndCoreConfiguration(javaRelease = 17)
 applyShadowConfiguration()
 
-val minecraftVersion = "1.19.4"
+val minecraftVersion = "1.20"
 val nextMajorMinecraftVersion: String = minecraftVersion.split('.').let { (useless, major) ->
     "$useless.${major.toInt() + 1}"
 }
-val forgeVersion = "45.0.1"
+val forgeVersion = "46.0.1"
 
 val apiClasspath = configurations.create("apiClasspath") {
     isCanBeResolved = true
@@ -74,7 +74,7 @@ configure<org.spongepowered.asm.gradle.plugins.MixinExtension> {
 }
 
 configure<BasePluginExtension> {
-    archivesName.set("${project.name}-mc$minecraftVersion")
+    archivesName.set("${archivesName.get()}-mc$minecraftVersion")
 }
 
 val javaComponent = components["java"] as AdhocComponentWithVariants
