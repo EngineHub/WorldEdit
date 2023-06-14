@@ -1,3 +1,14 @@
+7.2.15
+- [Forge] Fix a bug preventing Forge clients lacking WorldEdit from joining Forge servers with WorldEdit in some cases
+- [Forge] Added Console and CommandBlock support
+- [Fabric] Added Console and CommandBlock support
+- [Sponge] Added CommandBlock support
+- Update to 1.20 & 1.20.1
+- Fixed extend select mode being lost after using `//paste -s`, `//paste -n`, and `//cli selectworld`
+- Fixed convex selection type not correctly clearing selection within WECUI protocol
+- Fixed an edge case where API usages of the BlockMap type can lead to multiple values at one location
+- Fixed a bug breaking the `round` expression function
+
 7.2.14
 - Update to 1.19.4
 - Fixed some data values not being returned correctly in expression query functions
