@@ -89,6 +89,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.forge.ForgeAdapter.adaptCommandSource;
 import static com.sk89q.worldedit.forge.ForgeAdapter.adaptPlayer;
 import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAME;
 
@@ -332,10 +333,7 @@ public class ForgeWorldEdit {
     @SubscribeEvent
     public void onCommandEvent(CommandEvent event) throws CommandSyntaxException {
         ParseResults<CommandSourceStack> parseResults = event.getParseResults();
-        if (!(parseResults.getContext().getSource().getEntity() instanceof ServerPlayer player)) {
-            return;
-        }
-        if (player.level().isClientSide) {
+        if (parseResults.getContext().getSource().getEntity() instanceof ServerPlayer player && player.level().isClientSide) {
             return;
         }
         if (parseResults.getContext().getCommand() != CommandWrapper.FAKE_COMMAND) {
@@ -343,7 +341,7 @@ public class ForgeWorldEdit {
         }
         event.setCanceled(true);
         WorldEdit.getInstance().getEventBus().post(new com.sk89q.worldedit.event.platform.CommandEvent(
-            adaptPlayer(parseResults.getContext().getSource().getPlayerOrException()),
+            adaptCommandSource(parseResults.getContext().getSource()),
             "/" + parseResults.getReader().getString()
         ));
     }

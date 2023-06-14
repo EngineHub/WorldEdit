@@ -17,21 +17,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.bukkit;
+package com.sk89q.worldedit.sponge;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.AbstractCommandBlockActor;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
-import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.command.BlockCommandSender;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.BlockState;
+import org.spongepowered.api.block.BlockType;
+import org.spongepowered.api.block.BlockTypes;
+import org.spongepowered.api.block.entity.CommandBlock;
+import org.spongepowered.api.data.Keys;
+import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.util.Ticks;
+import org.spongepowered.math.vector.Vector3d;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
@@ -39,30 +42,30 @@ import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
-    private final BlockCommandSender sender;
-    private final WorldEditPlugin plugin;
+public class SpongeBlockCommandSender extends AbstractCommandBlockActor {
+    private final SpongeWorldEdit worldEdit;
+    private final CommandBlock sender;
     private final UUID uuid;
 
-    public BukkitBlockCommandSender(WorldEditPlugin plugin, BlockCommandSender sender) {
-        super(BukkitAdapter.adapt(checkNotNull(sender).getBlock().getLocation()));
-        checkNotNull(plugin);
+    public SpongeBlockCommandSender(SpongeWorldEdit worldEdit, CommandBlock sender) {
+        super(SpongeAdapter.adapt(checkNotNull(sender).serverLocation(), Vector3d.ZERO));
+        checkNotNull(worldEdit);
 
-        this.plugin = plugin;
+        this.worldEdit = worldEdit;
         this.sender = sender;
-        this.uuid = UUID.nameUUIDFromBytes((UUID_PREFIX + sender.getName()).getBytes(StandardCharsets.UTF_8));
+        this.uuid = UUID.nameUUIDFromBytes((UUID_PREFIX + sender.name()).getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
     public String getName() {
-        return sender.getName();
+        return sender.name();
     }
 
     @Override
     @Deprecated
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
-            sender.sendMessage(part);
+            sendMessage(net.kyori.adventure.text.Component.text(part));
         }
     }
 
@@ -92,7 +95,11 @@ public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
 
     @Override
     public void print(Component component) {
-        TextAdapter.sendMessage(sender, WorldEditText.format(component, getLocale()));
+        sendMessage(SpongeTextAdapter.convert(component, getLocale()));
+    }
+
+    private void sendMessage(net.kyori.adventure.text.Component textComponent) {
+        this.sender.offer(Keys.LAST_COMMAND_OUTPUT, textComponent);
     }
 
     @Override
@@ -122,7 +129,7 @@ public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
         return sender.hasPermission(permission);
     }
 
-    public BlockCommandSender getSender() {
+    public CommandBlock getSender() {
         return this.sender;
     }
 
@@ -133,34 +140,31 @@ public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
             private volatile boolean active = true;
 
             private void updateActive() {
-                Block block = sender.getBlock();
-                if (!block.getWorld().isChunkLoaded(block.getX() >> 4, block.getZ() >> 4)) {
+                BlockState block = sender.block();
+                if (!sender.serverLocation().world().isChunkLoadedAtBlock(sender.blockPosition(), false)) {
                     active = false;
                     return;
                 }
-                Material type = block.getType();
-                active = type == Material.COMMAND_BLOCK
-                    || type == Material.CHAIN_COMMAND_BLOCK
-                    || type == Material.REPEATING_COMMAND_BLOCK;
+                BlockType type = block.type();
+                active = type == BlockTypes.COMMAND_BLOCK.get()
+                    || type == BlockTypes.CHAIN_COMMAND_BLOCK.get()
+                    || type == BlockTypes.REPEATING_COMMAND_BLOCK.get();
             }
 
             @Override
             public String getName() {
-                return sender.getName();
+                return sender.name();
             }
 
             @Override
             public boolean isActive() {
-                if (Bukkit.isPrimaryThread()) {
+                if (Sponge.server().onMainThread()) {
                     // we can update eagerly
                     updateActive();
                 } else {
                     // we should update it eventually
-                    Bukkit.getScheduler().callSyncMethod(plugin,
-                        () -> {
-                            updateActive();
-                            return null;
-                        });
+                    Task task = Task.builder().delay(Ticks.zero()).plugin(worldEdit.getPluginContainer()).execute(this::updateActive).build();
+                    Sponge.server().scheduler().submit(task);
                 }
                 return active;
             }

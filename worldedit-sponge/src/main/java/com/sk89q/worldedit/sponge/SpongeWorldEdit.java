@@ -48,6 +48,8 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
+import org.spongepowered.api.block.entity.BlockEntity;
+import org.spongepowered.api.block.entity.CommandBlock;
 import org.spongepowered.api.command.Command;
 import org.spongepowered.api.command.CommandCause;
 import org.spongepowered.api.command.CommandCompletion;
@@ -67,6 +69,7 @@ import org.spongepowered.api.event.lifecycle.StoppingEngineEvent;
 import org.spongepowered.api.event.network.ServerSideConnectionEvent;
 import org.spongepowered.api.registry.RegistryTypes;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.world.LocatableBlock;
 import org.spongepowered.api.world.server.ServerLocation;
 import org.spongepowered.api.world.server.ServerWorld;
 import org.spongepowered.math.vector.Vector3d;
@@ -375,6 +378,15 @@ public class SpongeWorldEdit {
         Object rootCause = cause.root();
         if (rootCause instanceof ServerPlayer) {
             return SpongeAdapter.adapt((ServerPlayer) rootCause);
+        }
+        if (rootCause instanceof LocatableBlock locatableBlock) {
+            Optional<? extends BlockEntity> optionalBlockEntity = locatableBlock.world().blockEntity(locatableBlock.blockPosition());
+            if (optionalBlockEntity.isPresent()) {
+                BlockEntity blockEntity = optionalBlockEntity.get();
+                if (blockEntity instanceof CommandBlock commandBlock) {
+                    return new SpongeBlockCommandSender(this, commandBlock);
+                }
+            }
         }
         if (rootCause instanceof Audience) {
             return new SpongeCommandSender((Audience) rootCause);

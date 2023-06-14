@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.forge;
 
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.forge.internal.ForgeTransmogrifier;
 import com.sk89q.worldedit.forge.internal.NBTConverter;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
@@ -36,6 +37,7 @@ import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -44,6 +46,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BaseCommandBlock;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
@@ -246,5 +249,23 @@ public final class ForgeAdapter {
     public static ForgePlayer adaptPlayer(ServerPlayer player) {
         checkNotNull(player);
         return new ForgePlayer(player);
+    }
+
+    /**
+     * Get the WorldEdit proxy for the given command source.
+     *
+     * @param commandSourceStack the command source
+     * @return the WorldEdit actor
+     */
+    public static Actor adaptCommandSource(CommandSourceStack commandSourceStack) {
+        checkNotNull(commandSourceStack);
+        if (commandSourceStack.isPlayer()) {
+            return adaptPlayer(commandSourceStack.getPlayer());
+        }
+        if (ForgeWorldEdit.inst.getConfig().commandBlockSupport && commandSourceStack.source instanceof BaseCommandBlock commandBlock) {
+            return new ForgeBlockCommandSender(commandBlock);
+        }
+
+        return new ForgeCommandSender(commandSourceStack);
     }
 }

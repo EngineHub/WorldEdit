@@ -143,5 +143,7 @@ public class ConfigurateConfiguration extends LocalConfiguration {
 
         extendedYLimit = node.node("compat", "extended-y-limit").getBoolean(false);
         setDefaultLocaleName(node.node("default-locale").getString(defaultLocaleName));
+
+        commandBlockSupport = node.node("command-block-support").getBoolean(false);
     }
 }
