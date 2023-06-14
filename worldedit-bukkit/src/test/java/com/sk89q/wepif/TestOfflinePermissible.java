@@ -30,6 +30,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.profile.PlayerProfile;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -142,6 +143,11 @@ public class TestOfflinePermissible implements OfflinePlayer, Permissible {
 
     public UUID getUniqueId() {
         return randomUuid;
+    }
+
+    @Override
+    public PlayerProfile getPlayerProfile() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -276,6 +282,11 @@ public class TestOfflinePermissible implements OfflinePlayer, Permissible {
 
     @Override
     public void setStatistic(Statistic statistic, EntityType entityType, int newValue) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Location getLastDeathLocation() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }

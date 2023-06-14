@@ -42,7 +42,7 @@ dependencies {
     "api"(project(":worldedit-libs:bukkit"))
     // Technically this is api, but everyone should already have some form of the bukkit API
     // Avoid pulling in another one, especially one so outdated.
-    "localImplementation"("org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT") {
+    "localImplementation"("org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT") {
         exclude("junit", "junit")
     }
 
@@ -52,7 +52,7 @@ dependencies {
     "localImplementation"("org.apache.logging.log4j:log4j-api")
 
     "compileOnly"("org.jetbrains:annotations:20.1.0")
-    "compileOnly"("io.papermc.paper:paper-api:1.17-R0.1-SNAPSHOT") {
+    "compileOnly"("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT") {
         exclude("org.slf4j", "slf4j-api")
         exclude("junit", "junit")
     }
