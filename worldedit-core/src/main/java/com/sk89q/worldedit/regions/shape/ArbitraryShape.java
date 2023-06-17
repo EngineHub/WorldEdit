@@ -121,13 +121,11 @@ public abstract class ArbitraryShape {
         int y = position.getBlockY();
         int z = position.getBlockZ();
 
-        final BaseBlock defaultMaterial = pattern.applyBlock(position);
-
         if (!hollow) {
-            return getMaterial(x, y, z, defaultMaterial);
+            return getMaterial(x, y, z, pattern.applyBlock(position));
         }
 
-        final Object cacheEntry = getMaterialCached(x, y, z, defaultMaterial);
+        final Object cacheEntry = getMaterialCached(x, y, z, pattern);
         if (cacheEntry == OUTSIDE) {
             return null;
         }
@@ -157,14 +155,14 @@ public abstract class ArbitraryShape {
     }
 
     private boolean isOutsideCached(int x, int y, int z, Pattern pattern) {
-        return getMaterialCached(x, y, z, pattern.applyBlock(BlockVector3.at(x, y, z))) == OUTSIDE;
+        return getMaterialCached(x, y, z, pattern) == OUTSIDE;
     }
 
-    private Object getMaterialCached(int x, int y, int z, BaseBlock defaultMaterial) {
+    private Object getMaterialCached(int x, int y, int z, Pattern pattern) {
         final int index = (y - cacheOffsetY) + (z - cacheOffsetZ) * cacheSizeY + (x - cacheOffsetX) * cacheSizeY * cacheSizeZ;
         final Object cacheEntry = cache[index];
         if (cacheEntry == null) {
-            final BaseBlock material = getMaterial(x, y, z, defaultMaterial);
+            final BaseBlock material = getMaterial(x, y, z, pattern.applyBlock(BlockVector3.at(x, y, z)));
             if (material == null) {
                 return cache[index] = OUTSIDE;
             } else {
