@@ -23,12 +23,20 @@ import java.util.HashSet;
 import java.util.Set;
 
 public abstract class Category<T extends Keyed> {
-    private final Set<T> set = new HashSet<>();
+    private final Set<T> set;
     protected final String id;
     private boolean empty = true;
 
-    protected Category(final String id) {
+    public Category(final String id) {
         this.id = id;
+        // TODO Make this immutable in WE8
+        this.set = new HashSet<>();
+    }
+
+    public Category(final String id, final Set<T> contents) {
+        this.id = id;
+        this.set = Set.copyOf(contents);
+        this.empty = false;
     }
 
     public final String getId() {
@@ -43,6 +51,14 @@ public abstract class Category<T extends Keyed> {
         return this.set;
     }
 
+    /**
+     * Loads the contents of this category from the platform.
+     *
+     * @deprecated The load system will be removed in a future WorldEdit release. The registries should be populated by
+     * the platforms.
+     * @return The loaded contents of the category
+     */
+    @Deprecated
     protected abstract Set<T> load();
 
     /**
@@ -55,6 +71,11 @@ public abstract class Category<T extends Keyed> {
         return this.getAll().contains(object);
     }
 
+    /**
+     * @deprecated The load system will be removed in a future WorldEdit release. The registries should be populated by
+     * the platforms.
+     */
+    @Deprecated
     public void invalidateCache() {
         this.set.clear();
         this.empty = true;
