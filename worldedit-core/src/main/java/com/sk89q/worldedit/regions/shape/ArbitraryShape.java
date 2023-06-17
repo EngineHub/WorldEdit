@@ -57,7 +57,7 @@ public abstract class ArbitraryShape {
      * <li>anything else = (invalid, not used)</li>
      * </ul>
      */
-    private final Object[] cache;
+    private Object[] cache;
 
     public ArbitraryShape(Region extent) {
         this.extent = extent;
@@ -72,8 +72,6 @@ public abstract class ArbitraryShape {
         cacheSizeX = max.getX() - cacheOffsetX + 2;
         cacheSizeY = max.getY() - cacheOffsetY + 2;
         cacheSizeZ = max.getZ() - cacheOffsetZ + 2;
-
-        cache = new Object[cacheSizeX * cacheSizeY * cacheSizeZ];
     }
 
     protected Region getExtent() {
@@ -101,6 +99,10 @@ public abstract class ArbitraryShape {
      * @throws MaxChangedBlocksException if the maximum blocks changed is exceeded
      */
     public int generate(EditSession editSession, Pattern pattern, boolean hollow) throws MaxChangedBlocksException {
+        if (hollow && cache == null) {
+            cache = new Object[cacheSizeX * cacheSizeY * cacheSizeZ];
+        }
+
         int affected = 0;
 
         for (BlockVector3 position : getExtent()) {
