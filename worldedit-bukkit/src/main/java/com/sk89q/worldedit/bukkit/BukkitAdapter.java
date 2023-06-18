@@ -51,6 +51,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.block.Biome;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
@@ -332,10 +334,7 @@ public class BukkitAdapter {
      */
     public static Material adapt(ItemType itemType) {
         checkNotNull(itemType);
-        if (!itemType.getId().startsWith("minecraft:")) {
-            throw new IllegalArgumentException("Bukkit only supports Minecraft items");
-        }
-        return Material.getMaterial(itemType.getId().substring(10).toUpperCase(Locale.ROOT));
+        return Material.matchMaterial(itemType.getId());
     }
 
     /**
@@ -346,10 +345,7 @@ public class BukkitAdapter {
      */
     public static Material adapt(BlockType blockType) {
         checkNotNull(blockType);
-        if (!blockType.getId().startsWith("minecraft:")) {
-            throw new IllegalArgumentException("Bukkit only supports Minecraft blocks");
-        }
-        return Material.getMaterial(blockType.getId().substring(10).toUpperCase(Locale.ROOT));
+        return Material.matchMaterial(blockType.getId());
     }
 
     /**
@@ -375,15 +371,16 @@ public class BukkitAdapter {
      * @return WorldEdit BiomeType
      */
     public static BiomeType adapt(Biome biome) {
-        return biomeBiomeTypeCache.computeIfAbsent(biome, b -> BiomeTypes.get(b.name().toLowerCase(Locale.ROOT)));
+        return biomeBiomeTypeCache.computeIfAbsent(biome, b -> BiomeTypes.get(b.getKey().toString()));
     }
 
     public static Biome adapt(BiomeType biomeType) {
-        if (!biomeType.getId().startsWith("minecraft:")) {
-            throw new IllegalArgumentException("Bukkit only supports vanilla biomes");
+        NamespacedKey biomeKey = NamespacedKey.fromString(biomeType.getId());
+        if (biomeKey == null) {
+            throw new IllegalArgumentException("Biome key '" + biomeType.getId() + "' does not map to Bukkit");
         }
         try {
-            return biomeTypeBiomeCache.computeIfAbsent(biomeType, type -> Biome.valueOf(type.getId().substring(10).toUpperCase(Locale.ROOT)));
+            return biomeTypeBiomeCache.computeIfAbsent(biomeType, type -> Registry.BIOME.get(biomeKey));
         } catch (IllegalArgumentException e) {
             return null;
         }
@@ -396,20 +393,16 @@ public class BukkitAdapter {
      * @return WorldEdit EntityType
      */
     public static EntityType adapt(org.bukkit.entity.EntityType entityType) {
-        @SuppressWarnings("deprecation")
-        final String name = entityType.getName();
-        if (name == null) {
-            return null;
-        }
-        return EntityTypes.get(name.toLowerCase(Locale.ROOT));
+        return EntityTypes.get(entityType.getKey().toString());
     }
 
-    @SuppressWarnings("deprecation")
     public static org.bukkit.entity.EntityType adapt(EntityType entityType) {
-        if (!entityType.getId().startsWith("minecraft:")) {
-            throw new IllegalArgumentException("Bukkit only supports vanilla entities");
+        NamespacedKey entityKey = NamespacedKey.fromString(entityType.getId());
+        if (entityKey == null) {
+            throw new IllegalArgumentException("Entity key '" + entityType.getId() + "' does not map to Bukkit");
         }
-        return org.bukkit.entity.EntityType.fromName(entityType.getId().substring(10));
+
+        return Registry.ENTITY_TYPE.get(entityKey);
     }
 
     private static final Map<Material, BlockType> materialBlockTypeCache = Collections.synchronizedMap(
