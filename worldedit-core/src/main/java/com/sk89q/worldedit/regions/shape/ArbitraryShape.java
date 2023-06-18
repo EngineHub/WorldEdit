@@ -31,12 +31,17 @@ import com.sk89q.worldedit.world.block.BaseBlock;
  * {@link #getMaterial} method.
  */
 public abstract class ArbitraryShape {
+    /**
+     * This Object instance is used for cache entries that are known to be outside the shape.
+     */
+    private static final Object OUTSIDE = new Object();
 
     protected final Region extent;
 
     private final int cacheOffsetX;
     private final int cacheOffsetY;
     private final int cacheOffsetZ;
+    @SuppressWarnings("FieldCanBeLocal")
     private final int cacheSizeX;
     private final int cacheSizeY;
     private final int cacheSizeZ;
@@ -44,14 +49,15 @@ public abstract class ArbitraryShape {
     /**
      * Cache for expression results.
      *
-     * <p>
-     * Cache entries:
-     * 0 = unknown
-     * -1 = outside
-     * 1 = inside
-     * </p>
+     * <p>Possible cache entries:
+     * <ul>
+     * <li>null = unknown</li>
+     * <li>ArbitraryShape.OUTSIDE = outside</li>
+     * <li>any BaseBlock = inside</li>
+     * <li>anything else = (invalid, not used)</li>
+     * </ul>
      */
-    private final byte[] cache;
+    private Object[] cache;
 
     public ArbitraryShape(Region extent) {
         this.extent = extent;
@@ -66,8 +72,6 @@ public abstract class ArbitraryShape {
         cacheSizeX = max.getX() - cacheOffsetX + 2;
         cacheSizeY = max.getY() - cacheOffsetY + 2;
         cacheSizeZ = max.getZ() - cacheOffsetZ + 2;
-
-        cache = new byte[cacheSizeX * cacheSizeY * cacheSizeZ];
     }
 
     protected Region getExtent() {
@@ -95,62 +99,16 @@ public abstract class ArbitraryShape {
      * @throws MaxChangedBlocksException if the maximum blocks changed is exceeded
      */
     public int generate(EditSession editSession, Pattern pattern, boolean hollow) throws MaxChangedBlocksException {
+        if (hollow && cache == null) {
+            cache = new Object[cacheSizeX * cacheSizeY * cacheSizeZ];
+        }
+
         int affected = 0;
 
         for (BlockVector3 position : getExtent()) {
-            int x = position.getBlockX();
-            int y = position.getBlockY();
-            int z = position.getBlockZ();
+            final BaseBlock material = getMaterial(position, pattern, hollow);
 
-            if (!hollow) {
-                BaseBlock material = getMaterial(x, y, z, pattern.applyBlock(position));
-                if (material != null && editSession.setBlock(position, material)) {
-                    ++affected;
-                }
-
-                continue;
-            }
-
-            BaseBlock material = getMaterial(x, y, z, pattern.applyBlock(position));
-            if (material == null) {
-                final int index = (y - cacheOffsetY) + (z - cacheOffsetZ) * cacheSizeY + (x - cacheOffsetX) * cacheSizeY * cacheSizeZ;
-                cache[index] = -1;
-                continue;
-            }
-
-            boolean draw = false;
-            do {
-                if (!isInsideCached(x + 1, y, z, pattern)) {
-                    draw = true;
-                    break;
-                }
-                if (!isInsideCached(x - 1, y, z, pattern)) {
-                    draw = true;
-                    break;
-                }
-                if (!isInsideCached(x, y, z + 1, pattern)) {
-                    draw = true;
-                    break;
-                }
-                if (!isInsideCached(x, y, z - 1, pattern)) {
-                    draw = true;
-                    break;
-                }
-                if (!isInsideCached(x, y + 1, z, pattern)) {
-                    draw = true;
-                    break;
-                }
-                if (!isInsideCached(x, y - 1, z, pattern)) {
-                    draw = true;
-                    break;
-                }
-            } while (false);
-
-            if (!draw) {
-                continue;
-            }
-
-            if (editSession.setBlock(position, material)) {
+            if (material != null && editSession.setBlock(position, material)) {
                 ++affected;
             }
         }
@@ -158,27 +116,59 @@ public abstract class ArbitraryShape {
         return affected;
     }
 
-    private boolean isInsideCached(int x, int y, int z, Pattern pattern) {
-        final int index = (y - cacheOffsetY) + (z - cacheOffsetZ) * cacheSizeY + (x - cacheOffsetX) * cacheSizeY * cacheSizeZ;
+    private BaseBlock getMaterial(BlockVector3 position, Pattern pattern, boolean hollow) {
+        int x = position.getBlockX();
+        int y = position.getBlockY();
+        int z = position.getBlockZ();
 
-        switch (cache[index]) {
-            case 0:
-                BaseBlock mat = getMaterial(x, y, z, pattern.applyBlock(BlockVector3.at(x, y, z)));
-                if (mat == null) {
-                    cache[index] = -1;
-                    return false;
-                }
-                cache[index] = 1;
-                return true;
-
-            case -1:
-                // outside
-                return false;
-
-            default:
-                // inside
-                return true;
+        if (!hollow) {
+            return getMaterial(x, y, z, pattern.applyBlock(position));
         }
+
+        final Object cacheEntry = getMaterialCached(x, y, z, pattern);
+        if (cacheEntry == OUTSIDE) {
+            return null;
+        }
+
+        final BaseBlock material = (BaseBlock) cacheEntry;
+
+        if (isOutsideCached(x + 1, y, z, pattern)) {
+            return material;
+        }
+        if (isOutsideCached(x - 1, y, z, pattern)) {
+            return material;
+        }
+        if (isOutsideCached(x, y, z + 1, pattern)) {
+            return material;
+        }
+        if (isOutsideCached(x, y, z - 1, pattern)) {
+            return material;
+        }
+        if (isOutsideCached(x, y + 1, z, pattern)) {
+            return material;
+        }
+        if (isOutsideCached(x, y - 1, z, pattern)) {
+            return material;
+        }
+
+        return null;
     }
 
+    private boolean isOutsideCached(int x, int y, int z, Pattern pattern) {
+        return getMaterialCached(x, y, z, pattern) == OUTSIDE;
+    }
+
+    private Object getMaterialCached(int x, int y, int z, Pattern pattern) {
+        final int index = (y - cacheOffsetY) + (z - cacheOffsetZ) * cacheSizeY + (x - cacheOffsetX) * cacheSizeY * cacheSizeZ;
+        final Object cacheEntry = cache[index];
+        if (cacheEntry == null) {
+            final BaseBlock material = getMaterial(x, y, z, pattern.applyBlock(BlockVector3.at(x, y, z)));
+            if (material == null) {
+                return cache[index] = OUTSIDE;
+            } else {
+                return cache[index] = material;
+            }
+        }
+        return cacheEntry;
+    }
 }
