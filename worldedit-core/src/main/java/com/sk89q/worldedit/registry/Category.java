@@ -21,22 +21,22 @@ package com.sk89q.worldedit.registry;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public abstract class Category<T extends Keyed> {
-    private final Set<T> set;
+    private final Set<T> set = new HashSet<>();
+    private final Supplier<Set<T>> supplier;
     protected final String id;
     private boolean empty = true;
 
     public Category(final String id) {
         this.id = id;
-        // TODO Make this immutable in WE8
-        this.set = new HashSet<>();
+        this.supplier = null;
     }
 
-    public Category(final String id, final Set<T> contents) {
+    public Category(final String id, final Supplier<Set<T>> contentSupplier) {
         this.id = id;
-        this.set = Set.copyOf(contents);
-        this.empty = false;
+        this.supplier = contentSupplier;
     }
 
     public final String getId() {
@@ -45,7 +45,11 @@ public abstract class Category<T extends Keyed> {
 
     public final Set<T> getAll() {
         if (this.empty) {
-            this.set.addAll(this.load());
+            if (supplier != null) {
+                this.set.addAll(this.supplier.get());
+            } else {
+                this.set.addAll(this.load());
+            }
             this.empty = false;
         }
         return this.set;
@@ -54,9 +58,9 @@ public abstract class Category<T extends Keyed> {
     /**
      * Loads the contents of this category from the platform.
      *
-     * @deprecated The load system will be removed in a future WorldEdit release. The registries should be populated by
-     * the platforms.
      * @return The loaded contents of the category
+     * @deprecated The load system will be removed in a future WorldEdit release. The registries should be populated by
+     *     the platforms via the supplier constructor.
      */
     @Deprecated
     protected abstract Set<T> load();
@@ -71,11 +75,6 @@ public abstract class Category<T extends Keyed> {
         return this.getAll().contains(object);
     }
 
-    /**
-     * @deprecated The load system will be removed in a future WorldEdit release. The registries should be populated by
-     * the platforms.
-     */
-    @Deprecated
     public void invalidateCache() {
         this.set.clear();
         this.empty = true;

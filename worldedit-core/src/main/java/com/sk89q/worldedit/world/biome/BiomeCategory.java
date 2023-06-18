@@ -24,6 +24,7 @@ import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
 
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * A category of biomes.
@@ -36,8 +37,8 @@ public class BiomeCategory extends Category<BiomeType> implements Keyed {
         super(id);
     }
 
-    public BiomeCategory(final String id, final Set<BiomeType> contents) {
-        super(id, contents);
+    public BiomeCategory(final String id, final Supplier<Set<BiomeType>> contentSupplier) {
+        super(id, contentSupplier);
     }
 
     @Override

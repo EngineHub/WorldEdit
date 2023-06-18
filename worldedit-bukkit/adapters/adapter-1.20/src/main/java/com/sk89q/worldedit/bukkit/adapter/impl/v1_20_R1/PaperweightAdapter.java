@@ -928,7 +928,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             if (BiomeCategory.REGISTRY.get(key) == null) {
                 BiomeCategory.REGISTRY.register(key, new BiomeCategory(
                     key,
-                    biomeRegistry.getTag(tagKey)
+                    () -> biomeRegistry.getTag(tagKey)
                         .stream()
                         .flatMap(HolderSet.Named::stream)
                         .map(Holder::value)
