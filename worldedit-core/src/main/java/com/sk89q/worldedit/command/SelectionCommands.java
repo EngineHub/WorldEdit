@@ -41,6 +41,9 @@ import com.sk89q.worldedit.extension.platform.permission.ActorSelectorLimits;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.block.BlockDistributionCounter;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.mask.MaskIntersection;
+import com.sk89q.worldedit.function.mask.Masks;
+import com.sk89q.worldedit.function.mask.RegionMask;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.visitor.RegionVisitor;
 import com.sk89q.worldedit.internal.annotation.Chunk3d;
@@ -516,7 +519,11 @@ public class SelectionCommands {
                          Mask mask) throws WorldEditException {
         // Avoid checking blocks outside the original region but within the cuboid region
         Region originalRegion = session.getSelection(world);
-        boolean skipContains = originalRegion instanceof CuboidRegion;
+        if (!(originalRegion instanceof CuboidRegion)) {
+            mask = new MaskIntersection(new RegionMask(originalRegion), mask);
+        }
+        // Memoize the mask to reduce duplicated lookups
+        mask = Masks.memoize(mask);
 
         // Result region will be cuboid
         CuboidRegion region = originalRegion.getBoundingBox();
@@ -532,7 +539,7 @@ public class SelectionCommands {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
                     BlockVector3 vec = BlockVector3.at(x, y, z);
 
-                    if ((skipContains || originalRegion.contains(vec)) && mask.test(vec)) {
+                    if (mask.test(vec)) {
                         found = true;
                         minY = y;
 
@@ -555,7 +562,7 @@ public class SelectionCommands {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
                     BlockVector3 vec = BlockVector3.at(x, y, z);
 
-                    if ((skipContains || originalRegion.contains(vec)) && mask.test(vec)) {
+                    if (mask.test(vec)) {
                         maxY = y;
                         break outer;
                     }
@@ -570,7 +577,7 @@ public class SelectionCommands {
                 for (int y = minY; y <= maxY; y++) {
                     BlockVector3 vec = BlockVector3.at(x, y, z);
 
-                    if ((skipContains || originalRegion.contains(vec)) && mask.test(vec)) {
+                    if (mask.test(vec)) {
                         minX = x;
                         break outer;
                     }
@@ -585,7 +592,7 @@ public class SelectionCommands {
                 for (int y = minY; y <= maxY; y++) {
                     BlockVector3 vec = BlockVector3.at(x, y, z);
 
-                    if ((skipContains || originalRegion.contains(vec)) && mask.test(vec)) {
+                    if (mask.test(vec)) {
                         maxX = x;
                         break outer;
                     }
@@ -600,7 +607,7 @@ public class SelectionCommands {
                 for (int y = minY; y <= maxY; y++) {
                     BlockVector3 vec = BlockVector3.at(x, y, z);
 
-                    if ((skipContains || originalRegion.contains(vec)) && mask.test(vec)) {
+                    if (mask.test(vec)) {
                         minZ = z;
                         break outer;
                     }
@@ -615,7 +622,7 @@ public class SelectionCommands {
                 for (int y = minY; y <= maxY; y++) {
                     BlockVector3 vec = BlockVector3.at(x, y, z);
 
-                    if ((skipContains || originalRegion.contains(vec)) && mask.test(vec)) {
+                    if (mask.test(vec)) {
                         maxZ = z;
                         break outer;
                     }
@@ -623,9 +630,13 @@ public class SelectionCommands {
             }
         }
 
-        session.setRegionSelector(world, new CuboidRegionSelector(
-            world, BlockVector3.at(minX, minY, minZ), BlockVector3.at(maxX, maxY, maxZ)
-        ));
+        final CuboidRegionSelector selector;
+        if (session.getRegionSelector(world) instanceof ExtendingCuboidRegionSelector) {
+            selector = new ExtendingCuboidRegionSelector(world, BlockVector3.at(minX, minY, minZ), BlockVector3.at(maxX, maxY, maxZ));
+        } else {
+            selector = new CuboidRegionSelector(world, BlockVector3.at(minX, minY, minZ), BlockVector3.at(maxX, maxY, maxZ));
+        }
+        session.setRegionSelector(world, selector);
 
         session.getRegionSelector(world).learnChanges();
         session.getRegionSelector(world).explainRegionAdjust(actor, session);
