@@ -36,6 +36,7 @@ import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.lifecycle.Lifecycled;
 import com.sk89q.worldedit.util.lifecycle.SimpleLifecycled;
+import com.sk89q.worldedit.world.biome.BiomeCategory;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -59,6 +60,8 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -73,6 +76,7 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.phys.BlockHitResult;
 import org.apache.logging.log4j.Logger;
 import org.enginehub.piston.Command;
@@ -84,6 +88,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.fabric.FabricAdapter.adaptPlayer;
@@ -228,6 +233,21 @@ public class FabricWorldEdit implements ModInitializer {
         server.registryAccess().registryOrThrow(Registries.ITEM).getTagNames().map(TagKey::location).forEach(name -> {
             if (ItemCategory.REGISTRY.get(name.toString()) == null) {
                 ItemCategory.REGISTRY.register(name.toString(), new ItemCategory(name.toString()));
+            }
+        });
+        Registry<Biome> biomeRegistry = server.registryAccess().registryOrThrow(Registries.BIOME);
+        biomeRegistry.getTagNames().forEach(tagKey -> {
+            String key = tagKey.location().toString();
+            if (BiomeCategory.REGISTRY.get(key) == null) {
+                BiomeCategory.REGISTRY.register(key, new BiomeCategory(
+                    key,
+                    () -> biomeRegistry.getTag(tagKey)
+                        .stream()
+                        .flatMap(HolderSet.Named::stream)
+                        .map(Holder::value)
+                        .map(FabricAdapter::adapt)
+                        .collect(Collectors.toSet()))
+                );
             }
         });
         // Features

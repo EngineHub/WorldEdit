@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.registry;
 
-import com.sk89q.worldedit.WorldEdit;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;

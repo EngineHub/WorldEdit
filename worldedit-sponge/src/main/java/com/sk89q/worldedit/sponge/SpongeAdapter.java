@@ -136,6 +136,10 @@ public class SpongeAdapter {
             .asReference();
     }
 
+    public static BiomeType adapt(Biome biomeType) {
+        return BiomeType.REGISTRY.get(biomeType.toString());
+    }
+
     /**
      * Create a WorldEdit location from a Sponge location.
      *

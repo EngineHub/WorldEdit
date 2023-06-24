@@ -21,14 +21,22 @@ package com.sk89q.worldedit.registry;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public abstract class Category<T extends Keyed> {
     private final Set<T> set = new HashSet<>();
+    private final Supplier<Set<T>> supplier;
     protected final String id;
     private boolean empty = true;
 
-    protected Category(final String id) {
+    public Category(final String id) {
         this.id = id;
+        this.supplier = null;
+    }
+
+    public Category(final String id, final Supplier<Set<T>> contentSupplier) {
+        this.id = id;
+        this.supplier = contentSupplier;
     }
 
     public final String getId() {
@@ -37,12 +45,24 @@ public abstract class Category<T extends Keyed> {
 
     public final Set<T> getAll() {
         if (this.empty) {
-            this.set.addAll(this.load());
+            if (supplier != null) {
+                this.set.addAll(this.supplier.get());
+            } else {
+                this.set.addAll(this.load());
+            }
             this.empty = false;
         }
         return this.set;
     }
 
+    /**
+     * Loads the contents of this category from the platform.
+     *
+     * @return The loaded contents of the category
+     * @deprecated The load system will be removed in a future WorldEdit release. The registries should be populated by
+     *     the platforms via the supplier constructor.
+     */
+    @Deprecated
     protected abstract Set<T> load();
 
     /**

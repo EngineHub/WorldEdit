@@ -36,6 +36,7 @@ import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.sponge.config.SpongeConfiguration;
+import com.sk89q.worldedit.world.biome.BiomeCategory;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.item.ItemCategory;
@@ -83,6 +84,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAME;
 import static java.util.stream.Collectors.toList;
@@ -203,6 +205,12 @@ public class SpongeWorldEdit {
             String id = itemTypeTag.key().asString();
             if (!ItemCategory.REGISTRY.keySet().contains(id)) {
                 ItemCategory.REGISTRY.register(id, new ItemCategory(id));
+            }
+        });
+        event.game().registry(RegistryTypes.BIOME).tags().forEach(biomeTag -> {
+            String id = biomeTag.key().asString();
+            if (!BiomeCategory.REGISTRY.keySet().contains(id)) {
+                BiomeCategory.REGISTRY.register(id, new BiomeCategory(id, () -> event.game().registry(RegistryTypes.BIOME).taggedValues(biomeTag).stream().map(SpongeAdapter::adapt).collect(Collectors.toSet())));
             }
         });
 
