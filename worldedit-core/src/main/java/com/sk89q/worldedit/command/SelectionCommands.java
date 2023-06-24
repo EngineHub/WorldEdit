@@ -41,12 +41,16 @@ import com.sk89q.worldedit.extension.platform.permission.ActorSelectorLimits;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.block.BlockDistributionCounter;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.mask.MaskIntersection;
+import com.sk89q.worldedit.function.mask.Masks;
+import com.sk89q.worldedit.function.mask.RegionMask;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.visitor.RegionVisitor;
 import com.sk89q.worldedit.internal.annotation.Chunk3d;
 import com.sk89q.worldedit.internal.annotation.Direction;
 import com.sk89q.worldedit.internal.annotation.MultiDirection;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.regions.RegionSelector;
@@ -502,6 +506,141 @@ public class SelectionCommands {
         }
 
         return changes.build().map(v -> v.multiply(amount)).toArray(BlockVector3[]::new);
+    }
+
+    @Command(
+        name = "/trim",
+        desc = "Minimize the selection to encompass matching blocks"
+    )
+    @Logging(REGION)
+    @CommandPermissions("worldedit.selection.trim")
+    public void trim(Actor actor, World world, LocalSession session,
+                     @Arg(desc = "Mask of blocks to keep within the selection", def = "#existing")
+                         Mask mask) throws WorldEditException {
+        // Avoid checking blocks outside the original region but within the cuboid region
+        Region originalRegion = session.getSelection(world);
+        if (!(originalRegion instanceof CuboidRegion)) {
+            mask = new MaskIntersection(new RegionMask(originalRegion), mask);
+        }
+        // Memoize the mask to reduce duplicated lookups
+        mask = Masks.memoize(mask);
+
+        // Result region will be cuboid
+        CuboidRegion region = originalRegion.getBoundingBox();
+
+        BlockVector3 min = region.getMinimumPoint();
+        BlockVector3 max = region.getMaximumPoint();
+
+        int minY = 0;
+        boolean found = false;
+
+        outer: for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
+            for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
+                for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+                    BlockVector3 vec = BlockVector3.at(x, y, z);
+
+                    if (mask.test(vec)) {
+                        found = true;
+                        minY = y;
+
+                        break outer;
+                    }
+                }
+            }
+        }
+
+        // If anything was found in the first pass, then the remaining variables are guaranteed to be set
+        if (!found) {
+            throw new StopExecutionException(TranslatableComponent.of(
+                        "worldedit.trim.no-blocks"));
+        }
+
+        int maxY = minY;
+
+        outer: for (int y = max.getBlockY(); y > minY; y--) {
+            for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
+                for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+                    BlockVector3 vec = BlockVector3.at(x, y, z);
+
+                    if (mask.test(vec)) {
+                        maxY = y;
+                        break outer;
+                    }
+                }
+            }
+        }
+
+        int minX = 0;
+
+        outer: for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
+            for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+                for (int y = minY; y <= maxY; y++) {
+                    BlockVector3 vec = BlockVector3.at(x, y, z);
+
+                    if (mask.test(vec)) {
+                        minX = x;
+                        break outer;
+                    }
+                }
+            }
+        }
+
+        int maxX = minX;
+
+        outer: for (int x = max.getBlockX(); x > minX; x--) {
+            for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+                for (int y = minY; y <= maxY; y++) {
+                    BlockVector3 vec = BlockVector3.at(x, y, z);
+
+                    if (mask.test(vec)) {
+                        maxX = x;
+                        break outer;
+                    }
+                }
+            }
+        }
+
+        int minZ = 0;
+
+        outer: for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+            for (int x = minX; x <= maxX; x++) {
+                for (int y = minY; y <= maxY; y++) {
+                    BlockVector3 vec = BlockVector3.at(x, y, z);
+
+                    if (mask.test(vec)) {
+                        minZ = z;
+                        break outer;
+                    }
+                }
+            }
+        }
+
+        int maxZ = minZ;
+
+        outer: for (int z = max.getBlockZ(); z > minZ; z--) {
+            for (int x = minX; x <= maxX; x++) {
+                for (int y = minY; y <= maxY; y++) {
+                    BlockVector3 vec = BlockVector3.at(x, y, z);
+
+                    if (mask.test(vec)) {
+                        maxZ = z;
+                        break outer;
+                    }
+                }
+            }
+        }
+
+        final CuboidRegionSelector selector;
+        if (session.getRegionSelector(world) instanceof ExtendingCuboidRegionSelector) {
+            selector = new ExtendingCuboidRegionSelector(world, BlockVector3.at(minX, minY, minZ), BlockVector3.at(maxX, maxY, maxZ));
+        } else {
+            selector = new CuboidRegionSelector(world, BlockVector3.at(minX, minY, minZ), BlockVector3.at(maxX, maxY, maxZ));
+        }
+        session.setRegionSelector(world, selector);
+
+        session.getRegionSelector(world).learnChanges();
+        session.getRegionSelector(world).explainRegionAdjust(actor, session);
+        actor.printInfo(TranslatableComponent.of("worldedit.trim.trim"));
     }
 
     @Command(
