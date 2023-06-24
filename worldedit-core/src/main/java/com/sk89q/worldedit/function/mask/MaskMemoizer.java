@@ -51,7 +51,6 @@ public class MaskMemoizer extends AbstractMask implements AutoCloseable {
         this.cache.clear();
     }
 
-    @Nullable
     @Override
     public Mask2D toMask2D() {
         return new MaskMemoizer2D(this.mask.toMask2D());

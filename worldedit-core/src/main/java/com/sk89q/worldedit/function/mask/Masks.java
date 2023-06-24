@@ -58,6 +58,11 @@ public final class Masks {
     /**
      * Memoize the given mask.
      *
+     * <p>
+     * This should not be kept around long-term for memory usage reasons. It's intended for usage within a single operation.
+     * The function is auto-closeable to make this simpler.
+     * </p>
+     *
      * @param mask the mask
      * @return a memoized mask
      */
@@ -68,6 +73,11 @@ public final class Masks {
 
     /**
      * Memoize the given mask.
+     *
+     * <p>
+     * This should not be kept around long-term for memory usage reasons. It's intended for usage within a single operation.
+     * The function is auto-closeable to make this simpler.
+     * </p>
      *
      * @param mask the mask
      * @return a memoized mask
