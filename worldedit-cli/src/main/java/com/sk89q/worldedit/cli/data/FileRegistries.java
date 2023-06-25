@@ -30,8 +30,6 @@ import com.sk89q.worldedit.util.io.ResourceLoader;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
 
 public class FileRegistries {
 
@@ -58,23 +56,4 @@ public class FileRegistries {
         return this.dataFile;
     }
 
-    public static class BlockManifest {
-        public String defaultstate;
-        public Map<String, BlockProperty> properties;
-    }
-
-    public static class BlockProperty {
-        public List<String> values;
-        public String type;
-    }
-
-    public static class DataFile {
-        public Map<String, List<String>> itemtags;
-        public Map<String, List<String>> blocktags;
-        public Map<String, List<String>> entitytags;
-        public List<String> items;
-        public List<String> entities;
-        public List<String> biomes;
-        public Map<String, BlockManifest> blocks;
-    }
 }

@@ -21,6 +21,7 @@ package com.sk89q.worldedit.cli;
 
 import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.cli.data.DataFile;
 import com.sk89q.worldedit.cli.data.FileRegistries;
 import com.sk89q.worldedit.cli.schematic.ClipboardWorld;
 import com.sk89q.worldedit.event.platform.CommandEvent;
@@ -100,7 +101,6 @@ public class CLIWorldEdit {
         WorldEdit.getInstance().getEventBus().post(new PlatformsRegisteredEvent());
 
         this.fileRegistries = new FileRegistries(this);
-        this.fileRegistries.loadDataFiles();
     }
 
     private void registerCommands() {
@@ -116,8 +116,11 @@ public class CLIWorldEdit {
     }
 
     public void setupRegistries() {
+        this.fileRegistries.loadDataFiles();
+
         // Blocks
-        for (Map.Entry<String, FileRegistries.BlockManifest> manifestEntry : fileRegistries.getDataFile().blocks.entrySet()) {
+        BlockType.REGISTRY.clear();
+        for (Map.Entry<String, DataFile.BlockManifest> manifestEntry : fileRegistries.getDataFile().blocks.entrySet()) {
             if (BlockType.REGISTRY.get(manifestEntry.getKey()) == null) {
                 BlockType.REGISTRY.register(manifestEntry.getKey(), new BlockType(manifestEntry.getKey(), input -> {
                     ParserContext context = new ParserContext();
@@ -144,29 +147,34 @@ public class CLIWorldEdit {
             }
         }
         // Items
+        ItemType.REGISTRY.clear();
         for (String name : fileRegistries.getDataFile().items) {
             if (ItemType.REGISTRY.get(name) == null) {
                 ItemType.REGISTRY.register(name, new ItemType(name));
             }
         }
         // Entities
+        EntityType.REGISTRY.clear();
         for (String name : fileRegistries.getDataFile().entities) {
             if (EntityType.REGISTRY.get(name) == null) {
                 EntityType.REGISTRY.register(name, new EntityType(name));
             }
         }
         // Biomes
+        BiomeType.REGISTRY.clear();
         for (String name : fileRegistries.getDataFile().biomes) {
             if (BiomeType.REGISTRY.get(name) == null) {
                 BiomeType.REGISTRY.register(name, new BiomeType(name));
             }
         }
         // Tags
+        BlockCategory.REGISTRY.clear();
         for (String name : fileRegistries.getDataFile().blocktags.keySet()) {
             if (BlockCategory.REGISTRY.get(name) == null) {
                 BlockCategory.REGISTRY.register(name, new BlockCategory(name));
             }
         }
+        ItemCategory.REGISTRY.clear();
         for (String name : fileRegistries.getDataFile().itemtags.keySet()) {
             if (ItemCategory.REGISTRY.get(name) == null) {
                 ItemCategory.REGISTRY.register(name, new ItemCategory(name));
@@ -185,7 +193,7 @@ public class CLIWorldEdit {
             }
         }
 
-        this.commandSender = new CLICommandSender(this, LOGGER);
+        this.commandSender = new CLICommandSender(LOGGER);
         this.platform = new CLIPlatform(this);
         LOGGER.info("WorldEdit CLI (version " + getInternalVersion() + ") is loaded");
     }

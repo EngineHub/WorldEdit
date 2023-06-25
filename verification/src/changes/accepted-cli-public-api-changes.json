@@ -7,5 +7,142 @@
                 "METHOD_REMOVED"
             ]
         }
+    ],
+    "Removed overridden method": [
+        {
+            "type": "com.sk89q.worldedit.cli.CLIConfiguration",
+            "member": "Method com.sk89q.worldedit.cli.CLIConfiguration.loadExtra()",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        }
+    ],
+    "Data File changes for downloadability": [
+        {
+            "type": "com.sk89q.worldedit.cli.data.FileRegistries",
+            "member": "Method com.sk89q.worldedit.cli.data.FileRegistries.getDataFile()",
+            "changes": [
+                "METHOD_RETURN_TYPE_CHANGED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.cli.data.FileRegistries$BlockManifest",
+            "member": "Class com.sk89q.worldedit.cli.data.FileRegistries$BlockManifest",
+            "changes": [
+                "CLASS_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.cli.data.FileRegistries$BlockManifest",
+            "member": "Field defaultstate",
+            "changes": [
+                "FIELD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.cli.data.FileRegistries$BlockManifest",
+            "member": "Field properties",
+            "changes": [
+                "FIELD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.cli.data.FileRegistries$BlockManifest",
+            "member": "Constructor com.sk89q.worldedit.cli.data.FileRegistries$BlockManifest()",
+            "changes": [
+                "CONSTRUCTOR_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.cli.data.FileRegistries$BlockProperty",
+            "member": "Class com.sk89q.worldedit.cli.data.FileRegistries$BlockProperty",
+            "changes": [
+                "CLASS_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.cli.data.FileRegistries$BlockProperty",
+            "member": "Field values",
+            "changes": [
+                "FIELD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.cli.data.FileRegistries$BlockProperty",
+            "member": "Field type",
+            "changes": [
+                "FIELD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.cli.data.FileRegistries$BlockProperty",
+            "member": "Constructor com.sk89q.worldedit.cli.data.FileRegistries$BlockProperty()",
+            "changes": [
+                "CONSTRUCTOR_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.cli.data.FileRegistries$DataFile",
+            "member": "Class com.sk89q.worldedit.cli.data.FileRegistries$DataFile",
+            "changes": [
+                "CLASS_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.cli.data.FileRegistries$DataFile",
+            "member": "Field itemtags",
+            "changes": [
+                "FIELD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.cli.data.FileRegistries$DataFile",
+            "member": "Field entitytags",
+            "changes": [
+                "FIELD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.cli.data.FileRegistries$DataFile",
+            "member": "Field entities",
+            "changes": [
+                "FIELD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.cli.data.FileRegistries$DataFile",
+            "member": "Field biomes",
+            "changes": [
+                "FIELD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.cli.data.FileRegistries$DataFile",
+            "member": "Field blocks",
+            "changes": [
+                "FIELD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.cli.data.FileRegistries$DataFile",
+            "member": "Field blocktags",
+            "changes": [
+                "FIELD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.cli.data.FileRegistries$DataFile",
+            "member": "Field items",
+            "changes": [
+                "FIELD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.cli.data.FileRegistries$DataFile",
+            "member": "Constructor com.sk89q.worldedit.cli.data.FileRegistries$DataFile()",
+            "changes": [
+                "CONSTRUCTOR_REMOVED"
+            ]
+        }
     ]
 }
