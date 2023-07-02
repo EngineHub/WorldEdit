@@ -52,9 +52,9 @@ public class CLIBlockRegistry extends BundledBlockRegistry {
     @Override
     public Map<String, ? extends Property<?>> getProperties(BlockType blockType) {
         Map<String, DataFile.BlockProperty> properties =
-                CLIWorldEdit.inst.getFileRegistries().getDataFile().blocks.get(blockType.id()).properties;
+                CLIWorldEdit.inst.getFileRegistries().getDataFile().blocks().get(blockType.id()).properties();
         Maps.EntryTransformer<String, DataFile.BlockProperty, Property<?>> entryTransform =
-            (key, value) -> createProperty(value.type, key, value.values);
+            (key, value) -> createProperty(value.type(), key, value.values());
         return ImmutableMap.copyOf(Maps.transformEntries(properties, entryTransform));
     }
 }

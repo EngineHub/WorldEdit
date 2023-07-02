@@ -22,22 +22,17 @@ package com.sk89q.worldedit.cli.data;
 import java.util.List;
 import java.util.Map;
 
-public class DataFile {
-    public Map<String, List<String>> itemtags;
-    public Map<String, List<String>> blocktags;
-    public Map<String, List<String>> entitytags;
-    public List<String> items;
-    public List<String> entities;
-    public List<String> biomes;
-    public Map<String, BlockManifest> blocks;
+public record DataFile(Map<String, List<String>> itemtags,
+                       Map<String, List<String>> blocktags,
+                       Map<String, List<String>> entitytags,
+                       List<String> items,
+                       List<String> entities,
+                       List<String> biomes,
+                       Map<String, BlockManifest> blocks) {
 
-    public static class BlockManifest {
-        public String defaultstate;
-        public Map<String, BlockProperty> properties;
+    public record BlockManifest(String defaultstate, Map<String, BlockProperty> properties) {
     }
 
-    public static class BlockProperty {
-        public List<String> values;
-        public String type;
+    public record BlockProperty(List<String> values, String type) {
     }
 }

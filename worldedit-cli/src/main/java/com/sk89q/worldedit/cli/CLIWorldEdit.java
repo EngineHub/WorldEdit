@@ -120,7 +120,7 @@ public class CLIWorldEdit {
 
         // Blocks
         BlockType.REGISTRY.clear();
-        for (Map.Entry<String, DataFile.BlockManifest> manifestEntry : fileRegistries.getDataFile().blocks.entrySet()) {
+        for (Map.Entry<String, DataFile.BlockManifest> manifestEntry : fileRegistries.getDataFile().blocks().entrySet()) {
             if (BlockType.REGISTRY.get(manifestEntry.getKey()) == null) {
                 BlockType.REGISTRY.register(manifestEntry.getKey(), new BlockType(manifestEntry.getKey(), input -> {
                     ParserContext context = new ParserContext();
@@ -129,7 +129,7 @@ public class CLIWorldEdit {
                     context.setRestricted(false);
                     try {
                         FuzzyBlockState state = (FuzzyBlockState) WorldEdit.getInstance().getBlockFactory().parseFromInput(
-                            manifestEntry.getValue().defaultstate,
+                            manifestEntry.getValue().defaultstate(),
                             context
                         ).toImmutableState();
                         BlockState defaultState = input.getBlockType().getAllStates().get(0);
@@ -148,34 +148,34 @@ public class CLIWorldEdit {
         }
         // Items
         ItemType.REGISTRY.clear();
-        for (String name : fileRegistries.getDataFile().items) {
+        for (String name : fileRegistries.getDataFile().items()) {
             if (ItemType.REGISTRY.get(name) == null) {
                 ItemType.REGISTRY.register(name, new ItemType(name));
             }
         }
         // Entities
         EntityType.REGISTRY.clear();
-        for (String name : fileRegistries.getDataFile().entities) {
+        for (String name : fileRegistries.getDataFile().entities()) {
             if (EntityType.REGISTRY.get(name) == null) {
                 EntityType.REGISTRY.register(name, new EntityType(name));
             }
         }
         // Biomes
         BiomeType.REGISTRY.clear();
-        for (String name : fileRegistries.getDataFile().biomes) {
+        for (String name : fileRegistries.getDataFile().biomes()) {
             if (BiomeType.REGISTRY.get(name) == null) {
                 BiomeType.REGISTRY.register(name, new BiomeType(name));
             }
         }
         // Tags
         BlockCategory.REGISTRY.clear();
-        for (String name : fileRegistries.getDataFile().blocktags.keySet()) {
+        for (String name : fileRegistries.getDataFile().blocktags().keySet()) {
             if (BlockCategory.REGISTRY.get(name) == null) {
                 BlockCategory.REGISTRY.register(name, new BlockCategory(name));
             }
         }
         ItemCategory.REGISTRY.clear();
-        for (String name : fileRegistries.getDataFile().itemtags.keySet()) {
+        for (String name : fileRegistries.getDataFile().itemtags().keySet()) {
             if (ItemCategory.REGISTRY.get(name) == null) {
                 ItemCategory.REGISTRY.register(name, new ItemCategory(name));
             }
