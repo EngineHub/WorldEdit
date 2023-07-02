@@ -19,6 +19,7 @@
 
 package com.sk89q.wepif;
 
+import org.bukkit.BanEntry;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -32,6 +33,7 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.profile.PlayerProfile;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -152,6 +154,11 @@ public class TestOfflinePermissible implements OfflinePlayer, Permissible {
 
     @Override
     public boolean isBanned() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public BanEntry<PlayerProfile> ban(String reason, Date expires, String source) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
