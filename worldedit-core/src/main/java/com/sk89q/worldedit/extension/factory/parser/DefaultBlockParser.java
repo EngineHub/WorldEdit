@@ -399,11 +399,10 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
             if (nbtString != null) {
                 LinCompoundTag otherTag;
                 try {
-                    System.out.println(nbtString);
                     otherTag = LinStringIO.readFromStringUsing(nbtString, LinCompoundTag::readFrom);
                 } catch (NbtParseException e) {
                     throw new NoMatchException(TranslatableComponent.of(
-                        "worldedit.error.invalid-nbt",
+                        "worldedit.error.parser.invalid-nbt",
                         TextComponent.of(input),
                         TextComponent.of(e.getMessage())
                     ));
