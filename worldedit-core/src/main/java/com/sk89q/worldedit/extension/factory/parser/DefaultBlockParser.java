@@ -289,7 +289,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
 
             int stateStart = blockAndExtraData[0].indexOf('[');
             int nbtStart = blockAndExtraData[0].indexOf('{');
-            int typeEnd = stateStart == -1 ? nbtStart : stateStart;
+            int typeEnd = stateStart == -1 ? nbtStart : nbtStart == -1 ? stateStart : Math.min(nbtStart, stateStart);
 
             if (typeEnd == -1) {
                 typeString = blockAndExtraData[0];
@@ -298,7 +298,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
             }
 
             String stateString = null;
-            if (stateStart != -1) {
+            if (stateStart != -1 && (nbtStart == -1 || stateStart < nbtStart)) {
                 if (stateStart + 1 >= blockAndExtraData[0].length()) {
                     throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.hanging-lbracket", TextComponent.of(stateStart)));
                 }
@@ -434,7 +434,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
             return baseBlock;
         }
 
-        if (DeprecationUtil.isSign(blockType)) {
+        if (DeprecationUtil.isSign(blockType) && blockAndExtraData.length > 1) {
             // Allow special sign text syntax
             String[] text = new String[4];
             text[0] = blockAndExtraData.length > 1 ? blockAndExtraData[1] : "";
@@ -444,7 +444,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
             @SuppressWarnings("deprecation")
             SignBlock signBlock = new SignBlock(state, text);
             return signBlock;
-        } else if (blockType == BlockTypes.SPAWNER) {
+        } else if (blockType == BlockTypes.SPAWNER && (blockAndExtraData.length > 1 || blockNbtData != null)) {
             // Allow setting mob spawn type
             String mobName;
             if (blockAndExtraData.length > 1) {
@@ -463,7 +463,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
             @SuppressWarnings("deprecation")
             MobSpawnerBlock mobSpawnerBlock = new MobSpawnerBlock(state, mobName);
             return mobSpawnerBlock;
-        } else if (blockType == BlockTypes.PLAYER_HEAD || blockType == BlockTypes.PLAYER_WALL_HEAD) {
+        } else if ((blockType == BlockTypes.PLAYER_HEAD || blockType == BlockTypes.PLAYER_WALL_HEAD) && (blockAndExtraData.length > 1 || blockNbtData != null)) {
             // allow setting type/player/rotation
             if (blockAndExtraData.length <= 1) {
                 @SuppressWarnings("deprecation")

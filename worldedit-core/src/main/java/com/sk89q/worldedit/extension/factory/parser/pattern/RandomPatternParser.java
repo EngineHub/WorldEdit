@@ -43,7 +43,7 @@ public class RandomPatternParser extends InputParser<Pattern> {
     @Override
     public Stream<String> getSuggestions(String input, ParserContext context) {
         String[] splits = input.split(",", -1);
-        List<String> patterns = StringUtil.parseListInQuotes(splits, ',', '[', ']', true);
+        List<String> patterns = StringUtil.parseListInQuotes(splits, ',', new char[] {'[', '{' }, new char[] {']', '}'}, true);
         // get suggestions for the last token only
         String percent = null;
         String token = patterns.get(patterns.size() - 1);
@@ -65,7 +65,7 @@ public class RandomPatternParser extends InputParser<Pattern> {
         RandomPattern randomPattern = new RandomPattern();
 
         String[] splits = input.split(",", -1);
-        List<String> patterns = StringUtil.parseListInQuotes(splits, ',', '[', ']', true);
+        List<String> patterns = StringUtil.parseListInQuotes(splits, ',', new char[] {'[', '{' }, new char[] {']', '}'}, true);
         if (patterns.size() == 1) {
             return null; // let a 'single'-pattern parser handle it
         }
