@@ -325,9 +325,6 @@ public final class StringUtil {
         return parseListInQuotes(input, delimiter, quoteOpen, quoteClose, false);
     }
 
-    public static Pattern BLOCK_QUOTE_OPEN_PATTERN = Pattern.compile("[\\[{]");
-    public static Pattern BLOCK_QUOTE_CLOSE_PATTERN = Pattern.compile("[]}]");
-
     public static List<String> parseListInQuotes(String[] input, char delimiter, char quoteOpen, char quoteClose, boolean appendLeftover) {
         List<String> parsableBlocks = new ArrayList<>();
         StringBuilder buffer = new StringBuilder();
