@@ -302,7 +302,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                 if (stateStart + 1 >= blockAndExtraData[0].length()) {
                     throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.hanging-lbracket", TextComponent.of(stateStart)));
                 }
-                int stateEnd = blockAndExtraData[0].lastIndexOf(']');
+                int stateEnd = blockAndExtraData[0].indexOf(']');
                 if (stateEnd < 0) {
                     throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.missing-rbracket"));
                 }
