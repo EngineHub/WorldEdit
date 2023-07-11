@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.Set;
-import java.util.zip.GZIPInputStream;
 
 /**
  * A collection of supported clipboard formats.
@@ -71,7 +70,7 @@ public interface ClipboardFormat {
      * @return true if the given file is of this format
      */
     default boolean isFormat(File file) {
-        try (InputStream stream = new GZIPInputStream(Files.newInputStream(file.toPath()))) {
+        try (InputStream stream = Files.newInputStream(file.toPath())) {
             return isFormat(stream);
         } catch (IOException e) {
             return false;
