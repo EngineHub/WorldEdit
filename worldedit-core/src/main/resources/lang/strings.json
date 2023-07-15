@@ -250,6 +250,8 @@
     "worldedit.up.obstructed": "You would hit something above you.",
     "worldedit.up.moved": "Woosh!",
 
+    "worldedit.cone.invalid-radius": "You must either specify 1 or 2 radius values.",
+    "worldedit.cone.created": "{0} blocks have been created.",
     "worldedit.cyl.invalid-radius": "You must either specify 1 or 2 radius values.",
     "worldedit.cyl.created": "{0} blocks have been created.",
     "worldedit.sphere.invalid-radius": "You must either specify 1 or 3 radius values.",

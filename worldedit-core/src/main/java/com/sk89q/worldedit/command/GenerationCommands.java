@@ -133,6 +133,49 @@ public class GenerationCommands {
     }
 
     @Command(
+        name = "/cone",
+        desc = "Generates a cone."
+    )
+    @CommandPermissions("worldedit.generation.cone")
+    @Logging(PLACEMENT)
+    public int cone(Actor actor, LocalSession session, EditSession editSession,
+                   @Arg(desc = "The pattern of blocks to generate")
+                       Pattern pattern,
+                   @Arg(desc = "The radii of the cone. 1st is N/S, 2nd is E/W")
+                   @Radii(2)
+                       List<Double> radii,
+                   @Arg(desc = "The height of the cone", def = "1")
+                       int height,
+                   @Switch(name = 'h', desc = "Make a hollow cone")
+                       boolean hollow,
+                   @Arg(desc = "Thickness of the hollow cone", def = "1")
+                       double thickness
+    ) throws WorldEditException {
+        double radiusX;
+        double radiusZ;
+        switch (radii.size()) {
+            case 1 -> radiusX = radiusZ = Math.max(1, radii.get(0));
+            case 2 -> {
+                radiusX = Math.max(1, radii.get(0));
+                radiusZ = Math.max(1, radii.get(1));
+            }
+            default -> {
+                actor.printError(TranslatableComponent.of("worldedit.cone.invalid-radius"));
+                return 0;
+            }
+        }
+
+        worldEdit.checkMaxRadius(radiusX);
+        worldEdit.checkMaxRadius(radiusZ);
+        worldEdit.checkMaxRadius(height);
+
+        BlockVector3 pos = session.getPlacementPosition(actor);
+        int affected = editSession.makeCone(pos, pattern, radiusX, radiusZ, height, !hollow, thickness);
+        actor.printInfo(TranslatableComponent.of("worldedit.cone.created", TextComponent.of(affected)));
+        return affected;
+    }
+
+    @Command(
         name = "/hsphere",
         desc = "Generates a hollow sphere."
     )
