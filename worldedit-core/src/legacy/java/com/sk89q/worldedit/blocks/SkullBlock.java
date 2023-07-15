@@ -23,7 +23,6 @@ import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.internal.util.DeprecationUtil;
-import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 
 import java.util.HashMap;
@@ -36,7 +35,7 @@ import java.util.Map;
  *     deprecated for removal without replacement
  */
 @Deprecated
-public class SkullBlock extends BaseBlock {
+public class SkullBlock extends LegacyBaseBlockWrapper {
 
     private String owner = ""; // notchian
 
