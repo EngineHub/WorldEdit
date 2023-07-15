@@ -136,7 +136,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -1795,35 +1794,36 @@ public class EditSession implements Extent, AutoCloseable {
 
         final int ceilRadiusX = (int) Math.ceil(radiusX);
         final int ceilRadiusZ = (int) Math.ceil(radiusZ);
+        final double radiusXPow = Math.pow(radiusX, 2);
+        final double radiusZPow = Math.pow(radiusZ, 2);
+        final double heightPow = Math.pow(height, 2);
 
         for (int y = 0; y < height; ++y) {
+            double ySquaredMinusHeightOverHeightSquared = Math.pow(y - height, 2) / heightPow;
+
             forX:
             for (int x = 0; x <= ceilRadiusX; ++x) {
+                double xSquaredOverRadiusX = Math.pow(x, 2) / radiusXPow;
 
-                forZ:
                 for (int z = 0; z <= ceilRadiusZ; ++z) {
-
-                    double xSquaredOverRadiusX = Math.pow(x, 2) /  Math.pow(radiusX, 2);
-                    double zSquaredOverRadiusZ = Math.pow(z, 2) / Math.pow(radiusZ, 2);
-                    double ySquaredMinusHeightOverHeightSquared = Math.pow(y - height, 2)
-                            / Math.pow(height, 2);
+                    double zSquaredOverRadiusZ = Math.pow(z, 2) / radiusZPow;
                     double distanceFromOriginMinusHeightSquared = xSquaredOverRadiusX + zSquaredOverRadiusZ
-                            - ySquaredMinusHeightOverHeightSquared;
+                        - ySquaredMinusHeightOverHeightSquared;
 
                     if (distanceFromOriginMinusHeightSquared > 1) {
                         if (z == 0) {
                             break forX;
                         }
-                        break forZ;
+                        break;
                     }
 
                     if (!filled) {
-                        double xNext = Math.pow(x + thickness, 2) /  Math.pow(radiusX, 2)
-                                + zSquaredOverRadiusZ - ySquaredMinusHeightOverHeightSquared;
+                        double xNext = Math.pow(x + thickness, 2) / radiusXPow
+                            + zSquaredOverRadiusZ - ySquaredMinusHeightOverHeightSquared;
                         double yNext = xSquaredOverRadiusX + zSquaredOverRadiusZ
-                                - Math.pow(y + thickness - height, 2) / Math.pow(height, 2);
+                            - Math.pow(y + thickness - height, 2) / heightPow;
                         double zNext = xSquaredOverRadiusX + Math.pow(z + thickness, 2)
-                                / Math.pow(radiusZ, 2) - ySquaredMinusHeightOverHeightSquared;
+                            / radiusZPow - ySquaredMinusHeightOverHeightSquared;
                         if (xNext <= 0 && zNext <= 0 && (yNext <= 0 && y + thickness != height)) {
                             continue;
                         }
