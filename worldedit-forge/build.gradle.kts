@@ -168,9 +168,11 @@ addJarManifest(WorldEditKind.Mod, includeClasspath = false)
 tasks.named<ShadowJar>("shadowJar") {
     dependencies {
         relocate("org.antlr.v4", "com.sk89q.worldedit.antlr4")
+        relocate("net.royawesome.jlibnoise", "com.sk89q.worldedit.jlibnoise");
 
         include(dependency("org.antlr:antlr4-runtime"))
         include(dependency("org.mozilla:rhino-runtime"))
+        include(dependency("com.sk89q.lib:jlibnoise"))
     }
     minimize {
         exclude(dependency("org.mozilla:rhino-runtime"))

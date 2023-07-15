@@ -98,10 +98,12 @@ tasks.named<ShadowJar>("shadowJar") {
         include(dependency("org.bstats:"))
         include(dependency("io.papermc:paperlib"))
         include(dependency("it.unimi.dsi:fastutil"))
+        include(dependency("com.sk89q.lib:jlibnoise"))
 
         relocate("org.bstats", "com.sk89q.worldedit.bstats")
         relocate("io.papermc.lib", "com.sk89q.worldedit.bukkit.paperlib")
         relocate("it.unimi.dsi.fastutil", "com.sk89q.worldedit.bukkit.fastutil")
+        relocate("net.royawesome.jlibnoise", "com.sk89q.worldedit.jlibnoise");
     }
 }
 
