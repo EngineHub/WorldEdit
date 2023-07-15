@@ -27,7 +27,6 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.util.gson.GsonUtil;
-import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 
 import java.util.Arrays;
@@ -42,7 +41,7 @@ import java.util.stream.Collectors;
  *     deprecated for removal without replacement
  */
 @Deprecated
-public class SignBlock extends BaseBlock {
+public class SignBlock extends LegacyBaseBlockWrapper {
 
     private String[] text;
 
