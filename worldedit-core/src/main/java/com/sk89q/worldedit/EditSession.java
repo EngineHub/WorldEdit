@@ -2283,9 +2283,10 @@ public class EditSession implements Extent, AutoCloseable {
                 } catch (ExpressionTimeoutException e) {
                     timedOut[0] = timedOut[0] + 1;
                     return null;
+                } catch (RuntimeException e) {
+                    throw e;
                 } catch (Exception e) {
-                    LOGGER.warn("Failed to create shape", e);
-                    return null;
+                    throw new RuntimeException(e);
                 }
             }
         };
