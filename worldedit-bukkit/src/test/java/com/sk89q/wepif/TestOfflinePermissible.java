@@ -33,6 +33,8 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.profile.PlayerProfile;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -159,6 +161,16 @@ public class TestOfflinePermissible implements OfflinePlayer, Permissible {
 
     @Override
     public BanEntry<PlayerProfile> ban(String reason, Date expires, String source) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public BanEntry<PlayerProfile> ban(String reason, Instant expires, String source) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public BanEntry<PlayerProfile> ban(String reason, Duration duration, String source) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
