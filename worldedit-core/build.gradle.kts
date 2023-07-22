@@ -59,7 +59,7 @@ dependencies {
     "compileOnly"("com.google.auto.value:auto-value-annotations:${Versions.AUTO_VALUE}")
     "annotationProcessor"("com.google.auto.value:auto-value:${Versions.AUTO_VALUE}")
 
-    "languageFiles"("${project.group}:worldedit-lang:7.2.6:355@zip")
+    "languageFiles"("${project.group}:worldedit-lang:7.2.16:1029@zip")
 
     "testRuntimeOnly"("org.apache.logging.log4j:log4j-core:${Versions.LOG4J}")
 }
