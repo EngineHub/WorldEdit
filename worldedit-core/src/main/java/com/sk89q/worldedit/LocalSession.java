@@ -107,7 +107,6 @@ public class LocalSession {
     private transient boolean useInventory;
     private transient com.sk89q.worldedit.world.snapshot.Snapshot snapshot;
     private transient Snapshot snapshotExperimental;
-    private transient SideEffectSet sideEffectSet = SideEffectSet.defaults();
     private transient Mask mask;
     private transient ZoneId timezone = ZoneId.systemDefault();
     private transient BlockVector3 cuiTemporaryBlock;
@@ -127,6 +126,7 @@ public class LocalSession {
     private Boolean wandItemDefault;
     private String navWandItem;
     private Boolean navWandItemDefault;
+    private SideEffectSet sideEffectSet = SideEffectSet.defaults();
 
     /**
      * Construct the object.
@@ -1159,6 +1159,7 @@ public class LocalSession {
      */
     public void setSideEffectSet(SideEffectSet sideEffectSet) {
         this.sideEffectSet = sideEffectSet;
+        setDirty();
     }
 
     /**
@@ -1178,7 +1179,7 @@ public class LocalSession {
      */
     @Deprecated
     public void setFastMode(boolean fastMode) {
-        this.sideEffectSet = fastMode ? SideEffectSet.none() : SideEffectSet.defaults();
+        setSideEffectSet(fastMode ? SideEffectSet.none() : SideEffectSet.defaults());
     }
 
     /**
