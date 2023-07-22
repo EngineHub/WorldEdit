@@ -103,7 +103,7 @@ tasks.named<ShadowJar>("shadowJar") {
         relocate("org.bstats", "com.sk89q.worldedit.bstats")
         relocate("io.papermc.lib", "com.sk89q.worldedit.bukkit.paperlib")
         relocate("it.unimi.dsi.fastutil", "com.sk89q.worldedit.bukkit.fastutil")
-        relocate("net.royawesome.jlibnoise", "com.sk89q.worldedit.jlibnoise");
+        relocate("net.royawesome.jlibnoise", "com.sk89q.worldedit.jlibnoise")
     }
 }
 

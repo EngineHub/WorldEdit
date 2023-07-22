@@ -74,7 +74,7 @@ tasks.named<ShadowJar>("shadowJar") {
 
         relocate("org.antlr.v4", "com.sk89q.worldedit.antlr4")
         relocate("org.bstats", "com.sk89q.worldedit.sponge.bstats")
-        relocate("net.royawesome.jlibnoise", "com.sk89q.worldedit.jlibnoise");
+        relocate("net.royawesome.jlibnoise", "com.sk89q.worldedit.jlibnoise")
     }
 }
 tasks.named("assemble").configure {
