@@ -29,8 +29,10 @@ import com.sk89q.jnbt.NamedTag;
 import com.sk89q.jnbt.ShortTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.legacycompat.BannerBlockCompatibilityHandler;
@@ -42,6 +44,7 @@ import com.sk89q.worldedit.extent.clipboard.io.legacycompat.NoteBlockCompatibili
 import com.sk89q.worldedit.extent.clipboard.io.legacycompat.Pre13HangingCompatibilityHandler;
 import com.sk89q.worldedit.extent.clipboard.io.legacycompat.SignCompatibilityHandler;
 import com.sk89q.worldedit.extent.clipboard.io.legacycompat.SkullBlockCompatibilityHandler;
+import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -99,9 +102,7 @@ public class MCEditSchematicReader extends NBTSchematicReader {
     public MCEditSchematicReader(NBTInputStream inputStream) {
         checkNotNull(inputStream);
         this.inputStream = inputStream;
-        this.fixer = null;
-        //com.sk89q.worldedit.WorldEdit.getInstance().getPlatformManager().queryCapability(
-        //com.sk89q.worldedit.extension.platform.Capability.WORLD_EDITING).getDataFixer();
+        this.fixer = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getDataFixer();
     }
 
     @Override
@@ -221,7 +222,7 @@ public class MCEditSchematicReader extends NBTSchematicReader {
             }
 
             if (fixer != null && t != null) {
-                t = fixer.fixUp(DataFixer.FixTypes.BLOCK_ENTITY, t, -1);
+                t = fixer.fixUp(DataFixer.FixTypes.BLOCK_ENTITY, t, Constants.DATA_VERSION_MC_1_13_2);
             }
 
             BlockVector3 vec = BlockVector3.at(x, y, z);
@@ -282,7 +283,7 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                 if (tag instanceof CompoundTag) {
                     CompoundTag compound = (CompoundTag) tag;
                     if (fixer != null) {
-                        compound = fixer.fixUp(DataFixer.FixTypes.ENTITY, compound, -1);
+                        compound = fixer.fixUp(DataFixer.FixTypes.ENTITY, compound, Constants.DATA_VERSION_MC_1_13_2);
                     }
                     String id = convertEntityId(compound.getString("id"));
                     Location location = NBTConversions.toLocation(clipboard, compound.getListTag("Pos"), compound.getListTag("Rotation"));
