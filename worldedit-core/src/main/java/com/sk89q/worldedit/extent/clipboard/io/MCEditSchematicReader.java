@@ -21,7 +21,9 @@ package com.sk89q.worldedit.extent.clipboard.io;
 
 import com.google.common.collect.ImmutableList;
 import com.sk89q.jnbt.NBTInputStream;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.legacycompat.BannerBlockCompatibilityHandler;
@@ -33,6 +35,7 @@ import com.sk89q.worldedit.extent.clipboard.io.legacycompat.NoteBlockCompatibili
 import com.sk89q.worldedit.extent.clipboard.io.legacycompat.Pre13HangingCompatibilityHandler;
 import com.sk89q.worldedit.extent.clipboard.io.legacycompat.SignCompatibilityHandler;
 import com.sk89q.worldedit.extent.clipboard.io.legacycompat.SkullBlockCompatibilityHandler;
+import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -40,6 +43,7 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.collection.BlockMap;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
+import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.entity.EntityType;
@@ -69,6 +73,7 @@ public class MCEditSchematicReader implements ClipboardReader {
 
     private static final Logger LOGGER = LogManagerCompat.getLogger();
     private final LinStream rootStream;
+    private final DataFixer fixer;
     private static final ImmutableList<NBTCompatibilityHandler> COMPATIBILITY_HANDLERS
             = ImmutableList.of(
                 new SignCompatibilityHandler(),
@@ -95,6 +100,7 @@ public class MCEditSchematicReader implements ClipboardReader {
         try {
             var tag = inputStream.readNamedTag();
             this.rootStream = new LinRootEntry(tag.getName(), (LinCompoundTag) tag.getTag().toLinTag()).linStream();
+            this.fixer = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getDataFixer();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -102,6 +108,7 @@ public class MCEditSchematicReader implements ClipboardReader {
 
     MCEditSchematicReader(LinStream rootStream) {
         this.rootStream = rootStream;
+        this.fixer = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getDataFixer();
     }
 
     @Override
@@ -206,6 +213,15 @@ public class MCEditSchematicReader implements ClipboardReader {
                     break;
                 }
             }
+
+            if (fixer != null && updatedBlock.getNbtReference() != null) {
+                try {
+                    updatedBlock = updatedBlock.toBaseBlock(fixer.fixUp(DataFixer.FixTypes.BLOCK_ENTITY, updatedBlock.getNbt(), Constants.DATA_VERSION_MC_1_13_2));
+                } catch (Exception e) {
+                    LOGGER.warn("Failed to run DFU on a block entity. Is there something wrong with the schematic?", e);
+                }
+            }
+
             tileEntityBlocks.put(BlockVector3.at(x, y, z), updatedBlock);
         }
 
@@ -247,7 +263,14 @@ public class MCEditSchematicReader implements ClipboardReader {
         var entityList = schematicTag.findListTag("Entities", LinTagType.compoundTag());
         if (entityList != null) {
             for (LinCompoundTag tag : entityList.value()) {
-                String id = convertEntityId(tag.getTag("id", LinTagType.stringTag()).value());
+                if (fixer != null) {
+                    try {
+                        tag = fixer.fixUp(DataFixer.FixTypes.ENTITY, tag, -1);
+                    } catch (Exception e) {
+                        LOGGER.warn("Failed to run DFU on an entity. Is there something wrong with the schematic?", e);
+                    }
+                }
+                String id = fixer != null ? tag.getTag("id", LinTagType.stringTag()).value() : convertEntityId(tag.getTag("id", LinTagType.stringTag()).value());
                 Location location = NBTConversions.toLocation(
                     clipboard,
                     tag.getListTag("Pos", LinTagType.doubleTag()),
@@ -256,8 +279,10 @@ public class MCEditSchematicReader implements ClipboardReader {
                 if (!id.isEmpty()) {
                     EntityType entityType = EntityTypes.get(id.toLowerCase(Locale.ROOT));
                     if (entityType != null) {
-                        for (EntityNBTCompatibilityHandler compatibilityHandler : ENTITY_COMPATIBILITY_HANDLERS) {
-                            tag = compatibilityHandler.updateNbt(entityType, tag);
+                        if (fixer == null) {
+                            for (EntityNBTCompatibilityHandler compatibilityHandler : ENTITY_COMPATIBILITY_HANDLERS) {
+                                tag = compatibilityHandler.updateNbt(entityType, tag);
+                            }
                         }
                         BaseEntity state = new BaseEntity(entityType, LazyReference.computed(tag));
                         clipboard.createEntity(location, state);
