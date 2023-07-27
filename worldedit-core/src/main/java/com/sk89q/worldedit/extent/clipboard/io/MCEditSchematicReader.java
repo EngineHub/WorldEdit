@@ -283,16 +283,18 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                 if (tag instanceof CompoundTag) {
                     CompoundTag compound = (CompoundTag) tag;
                     if (fixer != null) {
-                        compound = fixer.fixUp(DataFixer.FixTypes.ENTITY, compound, Constants.DATA_VERSION_MC_1_13_2);
+                        compound = fixer.fixUp(DataFixer.FixTypes.ENTITY, compound, -1);
                     }
-                    String id = convertEntityId(compound.getString("id"));
+                    String id = fixer != null ? compound.getString("id") : convertEntityId(compound.getString("id"));
                     Location location = NBTConversions.toLocation(clipboard, compound.getListTag("Pos"), compound.getListTag("Rotation"));
                     if (!id.isEmpty()) {
                         EntityType entityType = EntityTypes.get(id.toLowerCase(Locale.ROOT));
                         if (entityType != null) {
-                            for (EntityNBTCompatibilityHandler compatibilityHandler : ENTITY_COMPATIBILITY_HANDLERS) {
-                                if (compatibilityHandler.isAffectedEntity(entityType, compound)) {
-                                    compound = compatibilityHandler.updateNBT(entityType, compound);
+                            if (fixer == null) {
+                                for (EntityNBTCompatibilityHandler compatibilityHandler : ENTITY_COMPATIBILITY_HANDLERS) {
+                                    if (compatibilityHandler.isAffectedEntity(entityType, compound)) {
+                                        compound = compatibilityHandler.updateNBT(entityType, compound);
+                                    }
                                 }
                             }
                             BaseEntity state = new BaseEntity(entityType, compound);
