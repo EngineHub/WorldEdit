@@ -19,19 +19,24 @@
 
 package com.sk89q.worldedit.cli.data;
 
-import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.cli.CLIWorldEdit;
-import com.sk89q.worldedit.extension.platform.Capability;
-import com.sk89q.worldedit.util.io.ResourceLoader;
+import com.sk89q.worldedit.util.io.Closer;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class FileRegistries {
+
+    private static final int CLI_DATA_VERSION = 1;
+    private static final String DATA_FILE_DOWNLOAD_URL = "https://services.enginehub.org/cassette-deck/we-cli-data/";
 
     private final CLIWorldEdit app;
     private final Gson gson = new GsonBuilder().create();
@@ -43,12 +48,23 @@ public class FileRegistries {
     }
 
     public void loadDataFiles() {
-        ResourceLoader resourceLoader = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.CONFIGURATION).getResourceLoader();
-        try {
-            URL url = resourceLoader.getResource(FileRegistries.class, app.getPlatform().getDataVersion() + ".json");
-            this.dataFile = gson.fromJson(Resources.toString(url, StandardCharsets.UTF_8), DataFile.class);
+        Path outputFolder = WorldEdit.getInstance().getWorkingDirectoryPath("cli-data");
+        Path checkPath = outputFolder.resolve(app.getPlatform().getDataVersion() + "_" + CLI_DATA_VERSION + ".json");
+
+        try(Closer closer = Closer.create()) {
+            Files.createDirectories(outputFolder);
+
+            if (!Files.exists(checkPath)) {
+                URL url = new URL(DATA_FILE_DOWNLOAD_URL + app.getPlatform().getDataVersion() + "/" + CLI_DATA_VERSION);
+                ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
+
+                FileOutputStream fileOutputStream = closer.register(new FileOutputStream(checkPath.toFile()));
+                fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+            }
+
+            this.dataFile = gson.fromJson(Files.readString(checkPath), DataFile.class);
         } catch (IOException e) {
-            throw new RuntimeException("The provided file is not compatible with this version of WorldEdit-CLI. Please update or report this.");
+            throw new RuntimeException("The provided file is not compatible with this version of WorldEdit-CLI. Please update or report this.", e);
         }
     }
 
