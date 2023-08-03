@@ -120,7 +120,9 @@ public class BukkitServerInterface extends AbstractPlatform implements MultiUser
 
     @Override
     public int schedule(long delay, long period, Runnable task) {
-        return Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, task, delay, period);
+        plugin.getScheduler().runAsyncRate(task, delay, period);
+        return 0;
+//        return Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, task, delay, period);
     }
 
     @Override
