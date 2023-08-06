@@ -70,9 +70,11 @@ tasks.named<ShadowJar>("shadowJar") {
     dependencies {
         include(dependency("org.bstats:"))
         include(dependency("org.antlr:antlr4-runtime"))
+        include(dependency("com.sk89q.lib:jlibnoise"))
 
         relocate("org.antlr.v4", "com.sk89q.worldedit.antlr4")
         relocate("org.bstats", "com.sk89q.worldedit.sponge.bstats")
+        relocate("net.royawesome.jlibnoise", "com.sk89q.worldedit.jlibnoise")
     }
 }
 tasks.named("assemble").configure {

@@ -137,8 +137,10 @@ tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("dist-dev")
     dependencies {
         relocate("org.antlr.v4", "com.sk89q.worldedit.antlr4")
+        relocate("net.royawesome.jlibnoise", "com.sk89q.worldedit.jlibnoise")
 
         include(dependency("org.antlr:antlr4-runtime"))
+        include(dependency("com.sk89q.lib:jlibnoise"))
     }
 }
 
