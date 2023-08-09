@@ -19,15 +19,12 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import com.google.common.base.Throwables;
 import com.sk89q.util.yaml.YAMLProcessor;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.util.YAMLConfiguration;
 import com.sk89q.worldedit.util.report.Unreported;
 import org.apache.logging.log4j.LogManager;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
@@ -53,32 +50,6 @@ public class BukkitConfiguration extends YAMLConfiguration {
         if (unsupportedVersionEditing) {
             WorldEdit.logger.warn("Editing without a Bukkit adapter has been enabled. You will not receive support "
                     + "for any issues that arise as a result.");
-        }
-        migrateLegacyFolders();
-    }
-
-    private void migrateLegacyFolders() {
-        migrate(scriptsDir, "craftscripts");
-        migrate(saveDir, "schematics");
-        migrate("drawings", "draw.js images");
-    }
-
-    private void migrate(String file, String name) {
-        Path fromDir = Path.of(file);
-        if (!fromDir.toAbsolutePath().startsWith(Path.of("").toAbsolutePath())) {
-            throw new IllegalArgumentException("Legacy folder must be below the current working directory");
-        }
-        Path toDir = getWorkingDirectoryPath().resolve(file);
-        if (Files.exists(fromDir) & !Files.exists(toDir)) {
-            try {
-                Files.move(fromDir, toDir);
-                plugin.getLogger().info("Migrated " + name + " folder '" + file
-                    + "' from server root to plugin data folder.");
-            } catch (IOException e) {
-                plugin.getLogger().warning(() ->
-                    "Error while migrating " + name + " folder! " + Throwables.getStackTraceAsString(e)
-                );
-            }
         }
     }
 
