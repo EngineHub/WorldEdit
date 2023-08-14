@@ -567,7 +567,7 @@ public class BrushCommands {
                        @Arg(desc = "The type of feature to use")
                        ConfiguredFeatureType type) throws WorldEditException {
         setOperationBasedBrush(player, localSession, radius,
-            new Paint(new FeatureGeneratorFactory(type), density / 100), shape, "worldedit.brush.feature");
+            new ApplyRegion(new FeatureGeneratorFactory(type, density / 100)), shape, "worldedit.brush.feature");
     }
 
     @Command(
@@ -650,6 +650,7 @@ public class BrushCommands {
         setOperationBasedBrush(player, localSession, radius,
             new ApplyRegion(new BiomeFactory(biomeType)), shape, "worldedit.brush.biome");
         player.printInfo(TranslatableComponent.of("worldedit.setbiome.warning"));
+        ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
     }
 
     @Command(
@@ -677,6 +678,7 @@ public class BrushCommands {
         tool.setSize(brushSize);
 
         player.printInfo(TranslatableComponent.of("worldedit.brush.morph.equip", TextComponent.of((int) brushSize)));
+        ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
     }
 
     @Command(
@@ -696,6 +698,7 @@ public class BrushCommands {
         tool.setSize(brushSize);
 
         player.printInfo(TranslatableComponent.of("worldedit.brush.morph.equip", TextComponent.of((int) brushSize)));
+        ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
     }
 
     @Command(
@@ -715,6 +718,7 @@ public class BrushCommands {
         tool.setSize(brushSize);
 
         player.printInfo(TranslatableComponent.of("worldedit.brush.morph.equip", TextComponent.of((int) brushSize)));
+        ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
     }
 
     static void setOperationBasedBrush(Player player, LocalSession session, double radius,
