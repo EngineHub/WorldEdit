@@ -52,10 +52,10 @@ dependencies {
     implementation("org.jfrog.buildinfo:build-info-extractor-gradle:4.32.0")
     implementation("org.spongepowered:spongegradle-plugin-development:2.1.1")
     implementation("org.spongepowered:vanillagradle:0.2.1-20230603.203956-54")
-    implementation("net.minecraftforge.gradle:ForgeGradle:6.0.6")
+    implementation("net.minecraftforge.gradle:ForgeGradle:6.0.11")
     implementation("net.fabricmc:fabric-loom:$loomVersion")
     implementation("net.fabricmc:sponge-mixin:$mixinVersion")
     implementation("org.enginehub.gradle:gradle-codecov-plugin:0.2.0")
     implementation("io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:1.5.5")
-    implementation("org.spongepowered:mixingradle:0.7.33")
+    implementation("org.spongepowered:mixingradle:0.7.38")
 }

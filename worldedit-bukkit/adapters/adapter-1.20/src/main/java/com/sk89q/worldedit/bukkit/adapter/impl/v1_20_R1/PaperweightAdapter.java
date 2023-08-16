@@ -626,7 +626,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         final net.minecraft.core.Direction enumFacing = adapt(face);
         BlockHitResult rayTrace = new BlockHitResult(blockVec, enumFacing, blockPos, false);
         UseOnContext context = new UseOnContext(fakePlayer, InteractionHand.MAIN_HAND, rayTrace);
-        InteractionResult result = stack.useOn(context, InteractionHand.MAIN_HAND);
+        InteractionResult result = stack.useOn(context);
         if (result != InteractionResult.SUCCESS) {
             if (worldServer.getBlockState(blockPos).use(worldServer, fakePlayer, InteractionHand.MAIN_HAND, rayTrace).consumesAction()) {
                 result = InteractionResult.SUCCESS;
