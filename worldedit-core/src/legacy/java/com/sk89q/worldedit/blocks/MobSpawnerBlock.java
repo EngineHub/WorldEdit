@@ -19,10 +19,8 @@
 
 package com.sk89q.worldedit.blocks;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.IntTag;
 import com.sk89q.jnbt.ListTag;
 import com.sk89q.jnbt.NBTUtils;
 import com.sk89q.jnbt.ShortTag;
@@ -130,15 +128,11 @@ public class MobSpawnerBlock extends BaseBlock {
         values.put("MaxNearbyEntities", new ShortTag(maxNearbyEntities));
         values.put("RequiredPlayerRange", new ShortTag(requiredPlayerRange));
         if (spawnData == null) {
-            values.put("SpawnData", new CompoundTag(ImmutableMap.of("id", new StringTag(mobType))));
+            values.put("SpawnData", new CompoundTag(ImmutableMap.of("entity", new CompoundTag(ImmutableMap.of("id", new StringTag(mobType))))));
         } else {
             values.put("SpawnData", new CompoundTag(spawnData.getValue()));
         }
-        if (spawnPotentials == null) {
-            values.put("SpawnPotentials", new ListTag(CompoundTag.class, ImmutableList.of(
-                    new CompoundTag(ImmutableMap.of("Weight", new IntTag(1), "Entity",
-                            new CompoundTag(ImmutableMap.of("id", new StringTag(mobType))))))));
-        } else {
+        if (spawnPotentials != null) {
             values.put("SpawnPotentials", new ListTag(CompoundTag.class, spawnPotentials.getValue()));
         }
 
