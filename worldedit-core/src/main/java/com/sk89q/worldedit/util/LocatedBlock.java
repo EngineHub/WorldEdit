@@ -22,46 +22,37 @@ package com.sk89q.worldedit.util;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.block.BaseBlock;
 
-import java.util.Objects;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Represents a block located at some position.
  */
-public final class LocatedBlock {
+public record LocatedBlock(BlockVector3 location, BaseBlock block) {
 
-    private final BlockVector3 location;
-    private final BaseBlock block;
-
-    public LocatedBlock(BlockVector3 location, BaseBlock block) {
-        this.location = checkNotNull(location);
-        this.block = checkNotNull(block);
+    public LocatedBlock {
+        checkNotNull(location);
+        checkNotNull(block);
     }
 
+    /**
+     * Gets the location.
+     *
+     * @return The location
+     * @deprecated This class is now a record. Use {@link #location()} instead.
+     */
+    @Deprecated
     public BlockVector3 getLocation() {
-        return location;
+        return this.location;
     }
 
+    /**
+     * Gets the block.
+     *
+     * @return The block
+     * @deprecated This class is now a record. Use {@link #block()} instead.
+     */
     public BaseBlock getBlock() {
-        return block;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(location, block);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (this.getClass() != obj.getClass()) {
-            return false;
-        }
-        LocatedBlock lb = (LocatedBlock) obj;
-        return Objects.equals(location, lb.location) && Objects.equals(block, lb.block);
+        return this.block;
     }
 
 }

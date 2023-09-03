@@ -117,12 +117,15 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
         checkNotNull(block);
         checkNotNull(transform);
 
+        if (transform.isIdentity()) {
+            return block;
+        }
+
         B result = block;
         List<? extends Property<?>> properties = block.getBlockType().getProperties();
 
         for (Property<?> property : properties) {
-            if (property instanceof DirectionalProperty) {
-                DirectionalProperty dirProp = (DirectionalProperty) property;
+            if (property instanceof DirectionalProperty dirProp) {
                 Direction value = (Direction) block.getState(property);
                 if (value != null) {
                     Vector3 newValue = getNewStateValue(dirProp.getValues(), transform, value.toVector());
@@ -130,24 +133,15 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                         result = result.with(dirProp, Direction.findClosest(newValue, Direction.Flag.ALL));
                     }
                 }
-            } else if (property instanceof EnumProperty) {
-                EnumProperty enumProp = (EnumProperty) property;
+            } else if (property instanceof EnumProperty enumProp) {
                 if (property.getName().equals("axis")) {
                     // We have an axis - this is something we can do the rotations to :sunglasses:
-                    Direction value = null;
-                    switch ((String) block.getState(property)) {
-                        case "x":
-                            value = Direction.EAST;
-                            break;
-                        case "y":
-                            value = Direction.UP;
-                            break;
-                        case "z":
-                            value = Direction.NORTH;
-                            break;
-                        default:
-                            break;
-                    }
+                    Direction value = switch ((String) block.getState(property)) {
+                        case "x" -> Direction.EAST;
+                        case "y" -> Direction.UP;
+                        case "z" -> Direction.NORTH;
+                        default -> null;
+                    };
                     if (value != null) {
                         Vector3 newValue = getNewStateValue(Direction.valuesOf(Direction.Flag.UPRIGHT | Direction.Flag.CARDINAL), transform, value.toVector());
                         if (newValue != null) {
@@ -225,8 +219,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                         }
                     }
                 }
-            } else if (property instanceof IntegerProperty) {
-                IntegerProperty intProp = (IntegerProperty) property;
+            } else if (property instanceof IntegerProperty intProp) {
                 if (property.getName().equals("rotation")) {
                     if (intProp.getValues().size() == 16) {
                         Optional<Direction> direction = Direction.fromRotationIndex(block.getState(intProp));

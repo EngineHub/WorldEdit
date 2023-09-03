@@ -77,6 +77,10 @@ public class ChunkBatchingExtent extends AbstractBufferingExtent {
 
     @Override
     protected BaseBlock getBufferedFullBlock(BlockVector3 position) {
+        if (!enabled) {
+            // Early exit if we're not enabled.
+            return null;
+        }
         return blockMap.get(position);
     }
 
