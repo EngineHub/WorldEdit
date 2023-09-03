@@ -77,9 +77,6 @@ public class BukkitWorld extends AbstractWorld {
 
     private static final Logger LOGGER = LogManagerCompat.getLogger();
 
-    private static final boolean HAS_3D_BIOMES;
-    private static final boolean HAS_MIN_Y;
-
     private static final Map<Integer, Effect> effects = new HashMap<>();
 
     static {
@@ -88,22 +85,6 @@ public class BukkitWorld extends AbstractWorld {
             int id = effect.getId();
             effects.put(id, effect);
         }
-
-        boolean temp;
-        try {
-            World.class.getMethod("getBiome", int.class, int.class, int.class);
-            temp = true;
-        } catch (NoSuchMethodException e) {
-            temp = false;
-        }
-        HAS_3D_BIOMES = temp;
-        try {
-            World.class.getMethod("getMinHeight");
-            temp = true;
-        } catch (NoSuchMethodException e) {
-            temp = false;
-        }
-        HAS_MIN_Y = temp;
     }
 
     private final WeakReference<World> worldRef;
@@ -160,11 +141,10 @@ public class BukkitWorld extends AbstractWorld {
                     return null;
                 }
             } catch (Exception e) {
-                LOGGER.warn("Corrupt entity found when creating: " + entity.getType().getId());
+                LOGGER.warn("Corrupt entity found when creating: " + entity.getType().getId(), e);
                 if (entity.getNbt() != null) {
                     LOGGER.warn(entity.getNbt().toString());
                 }
-                e.printStackTrace();
                 return null;
             }
         } else {
@@ -194,15 +174,11 @@ public class BukkitWorld extends AbstractWorld {
     @Override
     public Path getStoragePath() {
         Path worldFolder = getWorld().getWorldFolder().toPath();
-        switch (getWorld().getEnvironment()) {
-            case NETHER:
-                return worldFolder.resolve("DIM-1");
-            case THE_END:
-                return worldFolder.resolve("DIM1");
-            case NORMAL:
-            default:
-                return worldFolder;
-        }
+        return switch (getWorld().getEnvironment()) {
+            case NETHER -> worldFolder.resolve("DIM-1");
+            case THE_END -> worldFolder.resolve("DIM1");
+            default -> worldFolder;
+        };
     }
 
     @Override
@@ -243,14 +219,13 @@ public class BukkitWorld extends AbstractWorld {
 
         Block block = getWorld().getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
         BlockState state = PaperLib.getBlockState(block, false).getState();
-        if (!(state instanceof InventoryHolder)) {
+        if (!(state instanceof InventoryHolder inventoryHolder)) {
             return false;
         }
 
-        InventoryHolder chest = (InventoryHolder) state;
-        Inventory inven = chest.getInventory();
-        if (chest instanceof Chest) {
-            inven = ((Chest) chest).getBlockInventory();
+        Inventory inven = inventoryHolder.getInventory();
+        if (inventoryHolder instanceof Chest) {
+            inven = ((Chest) inventoryHolder).getBlockInventory();
         }
         inven.clear();
         return true;
@@ -343,13 +318,9 @@ public class BukkitWorld extends AbstractWorld {
 
     @Override
     public int getMinY() {
-        if (HAS_MIN_Y) {
-            return getWorld().getMinHeight();
-        }
-        return super.getMinY();
+        return getWorld().getMinHeight();
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void fixAfterFastMode(Iterable<BlockVector2> chunks) {
         World world = getWorld();
@@ -541,36 +512,26 @@ public class BukkitWorld extends AbstractWorld {
     @Override
     public boolean fullySupports3DBiomes() {
         // Supports if API does and we're not in the overworld
-        return HAS_3D_BIOMES && (getWorld().getEnvironment() != World.Environment.NORMAL || PaperLib.isVersion(18));
+        return getWorld().getEnvironment() != World.Environment.NORMAL || PaperLib.isVersion(18);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public BiomeType getBiome(BlockVector3 position) {
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         if (adapter != null && adapter.hasCustomBiomeSupport()) {
             return adapter.getBiome(BukkitAdapter.adapt(getWorld(), position));
         } else {
-            if (HAS_3D_BIOMES) {
-                return BukkitAdapter.adapt(getWorld().getBiome(position.getBlockX(), position.getBlockY(), position.getBlockZ()));
-            } else {
-                return BukkitAdapter.adapt(getWorld().getBiome(position.getBlockX(), position.getBlockZ()));
-            }
+            return BukkitAdapter.adapt(getWorld().getBiome(position.getBlockX(), position.getBlockY(), position.getBlockZ()));
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public boolean setBiome(BlockVector3 position, BiomeType biome) {
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         if (adapter != null && adapter.hasCustomBiomeSupport()) {
             adapter.setBiome(BukkitAdapter.adapt(getWorld(), position), biome);
         } else {
-            if (HAS_3D_BIOMES) {
-                getWorld().setBiome(position.getBlockX(), position.getBlockY(), position.getBlockZ(), BukkitAdapter.adapt(biome));
-            } else {
-                getWorld().setBiome(position.getBlockX(), position.getBlockZ(), BukkitAdapter.adapt(biome));
-            }
+            getWorld().setBiome(position.getBlockX(), position.getBlockY(), position.getBlockZ(), BukkitAdapter.adapt(biome));
         }
         return true;
     }
