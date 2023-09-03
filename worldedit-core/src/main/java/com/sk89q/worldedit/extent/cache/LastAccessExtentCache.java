@@ -74,7 +74,7 @@ public class LastAccessExtentCache extends AbstractDelegateExtent {
     @Override
     public <T extends BlockStateHolder<T>> boolean setBlock(BlockVector3 location, T block) throws WorldEditException {
         if (super.setBlock(location, block)) {
-            if (block instanceof BaseBlock && lastFullBlock != null && lastFullBlock.position.equals(location)) {
+            if (lastFullBlock != null && lastFullBlock.position.equals(location)) {
                 this.lastFullBlock = new CachedBlock<>(location, block.toBaseBlock());
             }
             if (lastBlock != null && lastBlock.position.equals(location)) {
