@@ -136,14 +136,12 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
             } else if (property instanceof EnumProperty enumProp) {
                 if (property.getName().equals("axis")) {
                     // We have an axis - this is something we can do the rotations to :sunglasses:
-                    Direction value = null;
-                    switch ((String) block.getState(property)) {
-                        case "x" -> value = Direction.EAST;
-                        case "y" -> value = Direction.UP;
-                        case "z" -> value = Direction.NORTH;
-                        default -> {
-                        }
-                    }
+                    Direction value = switch ((String) block.getState(property)) {
+                        case "x" -> Direction.EAST;
+                        case "y" -> Direction.UP;
+                        case "z" -> Direction.NORTH;
+                        default -> null;
+                    };
                     if (value != null) {
                         Vector3 newValue = getNewStateValue(Direction.valuesOf(Direction.Flag.UPRIGHT | Direction.Flag.CARDINAL), transform, value.toVector());
                         if (newValue != null) {

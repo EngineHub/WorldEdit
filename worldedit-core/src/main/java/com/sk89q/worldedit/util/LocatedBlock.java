@@ -29,9 +29,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public record LocatedBlock(BlockVector3 location, BaseBlock block) {
 
-    public LocatedBlock(BlockVector3 location, BaseBlock block) {
-        this.location = checkNotNull(location);
-        this.block = checkNotNull(block);
+    public LocatedBlock {
+        checkNotNull(location);
+        checkNotNull(block);
     }
 
     /**
