@@ -50,6 +50,8 @@ public class LastAccessExtentCache extends AbstractDelegateExtent {
         CachedBlock<BlockState> lastBlock = this.lastBlock;
         if (lastBlock != null && lastBlock.position.equals(position)) {
             return lastBlock.block;
+        } else if (lastFullBlock != null && lastFullBlock.position.equals(position)) {
+            return lastFullBlock.block().toImmutableState();
         } else {
             BlockState block = super.getBlock(position);
             this.lastBlock = new CachedBlock<>(position, block);
@@ -72,7 +74,7 @@ public class LastAccessExtentCache extends AbstractDelegateExtent {
     @Override
     public <T extends BlockStateHolder<T>> boolean setBlock(BlockVector3 location, T block) throws WorldEditException {
         if (super.setBlock(location, block)) {
-            if (lastFullBlock != null && lastFullBlock.position.equals(location)) {
+            if (block instanceof BaseBlock && lastFullBlock != null && lastFullBlock.position.equals(location)) {
                 this.lastFullBlock = new CachedBlock<>(location, block.toBaseBlock());
             }
             if (lastBlock != null && lastBlock.position.equals(location)) {
@@ -84,14 +86,7 @@ public class LastAccessExtentCache extends AbstractDelegateExtent {
         return false;
     }
 
-    private static class CachedBlock<B extends BlockStateHolder<B>> {
-        private final BlockVector3 position;
-        private final B block;
-
-        private CachedBlock(BlockVector3 position, B block) {
-            this.position = position;
-            this.block = block;
-        }
+    private record CachedBlock<B extends BlockStateHolder<B>>(BlockVector3 position, B block) {
     }
 
 }

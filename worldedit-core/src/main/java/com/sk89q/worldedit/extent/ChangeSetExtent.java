@@ -88,6 +88,7 @@ public class ChangeSetExtent extends AbstractDelegateExtent {
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+        this.changeSet.setRecordChanges(enabled);
     }
 
     @Override

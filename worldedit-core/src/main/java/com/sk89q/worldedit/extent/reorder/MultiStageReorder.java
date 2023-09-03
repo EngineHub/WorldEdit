@@ -259,6 +259,10 @@ public class MultiStageReorder extends AbstractBufferingExtent implements Reorde
 
     @Override
     protected BaseBlock getBufferedFullBlock(BlockVector3 position) {
+        if (!enabled) {
+            // Early-exit if we know we're not enabled.
+            return null;
+        }
         for (BlockMap<BaseBlock> blocks : stages.values()) {
             BaseBlock baseBlock = blocks.get(position);
             if (baseBlock != null) {

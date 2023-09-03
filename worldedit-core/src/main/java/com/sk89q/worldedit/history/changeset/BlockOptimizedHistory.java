@@ -42,7 +42,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class BlockOptimizedHistory extends ArrayListHistory {
 
     private static Change createChange(LocatedBlock block) {
-        return new BlockChange(block.getLocation(), block.getBlock(), block.getBlock());
+        return new BlockChange(block.location(), block.block(), block.block());
     }
 
     private final LocatedBlockList previous = new LocatedBlockList();
@@ -52,14 +52,16 @@ public class BlockOptimizedHistory extends ArrayListHistory {
     public void add(Change change) {
         checkNotNull(change);
 
-        if (change instanceof BlockChange blockChange) {
-            BlockVector3 position = blockChange.getPosition();
-            if (!previous.containsLocation(position)) {
-                previous.add(position, blockChange.getPrevious());
+        if (isRecordingChanges()) {
+            if (change instanceof BlockChange blockChange) {
+                BlockVector3 position = blockChange.getPosition();
+                if (!previous.containsLocation(position)) {
+                    previous.add(position, blockChange.getPrevious());
+                }
+                current.add(position, blockChange.getCurrent());
+            } else {
+                super.add(change);
             }
-            current.add(position, blockChange.getCurrent());
-        } else {
-            super.add(change);
         }
     }
 

@@ -47,13 +47,13 @@ public class LocatedBlockList implements Iterable<LocatedBlock> {
 
     public LocatedBlockList(Collection<? extends LocatedBlock> collection) {
         for (LocatedBlock locatedBlock : collection) {
-            add(locatedBlock.getLocation(), locatedBlock.getBlock());
+            add(locatedBlock.location(), locatedBlock.block());
         }
     }
 
     public void add(LocatedBlock setBlockCall) {
         checkNotNull(setBlockCall);
-        add(setBlockCall.getLocation(), setBlockCall.getBlock());
+        add(setBlockCall.location(), setBlockCall.block());
     }
 
     public <B extends BlockStateHolder<B>> void add(BlockVector3 location, B block) {

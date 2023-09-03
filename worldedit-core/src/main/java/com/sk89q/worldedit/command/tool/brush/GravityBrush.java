@@ -89,7 +89,7 @@ public class GravityBrush implements Brush {
                 }
 
                 for (LocatedBlock block : column) {
-                    editSession.setBlock(block.getLocation(), block.getBlock());
+                    editSession.setBlock(block.location(), block.block());
                 }
 
                 for (BlockVector3 removedBlock : removedBlocks) {

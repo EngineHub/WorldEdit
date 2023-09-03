@@ -38,7 +38,7 @@ public class SetLocatedBlocks implements Operation {
     @Override
     public Operation resume(RunContext run) throws WorldEditException {
         for (LocatedBlock block : blocks) {
-            extent.setBlock(block.getLocation(), block.getBlock());
+            extent.setBlock(block.location(), block.block());
         }
         return null;
     }
