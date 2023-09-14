@@ -59,6 +59,7 @@ import java.io.UncheckedIOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -132,18 +133,23 @@ public class MCEditSchematicReader implements ClipboardReader {
         short height = schematicTag.getTag("Height", LinTagType.shortTag()).valueAsShort();
         short length = schematicTag.getTag("Length", LinTagType.shortTag()).valueAsShort();
 
-        int originX = schematicTag.getTag("WEOriginX", LinTagType.intTag()).valueAsInt();
-        int originY = schematicTag.getTag("WEOriginY", LinTagType.intTag()).valueAsInt();
-        int originZ = schematicTag.getTag("WEOriginZ", LinTagType.intTag()).valueAsInt();
-        BlockVector3 min = BlockVector3.at(originX, originY, originZ);
+        try {
+            int originX = schematicTag.getTag("WEOriginX", LinTagType.intTag()).valueAsInt();
+            int originY = schematicTag.getTag("WEOriginY", LinTagType.intTag()).valueAsInt();
+            int originZ = schematicTag.getTag("WEOriginZ", LinTagType.intTag()).valueAsInt();
+            BlockVector3 min = BlockVector3.at(originX, originY, originZ);
 
-        int offsetX = schematicTag.getTag("WEOffsetX", LinTagType.intTag()).valueAsInt();
-        int offsetY = schematicTag.getTag("WEOffsetY", LinTagType.intTag()).valueAsInt();
-        int offsetZ = schematicTag.getTag("WEOffsetZ", LinTagType.intTag()).valueAsInt();
-        BlockVector3 offset = BlockVector3.at(offsetX, offsetY, offsetZ);
+            int offsetX = schematicTag.getTag("WEOffsetX", LinTagType.intTag()).valueAsInt();
+            int offsetY = schematicTag.getTag("WEOffsetY", LinTagType.intTag()).valueAsInt();
+            int offsetZ = schematicTag.getTag("WEOffsetZ", LinTagType.intTag()).valueAsInt();
+            BlockVector3 offset = BlockVector3.at(offsetX, offsetY, offsetZ);
 
-        origin = min.subtract(offset);
-        region = new CuboidRegion(min, min.add(width, height, length).subtract(BlockVector3.ONE));
+            origin = min.subtract(offset);
+            region = new CuboidRegion(min, min.add(width, height, length).subtract(BlockVector3.ONE));
+        } catch (NoSuchElementException e) {
+            origin = BlockVector3.ZERO;
+            region = new CuboidRegion(origin, origin.add(width, height, length).subtract(BlockVector3.ONE));
+        }
 
         // ====================================================================
         // Blocks
