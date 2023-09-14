@@ -25,7 +25,6 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
-import com.sk89q.worldedit.fabric.internal.ExtendedPlayerEntity;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
 import com.sk89q.worldedit.fabric.mixin.AccessorClientboundBlockEntityDataPacket;
 import com.sk89q.worldedit.fabric.net.handler.WECUIPacketHandler;
@@ -141,7 +140,7 @@ public class FabricPlayer extends AbstractPlayerActor {
 
     @Override
     public Locale getLocale() {
-        return TextUtils.getLocaleByMinecraftTag(((ExtendedPlayerEntity) this.player).getLanguage());
+        return TextUtils.getLocaleByMinecraftTag(this.player.clientInformation().language());
     }
 
     @Override
