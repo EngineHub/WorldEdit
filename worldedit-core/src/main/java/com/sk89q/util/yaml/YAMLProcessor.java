@@ -97,6 +97,8 @@ public class YAMLProcessor extends YAMLNode {
         representer.setDefaultFlowStyle(format.getStyle());
         LoaderOptions loaderOptions = new LoaderOptions();
         try {
+            int yamlAliasLimit = Integer.getInteger("worldedit.yaml.aliasLimit", 50);
+            loaderOptions.setMaxAliasesForCollections(yamlAliasLimit);
             // 64 MB default
             int yamlCodePointLimit = Integer.getInteger("worldedit.yaml.codePointLimit", 64 * 1024 * 1024);
             loaderOptions.setCodePointLimit(yamlCodePointLimit);
@@ -104,7 +106,7 @@ public class YAMLProcessor extends YAMLNode {
             // pre-1.32 snakeyaml
         }
 
-        yaml = new Yaml(new SafeConstructor(new LoaderOptions()), representer, dumperOptions, loaderOptions);
+        yaml = new Yaml(new SafeConstructor(loaderOptions), representer, dumperOptions, loaderOptions);
 
         this.file = file;
     }
