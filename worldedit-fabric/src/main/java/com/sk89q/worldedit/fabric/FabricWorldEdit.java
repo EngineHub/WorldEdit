@@ -32,6 +32,7 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.fabric.net.handler.WECUIPacketHandler;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
+import com.sk89q.worldedit.internal.event.InteractionDebouncer;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.lifecycle.Lifecycled;
@@ -81,6 +82,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -113,6 +115,7 @@ public class FabricWorldEdit implements ModInitializer {
 
     public static FabricWorldEdit inst;
 
+    private InteractionDebouncer debouncer;
     private FabricPlatform platform;
     private FabricConfiguration config;
     private Path workingDir;
@@ -139,6 +142,7 @@ public class FabricWorldEdit implements ModInitializer {
             }
         }
         this.platform = new FabricPlatform(this);
+        debouncer = new InteractionDebouncer(platform);
 
         WorldEdit.getInstance().getPlatformManager().register(platform);
 
@@ -250,16 +254,16 @@ public class FabricWorldEdit implements ModInitializer {
         WorldEdit.getInstance().getEventBus().post(new PlatformUnreadyEvent(platform));
     }
 
-    private boolean shouldSkip() {
-        if (platform == null) {
-            return true;
-        }
+    private boolean skipEvents() {
+        return platform == null || !platform.isHookingEvents();
+    }
 
-        return !platform.isHookingEvents(); // We have to be told to catch these events
+    private boolean skipInteractionEvent(Player player, InteractionHand hand) {
+        return skipEvents() || hand != InteractionHand.MAIN_HAND || player.level().isClientSide || !(player instanceof ServerPlayer);
     }
 
     private InteractionResult onLeftClickBlock(Player playerEntity, Level world, InteractionHand hand, BlockPos blockPos, Direction direction) {
-        if (shouldSkip() || hand == InteractionHand.OFF_HAND || world.isClientSide) {
+        if (skipInteractionEvent(playerEntity, hand)) {
             return InteractionResult.PASS;
         }
 
@@ -273,19 +277,14 @@ public class FabricWorldEdit implements ModInitializer {
         );
         com.sk89q.worldedit.util.Direction weDirection = FabricAdapter.adaptEnumFacing(direction);
 
-        if (we.handleBlockLeftClick(player, pos, weDirection)) {
-            return InteractionResult.SUCCESS;
-        }
+        boolean result = we.handleBlockLeftClick(player, pos, weDirection) || we.handleArmSwing(player);
+        debouncer.setLastInteraction(player, result);
 
-        if (we.handleArmSwing(player)) {
-            return InteractionResult.SUCCESS;
-        }
-
-        return InteractionResult.PASS;
+        return result ? InteractionResult.SUCCESS : InteractionResult.PASS;
     }
 
     private InteractionResult onRightClickBlock(Player playerEntity, Level world, InteractionHand hand, BlockHitResult blockHitResult) {
-        if (shouldSkip() || hand == InteractionHand.OFF_HAND || world.isClientSide) {
+        if (skipInteractionEvent(playerEntity, hand)) {
             return InteractionResult.PASS;
         }
 
@@ -299,36 +298,52 @@ public class FabricWorldEdit implements ModInitializer {
         );
         com.sk89q.worldedit.util.Direction direction = FabricAdapter.adaptEnumFacing(blockHitResult.getDirection());
 
-        if (we.handleBlockRightClick(player, pos, direction)) {
-            return InteractionResult.SUCCESS;
+        boolean result = we.handleBlockRightClick(player, pos, direction) || we.handleRightClick(player);
+        debouncer.setLastInteraction(player, result);
+
+        return result ? InteractionResult.SUCCESS : InteractionResult.PASS;
+    }
+
+    public void onLeftClickAir(ServerPlayer playerEntity, InteractionHand hand) {
+        if (skipInteractionEvent(playerEntity, hand)) {
+            return;
         }
 
-        if (we.handleRightClick(player)) {
-            return InteractionResult.SUCCESS;
+        WorldEdit we = WorldEdit.getInstance();
+        FabricPlayer player = adaptPlayer(playerEntity);
+
+        Optional<Boolean> previousResult = debouncer.getDuplicateInteractionResult(player);
+        if (previousResult.isPresent()) {
+            return;
         }
 
-        return InteractionResult.PASS;
+        boolean result = we.handleArmSwing(player);
+        debouncer.setLastInteraction(player, result);
     }
 
     private InteractionResultHolder<ItemStack> onRightClickAir(Player playerEntity, Level world, InteractionHand hand) {
         ItemStack stackInHand = playerEntity.getItemInHand(hand);
-        if (shouldSkip() || hand == InteractionHand.OFF_HAND || world.isClientSide) {
+        if (skipInteractionEvent(playerEntity, hand)) {
             return InteractionResultHolder.pass(stackInHand);
         }
 
         WorldEdit we = WorldEdit.getInstance();
         FabricPlayer player = adaptPlayer((ServerPlayer) playerEntity);
 
-        if (we.handleRightClick(player)) {
-            return InteractionResultHolder.success(stackInHand);
+        Optional<Boolean> previousResult = debouncer.getDuplicateInteractionResult(player);
+        if (previousResult.isPresent()) {
+            return previousResult.get() ? InteractionResultHolder.success(stackInHand) : InteractionResultHolder.pass(stackInHand);
         }
 
-        return InteractionResultHolder.pass(stackInHand);
+        boolean result = we.handleRightClick(player);
+        debouncer.setLastInteraction(player, result);
+
+        return result ? InteractionResultHolder.success(stackInHand) : InteractionResultHolder.pass(stackInHand);
     }
 
-    // TODO Pass empty left click to server
-
     private void onPlayerDisconnect(ServerGamePacketListenerImpl handler, MinecraftServer server) {
+        debouncer.clearInteraction(adaptPlayer(handler.player));
+
         WorldEdit.getInstance().getEventBus()
             .post(new SessionIdleEvent(new FabricPlayer.SessionKeyImpl(handler.player)));
     }

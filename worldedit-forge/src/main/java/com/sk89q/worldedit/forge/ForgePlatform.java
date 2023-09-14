@@ -63,18 +63,14 @@ import static java.util.stream.Collectors.toList;
 class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     private final ForgeWorldEdit mod;
-    private final MinecraftServer server;
     private final ForgeDataFixer dataFixer;
-    private final @Nullable ForgeWatchdog watchdog;
+    private @Nullable ForgeWatchdog watchdog;
     private boolean hookingEvents = false;
     private final ResourceLoader resourceLoader = new ForgeResourceLoader(WorldEdit.getInstance());
 
     ForgePlatform(ForgeWorldEdit mod) {
         this.mod = mod;
-        this.server = ServerLifecycleHooks.getCurrentServer();
         this.dataFixer = new ForgeDataFixer(getDataVersion());
-        this.watchdog = server instanceof DedicatedServer
-            ? new ForgeWatchdog((DedicatedServer) server) : null;
     }
 
     boolean isHookingEvents() {
@@ -120,12 +116,18 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
     @Override
     @Nullable
     public ForgeWatchdog getWatchdog() {
+        if (watchdog == null) {
+            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+            if (server instanceof DedicatedServer) {
+                watchdog = new ForgeWatchdog((DedicatedServer) server);
+            }
+        }
         return watchdog;
     }
 
     @Override
     public List<? extends World> getWorlds() {
-        Iterable<ServerLevel> worlds = server.getAllLevels();
+        Iterable<ServerLevel> worlds = ServerLifecycleHooks.getCurrentServer().getAllLevels();
         List<World> ret = new ArrayList<>();
         for (ServerLevel world : worlds) {
             ret.add(new ForgeWorld(world));
@@ -139,7 +141,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
         if (player instanceof ForgePlayer) {
             return player;
         } else {
-            ServerPlayer entity = server.getPlayerList().getPlayerByName(player.getName());
+            ServerPlayer entity = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(player.getName());
             return entity != null ? new ForgePlayer(entity) : null;
         }
     }
@@ -150,7 +152,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
         if (world instanceof ForgeWorld) {
             return world;
         } else {
-            for (ServerLevel ws : server.getAllLevels()) {
+            for (ServerLevel ws : ServerLifecycleHooks.getCurrentServer().getAllLevels()) {
                 if (((ServerLevelData) ws.getLevelData()).getLevelName().equals(world.getName())) {
                     return new ForgeWorld(ws);
                 }
@@ -162,6 +164,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public void registerCommands(CommandManager manager) {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (server == null) {
             return;
         }
@@ -235,9 +238,14 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
     }
 
     @Override
+    public long getTickCount() {
+        return ServerLifecycleHooks.getCurrentServer().getTickCount();
+    }
+
+    @Override
     public Collection<Actor> getConnectedUsers() {
         List<Actor> users = new ArrayList<>();
-        PlayerList scm = server.getPlayerList();
+        PlayerList scm = ServerLifecycleHooks.getCurrentServer().getPlayerList();
         for (ServerPlayer entity : scm.getPlayers()) {
             if (entity != null) {
                 users.add(new ForgePlayer(entity));
