@@ -21,7 +21,7 @@ applyShadowConfiguration()
 apply(plugin = "fabric-loom")
 apply(plugin = "java-library")
 
-val minecraftVersion = "1.20.2-pre4"
+val minecraftVersion = "1.20.2-rc1"
 val loaderVersion = "0.14.22"
 
 val fabricApiConfiguration: Configuration = configurations.create("fabricApi")
@@ -53,7 +53,7 @@ dependencies {
     "modImplementation"("net.fabricmc:fabric-loader:$loaderVersion")
 
     // [1] declare fabric-api dependency...
-    "fabricApi"("net.fabricmc.fabric-api:fabric-api:0.88.4+1.20.2")
+    "fabricApi"("net.fabricmc.fabric-api:fabric-api:0.88.5+1.20.2")
 
     // [2] Load the API dependencies from the fabric mod json...
     @Suppress("UNCHECKED_CAST")
