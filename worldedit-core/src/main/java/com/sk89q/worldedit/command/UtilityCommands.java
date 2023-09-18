@@ -101,7 +101,6 @@ public class UtilityCommands {
         radius = Math.max(1, radius);
         we.checkMaxRadius(radius);
         depth = Math.max(1, depth);
-        we.checkMaxRadius(depth);
 
         BlockVector3 pos = session.getPlacementPosition(actor);
         int affected = editSession.fillXZ(pos, pattern, radius, depth, false);
@@ -124,8 +123,8 @@ public class UtilityCommands {
                          Integer depth) throws WorldEditException {
         radius = Math.max(1, radius);
         we.checkMaxRadius(radius);
-        depth = depth == null ? (int) Math.round(radius) : Math.max(1, depth);
-        we.checkMaxRadius(depth);
+        depth = depth == null ? Integer.MAX_VALUE : Math.max(1, depth);
+        we.checkMaxRadius(radius);
 
         BlockVector3 pos = session.getPlacementPosition(actor);
         int affected = editSession.fillXZ(pos, pattern, radius, depth, true);
