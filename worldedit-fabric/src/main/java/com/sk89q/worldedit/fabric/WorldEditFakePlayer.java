@@ -33,9 +33,12 @@ import java.util.UUID;
 
 public class WorldEditFakePlayer extends ServerPlayer {
     private static final GameProfile FAKE_WORLDEDIT_PROFILE = new GameProfile(UUID.nameUUIDFromBytes("worldedit".getBytes()), "[WorldEdit]");
+    private static final ClientInformation FAKE_CLIENT_INFO = new ClientInformation(
+        "en_US", 16, ChatVisiblity.FULL, true, 0, HumanoidArm.LEFT, false, false
+    );
 
     public WorldEditFakePlayer(ServerLevel world) {
-        super(world.getServer(), world, FAKE_WORLDEDIT_PROFILE, new ClientInformation("", 0, ChatVisiblity.FULL, false, 0, HumanoidArm.RIGHT, false, false));
+        super(world.getServer(), world, FAKE_WORLDEDIT_PROFILE, FAKE_CLIENT_INFO);
     }
 
     @Override

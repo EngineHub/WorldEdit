@@ -1,3 +1,15 @@
 accessWidener v2 named
+
 accessible class net/minecraft/server/level/ServerChunkCache$MainThreadExecutor
+accessible field net/minecraft/server/level/ServerChunkCache mainThreadProcessor Lnet/minecraft/server/level/ServerChunkCache$MainThreadExecutor;
+
 accessible field net/minecraft/commands/CommandSourceStack source Lnet/minecraft/commands/CommandSource;
+
+accessible field net/minecraft/server/level/ServerPlayerGameMode isDestroyingBlock Z
+
+accessible field net/minecraft/world/level/storage/DerivedLevelData wrapped Lnet/minecraft/world/level/storage/ServerLevelData;
+
+accessible field net/minecraft/world/level/storage/PrimaryLevelData worldOptions Lnet/minecraft/world/level/levelgen/WorldOptions;
+mutable field net/minecraft/world/level/storage/PrimaryLevelData worldOptions Lnet/minecraft/world/level/levelgen/WorldOptions;
+
+accessible method net/minecraft/network/protocol/game/ClientboundBlockEntityDataPacket <init> (Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/entity/BlockEntityType;Lnet/minecraft/nbt/CompoundTag;)V
