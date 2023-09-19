@@ -26,7 +26,6 @@ import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
-import com.sk89q.worldedit.fabric.mixin.AccessorClientboundBlockEntityDataPacket;
 import com.sk89q.worldedit.fabric.net.handler.WECUIPacketHandler;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -48,6 +47,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -243,10 +243,10 @@ public class FabricPlayer extends AbstractPlayerActor {
             if (block instanceof BaseBlock && block.getBlockType().equals(BlockTypes.STRUCTURE_BLOCK)) {
                 final CompoundTag nbtData = ((BaseBlock) block).getNbtData();
                 if (nbtData != null) {
-                    player.connection.send(AccessorClientboundBlockEntityDataPacket.construct(
-                            new BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()),
-                            BlockEntityType.STRUCTURE_BLOCK,
-                            NBTConverter.toNative(nbtData))
+                    player.connection.send(new ClientboundBlockEntityDataPacket(
+                        new BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()),
+                        BlockEntityType.STRUCTURE_BLOCK,
+                        NBTConverter.toNative(nbtData))
                     );
                 }
             }
