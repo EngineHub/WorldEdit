@@ -71,7 +71,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.network.NetworkConstants;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.Logger;
 import org.enginehub.piston.Command;
@@ -130,7 +129,7 @@ public class ForgeWorldEdit {
                     ModLoadingContext.get(),
                     IExtensionPoint.DisplayTest.class,
                     (Supplier<?>) () -> new IExtensionPoint.DisplayTest(
-                        () -> NetworkConstants.IGNORESERVERONLY,
+                        () -> IExtensionPoint.DisplayTest.IGNORESERVERONLY,
                         (a, b) -> true
                     )
                 );
@@ -175,7 +174,6 @@ public class ForgeWorldEdit {
     }
 
     // TODO clean this up once Forge adds a proper API for this
-    @SuppressWarnings("deprecation")
     private void setupRegistries(MinecraftServer server) {
         // Blocks
         for (ResourceLocation name : ForgeRegistries.BLOCKS.getKeys()) {

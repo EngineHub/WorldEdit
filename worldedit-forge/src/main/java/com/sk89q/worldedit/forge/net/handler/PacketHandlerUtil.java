@@ -21,28 +21,27 @@ package com.sk89q.worldedit.forge.net.handler;
 
 import com.sk89q.worldedit.forge.ForgeWorldEdit;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkRegistry;
-
-import java.util.function.Predicate;
+import net.minecraftforge.network.Channel;
+import net.minecraftforge.network.ChannelBuilder;
 
 final class PacketHandlerUtil {
     private PacketHandlerUtil() {
     }
 
-    static NetworkRegistry.ChannelBuilder buildLenientHandler(String id, int protocolVersion) {
-        final String verStr = Integer.toString(protocolVersion);
-        final Predicate<String> validator = validateLenient(verStr);
-        return NetworkRegistry.ChannelBuilder
+    static ChannelBuilder buildLenientHandler(String id, int protocolVersion) {
+        final Channel.VersionTest validator = validateLenient(protocolVersion);
+        return ChannelBuilder
             .named(new ResourceLocation(ForgeWorldEdit.MOD_ID, id))
             .clientAcceptedVersions(validator)
             .serverAcceptedVersions(validator)
-            .networkProtocolVersion(() -> verStr);
+            .networkProtocolVersion(protocolVersion);
     }
 
-    private static Predicate<String> validateLenient(String protocolVersion) {
-        return remoteVersion ->
-            protocolVersion.equals(remoteVersion)
-                || NetworkRegistry.ABSENT.version().equals(remoteVersion)
-                || NetworkRegistry.ACCEPTVANILLA.equals(remoteVersion);
+    private static Channel.VersionTest validateLenient(int protocolVersion) {
+        return (status, remoteVersion) ->
+            protocolVersion == remoteVersion
+                // These two ignore protocolVersion anyway so it doesn't matter what it is
+                || Channel.VersionTest.ACCEPT_MISSING.accepts(status, protocolVersion)
+                || Channel.VersionTest.ACCEPT_VANILLA.accepts(status, protocolVersion);
     }
 }
