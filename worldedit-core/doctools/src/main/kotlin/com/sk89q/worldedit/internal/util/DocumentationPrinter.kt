@@ -207,7 +207,7 @@ Other Permissions
     ``worldedit.inventory.unrestricted``,"Override the ``use-inventory`` option if enabled in the :doc:`configuration <config>`."
     ``worldedit.override.bedrock``,"Allows breaking of bedrock with the super-pickaxe tool."
     ``worldedit.override.data-cycler``,"Allows cycling non-whitelisted blocks with the data cycler tool."
-    ``worldedit.setnbt``,"Allows setting `extra data <https://minecraft.gamepedia.com/Block_entity>`_ on blocks (such as signs, chests, etc)."
+    ``worldedit.setnbt``,"Allows setting `extra data <https://minecraft.wiki/w/Block_entity>`_ on blocks (such as signs, chests, etc)."
     ``worldedit.report.pastebin``,"Allows uploading report files to pastebin automatically for the ``/worldedit report`` :doc:`command <commands>`."
     ``worldedit.scripting.execute.<filename>``,"Allows using the CraftScript with the given filename."
 """.trim())
