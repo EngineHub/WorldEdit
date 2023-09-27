@@ -219,6 +219,11 @@ class FabricPlatform extends AbstractPlatform implements MultiUserPlatform {
     }
 
     @Override
+    public long getTickCount() {
+        return FabricWorldEdit.LIFECYCLED_SERVER.valueOrThrow().getTickCount();
+    }
+
+    @Override
     public Collection<Actor> getConnectedUsers() {
         List<Actor> users = new ArrayList<>();
         PlayerList scm = FabricWorldEdit.LIFECYCLED_SERVER.valueOrThrow().getPlayerList();

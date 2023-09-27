@@ -28,6 +28,7 @@ import net.minecraft.world.level.storage.LevelStorageSource;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 
 import java.nio.file.Path;
 
@@ -40,11 +41,13 @@ public abstract class MixinMinecraftServer implements Watchdog, ExtendedMinecraf
     @Shadow
     protected LevelStorageSource.LevelStorageAccess storageSource;
 
+    @Unique
     @Override
     public void tick() {
         nextTickTime = Util.getMillis();
     }
 
+    @Unique
     @Override
     public Path getStoragePath(Level world) {
         return storageSource.getDimensionPath(world.dimension());

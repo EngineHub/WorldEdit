@@ -3,7 +3,9 @@
     "package": "com.sk89q.worldedit.forge.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
-        "MixinLevelChunkSetBlockHook"
+        "AccessorServerPlayerGameMode",
+        "MixinLevelChunkSetBlockHook",
+        "MixinServerGamePacketListenerImpl"
     ],
     "server": [
     ],

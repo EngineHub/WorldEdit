@@ -25,6 +25,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.SessionIdleEvent;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.internal.event.InteractionDebouncer;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
@@ -52,6 +53,7 @@ import java.util.Optional;
 public class WorldEditListener implements Listener {
 
     private final WorldEditPlugin plugin;
+    private final InteractionDebouncer debouncer;
 
     /**
      * Construct the object.
@@ -60,6 +62,7 @@ public class WorldEditListener implements Listener {
      */
     public WorldEditListener(WorldEditPlugin plugin) {
         this.plugin = plugin;
+        debouncer = new InteractionDebouncer(plugin.getInternalPlatform());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -93,62 +96,59 @@ public class WorldEditListener implements Listener {
      */
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (!plugin.getInternalPlatform().isHookingEvents()) {
-            return;
-        }
-
-        if (event.useItemInHand() == Result.DENY) {
-            return;
-        }
-
-        if (event.getHand() == EquipmentSlot.OFF_HAND) {
+        if (!plugin.getInternalPlatform().isHookingEvents()
+                || event.useItemInHand() == Result.DENY
+                || event.getHand() == EquipmentSlot.OFF_HAND
+                || event.getAction() == Action.PHYSICAL) {
             return;
         }
 
         final Player player = plugin.wrapPlayer(event.getPlayer());
+
+        if (event.getAction() != Action.LEFT_CLICK_BLOCK) {
+            Optional<Boolean> previousResult = debouncer.getDuplicateInteractionResult(player);
+            if (previousResult.isPresent()) {
+                if (previousResult.get()) {
+                    event.setCancelled(true);
+                }
+                return;
+            }
+        }
+
         final World world = player.getWorld();
         final WorldEdit we = plugin.getWorldEdit();
         final Direction direction = BukkitAdapter.adapt(event.getBlockFace());
+        final Block clickedBlock = event.getClickedBlock();
+        final Location pos = clickedBlock == null ? null : new Location(world, clickedBlock.getX(), clickedBlock.getY(), clickedBlock.getZ());
 
-        Action action = event.getAction();
-        if (action == Action.LEFT_CLICK_BLOCK) {
-            final Block clickedBlock = event.getClickedBlock();
-            final Location pos = new Location(world, clickedBlock.getX(), clickedBlock.getY(), clickedBlock.getZ());
+        boolean result = false;
+        switch (event.getAction()) {
+            case LEFT_CLICK_BLOCK:
+                result = we.handleBlockLeftClick(player, pos, direction) || we.handleArmSwing(player);
+                break;
+            case LEFT_CLICK_AIR:
+                result = we.handleArmSwing(player);
+                break;
+            case RIGHT_CLICK_BLOCK:
+                result = we.handleBlockRightClick(player, pos, direction) || we.handleRightClick(player);
+                break;
+            case RIGHT_CLICK_AIR:
+                result = we.handleRightClick(player);
+                break;
+            default:
+                break;
+        }
 
-            if (we.handleBlockLeftClick(player, pos, direction)) {
-                event.setCancelled(true);
-            }
-
-            if (we.handleArmSwing(player)) {
-                event.setCancelled(true);
-            }
-
-        } else if (action == Action.LEFT_CLICK_AIR) {
-
-            if (we.handleArmSwing(player)) {
-                event.setCancelled(true);
-            }
-
-        } else if (action == Action.RIGHT_CLICK_BLOCK) {
-            final Block clickedBlock = event.getClickedBlock();
-            final Location pos = new Location(world, clickedBlock.getX(), clickedBlock.getY(), clickedBlock.getZ());
-
-            if (we.handleBlockRightClick(player, pos, direction)) {
-                event.setCancelled(true);
-            }
-
-            if (we.handleRightClick(player)) {
-                event.setCancelled(true);
-            }
-        } else if (action == Action.RIGHT_CLICK_AIR) {
-            if (we.handleRightClick(player)) {
-                event.setCancelled(true);
-            }
+        debouncer.setLastInteraction(player, result);
+        if (result) {
+            event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
+        debouncer.clearInteraction(plugin.wrapPlayer(event.getPlayer()));
+
         plugin.getWorldEdit().getEventBus().post(new SessionIdleEvent(new BukkitPlayer.SessionKeyImpl(event.getPlayer())));
     }
 }

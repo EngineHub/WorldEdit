@@ -34,6 +34,7 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.chunk.UpgradeData;
 import net.minecraft.world.level.levelgen.blending.BlendingData;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.Slice;
@@ -42,12 +43,14 @@ import javax.annotation.Nullable;
 
 @Mixin(LevelChunk.class)
 public abstract class MixinLevelChunkSetBlockHook extends ChunkAccess implements ExtendedChunk {
+    @Unique
     private boolean shouldUpdate = true;
 
     public MixinLevelChunkSetBlockHook(ChunkPos chunkPos, UpgradeData upgradeData, LevelHeightAccessor levelHeightAccessor, Registry<Biome> registry, long l, @org.jetbrains.annotations.Nullable LevelChunkSection[] levelChunkSections, @org.jetbrains.annotations.Nullable BlendingData blendingData) {
         super(chunkPos, upgradeData, levelHeightAccessor, registry, l, levelChunkSections, blendingData);
     }
 
+    @Unique
     @Nullable
     @Override
     public BlockState setBlockState(BlockPos pos, BlockState state, boolean moved, boolean update) {

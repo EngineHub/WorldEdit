@@ -38,9 +38,6 @@ import com.sk89q.worldedit.fabric.internal.FabricEntity;
 import com.sk89q.worldedit.fabric.internal.FabricServerLevelDelegateProxy;
 import com.sk89q.worldedit.fabric.internal.FabricWorldNativeAccess;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
-import com.sk89q.worldedit.fabric.mixin.AccessorDerivedLevelData;
-import com.sk89q.worldedit.fabric.mixin.AccessorPrimaryLevelData;
-import com.sk89q.worldedit.fabric.mixin.AccessorServerChunkCache;
 import com.sk89q.worldedit.function.mask.AbstractExtentMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.Mask2D;
@@ -104,8 +101,10 @@ import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
+import net.minecraft.world.level.storage.DerivedLevelData;
 import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.level.storage.LevelStorageSource;
+import net.minecraft.world.level.storage.PrimaryLevelData;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
@@ -333,20 +332,14 @@ public class FabricWorld extends AbstractWorld {
         LevelStorageSource levelStorage = LevelStorageSource.createDefault(tempDir);
         try (LevelStorageSource.LevelStorageAccess session = levelStorage.createAccess("WorldEditTempGen")) {
             ServerLevel originalWorld = (ServerLevel) getWorld();
-            AccessorPrimaryLevelData levelProperties;
-            if (originalWorld.getLevelData() instanceof AccessorDerivedLevelData derivedLevelData) {
-                levelProperties = (AccessorPrimaryLevelData) derivedLevelData.getWrapped();
-            } else {
-                levelProperties = (AccessorPrimaryLevelData) originalWorld.getLevelData();
-            }
+            PrimaryLevelData levelProperties = getPrimaryLevelData(originalWorld.getLevelData());
             WorldOptions originalOpts = levelProperties.worldGenOptions();
 
             long seed = options.getSeed().orElse(originalWorld.getSeed());
-            WorldOptions newOpts = options.getSeed().isPresent()
+            levelProperties.worldOptions = options.getSeed().isPresent()
                 ? originalOpts.withSeed(OptionalLong.of(seed))
                 : originalOpts;
 
-            levelProperties.setWorldOptions(newOpts);
             ResourceKey<Level> worldRegKey = originalWorld.dimension();
             try (ServerLevel serverWorld = new ServerLevel(
                 originalWorld.getServer(), Util.backgroundExecutor(), session,
@@ -372,10 +365,20 @@ public class FabricWorld extends AbstractWorld {
                     Thread.yield();
                 }
             } finally {
-                levelProperties.setWorldOptions(originalOpts);
+                levelProperties.worldOptions = originalOpts;
             }
         } finally {
             SafeFiles.tryHardToDeleteDir(tempDir);
+        }
+    }
+
+    private static PrimaryLevelData getPrimaryLevelData(LevelData levelData) {
+        if (levelData instanceof DerivedLevelData derivedLevelData) {
+            return getPrimaryLevelData(derivedLevelData.wrapped);
+        } else if (levelData instanceof PrimaryLevelData primaryLevelData) {
+            return primaryLevelData;
+        } else {
+            throw new IllegalStateException("Unknown level data type: " + levelData.getClass());
         }
     }
 
@@ -384,7 +387,7 @@ public class FabricWorld extends AbstractWorld {
         List<CompletableFuture<ChunkAccess>> chunkLoadings = submitChunkLoadTasks(region, serverWorld);
 
         // drive executor until loading finishes
-        ((AccessorServerChunkCache) serverWorld.getChunkSource()).getMainThreadProcessor()
+        serverWorld.getChunkSource().mainThreadProcessor
             .managedBlock(() -> {
                 // bail out early if a future fails
                 if (chunkLoadings.stream().anyMatch(ftr ->
@@ -422,12 +425,11 @@ public class FabricWorld extends AbstractWorld {
     }
 
     private List<CompletableFuture<ChunkAccess>> submitChunkLoadTasks(Region region, ServerLevel world) {
-        AccessorServerChunkCache chunkManager = (AccessorServerChunkCache) world.getChunkSource();
         List<CompletableFuture<ChunkAccess>> chunkLoadings = new ArrayList<>();
         // Pre-gen all the chunks
         for (BlockVector2 chunk : region.getChunks()) {
             chunkLoadings.add(
-                chunkManager.callGetChunkFuture(chunk.getX(), chunk.getZ(), ChunkStatus.FEATURES, true)
+                world.getChunkSource().getChunkFuture(chunk.getX(), chunk.getZ(), ChunkStatus.FEATURES, true)
                     .thenApply(either -> either.left().orElse(null))
             );
         }
