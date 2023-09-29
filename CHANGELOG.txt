@@ -1,3 +1,9 @@
+7.2.16
+- Update to 1.20.2
+- Fixed an issue with the legacy spawner|mobname syntax not setting mobs correctly on initial spawn
+- Added a workaround for situations where clients incorrectly send multiple clicks for a single click
+- Fixed some situations where //fillr might fail when Y is less than 0
+
 7.2.15
 - [Forge] Fix a bug preventing Forge clients lacking WorldEdit from joining Forge servers with WorldEdit in some cases
 - [Forge] Added Console and CommandBlock support
