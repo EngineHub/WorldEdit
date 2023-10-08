@@ -401,6 +401,8 @@
     "worldedit.error.parser.negate-nothing": "Cannot negate nothing!",
     "worldedit.error.parser.hanging-lbracket": "Invalid format. Hanging bracket at '{0}'.",
     "worldedit.error.parser.missing-rbracket": "State is missing trailing ']'",
+    "worldedit.error.parser.hanging-lbrace": "Invalid format. Hanging brace at '{0}'.",
+    "worldedit.error.parser.missing-rbrace": "NBT is missing trailing '}'",
     "worldedit.error.parser.missing-random-type": "Missing the type after the % symbol for '{0}'",
     "worldedit.error.parser.clipboard.missing-coordinates": "Clipboard offset needs x,y,z coordinates.",
     "worldedit.error.parser.player-only": "Input '{0}' requires a player!",

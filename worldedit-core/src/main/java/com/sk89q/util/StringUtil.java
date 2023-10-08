@@ -24,6 +24,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * String utilities.
@@ -305,6 +307,20 @@ public final class StringUtil {
         return type;
     }
 
+    private static int indexOfRegEx(String input, Pattern pattern) {
+        Matcher m = pattern.matcher(input);
+        return m.find() ? m.start() : -1;
+    }
+
+    private static int lastIndexOfRegEx(String input, Pattern pattern) {
+        // Reverse the input string and run a forwards search on the backwards string
+        StringBuilder builder = new StringBuilder(input).reverse();
+        int reverseIndex = indexOfRegEx(builder.toString(), pattern);
+
+        // If it wasn't found return -1, otherwise take length - index - 1.
+        return (reverseIndex == -1) ? -1 : (input.length() - reverseIndex - 1);
+    }
+
     public static List<String> parseListInQuotes(String[] input, char delimiter, char quoteOpen, char quoteClose) {
         return parseListInQuotes(input, delimiter, quoteOpen, quoteClose, false);
     }
@@ -323,6 +339,43 @@ public final class StringUtil {
                 parsableBlocks.add(split);
             } else {
                 buffer.append(split).append(delimiter);
+            }
+        }
+        if (appendLeftover && buffer.length() != 0) {
+            parsableBlocks.add(buffer.delete(buffer.length() - 1, buffer.length()).toString());
+        }
+
+        return parsableBlocks;
+    }
+
+    public static List<String> parseListInQuotes(String[] input, char delimiter, char[] quoteOpen, char[] quoteClose, boolean appendLeftover) {
+        List<String> parsableBlocks = new ArrayList<>();
+        StringBuilder buffer = new StringBuilder();
+        int quotes = quoteOpen.length;
+        if (quotes != quoteClose.length) {
+            throw new Error("Mismatched quoteOpen and quoteClose lengths");
+        }
+        for (String split : input) {
+            boolean quoteHandled = false;
+            for (int i = 0; i < quotes; i++) {
+                if (split.indexOf(quoteOpen[i]) != -1 && split.indexOf(quoteClose[i]) == -1) {
+                    buffer.append(split).append(delimiter);
+                    quoteHandled = true;
+                    break;
+                } else if (split.indexOf(quoteClose[i]) != -1 && split.indexOf(quoteOpen[i]) == -1) {
+                    buffer.append(split);
+                    parsableBlocks.add(buffer.toString());
+                    buffer = new StringBuilder();
+                    quoteHandled = true;
+                    break;
+                }
+            }
+            if (!quoteHandled) {
+                if (buffer.length() == 0) {
+                    parsableBlocks.add(split);
+                } else {
+                    buffer.append(split).append(delimiter);
+                }
             }
         }
         if (appendLeftover && buffer.length() != 0) {

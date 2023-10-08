@@ -27,6 +27,7 @@ import com.sk89q.worldedit.util.concurrency.LazyReference;
 import org.enginehub.linbus.format.snbt.LinStringIO;
 import org.enginehub.linbus.stream.exception.NbtWriteException;
 import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinStringTag;
 import org.enginehub.linbus.tree.LinTagType;
 
 import java.util.Map;
@@ -121,7 +122,8 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
         if (nbtData == null) {
             return "";
         }
-        return nbtData.getValue().getTag("id", LinTagType.stringTag()).value();
+        LinStringTag idTag = nbtData.getValue().findTag("id", LinTagType.stringTag());
+        return idTag != null ? idTag.value() : "";
     }
 
     @Nullable
