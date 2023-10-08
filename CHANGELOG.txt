@@ -1,3 +1,39 @@
+7.3.0
+- Added an `//update [sideEffect]` command to apply side effects to a selection
+- Added a schematic sharing system and corresponding API, with `/schem share`
+- Added WorldEdit version and platform information in schematic metadata
+- Added API to clear the contents of a registry
+- Added a splatter brush, with configurable decay
+- Added support for Sponge Schematics v3, and made specific versions accessible as `sponge.1`, `sponge.2`, and `sponge.3`
+- Added a snow smoothing brush and command to smooth layered snow
+- Added a `//pos` command to allow making entire selections with a single command
+- Added a morph brush to apply morphological dilation and erosion, with simple erode and dilate presets
+- Added a custom-build NBT library, allowing access to future improvements and modern NBT constructs
+- Lazy-load most NBT data to improve performance and memory usage of some operations
+- Added API to disable history tracking in an EditSession, to improve performance for plugins that don't care about history
+- Added command suggestions for block properties to dynamic patterns such as hand, offhand, pos1, etc
+- Added a feature generator command, `//feature [featureName]`
+- Added a structure generator command, `//structure [structureName`
+- Added an API to identify the format of a schematic from an InputStream, rather than a File
+- Added a `//placement` command to select the placement type, superseding `//toggleplace`
+- Added `min` placement mode to correspond to minimum position of a selection
+- Added `max` placement mode to correspond to maximum position of a selection
+- Added `world` placement mode to correspond to an absolute world location
+- Added `here` placement mode to correspond to the player position as of running the command
+- Added `-c` flag to the biome brush to set the biome to the entire column
+- Added API to memoize mask calls
+- Added a `//trim [mask]` command, to trim a selection to the smallest space without removing blocks that match the mask
+- Added a `//cone` command to generate cones
+- Added support for setting NBT data in patterns, using SNBT syntax (`//set oak_sign[rotation=12]{'is_waxed':1}`)
+- Improve performance of arbitrary shape generations
+- Improve "fast" reorder mode and make it default, deprecating alternate reorder modes
+- Changed schematic pasting to ignore structure void blocks by default, with a `-v` flag to paste it
+- Changed the offset mask to not negate itself by default
+- Fixed spline generation not correctly using block centres in some situations
+- Improve general performance across the board
+- [Bukkit] Remove legacy data folder migration code from 2012
+- [Bukkit] Remove support for all versions prior to 1.17.1, and non-latest patches of 1.18 and 1.19
+
 7.2.16
 - Update to 1.20.2
 - Fixed an issue with the legacy spawner|mobname syntax not setting mobs correctly on initial spawn
