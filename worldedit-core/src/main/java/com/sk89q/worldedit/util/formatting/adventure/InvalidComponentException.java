@@ -17,28 +17,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.io.file;
+package com.sk89q.worldedit.util.formatting.adventure;
 
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.util.adventure.text.Component;
 
-public class InvalidFilenameException extends FilenameException {
+public class InvalidComponentException extends WorldEditException {
 
-    public InvalidFilenameException(String filename) {
-        super(filename);
+    public InvalidComponentException(Component message) {
+        super(message);
     }
-
-    @Deprecated
-    public InvalidFilenameException(String filename, com.sk89q.worldedit.util.formatting.text.Component msg) {
-        super(filename, msg);
-    }
-
-    public InvalidFilenameException(String filename, Component msg) {
-        super(filename, msg);
-    }
-
-    @Deprecated
-    public InvalidFilenameException(String filename, String msg) {
-        super(filename, msg);
-    }
-
 }

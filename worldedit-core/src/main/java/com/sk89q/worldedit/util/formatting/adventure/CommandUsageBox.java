@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.formatting.component;
+package com.sk89q.worldedit.util.formatting.adventure;
 
 import com.google.common.collect.Iterables;
 import com.sk89q.worldedit.util.adventure.text.Component;
@@ -25,14 +25,13 @@ import com.sk89q.worldedit.util.adventure.text.TextComponent;
 import com.sk89q.worldedit.util.adventure.text.event.ClickEvent;
 import com.sk89q.worldedit.util.adventure.text.event.HoverEvent;
 import com.sk89q.worldedit.util.adventure.text.format.TextDecoration;
-import com.sk89q.worldedit.util.formatting.LegacyTextHelper;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandParameters;
 import org.enginehub.piston.config.ColorConfig;
 import org.enginehub.piston.util.HelpGenerator;
 
-import java.util.List;
 import javax.annotation.Nullable;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.internal.command.CommandUtil.getSubCommands;
@@ -40,8 +39,9 @@ import static com.sk89q.worldedit.internal.command.CommandUtil.getSubCommands;
 /**
  * A box to describe usage of a command.
  */
-@Deprecated
-public class CommandUsageBox extends TextComponentProducer {
+public class CommandUsageBox {
+
+    private final TextComponent.Builder builder = Component.text();
 
     /**
      * Create a new usage box.
@@ -83,9 +83,11 @@ public class CommandUsageBox extends TextComponentProducer {
                     ))
                 ));
         }
-        MessageBox box = new MessageBox("Help for " + commandString,
-                new TextComponentProducer().append(LegacyTextHelper.adapt(b.build())));
-        append(box.create());
+        MessageBox box = new MessageBox("Help for " + commandString, b.build());
+        builder.append(box.build());
     }
 
+    public Component build() {
+        return builder.build();
+    }
 }

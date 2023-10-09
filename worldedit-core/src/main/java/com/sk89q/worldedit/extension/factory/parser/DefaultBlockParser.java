@@ -75,9 +75,9 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
             try {
                 return ((Player) actor).getBlockInHand(handSide);
             } catch (NotABlockException e) {
-                throw new InputParseException(e.getRichMessage());
+                throw new InputParseException(e.getTextMessage());
             } catch (WorldEditException e) {
-                throw new InputParseException(Component.translatable("worldedit.error.unknown", e.getRichMessage()), e);
+                throw new InputParseException(Component.translatable("worldedit.error.unknown", e.getTextMessage()), e);
             }
         } else {
             throw new InputParseException(Component.translatable(

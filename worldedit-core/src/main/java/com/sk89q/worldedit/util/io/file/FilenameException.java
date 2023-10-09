@@ -31,6 +31,12 @@ public class FilenameException extends WorldEditException {
         this.filename = filename;
     }
 
+    @Deprecated
+    public FilenameException(String filename, com.sk89q.worldedit.util.formatting.text.Component msg) {
+        super(msg);
+        this.filename = filename;
+    }
+
     public FilenameException(String filename, Component msg) {
         super(msg);
         this.filename = filename;

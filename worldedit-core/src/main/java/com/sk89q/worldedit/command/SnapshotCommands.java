@@ -28,7 +28,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.util.formatting.component.PaginationBox;
+import com.sk89q.worldedit.util.formatting.adventure.PaginationBox;
 import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.util.adventure.text.event.ClickEvent;
 import com.sk89q.worldedit.util.adventure.text.event.HoverEvent;
@@ -116,7 +116,7 @@ public class SnapshotCommands {
         }
 
         if (!snapshots.isEmpty()) {
-            actor.print(new SnapshotListBox(world.getName(), snapshots).create(page));
+            actor.print(new SnapshotListBox(world.getName(), snapshots).build(page));
         } else {
             actor.printError(Component.translatable(
                 "worldedit.restore.none-for-specific-world",
