@@ -64,6 +64,20 @@
             "changes": [
                 "FIELD_REMOVED_IN_SUPERCLASS"
             ]
+        },
+        {
+            "type": "com.sk89q.worldedit.function.operation.Operation",
+            "member": "Method com.sk89q.worldedit.function.operation.Operation.getMessages()",
+            "changes": [
+                "METHOD_NEW_DEFAULT"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.regions.RegionSelector",
+            "member": "Method com.sk89q.worldedit.regions.RegionSelector.getSelectionInformationLines()",
+            "changes": [
+                "METHOD_NEW_DEFAULT"
+            ]
         }
     ]
 }
