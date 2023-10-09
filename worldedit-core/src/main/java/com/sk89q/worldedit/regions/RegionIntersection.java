@@ -21,7 +21,7 @@ package com.sk89q.worldedit.regions;
 
 import com.google.common.collect.Iterators;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.world.World;
 
 import java.util.ArrayList;

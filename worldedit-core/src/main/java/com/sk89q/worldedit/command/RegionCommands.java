@@ -56,8 +56,9 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
+import com.sk89q.worldedit.util.adventure.text.JoinConfiguration;
 import com.sk89q.worldedit.util.formatting.component.TextUtils;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.world.RegenOptions;
 import com.sk89q.worldedit.world.World;
 import org.enginehub.piston.annotation.Command;
@@ -107,7 +108,8 @@ public class RegionCommands {
         if (messages.isEmpty()) {
             actor.printInfo(Component.translatable("worldedit.set.done"));
         } else {
-            actor.printInfo(Component.translatable("worldedit.set.done.verbose", TextUtils.join(messages, Component.text(", "))));
+            actor.printInfo(Component.translatable("worldedit.set.done.verbose",
+                    Component.join(JoinConfiguration.separator(Component.text(", ")), messages)));
         }
 
         return visitor.getAffected();

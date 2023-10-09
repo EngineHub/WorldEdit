@@ -37,7 +37,7 @@ import com.sk89q.worldedit.command.ToolUtilCommands
 import com.sk89q.worldedit.command.UtilityCommands
 import com.sk89q.worldedit.command.util.PermissionCondition
 import com.sk89q.worldedit.internal.command.CommandUtil
-import com.sk89q.worldedit.util.formatting.text.Component
+import com.sk89q.worldedit.util.adventure.text.Component
 import org.enginehub.piston.Command
 import org.enginehub.piston.config.TextConfig
 import org.enginehub.piston.part.SubCommandPart

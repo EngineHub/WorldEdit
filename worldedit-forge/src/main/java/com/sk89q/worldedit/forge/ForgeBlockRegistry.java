@@ -21,7 +21,7 @@ package com.sk89q.worldedit.forge;
 
 import com.sk89q.worldedit.forge.internal.ForgeTransmogrifier;
 import com.sk89q.worldedit.registry.state.Property;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
@@ -39,7 +39,7 @@ public class ForgeBlockRegistry extends BundledBlockRegistry {
     private final Map<net.minecraft.world.level.block.state.BlockState, ForgeBlockMaterial> materialMap = new HashMap<>();
 
     @Override
-    public Component getRichName(BlockType blockType) {
+    public Component getDisplayName(BlockType blockType) {
         return Component.translatable(ForgeAdapter.adapt(blockType).getDescriptionId());
     }
 

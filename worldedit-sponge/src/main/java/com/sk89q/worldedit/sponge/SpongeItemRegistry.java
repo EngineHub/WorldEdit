@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.sponge;
 
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.BundledItemRegistry;
 import net.minecraft.world.item.ItemStack;
@@ -31,13 +31,13 @@ import org.spongepowered.api.registry.RegistryTypes;
 public class SpongeItemRegistry extends BundledItemRegistry {
 
     @Override
-    public Component getRichName(ItemType itemType) {
+    public Component getDisplayName(ItemType itemType) {
         return SpongeTextAdapter.convert(Sponge.game().registry(RegistryTypes.ITEM_TYPE)
             .value(ResourceKey.resolve(itemType.getId())).asComponent());
     }
 
     @Override
-    public Component getRichName(BaseItemStack itemStack) {
+    public Component getDisplayName(BaseItemStack itemStack) {
         return Component.translatable(
             ((ItemStack) (Object) SpongeAdapter.adapt(itemStack)).getDescriptionId()
         );

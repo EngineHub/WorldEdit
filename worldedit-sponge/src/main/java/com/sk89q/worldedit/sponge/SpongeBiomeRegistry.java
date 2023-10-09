@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.sponge;
 
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.util.translation.TranslationManager;
 import com.sk89q.worldedit.world.biome.BiomeData;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
 class SpongeBiomeRegistry implements BiomeRegistry {
 
     @Override
-    public Component getRichName(com.sk89q.worldedit.world.biome.BiomeType biomeType) {
+    public Component getDisplayName(com.sk89q.worldedit.world.biome.BiomeType biomeType) {
         return Component.translatable(
             TranslationManager.makeTranslationKey("biome", biomeType.getId())
         );

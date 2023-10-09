@@ -23,7 +23,7 @@ import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.RegionSelector;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 
 public class Placement {
     private final PlacementType placementType;

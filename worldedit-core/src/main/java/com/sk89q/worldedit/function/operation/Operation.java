@@ -21,7 +21,7 @@ package com.sk89q.worldedit.function.operation;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 
 import java.util.ArrayList;
 import java.util.HashSet;

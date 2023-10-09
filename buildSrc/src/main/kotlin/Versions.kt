@@ -1,6 +1,7 @@
 import org.gradle.api.Project
 
 object Versions {
+    const val TEXT = "3.0.4"
     const val KYORI_ADVENTURE = "4.14.0"
     const val KYORI_PLATFORM_BUKKIT = "4.3.1"
     const val PISTON = "0.6.0-SNAPSHOT"

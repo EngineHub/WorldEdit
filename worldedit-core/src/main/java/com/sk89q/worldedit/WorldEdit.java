@@ -57,9 +57,9 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.asset.AssetLoaders;
 import com.sk89q.worldedit.util.concurrency.EvenMoreExecutors;
 import com.sk89q.worldedit.util.eventbus.EventBus;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.TextComponent;
+import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
 import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
 import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
@@ -605,7 +605,7 @@ public final class WorldEdit {
             int i = 0;
 
             for (Map.Entry<BlockType, Integer> blockTypeIntegerEntry : missingBlocks.entrySet()) {
-                str.append((blockTypeIntegerEntry.getKey()).getRichName());
+                str.append((blockTypeIntegerEntry.getKey()).getDisplayName());
 
                 str.append(Component.text(" [Amt: "))
                     .append(Component.text(blockTypeIntegerEntry.getValue()))

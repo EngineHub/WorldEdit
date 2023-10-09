@@ -20,7 +20,8 @@
 package com.sk89q.worldedit;
 
 import com.sk89q.worldedit.util.formatting.WorldEditText;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.formatting.LegacyTextHelper;
 
 import java.util.Locale;
 
@@ -63,6 +64,19 @@ public abstract class WorldEditException extends Exception {
     }
 
     /**
+     * Create a new exception with a message.
+     *
+     * @deprecated Use {@link WorldEditException#WorldEditException(Component)}
+     * @param message the message
+     */
+    @Deprecated
+    protected WorldEditException(com.sk89q.worldedit.util.formatting.text.Component message) {
+        super(WorldEditText.reduceToText(LegacyTextHelper.adapt(message), Locale.getDefault()));
+
+        this.message = LegacyTextHelper.adapt(message);
+    }
+
+    /**
      * Create a new exception with a message and a cause.
      *
      * @param message the message
@@ -89,6 +103,20 @@ public abstract class WorldEditException extends Exception {
     }
 
     /**
+     * Create a new exception with a message and a cause.
+     *
+     * @deprecated Use {@link WorldEditException#WorldEditException(Component, Throwable)}
+     * @param message the message
+     * @param cause the cause
+     */
+    @Deprecated
+    protected WorldEditException(com.sk89q.worldedit.util.formatting.text.Component message, Throwable cause) {
+        super(WorldEditText.reduceToText(LegacyTextHelper.adapt(message), Locale.getDefault()), cause);
+
+        this.message = LegacyTextHelper.adapt(message);
+    }
+
+    /**
      * Create a new exception with a cause.
      *
      * @param cause the cause
@@ -104,7 +132,18 @@ public abstract class WorldEditException extends Exception {
      *
      * @return The rich message
      */
-    public Component getRichMessage() {
+    @Deprecated
+    public com.sk89q.worldedit.util.formatting.text.Component getRichMessage() {
+        return LegacyTextHelper.adapt(this.message);
+    }
+
+
+    /**
+     * Get the message of this exception as a rich text component.
+     *
+     * @return The rich message
+     */
+    public Component getTextMessage() {
         return this.message;
     }
 }

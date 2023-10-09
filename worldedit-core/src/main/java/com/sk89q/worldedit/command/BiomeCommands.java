@@ -41,10 +41,10 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.adventure.text.JoinConfiguration;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
-import com.sk89q.worldedit.util.formatting.component.TextUtils;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.event.HoverEvent;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
@@ -86,16 +86,16 @@ public class BiomeCommands {
             BiomeRegistry biomeRegistry = WorldEdit.getInstance().getPlatformManager()
                 .queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();
 
-            PaginationBox paginationBox = PaginationBox.fromComponents("Available Biomes", "/biomelist -p %page%",
+            PaginationBox paginationBox = PaginationBox.fromText("Available Biomes", "/biomelist -p %page%",
                 BiomeType.REGISTRY.values().stream()
                     .map(biomeType -> Component.text()
                         .append(Component.text(biomeType.getId()))
                         .append(Component.text(" ("))
-                        .append(biomeRegistry.getRichName(biomeType))
+                        .append(biomeRegistry.getDisplayName(biomeType))
                         .append(Component.text(")"))
                         .build())
                     .collect(Collectors.toList()));
-            return paginationBox.create(page);
+            return paginationBox.build(page);
         }, (Component) null);
     }
 
@@ -152,11 +152,11 @@ public class BiomeCommands {
         }
 
         List<Component> components = biomes.stream().map(biome ->
-            biomeRegistry.getRichName(biome).hoverEvent(
+            biomeRegistry.getDisplayName(biome).hoverEvent(
                 HoverEvent.showText(Component.text(biome.getId()))
             )
         ).collect(Collectors.toList());
-        actor.printInfo(Component.translatable(messageKey, TextUtils.join(components, Component.text(", "))));
+        actor.printInfo(Component.translatable(messageKey, Component.join(JoinConfiguration.separator(Component.text(", ")), components)));
     }
 
     @Command(

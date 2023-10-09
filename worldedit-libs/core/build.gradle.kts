@@ -18,4 +18,10 @@ dependencies {
     "shade"("org.enginehub.lin-bus:lin-bus-stream:${Versions.LIN_BUS}")
     "shade"("org.enginehub.lin-bus:lin-bus-tree:${Versions.LIN_BUS}")
     "shade"("org.enginehub.lin-bus.format:lin-bus-format-snbt:${Versions.LIN_BUS}")
+
+    // LEGACY Section: kyori-text is shaded and used in deprecated setups
+    "shade"("net.kyori:text-api:${Versions.TEXT}")
+    "shade"("net.kyori:text-serializer-gson:${Versions.TEXT}")
+    "shade"("net.kyori:text-serializer-legacy:${Versions.TEXT}")
+    "shade"("net.kyori:text-serializer-plain:${Versions.TEXT}")
 }

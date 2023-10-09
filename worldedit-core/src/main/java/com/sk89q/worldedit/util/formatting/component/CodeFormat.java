@@ -20,15 +20,15 @@
 package com.sk89q.worldedit.util.formatting.component;
 
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
 /**
  * Represents a fragment representing a command that is to be typed.
  */
+@Deprecated
 public class CodeFormat extends TextComponentProducer {
 
     private CodeFormat() {
-        getBuilder().color(NamedTextColor.AQUA);
     }
 
     /**
@@ -38,11 +38,12 @@ public class CodeFormat extends TextComponentProducer {
      * @return The Component
      */
     public static TextComponent wrap(String... texts) {
-        CodeFormat code = new CodeFormat();
+        TextComponent.Builder b = TextComponent.builder();
+        b.color(TextColor.AQUA);
         for (String text: texts) {
-            code.append(text);
+            b.append(text);
         }
 
-        return code.create();
+        return b.build();
     }
 }

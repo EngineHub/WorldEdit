@@ -22,8 +22,8 @@ package com.sk89q.worldedit.bukkit;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.AbstractNonPlayerActor;
 import com.sk89q.worldedit.session.SessionKey;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
-import com.sk89q.worldedit.util.formatting.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

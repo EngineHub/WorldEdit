@@ -21,8 +21,8 @@ package com.sk89q.worldedit.util.paste;
 
 import com.sk89q.worldedit.command.util.AsyncCommandBuilder;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.TranslatableComponent;
 import com.sk89q.worldedit.util.task.Supervisor;
 
 import java.net.URL;

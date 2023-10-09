@@ -21,7 +21,7 @@ package com.sk89q.worldedit.command.argument;
 
 import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.command.util.EntityRemover;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
 import org.enginehub.piston.converter.ConversionResult;

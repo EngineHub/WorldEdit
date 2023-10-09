@@ -23,8 +23,8 @@ import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.event.ClickEvent;
 import com.sk89q.worldedit.util.paste.EngineHubPaste;
 import com.sk89q.worldedit.util.paste.PasteMetadata;
 

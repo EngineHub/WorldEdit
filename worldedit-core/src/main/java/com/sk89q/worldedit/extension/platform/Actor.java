@@ -23,8 +23,9 @@ import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionOwner;
 import com.sk89q.worldedit.util.Identifiable;
 import com.sk89q.worldedit.util.auth.Subject;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.formatting.LegacyTextHelper;
 
 import java.io.File;
 import java.util.Locale;
@@ -119,6 +120,50 @@ public interface Actor extends Identifiable, SessionOwner, Subject {
      * @param component The component to print
      */
     void print(Component component);
+
+    /**
+     * Print a WorldEdit error.
+     *
+     * @param component The component to print
+     * @deprecated Use {@link #printError(Component)} instead.
+     */
+    @Deprecated
+    default void printError(com.sk89q.worldedit.util.formatting.text.Component component) {
+        print(LegacyTextHelper.adapt(component).color(NamedTextColor.RED));
+    }
+
+    /**
+     * Print a WorldEdit message.
+     *
+     * @param component The component to print
+     * @deprecated Use {@link #printInfo(Component)} instead.
+     */
+    @Deprecated
+    default void printInfo(com.sk89q.worldedit.util.formatting.text.Component component) {
+        print(LegacyTextHelper.adapt(component).color(NamedTextColor.LIGHT_PURPLE));
+    }
+
+    /**
+     * Print a WorldEdit message.
+     *
+     * @param component The component to print
+     * @deprecated Use {@link #printDebug(Component)} instead.
+     */
+    @Deprecated
+    default void printDebug(com.sk89q.worldedit.util.formatting.text.Component component) {
+        print(LegacyTextHelper.adapt(component).color(NamedTextColor.GRAY));
+    }
+
+    /**
+     * Print a {@link Component}.
+     *
+     * @param component The component to print
+     * @deprecated Use {@link #print(Component)} instead.
+     */
+    @Deprecated
+    default void print(com.sk89q.worldedit.util.formatting.text.Component component) {
+        print(LegacyTextHelper.adapt(component));
+    }
 
     /**
      * Returns true if the actor can destroy bedrock.

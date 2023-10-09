@@ -20,18 +20,18 @@
 package com.sk89q.worldedit.util.formatting.component;
 
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
 /**
  * Represents a fragment representing an error.
  */
+@Deprecated
 public class ErrorFormat extends TextComponentProducer {
 
     /**
      * Create a new instance.
      */
     private ErrorFormat() {
-        getBuilder().color(NamedTextColor.RED);
     }
 
     /**
@@ -40,12 +40,14 @@ public class ErrorFormat extends TextComponentProducer {
      * @param texts The text
      * @return The Component
      */
+    @Deprecated
     public static TextComponent wrap(String... texts) {
-        ErrorFormat error = new ErrorFormat();
+        TextComponent.Builder b = TextComponent.builder();
+        b.color(TextColor.RED);
         for (String component : texts) {
-            error.append(component);
+            b.append(component);
         }
 
-        return error.create();
+        return b.build();
     }
 }

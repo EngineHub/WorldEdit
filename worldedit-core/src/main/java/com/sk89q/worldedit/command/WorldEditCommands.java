@@ -32,11 +32,12 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
+import com.sk89q.worldedit.util.adventure.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.component.MessageBox;
 import com.sk89q.worldedit.util.formatting.component.TextComponentProducer;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
-import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.event.HoverEvent;
+import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
 import com.sk89q.worldedit.util.paste.ActorCallbackPaste;
 import com.sk89q.worldedit.util.paste.PasteMetadata;
 import com.sk89q.worldedit.util.report.ConfigReport;
@@ -80,27 +81,27 @@ public class WorldEditCommands {
 
         PlatformManager pm = we.getPlatformManager();
 
-        TextComponentProducer producer = new TextComponentProducer();
+        TextComponent.Builder producer = Component.text();
         for (Platform platform : pm.getPlatforms()) {
             producer.append(
                     Component.text("* ", NamedTextColor.GRAY)
                     .append(Component.text(platform.getPlatformName())
                         .hoverEvent(HoverEvent.showText(Component.text(platform.getId()))))
                     .append(Component.text("(" + platform.getPlatformVersion() + ")"))
-            ).newline();
+            ).append(Component.newline());
         }
-        actor.print(new MessageBox("Platforms", producer, NamedTextColor.GRAY).create());
+        actor.print(new MessageBox("Platforms", producer.build(), NamedTextColor.GRAY).build());
 
-        producer.reset();
+        producer = Component.text();
         for (Capability capability : Capability.values()) {
             Platform platform = pm.queryCapability(capability);
             producer.append(
                     Component.text(capability.name(), NamedTextColor.GRAY)
                     .append(Component.text(": ")
                     .append(Component.text(platform != null ? platform.getPlatformName() : "none")))
-            ).newline();
+            ).append(Component.newline());
         }
-        actor.print(new MessageBox("Capabilities", producer, NamedTextColor.GRAY).create());
+        actor.print(new MessageBox("Capabilities", producer.build(), NamedTextColor.GRAY).build());
     }
 
     @Command(

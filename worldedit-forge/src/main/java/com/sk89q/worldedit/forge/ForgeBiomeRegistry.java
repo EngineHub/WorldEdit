@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.world.biome.BiomeData;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
@@ -32,7 +32,7 @@ import net.minecraft.resources.ResourceLocation;
 class ForgeBiomeRegistry implements BiomeRegistry {
 
     @Override
-    public Component getRichName(BiomeType biomeType) {
+    public Component getDisplayName(BiomeType biomeType) {
         return Component.translatable(Util.makeDescriptionId("biome", new ResourceLocation(biomeType.getId())));
     }
 

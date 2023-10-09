@@ -65,11 +65,11 @@ import com.sk89q.worldedit.util.formatting.component.InvalidComponentException;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.component.SubtleFormat;
 import com.sk89q.worldedit.util.formatting.component.TextComponentProducer;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
-import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
-import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.TextComponent;
+import com.sk89q.worldedit.util.adventure.text.event.ClickEvent;
+import com.sk89q.worldedit.util.adventure.text.event.HoverEvent;
+import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -736,7 +736,7 @@ public class SelectionCommands {
             if (!actor.isPlayer()) {
                 res.formatForConsole();
             }
-            return res.create(finalPage);
+            return res.build(finalPage);
         }, (Component) null);
     }
 
@@ -760,8 +760,7 @@ public class SelectionCommands {
         if (!(selectorChoiceOrList instanceof SelectorChoice selectorChoice)) {
             CommandListBox box = new CommandListBox("Selection modes", null, null);
             box.setHidingHelp(true);
-            TextComponentProducer contents = box.getContents();
-            contents.append(SubtleFormat.wrap("Select one of the modes below:")).newline();
+            box.builder().append(Component.text("Select one of the modes below:")).append(Component.newline());
             box.appendCommand("cuboid", Component.translatable("worldedit.select.cuboid.description"), "//sel cuboid");
             box.appendCommand("extend", Component.translatable("worldedit.select.extend.description"), "//sel extend");
             box.appendCommand("poly", Component.translatable("worldedit.select.poly.description"), "//sel poly");
@@ -769,7 +768,7 @@ public class SelectionCommands {
             box.appendCommand("sphere", Component.translatable("worldedit.select.sphere.description"), "//sel sphere");
             box.appendCommand("cyl", Component.translatable("worldedit.select.cyl.description"), "//sel cyl");
             box.appendCommand("convex", Component.translatable("worldedit.select.convex.description"), "//sel convex");
-            actor.print(box.create(1));
+            actor.print(box.build(1));
             return;
         }
 
@@ -816,7 +815,7 @@ public class SelectionCommands {
         }
 
         @Override
-        public Component getComponent(int number) {
+        public Component component(int number) {
             Countable<BlockState> c = distribution.get(number);
             TextComponent.Builder line = Component.text();
 
@@ -832,7 +831,7 @@ public class SelectionCommands {
 
             final BlockState state = c.getID();
             final BlockType blockType = state.getBlockType();
-            Component blockName = blockType.getRichName().color(NamedTextColor.LIGHT_PURPLE);
+            Component blockName = blockType.getDisplayName().color(NamedTextColor.LIGHT_PURPLE);
             TextComponent toolTip;
             if (separateStates && state != blockType.getDefaultState()) {
                 toolTip = Component.text(state.getAsString(), NamedTextColor.GRAY);
@@ -852,10 +851,10 @@ public class SelectionCommands {
         }
 
         @Override
-        public Component create(int page) throws InvalidComponentException {
-            super.getContents().append(Component.translatable("worldedit.distr.total", NamedTextColor.GRAY, Component.text(totalBlocks)))
+        public Component build(int page) throws InvalidComponentException {
+            super.builder().append(Component.translatable("worldedit.distr.total", NamedTextColor.GRAY, Component.text(totalBlocks)))
                     .append(Component.newline());
-            return super.create(page);
+            return super.build(page);
         }
     }
 }

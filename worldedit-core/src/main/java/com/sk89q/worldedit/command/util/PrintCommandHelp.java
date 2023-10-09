@@ -26,7 +26,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.util.formatting.component.CommandListBox;
 import com.sk89q.worldedit.util.formatting.component.CommandUsageBox;
 import com.sk89q.worldedit.util.formatting.component.InvalidComponentException;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.inject.InjectedValueStore;
@@ -97,7 +97,7 @@ public class PrintCommandHelp {
                 // full help for single command
                 CommandUsageBox box = new CommandUsageBox(visited, visited.stream()
                         .map(Command::getName).collect(Collectors.joining(" ")), helpRootCommand);
-                actor.print(box.create());
+                actor.print(box.build());
                 return;
             }
 
@@ -118,7 +118,7 @@ public class PrintCommandHelp {
         if (subCommands.isEmpty() || !listSubCommands) {
             // Create the message
             CommandUsageBox box = new CommandUsageBox(visited, toCommandString(visited), helpRootCommand);
-            actor.print(box.create());
+            actor.print(box.build());
         } else {
             printCommands(page, subCommands.values().stream(), actor, visited, helpRootCommand);
         }

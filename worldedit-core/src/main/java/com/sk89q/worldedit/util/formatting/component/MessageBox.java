@@ -21,12 +21,13 @@ package com.sk89q.worldedit.util.formatting.component;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
-import com.sk89q.worldedit.util.formatting.text.format.TextDecoration;
-import com.sk89q.worldedit.util.formatting.text.serializer.plain.PlainTextComponentSerializer;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.TextComponent;
+import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.adventure.text.format.TextColor;
+import com.sk89q.worldedit.util.adventure.text.format.TextDecoration;
+import com.sk89q.worldedit.util.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import com.sk89q.worldedit.util.formatting.LegacyTextHelper;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -37,29 +38,39 @@ public class MessageBox extends TextComponentProducer {
 
     private static final int GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH = 47;
 
-    private final TextComponentProducer contents;
+    private final TextComponent.Builder builder = Component.text();
     private final TextColor borderColor;
 
     /**
      * Create a new box.
      */
+    @Deprecated
     public MessageBox(String title, TextComponentProducer contents) {
+        this(title, contents, com.sk89q.worldedit.util.formatting.text.format.TextColor.YELLOW);
+    }
+
+    public MessageBox(String title, Component contents) {
         this(title, contents, NamedTextColor.YELLOW);
     }
 
     /**
      * Create a new box.
      */
-    public MessageBox(String title, TextComponentProducer contents, TextColor borderColor) {
-        checkNotNull(title);
+    @Deprecated
+    public MessageBox(String title, TextComponentProducer contents, com.sk89q.worldedit.util.formatting.text.format.TextColor borderColor) {
+        this(title, LegacyTextHelper.adapt(contents.create()), NamedTextColor.NAMES.value(borderColor.name()));
+    }
 
+    public MessageBox(String title, Component contents, NamedTextColor borderColor) {
+        checkNotNull(title);
         this.borderColor = borderColor;
-        append(centerAndBorder(Component.text(title))).newline();
-        this.contents = contents;
+
+        this.builder.append(centerAndBorder(Component.text(title))).append(Component.newline());
+        this.builder.append(contents);
     }
 
     protected Component centerAndBorder(TextComponent text) {
-        TextComponentProducer line = new TextComponentProducer();
+        TextComponent.Builder line = Component.text();
         int leftOver = GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH - getLength(text);
         int side = (int) Math.floor(leftOver / 2.0);
         if (side > 0) {
@@ -75,7 +86,7 @@ public class MessageBox extends TextComponentProducer {
                 line.append(createBorder(side - 1));
             }
         }
-        return line.create();
+        return line.build();
     }
 
     private static int getLength(TextComponent text) {
@@ -93,12 +104,20 @@ public class MessageBox extends TextComponentProducer {
      * @return The contents producer
      */
     public TextComponentProducer getContents() {
-        return contents;
+        TextComponentProducer adapt = new TextComponentProducer();
+        return adapt.append(LegacyTextHelper.adapt(builder.build()));
     }
 
     @Override
-    public TextComponent create() {
-        append(contents.create());
-        return super.create();
+    public com.sk89q.worldedit.util.formatting.text.TextComponent create() {
+        return (com.sk89q.worldedit.util.formatting.text.TextComponent) LegacyTextHelper.adapt(build());
+    }
+
+    public Component build() {
+        return builder.build();
+    }
+
+    public TextComponent.Builder builder() {
+        return builder;
     }
 }

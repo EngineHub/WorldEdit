@@ -17,33 +17,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.io.file;
+package com.sk89q.worldedit.util.formatting;
 
-import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.serializer.gson.GsonComponentSerializer;
 
-public class FilenameException extends WorldEditException {
-
-    private final String filename;
-
-    public FilenameException(String filename) {
-        super();
-        this.filename = filename;
+/**
+ * Converts adventure text components to kyori text components.
+ * @deprecated
+ */
+@Deprecated
+public class LegacyTextHelper {
+    public static Component adapt(com.sk89q.worldedit.util.formatting.text.Component toAdapt) {
+        return GsonComponentSerializer.gson().deserialize(
+                com.sk89q.worldedit.util.formatting.text.serializer.legacy.LegacyComponentSerializer.legacy().serialize(toAdapt)
+        );
     }
 
-    public FilenameException(String filename, Component msg) {
-        super(msg);
-        this.filename = filename;
+    public static com.sk89q.worldedit.util.formatting.text.Component adapt(Component toAdapt) {
+        return com.sk89q.worldedit.util.formatting.text.serializer.legacy.LegacyComponentSerializer.legacy().deserialize(
+                GsonComponentSerializer.gson().serialize(toAdapt)
+        );
     }
-
-    @Deprecated
-    public FilenameException(String filename, String msg) {
-        super(msg);
-        this.filename = filename;
-    }
-
-    public String getFilename() {
-        return filename;
-    }
-
 }

@@ -20,10 +20,12 @@
 package com.sk89q.worldedit.util.formatting.component;
 
 import com.google.common.collect.Iterables;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
-import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
-import com.sk89q.worldedit.util.formatting.text.format.TextDecoration;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.TextComponent;
+import com.sk89q.worldedit.util.adventure.text.event.ClickEvent;
+import com.sk89q.worldedit.util.adventure.text.event.HoverEvent;
+import com.sk89q.worldedit.util.adventure.text.format.TextDecoration;
+import com.sk89q.worldedit.util.formatting.LegacyTextHelper;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandParameters;
 import org.enginehub.piston.config.ColorConfig;
@@ -39,6 +41,8 @@ import static com.sk89q.worldedit.internal.command.CommandUtil.getSubCommands;
  * A box to describe usage of a command.
  */
 public class CommandUsageBox extends TextComponentProducer {
+
+    private final TextComponent.Builder builder = Component.text();
 
     /**
      * Create a new usage box.
@@ -68,10 +72,10 @@ public class CommandUsageBox extends TextComponentProducer {
     }
 
     private void attachCommandUsage(List<Command> commands, String commandString, String helpRootCommand) {
-        TextComponentProducer boxContent = new TextComponentProducer()
-            .append(HelpGenerator.create(commands).getFullHelp());
+        TextComponent.Builder b = Component.text();
+        b.append(HelpGenerator.create(commands).getFullHelp());
         if (getSubCommands(Iterables.getLast(commands)).size() > 0) {
-            boxContent.append(Component.newline())
+            b.append(Component.newline())
                 .append(ColorConfig.helpText().wrap(Component.text("> ")
                     .append(ColorConfig.mainText().wrap(Component.text("List Subcommands")
                         .decoration(TextDecoration.ITALIC, true)
@@ -80,10 +84,16 @@ public class CommandUsageBox extends TextComponentProducer {
                     ))
                 ));
         }
-        MessageBox box = new MessageBox("Help for " + commandString,
-            boxContent);
-
-        append(box.create());
+        MessageBox box = new MessageBox("Help for " + commandString, b.build());
+        builder.append(box.build());
     }
 
+    public Component build() {
+        return builder.build();
+    }
+
+    @Override
+    public com.sk89q.worldedit.util.formatting.text.TextComponent create() {
+        return (com.sk89q.worldedit.util.formatting.text.TextComponent) LegacyTextHelper.adapt(build());
+    }
 }

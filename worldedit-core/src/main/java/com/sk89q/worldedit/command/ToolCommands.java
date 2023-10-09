@@ -48,9 +48,9 @@ import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.TreeGenerator;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
-import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.event.ClickEvent;
+import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.item.ItemType;
 import org.enginehub.piston.CommandManager;
@@ -159,7 +159,7 @@ public class ToolCommands {
                                 String translationKey) throws InvalidToolBindException {
         BaseItemStack itemStack = player.getItemInHand(HandSide.MAIN_HAND);
         session.setTool(itemStack.getType(), tool);
-        player.printInfo(Component.translatable(translationKey, itemStack.getRichName()));
+        player.printInfo(Component.translatable(translationKey, itemStack.getDisplayName()));
         sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
     }
 
@@ -305,12 +305,12 @@ public class ToolCommands {
         Component primaryName;
         Component secondaryName;
         if (primary instanceof BlockStateHolder) {
-            primaryName = ((BlockStateHolder<?>) primary).getBlockType().getRichName();
+            primaryName = ((BlockStateHolder<?>) primary).getBlockType().getDisplayName();
         } else {
             primaryName = Component.text("pattern");
         }
         if (secondary instanceof BlockStateHolder) {
-            secondaryName = ((BlockStateHolder<?>) secondary).getBlockType().getRichName();
+            secondaryName = ((BlockStateHolder<?>) secondary).getBlockType().getDisplayName();
         } else {
             secondaryName = Component.text("pattern");
         }

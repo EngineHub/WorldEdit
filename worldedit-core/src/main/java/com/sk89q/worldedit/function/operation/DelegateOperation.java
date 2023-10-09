@@ -21,7 +21,7 @@ package com.sk89q.worldedit.function.operation;
 
 import com.google.common.collect.Iterables;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

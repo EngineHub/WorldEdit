@@ -21,7 +21,7 @@ package com.sk89q.worldedit.sponge;
 
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.sponge.internal.SpongeTransmogrifier;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
@@ -44,7 +44,7 @@ public class SpongeBlockRegistry extends BundledBlockRegistry {
         new HashMap<>();
 
     @Override
-    public Component getRichName(BlockType blockType) {
+    public Component getDisplayName(BlockType blockType) {
         return SpongeTextAdapter.convert(Sponge.game().registry(RegistryTypes.BLOCK_TYPE)
             .value(ResourceKey.resolve(blockType.getId())).asComponent());
     }
