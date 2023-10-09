@@ -1,11 +1,15 @@
 applyLibrariesConfiguration()
 
+repositories {
+    mavenLocal()
+}
+
 dependencies {
-    "shade"("net.kyori:text-api:${Versions.TEXT}")
-    "shade"("net.kyori:text-serializer-gson:${Versions.TEXT}")
-    "shade"("net.kyori:text-serializer-legacy:${Versions.TEXT}")
-    "shade"("net.kyori:text-serializer-plain:${Versions.TEXT}")
-    // These are here because they use net.kyori:text-api -- so they need to be relocated too
+    "shade"("net.kyori:adventure-api:${Versions.KYORI_ADVENTURE}")
+    "shade"("net.kyori:adventure-text-serializer-gson:${Versions.KYORI_ADVENTURE}")
+    "shade"("net.kyori:adventure-text-serializer-legacy:${Versions.KYORI_ADVENTURE}")
+    "shade"("net.kyori:adventure-text-serializer-plain:${Versions.KYORI_ADVENTURE}")
+    // These are here because they use net.kyori:adventure -- so they need to be relocated too
     "shade"("org.enginehub.piston:core:${Versions.PISTON}")
     "shade"("org.enginehub.piston.core-ap:runtime:${Versions.PISTON}")
     "shade"("org.enginehub.piston:default-impl:${Versions.PISTON}")
