@@ -1,2 +1,60 @@
 {
+  "Default implementation in interface added": [
+    {
+      "type": "com.sk89q.worldedit.forge.ForgeBlockCommandSender",
+      "member": "Method com.sk89q.worldedit.forge.ForgeBlockCommandSender.print(com.sk89q.worldedit.util.formatting.text.Component)",
+      "changes": [
+        "METHOD_REMOVED"
+      ]
+    },
+    {
+      "type": "com.sk89q.worldedit.forge.ForgeBlockRegistry",
+      "member": "Method com.sk89q.worldedit.forge.ForgeBlockRegistry.getRichName(com.sk89q.worldedit.world.block.BlockType)",
+      "changes": [
+        "METHOD_REMOVED"
+      ]
+    },
+    {
+      "type": "com.sk89q.worldedit.forge.ForgeCommandSender",
+      "member": "Method com.sk89q.worldedit.forge.ForgeCommandSender.print(com.sk89q.worldedit.util.formatting.text.Component)",
+      "changes": [
+        "METHOD_REMOVED"
+      ]
+    },
+    {
+      "type": "com.sk89q.worldedit.forge.ForgeItemRegistry",
+      "member": "Method com.sk89q.worldedit.forge.ForgeItemRegistry.getRichName(com.sk89q.worldedit.world.item.ItemType)",
+      "changes": [
+        "METHOD_REMOVED"
+      ]
+    },
+    {
+      "type": "com.sk89q.worldedit.forge.ForgeItemRegistry",
+      "member": "Method com.sk89q.worldedit.forge.ForgeItemRegistry.getRichName(com.sk89q.worldedit.blocks.BaseItemStack)",
+      "changes": [
+        "METHOD_REMOVED"
+      ]
+    },
+    {
+      "type": "com.sk89q.worldedit.forge.ForgePlayer",
+      "member": "Method com.sk89q.worldedit.forge.ForgePlayer.print(com.sk89q.worldedit.util.formatting.text.Component)",
+      "changes": [
+        "METHOD_REMOVED"
+      ]
+    },
+    {
+      "type": "com.sk89q.worldedit.forge.WorldEditFakePlayer",
+      "member": "Method com.sk89q.worldedit.forge.WorldEditFakePlayer.m_36391_(boolean)",
+      "changes": [
+        "METHOD_REMOVED"
+      ]
+    },
+    {
+      "type": "com.sk89q.worldedit.forge.WorldEditFakePlayer",
+      "member": "Method com.sk89q.worldedit.forge.WorldEditFakePlayer.m_5893_(net.minecraft.world.MenuProvider)",
+      "changes": [
+        "METHOD_REMOVED"
+      ]
+    }
+  ]
 }

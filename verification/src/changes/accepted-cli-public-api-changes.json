@@ -1,2 +1,11 @@
 {
+  "Default implementation in interface added": [
+    {
+      "type": "com.sk89q.worldedit.cli.CLICommandSender",
+      "member": "Method com.sk89q.worldedit.cli.CLICommandSender.print(com.sk89q.worldedit.util.formatting.text.Component)",
+      "changes": [
+        "METHOD_REMOVED"
+      ]
+    }
+  ]
 }

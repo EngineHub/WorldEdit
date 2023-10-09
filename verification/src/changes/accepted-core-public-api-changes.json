@@ -136,6 +136,13 @@
             "changes": [
                 "METHOD_NEW_DEFAULT"
             ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.registry.ItemRegistry",
+            "member": "Method com.sk89q.worldedit.world.registry.ItemRegistry.getDisplayName(com.sk89q.worldedit.blocks.BaseItemStack)",
+            "changes": [
+                "METHOD_NEW_DEFAULT"
+            ]
         }
     ],
     "LazyReference was never publicly extensible": [
@@ -213,6 +220,27 @@
         {
             "type": "com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat",
             "member": "Method com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat.isFormat(java.io.InputStream)",
+            "changes": [
+                "METHOD_NEW_DEFAULT"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.extension.platform.Actor",
+            "member": "Method com.sk89q.worldedit.extension.platform.Actor.printDebug(com.sk89q.worldedit.util.adventure.text.Component)",
+            "changes": [
+                "METHOD_NEW_DEFAULT"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.extension.platform.Actor",
+            "member": "Method com.sk89q.worldedit.extension.platform.Actor.printError(com.sk89q.worldedit.util.adventure.text.Component)",
+            "changes": [
+                "METHOD_NEW_DEFAULT"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.extension.platform.Actor",
+            "member": "Method com.sk89q.worldedit.extension.platform.Actor.printInfo(com.sk89q.worldedit.util.adventure.text.Component)",
             "changes": [
                 "METHOD_NEW_DEFAULT"
             ]
