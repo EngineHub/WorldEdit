@@ -28,6 +28,7 @@ import com.sk89q.worldedit.internal.command.exception.ExceptionConverter;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.formatting.LegacyTextHelper;
 import com.sk89q.worldedit.util.task.FutureForwardingTask;
 import com.sk89q.worldedit.util.task.Supervisor;
 import org.apache.logging.log4j.Logger;
@@ -86,12 +87,17 @@ public final class AsyncCommandBuilder<T> {
 
     @Deprecated
     public AsyncCommandBuilder<T> sendMessageAfterDelay(String message) {
-        return sendMessageAfterDelay(Component.text(checkNotNull(message)));
+        return setDelayMessage(Component.text(checkNotNull(message)));
     }
 
     @Deprecated
-    public AsyncCommandBuilder<T> sendMessageAfterDelay(Component message) {
+    public AsyncCommandBuilder<T> sendMessageAfterDelay(com.sk89q.worldedit.util.formatting.text.Component message) {
         return setDelayMessage(message);
+    }
+
+    @Deprecated
+    public AsyncCommandBuilder<T> setDelayMessage(com.sk89q.worldedit.util.formatting.text.Component message) {
+        return setDelayMessage(LegacyTextHelper.adapt(message));
     }
 
     public AsyncCommandBuilder<T> setDelayMessage(Component message) {
@@ -99,9 +105,22 @@ public final class AsyncCommandBuilder<T> {
         return this;
     }
 
+    @Deprecated
+    public AsyncCommandBuilder<T> setWorkingMessage(com.sk89q.worldedit.util.formatting.text.Component message) {
+        return setWorkingMessage(LegacyTextHelper.adapt(message));
+    }
+
     public AsyncCommandBuilder<T> setWorkingMessage(Component message) {
         checkNotNull(this.delayMessage, "Must have a delay message if using a working message");
         this.workingMessage = checkNotNull(message);
+        return this;
+    }
+
+    @Deprecated
+    public AsyncCommandBuilder<T> onSuccess(@Nullable com.sk89q.worldedit.util.formatting.text.Component message, @Nullable Consumer<T> consumer) {
+        checkArgument(message != null || consumer != null, "Can't have null message AND consumer");
+        this.successMessage = message == null ? null : LegacyTextHelper.adapt(message);
+        this.consumer = consumer;
         return this;
     }
 
@@ -116,6 +135,14 @@ public final class AsyncCommandBuilder<T> {
         checkArgument(message != null || consumer != null, "Can't have null message AND consumer");
         this.successMessage = message == null ? null : Component.text(message, NamedTextColor.LIGHT_PURPLE);
         this.consumer = consumer;
+        return this;
+    }
+
+    @Deprecated
+    public AsyncCommandBuilder<T> onFailure(@Nullable com.sk89q.worldedit.util.formatting.text.Component message, @Nullable ExceptionConverter exceptionConverter) {
+        checkArgument(message != null || exceptionConverter != null, "Can't have null message AND exceptionConverter");
+        this.failureMessage = message == null ? null : LegacyTextHelper.adapt(message);
+        this.exceptionConverter = exceptionConverter;
         return this;
     }
 

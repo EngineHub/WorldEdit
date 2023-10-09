@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.util.formatting;
 
+import com.google.common.base.Preconditions;
 import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.util.adventure.text.serializer.gson.GsonComponentSerializer;
 
@@ -29,13 +30,15 @@ import com.sk89q.worldedit.util.adventure.text.serializer.gson.GsonComponentSeri
 @Deprecated
 public class LegacyTextHelper {
     public static Component adapt(com.sk89q.worldedit.util.formatting.text.Component toAdapt) {
+        Preconditions.checkNotNull(toAdapt);
         return GsonComponentSerializer.gson().deserialize(
-                com.sk89q.worldedit.util.formatting.text.serializer.legacy.LegacyComponentSerializer.legacy().serialize(toAdapt)
+                com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer.INSTANCE.serialize(toAdapt)
         );
     }
 
     public static com.sk89q.worldedit.util.formatting.text.Component adapt(Component toAdapt) {
-        return com.sk89q.worldedit.util.formatting.text.serializer.legacy.LegacyComponentSerializer.legacy().deserialize(
+        Preconditions.checkNotNull(toAdapt);
+        return com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer.INSTANCE.deserialize(
                 GsonComponentSerializer.gson().serialize(toAdapt)
         );
     }
