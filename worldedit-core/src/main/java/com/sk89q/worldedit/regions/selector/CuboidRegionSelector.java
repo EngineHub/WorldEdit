@@ -249,7 +249,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
     }
 
     @Override
-    public List<Component> getSelectionInfoLines() {
+    public List<Component> getSelectionInformationLines() {
         final List<Component> lines = new ArrayList<>();
 
         if (position1 != null) {

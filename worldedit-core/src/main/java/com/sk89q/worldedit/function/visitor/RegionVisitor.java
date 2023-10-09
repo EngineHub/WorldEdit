@@ -68,7 +68,7 @@ public class RegionVisitor implements Operation {
     }
 
     @Override
-    public Iterable<Component> getStatusMessages() {
+    public Iterable<Component> getMessages() {
         return ImmutableList.of(Component.translatable(
                 "worldedit.operation.affected.block",
                 Component.text(getAffected())

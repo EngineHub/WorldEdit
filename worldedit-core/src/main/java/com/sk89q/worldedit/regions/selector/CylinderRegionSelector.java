@@ -253,7 +253,7 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
     }
 
     @Override
-    public List<Component> getSelectionInfoLines() {
+    public List<Component> getSelectionInformationLines() {
         final List<Component> lines = new ArrayList<>();
 
         if (!region.getCenter().equals(Vector3.ZERO)) {

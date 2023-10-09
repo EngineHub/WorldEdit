@@ -107,8 +107,8 @@ public class OperationQueue implements Operation {
     }
 
     @Override
-    public Iterable<Component> getStatusMessages() {
-        return Iterables.concat(operations.stream().map(Operation::getStatusMessages).toList());
+    public Iterable<Component> getMessages() {
+        return Iterables.concat(operations.stream().map(Operation::getMessages).toList());
     }
 
 }

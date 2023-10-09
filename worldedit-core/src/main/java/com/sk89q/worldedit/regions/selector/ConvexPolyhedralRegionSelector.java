@@ -181,7 +181,7 @@ public class ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion
     }
 
     @Override
-    public List<Component> getSelectionInfoLines() {
+    public List<Component> getSelectionInformationLines() {
         List<Component> ret = new ArrayList<>();
 
         ret.add(Component.translatable("worldedit.selection.convex.info.vertices", Component.text(region.getVertices().size())));

@@ -403,7 +403,7 @@ public class GeneralCommands {
         }
 
         session.setPlacement(placement);
-        actor.printInfo(placement.getInfo());
+        actor.printInfo(placement.getInformation());
     }
 
     @Command(

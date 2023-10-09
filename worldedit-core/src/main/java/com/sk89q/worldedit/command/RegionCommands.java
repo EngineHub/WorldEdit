@@ -107,7 +107,7 @@ public class RegionCommands {
         RegionVisitor visitor = new RegionVisitor(region, set);
 
         Operations.completeBlindly(visitor);
-        List<Component> messages = Lists.newArrayList(visitor.getStatusMessages());
+        List<Component> messages = Lists.newArrayList(visitor.getMessages());
         if (messages.isEmpty()) {
             actor.printInfo(Component.translatable("worldedit.set.done"));
         } else {

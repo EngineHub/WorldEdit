@@ -29,6 +29,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
 import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.formatting.LegacyTextHelper;
 import com.sk89q.worldedit.world.World;
 
 import java.util.List;
@@ -189,8 +190,18 @@ public interface RegionSelector {
      * Get lines of information about the selection.
      *
      * @return a list of lines describing the region.
+     * @deprecated
      */
-    default List<Component> getSelectionInfoLines() {
+    default List<com.sk89q.worldedit.util.formatting.text.Component> getSelectionInfoLines() {
+        return getSelectionInformationLines().stream().map(LegacyTextHelper::adapt).toList();
+    }
+
+    /**
+     * Get lines of information about the selection.
+     *
+     * @return a list of lines describing the region.
+     */
+    default List<Component> getSelectionInformationLines() {
         return getInformationLines().stream()
                 .map(line -> Component.text(line, NamedTextColor.LIGHT_PURPLE))
                 .collect(Collectors.toList());

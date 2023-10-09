@@ -60,8 +60,8 @@ public class DelegateOperation implements Operation {
     }
 
     @Override
-    public Iterable<Component> getStatusMessages() {
-        return Iterables.concat(original.getStatusMessages(), delegate.getStatusMessages());
+    public Iterable<Component> getMessages() {
+        return Iterables.concat(original.getMessages(), delegate.getMessages());
     }
 
 }
