@@ -1,2 +1,46 @@
 {
+  "Default implementation in interface added": [
+    {
+      "type": "com.sk89q.worldedit.fabric.FabricBlockCommandSender",
+      "member": "Method com.sk89q.worldedit.fabric.FabricBlockCommandSender.print(com.sk89q.worldedit.util.formatting.text.Component)",
+      "changes": [
+        "METHOD_REMOVED"
+      ]
+    },
+    {
+      "type": "com.sk89q.worldedit.fabric.FabricBlockRegistry",
+      "member": "Method com.sk89q.worldedit.fabric.FabricBlockRegistry.getRichName(com.sk89q.worldedit.world.block.BlockType)",
+      "changes": [
+        "METHOD_REMOVED"
+      ]
+    },
+    {
+      "type": "com.sk89q.worldedit.fabric.FabricCommandSender",
+      "member": "Method com.sk89q.worldedit.fabric.FabricCommandSender.print(com.sk89q.worldedit.util.formatting.text.Component)",
+      "changes": [
+        "METHOD_REMOVED"
+      ]
+    },
+    {
+      "type": "com.sk89q.worldedit.fabric.FabricItemRegistry",
+      "member": "Method com.sk89q.worldedit.fabric.FabricItemRegistry.getRichName(com.sk89q.worldedit.world.item.ItemType)",
+      "changes": [
+        "METHOD_REMOVED"
+      ]
+    },
+    {
+      "type": "com.sk89q.worldedit.fabric.FabricItemRegistry",
+      "member": "Method com.sk89q.worldedit.fabric.FabricItemRegistry.getRichName(com.sk89q.worldedit.blocks.BaseItemStack)",
+      "changes": [
+        "METHOD_REMOVED"
+      ]
+    },
+    {
+      "type": "com.sk89q.worldedit.fabric.FabricPlayer",
+      "member": "Method com.sk89q.worldedit.fabric.FabricPlayer.print(com.sk89q.worldedit.util.formatting.text.Component)",
+      "changes": [
+        "METHOD_REMOVED"
+      ]
+    }
+  ]
 }
