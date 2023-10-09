@@ -26,8 +26,7 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.function.mask.BlockStateMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.registry.InputParser;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.Component;
 
 import java.util.stream.Stream;
 
@@ -58,7 +57,7 @@ public class BlockStateMaskParser extends InputParser<Mask> {
                     Splitter.on(',').omitEmptyStrings().trimResults().withKeyValueSeparator('=').split(states),
                     strict);
         } catch (Exception e) {
-            throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.bad-state-format", TextComponent.of(states)), e);
+            throw new InputParseException(Component.translatable("worldedit.error.parser.bad-state-format", Component.text(states)), e);
         }
     }
 }

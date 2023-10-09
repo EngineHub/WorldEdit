@@ -21,7 +21,6 @@ package com.sk89q.worldedit.sponge;
 
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.BundledItemRegistry;
 import net.minecraft.server.MinecraftServer;

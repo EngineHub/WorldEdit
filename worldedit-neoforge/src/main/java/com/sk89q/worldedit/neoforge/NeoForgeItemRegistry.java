@@ -31,7 +31,7 @@ public class NeoForgeItemRegistry extends BundledItemRegistry {
 
     @Override
     public Component getRichName(ItemType itemType) {
-        return TranslatableComponent.of(
+        return Component.translatable(
             NeoForgeAdapter.adapt(itemType).getDescriptionId()
         );
     }

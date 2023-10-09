@@ -38,8 +38,6 @@ import com.sk89q.worldedit.extent.clipboard.io.SchematicLoadException;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
 import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
 import com.sk89q.worldedit.util.io.file.InvalidFilenameException;
@@ -65,7 +63,7 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
     }
 
     private CommandException newCommandException(String message, Throwable cause) {
-        return newCommandException(TextComponent.of(String.valueOf(message)), cause);
+        return newCommandException(Component.text(String.valueOf(message)), cause);
     }
 
     private CommandException newCommandException(Component message, Throwable cause) {
@@ -77,15 +75,15 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
         final Matcher matcher = numberFormat.matcher(e.getMessage());
 
         if (matcher.matches()) {
-            throw newCommandException(TranslatableComponent.of("worldedit.error.invalid-number.matches", TextComponent.of(matcher.group(1))), e);
+            throw newCommandException(Component.translatable("worldedit.error.invalid-number.matches", Component.text(matcher.group(1))), e);
         } else {
-            throw newCommandException(TranslatableComponent.of("worldedit.error.invalid-number"), e);
+            throw newCommandException(Component.translatable("worldedit.error.invalid-number"), e);
         }
     }
 
     @ExceptionMatch
     public void convert(IncompleteRegionException e) throws CommandException {
-        throw newCommandException(TranslatableComponent.of("worldedit.error.incomplete-region"), e);
+        throw newCommandException(Component.translatable("worldedit.error.incomplete-region"), e);
     }
 
     @ExceptionMatch
@@ -111,13 +109,13 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
 
     @ExceptionMatch
     public void convert(MaxChangedBlocksException e) throws CommandException {
-        throw newCommandException(TranslatableComponent.of("worldedit.error.max-changes", TextComponent.of(e.getBlockLimit())), e);
+        throw newCommandException(Component.translatable("worldedit.error.max-changes", Component.text(e.getBlockLimit())), e);
     }
 
     @ExceptionMatch
     public void convert(MaxBrushRadiusException e) throws CommandException {
         throw newCommandException(
-                TranslatableComponent.of("worldedit.error.max-brush-radius", TextComponent.of(worldEdit.getConfiguration().maxBrushRadius)),
+                Component.translatable("worldedit.error.max-brush-radius", Component.text(worldEdit.getConfiguration().maxBrushRadius)),
                 e
         );
     }
@@ -125,7 +123,7 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
     @ExceptionMatch
     public void convert(MaxRadiusException e) throws CommandException {
         throw newCommandException(
-                TranslatableComponent.of("worldedit.error.max-radius", TextComponent.of(worldEdit.getConfiguration().maxRadius)),
+                Component.translatable("worldedit.error.max-radius", Component.text(worldEdit.getConfiguration().maxRadius)),
                 e
         );
     }
@@ -152,13 +150,13 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
 
     @ExceptionMatch
     public void convert(EmptyClipboardException e) throws CommandException {
-        throw newCommandException(TranslatableComponent.of("worldedit.error.empty-clipboard"), e);
+        throw newCommandException(Component.translatable("worldedit.error.empty-clipboard"), e);
     }
 
     @ExceptionMatch
     public void convert(InvalidFilenameException e) throws CommandException {
         throw newCommandException(
-                TranslatableComponent.of("worldedit.error.invalid-filename", TextComponent.of(e.getFilename()), e.getRichMessage()),
+                Component.translatable("worldedit.error.invalid-filename", Component.text(e.getFilename()), e.getRichMessage()),
                 e
         );
     }
@@ -166,7 +164,7 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
     @ExceptionMatch
     public void convert(FilenameResolutionException e) throws CommandException {
         throw newCommandException(
-                TranslatableComponent.of("worldedit.error.file-resolution", TextComponent.of(e.getFilename()), e.getRichMessage()),
+                Component.translatable("worldedit.error.file-resolution", Component.text(e.getFilename()), e.getRichMessage()),
                 e
         );
     }
@@ -174,14 +172,14 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
     @ExceptionMatch
     public void convert(InvalidToolBindException e) throws CommandException {
         throw newCommandException(
-                TranslatableComponent.of("worldedit.tool.error.cannot-bind", e.getItemType().getRichName(), e.getRichMessage()),
+                Component.translatable("worldedit.tool.error.cannot-bind", e.getItemType().getRichName(), e.getRichMessage()),
                 e
         );
     }
 
     @ExceptionMatch
     public void convert(FileSelectionAbortedException e) throws CommandException {
-        throw newCommandException(TranslatableComponent.of("worldedit.error.file-aborted"), e);
+        throw newCommandException(Component.translatable("worldedit.error.file-aborted"), e);
     }
 
     @ExceptionMatch

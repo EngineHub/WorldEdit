@@ -24,8 +24,6 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 
 public record Placement(PlacementType placementType, BlockVector3 offset) {
     public BlockVector3 getPlacementPosition(RegionSelector selector, Actor actor) throws IncompleteRegionException {
@@ -38,13 +36,13 @@ public record Placement(PlacementType placementType, BlockVector3 offset) {
 
     public Component getInfo() {
         if (offset.equals(BlockVector3.ZERO)) {
-            return TranslatableComponent.of(placementType.getTranslationKey());
+            return Component.translatable(placementType.getTranslationKey());
         } else {
-            return TranslatableComponent.of(
+            return Component.translatable(
                     placementType.getTranslationKeyWithOffset(),
-                    TextComponent.of(offset.x()),
-                    TextComponent.of(offset.y()),
-                    TextComponent.of(offset.z())
+                    Component.text(offset.x()),
+                    Component.text(offset.y()),
+                    Component.text(offset.z())
             );
         }
     }

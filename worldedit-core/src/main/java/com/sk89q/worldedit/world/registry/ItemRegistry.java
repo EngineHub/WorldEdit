@@ -20,8 +20,8 @@
 package com.sk89q.worldedit.world.registry;
 
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.item.ItemType;
+import com.sk89q.worldedit.util.formatting.text.Component;
 
 import javax.annotation.Nullable;
 

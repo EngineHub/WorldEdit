@@ -48,7 +48,7 @@ public class ClipboardFormatConverter implements ArgumentConverter<ClipboardForm
     private final TextComponent choices;
 
     private ClipboardFormatConverter() {
-        this.choices = TextComponent.of("any clipboard format");
+        this.choices = Component.text("any clipboard format");
     }
 
     @Override

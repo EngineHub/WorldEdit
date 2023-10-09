@@ -22,7 +22,6 @@ package com.sk89q.worldedit.neoforge;
 import com.sk89q.worldedit.neoforge.internal.NeoForgeTransmogrifier;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
@@ -41,7 +40,7 @@ public class NeoForgeBlockRegistry extends BundledBlockRegistry {
 
     @Override
     public Component getRichName(BlockType blockType) {
-        return TranslatableComponent.of(NeoForgeAdapter.adapt(blockType).getDescriptionId());
+        return Component.translatable(NeoForgeAdapter.adapt(blockType).getDescriptionId());
     }
 
     @Override

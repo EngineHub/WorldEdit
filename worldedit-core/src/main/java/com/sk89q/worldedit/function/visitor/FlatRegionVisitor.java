@@ -27,9 +27,7 @@ import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.regions.FlatRegion;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -82,10 +80,10 @@ public class FlatRegionVisitor implements Operation {
 
     @Override
     public Iterable<Component> getStatusMessages() {
-        return ImmutableList.of(TranslatableComponent.of(
+        return ImmutableList.of(Component.translatable(
                 "worldedit.operation.affected.column",
-                TextComponent.of(getAffected())
-        ).color(TextColor.LIGHT_PURPLE));
+                Component.text(getAffected())
+        ).color(NamedTextColor.LIGHT_PURPLE));
     }
 
 }

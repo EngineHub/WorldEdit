@@ -93,7 +93,7 @@ public final class RegistryConverter<V extends Keyed> implements ArgumentConvert
 
     private RegistryConverter(Registry<V> registry) {
         this.registry = registry;
-        this.choices = TextComponent.of("any " + registry.getName());
+        this.choices = Component.text("any " + registry.getName());
     }
 
     @Override

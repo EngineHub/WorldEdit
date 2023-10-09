@@ -43,7 +43,7 @@ public class SideEffectConverter implements ArgumentConverter<SideEffect> {
         commandManager.registerConverter(Key.of(SideEffect.class), new SideEffectConverter());
     }
 
-    private final TextComponent choices = TextComponent.of("any side effect");
+    private final TextComponent choices = Component.text("any side effect");
 
     private SideEffectConverter() {
     }

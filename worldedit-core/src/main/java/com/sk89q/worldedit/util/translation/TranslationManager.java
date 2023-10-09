@@ -85,9 +85,11 @@ public class TranslationManager {
         return type + '.' + parts[0] + '.' + parts[1].replace('/', '.');
     }
 
-    private final TranslatableComponentRenderer<Locale> friendlyComponentRenderer = TranslatableComponentRenderer.from(
-        this::getTranslation
-    );
+    private final TranslatableComponentRenderer<Locale> friendlyComponentRenderer = new TranslatableComponentRenderer<>() {
+        protected @Nullable MessageFormat translate(final String key, final Locale context) {
+            return getTranslation(context, key);
+        }
+    };
     private final Table<Locale, String, MessageFormat> translationTable = Tables.newCustomTable(
         new ConcurrentHashMap<>(), ConcurrentHashMap::new
     );

@@ -28,8 +28,7 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.function.mask.BiomeMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.registry.InputParser;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.biome.BiomeType;
 
 import java.util.Arrays;
@@ -74,7 +73,7 @@ public class BiomeMaskParser extends InputParser<Mask> {
         for (String biomeName : Splitter.on(",").split(input.substring(1))) {
             BiomeType biome = BiomeType.REGISTRY.get(biomeName);
             if (biome == null) {
-                throw new NoMatchException(TranslatableComponent.of("worldedit.error.unknown-biome", TextComponent.of(biomeName)));
+                throw new NoMatchException(Component.translatable("worldedit.error.unknown-biome", Component.text(biomeName)));
             }
             biomes.add(biome);
         }

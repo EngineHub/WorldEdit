@@ -67,10 +67,9 @@ import com.sk89q.worldedit.util.formatting.component.SubtleFormat;
 import com.sk89q.worldedit.util.formatting.component.TextComponentProducer;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -110,7 +109,7 @@ public class SelectionCommands {
         if (actor instanceof Locatable locatable) {
             return locatable.getLocation().toVector().toBlockPoint();
         }
-        actor.printError(TranslatableComponent.of("worldedit.pos.console-require-coords"));
+        actor.printError(Component.translatable("worldedit.pos.console-require-coords"));
         return null;
     }
 
@@ -162,7 +161,7 @@ public class SelectionCommands {
         for (Component line : regionSelector.getSelectionInfoLines()) {
             actor.printInfo(line);
         }
-        actor.printInfo(TranslatableComponent.of("worldedit.selection.updated"));
+        actor.printInfo(Component.translatable("worldedit.selection.updated"));
     }
 
     @Command(
@@ -182,7 +181,7 @@ public class SelectionCommands {
         }
 
         if (!session.getRegionSelector(world).selectPrimary(coordinates, ActorSelectorLimits.forActor(actor))) {
-            actor.printError(TranslatableComponent.of("worldedit.pos.already-set"));
+            actor.printError(Component.translatable("worldedit.pos.already-set"));
             return;
         }
 
@@ -206,7 +205,7 @@ public class SelectionCommands {
         }
 
         if (!session.getRegionSelector(world).selectSecondary(coordinates, ActorSelectorLimits.forActor(actor))) {
-            actor.printError(TranslatableComponent.of("worldedit.pos.already-set"));
+            actor.printError(Component.translatable("worldedit.pos.already-set"));
             return;
         }
 
@@ -224,14 +223,14 @@ public class SelectionCommands {
 
         if (pos != null) {
             if (!session.getRegionSelector(player.getWorld()).selectPrimary(pos.toVector().toBlockPoint(), ActorSelectorLimits.forActor(player))) {
-                player.printError(TranslatableComponent.of("worldedit.hpos.already-set"));
+                player.printError(Component.translatable("worldedit.hpos.already-set"));
                 return;
             }
 
             session.getRegionSelector(player.getWorld())
                     .explainPrimarySelection(player, session, pos.toVector().toBlockPoint());
         } else {
-            player.printError(TranslatableComponent.of("worldedit.hpos.no-block"));
+            player.printError(Component.translatable("worldedit.hpos.no-block"));
         }
     }
 
@@ -246,14 +245,14 @@ public class SelectionCommands {
 
         if (pos != null) {
             if (!session.getRegionSelector(player.getWorld()).selectSecondary(pos.toVector().toBlockPoint(), ActorSelectorLimits.forActor(player))) {
-                player.printError(TranslatableComponent.of("worldedit.hpos.already-set"));
+                player.printError(Component.translatable("worldedit.hpos.already-set"));
                 return;
             }
 
             session.getRegionSelector(player.getWorld())
                     .explainSecondarySelection(player, session, pos.toVector().toBlockPoint());
         } else {
-            player.printError(TranslatableComponent.of("worldedit.hpos.no-block"));
+            player.printError(Component.translatable("worldedit.hpos.no-block"));
         }
     }
 
@@ -288,14 +287,14 @@ public class SelectionCommands {
             min = minChunk.shl(CHUNK_SHIFTS, CHUNK_SHIFTS_Y, CHUNK_SHIFTS);
             max = maxChunk.shl(CHUNK_SHIFTS, CHUNK_SHIFTS_Y, CHUNK_SHIFTS).add(15, 255, 15);
 
-            actor.printInfo(TranslatableComponent.of(
+            actor.printInfo(Component.translatable(
                 "worldedit.chunk.selected-multiple",
-                TextComponent.of(minChunk.x()),
-                TextComponent.of(minChunk.y()),
-                TextComponent.of(minChunk.z()),
-                TextComponent.of(maxChunk.x()),
-                TextComponent.of(maxChunk.y()),
-                TextComponent.of(maxChunk.z())
+                Component.text(minChunk.x()),
+                Component.text(minChunk.y()),
+                Component.text(minChunk.z()),
+                Component.text(maxChunk.x()),
+                Component.text(maxChunk.y()),
+                Component.text(maxChunk.z())
             ));
         } else {
             BlockVector3 minChunk;
@@ -309,17 +308,17 @@ public class SelectionCommands {
                 if (actor instanceof Locatable) {
                     minChunk = ChunkStore.toChunk3d(((Locatable) actor).getBlockLocation().toVector().toBlockPoint());
                 } else {
-                    throw new StopExecutionException(TextComponent.of("A player or coordinates are required."));
+                    throw new StopExecutionException(Component.text("A player or coordinates are required."));
                 }
             }
 
             min = minChunk.shl(CHUNK_SHIFTS, CHUNK_SHIFTS_Y, CHUNK_SHIFTS);
             max = min.add(15, 255, 15);
 
-            actor.printInfo(TranslatableComponent.of("worldedit.chunk.selected",
-                TextComponent.of(minChunk.x()),
-                TextComponent.of(minChunk.y()),
-                TextComponent.of(minChunk.z())));
+            actor.printInfo(Component.translatable("worldedit.chunk.selected",
+                Component.text(minChunk.x()),
+                Component.text(minChunk.y()),
+                Component.text(minChunk.z())));
         }
 
         final CuboidRegionSelector selector;
@@ -348,7 +347,7 @@ public class SelectionCommands {
                          boolean navWand) throws WorldEditException {
         Tool tool = navWand ? new NavigationWand() : new SelectionWand();
         if (!tool.canUse(player)) {
-            player.printError(TranslatableComponent.of("worldedit.command.permissions"));
+            player.printError(Component.translatable("worldedit.command.permissions"));
             return;
         }
         String wandId = navWand ? session.getNavWandItem() : session.getWandItem();
@@ -357,12 +356,12 @@ public class SelectionCommands {
         }
         ItemType itemType = ItemTypes.get(wandId);
         if (itemType == null) {
-            player.printError(TranslatableComponent.of("worldedit.wand.invalid"));
+            player.printError(Component.translatable("worldedit.wand.invalid"));
             return;
         }
         player.giveItem(new BaseItemStack(itemType, 1));
         session.setTool(itemType, tool);
-        player.printInfo(TranslatableComponent.of("worldedit.wand." + (navWand ? "nav" : "sel" ) + "wand.info"));
+        player.printInfo(Component.translatable("worldedit.wand." + (navWand ? "nav" : "sel" ) + "wand.info"));
     }
 
     @Command(
@@ -372,14 +371,14 @@ public class SelectionCommands {
     @CommandPermissions("worldedit.wand.toggle")
     public void toggleWand(Player player) {
         player.printInfo(
-            TranslatableComponent.of(
+            Component.translatable(
                 "worldedit.wand.selwand.now.tool",
-                TextComponent.of("/tool none", TextColor.AQUA).clickEvent(
-                    ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/tool none")),
-                TextComponent.of("/tool selwand", TextColor.AQUA).clickEvent(
-                    ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/tool selwand")),
-                TextComponent.of("//wand", TextColor.AQUA).clickEvent(
-                    ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "//wand"))
+                Component.text("/tool none", NamedTextColor.AQUA).clickEvent(
+                    ClickEvent.runCommand("/tool none")),
+                Component.text("/tool selwand", NamedTextColor.AQUA).clickEvent(
+                    ClickEvent.runCommand("/tool selwand")),
+                Component.text("//wand", NamedTextColor.AQUA).clickEvent(
+                    ClickEvent.runCommand("//wand"))
             )
         );
     }
@@ -415,9 +414,9 @@ public class SelectionCommands {
 
             session.getRegionSelector(world).explainRegionAdjust(actor, session);
 
-            actor.printInfo(TranslatableComponent.of("worldedit.contract.contracted", TextComponent.of(oldSize - newSize)));
+            actor.printInfo(Component.translatable("worldedit.contract.contracted", Component.text(oldSize - newSize)));
         } catch (RegionOperationException e) {
-            actor.printError(TextComponent.of(e.getMessage()));
+            actor.printError(Component.text(e.getMessage()));
         }
     }
 
@@ -444,9 +443,9 @@ public class SelectionCommands {
 
             session.getRegionSelector(world).explainRegionAdjust(actor, session);
 
-            actor.printInfo(TranslatableComponent.of("worldedit.shift.shifted"));
+            actor.printInfo(Component.translatable("worldedit.shift.shifted"));
         } catch (RegionOperationException e) {
-            actor.printError(TextComponent.of(e.getMessage()));
+            actor.printError(Component.text(e.getMessage()));
         }
     }
 
@@ -467,7 +466,7 @@ public class SelectionCommands {
         region.expand(getChangesForEachDir(amount, onlyHorizontal, onlyVertical));
         session.getRegionSelector(world).learnChanges();
         session.getRegionSelector(world).explainRegionAdjust(actor, session);
-        actor.printInfo(TranslatableComponent.of("worldedit.outset.outset"));
+        actor.printInfo(Component.translatable("worldedit.outset.outset"));
     }
 
     @Command(
@@ -487,7 +486,7 @@ public class SelectionCommands {
         region.contract(getChangesForEachDir(amount, onlyHorizontal, onlyVertical));
         session.getRegionSelector(world).learnChanges();
         session.getRegionSelector(world).explainRegionAdjust(actor, session);
-        actor.printInfo(TranslatableComponent.of("worldedit.inset.inset"));
+        actor.printInfo(Component.translatable("worldedit.inset.inset"));
     }
 
     private BlockVector3[] getChangesForEachDir(int amount, boolean onlyHorizontal, boolean onlyVertical) {
@@ -551,7 +550,7 @@ public class SelectionCommands {
 
         // If anything was found in the first pass, then the remaining variables are guaranteed to be set
         if (!found) {
-            throw new StopExecutionException(TranslatableComponent.of(
+            throw new StopExecutionException(Component.translatable(
                         "worldedit.trim.no-blocks"));
         }
 
@@ -640,7 +639,7 @@ public class SelectionCommands {
 
         session.getRegionSelector(world).learnChanges();
         session.getRegionSelector(world).explainRegionAdjust(actor, session);
-        actor.printInfo(TranslatableComponent.of("worldedit.trim.trim"));
+        actor.printInfo(Component.translatable("worldedit.trim.trim"));
     }
 
     @Command(
@@ -658,11 +657,11 @@ public class SelectionCommands {
             region = clipboard.getRegion();
 
             BlockVector3 origin = clipboard.getOrigin();
-            actor.printInfo(TranslatableComponent.of("worldedit.size.offset", TextComponent.of(origin.toString())));
+            actor.printInfo(Component.translatable("worldedit.size.offset", Component.text(origin.toString())));
         } else {
             region = session.getSelection(world);
 
-            actor.printInfo(TranslatableComponent.of("worldedit.size.type", TextComponent.of(session.getRegionSelector(world).getTypeName())));
+            actor.printInfo(Component.translatable("worldedit.size.type", Component.text(session.getRegionSelector(world).getTypeName())));
 
             for (Component line : session.getRegionSelector(world).getSelectionInfoLines()) {
                 actor.printInfo(line);
@@ -672,9 +671,9 @@ public class SelectionCommands {
                 .subtract(region.getMinimumPoint())
                 .add(1, 1, 1);
 
-        actor.printInfo(TranslatableComponent.of("worldedit.size.size", TextComponent.of(size.toString())));
-        actor.printInfo(TranslatableComponent.of("worldedit.size.distance", TextComponent.of(region.getMaximumPoint().distance(region.getMinimumPoint()))));
-        actor.printInfo(TranslatableComponent.of("worldedit.size.blocks", TextComponent.of(region.getVolume())));
+        actor.printInfo(Component.translatable("worldedit.size.size", Component.text(size.toString())));
+        actor.printInfo(Component.translatable("worldedit.size.distance", Component.text(region.getMaximumPoint().distance(region.getMinimumPoint()))));
+        actor.printInfo(Component.translatable("worldedit.size.blocks", Component.text(region.getVolume())));
     }
 
     @Command(
@@ -686,7 +685,7 @@ public class SelectionCommands {
                       @Arg(desc = "The mask of blocks to match")
                           Mask mask) throws WorldEditException {
         int count = editSession.countBlocks(session.getSelection(world), mask);
-        actor.printInfo(TranslatableComponent.of("worldedit.count.counted", TextComponent.of(count)));
+        actor.printInfo(Component.translatable("worldedit.count.counted", Component.text(count)));
         return count;
     }
 
@@ -721,13 +720,13 @@ public class SelectionCommands {
         } else {
             distribution = session.getLastDistribution();
             if (distribution == null) {
-                actor.printError(TranslatableComponent.of("worldedit.distr.no-previous"));
+                actor.printError(Component.translatable("worldedit.distr.no-previous"));
                 return;
             }
         }
 
         if (distribution.isEmpty()) {  // *Should* always be false
-            actor.printError(TranslatableComponent.of("worldedit.distr.no-blocks"));
+            actor.printError(Component.translatable("worldedit.distr.no-blocks"));
             return;
         }
 
@@ -754,7 +753,7 @@ public class SelectionCommands {
         if (selectorChoiceOrList == null) {
             session.getRegionSelector(world).clear();
             session.dispatchCUISelection(actor);
-            actor.printInfo(TranslatableComponent.of("worldedit.select.cleared"));
+            actor.printInfo(Component.translatable("worldedit.select.cleared"));
             return;
         }
 
@@ -763,13 +762,13 @@ public class SelectionCommands {
             box.setHidingHelp(true);
             TextComponentProducer contents = box.getContents();
             contents.append(SubtleFormat.wrap("Select one of the modes below:")).newline();
-            box.appendCommand("cuboid", TranslatableComponent.of("worldedit.select.cuboid.description"), "//sel cuboid");
-            box.appendCommand("extend", TranslatableComponent.of("worldedit.select.extend.description"), "//sel extend");
-            box.appendCommand("poly", TranslatableComponent.of("worldedit.select.poly.description"), "//sel poly");
-            box.appendCommand("ellipsoid", TranslatableComponent.of("worldedit.select.ellipsoid.description"), "//sel ellipsoid");
-            box.appendCommand("sphere", TranslatableComponent.of("worldedit.select.sphere.description"), "//sel sphere");
-            box.appendCommand("cyl", TranslatableComponent.of("worldedit.select.cyl.description"), "//sel cyl");
-            box.appendCommand("convex", TranslatableComponent.of("worldedit.select.convex.description"), "//sel convex");
+            box.appendCommand("cuboid", Component.translatable("worldedit.select.cuboid.description"), "//sel cuboid");
+            box.appendCommand("extend", Component.translatable("worldedit.select.extend.description"), "//sel extend");
+            box.appendCommand("poly", Component.translatable("worldedit.select.poly.description"), "//sel poly");
+            box.appendCommand("ellipsoid", Component.translatable("worldedit.select.ellipsoid.description"), "//sel ellipsoid");
+            box.appendCommand("sphere", Component.translatable("worldedit.select.sphere.description"), "//sel sphere");
+            box.appendCommand("cyl", Component.translatable("worldedit.select.cyl.description"), "//sel cyl");
+            box.appendCommand("convex", Component.translatable("worldedit.select.convex.description"), "//sel convex");
             actor.print(box.create(1));
             return;
         }
@@ -791,7 +790,7 @@ public class SelectionCommands {
 
             if (found != null) {
                 session.setDefaultRegionSelector(found);
-                actor.printInfo(TranslatableComponent.of("worldedit.select.default-set", TextComponent.of(found.name())));
+                actor.printInfo(Component.translatable("worldedit.select.default-set", Component.text(found.name())));
             } else {
                 throw new RuntimeException("Something unexpected happened. Please report this.");
             }
@@ -819,29 +818,29 @@ public class SelectionCommands {
         @Override
         public Component getComponent(int number) {
             Countable<BlockState> c = distribution.get(number);
-            TextComponent.Builder line = TextComponent.builder();
+            TextComponent.Builder line = Component.text();
 
             final int count = c.getAmount();
 
             final double perc = count / (double) totalBlocks * 100;
             final int maxDigits = (int) (Math.log10(totalBlocks) + 1);
             final int curDigits = (int) (Math.log10(count) + 1);
-            line.append(String.format("%s%.3f%%  ", perc < 10 ? "  " : "", perc), TextColor.GOLD);
+            line.append(Component.text(String.format("%s%.3f%%  ", perc < 10 ? "  " : "", perc), NamedTextColor.GOLD));
             final int space = maxDigits - curDigits;
             String pad = Strings.repeat(" ", space == 0 ? 2 : 2 * space + 1);
-            line.append(String.format("%s%s", count, pad), TextColor.YELLOW);
+            line.append(Component.text(String.format("%s%s", count, pad), NamedTextColor.YELLOW));
 
             final BlockState state = c.getID();
             final BlockType blockType = state.getBlockType();
-            Component blockName = blockType.getRichName().color(TextColor.LIGHT_PURPLE);
+            Component blockName = blockType.getRichName().color(NamedTextColor.LIGHT_PURPLE);
             TextComponent toolTip;
             if (separateStates && state != blockType.getDefaultState()) {
-                toolTip = TextComponent.of(state.getAsString(), TextColor.GRAY);
-                blockName = blockName.append(TextComponent.of("*", TextColor.LIGHT_PURPLE));
+                toolTip = Component.text(state.getAsString(), NamedTextColor.GRAY);
+                blockName = blockName.append(Component.text("*", NamedTextColor.LIGHT_PURPLE));
             } else {
-                toolTip = TextComponent.of(blockType.id(), TextColor.GRAY);
+                toolTip = Component.text(blockType.id(), NamedTextColor.GRAY);
             }
-            blockName = blockName.hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, toolTip));
+            blockName = blockName.hoverEvent(HoverEvent.showText(toolTip));
             line.append(blockName);
 
             return line.build();
@@ -854,8 +853,8 @@ public class SelectionCommands {
 
         @Override
         public Component create(int page) throws InvalidComponentException {
-            super.getContents().append(TranslatableComponent.of("worldedit.distr.total", TextColor.GRAY, TextComponent.of(totalBlocks)))
-                    .append(TextComponent.newline());
+            super.getContents().append(Component.translatable("worldedit.distr.total", NamedTextColor.GRAY, Component.text(totalBlocks)))
+                    .append(Component.newline());
             return super.create(page);
         }
     }

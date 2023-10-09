@@ -22,7 +22,6 @@ package com.sk89q.worldedit.function.operation;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -91,6 +90,6 @@ public interface Operation {
                 warnedDeprecatedClasses.add(className);
             }
         }
-        return oldMessages.stream().map(TextComponent::of).collect(Collectors.toList());
+        return oldMessages.stream().map(Component::text).collect(Collectors.toList());
     }
 }

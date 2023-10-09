@@ -62,8 +62,6 @@ import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.util.formatting.component.TextUtils;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.RegenOptions;
 import com.sk89q.worldedit.world.World;
 import org.enginehub.piston.annotation.Command;
@@ -111,9 +109,9 @@ public class RegionCommands {
         Operations.completeBlindly(visitor);
         List<Component> messages = Lists.newArrayList(visitor.getStatusMessages());
         if (messages.isEmpty()) {
-            actor.printInfo(TranslatableComponent.of("worldedit.set.done"));
+            actor.printInfo(Component.translatable("worldedit.set.done"));
         } else {
-            actor.printInfo(TranslatableComponent.of("worldedit.set.done.verbose", TextUtils.join(messages, TextComponent.of(", "))));
+            actor.printInfo(Component.translatable("worldedit.set.done.verbose", TextUtils.join(messages, Component.text(", "))));
         }
 
         return visitor.getAffected();
@@ -135,7 +133,7 @@ public class RegionCommands {
                     @Switch(name = 'h', desc = "Generate only a shell")
                         boolean shell) throws WorldEditException {
         if (!((region instanceof CuboidRegion) || (region instanceof ConvexPolyhedralRegion))) {
-            actor.printError(TranslatableComponent.of("worldedit.line.invalid-type"));
+            actor.printError(Component.translatable("worldedit.line.invalid-type"));
             return 0;
         }
         checkCommandArgument(thickness >= 0, "Thickness must be >= 0");
@@ -152,7 +150,7 @@ public class RegionCommands {
 
         int blocksChanged = editSession.drawLine(pattern, vectors, thickness, !shell);
 
-        actor.printInfo(TranslatableComponent.of("worldedit.line.changed", TextComponent.of(blocksChanged)));
+        actor.printInfo(Component.translatable("worldedit.line.changed", Component.text(blocksChanged)));
         return blocksChanged;
     }
 
@@ -172,7 +170,7 @@ public class RegionCommands {
                      @Switch(name = 'h', desc = "Generate only a shell")
                          boolean shell) throws WorldEditException {
         if (!(region instanceof ConvexPolyhedralRegion cpregion)) {
-            actor.printError(TranslatableComponent.of("worldedit.curve.invalid-type"));
+            actor.printError(Component.translatable("worldedit.curve.invalid-type"));
             return 0;
         }
         checkCommandArgument(thickness >= 0, "Thickness must be >= 0");
@@ -182,7 +180,7 @@ public class RegionCommands {
 
         int blocksChanged = editSession.drawSpline(pattern, vectors, 0, 0, 0, 10, thickness, !shell);
 
-        actor.printInfo(TranslatableComponent.of("worldedit.curve.changed", TextComponent.of(blocksChanged)));
+        actor.printInfo(Component.translatable("worldedit.curve.changed", Component.text(blocksChanged)));
         return blocksChanged;
     }
 
@@ -202,7 +200,7 @@ public class RegionCommands {
             from = new ExistingBlockMask(editSession);
         }
         int affected = editSession.replaceBlocks(region, from, to);
-        actor.printInfo(TranslatableComponent.of("worldedit.replace.replaced", TextComponent.of(affected)));
+        actor.printInfo(Component.translatable("worldedit.replace.replaced", Component.text(affected)));
         return affected;
     }
 
@@ -216,7 +214,7 @@ public class RegionCommands {
                        @Arg(desc = "The pattern of blocks to overlay")
                            Pattern pattern) throws WorldEditException {
         int affected = editSession.overlayCuboidBlocks(region, pattern);
-        actor.printInfo(TranslatableComponent.of("worldedit.overlay.overlaid", TextComponent.of(affected)));
+        actor.printInfo(Component.translatable("worldedit.overlay.overlaid", Component.text(affected)));
         return affected;
     }
 
@@ -231,7 +229,7 @@ public class RegionCommands {
                       @Arg(desc = "The pattern of blocks to set")
                           Pattern pattern) throws WorldEditException {
         int affected = editSession.center(region, pattern);
-        actor.printInfo(TranslatableComponent.of("worldedit.center.changed", TextComponent.of(affected)));
+        actor.printInfo(Component.translatable("worldedit.center.changed", Component.text(affected)));
         return affected;
     }
 
@@ -243,7 +241,7 @@ public class RegionCommands {
     @Logging(REGION)
     public int naturalize(Actor actor, EditSession editSession, @Selection Region region) throws WorldEditException {
         int affected = editSession.naturalizeCuboidBlocks(region);
-        actor.printInfo(TranslatableComponent.of("worldedit.naturalize.naturalized", TextComponent.of(affected)));
+        actor.printInfo(Component.translatable("worldedit.naturalize.naturalized", Component.text(affected)));
         return affected;
     }
 
@@ -257,7 +255,7 @@ public class RegionCommands {
                      @Arg(desc = "The pattern of blocks to set")
                          Pattern pattern) throws WorldEditException {
         int affected = editSession.makeWalls(region, pattern);
-        actor.printInfo(TranslatableComponent.of("worldedit.walls.changed", TextComponent.of(affected)));
+        actor.printInfo(Component.translatable("worldedit.walls.changed", Component.text(affected)));
         return affected;
     }
 
@@ -272,7 +270,7 @@ public class RegionCommands {
                      @Arg(desc = "The pattern of blocks to set")
                          Pattern pattern) throws WorldEditException {
         int affected = editSession.makeFaces(region, pattern);
-        actor.printInfo(TranslatableComponent.of("worldedit.faces.changed", TextComponent.of(affected)));
+        actor.printInfo(Component.translatable("worldedit.faces.changed", Component.text(affected)));
         return affected;
     }
 
@@ -291,7 +289,7 @@ public class RegionCommands {
         HeightMap heightMap = new HeightMap(editSession, region, mask);
         HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));
         int affected = heightMap.applyFilter(filter, iterations);
-        actor.printInfo(TranslatableComponent.of("worldedit.smooth.changed", TextComponent.of(affected)));
+        actor.printInfo(Component.translatable("worldedit.smooth.changed", Component.text(affected)));
         return affected;
     }
 
@@ -313,7 +311,7 @@ public class RegionCommands {
         HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));
         float[] changed = heightMap.applyFilter(filter, iterations);
         int affected = heightMap.applyChanges(changed, snowBlockCount);
-        actor.printInfo(TranslatableComponent.of("worldedit.snowsmooth.changed", TextComponent.of(affected)));
+        actor.printInfo(Component.translatable("worldedit.snowsmooth.changed", Component.text(affected)));
         return affected;
     }
 
@@ -368,7 +366,7 @@ public class RegionCommands {
             }
         }
 
-        actor.printInfo(TranslatableComponent.of("worldedit.move.moved", TextComponent.of(affected)));
+        actor.printInfo(Component.translatable("worldedit.move.moved", Component.text(affected)));
         return affected;
     }
 
@@ -432,7 +430,7 @@ public class RegionCommands {
             }
         }
 
-        actor.printInfo(TranslatableComponent.of("worldedit.stack.changed", TextComponent.of(affected)));
+        actor.printInfo(Component.translatable("worldedit.stack.changed", Component.text(affected)));
         return affected;
     }
 
@@ -461,9 +459,9 @@ public class RegionCommands {
             session.setMask(mask);
         }
         if (success) {
-            actor.printInfo(TranslatableComponent.of("worldedit.regen.regenerated"));
+            actor.printInfo(Component.translatable("worldedit.regen.regenerated"));
         } else {
-            actor.printError(TranslatableComponent.of("worldedit.regen.failed"));
+            actor.printError(Component.translatable("worldedit.regen.failed"));
         }
     }
 
@@ -524,10 +522,10 @@ public class RegionCommands {
             if (actor instanceof Player) {
                 ((Player) actor).findFreePosition();
             }
-            actor.printInfo(TranslatableComponent.of("worldedit.deform.deformed", TextComponent.of(affected)));
+            actor.printInfo(Component.translatable("worldedit.deform.deformed", Component.text(affected)));
             return affected;
         } catch (ExpressionException e) {
-            actor.printError(TextComponent.of(e.getMessage()));
+            actor.printError(Component.text(e.getMessage()));
             return 0;
         }
     }
@@ -548,7 +546,7 @@ public class RegionCommands {
         checkCommandArgument(thickness >= 0, "Thickness must be >= 0");
 
         int affected = editSession.hollowOutRegion(region, thickness, pattern);
-        actor.printInfo(TranslatableComponent.of("worldedit.hollow.changed", TextComponent.of(affected)));
+        actor.printInfo(Component.translatable("worldedit.hollow.changed", Component.text(affected)));
         return affected;
     }
 
@@ -565,7 +563,7 @@ public class RegionCommands {
                           double density) throws WorldEditException {
         checkCommandArgument(0 <= density && density <= 100, "Density must be in [0, 100]");
         int affected = editSession.makeForest(region, density / 100, type);
-        actor.printInfo(TranslatableComponent.of("worldedit.forest.created", TextComponent.of(affected)));
+        actor.printInfo(Component.translatable("worldedit.forest.created", Component.text(affected)));
         return affected;
     }
 
@@ -587,7 +585,7 @@ public class RegionCommands {
         Operations.completeLegacy(visitor);
 
         int affected = ground.getAffected();
-        actor.printInfo(TranslatableComponent.of("worldedit.flora.created", TextComponent.of(affected)));
+        actor.printInfo(Component.translatable("worldedit.flora.created", Component.text(affected)));
         return affected;
     }
 

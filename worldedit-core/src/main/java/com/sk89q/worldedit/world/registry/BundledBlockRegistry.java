@@ -21,8 +21,6 @@ package com.sk89q.worldedit.world.registry;
 
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.translation.TranslationManager;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -46,9 +44,9 @@ public class BundledBlockRegistry implements BlockRegistry {
             // Some vanilla MC blocks have overrides so we need this name here
             // Most platforms should be overriding this anyways, so it likely doesn't matter
             // too much!
-            return TextComponent.of(blockEntry.localizedName);
+            return Component.text(blockEntry.localizedName);
         }
-        return TranslatableComponent.of(
+        return Component.translatable(
             TranslationManager.makeTranslationKey("block", blockType.id())
         );
     }

@@ -33,8 +33,7 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.expression.invoke.ReturnException;
 import com.sk89q.worldedit.session.request.Request;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldedit.world.block.BaseBlock;
 
@@ -119,7 +118,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @param message a message
      */
     public void print(String message) {
-        player.printInfo(TextComponent.of(message));
+        player.printInfo(Component.text(message));
     }
 
     /**
@@ -128,7 +127,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @param message a message
      */
     public void error(String message) {
-        player.printError(TextComponent.of(message));
+        player.printError(Component.text(message));
     }
 
     /**
@@ -137,7 +136,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @param message a message
      */
     public void printRaw(String message) {
-        player.print(TextComponent.of(message));
+        player.print(Component.text(message));
     }
 
     /**
@@ -151,7 +150,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
     public void checkArgs(int min, int max, String usage)
             throws InsufficientArgumentsException {
         if (args.length <= min || (max != -1 && args.length - 1 > max)) {
-            throw new InsufficientArgumentsException(TranslatableComponent.of("worldedit.error.incorrect-usage", TextComponent.of(usage)));
+            throw new InsufficientArgumentsException(Component.translatable("worldedit.error.incorrect-usage", Component.text(usage)));
         }
     }
 

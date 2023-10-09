@@ -23,10 +23,9 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.spongepowered.api.entity.living.player.Player;
 
 import java.io.File;
@@ -69,7 +68,7 @@ public class SpongeCommandSender implements Actor {
     @Deprecated
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
-            sender.sendMessage(net.kyori.adventure.text.Component.text(part));
+            sender.sendMessage(Component.text(part));
         }
     }
 
@@ -77,7 +76,7 @@ public class SpongeCommandSender implements Actor {
     @Deprecated
     public void print(String msg) {
         for (String part : msg.split("\n")) {
-            print(TextComponent.of(part, TextColor.LIGHT_PURPLE));
+            sender.sendMessage(Component.text(part, NamedTextColor.LIGHT_PURPLE));
         }
     }
 
@@ -85,7 +84,7 @@ public class SpongeCommandSender implements Actor {
     @Deprecated
     public void printDebug(String msg) {
         for (String part : msg.split("\n")) {
-            print(TextComponent.of(part, TextColor.GRAY));
+            sender.sendMessage(Component.text(part, NamedTextColor.GRAY));
         }
     }
 
@@ -93,12 +92,12 @@ public class SpongeCommandSender implements Actor {
     @Deprecated
     public void printError(String msg) {
         for (String part : msg.split("\n")) {
-            print(TextComponent.of(part, TextColor.RED));
+            sender.sendMessage(Component.text(part, NamedTextColor.RED));
         }
     }
 
     @Override
-    public void print(Component component) {
+    public void print(com.sk89q.worldedit.util.formatting.text.Component component) {
         sender.sendMessage(SpongeTextAdapter.convert(component, getLocale()));
     }
 

@@ -26,8 +26,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.util.formatting.component.CommandListBox;
 import com.sk89q.worldedit.util.formatting.component.CommandUsageBox;
 import com.sk89q.worldedit.util.formatting.component.InvalidComponentException;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.inject.InjectedValueStore;
@@ -81,7 +80,7 @@ public class PrintCommandHelp {
         List<Command> visited = new ArrayList<>();
         Command currentCommand = detectCommand(manager, commandPath.get(0));
         if (currentCommand == null) {
-            actor.printError(TranslatableComponent.of("worldedit.help.command-not-found", TextComponent.of(commandPath.get(0))));
+            actor.printError(Component.translatable("worldedit.help.command-not-found", Component.text(commandPath.get(0))));
             return;
         }
         visited.add(currentCommand);
@@ -92,8 +91,8 @@ public class PrintCommandHelp {
             Map<String, Command> subCommands = getSubCommands(currentCommand);
 
             if (subCommands.isEmpty()) {
-                actor.printError(TranslatableComponent.of("worldedit.help.no-subcommands",
-                    TextComponent.of(toCommandString(visited)), TextComponent.of(subCommand)));
+                actor.printError(Component.translatable("worldedit.help.no-subcommands",
+                    Component.text(toCommandString(visited)), Component.text(subCommand)));
                 // full help for single command
                 CommandUsageBox box = new CommandUsageBox(visited, visited.stream()
                         .map(Command::getName).collect(Collectors.joining(" ")), helpRootCommand);
@@ -105,8 +104,8 @@ public class PrintCommandHelp {
                 currentCommand = subCommands.get(subCommand);
                 visited.add(currentCommand);
             } else {
-                actor.printError(TranslatableComponent.of("worldedit.help.subcommand-not-found",
-                    TextComponent.of(subCommand), TextComponent.of(toCommandString(visited))));
+                actor.printError(Component.translatable("worldedit.help.subcommand-not-found",
+                    Component.text(subCommand), Component.text(toCommandString(visited))));
                 // list subcommands for currentCommand
                 printCommands(page, getSubCommands(Iterables.getLast(visited)).values().stream(), actor, visited, helpRootCommand);
                 return;

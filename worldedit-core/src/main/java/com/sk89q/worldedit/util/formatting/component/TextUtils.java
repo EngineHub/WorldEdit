@@ -38,7 +38,7 @@ public class TextUtils {
      * @return The joined component
      */
     public static Component join(List<Component> components, Component joiner) {
-        TextComponent.Builder builder = TextComponent.builder();
+        TextComponent.Builder builder = Component.text();
         for (int i = 0; i < components.size(); i++) {
             builder.append(components.get(i));
             if (i < components.size() - 1) {

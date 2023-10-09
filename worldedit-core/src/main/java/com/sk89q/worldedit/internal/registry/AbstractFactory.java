@@ -23,8 +23,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.NoMatchException;
 import com.sk89q.worldedit.extension.input.ParserContext;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -81,7 +80,7 @@ public abstract class AbstractFactory<E> {
             }
         }
 
-        throw new NoMatchException(TranslatableComponent.of("worldedit.error.no-match", TextComponent.of(input)));
+        throw new NoMatchException(Component.translatable("worldedit.error.no-match", Component.text(input)));
     }
 
     @Deprecated

@@ -47,7 +47,7 @@ public class ClipboardShareDestinationConverter implements ArgumentConverter<Cli
     private final TextComponent choices;
 
     private ClipboardShareDestinationConverter() {
-        this.choices = TextComponent.of("any clipboard share destination");
+        this.choices = Component.text("any clipboard share destination");
     }
 
     @Override

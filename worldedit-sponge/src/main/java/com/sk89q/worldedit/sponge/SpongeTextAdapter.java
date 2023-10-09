@@ -30,11 +30,11 @@ public class SpongeTextAdapter {
     public static net.kyori.adventure.text.Component convert(Component component, Locale locale) {
         component = WorldEditText.format(component, locale);
         return net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson()
-            .deserialize(GsonComponentSerializer.INSTANCE.serialize(component));
+            .deserialize(GsonComponentSerializer.gson().serialize(component));
     }
 
     public static Component convert(net.kyori.adventure.text.Component component) {
-        return GsonComponentSerializer.INSTANCE.deserialize(
+        return GsonComponentSerializer.gson().deserialize(
             net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson()
                 .serialize(component)
         );

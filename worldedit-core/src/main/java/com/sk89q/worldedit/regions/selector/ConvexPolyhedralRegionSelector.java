@@ -34,8 +34,6 @@ import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.polyhedron.Triangle;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 
 import java.util.ArrayList;
@@ -186,8 +184,8 @@ public class ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion
     public List<Component> getSelectionInfoLines() {
         List<Component> ret = new ArrayList<>();
 
-        ret.add(TranslatableComponent.of("worldedit.selection.convex.info.vertices", TextComponent.of(region.getVertices().size())));
-        ret.add(TranslatableComponent.of("worldedit.selection.convex.info.triangles", TextComponent.of(region.getTriangles().size())));
+        ret.add(Component.translatable("worldedit.selection.convex.info.vertices", Component.text(region.getVertices().size())));
+        ret.add(Component.translatable("worldedit.selection.convex.info.triangles", Component.text(region.getTriangles().size())));
 
         return ret;
     }
@@ -201,7 +199,7 @@ public class ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion
         session.dispatchCUIEvent(player, new SelectionShapeEvent(getTypeID()));
         session.describeCUI(player);
 
-        player.printInfo(TranslatableComponent.of("worldedit.selection.convex.explain.primary", TextComponent.of(pos.toString())));
+        player.printInfo(Component.translatable("worldedit.selection.convex.explain.primary", Component.text(pos.toString())));
     }
 
     @Override
@@ -212,7 +210,7 @@ public class ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion
 
         session.describeCUI(player);
 
-        player.printInfo(TranslatableComponent.of("worldedit.selection.convex.explain.secondary", TextComponent.of(pos.toString())));
+        player.printInfo(Component.translatable("worldedit.selection.convex.explain.secondary", Component.text(pos.toString())));
     }
 
     @Override

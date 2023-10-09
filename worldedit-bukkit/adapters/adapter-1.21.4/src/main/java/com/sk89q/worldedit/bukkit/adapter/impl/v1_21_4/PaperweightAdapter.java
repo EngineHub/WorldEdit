@@ -53,8 +53,6 @@ import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
 import com.sk89q.worldedit.util.io.file.SafeFiles;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.RegenOptions;
@@ -536,22 +534,17 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
     @Override
     public Component getRichBlockName(BlockType blockType) {
-        return TranslatableComponent.of(getBlockFromType(blockType).getDescriptionId());
+        return Component.translatable(getBlockFromType(blockType).getDescriptionId());
     }
 
     @Override
     public Component getRichItemName(ItemType itemType) {
-        return TranslatableComponent.of(getItemFromType(itemType).getDescriptionId());
+        return Component.translatable(getItemFromType(itemType).getDescriptionId());
     }
 
     @Override
     public Component getRichItemName(BaseItemStack itemStack) {
-        return GsonComponentSerializer.INSTANCE.deserialize(
-            net.minecraft.network.chat.Component.Serializer.toJson(
-                CraftItemStack.asNMSCopy(BukkitAdapter.adapt(itemStack)).getItemName(),
-                ((CraftServer) Bukkit.getServer()).getServer().registryAccess()
-            )
-        );
+        return Component.translatable(CraftItemStack.asNMSCopy(BukkitAdapter.adapt(itemStack)).getDescriptionId());
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.fabric;
 
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.biome.BiomeData;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
@@ -34,7 +33,7 @@ class FabricBiomeRegistry implements BiomeRegistry {
 
     @Override
     public Component getRichName(BiomeType biomeType) {
-        return TranslatableComponent.of(Util.makeDescriptionId("biome", ResourceLocation.parse(biomeType.id())));
+        return Component.translatable(Util.makeDescriptionId("biome", ResourceLocation.parse(biomeType.id())));
     }
 
     @Deprecated

@@ -168,7 +168,7 @@ public class NeoForgePlayer extends AbstractPlayerActor {
     @Override
     public void print(Component component) {
         sendMessage(net.minecraft.network.chat.Component.Serializer.fromJson(
-            GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale())),
+            GsonComponentSerializer.gson().serialize(WorldEditText.format(component, getLocale())),
             this.player.registryAccess()
         ));
     }
