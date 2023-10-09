@@ -76,9 +76,7 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
      */
     public EllipsoidRegionSelector(RegionSelector oldSelector) {
         this(checkNotNull(oldSelector).getIncompleteRegion().getWorld());
-        if (oldSelector instanceof EllipsoidRegionSelector) {
-            final EllipsoidRegionSelector ellipsoidRegionSelector = (EllipsoidRegionSelector) oldSelector;
-
+        if (oldSelector instanceof EllipsoidRegionSelector ellipsoidRegionSelector) {
             region = new EllipsoidRegion(ellipsoidRegionSelector.getIncompleteRegion());
             started = ellipsoidRegionSelector.started;
             selectedRadius = ellipsoidRegionSelector.selectedRadius;

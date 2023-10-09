@@ -752,16 +752,12 @@ public class EditSession implements Extent, AutoCloseable {
      * @throws WorldEditException thrown on a set error
      */
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, Stage stage) throws WorldEditException {
-        switch (stage) {
-            case BEFORE_HISTORY:
-                return bypassNone.setBlock(position, block);
-            case BEFORE_CHANGE:
-                return bypassHistory.setBlock(position, block);
-            case BEFORE_REORDER:
-                return bypassReorderHistory.setBlock(position, block);
-            default:
-                throw new RuntimeException("New enum entry added that is unhandled here");
-        }
+        return switch (stage) {
+            case BEFORE_HISTORY -> bypassNone.setBlock(position, block);
+            case BEFORE_CHANGE -> bypassHistory.setBlock(position, block);
+            case BEFORE_REORDER -> bypassReorderHistory.setBlock(position, block);
+            default -> throw new RuntimeException("New enum entry added that is unhandled here");
+        };
     }
 
     /**
@@ -2519,8 +2515,8 @@ public class EditSession implements Extent, AutoCloseable {
             }
         }
 
+        final Set<BlockVector3> newOutside = new HashSet<>();
         for (int i = 1; i < thickness; ++i) {
-            final Set<BlockVector3> newOutside = new HashSet<>();
             outer: for (BlockVector3 position : region) {
                 for (BlockVector3 recurseDirection : recurseDirections) {
                     BlockVector3 neighbor = position.add(recurseDirection);
@@ -2533,6 +2529,7 @@ public class EditSession implements Extent, AutoCloseable {
             }
 
             outside.addAll(newOutside);
+            newOutside.clear();
         }
 
         outer: for (BlockVector3 position : region) {
@@ -2691,14 +2688,6 @@ public class EditSession implements Extent, AutoCloseable {
         return setBlocks(vset, pattern);
     }
 
-    private static double hypotSquare(double... pars) {
-        double sum = 0;
-        for (double d : pars) {
-            sum += Math.pow(d, 2);
-        }
-        return sum;
-    }
-
     private static Set<BlockVector3> getBallooned(Set<BlockVector3> vset, double radius) {
         Set<BlockVector3> returnset = new HashSet<>();
         int ceilrad = (int) Math.ceil(radius);
@@ -2712,7 +2701,7 @@ public class EditSession implements Extent, AutoCloseable {
             for (int loopx = tipx - ceilrad; loopx <= tipx + ceilrad; loopx++) {
                 for (int loopy = tipy - ceilrad; loopy <= tipy + ceilrad; loopy++) {
                     for (int loopz = tipz - ceilrad; loopz <= tipz + ceilrad; loopz++) {
-                        if (hypotSquare(loopx - tipx, loopy - tipy, loopz - tipz) <= radiusSquare) {
+                        if (lengthSq(loopx - tipx, loopy - tipy, loopz - tipz) <= radiusSquare) {
                             returnset.add(BlockVector3.at(loopx, loopy, loopz));
                         }
                     }

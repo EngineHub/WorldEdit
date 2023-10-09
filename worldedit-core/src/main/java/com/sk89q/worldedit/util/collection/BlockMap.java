@@ -237,10 +237,10 @@ public class BlockMap<V> extends AbstractMap<BlockVector3, V> {
     public Set<Entry<BlockVector3, V>> entrySet() {
         Set<Entry<BlockVector3, V>> es = entrySet;
         if (es == null) {
-            entrySet = es = new AbstractSet<Entry<BlockVector3, V>>() {
+            entrySet = es = new AbstractSet<>() {
                 @Override
                 public Iterator<Entry<BlockVector3, V>> iterator() {
-                    return new Iterator<Entry<BlockVector3, V>>() {
+                    return new Iterator<>() {
 
                         private final ObjectIterator<Long2ObjectMap.Entry<Int2ObjectMap<V>>> primaryIterator
                             = Long2ObjectMaps.fastIterator(maps);
@@ -441,7 +441,7 @@ public class BlockMap<V> extends AbstractMap<BlockVector3, V> {
     public Collection<V> values() {
         Collection<V> vs = values;
         if (vs == null) {
-            values = vs = new AbstractCollection<V>() {
+            values = vs = new AbstractCollection<>() {
                 @Override
                 public Iterator<V> iterator() {
                     return maps.values().stream()

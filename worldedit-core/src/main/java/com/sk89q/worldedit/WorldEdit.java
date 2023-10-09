@@ -736,7 +736,7 @@ public final class WorldEdit {
             byte[] data = new byte[in.available()];
             in.readFully(data);
             in.close();
-            script = new String(data, 0, data.length, StandardCharsets.UTF_8);
+            script = new String(data, StandardCharsets.UTF_8);
         } catch (IOException e) {
             player.printError(TranslatableComponent.of("worldedit.script.read-error", TextComponent.of(e.getMessage())));
             return;

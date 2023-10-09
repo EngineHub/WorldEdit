@@ -538,11 +538,10 @@ public final class BlockVector2 {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof BlockVector2)) {
+        if (!(obj instanceof BlockVector2 other)) {
             return false;
         }
 
-        BlockVector2 other = (BlockVector2) obj;
         return other.x == this.x && other.z == this.z;
 
     }

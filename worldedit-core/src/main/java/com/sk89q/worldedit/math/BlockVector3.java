@@ -688,11 +688,10 @@ public final class BlockVector3 {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof BlockVector3)) {
+        if (!(obj instanceof BlockVector3 other)) {
             return false;
         }
 
-        BlockVector3 other = (BlockVector3) obj;
         return other.x == this.x && other.y == this.y && other.z == this.z;
     }
 

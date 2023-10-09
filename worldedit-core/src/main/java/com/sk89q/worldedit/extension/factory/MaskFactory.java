@@ -116,14 +116,12 @@ public final class MaskFactory extends AbstractFactory<Mask> {
             masks.add(match);
         }
 
-        switch (masks.size()) {
-            case 0:
+        return switch (masks.size()) {
+            case 0 ->
                 throw new NoMatchException(TranslatableComponent.of("worldedit.error.no-match", TextComponent.of(input)));
-            case 1:
-                return masks.get(0);
-            default:
-                return new MaskIntersection(masks);
-        }
+            case 1 -> masks.get(0);
+            default -> new MaskIntersection(masks);
+        };
     }
 
 }

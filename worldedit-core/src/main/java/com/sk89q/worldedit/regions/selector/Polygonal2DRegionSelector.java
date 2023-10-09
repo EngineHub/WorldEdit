@@ -76,9 +76,7 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
     public Polygonal2DRegionSelector(RegionSelector oldSelector) {
         this(checkNotNull(oldSelector).getIncompleteRegion().getWorld());
 
-        if (oldSelector instanceof Polygonal2DRegionSelector) {
-            final Polygonal2DRegionSelector polygonal2DRegionSelector = (Polygonal2DRegionSelector) oldSelector;
-
+        if (oldSelector instanceof Polygonal2DRegionSelector polygonal2DRegionSelector) {
             pos1 = polygonal2DRegionSelector.pos1;
             region = new Polygonal2DRegion(polygonal2DRegionSelector.region);
         } else {

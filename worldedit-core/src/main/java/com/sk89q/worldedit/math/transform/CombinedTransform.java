@@ -85,8 +85,7 @@ public class CombinedTransform implements Transform {
     @Override
     public Transform combine(Transform other) {
         checkNotNull(other);
-        if (other instanceof CombinedTransform) {
-            CombinedTransform combinedOther = (CombinedTransform) other;
+        if (other instanceof CombinedTransform combinedOther) {
             Transform[] newTransforms = new Transform[transforms.length + combinedOther.transforms.length];
             System.arraycopy(transforms, 0, newTransforms, 0, transforms.length);
             System.arraycopy(combinedOther.transforms, 0, newTransforms, transforms.length, combinedOther.transforms.length);

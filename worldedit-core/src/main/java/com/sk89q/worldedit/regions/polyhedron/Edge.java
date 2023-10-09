@@ -38,11 +38,10 @@ public class Edge {
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof Edge)) {
+        if (!(other instanceof Edge otherEdge)) {
             return false;
         }
 
-        Edge otherEdge = (Edge) other;
         if (this.start.equals(otherEdge.end) && this.end.equals(otherEdge.start)) {
             return true;
         }

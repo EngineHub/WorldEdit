@@ -195,9 +195,9 @@ public class BlockState implements BlockStateHolder<BlockState> {
         }
 
         Set<Property<?>> differingProperties = new HashSet<>();
-        for (Object state : o.getStates().keySet()) {
-            if (getState((Property<?>) state) == null) {
-                differingProperties.add((Property<?>) state);
+        for (Property<?> state : o.getStates().keySet()) {
+            if (getState(state) == null) {
+                differingProperties.add(state);
             }
         }
         for (Property<?> property : getStates().keySet()) {

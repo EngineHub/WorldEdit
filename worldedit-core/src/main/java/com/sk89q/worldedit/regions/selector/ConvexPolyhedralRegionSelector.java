@@ -80,9 +80,7 @@ public class ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion
     public ConvexPolyhedralRegionSelector(RegionSelector oldSelector) {
         checkNotNull(oldSelector);
 
-        if (oldSelector instanceof ConvexPolyhedralRegionSelector) {
-            final ConvexPolyhedralRegionSelector convexPolyhedralRegionSelector = (ConvexPolyhedralRegionSelector) oldSelector;
-
+        if (oldSelector instanceof ConvexPolyhedralRegionSelector convexPolyhedralRegionSelector) {
             pos1 = convexPolyhedralRegionSelector.pos1;
             region = new ConvexPolyhedralRegion(convexPolyhedralRegionSelector.region);
         } else {

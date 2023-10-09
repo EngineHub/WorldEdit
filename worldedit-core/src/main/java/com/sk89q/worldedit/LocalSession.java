@@ -962,9 +962,7 @@ public class LocalSession {
             return;
         }
 
-        if (selector instanceof CUIRegion) {
-            CUIRegion tempSel = (CUIRegion) selector;
-
+        if (selector instanceof CUIRegion tempSel) {
             if (tempSel.getProtocolVersion() > cuiVersion) {
                 actor.dispatchCUIEvent(new SelectionShapeEvent(tempSel.getLegacyTypeID()));
                 tempSel.describeLegacyCUI(this, actor);
@@ -988,9 +986,7 @@ public class LocalSession {
             return;
         }
 
-        if (selector instanceof CUIRegion) {
-            CUIRegion tempSel = (CUIRegion) selector;
-
+        if (selector instanceof CUIRegion tempSel) {
             if (tempSel.getProtocolVersion() > cuiVersion) {
                 tempSel.describeLegacyCUI(this, actor);
             } else {

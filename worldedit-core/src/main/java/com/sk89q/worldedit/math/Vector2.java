@@ -459,11 +459,10 @@ public final class Vector2 {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Vector2)) {
+        if (!(obj instanceof Vector2 other)) {
             return false;
         }
 
-        Vector2 other = (Vector2) obj;
         return other.x == this.x && other.z == this.z;
 
     }

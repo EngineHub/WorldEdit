@@ -28,9 +28,7 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.internal.util.VarIntIterator;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.biome.BiomeType;
-import com.sk89q.worldedit.world.biome.BiomeTypes;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import org.apache.logging.log4j.Logger;
 import org.enginehub.linbus.stream.LinStream;
@@ -42,8 +40,6 @@ import org.enginehub.linbus.tree.LinRootEntry;
 import org.enginehub.linbus.tree.LinTagType;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.OptionalInt;
 
 /**

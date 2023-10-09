@@ -116,10 +116,8 @@ public class CommandUtil {
     public static Optional<Component> footerWithoutDeprecation(Command command) {
         return command.getFooter()
             .filter(footer -> anyComponent(footer, Predicate.isEqual(DEPRECATION_MARKER)))
-            .map(footer -> Optional.of(
-                replaceDeprecation(footer)
-            ))
-            .orElseGet(command::getFooter);
+            .map(CommandUtil::replaceDeprecation)
+            .or(command::getFooter);
     }
 
     public static Optional<Component> deprecationWarning(Command command) {

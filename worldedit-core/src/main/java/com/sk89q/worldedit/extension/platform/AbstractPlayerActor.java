@@ -519,10 +519,9 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof Player)) {
+        if (!(other instanceof Player other2)) {
             return false;
         }
-        Player other2 = (Player) other;
         return other2.getName().equals(getName());
     }
 

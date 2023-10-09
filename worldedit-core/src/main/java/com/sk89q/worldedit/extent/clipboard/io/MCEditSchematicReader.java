@@ -272,115 +272,81 @@ public class MCEditSchematicReader implements ClipboardReader {
     }
 
     private String convertEntityId(String id) {
-        switch (id) {
-            case "AreaEffectCloud": return "area_effect_cloud";
-            case "ArmorStand": return "armor_stand";
-            case "CaveSpider": return "cave_spider";
-            case "MinecartChest": return "chest_minecart";
-            case "DragonFireball": return "dragon_fireball";
-            case "ThrownEgg": return "egg";
-            case "EnderDragon": return "ender_dragon";
-            case "ThrownEnderpearl": return "ender_pearl";
-            case "FallingSand": return "falling_block";
-            case "FireworksRocketEntity": return "fireworks_rocket";
-            case "MinecartFurnace": return "furnace_minecart";
-            case "MinecartHopper": return "hopper_minecart";
-            case "EntityHorse": return "horse";
-            case "ItemFrame": return "item_frame";
-            case "LeashKnot": return "leash_knot";
-            case "LightningBolt": return "lightning_bolt";
-            case "LavaSlime": return "magma_cube";
-            case "MinecartRideable": return "minecart";
-            case "MushroomCow": return "mooshroom";
-            case "Ozelot": return "ocelot";
-            case "PolarBear": return "polar_bear";
-            case "ThrownPotion": return "potion";
-            case "ShulkerBullet": return "shulker_bullet";
-            case "SmallFireball": return "small_fireball";
-            case "MinecartSpawner": return "spawner_minecart";
-            case "SpectralArrow": return "spectral_arrow";
-            case "PrimedTnt": return "tnt";
-            case "MinecartTNT": return "tnt_minecart";
-            case "VillagerGolem": return "villager_golem";
-            case "WitherBoss": return "wither";
-            case "WitherSkull": return "wither_skull";
-            case "PigZombie": return "zombie_pigman";
-            case "XPOrb":
-            case "xp_orb":
-                return "experience_orb";
-            case "ThrownExpBottle":
-            case "xp_bottle":
-                return "experience_bottle";
-            case "EyeOfEnderSignal":
-            case "eye_of_ender_signal":
-                return "eye_of_ender";
-            case "EnderCrystal":
-            case "ender_crystal":
-                return "end_crystal";
-            case "fireworks_rocket": return "firework_rocket";
-            case "MinecartCommandBlock":
-            case "commandblock_minecart":
-                return "command_block_minecart";
-            case "snowman": return "snow_golem";
-            case "villager_golem": return "iron_golem";
-            case "evocation_fangs": return "evoker_fangs";
-            case "evocation_illager": return "evoker";
-            case "vindication_illager": return "vindicator";
-            case "illusion_illager": return "illusioner";
-            default: return id;
-        }
+        return switch (id) {
+            case "AreaEffectCloud" -> "area_effect_cloud";
+            case "ArmorStand" -> "armor_stand";
+            case "CaveSpider" -> "cave_spider";
+            case "MinecartChest" -> "chest_minecart";
+            case "DragonFireball" -> "dragon_fireball";
+            case "ThrownEgg" -> "egg";
+            case "EnderDragon" -> "ender_dragon";
+            case "ThrownEnderpearl" -> "ender_pearl";
+            case "FallingSand" -> "falling_block";
+            case "FireworksRocketEntity" -> "fireworks_rocket";
+            case "MinecartFurnace" -> "furnace_minecart";
+            case "MinecartHopper" -> "hopper_minecart";
+            case "EntityHorse" -> "horse";
+            case "ItemFrame" -> "item_frame";
+            case "LeashKnot" -> "leash_knot";
+            case "LightningBolt" -> "lightning_bolt";
+            case "LavaSlime" -> "magma_cube";
+            case "MinecartRideable" -> "minecart";
+            case "MushroomCow" -> "mooshroom";
+            case "Ozelot" -> "ocelot";
+            case "PolarBear" -> "polar_bear";
+            case "ThrownPotion" -> "potion";
+            case "ShulkerBullet" -> "shulker_bullet";
+            case "SmallFireball" -> "small_fireball";
+            case "MinecartSpawner" -> "spawner_minecart";
+            case "SpectralArrow" -> "spectral_arrow";
+            case "PrimedTnt" -> "tnt";
+            case "MinecartTNT" -> "tnt_minecart";
+            case "VillagerGolem" -> "villager_golem";
+            case "WitherBoss" -> "wither";
+            case "WitherSkull" -> "wither_skull";
+            case "PigZombie" -> "zombie_pigman";
+            case "XPOrb", "xp_orb" -> "experience_orb";
+            case "ThrownExpBottle", "xp_bottle" -> "experience_bottle";
+            case "EyeOfEnderSignal", "eye_of_ender_signal" -> "eye_of_ender";
+            case "EnderCrystal", "ender_crystal" -> "end_crystal";
+            case "fireworks_rocket" -> "firework_rocket";
+            case "MinecartCommandBlock", "commandblock_minecart" -> "command_block_minecart";
+            case "snowman" -> "snow_golem";
+            case "villager_golem" -> "iron_golem";
+            case "evocation_fangs" -> "evoker_fangs";
+            case "evocation_illager" -> "evoker";
+            case "vindication_illager" -> "vindicator";
+            case "illusion_illager" -> "illusioner";
+            default -> id;
+        };
     }
 
     private String convertBlockEntityId(String id) {
-        switch (id) {
-            case "Cauldron":
-                return "brewing_stand";
-            case "Control":
-                return "command_block";
-            case "DLDetector":
-                return "daylight_detector";
-            case "Trap":
-                return "dispenser";
-            case "EnchantTable":
-                return "enchanting_table";
-            case "EndGateway":
-                return "end_gateway";
-            case "AirPortal":
-                return "end_portal";
-            case "EnderChest":
-                return "ender_chest";
-            case "FlowerPot":
-                return "flower_pot";
-            case "RecordPlayer":
-                return "jukebox";
-            case "MobSpawner":
-                return "mob_spawner";
-            case "Music":
-            case "noteblock":
-                return "note_block";
-            case "Structure":
-                return "structure_block";
-            case "Chest":
-                return "chest";
-            case "Sign":
-                return "sign";
-            case "Banner":
-                return "banner";
-            case "Beacon":
-                return "beacon";
-            case "Comparator":
-                return "comparator";
-            case "Dropper":
-                return "dropper";
-            case "Furnace":
-                return "furnace";
-            case "Hopper":
-                return "hopper";
-            case "Skull":
-                return "skull";
-            default:
-                return id;
-        }
+        return switch (id) {
+            case "Cauldron" -> "brewing_stand";
+            case "Control" -> "command_block";
+            case "DLDetector" -> "daylight_detector";
+            case "Trap" -> "dispenser";
+            case "EnchantTable" -> "enchanting_table";
+            case "EndGateway" -> "end_gateway";
+            case "AirPortal" -> "end_portal";
+            case "EnderChest" -> "ender_chest";
+            case "FlowerPot" -> "flower_pot";
+            case "RecordPlayer" -> "jukebox";
+            case "MobSpawner" -> "mob_spawner";
+            case "Music", "noteblock" -> "note_block";
+            case "Structure" -> "structure_block";
+            case "Chest" -> "chest";
+            case "Sign" -> "sign";
+            case "Banner" -> "banner";
+            case "Beacon" -> "beacon";
+            case "Comparator" -> "comparator";
+            case "Dropper" -> "dropper";
+            case "Furnace" -> "furnace";
+            case "Hopper" -> "hopper";
+            case "Skull" -> "skull";
+            default -> id;
+        };
     }
 
     private BlockState getBlockState(int id, int data) {

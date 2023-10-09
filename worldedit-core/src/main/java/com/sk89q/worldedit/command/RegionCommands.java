@@ -167,13 +167,12 @@ public class RegionCommands {
                          int thickness,
                      @Switch(name = 'h', desc = "Generate only a shell")
                          boolean shell) throws WorldEditException {
-        if (!(region instanceof ConvexPolyhedralRegion)) {
+        if (!(region instanceof ConvexPolyhedralRegion cpregion)) {
             actor.printError(TranslatableComponent.of("worldedit.curve.invalid-type"));
             return 0;
         }
         checkCommandArgument(thickness >= 0, "Thickness must be >= 0");
 
-        ConvexPolyhedralRegion cpregion = (ConvexPolyhedralRegion) region;
         List<BlockVector3> vectors = new ArrayList<>(cpregion.getVertices());
 
         int blocksChanged = editSession.drawSpline(pattern, vectors, 0, 0, 0, 10, thickness, !shell);
