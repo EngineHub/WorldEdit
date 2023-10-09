@@ -51,7 +51,7 @@ import com.sk89q.worldedit.session.PlacementType;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.util.SideEffectSet;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;

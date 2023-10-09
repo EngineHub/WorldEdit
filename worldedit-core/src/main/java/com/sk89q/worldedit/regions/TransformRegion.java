@@ -24,7 +24,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.math.transform.Identity;
 import com.sk89q.worldedit.math.transform.Transform;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.world.World;
 
 import java.util.ArrayList;

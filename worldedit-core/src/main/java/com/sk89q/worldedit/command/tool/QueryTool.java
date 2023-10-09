@@ -28,10 +28,10 @@ import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
-import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.TextComponent;
+import com.sk89q.worldedit.util.adventure.text.event.HoverEvent;
+import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
@@ -57,14 +57,13 @@ public class QueryTool implements BlockTool {
 
         TextComponent.Builder builder = Component.text();
         builder.append(Component.text("@" + clicked.toVector().toBlockPoint() + ": ", TextColor.BLUE));
-        builder.append(block.getBlockType().getRichName().color(TextColor.YELLOW));
+        builder.append(block.getBlockType().getDisplayName().color(TextColor.YELLOW));
 
         String blockStateString = block.toString();
         Component blockStateComponent = Component.text(" (" + blockStateString + ") ", TextColor.GRAY)
             .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TranslatableComponent.of("worldedit.tool.info.blockstate.hover")))
             .clickEvent(ClickEvent.of(ClickEvent.Action.COPY_TO_CLIPBOARD, blockStateString));
         builder.append(blockStateComponent);
-
         final int internalId = BlockStateIdAccess.getBlockStateId(block.toImmutableState());
         if (BlockStateIdAccess.isValidInternalId(internalId)) {
             builder.append(Component.text(" (" + internalId + ") ", NamedTextColor.DARK_GRAY)

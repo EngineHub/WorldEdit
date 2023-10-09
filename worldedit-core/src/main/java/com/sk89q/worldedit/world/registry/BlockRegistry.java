@@ -20,7 +20,8 @@
 package com.sk89q.worldedit.world.registry;
 
 import com.sk89q.worldedit.registry.state.Property;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.formatting.LegacyTextHelper;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 
@@ -38,20 +39,32 @@ public interface BlockRegistry {
      *
      * @param blockType the block
      * @return The name
+     * @deprecated Use {@link BlockRegistry#getDisplayName} instead
      */
-    Component getRichName(BlockType blockType);
+    @Deprecated
+    default com.sk89q.worldedit.util.formatting.text.Component getRichName(BlockType blockType) {
+        return LegacyTextHelper.adapt(getDisplayName(blockType));
+    }
+
+    /**
+     * Gets the name for the given block.
+     *
+     * @param blockType the block
+     * @return The name
+     */
+    Component getDisplayName(BlockType blockType);
 
     /**
      * Gets the name for the given block.
      *
      * @param blockType the block
      * @return The name, or null if it's unknown
-     * @deprecated Names are now translatable, use {@link #getRichName(BlockType)}.
+     * @deprecated Names are now translatable, use {@link #getDisplayName(BlockType)}.
      */
     @Deprecated
     @Nullable
     default String getName(BlockType blockType) {
-        return getRichName(blockType).toString();
+        return getDisplayName(blockType).toString();
     }
 
     /**

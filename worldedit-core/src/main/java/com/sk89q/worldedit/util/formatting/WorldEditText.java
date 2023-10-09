@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.util.formatting;
 
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import org.enginehub.piston.config.ConfigHolder;
 import org.enginehub.piston.config.ConfigRenderer;
 import org.enginehub.piston.config.TextConfig;
@@ -37,7 +37,7 @@ public class WorldEditText {
     }
 
     public static Component format(Component component, Locale locale) {
-        return WorldEdit.getInstance().getTranslationManager().convertText(
+        return WorldEdit.getInstance().getTranslationManager().convert(
             RENDERER.render(component, CONFIG_HOLDER),
             locale
         );

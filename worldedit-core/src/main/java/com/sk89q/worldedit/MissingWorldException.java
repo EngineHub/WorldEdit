@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit;
 
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 
 /**
  * Raised when a world is missing but is required.

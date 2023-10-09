@@ -25,8 +25,8 @@ import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.function.EntityFunction;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
 
 import java.util.Iterator;
 

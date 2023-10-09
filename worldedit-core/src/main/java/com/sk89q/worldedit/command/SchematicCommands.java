@@ -46,10 +46,10 @@ import com.sk89q.worldedit.util.formatting.component.CodeFormat;
 import com.sk89q.worldedit.util.formatting.component.ErrorFormat;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.component.SubtleFormat;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
-import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
-import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.event.ClickEvent;
+import com.sk89q.worldedit.util.adventure.text.event.HoverEvent;
+import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldedit.util.io.file.MorePaths;
@@ -134,7 +134,7 @@ public class SchematicCommands {
                 .setWorkingMessage(Component.translatable("worldedit.schematic.load.still-loading"))
                 .onSuccess(Component.text(filename, NamedTextColor.GOLD)
                                 .append(Component.text(" loaded. Paste it with ", NamedTextColor.LIGHT_PURPLE))
-                                .append(CodeFormat.wrap("//paste").clickEvent(ClickEvent.suggestCommand("//paste"))),
+                                .append(Component.text("//paste", NamedTextColor.AQUA).clickEvent(ClickEvent.suggestCommand("//paste"))),
                         session::setClipboard)
                 .onFailure("Failed to load schematic", worldEdit.getPlatformManager().getPlatformCommandManager().getExceptionConverter())
                 .buildAndExec(worldEdit.getExecutorService());
@@ -330,7 +330,7 @@ public class SchematicCommands {
 
         WorldEditAsyncCommandBuilder.createAndSendMessage(actor,
                 new SchematicListTask(saveDir, pathComparator, page, pageCommand),
-                SubtleFormat.wrap("(Please wait... gathering schematic list.)"));
+                Component.text("(Please wait... gathering schematic list.)"));
     }
 
     private static class SchematicLoadTask implements Callable<ClipboardHolder> {
@@ -453,13 +453,13 @@ public class SchematicCommands {
             List<Path> fileList = allFiles(resolvedRoot);
 
             if (fileList.isEmpty()) {
-                return ErrorFormat.wrap("No schematics found.");
+                return Component.text("No schematics found.");
             }
 
             fileList.sort(pathComparator);
 
             PaginationBox paginationBox = new SchematicPaginationBox(resolvedRoot, fileList, pageCommand);
-            return paginationBox.create(page);
+            return paginationBox.build(page);
         }
     }
 
@@ -488,7 +488,7 @@ public class SchematicCommands {
         }
 
         @Override
-        public Component getComponent(int number) {
+        public Component component(int number) {
             checkArgument(number < files.size() && number >= 0);
             Path file = files.get(number);
 

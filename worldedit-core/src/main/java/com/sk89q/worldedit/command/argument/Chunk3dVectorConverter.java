@@ -24,7 +24,7 @@ import com.google.common.collect.Range;
 import com.google.common.reflect.TypeToken;
 import com.sk89q.worldedit.internal.annotation.Chunk3d;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
 import org.enginehub.piston.converter.ArgumentConverters;

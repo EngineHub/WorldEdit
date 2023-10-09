@@ -19,11 +19,12 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
-import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
-import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.TextComponent;
+import com.sk89q.worldedit.util.adventure.text.event.ClickEvent;
+import com.sk89q.worldedit.util.adventure.text.event.HoverEvent;
+import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.formatting.LegacyTextHelper;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,8 +47,12 @@ public abstract class PaginationBox extends MessageBox {
         this(title, null);
     }
 
-    public abstract Component getComponent(int number);
+    public abstract Component component(int number);
 
+    @Deprecated
+    public com.sk89q.worldedit.util.formatting.text.Component getComponent(int number) {
+        return LegacyTextHelper.adapt(component(number));
+    }
     public abstract int getComponentsSize();
 
     public void setComponentsPerPage(int componentsPerPage) {
@@ -70,17 +75,21 @@ public abstract class PaginationBox extends MessageBox {
      * @param pageCommand The command to run to switch page, with %page% representing page number
      */
     protected PaginationBox(String title, @Nullable String pageCommand) {
-        super(title, new TextComponentProducer());
+        super(title, Component.empty());
 
         if (pageCommand != null && !pageCommand.contains("%page%")) {
             throw new IllegalArgumentException("pageCommand must contain %page% if provided.");
         }
         this.pageCommand = pageCommand;
     }
+    @Deprecated
+    public com.sk89q.worldedit.util.formatting.text.Component create(int page) throws InvalidComponentException {
+        return LegacyTextHelper.adapt(build(page));
+    }
 
-    public Component create(int page) throws InvalidComponentException {
+    public Component build(int page) throws InvalidComponentException {
         if (page == 1 && getComponentsSize() == 0) {
-            return getContents().reset().append("No results found.").create();
+            return builder().resetStyle().append(Component.text("No results found.")).build();
         }
         int pageCount = (int) Math.ceil(getComponentsSize() / (double) componentsPerPage);
         if (page < 1 || page > pageCount) {
@@ -89,21 +98,21 @@ public abstract class PaginationBox extends MessageBox {
         currentPage = page;
         final int lastComp = Math.min(page * componentsPerPage, getComponentsSize());
         for (int i = (page - 1) * componentsPerPage; i < lastComp; i++) {
-            getContents().append(getComponent(i));
+            builder().append(component(i));
             if (i + 1 != lastComp) {
-                getContents().newline();
+                builder().append(Component.newline());
             }
         }
         if (pageCount == 1) {
-            return super.create();
+            return super.build();
         }
-        getContents().newline();
+        builder().append(Component.newline());
         TextComponent pageNumberComponent = Component.text("Page ", NamedTextColor.YELLOW)
                 .append(Component.text(String.valueOf(page), NamedTextColor.GOLD))
                 .append(Component.text(" of "))
                 .append(Component.text(String.valueOf(pageCount), NamedTextColor.GOLD));
         if (pageCommand != null) {
-            TextComponentProducer navProducer = new TextComponentProducer();
+            TextComponent.Builder navProducer = Component.text();
             if (page > 1) {
                 TextComponent prevComponent = Component.text("<<< ", NamedTextColor.GOLD)
                         .clickEvent(ClickEvent.runCommand(pageCommand.replace("%page%", String.valueOf(page - 1))))
@@ -117,25 +126,31 @@ public abstract class PaginationBox extends MessageBox {
                         .hoverEvent(HoverEvent.showText(Component.text("Click to navigate")));
                 navProducer.append(nextComponent);
             }
-            getContents().append(centerAndBorder(navProducer.create()));
+            builder().append(centerAndBorder(navProducer.build()));
         } else {
-            getContents().append(centerAndBorder(pageNumberComponent));
+            builder().append(centerAndBorder(pageNumberComponent));
         }
-        return super.create();
+        return super.build();
     }
 
     @Override
-    public TextComponent create() {
+    @Deprecated
+    public com.sk89q.worldedit.util.formatting.text.TextComponent create() {
         throw new IllegalStateException("Pagination components must be created with a page");
     }
 
     public static PaginationBox fromStrings(String header, @Nullable String pageCommand, List<String> lines) {
-        return fromComponents(header, pageCommand, lines.stream()
+        return fromText(header, pageCommand, lines.stream()
             .map(Component::text)
             .collect(Collectors.toList()));
     }
 
-    public static PaginationBox fromComponents(String header, @Nullable String pageCommand, List<Component> lines) {
+    @Deprecated
+    public static PaginationBox fromComponents(String header, @Nullable String pageCommand, List<com.sk89q.worldedit.util.formatting.text.Component> lines) {
+        return new ListPaginationBox(header, pageCommand, lines.stream().map(LegacyTextHelper::adapt).toList());
+    }
+
+    public static PaginationBox fromText(String header, @Nullable String pageCommand, List<Component> lines) {
         return new ListPaginationBox(header, pageCommand, lines);
     }
 
@@ -148,7 +163,7 @@ public abstract class PaginationBox extends MessageBox {
         }
 
         @Override
-        public Component getComponent(int number) {
+        public Component component(int number) {
             return lines.get(number);
         }
 

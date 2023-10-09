@@ -26,8 +26,8 @@ import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
 
 /**
  * Utility class to apply region functions to {@link com.sk89q.worldedit.regions.Region}.

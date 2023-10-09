@@ -20,11 +20,12 @@
 package com.sk89q.worldedit.util.formatting.component;
 
 import com.google.common.collect.Lists;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
-import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
-import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.TextComponent;
+import com.sk89q.worldedit.util.adventure.text.event.ClickEvent;
+import com.sk89q.worldedit.util.adventure.text.event.HoverEvent;
+import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.formatting.LegacyTextHelper;
 
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class CommandListBox extends PaginationBox {
     }
 
     @Override
-    public Component getComponent(int number) {
+    public Component component(int number) {
         return commands.get(number).createComponent(hideHelp);
     }
 
@@ -61,6 +62,11 @@ public class CommandListBox extends PaginationBox {
     @Deprecated
     public void appendCommand(String alias, String description, String insertion) {
         appendCommand(alias, Component.text(description), insertion);
+    }
+
+    @Deprecated
+    public void appendCommand(String alias, com.sk89q.worldedit.util.formatting.text.Component description, String insertion) {
+        appendCommand(alias, LegacyTextHelper.adapt(description), insertion);
     }
 
     public void appendCommand(String alias, Component description, String insertion) {
@@ -87,9 +93,9 @@ public class CommandListBox extends PaginationBox {
         }
 
         Component createComponent(boolean hideHelp) {
-            TextComponentProducer line = new TextComponentProducer();
+            TextComponent.Builder line = Component.text();
             if (!hideHelp) {
-                line.append(SubtleFormat.wrap("? ")
+                line.append(Component.text("? ")
                         .clickEvent(ClickEvent.runCommand(CommandListBox.this.helpCommand + " " + insertion))
                         .hoverEvent(HoverEvent.showText(Component.text("Additional Help"))));
             }
@@ -101,7 +107,7 @@ public class CommandListBox extends PaginationBox {
                         .clickEvent(ClickEvent.suggestCommand(insertion))
                         .hoverEvent(HoverEvent.showText(Component.text("Click to select"))));
             }
-            return line.append(Component.text(": ")).append(description).create();
+            return line.append(Component.text(": ")).append(description).build();
         }
     }
 }

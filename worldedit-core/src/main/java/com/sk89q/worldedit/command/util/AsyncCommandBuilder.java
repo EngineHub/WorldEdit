@@ -26,9 +26,8 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.command.exception.ExceptionConverter;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
-import com.sk89q.worldedit.util.formatting.component.ErrorFormat;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
 import com.sk89q.worldedit.util.task.FutureForwardingTask;
 import com.sk89q.worldedit.util.task.Supervisor;
 import org.apache.logging.log4j.Logger;
@@ -129,7 +128,7 @@ public final class AsyncCommandBuilder<T> {
 
     public AsyncCommandBuilder<T> onFailure(@Nullable String message, @Nullable ExceptionConverter exceptionConverter) {
         checkArgument(message != null || exceptionConverter != null, "Can't have null message AND exceptionConverter");
-        this.failureMessage = message == null ? null : ErrorFormat.wrap(message);
+        this.failureMessage = message == null ? null : Component.text(message, NamedTextColor.RED);
         this.exceptionConverter = exceptionConverter;
         return this;
     }

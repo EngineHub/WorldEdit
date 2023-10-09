@@ -46,8 +46,8 @@ import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.component.SideEffectBox;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.item.ItemType;
 import org.enginehub.piston.CommandManager;
@@ -504,7 +504,7 @@ public class GeneralCommands {
                 }
                 final String id = searchType.id();
                 if (id.contains(idMatch)) {
-                    Component name = searchType.getRichName();
+                    Component name = searchType.getDisplayName();
                     results.put(id, Component.text()
                         .append(name)
                         .append(Component.text(" (" + id + ")"))
@@ -512,8 +512,8 @@ public class GeneralCommands {
                 }
             }
             List<Component> list = new ArrayList<>(results.values());
-            return PaginationBox.fromComponents("Search results for '" + search + "'", command, list)
-                .create(page);
+            return PaginationBox.fromText("Search results for '" + search + "'", command, list)
+                .build(page);
         }
     }
 }

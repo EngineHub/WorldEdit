@@ -29,7 +29,7 @@ import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
 import com.sk89q.worldedit.world.snapshot.experimental.SnapshotRestore;

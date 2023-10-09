@@ -52,8 +52,8 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.formatting.component.SubtleFormat;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import org.enginehub.piston.annotation.Command;
@@ -539,7 +539,7 @@ public class UtilityCommands {
             double result = expression.evaluate(
                     new double[]{}, WorldEdit.getInstance().getSessionManager().get(actor).getTimeout());
             String formatted = Double.isNaN(result) ? "NaN" : formatForLocale(actor.getLocale()).format(result);
-            return SubtleFormat.wrap(input + " = ").append(Component.text(formatted, NamedTextColor.LIGHT_PURPLE));
+            return Component.text(input + " = ").append(Component.text(formatted, NamedTextColor.LIGHT_PURPLE));
         }, (Component) null);
     }
 

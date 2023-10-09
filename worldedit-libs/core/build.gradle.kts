@@ -21,4 +21,10 @@ dependencies {
     "shade"(libs.linBus.stream)
     "shade"(libs.linBus.tree)
     "shade"(libs.linBus.format.snbt)
+
+    // LEGACY Section: kyori-text is shaded and used in deprecated setups
+    "shade"("net.kyori:text-api:${Versions.TEXT}")
+    "shade"("net.kyori:text-serializer-gson:${Versions.TEXT}")
+    "shade"("net.kyori:text-serializer-legacy:${Versions.TEXT}")
+    "shade"("net.kyori:text-serializer-plain:${Versions.TEXT}")
 }

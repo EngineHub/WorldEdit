@@ -35,7 +35,7 @@ public interface BiomeData {
      *
      * @return the biome's name
      * @deprecated This method does not work on the server.
-     *     Use {@link BiomeRegistry#getRichName(BiomeType)}.
+     *     Use {@link BiomeRegistry#getDisplayName(BiomeType)}.
      */
     @Deprecated
     String getName();

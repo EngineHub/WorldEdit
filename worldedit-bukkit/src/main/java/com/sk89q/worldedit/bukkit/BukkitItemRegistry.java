@@ -20,24 +20,24 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.BundledItemRegistry;
 
 class BukkitItemRegistry extends BundledItemRegistry {
     @Override
-    public Component getRichName(ItemType itemType) {
+    public Component getDisplayName(ItemType itemType) {
         if (WorldEditPlugin.getInstance().getBukkitImplAdapter() != null) {
             return WorldEditPlugin.getInstance().getBukkitImplAdapter().getRichItemName(itemType);
         }
-        return super.getRichName(itemType);
+        return super.getDisplayName(itemType);
     }
 
     @Override
-    public Component getRichName(BaseItemStack itemStack) {
+    public Component getDisplayName(BaseItemStack itemStack) {
         if (WorldEditPlugin.getInstance().getBukkitImplAdapter() != null) {
             return WorldEditPlugin.getInstance().getBukkitImplAdapter().getRichItemName(itemStack);
         }
-        return super.getRichName(itemStack);
+        return super.getDisplayName(itemStack);
     }
 }

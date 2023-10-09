@@ -20,8 +20,9 @@
 package com.sk89q.worldedit.world.registry;
 
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.util.formatting.LegacyTextHelper;
 import com.sk89q.worldedit.world.item.ItemType;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 
 import javax.annotation.Nullable;
 
@@ -32,8 +33,32 @@ public interface ItemRegistry {
      *
      * @param itemType the item
      * @return The name
+     * @deprecated use {@link ItemRegistry#getDisplayName(ItemType)} instead
      */
-    Component getRichName(ItemType itemType);
+    @Deprecated
+    default com.sk89q.worldedit.util.formatting.text.Component getRichName(ItemType itemType) {
+        return LegacyTextHelper.adapt(getDisplayName(itemType));
+    }
+
+    /**
+     * Gets the name for the given item.
+     *
+     * @param itemType the item
+     * @return The name
+     */
+    Component getDisplayName(ItemType itemType);
+
+    /**
+     * Gets the name for the given item stack.
+     *
+     * @param itemStack the item stack
+     * @return The name
+     * @deprecated use {@link ItemRegistry#getDisplayName(BaseItemStack)} instead
+     */
+    @Deprecated
+    default com.sk89q.worldedit.util.formatting.text.Component getRichName(BaseItemStack itemStack) {
+        return LegacyTextHelper.adapt(getDisplayName(itemStack.getType()));
+    }
 
     /**
      * Gets the name for the given item stack.
@@ -41,8 +66,8 @@ public interface ItemRegistry {
      * @param itemStack the item stack
      * @return The name
      */
-    default Component getRichName(BaseItemStack itemStack) {
-        return getRichName(itemStack.getType());
+    default Component getDisplayName(BaseItemStack itemStack) {
+        return getDisplayName(itemStack.getType());
     }
 
     /**
@@ -50,12 +75,12 @@ public interface ItemRegistry {
      *
      * @param itemType the item
      * @return The name, or null if it's unknown
-     * @deprecated Names are now translatable, use {@link #getRichName(ItemType)}.
+     * @deprecated Names are now translatable, use {@link #getDisplayName(ItemType)}.
      */
     @Deprecated
     @Nullable
     default String getName(ItemType itemType) {
-        return getRichName(itemType).toString();
+        return getDisplayName(itemType).toString();
     }
 
     /**

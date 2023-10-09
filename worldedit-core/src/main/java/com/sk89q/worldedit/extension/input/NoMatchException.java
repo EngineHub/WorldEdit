@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.extension.input;
 
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 
 /**
  * Thrown when a match fails when input is parsed.
@@ -32,6 +32,17 @@ public class NoMatchException extends InputParseException {
      * @param message the message
      */
     public NoMatchException(Component message) {
+        super(message);
+    }
+
+    /**
+     * Create with a message.
+     *
+     * @deprecated Use {@link NoMatchException#NoMatchException(Component)}
+     * @param message the message
+     */
+    @Deprecated
+    public NoMatchException(com.sk89q.worldedit.util.formatting.text.Component message) {
         super(message);
     }
 
@@ -52,6 +63,18 @@ public class NoMatchException extends InputParseException {
      * @param cause the cause
      */
     public NoMatchException(Component message, Throwable cause) {
+        super(message, cause);
+    }
+
+    /**
+     * Create with a message and a cause.
+     *
+     * @deprecated Use {@link NoMatchException#NoMatchException(Component, Throwable)}
+     * @param message the message
+     * @param cause the cause
+     */
+    @Deprecated
+    public NoMatchException(com.sk89q.worldedit.util.formatting.text.Component message, Throwable cause) {
         super(message, cause);
     }
 

@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.world.registry;
 
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.util.translation.TranslationManager;
 import com.sk89q.worldedit.world.item.ItemType;
 
@@ -36,7 +36,7 @@ public class BundledItemRegistry implements ItemRegistry {
     }
 
     @Override
-    public Component getRichName(ItemType itemType) {
+    public Component getDisplayName(ItemType itemType) {
         BundledItemData.ItemEntry itemEntry = getEntryById(itemType);
         if (itemEntry != null && !itemEntry.localizedName.equals("Air")) {
             // This is more likely to be "right", but not translated

@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit;
 
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 
 /**
  * Thrown when an unknown direction is specified or detected.

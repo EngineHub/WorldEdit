@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit;
 
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.world.item.ItemType;
 
 /**
@@ -60,6 +60,6 @@ public class NotABlockException extends WorldEditException {
      * @param input the input that was used
      */
     public NotABlockException(ItemType input) {
-        super(Component.translatable("worldedit.error.not-a-block.item", input.getRichName()));
+        super(Component.translatable("worldedit.error.not-a-block.item", input.getDisplayName()));
     }
 }

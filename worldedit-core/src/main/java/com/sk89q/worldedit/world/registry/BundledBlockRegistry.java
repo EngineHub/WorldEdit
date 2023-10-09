@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.world.registry;
 
 import com.sk89q.worldedit.registry.state.Property;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.util.translation.TranslationManager;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
 public class BundledBlockRegistry implements BlockRegistry {
 
     @Override
-    public Component getRichName(BlockType blockType) {
+    public Component getDisplayName(BlockType blockType) {
         BundledBlockData.BlockEntry blockEntry = BundledBlockData.getInstance().findById(blockType.id());
         if (blockEntry != null) {
             // This is more likely to be "right", but not translated

@@ -25,7 +25,8 @@ import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
 import com.sk89q.worldedit.util.GuavaUtil;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.formatting.LegacyTextHelper;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.registry.ItemMaterial;
@@ -49,7 +50,7 @@ public class ItemType implements Keyed {
     @SuppressWarnings("this-escape")
     private final LazyReference<Component> richName = LazyReference.from(() ->
         WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
-            .getRegistries().getItemRegistry().getRichName(this)
+            .getRegistries().getItemRegistry().getDisplayName(this)
     );
     @SuppressWarnings("this-escape")
     private final LazyReference<ItemMaterial> itemMaterial = LazyReference.from(() ->
@@ -70,7 +71,24 @@ public class ItemType implements Keyed {
         return this.id;
     }
 
-    public Component getRichName() {
+
+    /**
+     * Gets the name of this item.
+     *
+     * @return The name
+     * @deprecated Use {@link ItemType#getDisplayName()} instead.
+     */
+    @Deprecated
+    public com.sk89q.worldedit.util.formatting.text.Component getRichName() {
+        return LegacyTextHelper.adapt(richName.getValue());
+    }
+
+    /**
+     * Gets the name of this item.
+     *
+     * @return The name
+     */
+    public Component getDisplayName() {
         return richName.getValue();
     }
 
@@ -78,7 +96,7 @@ public class ItemType implements Keyed {
      * Gets the name of this item, or the ID if the name cannot be found.
      *
      * @return The name, or ID
-     * @deprecated Names are translatable now, use {@link #getRichName()}.
+     * @deprecated Names are translatable now, use {@link #getDisplayName()}.
      */
     @Deprecated
     public String getName() {

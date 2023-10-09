@@ -36,9 +36,9 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
-import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.event.ClickEvent;
+import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.storage.LegacyChunkStore;
 import com.sk89q.worldedit.world.storage.McRegionChunkStore;
@@ -98,7 +98,7 @@ public class ChunkCommands {
         final Region region = session.getSelection(world);
 
         WorldEditAsyncCommandBuilder.createAndSendMessage(actor,
-            () -> new ChunkListPaginationBox(region).create(page),
+            () -> new ChunkListPaginationBox(region).build(page),
             Component.translatable(
                 "worldedit.listchunks.listfor",
                 Component.text(actor.getName())
@@ -190,7 +190,7 @@ public class ChunkCommands {
         }
 
         @Override
-        public Component getComponent(int number) {
+        public Component component(int number) {
             return Component.text(chunks.get(number).toString());
         }
 

@@ -37,7 +37,7 @@ import com.sk89q.worldedit.extension.input.NoMatchException;
 import com.sk89q.worldedit.extent.clipboard.io.SchematicLoadException;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.regions.RegionOperationException;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
 import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
 import com.sk89q.worldedit.util.io.file.InvalidFilenameException;
@@ -172,7 +172,7 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
     @ExceptionMatch
     public void convert(InvalidToolBindException e) throws CommandException {
         throw newCommandException(
-                Component.translatable("worldedit.tool.error.cannot-bind", e.getItemType().getRichName(), e.getRichMessage()),
+                Component.translatable("worldedit.tool.error.cannot-bind", e.getItemType().getDisplayName(), e.getRichMessage()),
                 e
         );
     }

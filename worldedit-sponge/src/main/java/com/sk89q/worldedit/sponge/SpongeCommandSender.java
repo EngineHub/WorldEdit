@@ -97,7 +97,7 @@ public class SpongeCommandSender implements Actor {
     }
 
     @Override
-    public void print(com.sk89q.worldedit.util.formatting.text.Component component) {
+    public void print(com.sk89q.worldedit.util.adventure.text.Component component) {
         sender.sendMessage(SpongeTextAdapter.convert(component, getLocale()));
     }
 

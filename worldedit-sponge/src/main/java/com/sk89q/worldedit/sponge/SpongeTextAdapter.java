@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.sponge;
 
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.serializer.gson.GsonComponentSerializer;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
 
 import java.util.Locale;
 
