@@ -17,88 +17,74 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.formatting.component;
+package com.sk89q.worldedit.util.formatting.adventure;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
-import com.sk89q.worldedit.util.formatting.text.format.TextDecoration;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.TextComponent;
+import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.adventure.text.format.TextColor;
+import com.sk89q.worldedit.util.adventure.text.format.TextDecoration;
+import com.sk89q.worldedit.util.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Makes for a box with a border above and below.
  */
-@Deprecated
-public class MessageBox extends TextComponentProducer {
+public class MessageBox {
 
     private static final int GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH = 47;
 
-    private final TextComponentProducer contents;
+    private final TextComponent.Builder builder = Component.text();
     private final TextColor borderColor;
-
-    /**
-     * Create a new box.
-     */
-    public MessageBox(String title, TextComponentProducer contents) {
-        this(title, contents, TextColor.YELLOW);
+    public MessageBox(String title, Component contents) {
+        this(title, contents, NamedTextColor.YELLOW);
     }
 
-    /**
-     * Create a new box.
-     */
-    public MessageBox(String title, TextComponentProducer contents, TextColor borderColor) {
+    public MessageBox(String title, Component contents, NamedTextColor borderColor) {
         checkNotNull(title);
-
         this.borderColor = borderColor;
-        append(centerAndBorder(TextComponent.of(title))).newline();
-        this.contents = contents;
+
+        this.builder.append(centerAndBorder(Component.text(title))).append(Component.newline());
+        this.builder.append(contents);
     }
 
     protected Component centerAndBorder(TextComponent text) {
-        TextComponentProducer line = new TextComponentProducer();
+        TextComponent.Builder line = Component.text();
         int leftOver = GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH - getLength(text);
         int side = (int) Math.floor(leftOver / 2.0);
         if (side > 0) {
             if (side > 1) {
                 line.append(createBorder(side - 1));
             }
-            line.append(TextComponent.space());
+            line.append(Component.space());
         }
         line.append(text);
         if (side > 0) {
-            line.append(TextComponent.space());
+            line.append(Component.space());
             if (side > 1) {
                 line.append(createBorder(side - 1));
             }
         }
-        return line.create();
+        return line.build();
     }
 
     private static int getLength(TextComponent text) {
-        return text.content().length() + text.children().stream().filter(c -> c instanceof TextComponent)
-                .mapToInt(c -> getLength((TextComponent) c)).sum();
+        return PlainTextComponentSerializer.plainText().serialize(text).length();
     }
 
     private TextComponent createBorder(int count) {
-        return TextComponent.of(Strings.repeat("-", count),
+        return Component.text(Strings.repeat("-", count),
                 borderColor, Sets.newHashSet(TextDecoration.STRIKETHROUGH));
     }
 
-    /**
-     * Gets the message box contents producer.
-     *
-     * @return The contents producer
-     */
-    public TextComponentProducer getContents() {
-        return contents;
+    public Component build() {
+        return builder.build();
     }
 
-    @Override
-    public TextComponent create() {
-        append(contents.create());
-        return super.create();
+    public TextComponent.Builder builder() {
+        return builder;
     }
 }

@@ -20,8 +20,8 @@
 package com.sk89q.worldedit.util.formatting.component;
 
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.util.adventure.text.Component;
 
+@Deprecated
 public class InvalidComponentException extends WorldEditException {
 
     @Deprecated
@@ -31,10 +31,6 @@ public class InvalidComponentException extends WorldEditException {
 
     @Deprecated
     public InvalidComponentException(com.sk89q.worldedit.util.formatting.text.Component message) {
-        super(message);
-    }
-
-    public InvalidComponentException(Component message) {
         super(message);
     }
 }

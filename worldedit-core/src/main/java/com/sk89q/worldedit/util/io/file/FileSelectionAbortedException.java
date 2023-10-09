@@ -32,6 +32,11 @@ public class FileSelectionAbortedException extends FilenameException {
         super("", msg);
     }
 
+    @Deprecated
+    public FileSelectionAbortedException(com.sk89q.worldedit.util.formatting.text.Component msg) {
+        super("", msg);
+    }
+
     public FileSelectionAbortedException(Component msg) {
         super("", msg);
     }

@@ -21,6 +21,7 @@ package com.sk89q.worldedit.util.formatting;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.enginehub.piston.config.ConfigHolder;
 import org.enginehub.piston.config.ConfigRenderer;
 import org.enginehub.piston.config.TextConfig;
@@ -36,6 +37,11 @@ public class WorldEditText {
         CONFIG_HOLDER.getConfig(TextConfig.commandPrefix()).setValue("/");
     }
 
+    @Deprecated
+    public static com.sk89q.worldedit.util.formatting.text.Component format(com.sk89q.worldedit.util.formatting.text.Component component, Locale locale) {
+        return LegacyTextHelper.adapt(format(LegacyTextHelper.adapt(component), locale));
+    }
+
     public static Component format(Component component, Locale locale) {
         return WorldEdit.getInstance().getTranslationManager().convert(
             RENDERER.render(component, CONFIG_HOLDER),
@@ -43,8 +49,13 @@ public class WorldEditText {
         );
     }
 
+    @Deprecated
+    public static String reduceToText(com.sk89q.worldedit.util.formatting.text.Component component, Locale locale) {
+        return reduceToText(LegacyTextHelper.adapt(component), locale);
+    }
+
     public static String reduceToText(Component component, Locale locale) {
-        return TextHelper.reduceToText(format(component, locale));
+        return PlainTextComponentSerializer.plainText().serialize(format(component, locale));
     }
 
     private WorldEditText() {

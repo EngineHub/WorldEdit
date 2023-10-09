@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 
 import java.util.List;
@@ -36,12 +37,8 @@ public class TextUtils {
      * @param joiner The joiner component
      * @return The joined component
      */
-    @Deprecated
-    public static com.sk89q.worldedit.util.formatting.text.Component join(
-            List<com.sk89q.worldedit.util.formatting.text.Component> components,
-            com.sk89q.worldedit.util.formatting.text.Component joiner
-    ) {
-        com.sk89q.worldedit.util.formatting.text.TextComponent.Builder builder = TextComponent.builder();
+    public static Component join(List<Component> components, Component joiner) {
+        TextComponent.Builder builder = TextComponent.builder();
         for (int i = 0; i < components.size(); i++) {
             builder.append(components.get(i));
             if (i < components.size() - 1) {

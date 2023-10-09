@@ -27,6 +27,11 @@ public class FilenameResolutionException extends FilenameException {
         super(filename);
     }
 
+    @Deprecated
+    public FilenameResolutionException(String filename, com.sk89q.worldedit.util.formatting.text.Component msg) {
+        super(filename, msg);
+    }
+
     public FilenameResolutionException(String filename, Component msg) {
         super(filename, msg);
     }

@@ -40,7 +40,6 @@ public class TextComponentProducer {
      * @param component The component
      * @return The producer, for chaining
      */
-    @Deprecated
     public TextComponentProducer append(Component component) {
         getBuilder().append(component);
         return this;
@@ -52,7 +51,6 @@ public class TextComponentProducer {
      * @param string The text
      * @return The producer, for chaining
      */
-    @Deprecated
     public TextComponentProducer append(String string) {
         getBuilder().append(TextComponent.of(string));
         return this;
@@ -63,7 +61,6 @@ public class TextComponentProducer {
      *
      * @return The producer, for chaining
      */
-    @Deprecated
     public TextComponentProducer newline() {
         getBuilder().append(TextComponent.newline());
         return this;
@@ -74,7 +71,6 @@ public class TextComponentProducer {
      *
      * @return The component
      */
-    @Deprecated
     public TextComponent create() {
         return builder.build();
     }
@@ -85,7 +81,7 @@ public class TextComponentProducer {
      * @return The producer, for chaining
      */
     public TextComponentProducer reset() {
-        builder = TextComponent.builder();
+        builder = TextComponent.builder().content("");
         return this;
     }
 }

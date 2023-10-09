@@ -49,8 +49,8 @@ import com.sk89q.worldedit.session.PlacementType;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
-import com.sk89q.worldedit.util.formatting.component.PaginationBox;
-import com.sk89q.worldedit.util.formatting.component.SideEffectBox;
+import com.sk89q.worldedit.util.formatting.adventure.PaginationBox;
+import com.sk89q.worldedit.util.formatting.adventure.SideEffectBox;
 import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
 import com.sk89q.worldedit.world.World;
@@ -287,7 +287,7 @@ public class GeneralCommands {
 
         if (sideEffect == null || showInfoBox) {
             SideEffectBox sideEffectBox = new SideEffectBox(session.getSideEffectSet());
-            actor.print(sideEffectBox.create(1));
+            actor.print(sideEffectBox.build(1));
         }
     }
 

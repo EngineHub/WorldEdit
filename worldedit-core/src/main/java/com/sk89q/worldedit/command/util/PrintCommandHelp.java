@@ -23,9 +23,9 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.util.formatting.component.CommandListBox;
-import com.sk89q.worldedit.util.formatting.component.CommandUsageBox;
-import com.sk89q.worldedit.util.formatting.component.InvalidComponentException;
+import com.sk89q.worldedit.util.formatting.adventure.CommandListBox;
+import com.sk89q.worldedit.util.formatting.adventure.CommandUsageBox;
+import com.sk89q.worldedit.util.formatting.adventure.InvalidComponentException;
 import com.sk89q.worldedit.util.adventure.text.Component;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandManager;
@@ -157,7 +157,7 @@ public class PrintCommandHelp {
             box.appendCommand(alias, mapping.getDescription(), command);
         }
 
-        actor.print(box.create(page));
+        actor.print(box.build(page));
     }
 
     private PrintCommandHelp() {
