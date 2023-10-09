@@ -234,7 +234,7 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
     }
 
     @Override
-    public List<Component> getSelectionInfoLines() {
+    public List<Component> getSelectionInformationLines() {
         return Collections.singletonList(Component.translatable("worldedit.selection.polygon2d.info", Component.text(region.size())));
     }
 

@@ -233,7 +233,7 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
     }
 
     @Override
-    public List<Component> getSelectionInfoLines() {
+    public List<Component> getSelectionInformationLines() {
         final List<Component> lines = new ArrayList<>();
 
         final Vector3 center = region.getCenter();

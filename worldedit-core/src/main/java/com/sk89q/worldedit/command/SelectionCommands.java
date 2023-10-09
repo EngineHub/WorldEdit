@@ -156,7 +156,7 @@ public class SelectionCommands {
 
         session.dispatchCUISelection(actor);
 
-        for (Component line : regionSelector.getSelectionInfoLines()) {
+        for (Component line : regionSelector.getSelectionInformationLines()) {
             actor.printInfo(line);
         }
         actor.printInfo(Component.translatable("worldedit.selection.updated"));
@@ -661,7 +661,7 @@ public class SelectionCommands {
 
             actor.printInfo(Component.translatable("worldedit.size.type", Component.text(session.getRegionSelector(world).getTypeName())));
 
-            for (Component line : session.getRegionSelector(world).getSelectionInfoLines()) {
+            for (Component line : session.getRegionSelector(world).getSelectionInformationLines()) {
                 actor.printInfo(line);
             }
         }

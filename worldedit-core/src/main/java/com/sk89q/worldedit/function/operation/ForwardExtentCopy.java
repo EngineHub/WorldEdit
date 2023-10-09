@@ -331,7 +331,7 @@ public class ForwardExtentCopy implements Operation {
     }
 
     @Override
-    public Iterable<Component> getStatusMessages() {
+    public Iterable<Component> getMessages() {
         return ImmutableList.of(
             Component.translatable("worldedit.operation.affected.block",
                     Component.text(affectedBlocks)).color(NamedTextColor.LIGHT_PURPLE),

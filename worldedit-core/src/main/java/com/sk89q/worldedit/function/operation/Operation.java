@@ -22,8 +22,10 @@ package com.sk89q.worldedit.function.operation;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.formatting.LegacyTextHelper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -78,8 +80,29 @@ public interface Operation {
      * operation.
      *
      * @return The status messages
+     * @deprecated use {@link #getMessages()} instead. default implementation returns an empty list.
      */
-    default Iterable<Component> getStatusMessages() {
+    @Deprecated
+    default Iterable<com.sk89q.worldedit.util.formatting.text.Component> getStatusMessages() {
+        return Collections.emptyList();
+    }
+    /**
+     * Gets an iterable of messages that describe the current status of the
+     * operation.
+     *
+     * @return The status messages
+     */
+    default Iterable<Component> getMessages() {
+        // TODO Remove legacy code for text3 Components with WorldEdit 8.0.0
+        Iterable<com.sk89q.worldedit.util.formatting.text.Component> legacyComponents = getStatusMessages();
+        if (legacyComponents.iterator().hasNext()) {
+            List<Component> components = new ArrayList<>();
+            for (com.sk89q.worldedit.util.formatting.text.Component legacyComponent : legacyComponents) {
+                components.add(LegacyTextHelper.adapt(legacyComponent));
+            }
+            return components;
+        }
+
         // TODO Remove legacy code WorldEdit 8.0.0
         List<String> oldMessages = new ArrayList<>();
         addStatusMessages(oldMessages);

@@ -104,7 +104,7 @@ public class ClipboardCommands {
         Operations.completeLegacy(copy);
         session.setClipboard(new ClipboardHolder(clipboard));
 
-        copy.getStatusMessages().forEach(actor::print);
+        copy.getMessages().forEach(actor::print);
     }
 
     @Command(
@@ -137,7 +137,7 @@ public class ClipboardCommands {
         Operations.completeLegacy(copy);
         session.setClipboard(new ClipboardHolder(clipboard));
 
-        copy.getStatusMessages().forEach(actor::print);
+        copy.getMessages().forEach(actor::print);
     }
 
     @Command(
@@ -182,7 +182,7 @@ public class ClipboardCommands {
                     .maskSource(sourceMask)
                     .build();
             Operations.completeLegacy(operation);
-            messages.addAll(Lists.newArrayList(operation.getStatusMessages()));
+            messages.addAll(Lists.newArrayList(operation.getMessages()));
         }
 
         if (selectPasted || onlySelect) {

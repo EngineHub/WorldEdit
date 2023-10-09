@@ -189,7 +189,7 @@ public class Deform implements Contextual<Operation> {
 
 
         @Override
-        public Iterable<Component> getStatusMessages() {
+        public Iterable<Component> getMessages() {
             return ImmutableList.of(Component.translatable("worldedit.operation.deform.expression",
                     Component.text(expression.getSource()).color(NamedTextColor.LIGHT_PURPLE)));
         }
