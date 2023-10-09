@@ -38,8 +38,8 @@ public class NoMatchException extends InputParseException {
     /**
      * Create with a message.
      *
-     * @deprecated Use {@link NoMatchException#NoMatchException(Component)}
      * @param message the message
+     * @deprecated Use {@link NoMatchException#NoMatchException(Component)}
      */
     @Deprecated
     public NoMatchException(com.sk89q.worldedit.util.formatting.text.Component message) {
@@ -69,9 +69,9 @@ public class NoMatchException extends InputParseException {
     /**
      * Create with a message and a cause.
      *
-     * @deprecated Use {@link NoMatchException#NoMatchException(Component, Throwable)}
      * @param message the message
      * @param cause the cause
+     * @deprecated Use {@link NoMatchException#NoMatchException(Component, Throwable)}
      */
     @Deprecated
     public NoMatchException(com.sk89q.worldedit.util.formatting.text.Component message, Throwable cause) {

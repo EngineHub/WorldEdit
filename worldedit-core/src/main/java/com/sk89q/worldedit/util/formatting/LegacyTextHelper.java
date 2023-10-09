@@ -24,7 +24,7 @@ import com.sk89q.worldedit.util.adventure.text.serializer.gson.GsonComponentSeri
 
 /**
  * Converts adventure text components to kyori text components.
- * @deprecated
+ * @deprecated only used to convert from text3 to adventure and back
  */
 @Deprecated
 public class LegacyTextHelper {

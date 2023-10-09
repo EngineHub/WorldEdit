@@ -39,6 +39,7 @@ public class MessageBox {
 
     private final TextComponent.Builder builder = Component.text();
     private final TextColor borderColor;
+
     public MessageBox(String title, Component contents) {
         this(title, contents, NamedTextColor.YELLOW);
     }

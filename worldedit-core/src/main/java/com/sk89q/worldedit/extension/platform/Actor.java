@@ -22,9 +22,9 @@ package com.sk89q.worldedit.extension.platform;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionOwner;
 import com.sk89q.worldedit.util.Identifiable;
-import com.sk89q.worldedit.util.auth.Subject;
 import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.auth.Subject;
 import com.sk89q.worldedit.util.formatting.LegacyTextHelper;
 
 import java.io.File;

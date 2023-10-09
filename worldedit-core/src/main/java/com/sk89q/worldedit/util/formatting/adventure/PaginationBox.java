@@ -25,9 +25,9 @@ import com.sk89q.worldedit.util.adventure.text.event.ClickEvent;
 import com.sk89q.worldedit.util.adventure.text.event.HoverEvent;
 import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 
 public abstract class PaginationBox extends MessageBox {
 
