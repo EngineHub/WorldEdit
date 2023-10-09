@@ -51,7 +51,6 @@ import com.sk89q.worldedit.math.Vector2;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.util.formatting.component.SubtleFormat;
 import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
 import com.sk89q.worldedit.world.World;

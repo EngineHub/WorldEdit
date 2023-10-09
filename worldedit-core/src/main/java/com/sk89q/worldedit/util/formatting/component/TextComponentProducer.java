@@ -23,6 +23,7 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 
 /**
+ * Utility class to build components.
  * @deprecated do not use anymore, use adventure directly
  */
 @Deprecated

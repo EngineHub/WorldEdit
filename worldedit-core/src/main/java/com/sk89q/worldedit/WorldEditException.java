@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit;
 
-import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.util.formatting.LegacyTextHelper;
+import com.sk89q.worldedit.util.formatting.WorldEditText;
 
 import java.util.Locale;
 
@@ -66,8 +66,8 @@ public abstract class WorldEditException extends Exception {
     /**
      * Create a new exception with a message.
      *
-     * @deprecated Use {@link WorldEditException#WorldEditException(Component)}
      * @param message the message
+     * @deprecated Use {@link WorldEditException#WorldEditException(Component)}
      */
     @Deprecated
     protected WorldEditException(com.sk89q.worldedit.util.formatting.text.Component message) {
@@ -105,9 +105,9 @@ public abstract class WorldEditException extends Exception {
     /**
      * Create a new exception with a message and a cause.
      *
-     * @deprecated Use {@link WorldEditException#WorldEditException(Component, Throwable)}
      * @param message the message
      * @param cause the cause
+     * @deprecated Use {@link WorldEditException#WorldEditException(Component, Throwable)}
      */
     @Deprecated
     protected WorldEditException(com.sk89q.worldedit.util.formatting.text.Component message, Throwable cause) {

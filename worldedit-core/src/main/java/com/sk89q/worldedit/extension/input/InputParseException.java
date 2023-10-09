@@ -39,8 +39,8 @@ public class InputParseException extends WorldEditException {
     /**
      * Throw with a message.
      *
-     * @deprecated Use {@link InputParseException#InputParseException(Component)} instead
      * @param message the message
+     * @deprecated Use {@link InputParseException#InputParseException(Component)} instead
      */
     @Deprecated
     public InputParseException(com.sk89q.worldedit.util.formatting.text.Component message) {
@@ -70,9 +70,9 @@ public class InputParseException extends WorldEditException {
     /**
      * Throw with a message and a cause.
      *
-     * @deprecated Use {@link InputParseException#InputParseException(Component, Throwable)} instead
      * @param message the message
      * @param cause the cause
+     * @deprecated Use {@link InputParseException#InputParseException(Component, Throwable)} instead
      */
     @Deprecated
     public InputParseException(com.sk89q.worldedit.util.formatting.text.Component message, Throwable cause) {

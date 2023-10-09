@@ -24,10 +24,10 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.FileDialogUtil;
-import com.sk89q.worldedit.util.auth.AuthorizationException;
-import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.util.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import com.sk89q.worldedit.util.auth.AuthorizationException;
+import com.sk89q.worldedit.util.formatting.WorldEditText;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
