@@ -2,6 +2,10 @@ plugins {
     id("buildlogic.libs")
 }
 
+repositories {
+    mavenLocal()
+}
+
 dependencies {
     "shade"(libs.kyoriText.api)
     "shade"(libs.kyoriText.serializer.gson)
