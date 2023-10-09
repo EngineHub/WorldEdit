@@ -139,8 +139,7 @@ public class RegionCommands {
 
         List<BlockVector3> vectors;
 
-        if (region instanceof CuboidRegion) {
-            CuboidRegion cuboidRegion = (CuboidRegion) region;
+        if (region instanceof CuboidRegion cuboidRegion) {
             vectors = ImmutableList.of(cuboidRegion.getPos1(), cuboidRegion.getPos2());
         } else {
             ConvexPolyhedralRegion convexRegion = (ConvexPolyhedralRegion) region;

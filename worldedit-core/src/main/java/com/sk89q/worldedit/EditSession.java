@@ -2587,7 +2587,7 @@ public class EditSession implements Extent, AutoCloseable {
 
         Set<BlockVector3> vset = new HashSet<>();
 
-        for (int i = 0; vectors.size() != 0 && i < vectors.size() - 1; i++) {
+        for (int i = 0; !vectors.isEmpty() && i < vectors.size() - 1; i++) {
             BlockVector3 pos1 = vectors.get(i);
             BlockVector3 pos2 = vectors.get(i + 1);
 
@@ -2691,17 +2691,18 @@ public class EditSession implements Extent, AutoCloseable {
         return setBlocks(vset, pattern);
     }
 
-    private static double hypot(double... pars) {
+    private static double hypotSquare(double... pars) {
         double sum = 0;
         for (double d : pars) {
             sum += Math.pow(d, 2);
         }
-        return Math.sqrt(sum);
+        return sum;
     }
 
     private static Set<BlockVector3> getBallooned(Set<BlockVector3> vset, double radius) {
         Set<BlockVector3> returnset = new HashSet<>();
         int ceilrad = (int) Math.ceil(radius);
+        double radiusSquare = Math.pow(radius, 2);
 
         for (BlockVector3 v : vset) {
             int tipx = v.getBlockX();
@@ -2711,7 +2712,7 @@ public class EditSession implements Extent, AutoCloseable {
             for (int loopx = tipx - ceilrad; loopx <= tipx + ceilrad; loopx++) {
                 for (int loopy = tipy - ceilrad; loopy <= tipy + ceilrad; loopy++) {
                     for (int loopz = tipz - ceilrad; loopz <= tipz + ceilrad; loopz++) {
-                        if (hypot(loopx - tipx, loopy - tipy, loopz - tipz) <= radius) {
+                        if (hypotSquare(loopx - tipx, loopy - tipy, loopz - tipz) <= radiusSquare) {
                             returnset.add(BlockVector3.at(loopx, loopy, loopz));
                         }
                     }
