@@ -21,7 +21,6 @@ package com.sk89q.worldedit.sponge;
 
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.BundledItemRegistry;
 import net.minecraft.world.item.ItemStack;
@@ -39,7 +38,7 @@ public class SpongeItemRegistry extends BundledItemRegistry {
 
     @Override
     public Component getRichName(BaseItemStack itemStack) {
-        return TranslatableComponent.of(
+        return Component.translatable(
             ((ItemStack) (Object) SpongeAdapter.adapt(itemStack)).getDescriptionId()
         );
     }

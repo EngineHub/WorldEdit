@@ -25,9 +25,8 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.PlatformCommandManager;
 import com.sk89q.worldedit.internal.util.Substring;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.util.formatting.text.format.TextDecoration;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandParameters;
@@ -50,14 +49,14 @@ import static java.util.stream.Collectors.toList;
 
 public class CommandUtil {
 
-    private static final Component DEPRECATION_MARKER = TextComponent.of("This command is deprecated.");
+    private static final Component DEPRECATION_MARKER = Component.text("This command is deprecated.");
 
     private static Component makeDeprecatedFooter(String reason, Component replacement) {
-        return TextComponent.builder()
+        return Component.text()
             .append(DEPRECATION_MARKER)
-            .append(" " + reason + ".")
-            .append(TextComponent.newline())
-            .append(replacement.color(TextColor.GOLD))
+            .append(Component.text(" " + reason + "."))
+            .append(Component.newline())
+            .append(replacement.color(NamedTextColor.GOLD))
             .build();
     }
 
@@ -85,12 +84,11 @@ public class CommandUtil {
     }
 
     public static Component createNewCommandReplacementText(String suggestedCommand) {
-        return TextComponent.builder("Please use ", TextColor.GOLD)
-            .append(TextComponent.of(suggestedCommand)
+        return Component.text("Please use ", NamedTextColor.GOLD)
+            .append(Component.text(suggestedCommand)
                 .decoration(TextDecoration.UNDERLINED, true)
                 .clickEvent(ClickEvent.suggestCommand(suggestedCommand)))
-            .append(" instead.")
-            .build();
+            .append(Component.text(" instead."));
     }
 
     public static Command deprecate(Command command, String reason,
@@ -107,7 +105,7 @@ public class CommandUtil {
                 deprecatedCommandWarning(parameters, command, reason, replacementMessageGenerator))
             .footer(command.getFooter()
                 .map(existingFooter -> existingFooter
-                    .append(TextComponent.newline())
+                    .append(Component.newline())
                     .append(deprecatedWarning))
                 .orElse(deprecatedWarning))
             .build();
@@ -141,7 +139,7 @@ public class CommandUtil {
 
     private static Component replaceDeprecation(Component component) {
         if (component.children().stream().anyMatch(Predicate.isEqual(DEPRECATION_MARKER))) {
-            return TextComponent.empty();
+            return Component.empty();
         }
         return component.children(
             component.children().stream()
@@ -183,9 +181,7 @@ public class CommandUtil {
     ) {
         Component replacement = generator.getReplacement(command, parameters);
         actor.print(
-            TextComponent.builder(reason + ". ", TextColor.GOLD)
-                .append(replacement)
-                .build()
+            Component.text(reason + ". ", NamedTextColor.GOLD).append(replacement)
         );
     }
 
@@ -269,7 +265,7 @@ public class CommandUtil {
      * @param message the message for failure
      */
     public static void checkCommandArgument(boolean condition, String message) {
-        checkCommandArgument(condition, TextComponent.of(message));
+        checkCommandArgument(condition, Component.text(message));
     }
 
     /**

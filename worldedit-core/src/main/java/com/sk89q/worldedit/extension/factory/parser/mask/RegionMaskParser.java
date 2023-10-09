@@ -27,7 +27,7 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.RegionMask;
 import com.sk89q.worldedit.internal.registry.SimpleInputParser;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.Component;
 
 import java.util.List;
 
@@ -49,7 +49,7 @@ public class RegionMaskParser extends SimpleInputParser<Mask> {
         try {
             return new RegionMask(context.requireSession().getSelection(context.requireWorld()).clone());
         } catch (IncompleteRegionException e) {
-            throw new InputParseException(TranslatableComponent.of("worldedit.error.incomplete-region"));
+            throw new InputParseException(Component.translatable("worldedit.error.incomplete-region"));
         }
     }
 }

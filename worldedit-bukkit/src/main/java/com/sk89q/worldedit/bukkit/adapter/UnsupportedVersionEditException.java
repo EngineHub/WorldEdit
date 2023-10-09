@@ -20,10 +20,10 @@
 package com.sk89q.worldedit.bukkit.adapter;
 
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.Component;
 
 public class UnsupportedVersionEditException extends WorldEditException {
     public UnsupportedVersionEditException() {
-        super(TranslatableComponent.of("worldedit.bukkit.no-edit-without-adapter"));
+        super(Component.translatable("worldedit.bukkit.no-edit-without-adapter"));
     }
 }

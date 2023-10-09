@@ -41,8 +41,9 @@ private fun formatAsRst(component: Component, currentDeco: String? = null): Char
             val deco = when {
                 // Actions that suggest themselves as commands are marked as code
                 component.isSuggestingAsCommand(content.toString()) -> "``"
-                component.decorations().any { it == TextDecoration.BOLD } -> "**"
-                component.decorations().any { it == TextDecoration.ITALIC } -> "*"
+                // TODO: Fix this somehow
+                //component.decorations().any { it == TextDecoration.BOLD } -> "**"
+                //component.decorations().any { it == TextDecoration.ITALIC } -> "*"
                 else -> null
             }
 

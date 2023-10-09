@@ -44,8 +44,6 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.component.TextUtils;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -90,11 +88,11 @@ public class BiomeCommands {
 
             PaginationBox paginationBox = PaginationBox.fromComponents("Available Biomes", "/biomelist -p %page%",
                 BiomeType.REGISTRY.values().stream()
-                    .map(biomeType -> TextComponent.builder()
-                        .append(biomeType.getId())
-                        .append(" (")
+                    .map(biomeType -> Component.text()
+                        .append(Component.text(biomeType.getId()))
+                        .append(Component.text(" ("))
                         .append(biomeRegistry.getRichName(biomeType))
-                        .append(")")
+                        .append(Component.text(")"))
                         .build())
                     .collect(Collectors.toList()));
             return paginationBox.create(page);
@@ -121,7 +119,7 @@ public class BiomeCommands {
             if (actor instanceof Player) {
                 Location blockPosition = ((Player) actor).getBlockTrace(300);
                 if (blockPosition == null) {
-                    actor.printError(TranslatableComponent.of("worldedit.raytrace.noblock"));
+                    actor.printError(Component.translatable("worldedit.raytrace.noblock"));
                     return;
                 }
 
@@ -130,7 +128,7 @@ public class BiomeCommands {
 
                 messageKey = "worldedit.biomeinfo.lineofsight";
             } else {
-                actor.printError(TranslatableComponent.of("worldedit.raytrace.require-player"));
+                actor.printError(Component.translatable("worldedit.raytrace.require-player"));
                 return;
             }
         } else if (usePosition) {
@@ -140,7 +138,7 @@ public class BiomeCommands {
 
                 messageKey = "worldedit.biomeinfo.position";
             } else {
-                actor.printError(TranslatableComponent.of("worldedit.biomeinfo.not-locatable"));
+                actor.printError(Component.translatable("worldedit.biomeinfo.not-locatable"));
                 return;
             }
         } else {
@@ -155,10 +153,10 @@ public class BiomeCommands {
 
         List<Component> components = biomes.stream().map(biome ->
             biomeRegistry.getRichName(biome).hoverEvent(
-                HoverEvent.showText(TextComponent.of(biome.getId()))
+                HoverEvent.showText(Component.text(biome.getId()))
             )
         ).collect(Collectors.toList());
-        actor.printInfo(TranslatableComponent.of(messageKey, TextUtils.join(components, TextComponent.of(", "))));
+        actor.printInfo(Component.translatable(messageKey, TextUtils.join(components, Component.text(", "))));
     }
 
     @Command(
@@ -180,7 +178,7 @@ public class BiomeCommands {
                 final BlockVector3 pos = ((Locatable) actor).getLocation().toVector().toBlockPoint();
                 region = new CuboidRegion(pos, pos);
             } else {
-                actor.printError(TranslatableComponent.of("worldedit.setbiome.not-locatable"));
+                actor.printError(Component.translatable("worldedit.setbiome.not-locatable"));
                 return;
             }
         } else {
@@ -194,12 +192,12 @@ public class BiomeCommands {
         RegionVisitor visitor = new RegionVisitor(region, replace);
         Operations.completeLegacy(visitor);
 
-        actor.printInfo(TranslatableComponent.of(
+        actor.printInfo(Component.translatable(
             "worldedit.setbiome.changed",
-            TextComponent.of(visitor.getAffected())
+            Component.text(visitor.getAffected())
         )
-            .append(TextComponent.newline())
-            .append(TranslatableComponent.of("worldedit.setbiome.warning")));
+            .append(Component.newline())
+            .append(Component.translatable("worldedit.setbiome.warning")));
     }
 
 }

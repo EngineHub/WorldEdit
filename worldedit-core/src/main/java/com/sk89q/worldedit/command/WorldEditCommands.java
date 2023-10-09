@@ -34,10 +34,9 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.util.formatting.component.MessageBox;
 import com.sk89q.worldedit.util.formatting.component.TextComponentProducer;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.util.paste.ActorCallbackPaste;
 import com.sk89q.worldedit.util.paste.PasteMetadata;
 import com.sk89q.worldedit.util.report.ConfigReport;
@@ -76,32 +75,32 @@ public class WorldEditCommands {
         desc = "Get WorldEdit version"
     )
     public void version(Actor actor) {
-        actor.printInfo(TranslatableComponent.of("worldedit.version.version", TextComponent.of(WorldEdit.getVersion())));
-        actor.printInfo(TextComponent.of("https://github.com/EngineHub/WorldEdit/"));
+        actor.printInfo(Component.translatable("worldedit.version.version", Component.text(WorldEdit.getVersion())));
+        actor.printInfo(Component.text("https://github.com/EngineHub/WorldEdit/"));
 
         PlatformManager pm = we.getPlatformManager();
 
         TextComponentProducer producer = new TextComponentProducer();
         for (Platform platform : pm.getPlatforms()) {
             producer.append(
-                    TextComponent.of("* ", TextColor.GRAY)
-                    .append(TextComponent.of(platform.getPlatformName())
-                        .hoverEvent(HoverEvent.showText(TextComponent.of(platform.getId()))))
-                    .append(TextComponent.of("(" + platform.getPlatformVersion() + ")"))
+                    Component.text("* ", NamedTextColor.GRAY)
+                    .append(Component.text(platform.getPlatformName())
+                        .hoverEvent(HoverEvent.showText(Component.text(platform.getId()))))
+                    .append(Component.text("(" + platform.getPlatformVersion() + ")"))
             ).newline();
         }
-        actor.print(new MessageBox("Platforms", producer, TextColor.GRAY).create());
+        actor.print(new MessageBox("Platforms", producer, NamedTextColor.GRAY).create());
 
         producer.reset();
         for (Capability capability : Capability.values()) {
             Platform platform = pm.queryCapability(capability);
             producer.append(
-                    TextComponent.of(capability.name(), TextColor.GRAY)
-                    .append(TextComponent.of(": ")
-                    .append(TextComponent.of(platform != null ? platform.getPlatformName() : "none")))
+                    Component.text(capability.name(), NamedTextColor.GRAY)
+                    .append(Component.text(": ")
+                    .append(Component.text(platform != null ? platform.getPlatformName() : "none")))
             ).newline();
         }
-        actor.print(new MessageBox("Capabilities", producer, TextColor.GRAY).create());
+        actor.print(new MessageBox("Capabilities", producer, NamedTextColor.GRAY).create());
     }
 
     @Command(
@@ -112,7 +111,7 @@ public class WorldEditCommands {
     public void reload(Actor actor) {
         we.getPlatformManager().queryCapability(Capability.CONFIGURATION).reload();
         we.getEventBus().post(new ConfigurationLoadEvent(we.getPlatformManager().queryCapability(Capability.CONFIGURATION).getConfiguration()));
-        actor.printInfo(TranslatableComponent.of("worldedit.reload.config"));
+        actor.printInfo(Component.translatable("worldedit.reload.config"));
     }
 
     @Command(
@@ -131,9 +130,9 @@ public class WorldEditCommands {
         try {
             Path dest = we.getConfiguration().getWorkingDirectoryPath().resolve("report.txt");
             Files.writeString(dest, result, StandardCharsets.UTF_8);
-            actor.printInfo(TranslatableComponent.of("worldedit.report.written", TextComponent.of(dest.toAbsolutePath().toString())));
+            actor.printInfo(Component.translatable("worldedit.report.written", Component.text(dest.toAbsolutePath().toString())));
         } catch (IOException e) {
-            actor.printError(TranslatableComponent.of("worldedit.report.error", TextComponent.of(e.getMessage())));
+            actor.printError(Component.translatable("worldedit.report.error", Component.text(e.getMessage())));
         }
 
         if (pastebin) {
@@ -141,7 +140,7 @@ public class WorldEditCommands {
             PasteMetadata metadata = new PasteMetadata();
             metadata.author = actor.getName();
             metadata.extension = "report";
-            ActorCallbackPaste.pastebin(we.getSupervisor(), actor, result, metadata, TranslatableComponent.builder("worldedit.report.callback"));
+            ActorCallbackPaste.pastebin(we.getSupervisor(), actor, result, metadata, Component.translatable("worldedit.report.callback"));
         }
     }
 
@@ -157,14 +156,14 @@ public class WorldEditCommands {
         if (hookMode != null) {
             newMode = hookMode == HookMode.ACTIVE;
             if (newMode == previousMode) {
-                actor.printError(TranslatableComponent.of(previousMode ? "worldedit.trace.active.already" : "worldedit.trace.inactive.already"));
+                actor.printError(Component.translatable(previousMode ? "worldedit.trace.active.already" : "worldedit.trace.inactive.already"));
                 return;
             }
         } else {
             newMode = !previousMode;
         }
         session.setTracingActions(newMode);
-        actor.printInfo(TranslatableComponent.of(newMode ? "worldedit.trace.active" : "worldedit.trace.inactive"));
+        actor.printInfo(Component.translatable(newMode ? "worldedit.trace.active" : "worldedit.trace.inactive"));
     }
 
     @Command(
@@ -186,13 +185,13 @@ public class WorldEditCommands {
         try {
             ZoneId tz = ZoneId.of(timezone);
             session.setTimezone(tz);
-            actor.printInfo(TranslatableComponent.of("worldedit.timezone.set", TextComponent.of(tz.getDisplayName(
+            actor.printInfo(Component.translatable("worldedit.timezone.set", Component.text(tz.getDisplayName(
                     TextStyle.FULL, actor.getLocale()
             ))));
-            actor.printInfo(TranslatableComponent.of("worldedit.timezone.current",
-                    TextComponent.of(dateFormat.withLocale(actor.getLocale()).format(ZonedDateTime.now(tz)))));
+            actor.printInfo(Component.translatable("worldedit.timezone.current",
+                    Component.text(dateFormat.withLocale(actor.getLocale()).format(ZonedDateTime.now(tz)))));
         } catch (ZoneRulesException e) {
-            actor.printError(TranslatableComponent.of("worldedit.timezone.invalid"));
+            actor.printError(Component.translatable("worldedit.timezone.invalid"));
         }
     }
 

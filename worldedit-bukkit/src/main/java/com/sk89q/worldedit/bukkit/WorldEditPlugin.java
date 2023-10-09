@@ -45,6 +45,7 @@ import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.util.formatting.platform.bukkit.BukkitAudiences;
 import com.sk89q.worldedit.util.lifecycle.Lifecycled;
 import com.sk89q.worldedit.util.lifecycle.SimpleLifecycled;
 import com.sk89q.worldedit.world.World;
@@ -121,6 +122,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         SimpleLifecycled.invalid();
     private BukkitServerInterface platform;
     private BukkitConfiguration config;
+    private BukkitAudiences audiences;
 
     @Override
     public void onLoad() {
@@ -170,6 +172,8 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         if (PaperLib.isPaper()) {
             getServer().getPluginManager().registerEvents(new AsyncTabCompleteListener(), this);
         }
+
+        audiences = BukkitAudiences.create(this);
 
         if (Bukkit.getWorlds().isEmpty()) {
             setupPreWorldData();
@@ -469,6 +473,15 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
      */
     public BukkitPlayer wrapPlayer(Player player) {
         return new BukkitPlayer(this, player);
+    }
+
+    /**
+     * Convert a player to an adventure audience.
+     *
+     * @return the parsed adventure audience
+     */
+    public BukkitAudiences getAudiences() {
+        return this.audiences;
     }
 
     public Actor wrapCommandSender(CommandSender sender) {

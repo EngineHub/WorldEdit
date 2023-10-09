@@ -31,7 +31,6 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.math.transform.AffineTransform;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
 import org.enginehub.piston.converter.ConversionResult;
@@ -61,9 +60,9 @@ public class OffsetConverter implements ArgumentConverter<BlockVector3> {
 
     @Override
     public Component describeAcceptableArguments() {
-        return TextComponent.builder()
+        return Component.text()
             .append(directionVectorConverter.describeAcceptableArguments())
-            .append(", or ")
+            .append(Component.text(", or "))
             .append(vectorConverter.describeAcceptableArguments())
             .build();
     }

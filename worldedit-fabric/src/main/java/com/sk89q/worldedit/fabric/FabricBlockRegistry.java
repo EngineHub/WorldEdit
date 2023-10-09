@@ -22,7 +22,6 @@ package com.sk89q.worldedit.fabric;
 import com.sk89q.worldedit.fabric.internal.FabricTransmogrifier;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
@@ -41,7 +40,7 @@ public class FabricBlockRegistry extends BundledBlockRegistry {
 
     @Override
     public Component getRichName(BlockType blockType) {
-        return TranslatableComponent.of(FabricAdapter.adapt(blockType).getDescriptionId());
+        return Component.translatable(FabricAdapter.adapt(blockType).getDescriptionId());
     }
 
     @Override

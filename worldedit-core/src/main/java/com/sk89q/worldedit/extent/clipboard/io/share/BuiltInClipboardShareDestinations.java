@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.paste.EngineHubPaste;
 import com.sk89q.worldedit.util.paste.PasteMetadata;
@@ -62,7 +62,7 @@ public enum BuiltInClipboardShareDestinations implements ClipboardShareDestinati
 
             URL url = pasteService.paste(new String(Base64.getEncoder().encode(outputStream.toByteArray()), StandardCharsets.UTF_8), pasteMetadata).call();
             String urlString = url.toExternalForm() + ".schem";
-            return actor -> actor.printInfo(TextComponent.of(urlString).clickEvent(ClickEvent.openUrl(urlString)));
+            return actor -> actor.printInfo(Component.text(urlString).clickEvent(ClickEvent.openUrl(urlString)));
         }
 
         @Override

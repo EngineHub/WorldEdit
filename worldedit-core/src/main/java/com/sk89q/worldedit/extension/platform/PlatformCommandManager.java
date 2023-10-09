@@ -108,9 +108,8 @@ import com.sk89q.worldedit.internal.util.Substring;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.util.logging.DynamicStreamHandler;
 import com.sk89q.worldedit.util.logging.LogFormat;
 import com.sk89q.worldedit.world.World;
@@ -296,7 +295,7 @@ public final class PlatformCommandManager {
                                           Consumer<CommandManager> additionalConfig) {
         commandManager.register(name, cmd -> {
             cmd.aliases(aliases);
-            cmd.description(TextComponent.of(desc));
+            cmd.description(Component.text(desc));
             cmd.action(Command.Action.NULL_ACTION);
 
             CommandManager manager = commandManagerService.newCommandManager();
@@ -308,8 +307,8 @@ public final class PlatformCommandManager {
             additionalConfig.accept(manager);
 
             final List<Command> subCommands = manager.getAllCommands().collect(Collectors.toList());
-            cmd.addPart(SubCommandPart.builder(TranslatableComponent.of("worldedit.argument.action"),
-                TextComponent.of("Sub-command to run."))
+            cmd.addPart(SubCommandPart.builder(Component.translatable("worldedit.argument.action"),
+                Component.text("Sub-command to run."))
                 .withCommands(subCommands)
                 .required()
                 .build());
@@ -517,19 +516,19 @@ public final class PlatformCommandManager {
             }
         } catch (ConditionFailedException e) {
             if (e.getCondition() instanceof PermissionCondition) {
-                actor.printError(TranslatableComponent.of("worldedit.command.permissions"));
+                actor.printError(Component.translatable("worldedit.command.permissions"));
             } else {
                 actor.print(e.getRichMessage());
             }
         } catch (UsageException e) {
-            actor.print(TextComponent.builder("")
-                .color(TextColor.RED)
+            actor.print(Component.text()
+                .color(NamedTextColor.RED)
                 .append(e.getRichMessage())
                 .build());
             ImmutableList<Command> cmd = e.getCommands();
             if (!cmd.isEmpty()) {
                 actor.printError(
-                        TranslatableComponent.of("worldedit.error.incorrect-usage",
+                        Component.translatable("worldedit.error.incorrect-usage",
                         HelpGenerator.create(e.getCommandParseResult()).getUsage())
                 );
             }
@@ -553,11 +552,11 @@ public final class PlatformCommandManager {
                     double timeS = (time / 1000.0);
                     int changed = editSession.getBlockChangeCount();
                     double throughput = timeS == 0 ? changed : changed / timeS;
-                    actor.printDebug(TranslatableComponent.of(
+                    actor.printDebug(Component.translatable(
                             "worldedit.command.time-elapsed",
-                            TextComponent.of(timeS),
-                            TextComponent.of(changed),
-                            TextComponent.of(Math.round(throughput))
+                            Component.text(timeS),
+                            Component.text(changed),
+                            Component.text(Math.round(throughput))
                     ));
                 }
 
@@ -577,7 +576,7 @@ public final class PlatformCommandManager {
             store.injectValue(Key.of(Player.class, OptionalArg.class), ValueProvider.constant((Player) actor));
         } else {
             store.injectValue(Key.of(Player.class), context -> {
-                throw new CommandException(TranslatableComponent.of("worldedit.command.player-only"), ImmutableList.of());
+                throw new CommandException(Component.translatable("worldedit.command.player-only"), ImmutableList.of());
             });
         }
         store.injectValue(Key.of(Arguments.class), ValueProvider.constant(arguments));

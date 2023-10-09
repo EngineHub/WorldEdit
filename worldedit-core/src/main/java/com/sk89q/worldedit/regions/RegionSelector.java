@@ -28,8 +28,7 @@ import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.world.World;
 
 import java.util.List;
@@ -193,7 +192,7 @@ public interface RegionSelector {
      */
     default List<Component> getSelectionInfoLines() {
         return getInformationLines().stream()
-                .map(line -> TextComponent.of(line, TextColor.LIGHT_PURPLE))
+                .map(line -> Component.text(line, NamedTextColor.LIGHT_PURPLE))
                 .collect(Collectors.toList());
     }
 }

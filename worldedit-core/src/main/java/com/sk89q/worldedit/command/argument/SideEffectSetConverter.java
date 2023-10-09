@@ -44,7 +44,7 @@ public class SideEffectSetConverter implements ArgumentConverter<SideEffectSet> 
         );
     }
 
-    private final TextComponent choices = TextComponent.of("any side effects");
+    private final TextComponent choices = Component.text("any side effects");
     private final CommaSeparatedValuesConverter<SideEffect> sideEffectConverter;
 
     private SideEffectSetConverter(CommaSeparatedValuesConverter<SideEffect> sideEffectConverter) {

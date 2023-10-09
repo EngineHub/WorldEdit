@@ -27,9 +27,7 @@ import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -187,10 +185,10 @@ public abstract class BreadthFirstSearch implements Operation {
 
     @Override
     public Iterable<Component> getStatusMessages() {
-        return ImmutableList.of(TranslatableComponent.of(
+        return ImmutableList.of(Component.translatable(
                 "worldedit.operation.affected.block",
-                TextComponent.of(getAffected())
-        ).color(TextColor.LIGHT_PURPLE));
+                Component.text(getAffected())
+        ).color(NamedTextColor.LIGHT_PURPLE));
     }
 
 }

@@ -23,8 +23,10 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.util.formatting.text.format.TextDecoration;
+import com.sk89q.worldedit.util.formatting.text.serializer.plain.PlainTextComponentSerializer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -42,7 +44,7 @@ public class MessageBox extends TextComponentProducer {
      * Create a new box.
      */
     public MessageBox(String title, TextComponentProducer contents) {
-        this(title, contents, TextColor.YELLOW);
+        this(title, contents, NamedTextColor.YELLOW);
     }
 
     /**
@@ -52,7 +54,7 @@ public class MessageBox extends TextComponentProducer {
         checkNotNull(title);
 
         this.borderColor = borderColor;
-        append(centerAndBorder(TextComponent.of(title))).newline();
+        append(centerAndBorder(Component.text(title))).newline();
         this.contents = contents;
     }
 
@@ -64,11 +66,11 @@ public class MessageBox extends TextComponentProducer {
             if (side > 1) {
                 line.append(createBorder(side - 1));
             }
-            line.append(TextComponent.space());
+            line.append(Component.space());
         }
         line.append(text);
         if (side > 0) {
-            line.append(TextComponent.space());
+            line.append(Component.space());
             if (side > 1) {
                 line.append(createBorder(side - 1));
             }
@@ -77,12 +79,11 @@ public class MessageBox extends TextComponentProducer {
     }
 
     private static int getLength(TextComponent text) {
-        return text.content().length() + text.children().stream().filter(c -> c instanceof TextComponent)
-                .mapToInt(c -> getLength((TextComponent) c)).sum();
+        return PlainTextComponentSerializer.plainText().serialize(text).length();
     }
 
     private TextComponent createBorder(int count) {
-        return TextComponent.of(Strings.repeat("-", count),
+        return Component.text(Strings.repeat("-", count),
                 borderColor, Sets.newHashSet(TextDecoration.STRIKETHROUGH));
     }
 

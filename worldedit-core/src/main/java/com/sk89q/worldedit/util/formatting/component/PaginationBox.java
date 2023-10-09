@@ -21,10 +21,9 @@ package com.sk89q.worldedit.util.formatting.component;
 
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -85,7 +84,7 @@ public abstract class PaginationBox extends MessageBox {
         }
         int pageCount = (int) Math.ceil(getComponentsSize() / (double) componentsPerPage);
         if (page < 1 || page > pageCount) {
-            throw new InvalidComponentException(TranslatableComponent.of("worldedit.error.invalid-page"));
+            throw new InvalidComponentException(Component.translatable("worldedit.error.invalid-page"));
         }
         currentPage = page;
         final int lastComp = Math.min(page * componentsPerPage, getComponentsSize());
@@ -99,23 +98,23 @@ public abstract class PaginationBox extends MessageBox {
             return super.create();
         }
         getContents().newline();
-        TextComponent pageNumberComponent = TextComponent.of("Page ", TextColor.YELLOW)
-                .append(TextComponent.of(String.valueOf(page), TextColor.GOLD))
-                .append(TextComponent.of(" of "))
-                .append(TextComponent.of(String.valueOf(pageCount), TextColor.GOLD));
+        TextComponent pageNumberComponent = Component.text("Page ", NamedTextColor.YELLOW)
+                .append(Component.text(String.valueOf(page), NamedTextColor.GOLD))
+                .append(Component.text(" of "))
+                .append(Component.text(String.valueOf(pageCount), NamedTextColor.GOLD));
         if (pageCommand != null) {
             TextComponentProducer navProducer = new TextComponentProducer();
             if (page > 1) {
-                TextComponent prevComponent = TextComponent.of("<<< ", TextColor.GOLD)
-                        .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, pageCommand.replace("%page%", String.valueOf(page - 1))))
-                        .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to navigate")));
+                TextComponent prevComponent = Component.text("<<< ", NamedTextColor.GOLD)
+                        .clickEvent(ClickEvent.runCommand(pageCommand.replace("%page%", String.valueOf(page - 1))))
+                        .hoverEvent(HoverEvent.showText(Component.text("Click to navigate")));
                 navProducer.append(prevComponent);
             }
             navProducer.append(pageNumberComponent);
             if (page < pageCount) {
-                TextComponent nextComponent = TextComponent.of(" >>>", TextColor.GOLD)
-                        .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, pageCommand.replace("%page%", String.valueOf(page + 1))))
-                        .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to navigate")));
+                TextComponent nextComponent = Component.text(" >>>", NamedTextColor.GOLD)
+                        .clickEvent(ClickEvent.runCommand(pageCommand.replace("%page%", String.valueOf(page + 1))))
+                        .hoverEvent(HoverEvent.showText(Component.text("Click to navigate")));
                 navProducer.append(nextComponent);
             }
             getContents().append(centerAndBorder(navProducer.create()));
@@ -132,7 +131,7 @@ public abstract class PaginationBox extends MessageBox {
 
     public static PaginationBox fromStrings(String header, @Nullable String pageCommand, List<String> lines) {
         return fromComponents(header, pageCommand, lines.stream()
-            .map(TextComponent::of)
+            .map(Component::text)
             .collect(Collectors.toList()));
     }
 

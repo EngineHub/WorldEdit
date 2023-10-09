@@ -30,7 +30,7 @@ import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
@@ -76,7 +76,7 @@ public class FloodFillTool implements BlockTool {
             try {
                 recurse(editSession, origin, origin, range, initialType, new HashSet<>());
             } catch (MaxChangedBlocksException e) {
-                player.printError(TranslatableComponent.of("worldedit.tool.max-block-changes"));
+                player.printError(Component.translatable("worldedit.tool.max-block-changes"));
             } finally {
                 session.remember(editSession);
             }

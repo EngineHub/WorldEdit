@@ -27,7 +27,7 @@ import com.sk89q.worldedit.util.FileDialogUtil;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.serializer.plain.PlainComponentSerializer;
+import com.sk89q.worldedit.util.formatting.text.serializer.plain.PlainTextComponentSerializer;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
@@ -103,7 +103,7 @@ public class CLICommandSender implements Actor {
 
     @Override
     public void print(Component component) {
-        print(PlainComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale())));
+        print(PlainTextComponentSerializer.plainText().serialize(WorldEditText.format(component, getLocale())));
     }
 
     @Override

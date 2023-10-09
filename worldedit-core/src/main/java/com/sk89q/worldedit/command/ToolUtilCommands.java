@@ -29,7 +29,7 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.util.HandSide;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
@@ -56,15 +56,15 @@ public class ToolUtilCommands {
                                   Boolean superPickaxe) {
         boolean hasSuperPickAxe = session.hasSuperPickAxe();
         if (superPickaxe != null && superPickaxe == hasSuperPickAxe) {
-            player.printError(TranslatableComponent.of(superPickaxe ? "worldedit.tool.superpickaxe.enabled.already" : "worldedit.tool.superpickaxe.disabled.already"));
+            player.printError(Component.translatable(superPickaxe ? "worldedit.tool.superpickaxe.enabled.already" : "worldedit.tool.superpickaxe.disabled.already"));
             return;
         }
         if (hasSuperPickAxe) {
             session.disableSuperPickAxe();
-            player.printInfo(TranslatableComponent.of("worldedit.tool.superpickaxe.disabled"));
+            player.printInfo(Component.translatable("worldedit.tool.superpickaxe.disabled"));
         } else {
             session.enableSuperPickAxe();
-            player.printInfo(TranslatableComponent.of("worldedit.tool.superpickaxe.enabled"));
+            player.printInfo(Component.translatable("worldedit.tool.superpickaxe.enabled"));
         }
 
     }
@@ -79,14 +79,14 @@ public class ToolUtilCommands {
                          Mask mask) throws WorldEditException {
         BrushTool brushTool = session.getBrush(player.getItemInHand(HandSide.MAIN_HAND).getType());
         if (brushTool == null) {
-            player.printError(TranslatableComponent.of("worldedit.brush.none.equipped"));
+            player.printError(Component.translatable("worldedit.brush.none.equipped"));
             return;
         }
         brushTool.setMask(mask);
         if (mask == null) {
-            player.printInfo(TranslatableComponent.of("worldedit.tool.mask.disabled"));
+            player.printInfo(Component.translatable("worldedit.tool.mask.disabled"));
         } else {
-            player.printInfo(TranslatableComponent.of("worldedit.tool.mask.set"));
+            player.printInfo(Component.translatable("worldedit.tool.mask.set"));
         }
     }
 
@@ -101,11 +101,11 @@ public class ToolUtilCommands {
                              Pattern pattern) throws WorldEditException {
         BrushTool brushTool = session.getBrush(player.getItemInHand(HandSide.MAIN_HAND).getType());
         if (brushTool == null) {
-            player.printError(TranslatableComponent.of("worldedit.brush.none.equipped"));
+            player.printError(Component.translatable("worldedit.brush.none.equipped"));
             return;
         }
         brushTool.setFill(pattern);
-        player.printInfo(TranslatableComponent.of("worldedit.tool.material.set"));
+        player.printInfo(Component.translatable("worldedit.tool.material.set"));
     }
 
     @Command(
@@ -118,11 +118,11 @@ public class ToolUtilCommands {
                           int range) throws WorldEditException {
         BrushTool brushTool = session.getBrush(player.getItemInHand(HandSide.MAIN_HAND).getType());
         if (brushTool == null) {
-            player.printError(TranslatableComponent.of("worldedit.brush.none.equipped"));
+            player.printError(Component.translatable("worldedit.brush.none.equipped"));
             return;
         }
         brushTool.setRange(range);
-        player.printInfo(TranslatableComponent.of("worldedit.tool.range.set"));
+        player.printInfo(Component.translatable("worldedit.tool.range.set"));
     }
 
     @Command(
@@ -137,11 +137,11 @@ public class ToolUtilCommands {
 
         BrushTool brushTool = session.getBrush(player.getItemInHand(HandSide.MAIN_HAND).getType());
         if (brushTool == null) {
-            player.printError(TranslatableComponent.of("worldedit.brush.none.equipped"));
+            player.printError(Component.translatable("worldedit.brush.none.equipped"));
             return;
         }
         brushTool.setSize(size);
-        player.printInfo(TranslatableComponent.of("worldedit.tool.size.set"));
+        player.printInfo(Component.translatable("worldedit.tool.size.set"));
     }
 
     @Command(
@@ -154,14 +154,14 @@ public class ToolUtilCommands {
                              Mask mask) throws WorldEditException {
         BrushTool brushTool = session.getBrush(player.getItemInHand(HandSide.MAIN_HAND).getType());
         if (brushTool == null) {
-            player.printError(TranslatableComponent.of("worldedit.brush.none.equipped"));
+            player.printError(Component.translatable("worldedit.brush.none.equipped"));
             return;
         }
         brushTool.setTraceMask(mask);
         if (mask == null) {
-            player.printInfo(TranslatableComponent.of("worldedit.tool.tracemask.disabled"));
+            player.printInfo(Component.translatable("worldedit.tool.tracemask.disabled"));
         } else {
-            player.printInfo(TranslatableComponent.of("worldedit.tool.tracemask.set"));
+            player.printInfo(Component.translatable("worldedit.tool.tracemask.set"));
         }
     }
 }

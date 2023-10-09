@@ -31,8 +31,6 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.world.World;
@@ -158,13 +156,13 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
         checkNotNull(pos);
 
         if (position1 != null && position2 != null) {
-            player.printInfo(TranslatableComponent.of(
+            player.printInfo(Component.translatable(
                     "worldedit.selection.cuboid.explain.primary-area",
-                    TextComponent.of(position1.toString()),
-                    TextComponent.of(region.getVolume())
+                    Component.text(position1.toString()),
+                    Component.text(region.getVolume())
             ));
         } else if (position1 != null) {
-            player.printInfo(TranslatableComponent.of("worldedit.selection.cuboid.explain.primary", TextComponent.of(position1.toString())));
+            player.printInfo(Component.translatable("worldedit.selection.cuboid.explain.primary", Component.text(position1.toString())));
         }
 
         session.dispatchCUIEvent(player, new SelectionPointEvent(0, pos, getVolume()));
@@ -177,13 +175,13 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
         checkNotNull(pos);
 
         if (position1 != null && position2 != null) {
-            player.printInfo(TranslatableComponent.of(
+            player.printInfo(Component.translatable(
                     "worldedit.selection.cuboid.explain.secondary-area",
-                    TextComponent.of(position2.toString()),
-                    TextComponent.of(region.getVolume())
+                    Component.text(position2.toString()),
+                    Component.text(region.getVolume())
             ));
         } else if (position2 != null) {
-            player.printInfo(TranslatableComponent.of("worldedit.selection.cuboid.explain.secondary", TextComponent.of(position2.toString())));
+            player.printInfo(Component.translatable("worldedit.selection.cuboid.explain.secondary", Component.text(position2.toString())));
         }
 
         session.dispatchCUIEvent(player, new SelectionPointEvent(1, pos, getVolume()));
@@ -257,15 +255,15 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
         final List<Component> lines = new ArrayList<>();
 
         if (position1 != null) {
-            lines.add(TranslatableComponent.of("worldedit.selection.cuboid.info.pos1", TextComponent.of(position1.toString())
-                    .clickEvent(ClickEvent.of(ClickEvent.Action.COPY_TO_CLIPBOARD, position1.toParserString()))
-                    .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to copy")))));
+            lines.add(Component.translatable("worldedit.selection.cuboid.info.pos1", Component.text(position1.toString())
+                    .clickEvent(ClickEvent.copyToClipboard(position1.toParserString()))
+                    .hoverEvent(HoverEvent.showText(Component.text("Click to copy")))));
         }
 
         if (position2 != null) {
-            lines.add(TranslatableComponent.of("worldedit.selection.cuboid.info.pos2", TextComponent.of(position2.toString())
-                    .clickEvent(ClickEvent.of(ClickEvent.Action.COPY_TO_CLIPBOARD, position2.toParserString()))
-                    .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to copy")))));
+            lines.add(Component.translatable("worldedit.selection.cuboid.info.pos2", Component.text(position2.toString())
+                    .clickEvent(ClickEvent.copyToClipboard(position2.toParserString()))
+                    .hoverEvent(HoverEvent.showText(Component.text("Click to copy")))));
         }
 
         return lines;

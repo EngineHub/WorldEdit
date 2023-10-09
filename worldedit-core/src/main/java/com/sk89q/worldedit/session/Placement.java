@@ -24,8 +24,6 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 
 public class Placement {
     private final PlacementType placementType;
@@ -55,13 +53,13 @@ public class Placement {
 
     public Component getInfo() {
         if (offset.equals(BlockVector3.ZERO)) {
-            return TranslatableComponent.of(placementType.getTranslationKey());
+            return Component.translatable(placementType.getTranslationKey());
         } else {
-            return TranslatableComponent.of(
+            return Component.translatable(
                     placementType.getTranslationKeyWithOffset(),
-                    TextComponent.of(offset.getX()),
-                    TextComponent.of(offset.getY()),
-                    TextComponent.of(offset.getZ())
+                    Component.text(offset.getX()),
+                    Component.text(offset.getY()),
+                    Component.text(offset.getZ())
             );
         }
     }

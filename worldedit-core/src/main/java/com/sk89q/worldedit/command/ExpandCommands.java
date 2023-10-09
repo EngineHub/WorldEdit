@@ -32,8 +32,7 @@ import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.World;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandManager;
@@ -73,8 +72,8 @@ public class ExpandCommands {
             command.condition(new PermissionCondition(ImmutableSet.of("worldedit.selection.expand")));
 
             command.addPart(SubCommandPart.builder(
-                TranslatableComponent.of("vert"),
-                TextComponent.of("Vertical expansion sub-command")
+                Component.translatable("vert"),
+                Component.text("Vertical expansion sub-command")
             )
                 .withCommands(ImmutableSet.of(createVertCommand(commandManager)))
                 .optional()
@@ -88,7 +87,7 @@ public class ExpandCommands {
 
     private static Command createVertCommand(CommandManager commandManager) {
         return commandManager.newCommand("vert")
-            .description(TranslatableComponent.of("worldedit.expand.description.vert"))
+            .description(Component.translatable("worldedit.expand.description.vert"))
             .action(parameters -> {
                 expandVert(
                     requireIV(Key.of(LocalSession.class), "localSession", parameters),
@@ -113,10 +112,10 @@ public class ExpandCommands {
             session.getRegionSelector(world).explainRegionAdjust(actor, session);
             long changeSize = newSize - oldSize;
             actor.printInfo(
-                TranslatableComponent.of("worldedit.expand.expanded.vert", TextComponent.of(changeSize))
+                Component.translatable("worldedit.expand.expanded.vert", Component.text(changeSize))
             );
         } catch (RegionOperationException e) {
-            actor.printError(TextComponent.of(e.getMessage()));
+            actor.printError(Component.text(e.getMessage()));
         }
     }
 
@@ -152,7 +151,7 @@ public class ExpandCommands {
         session.getRegionSelector(world).explainRegionAdjust(actor, session);
 
         long changeSize = newSize - oldSize;
-        actor.printInfo(TranslatableComponent.of("worldedit.expand.expanded", TextComponent.of(changeSize)));
+        actor.printInfo(Component.translatable("worldedit.expand.expanded", Component.text(changeSize)));
     }
 
 }

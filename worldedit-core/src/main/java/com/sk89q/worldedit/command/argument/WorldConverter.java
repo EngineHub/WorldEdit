@@ -47,7 +47,7 @@ public class WorldConverter implements ArgumentConverter<World> {
     private final TextComponent choices;
 
     private WorldConverter() {
-        this.choices = TextComponent.of("any world");
+        this.choices = Component.text("any world");
     }
 
     @Override

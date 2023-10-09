@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.util.formatting.component;
 
 import com.google.common.collect.Iterables;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextDecoration;
@@ -71,14 +71,14 @@ public class CommandUsageBox extends TextComponentProducer {
         TextComponentProducer boxContent = new TextComponentProducer()
             .append(HelpGenerator.create(commands).getFullHelp());
         if (getSubCommands(Iterables.getLast(commands)).size() > 0) {
-            boxContent.append(TextComponent.newline())
-                .append(ColorConfig.helpText().wrap(TextComponent.builder("> ")
-                    .append(ColorConfig.mainText().wrap(TextComponent.builder("List Subcommands")
+            boxContent.append(Component.newline())
+                .append(ColorConfig.helpText().wrap(Component.text("> ")
+                    .append(ColorConfig.mainText().wrap(Component.text("List Subcommands")
                         .decoration(TextDecoration.ITALIC, true)
                         .clickEvent(ClickEvent.runCommand(helpRootCommand + " -s " + commandString))
-                        .hoverEvent(HoverEvent.showText(TextComponent.of("List all subcommands of this command")))
-                        .build()))
-                    .build()));
+                        .hoverEvent(HoverEvent.showText(Component.text("List all subcommands of this command")))
+                    ))
+                ));
         }
         MessageBox box = new MessageBox("Help for " + commandString,
             boxContent);

@@ -24,7 +24,6 @@ import com.sk89q.worldedit.extension.platform.AbstractNonPlayerActor;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -98,7 +97,7 @@ public class BukkitCommandSender extends AbstractNonPlayerActor {
 
     @Override
     public void print(Component component) {
-        TextAdapter.sendMessage(sender, WorldEditText.format(component, getLocale()));
+        plugin.getAudiences().sender(sender).sendMessage(WorldEditText.format(component, getLocale()));
     }
 
     @Override

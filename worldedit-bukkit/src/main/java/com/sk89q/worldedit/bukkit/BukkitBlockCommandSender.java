@@ -25,9 +25,7 @@ import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -70,7 +68,7 @@ public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
     @Deprecated
     public void print(String msg) {
         for (String part : msg.split("\n")) {
-            print(TextComponent.of(part, TextColor.LIGHT_PURPLE));
+            print(Component.text(part, NamedTextColor.LIGHT_PURPLE));
         }
     }
 
@@ -78,7 +76,7 @@ public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
     @Deprecated
     public void printDebug(String msg) {
         for (String part : msg.split("\n")) {
-            print(TextComponent.of(part, TextColor.GRAY));
+            print(Component.text(part, NamedTextColor.GRAY));
         }
     }
 
@@ -86,13 +84,13 @@ public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
     @Deprecated
     public void printError(String msg) {
         for (String part : msg.split("\n")) {
-            print(TextComponent.of(part, TextColor.RED));
+            print(Component.text(part, NamedTextColor.RED));
         }
     }
 
     @Override
     public void print(Component component) {
-        TextAdapter.sendMessage(sender, WorldEditText.format(component, getLocale()));
+        plugin.getAudiences().sender(sender).sendMessage(WorldEditText.format(component, getLocale()));
     }
 
     @Override

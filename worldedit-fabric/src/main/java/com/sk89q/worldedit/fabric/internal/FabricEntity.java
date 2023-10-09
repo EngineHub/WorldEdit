@@ -26,7 +26,6 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.fabric.FabricAdapter;
 import com.sk89q.worldedit.fabric.FabricEntityProperties;
 import com.sk89q.worldedit.fabric.FabricWorldEdit;
-import com.sk89q.worldedit.fabric.internal.NBTConverter;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.concurrency.LazyReference;

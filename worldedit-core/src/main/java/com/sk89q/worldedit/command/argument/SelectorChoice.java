@@ -30,8 +30,6 @@ import com.sk89q.worldedit.regions.selector.ExtendingCuboidRegionSelector;
 import com.sk89q.worldedit.regions.selector.Polygonal2DRegionSelector;
 import com.sk89q.worldedit.regions.selector.SphereRegionSelector;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 
 import java.util.Optional;
@@ -45,8 +43,8 @@ public enum SelectorChoice implements SelectorChoiceOrList {
         public void explainNewSelector(Actor actor) {
             super.explainNewSelector(actor);
             Optional<Integer> limit = ActorSelectorLimits.forActor(actor).getPolygonVertexLimit();
-            limit.ifPresent(integer -> actor.printInfo(TranslatableComponent.of(
-                "worldedit.select.poly.limit-message", TextComponent.of(integer)
+            limit.ifPresent(integer -> actor.printInfo(Component.translatable(
+                "worldedit.select.poly.limit-message", Component.text(integer)
             )));
         }
     },
@@ -58,8 +56,8 @@ public enum SelectorChoice implements SelectorChoiceOrList {
         public void explainNewSelector(Actor actor) {
             super.explainNewSelector(actor);
             Optional<Integer> limit = ActorSelectorLimits.forActor(actor).getPolyhedronVertexLimit();
-            limit.ifPresent(integer -> actor.printInfo(TranslatableComponent.of(
-                "worldedit.select.convex.limit-message", TextComponent.of(integer)
+            limit.ifPresent(integer -> actor.printInfo(Component.translatable(
+                "worldedit.select.convex.limit-message", Component.text(integer)
             )));
         }
     },
@@ -74,7 +72,7 @@ public enum SelectorChoice implements SelectorChoiceOrList {
                    String message) {
         this.newFromWorld = newFromWorld;
         this.newFromOld = newFromOld;
-        this.messageComponent = TranslatableComponent.of(message);
+        this.messageComponent = Component.translatable(message);
     }
 
     public RegionSelector createNewSelector(World world) {

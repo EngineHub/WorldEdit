@@ -30,7 +30,7 @@ import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.Component;
 
 import java.util.Locale;
 import java.util.stream.Stream;
@@ -79,11 +79,11 @@ public class ClipboardPatternParser extends InputParser<Pattern> {
             String coords = offsetParts[1];
             if (coords.length() < 7  // min length of `[x,y,z]`
                 || coords.charAt(0) != '[' || coords.charAt(coords.length() - 1) != ']') {
-                throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.clipboard.missing-offset"));
+                throw new InputParseException(Component.translatable("worldedit.error.parser.clipboard.missing-offset"));
             }
             String[] offsetSplit = coords.substring(1, coords.length() - 1).split(",");
             if (offsetSplit.length != 3) {
-                throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.clipboard.missing-coordinates"));
+                throw new InputParseException(Component.translatable("worldedit.error.parser.clipboard.missing-coordinates"));
             }
             offset = BlockVector3.at(
                     Integer.parseInt(offsetSplit[0]),
@@ -98,10 +98,10 @@ public class ClipboardPatternParser extends InputParser<Pattern> {
                 Clipboard clipboard = holder.getClipboard();
                 return new ClipboardPattern(clipboard, offset);
             } catch (EmptyClipboardException e) {
-                throw new InputParseException(TranslatableComponent.of("worldedit.error.empty-clipboard"));
+                throw new InputParseException(Component.translatable("worldedit.error.empty-clipboard"));
             }
         } else {
-            throw new InputParseException(TranslatableComponent.of("worldedit.error.missing-session"));
+            throw new InputParseException(Component.translatable("worldedit.error.missing-session"));
         }
     }
 

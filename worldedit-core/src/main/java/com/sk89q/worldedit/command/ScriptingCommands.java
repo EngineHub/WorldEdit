@@ -26,7 +26,7 @@ import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
@@ -69,7 +69,7 @@ public class ScriptingCommands {
                         @Arg(desc = "Arguments to the CraftScript", def = "", variable = true)
                             List<String> args) throws WorldEditException {
         if (!player.hasPermission("worldedit.scripting.execute." + filename)) {
-            player.printError(TranslatableComponent.of("worldedit.execute.script-permissions"));
+            player.printError(Component.translatable("worldedit.execute.script-permissions"));
             return;
         }
 
@@ -95,12 +95,12 @@ public class ScriptingCommands {
         String lastScript = session.getLastScript();
 
         if (!player.hasPermission("worldedit.scripting.execute." + lastScript)) {
-            player.printError(TranslatableComponent.of("worldedit.execute.script-permissions"));
+            player.printError(Component.translatable("worldedit.execute.script-permissions"));
             return;
         }
 
         if (lastScript == null) {
-            player.printError(TranslatableComponent.of("worldedit.executelast.no-script"));
+            player.printError(Component.translatable("worldedit.executelast.no-script"));
             return;
         }
 

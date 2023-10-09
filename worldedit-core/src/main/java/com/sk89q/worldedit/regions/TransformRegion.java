@@ -24,7 +24,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.math.transform.Identity;
 import com.sk89q.worldedit.math.transform.Transform;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.World;
 
 import java.util.ArrayList;
@@ -134,17 +134,17 @@ public class TransformRegion extends AbstractRegion {
 
     @Override
     public void expand(BlockVector3... changes) throws RegionOperationException {
-        throw new RegionOperationException(TranslatableComponent.of("worldedit.selection.transform.error.cannot-expand"));
+        throw new RegionOperationException(Component.translatable("worldedit.selection.transform.error.cannot-expand"));
     }
 
     @Override
     public void contract(BlockVector3... changes) throws RegionOperationException {
-        throw new RegionOperationException(TranslatableComponent.of("worldedit.selection.transform.error.cannot-contract"));
+        throw new RegionOperationException(Component.translatable("worldedit.selection.transform.error.cannot-contract"));
     }
 
     @Override
     public void shift(BlockVector3 change) throws RegionOperationException {
-        throw new RegionOperationException(TranslatableComponent.of("worldedit.selection.transform.error.cannot-change"));
+        throw new RegionOperationException(Component.translatable("worldedit.selection.transform.error.cannot-change"));
     }
 
     @Override

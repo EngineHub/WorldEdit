@@ -24,7 +24,7 @@ import com.sk89q.worldedit.session.SessionOwner;
 import com.sk89q.worldedit.util.Identifiable;
 import com.sk89q.worldedit.util.auth.Subject;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 
 import java.io.File;
 import java.util.Locale;
@@ -92,7 +92,7 @@ public interface Actor extends Identifiable, SessionOwner, Subject {
      * @param component The component to print
      */
     default void printError(Component component) {
-        print(component.color(TextColor.RED));
+        print(component.color(NamedTextColor.RED));
     }
 
     /**
@@ -101,7 +101,7 @@ public interface Actor extends Identifiable, SessionOwner, Subject {
      * @param component The component to print
      */
     default void printInfo(Component component) {
-        print(component.color(TextColor.LIGHT_PURPLE));
+        print(component.color(NamedTextColor.LIGHT_PURPLE));
     }
 
     /**
@@ -110,7 +110,7 @@ public interface Actor extends Identifiable, SessionOwner, Subject {
      * @param component The component to print
      */
     default void printDebug(Component component) {
-        print(component.color(TextColor.GRAY));
+        print(component.color(NamedTextColor.GRAY));
     }
 
     /**
