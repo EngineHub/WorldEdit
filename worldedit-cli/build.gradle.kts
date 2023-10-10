@@ -18,6 +18,7 @@ dependencies {
     "annotationProcessor"(project(":worldedit-libs:core:ap"))
     "annotationProcessor"(libs.guava)
     "api"(project(":worldedit-core"))
+    "api"(project(":worldedit-libs:cli"))
     "implementation"(platform(libs.log4j.bom))
     "implementation"(libs.log4j.api)
     "implementation"(libs.log4j.core)

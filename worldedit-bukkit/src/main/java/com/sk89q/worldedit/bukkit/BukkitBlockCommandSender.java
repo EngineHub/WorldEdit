@@ -23,7 +23,6 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.AbstractCommandBlockActor;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.adventure.text.Component;
-import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
 import org.bukkit.Bukkit;
@@ -61,30 +60,6 @@ public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
             sender.sendMessage(part);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void print(String msg) {
-        for (String part : msg.split("\n")) {
-            print(Component.text(part, NamedTextColor.LIGHT_PURPLE));
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void printDebug(String msg) {
-        for (String part : msg.split("\n")) {
-            print(Component.text(part, NamedTextColor.GRAY));
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void printError(String msg) {
-        for (String part : msg.split("\n")) {
-            print(Component.text(part, NamedTextColor.RED));
         }
     }
 

@@ -113,30 +113,6 @@ public class BukkitPlayer extends AbstractPlayerActor {
     }
 
     @Override
-    @Deprecated
-    public void print(String msg) {
-        for (String part : msg.split("\n")) {
-            player.sendMessage("§d" + part);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void printDebug(String msg) {
-        for (String part : msg.split("\n")) {
-            player.sendMessage("§7" + part);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void printError(String msg) {
-        for (String part : msg.split("\n")) {
-            player.sendMessage("§c" + part);
-        }
-    }
-
-    @Override
     public void print(Component component) {
         plugin.getAudiences().player(player).sendMessage(WorldEditText.format(component, getLocale()));
     }

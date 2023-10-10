@@ -67,7 +67,11 @@ public interface Actor extends Identifiable, SessionOwner, Subject {
      * @deprecated Use component-based functions (printDebug)
      */
     @Deprecated
-    void printDebug(String msg);
+    default void printDebug(String msg) {
+        for (String part : msg.split("\n")) {
+            print(Component.text(part, NamedTextColor.GRAY));
+        }
+    }
 
     /**
      * Print a WorldEdit message.
@@ -76,7 +80,11 @@ public interface Actor extends Identifiable, SessionOwner, Subject {
      * @deprecated Use component-based functions (printInfo)
      */
     @Deprecated
-    void print(String msg);
+    default void print(String msg) {
+        for (String part : msg.split("\n")) {
+            print(Component.text(part, NamedTextColor.LIGHT_PURPLE));
+        }
+    }
 
     /**
      * Print a WorldEdit error.
@@ -85,7 +93,11 @@ public interface Actor extends Identifiable, SessionOwner, Subject {
      * @deprecated Use component-based functions (printError)
      */
     @Deprecated
-    void printError(String msg);
+    default void printError(String msg) {
+        for (String part : msg.split("\n")) {
+            print(Component.text(part, NamedTextColor.RED));
+        }
+    }
 
     /**
      * Print a WorldEdit error.

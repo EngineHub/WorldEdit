@@ -69,30 +69,6 @@ public class SpongeBlockCommandSender extends AbstractCommandBlockActor {
     }
 
     @Override
-    @Deprecated
-    public void print(String msg) {
-        for (String part : msg.split("\n")) {
-            print(Component.text(part, NamedTextColor.LIGHT_PURPLE));
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void printDebug(String msg) {
-        for (String part : msg.split("\n")) {
-            print(Component.text(part, NamedTextColor.GRAY));
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void printError(String msg) {
-        for (String part : msg.split("\n")) {
-            print(Component.text(part, NamedTextColor.RED));
-        }
-    }
-
-    @Override
     public void print(Component component) {
         sendMessage(SpongeTextAdapter.convert(component, getLocale()));
     }

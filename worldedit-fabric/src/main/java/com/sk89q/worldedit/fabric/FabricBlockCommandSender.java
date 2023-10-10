@@ -33,6 +33,7 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.BaseCommandBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import org.jetbrains.annotations.NotNull;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
