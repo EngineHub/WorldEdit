@@ -19,6 +19,7 @@ dependencies {
     "annotationProcessor"(project(":worldedit-libs:core:ap"))
     "annotationProcessor"("com.google.guava:guava:${Versions.GUAVA}")
     "api"(project(":worldedit-core"))
+    "api"(project(":worldedit-libs:cli"))
     "implementation"(platform("org.apache.logging.log4j:log4j-bom:${Versions.LOG4J}") {
         because("We control Log4J on this platform")
     })

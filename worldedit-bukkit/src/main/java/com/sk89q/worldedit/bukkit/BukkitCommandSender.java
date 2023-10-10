@@ -72,30 +72,6 @@ public class BukkitCommandSender extends AbstractNonPlayerActor {
     }
 
     @Override
-    @Deprecated
-    public void print(String msg) {
-        for (String part : msg.split("\n")) {
-            sender.sendMessage("§d" + part);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void printDebug(String msg) {
-        for (String part : msg.split("\n")) {
-            sender.sendMessage("§7" + part);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void printError(String msg) {
-        for (String part : msg.split("\n")) {
-            sender.sendMessage("§c" + part);
-        }
-    }
-
-    @Override
     public void print(Component component) {
         plugin.getAudiences().sender(sender).sendMessage(WorldEditText.format(component, getLocale()));
     }

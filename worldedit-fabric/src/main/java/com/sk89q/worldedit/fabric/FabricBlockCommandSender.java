@@ -33,6 +33,7 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.BaseCommandBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import org.jetbrains.annotations.NotNull;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
@@ -65,27 +66,9 @@ public class FabricBlockCommandSender extends AbstractCommandBlockActor {
     }
 
     @Override
-    @Deprecated
-    public void printDebug(String msg) {
-        sendColorized(msg, ChatFormatting.GRAY);
-    }
-
-    @Override
-    @Deprecated
-    public void print(String msg) {
-        sendColorized(msg, ChatFormatting.LIGHT_PURPLE);
-    }
-
-    @Override
-    @Deprecated
-    public void printError(String msg) {
-        sendColorized(msg, ChatFormatting.RED);
-    }
-
-    @Override
-    public void print(Component component) {
-        sendMessage(net.minecraft.network.chat.Component.Serializer.fromJson(
-            GsonComponentSerializer.gson().serialize(WorldEditText.format(component, getLocale()))
+    public void print(@NotNull Component component) {
+        this.sender.sendSystemMessage(net.minecraft.network.chat.Component.Serializer.fromJson(
+                GsonComponentSerializer.gson().serialize(WorldEditText.format(component, getLocale()))
         ));
     }
 

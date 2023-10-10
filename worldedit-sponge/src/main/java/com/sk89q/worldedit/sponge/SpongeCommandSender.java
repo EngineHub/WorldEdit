@@ -73,30 +73,6 @@ public class SpongeCommandSender implements Actor {
     }
 
     @Override
-    @Deprecated
-    public void print(String msg) {
-        for (String part : msg.split("\n")) {
-            sender.sendMessage(Component.text(part, NamedTextColor.LIGHT_PURPLE));
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void printDebug(String msg) {
-        for (String part : msg.split("\n")) {
-            sender.sendMessage(Component.text(part, NamedTextColor.GRAY));
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void printError(String msg) {
-        for (String part : msg.split("\n")) {
-            sender.sendMessage(Component.text(part, NamedTextColor.RED));
-        }
-    }
-
-    @Override
     public void print(com.sk89q.worldedit.util.adventure.text.Component component) {
         sender.sendMessage(SpongeTextAdapter.convert(component, getLocale()));
     }

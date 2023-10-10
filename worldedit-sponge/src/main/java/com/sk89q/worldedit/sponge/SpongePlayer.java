@@ -145,34 +145,8 @@ public class SpongePlayer extends AbstractPlayerActor {
     }
 
     @Override
-    @Deprecated
-    public void printDebug(String msg) {
-        sendColorized(msg, NamedTextColor.GRAY);
-    }
-
-    @Override
-    @Deprecated
-    public void print(String msg) {
-        sendColorized(msg, NamedTextColor.LIGHT_PURPLE);
-    }
-
-    @Override
-    @Deprecated
-    public void printError(String msg) {
-        sendColorized(msg, NamedTextColor.RED);
-    }
-
-    @Override
     public void print(Component component) {
         player.sendMessage(SpongeTextAdapter.convert(component, getLocale()));
-    }
-
-    private void sendColorized(String msg, TextColor formatting) {
-        for (String part : msg.split("\n")) {
-            this.player.sendMessage(
-                LegacyComponentSerializer.legacySection().deserialize(part).color(formatting)
-            );
-        }
     }
 
     @Override
