@@ -107,8 +107,11 @@ public class SnowHeightMap {
         float[] newData = data.clone();
 
         for (int i = 0; i < iterations; ++i) {
-            // add an offset from 0.0625F to the values (snowlayer half)
-            newData = filter.filter(newData, width, height, 0.0625F);
+            newData = filter.filter(newData, width, height, 0);
+        }
+        // add an offset from 0.0625F to the values (half snowlayer)
+        for (int i = 0; i < newData.length; ++i) {
+            newData[i] = newData[i] + 0.0625F;
         }
         return newData;
     }
