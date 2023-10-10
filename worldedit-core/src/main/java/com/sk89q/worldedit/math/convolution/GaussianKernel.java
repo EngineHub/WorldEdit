@@ -40,10 +40,18 @@ public class GaussianKernel extends Kernel {
 
         double sigma22 = 2 * sigma * sigma;
         double constant = Math.PI * sigma22;
+        float sum = 0;
         for (int y = -radius; y <= radius; ++y) {
             for (int x = -radius; x <= radius; ++x) {
-                data[(y + radius) * diameter + x + radius] = (float) (Math.exp(-(x * x + y * y) / sigma22) / constant);
+                float value = (float) (Math.exp(-(x * x + y * y) / sigma22) / constant);
+                data[(y + radius) * diameter + x + radius] = value;
+                sum += value;
             }
+        }
+
+        // GaussianKernel assumes a circle, however we have whole blocks. Normalize the array.
+        for (int i = 0; i < data.length; i++) {
+            data[i] = data[i] / sum;
         }
 
         return data;
