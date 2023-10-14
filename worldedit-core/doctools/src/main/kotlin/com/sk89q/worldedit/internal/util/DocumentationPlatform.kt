@@ -21,10 +21,13 @@ package com.sk89q.worldedit.internal.util
 
 import com.sk89q.worldedit.entity.Player
 import com.sk89q.worldedit.extension.platform.AbstractPlatform
+import com.sk89q.worldedit.extension.platform.Capability
+import com.sk89q.worldedit.extension.platform.Preference
 import com.sk89q.worldedit.world.World
 import org.enginehub.piston.CommandManager
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.EnumMap
 import java.util.Properties
 
 class DocumentationPlatform : AbstractPlatform() {
@@ -55,11 +58,20 @@ class DocumentationPlatform : AbstractPlatform() {
 
     override fun matchWorld(world: World?) = error("Documentation does not provide this")
 
-    override fun registerCommands(commandManager: CommandManager?) = error("Documentation does not provide this")
+    override fun registerCommands(commandManager: CommandManager?) {}
 
-    override fun setGameHooksEnabled(enabled: Boolean) = error("Documentation does not provide this")
+    override fun setGameHooksEnabled(enabled: Boolean) {}
 
-    override fun getCapabilities() = error("Documentation does not provide this")
+    override fun getCapabilities(): MutableMap<Capability, Preference> {
+        val capabilities: MutableMap<Capability, Preference> = EnumMap(Capability::class.java)
+        capabilities[Capability.CONFIGURATION] = Preference.NORMAL
+        capabilities[Capability.WORLDEDIT_CUI] = Preference.NORMAL
+        capabilities[Capability.GAME_HOOKS] = Preference.PREFERRED
+        capabilities[Capability.PERMISSIONS] = Preference.PREFERRED
+        capabilities[Capability.USER_COMMANDS] = Preference.PREFERRED
+        capabilities[Capability.WORLD_EDITING] = Preference.PREFER_OTHERS
+        return capabilities
+    }
 
     override fun getSupportedSideEffects() = error("Documentation does not provide this")
 
