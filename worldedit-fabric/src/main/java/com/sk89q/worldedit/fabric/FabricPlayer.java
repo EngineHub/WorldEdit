@@ -32,10 +32,10 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.serializer.gson.GsonComponentSerializer;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.component.TextUtils;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -154,34 +154,10 @@ public class FabricPlayer extends AbstractPlayerActor {
     }
 
     @Override
-    @Deprecated
-    public void printDebug(String msg) {
-        sendColorized(msg, ChatFormatting.GRAY);
-    }
-
-    @Override
-    @Deprecated
-    public void print(String msg) {
-        sendColorized(msg, ChatFormatting.LIGHT_PURPLE);
-    }
-
-    @Override
-    @Deprecated
-    public void printError(String msg) {
-        sendColorized(msg, ChatFormatting.RED);
-    }
-
-    @Override
     public void print(Component component) {
-        this.player.sendSystemMessage(net.minecraft.network.chat.Component.Serializer.fromJson(GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale()))));
-    }
-
-    private void sendColorized(String msg, ChatFormatting formatting) {
-        for (String part : msg.split("\n")) {
-            MutableComponent component = net.minecraft.network.chat.Component.literal(part)
-                .withStyle(style -> style.withColor(formatting));
-            this.player.sendSystemMessage(component);
-        }
+        this.player.sendSystemMessage(net.minecraft.network.chat.Component.Serializer.fromJson(
+                GsonComponentSerializer.gson().serialize(WorldEditText.format(component, getLocale()))
+        ));
     }
 
     @Override

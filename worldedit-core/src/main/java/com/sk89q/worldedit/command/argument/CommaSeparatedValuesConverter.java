@@ -23,8 +23,8 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.TextComponent;
 import org.enginehub.piston.converter.ArgumentConverter;
 import org.enginehub.piston.converter.ConversionResult;
 import org.enginehub.piston.converter.SuccessfulConversion;
@@ -35,7 +35,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.sk89q.worldedit.util.formatting.text.TextComponent.space;
 
 public class CommaSeparatedValuesConverter<T> implements ArgumentConverter<T> {
 
@@ -71,13 +70,13 @@ public class CommaSeparatedValuesConverter<T> implements ArgumentConverter<T> {
 
     @Override
     public Component describeAcceptableArguments() {
-        TextComponent.Builder result = TextComponent.builder("");
+        TextComponent.Builder result = Component.text();
         if (maximum > -1) {
-            result.append(TextComponent.of("up to "))
-                .append(TextComponent.of(maximum))
-                .append(space());
+            result.append(Component.text("up to "))
+                .append(Component.text(maximum))
+                .append(Component.space());
         }
-        result.append(TextComponent.of("comma separated values of: "))
+        result.append(Component.text("comma separated values of: "))
             .append(delegate.describeAcceptableArguments());
         return result.build();
     }

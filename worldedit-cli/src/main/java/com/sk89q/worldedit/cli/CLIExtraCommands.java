@@ -24,7 +24,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
 import com.sk89q.worldedit.regions.selector.ExtendingCuboidRegionSelector;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.util.task.Task;
 import com.sk89q.worldedit.world.World;
 import org.enginehub.piston.annotation.Command;
@@ -46,7 +46,7 @@ public class CLIExtraCommands {
             selector = new CuboidRegionSelector(world, world.getMinimumPoint(), world.getMaximumPoint());
         }
         session.setRegionSelector(world, selector);
-        actor.printInfo(TextComponent.of("Selected the entire world."));
+        actor.printInfo(Component.text("Selected the entire world."));
     }
 
     @Command(

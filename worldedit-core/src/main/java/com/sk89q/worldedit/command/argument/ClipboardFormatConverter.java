@@ -22,8 +22,8 @@ package com.sk89q.worldedit.command.argument;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.share.ClipboardShareDestination;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.TextComponent;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
 import org.enginehub.piston.converter.ConversionResult;
@@ -48,7 +48,7 @@ public class ClipboardFormatConverter implements ArgumentConverter<ClipboardForm
     private final TextComponent choices;
 
     private ClipboardFormatConverter() {
-        this.choices = TextComponent.of("any clipboard format");
+        this.choices = Component.text("any clipboard format");
     }
 
     @Override

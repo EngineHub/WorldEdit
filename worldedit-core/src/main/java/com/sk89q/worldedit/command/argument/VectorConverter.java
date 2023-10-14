@@ -25,8 +25,7 @@ import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector2;
 import com.sk89q.worldedit.math.Vector3;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
 import org.enginehub.piston.converter.ArgumentConverters;
@@ -95,7 +94,7 @@ public class VectorConverter<C, T> implements ArgumentConverter<T> {
 
     @Override
     public Component describeAcceptableArguments() {
-        return TextComponent.of("any " + acceptableArguments);
+        return Component.text("any " + acceptableArguments);
     }
 
     @Override

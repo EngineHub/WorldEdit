@@ -27,7 +27,7 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.math.geom.Polygons;
 import com.sk89q.worldedit.regions.iterator.FlatRegion3DIterator;
 import com.sk89q.worldedit.regions.iterator.FlatRegionIterator;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.world.World;
 
 import java.math.BigDecimal;
@@ -220,7 +220,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
         }
 
         if ((diff.getBlockX() & 1) + (diff.getBlockZ() & 1) != 0) {
-            throw new RegionOperationException(TranslatableComponent.of("worldedit.selection.cylinder.error.even-horizontal"));
+            throw new RegionOperationException(Component.translatable("worldedit.selection.cylinder.error.even-horizontal"));
         }
 
         return diff.divide(2).floor();

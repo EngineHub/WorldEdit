@@ -31,7 +31,7 @@ import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.sponge.internal.NbtAdapter;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.gamemode.GameMode;
@@ -145,34 +145,8 @@ public class SpongePlayer extends AbstractPlayerActor {
     }
 
     @Override
-    @Deprecated
-    public void printDebug(String msg) {
-        sendColorized(msg, NamedTextColor.GRAY);
-    }
-
-    @Override
-    @Deprecated
-    public void print(String msg) {
-        sendColorized(msg, NamedTextColor.LIGHT_PURPLE);
-    }
-
-    @Override
-    @Deprecated
-    public void printError(String msg) {
-        sendColorized(msg, NamedTextColor.RED);
-    }
-
-    @Override
     public void print(Component component) {
         player.sendMessage(SpongeTextAdapter.convert(component, getLocale()));
-    }
-
-    private void sendColorized(String msg, TextColor formatting) {
-        for (String part : msg.split("\n")) {
-            this.player.sendMessage(
-                LegacyComponentSerializer.legacySection().deserialize(part).color(formatting)
-            );
-        }
     }
 
     @Override

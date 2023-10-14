@@ -21,8 +21,8 @@ package com.sk89q.worldedit.command.argument;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.TextComponent;
 import com.sk89q.worldedit.world.World;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
@@ -47,7 +47,7 @@ public class WorldConverter implements ArgumentConverter<World> {
     private final TextComponent choices;
 
     private WorldConverter() {
-        this.choices = TextComponent.of("any world");
+        this.choices = Component.text("any world");
     }
 
     @Override

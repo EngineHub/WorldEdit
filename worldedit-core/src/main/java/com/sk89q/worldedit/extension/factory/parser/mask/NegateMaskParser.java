@@ -25,7 +25,7 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.internal.registry.InputParser;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.adventure.text.Component;
 
 import java.util.stream.Stream;
 
@@ -55,7 +55,7 @@ public class NegateMaskParser extends InputParser<Mask> {
         if (input.length() > 1) {
             return Masks.negate(worldEdit.getMaskFactory().parseFromInput(input.substring(1), context));
         } else {
-            throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.negate-nothing"));
+            throw new InputParseException(Component.translatable("worldedit.error.parser.negate-nothing"));
         }
     }
 }

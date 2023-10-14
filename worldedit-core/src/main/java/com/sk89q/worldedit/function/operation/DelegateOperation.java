@@ -21,7 +21,7 @@ package com.sk89q.worldedit.function.operation;
 
 import com.google.common.collect.Iterables;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -60,8 +60,8 @@ public class DelegateOperation implements Operation {
     }
 
     @Override
-    public Iterable<Component> getStatusMessages() {
-        return Iterables.concat(original.getStatusMessages(), delegate.getStatusMessages());
+    public Iterable<Component> getMessages() {
+        return Iterables.concat(original.getMessages(), delegate.getMessages());
     }
 
 }

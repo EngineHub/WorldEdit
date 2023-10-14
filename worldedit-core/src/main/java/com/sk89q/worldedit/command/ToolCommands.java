@@ -48,11 +48,9 @@ import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.TreeGenerator;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.event.ClickEvent;
+import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.item.ItemType;
 import org.enginehub.piston.CommandManager;
@@ -71,9 +69,8 @@ import java.util.stream.Collectors;
 @CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class ToolCommands {
 
-    private static final Component UNBIND_COMMAND_COMPONENT = TextComponent.builder("/tool unbind", TextColor.AQUA)
-                                                                   .clickEvent(ClickEvent.suggestCommand("/tool unbind"))
-                                                                   .build();
+    private static final Component UNBIND_COMMAND_COMPONENT = Component.text("/tool unbind", NamedTextColor.AQUA)
+                                                                   .clickEvent(ClickEvent.suggestCommand("/tool unbind"));
 
     public static void register(CommandRegistrationHandler registration,
                                 CommandManager commandManager,
@@ -119,13 +116,13 @@ public class ToolCommands {
             .collect(Collectors.toSet());
         commandManager.register("tool", command -> {
             command.addPart(SubCommandPart.builder(
-                TranslatableComponent.of("tool"),
-                TextComponent.of("The tool to bind")
+                Component.translatable("tool"),
+                Component.text("The tool to bind")
             )
                 .withCommands(nonGlobalCommands)
                 .required()
                 .build());
-            command.description(TextComponent.of("Binds a tool to the item in your hand"));
+            command.description(Component.text("Binds a tool to the item in your hand"));
 
             command.condition(new SubCommandPermissionCondition.Generator(nonGlobalCommands).build());
         });
@@ -148,21 +145,21 @@ public class ToolCommands {
             || type.getId().equals(session.getNavWandItem());
         if (set) {
             session.setTool(type, null);
-            player.printInfo(TranslatableComponent.of(isBrush ? "worldedit.brush.none.equip" : "worldedit.tool.none.equip"));
+            player.printInfo(Component.translatable(isBrush ? "worldedit.brush.none.equip" : "worldedit.tool.none.equip"));
         } else {
-            player.printInfo(TranslatableComponent.of("worldedit.tool.none.to.unequip"));
+            player.printInfo(Component.translatable("worldedit.tool.none.to.unequip"));
         }
     }
 
     static void sendUnbindInstruction(Player sender, Component commandComponent) {
-        sender.printDebug(TranslatableComponent.of("worldedit.tool.unbind-instruction", commandComponent));
+        sender.printDebug(Component.translatable("worldedit.tool.unbind-instruction", commandComponent));
     }
 
     private static void setTool(Player player, LocalSession session, Tool tool,
                                 String translationKey) throws InvalidToolBindException {
         BaseItemStack itemStack = player.getItemInHand(HandSide.MAIN_HAND);
         session.setTool(itemStack.getType(), tool);
-        player.printInfo(TranslatableComponent.of(translationKey, itemStack.getRichName()));
+        player.printInfo(Component.translatable(translationKey, itemStack.getDisplayName()));
         sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
     }
 
@@ -269,7 +266,7 @@ public class ToolCommands {
         LocalConfiguration config = we.getConfiguration();
 
         if (range > config.maxSuperPickaxeSize) {
-            player.printError(TranslatableComponent.of("worldedit.tool.superpickaxe.max-range", TextComponent.of(config.maxSuperPickaxeSize)));
+            player.printError(Component.translatable("worldedit.tool.superpickaxe.max-range", Component.text(config.maxSuperPickaxeSize)));
             return;
         }
         setTool(player, session, new FloodFillTool(range, pattern), "worldedit.tool.floodfill.equip");
@@ -308,15 +305,15 @@ public class ToolCommands {
         Component primaryName;
         Component secondaryName;
         if (primary instanceof BlockStateHolder) {
-            primaryName = ((BlockStateHolder<?>) primary).getBlockType().getRichName();
+            primaryName = ((BlockStateHolder<?>) primary).getBlockType().getDisplayName();
         } else {
-            primaryName = TextComponent.of("pattern");
+            primaryName = Component.text("pattern");
         }
         if (secondary instanceof BlockStateHolder) {
-            secondaryName = ((BlockStateHolder<?>) secondary).getBlockType().getRichName();
+            secondaryName = ((BlockStateHolder<?>) secondary).getBlockType().getDisplayName();
         } else {
-            secondaryName = TextComponent.of("pattern");
+            secondaryName = Component.text("pattern");
         }
-        player.printInfo(TranslatableComponent.of("worldedit.tool.lrbuild.set", primaryName, secondaryName));
+        player.printInfo(Component.translatable("worldedit.tool.lrbuild.set", primaryName, secondaryName));
     }
 }

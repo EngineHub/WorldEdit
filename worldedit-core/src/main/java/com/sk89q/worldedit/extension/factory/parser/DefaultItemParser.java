@@ -30,9 +30,8 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.util.HandSide;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
@@ -66,7 +65,7 @@ public class DefaultItemParser extends InputParser<BaseItem> {
             try {
                 String[] split = input.split(":");
                 if (split.length == 0) {
-                    throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.invalid-colon"));
+                    throw new InputParseException(Component.translatable("worldedit.error.parser.invalid-colon"));
                 } else if (split.length == 1) {
                     itemType = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(split[0]));
                 } else {
@@ -89,11 +88,11 @@ public class DefaultItemParser extends InputParser<BaseItem> {
             } else {
                 typeString = input.substring(0, nbtStart);
                 if (nbtStart + 1 >= input.length()) {
-                    throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.hanging-lbrace", TextComponent.of(nbtStart)));
+                    throw new InputParseException(Component.translatable("worldedit.error.parser.hanging-lbrace", Component.text(nbtStart)));
                 }
                 int stateEnd = input.lastIndexOf('}');
                 if (stateEnd < 0) {
-                    throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.missing-rbrace"));
+                    throw new InputParseException(Component.translatable("worldedit.error.parser.missing-rbrace"));
                 }
                 nbtString = input.substring(nbtStart);
             }
@@ -111,7 +110,7 @@ public class DefaultItemParser extends InputParser<BaseItem> {
             }
 
             if (itemType == null) {
-                throw new NoMatchException(TranslatableComponent.of("worldedit.error.unknown-item", TextComponent.of(input)));
+                throw new NoMatchException(Component.translatable("worldedit.error.unknown-item", Component.text(input)));
             }
 
             if (nbtString != null) {
@@ -119,10 +118,10 @@ public class DefaultItemParser extends InputParser<BaseItem> {
                 try {
                     otherTag = LinStringIO.readFromStringUsing(nbtString, LinCompoundTag::readFrom);
                 } catch (NbtParseException e) {
-                    throw new NoMatchException(TranslatableComponent.of(
+                    throw new NoMatchException(Component.translatable(
                         "worldedit.error.invalid-nbt",
-                        TextComponent.of(input),
-                        TextComponent.of(e.getMessage())
+                        Component.text(input),
+                        Component.text(e.getMessage())
                     ));
                 }
                 if (itemNbtData == null) {
@@ -142,9 +141,9 @@ public class DefaultItemParser extends InputParser<BaseItem> {
         if (actor instanceof Player) {
             return ((Player) actor).getItemInHand(handSide);
         } else {
-            throw new InputParseException(TranslatableComponent.of(
+            throw new InputParseException(Component.translatable(
                     "worldedit.error.parser.player-only",
-                    TextComponent.of(handSide == HandSide.MAIN_HAND ? "hand" : "offhand")
+                    Component.text(handSide == HandSide.MAIN_HAND ? "hand" : "offhand")
             ));
         }
     }

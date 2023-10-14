@@ -34,11 +34,9 @@ import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
-import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.event.ClickEvent;
+import com.sk89q.worldedit.util.adventure.text.event.HoverEvent;
 import com.sk89q.worldedit.world.World;
 
 import java.text.NumberFormat;
@@ -184,7 +182,7 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
 
     @Override
     public void explainPrimarySelection(Actor player, LocalSession session, BlockVector3 pos) {
-        player.printInfo(TranslatableComponent.of("worldedit.selection.cylinder.explain.primary", TextComponent.of(pos.toString())));
+        player.printInfo(Component.translatable("worldedit.selection.cylinder.explain.primary", Component.text(pos.toString())));
 
         session.describeCUI(player);
     }
@@ -192,14 +190,14 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
     @Override
     public void explainSecondarySelection(Actor player, LocalSession session, BlockVector3 pos) {
         if (selectedCenter) {
-            player.printInfo(TranslatableComponent.of(
+            player.printInfo(Component.translatable(
                     "worldedit.selection.cylinder.explain.secondary",
-                    TextComponent.of(NUMBER_FORMAT.format(region.getRadius().getX())),
-                    TextComponent.of(NUMBER_FORMAT.format(region.getRadius().getZ())),
-                    TextComponent.of(region.getVolume())
+                    Component.text(NUMBER_FORMAT.format(region.getRadius().getX())),
+                    Component.text(NUMBER_FORMAT.format(region.getRadius().getZ())),
+                    Component.text(region.getVolume())
             ));
         } else {
-            player.printError(TranslatableComponent.of("worldedit.selection.cylinder.explain.secondary-missing"));
+            player.printError(Component.translatable("worldedit.selection.cylinder.explain.secondary-missing"));
             return;
         }
 
@@ -255,17 +253,17 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
     }
 
     @Override
-    public List<Component> getSelectionInfoLines() {
+    public List<Component> getSelectionInformationLines() {
         final List<Component> lines = new ArrayList<>();
 
         if (!region.getCenter().equals(Vector3.ZERO)) {
             Vector3 center = region.getCenter();
-            lines.add(TranslatableComponent.of("worldedit.selection.cylinder.info.center", TextComponent.of(center.toString())
-                    .clickEvent(ClickEvent.of(ClickEvent.Action.COPY_TO_CLIPBOARD, center.toParserString()))
-                    .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to copy")))));
+            lines.add(Component.translatable("worldedit.selection.cylinder.info.center", Component.text(center.toString())
+                    .clickEvent(ClickEvent.copyToClipboard(center.toParserString()))
+                    .hoverEvent(HoverEvent.showText(Component.text("Click to copy")))));
         }
         if (!region.getRadius().equals(Vector2.ZERO)) {
-            lines.add(TranslatableComponent.of("worldedit.selection.cylinder.info.radius", TextComponent.of(region.getRadius().toString())));
+            lines.add(Component.translatable("worldedit.selection.cylinder.info.radius", Component.text(region.getRadius().toString())));
         }
 
         return lines;

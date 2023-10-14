@@ -22,8 +22,7 @@ package com.sk89q.worldedit.command.util;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.adventure.text.Component;
 
 import java.util.Timer;
 import javax.annotation.Nullable;
@@ -40,7 +39,7 @@ public class FutureProgressListener implements Runnable {
 
     @Deprecated
     public FutureProgressListener(Actor sender, String message) {
-        this(sender, TextComponent.of(message));
+        this(sender, Component.text(message));
     }
 
     public FutureProgressListener(Actor sender, Component message) {
@@ -62,7 +61,7 @@ public class FutureProgressListener implements Runnable {
 
     @Deprecated
     public static void addProgressListener(ListenableFuture<?> future, Actor sender, String message) {
-        addProgressListener(future, sender, TextComponent.of(message));
+        addProgressListener(future, sender, Component.text(message));
     }
 
     public static void addProgressListener(ListenableFuture<?> future, Actor sender, Component message) {

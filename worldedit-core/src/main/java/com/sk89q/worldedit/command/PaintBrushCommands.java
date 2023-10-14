@@ -39,10 +39,9 @@ import com.sk89q.worldedit.internal.annotation.Direction;
 import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.regions.factory.RegionFactory;
 import com.sk89q.worldedit.util.TreeGenerator;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
-import com.sk89q.worldedit.util.formatting.text.format.TextDecoration;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.adventure.text.format.TextDecoration;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.CommandManagerService;
 import org.enginehub.piston.CommandParameters;
@@ -61,24 +60,24 @@ import static org.enginehub.piston.part.CommandParts.arg;
 @CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class PaintBrushCommands {
 
-    private static final CommandArgument REGION_FACTORY = arg(TranslatableComponent.of("shape"), TranslatableComponent.of("worldedit.brush.paint.shape"))
+    private static final CommandArgument REGION_FACTORY = arg(Component.translatable("shape"), Component.translatable("worldedit.brush.paint.shape"))
         .defaultsTo(ImmutableList.of())
         .ofTypes(ImmutableList.of(Key.of(RegionFactory.class)))
         .build();
 
-    private static final CommandArgument RADIUS = arg(TranslatableComponent.of("radius"), TranslatableComponent.of("worldedit.brush.paint.size"))
+    private static final CommandArgument RADIUS = arg(Component.translatable("radius"), Component.translatable("worldedit.brush.paint.size"))
         .defaultsTo(ImmutableList.of("5"))
         .ofTypes(ImmutableList.of(Key.of(double.class)))
         .build();
 
-    private static final CommandArgument DENSITY = arg(TranslatableComponent.of("density"), TranslatableComponent.of("worldedit.brush.paint.density"))
+    private static final CommandArgument DENSITY = arg(Component.translatable("density"), Component.translatable("worldedit.brush.paint.density"))
         .defaultsTo(ImmutableList.of("20"))
         .ofTypes(ImmutableList.of(Key.of(double.class)))
         .build();
 
     public static void register(CommandManagerService service, CommandManager commandManager, CommandRegistrationHandler registration) {
         commandManager.register("paint", builder -> {
-            builder.description(TranslatableComponent.of("worldedit.brush.paint.description"));
+            builder.description(Component.translatable("worldedit.brush.paint.description"));
             builder.action(org.enginehub.piston.Command.Action.NULL_ACTION);
 
             CommandManager manager = service.newCommandManager();
@@ -91,7 +90,7 @@ public class PaintBrushCommands {
             builder.condition(new PermissionCondition(ImmutableSet.of("worldedit.brush.paint")));
 
             builder.addParts(REGION_FACTORY, RADIUS, DENSITY);
-            builder.addPart(SubCommandPart.builder(TranslatableComponent.of("type"), TranslatableComponent.of("worldedit.brush.paint.type"))
+            builder.addPart(SubCommandPart.builder(Component.translatable("type"), Component.translatable("worldedit.brush.paint.type"))
                 .withCommands(manager.getAllCommands().collect(Collectors.toList()))
                 .required()
                 .build());
@@ -130,8 +129,8 @@ public class PaintBrushCommands {
                      @Arg(desc = "The direction in which the item will be applied", def = "up")
                      @Direction(includeDiagonals = true)
                          com.sk89q.worldedit.util.Direction direction) throws WorldEditException {
-        player.print(TextComponent.builder().append("WARNING: ", TextColor.RED, TextDecoration.BOLD)
-                .append(TranslatableComponent.of("worldedit.brush.paint.item.warning")).build());
+        player.print(Component.text("WARNING: ", NamedTextColor.RED, TextDecoration.BOLD)
+                .append(Component.translatable("worldedit.brush.paint.item.warning")));
         setPaintBrush(parameters, player, localSession, new ItemUseFactory(item, direction));
     }
 

@@ -19,12 +19,17 @@
 
 package com.sk89q.worldedit.util.io.file;
 
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 
 public class FilenameResolutionException extends FilenameException {
 
     public FilenameResolutionException(String filename) {
         super(filename);
+    }
+
+    @Deprecated
+    public FilenameResolutionException(String filename, com.sk89q.worldedit.util.formatting.text.Component msg) {
+        super(filename, msg);
     }
 
     public FilenameResolutionException(String filename, Component msg) {

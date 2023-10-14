@@ -23,8 +23,7 @@ import com.google.common.reflect.TypeToken;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.internal.annotation.VertHeight;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
 import org.enginehub.piston.converter.ArgumentConverters;
@@ -59,7 +58,7 @@ public class HeightConverter implements ArgumentConverter<Integer> {
 
     @Override
     public Component describeAcceptableArguments() {
-        return TextComponent.of("Any integer");
+        return Component.text("Any integer");
     }
 
     @Override

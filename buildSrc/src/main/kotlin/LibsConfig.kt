@@ -38,6 +38,7 @@ fun Project.applyLibrariesConfiguration() {
 
     val relocations = mapOf(
         "net.kyori.text" to "com.sk89q.worldedit.util.formatting.text",
+        "net.kyori.adventure" to "com.sk89q.worldedit.util.adventure",
         "net.kyori.minecraft" to "com.sk89q.worldedit.util.kyori",
     )
 

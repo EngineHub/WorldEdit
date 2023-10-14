@@ -23,8 +23,8 @@ import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.command.util.SuggestionHelper;
 import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.Registry;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.TextComponent;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -93,7 +93,7 @@ public final class RegistryConverter<V extends Keyed> implements ArgumentConvert
 
     private RegistryConverter(Registry<V> registry) {
         this.registry = registry;
-        this.choices = TextComponent.of("any " + registry.getName());
+        this.choices = Component.text("any " + registry.getName());
     }
 
     @Override

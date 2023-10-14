@@ -19,12 +19,17 @@
 
 package com.sk89q.worldedit.util.io.file;
 
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 
 public class InvalidFilenameException extends FilenameException {
 
     public InvalidFilenameException(String filename) {
         super(filename);
+    }
+
+    @Deprecated
+    public InvalidFilenameException(String filename, com.sk89q.worldedit.util.formatting.text.Component msg) {
+        super(filename, msg);
     }
 
     public InvalidFilenameException(String filename, Component msg) {

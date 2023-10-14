@@ -23,6 +23,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
+import com.sk89q.worldedit.util.formatting.LegacyTextHelper;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
@@ -36,6 +37,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+@Deprecated
 public class SideEffectBox extends PaginationBox {
 
     private static final LazyReference<List<SideEffect>> SIDE_EFFECTS = LazyReference.from(() ->
@@ -44,7 +46,7 @@ public class SideEffectBox extends PaginationBox {
             .filter(SideEffect::isExposed)
             .sorted(Comparator.comparing(effect ->
                 WorldEditText.reduceToText(
-                    TranslatableComponent.of(effect.getDisplayName()),
+                    LegacyTextHelper.adapt(TranslatableComponent.of(effect.getDisplayName())),
                     Locale.US
                 )
             ))

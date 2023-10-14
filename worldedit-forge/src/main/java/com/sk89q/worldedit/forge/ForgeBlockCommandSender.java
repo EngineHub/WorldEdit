@@ -23,11 +23,10 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.AbstractCommandBlockActor;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.serializer.gson.GsonComponentSerializer;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.BaseCommandBlock;
@@ -67,36 +66,10 @@ public class ForgeBlockCommandSender extends AbstractCommandBlockActor {
     }
 
     @Override
-    @Deprecated
-    public void printDebug(String msg) {
-        sendColorized(msg, ChatFormatting.GRAY);
-    }
-
-    @Override
-    @Deprecated
-    public void print(String msg) {
-        sendColorized(msg, ChatFormatting.LIGHT_PURPLE);
-    }
-
-    @Override
-    @Deprecated
-    public void printError(String msg) {
-        sendColorized(msg, ChatFormatting.RED);
-    }
-
-    @Override
     public void print(Component component) {
         sendMessage(net.minecraft.network.chat.Component.Serializer.fromJson(
-            GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale()))
+            GsonComponentSerializer.gson().serialize(WorldEditText.format(component, getLocale()))
         ));
-    }
-
-    private void sendColorized(String msg, ChatFormatting formatting) {
-        for (String part : msg.split("\n")) {
-            var component = net.minecraft.network.chat.Component.literal(part);
-            component.withStyle(formatting);
-            sendMessage(component);
-        }
     }
 
     private void sendMessage(net.minecraft.network.chat.Component textComponent) {

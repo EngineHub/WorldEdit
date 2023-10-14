@@ -20,9 +20,7 @@
 package com.sk89q.worldedit.world.registry;
 
 import com.sk89q.worldedit.registry.state.Property;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.util.translation.TranslationManager;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -39,16 +37,16 @@ import javax.annotation.Nullable;
 public class BundledBlockRegistry implements BlockRegistry {
 
     @Override
-    public Component getRichName(BlockType blockType) {
+    public Component getDisplayName(BlockType blockType) {
         BundledBlockData.BlockEntry blockEntry = BundledBlockData.getInstance().findById(blockType.getId());
         if (blockEntry != null) {
             // This is more likely to be "right", but not translated
             // Some vanilla MC blocks have overrides so we need this name here
             // Most platforms should be overriding this anyways, so it likely doesn't matter
             // too much!
-            return TextComponent.of(blockEntry.localizedName);
+            return Component.text(blockEntry.localizedName);
         }
-        return TranslatableComponent.of(
+        return Component.translatable(
             TranslationManager.makeTranslationKey("block", blockType.getId())
         );
     }

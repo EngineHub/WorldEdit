@@ -48,6 +48,9 @@ public class FileRegistries {
         ResourceLoader resourceLoader = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.CONFIGURATION).getResourceLoader();
         try {
             URL url = resourceLoader.getResource(FileRegistries.class, app.getPlatform().getDataVersion() + ".json");
+            if (url == null) {
+                throw new RuntimeException("The provided file " + app.getPlatform().getDataVersion() + " is not compatible with this version of WorldEdit-CLI. Please update or report this.");
+            }
             this.dataFile = gson.fromJson(Resources.toString(url, StandardCharsets.UTF_8), DataFile.class);
         } catch (IOException e) {
             throw new RuntimeException("The provided file is not compatible with this version of WorldEdit-CLI. Please update or report this.");

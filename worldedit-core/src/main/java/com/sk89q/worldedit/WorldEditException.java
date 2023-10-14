@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit;
 
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.formatting.LegacyTextHelper;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 
 import java.util.Locale;
 
@@ -49,7 +49,7 @@ public abstract class WorldEditException extends Exception {
     protected WorldEditException(String message) {
         super(message);
 
-        this.message = TextComponent.of(message);
+        this.message = Component.text(message);
     }
 
     /**
@@ -64,6 +64,19 @@ public abstract class WorldEditException extends Exception {
     }
 
     /**
+     * Create a new exception with a message.
+     *
+     * @param message the message
+     * @deprecated Use {@link WorldEditException#WorldEditException(Component)}
+     */
+    @Deprecated
+    protected WorldEditException(com.sk89q.worldedit.util.formatting.text.Component message) {
+        super(WorldEditText.reduceToText(LegacyTextHelper.adapt(message), Locale.getDefault()));
+
+        this.message = LegacyTextHelper.adapt(message);
+    }
+
+    /**
      * Create a new exception with a message and a cause.
      *
      * @param message the message
@@ -74,7 +87,7 @@ public abstract class WorldEditException extends Exception {
     protected WorldEditException(String message, Throwable cause) {
         super(message, cause);
 
-        this.message = TextComponent.of(message);
+        this.message = Component.text(message);
     }
 
     /**
@@ -87,6 +100,20 @@ public abstract class WorldEditException extends Exception {
         super(WorldEditText.reduceToText(message, Locale.getDefault()), cause);
 
         this.message = message;
+    }
+
+    /**
+     * Create a new exception with a message and a cause.
+     *
+     * @param message the message
+     * @param cause the cause
+     * @deprecated Use {@link WorldEditException#WorldEditException(Component, Throwable)}
+     */
+    @Deprecated
+    protected WorldEditException(com.sk89q.worldedit.util.formatting.text.Component message, Throwable cause) {
+        super(WorldEditText.reduceToText(LegacyTextHelper.adapt(message), Locale.getDefault()), cause);
+
+        this.message = LegacyTextHelper.adapt(message);
     }
 
     /**
@@ -105,7 +132,18 @@ public abstract class WorldEditException extends Exception {
      *
      * @return The rich message
      */
-    public Component getRichMessage() {
+    @Deprecated
+    public com.sk89q.worldedit.util.formatting.text.Component getRichMessage() {
+        return LegacyTextHelper.adapt(this.message);
+    }
+
+
+    /**
+     * Get the message of this exception as a rich text component.
+     *
+     * @return The rich message
+     */
+    public Component getTextMessage() {
         return this.message;
     }
 }

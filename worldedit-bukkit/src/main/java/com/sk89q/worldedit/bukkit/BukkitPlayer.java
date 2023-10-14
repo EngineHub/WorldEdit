@@ -31,14 +31,11 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.event.ClickEvent;
+import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.component.TextUtils;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
-import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -116,32 +113,8 @@ public class BukkitPlayer extends AbstractPlayerActor {
     }
 
     @Override
-    @Deprecated
-    public void print(String msg) {
-        for (String part : msg.split("\n")) {
-            player.sendMessage("§d" + part);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void printDebug(String msg) {
-        for (String part : msg.split("\n")) {
-            player.sendMessage("§7" + part);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void printError(String msg) {
-        for (String part : msg.split("\n")) {
-            player.sendMessage("§c" + part);
-        }
-    }
-
-    @Override
     public void print(Component component) {
-        TextAdapter.sendMessage(player, WorldEditText.format(component, getLocale()));
+        plugin.getAudiences().player(player).sendMessage(WorldEditText.format(component, getLocale()));
     }
 
     @Override
@@ -236,8 +209,8 @@ public class BukkitPlayer extends AbstractPlayerActor {
     @Override
     public void sendAnnouncements() {
         if (!WorldEditPlugin.getInstance().getLifecycledBukkitImplAdapter().isValid()) {
-            printError(TranslatableComponent.of("worldedit.version.bukkit.unsupported-adapter",
-                    TextComponent.of("https://enginehub.org/worldedit/#downloads", TextColor.AQUA)
+            printError(Component.translatable("worldedit.version.bukkit.unsupported-adapter",
+                    Component.text("https://enginehub.org/worldedit/#downloads", NamedTextColor.AQUA)
                         .clickEvent(ClickEvent.openUrl("https://enginehub.org/worldedit/#downloads"))));
         }
     }

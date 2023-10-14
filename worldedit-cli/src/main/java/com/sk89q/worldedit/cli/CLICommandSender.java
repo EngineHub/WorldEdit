@@ -24,10 +24,10 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.FileDialogUtil;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.serializer.ansi.ANSIComponentSerializer;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.serializer.plain.PlainComponentSerializer;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
@@ -72,38 +72,19 @@ public class CLICommandSender implements Actor {
         }
     }
 
-    private static final String ANSI_PURPLE = "\u001B[35m";
-    private static final String ANSI_RED = "\u001B[31m";
-    private static final String ANSI_GREEN = "\u001B[32m";
-    private static final String ANSI_RESET = "\u001B[0m";
-
     @Override
-    @Deprecated
-    public void print(String msg) {
-        for (String part : msg.split("\n")) {
-            sender.info(ANSI_PURPLE + part + ANSI_RESET);
-        }
+    public void printError(Component component) {
+        sender.error(ANSIComponentSerializer.ansi().serialize(WorldEditText.format(component, getLocale())));
     }
 
     @Override
-    @Deprecated
-    public void printDebug(String msg) {
-        for (String part : msg.split("\n")) {
-            sender.debug(ANSI_GREEN + part + ANSI_RESET);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void printError(String msg) {
-        for (String part : msg.split("\n")) {
-            sender.error(ANSI_RED + part + ANSI_RESET);
-        }
+    public void printDebug(Component component) {
+        sender.debug(ANSIComponentSerializer.ansi().serialize(WorldEditText.format(component, getLocale())));
     }
 
     @Override
     public void print(Component component) {
-        print(PlainComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale())));
+        sender.info(ANSIComponentSerializer.ansi().serialize(WorldEditText.format(component, getLocale())));
     }
 
     @Override

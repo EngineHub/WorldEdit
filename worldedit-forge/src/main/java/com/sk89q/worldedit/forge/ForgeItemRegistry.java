@@ -20,23 +20,22 @@
 package com.sk89q.worldedit.forge;
 
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.BundledItemRegistry;
 
 public class ForgeItemRegistry extends BundledItemRegistry {
 
     @Override
-    public Component getRichName(ItemType itemType) {
-        return TranslatableComponent.of(
+    public Component getDisplayName(ItemType itemType) {
+        return Component.translatable(
             ForgeAdapter.adapt(itemType).getDescriptionId()
         );
     }
 
     @Override
-    public Component getRichName(BaseItemStack itemStack) {
-        return TranslatableComponent.of(
+    public Component getDisplayName(BaseItemStack itemStack) {
+        return Component.translatable(
             ForgeAdapter.adapt(itemStack).getDescriptionId()
         );
     }

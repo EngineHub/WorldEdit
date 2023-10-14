@@ -27,8 +27,7 @@ import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
@@ -63,7 +62,7 @@ public class NavigationCommands {
     @CommandPermissions("worldedit.navigation.unstuck")
     public void unstuck(Player player) throws WorldEditException {
         player.findFreePosition();
-        player.printInfo(TranslatableComponent.of("worldedit.unstuck.moved"));
+        player.printInfo(Component.translatable("worldedit.unstuck.moved"));
     }
 
     @Command(
@@ -83,9 +82,9 @@ public class NavigationCommands {
             }
         }
         if (ascentLevels == 0) {
-            player.printError(TranslatableComponent.of("worldedit.ascend.obstructed"));
+            player.printError(Component.translatable("worldedit.ascend.obstructed"));
         } else {
-            player.printInfo(TranslatableComponent.of("worldedit.ascend.moved", TextComponent.of(ascentLevels)));
+            player.printInfo(Component.translatable("worldedit.ascend.moved", Component.text(ascentLevels)));
         }
     }
 
@@ -106,9 +105,9 @@ public class NavigationCommands {
             }
         }
         if (descentLevels == 0) {
-            player.printError(TranslatableComponent.of("worldedit.descend.obstructed"));
+            player.printError(Component.translatable("worldedit.descend.obstructed"));
         } else {
-            player.printInfo(TranslatableComponent.of("worldedit.descend.moved", TextComponent.of(descentLevels)));
+            player.printInfo(Component.translatable("worldedit.descend.moved", Component.text(descentLevels)));
         }
     }
 
@@ -129,9 +128,9 @@ public class NavigationCommands {
 
         boolean alwaysGlass = getAlwaysGlass(forceFlight, forceGlass);
         if (player.ascendToCeiling(clearance, alwaysGlass)) {
-            player.printInfo(TranslatableComponent.of("worldedit.ceil.moved"));
+            player.printInfo(Component.translatable("worldedit.ceil.moved"));
         } else {
-            player.printError(TranslatableComponent.of("worldedit.ceil.obstructed"));
+            player.printError(Component.translatable("worldedit.ceil.obstructed"));
         }
     }
 
@@ -142,9 +141,9 @@ public class NavigationCommands {
     @CommandPermissions("worldedit.navigation.thru.command")
     public void thru(Player player) throws WorldEditException {
         if (player.passThroughForwardWall(6)) {
-            player.printInfo(TranslatableComponent.of("worldedit.thru.moved"));
+            player.printInfo(Component.translatable("worldedit.thru.moved"));
         } else {
-            player.printError(TranslatableComponent.of("worldedit.thru.obstructed"));
+            player.printError(Component.translatable("worldedit.thru.obstructed"));
         }
     }
 
@@ -159,9 +158,9 @@ public class NavigationCommands {
         Location pos = player.getSolidBlockTrace(300);
         if (pos != null) {
             player.findFreePosition(pos);
-            player.printInfo(TranslatableComponent.of("worldedit.jumpto.moved"));
+            player.printInfo(Component.translatable("worldedit.jumpto.moved"));
         } else {
-            player.printError(TranslatableComponent.of("worldedit.jumpto.none"));
+            player.printError(Component.translatable("worldedit.jumpto.none"));
         }
     }
 
@@ -180,9 +179,9 @@ public class NavigationCommands {
                        boolean forceGlass) throws WorldEditException {
         boolean alwaysGlass = getAlwaysGlass(forceFlight, forceGlass);
         if (player.ascendUpwards(distance, alwaysGlass)) {
-            player.printInfo(TranslatableComponent.of("worldedit.up.moved"));
+            player.printInfo(Component.translatable("worldedit.up.moved"));
         } else {
-            player.printError(TranslatableComponent.of("worldedit.up.obstructed"));
+            player.printError(Component.translatable("worldedit.up.obstructed"));
         }
     }
 

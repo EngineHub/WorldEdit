@@ -25,13 +25,13 @@ import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 /**
  * Represents a subtle part of the message.
  */
+@Deprecated
 public class SubtleFormat extends TextComponentProducer {
 
     /**
      * Create a new instance.
      */
     private SubtleFormat() {
-        getBuilder().content("").color(TextColor.GRAY);
     }
 
     /**
@@ -40,12 +40,14 @@ public class SubtleFormat extends TextComponentProducer {
      * @param texts The text
      * @return The Component
      */
+    @Deprecated
     public static TextComponent wrap(String... texts) {
-        SubtleFormat subtle = new SubtleFormat();
+        TextComponent.Builder b = TextComponent.builder();
+        b.color(TextColor.GRAY);
         for (String component : texts) {
-            subtle.append(component);
+            b.append(component);
         }
 
-        return subtle.create();
+        return b.build();
     }
 }

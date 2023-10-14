@@ -20,8 +20,7 @@
 package com.sk89q.worldedit.command.util;
 
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.adventure.text.Component;
 
 import java.util.TimerTask;
 import javax.annotation.Nullable;
@@ -39,7 +38,7 @@ public class MessageTimerTask extends TimerTask {
 
     @Deprecated
     MessageTimerTask(Actor sender, String message) {
-        this(sender, TextComponent.of(message), null);
+        this(sender, Component.text(message), null);
     }
 
     MessageTimerTask(Actor sender, Component message, @Nullable Component workingMessage) {

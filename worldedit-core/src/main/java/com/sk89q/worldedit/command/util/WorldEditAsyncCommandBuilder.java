@@ -21,8 +21,7 @@ package com.sk89q.worldedit.command.util;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.adventure.text.Component;
 
 import java.util.concurrent.Callable;
 import javax.annotation.Nullable;
@@ -36,7 +35,7 @@ public final class WorldEditAsyncCommandBuilder {
 
     @Deprecated
     public static void createAndSendMessage(Actor actor, Callable<Component> task, @Nullable String desc) {
-        createAndSendMessage(actor, task, desc != null ? TextComponent.of(desc) : null);
+        createAndSendMessage(actor, task, desc != null ? Component.text(desc) : null);
     }
 
     public static void createAndSendMessage(Actor actor, Callable<Component> task, @Nullable Component desc) {

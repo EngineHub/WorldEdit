@@ -31,7 +31,7 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.world.block.BaseBlock;
 
 /**
@@ -123,7 +123,7 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
         }
 
         if (target == null) {
-            player.printError(TranslatableComponent.of("worldedit.tool.no-block"));
+            player.printError(Component.translatable("worldedit.tool.no-block"));
             return null;
         }
 

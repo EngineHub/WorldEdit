@@ -32,10 +32,10 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.serializer.gson.GsonComponentSerializer;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.component.TextUtils;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -168,7 +168,7 @@ public class ForgePlayer extends AbstractPlayerActor {
     @Override
     public void print(Component component) {
         sendMessage(net.minecraft.network.chat.Component.Serializer.fromJson(
-            GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale()))
+            GsonComponentSerializer.gson().serialize(WorldEditText.format(component, getLocale()))
         ));
     }
 

@@ -16,6 +16,7 @@ tasks.register<Jar>("jar") {
     from(zipTree({project(":worldedit-forge").tasks.getByName("shadowJar").outputs.files.singleFile})) {
         // Duplicated first-party files
         exclude("META-INF/services/org.enginehub.piston.CommandManagerService")
+        exclude("META-INF/services/net.kyori.adventure.text.serializer.json.JSONComponentSerializer\$Provider")
         exclude("lang/")
         // No-brainer library excludes
         exclude("com/sk89q/jchronic/")

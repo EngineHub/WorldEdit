@@ -27,8 +27,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.renderer.TranslatableComponentRenderer;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.renderer.TranslatableComponentRenderer;
+import com.sk89q.worldedit.util.formatting.LegacyTextHelper;
 import com.sk89q.worldedit.util.io.ResourceLoader;
 import com.sk89q.worldedit.util.io.file.ArchiveUnpacker;
 import org.apache.logging.log4j.Logger;
@@ -85,9 +86,11 @@ public class TranslationManager {
         return type + '.' + parts[0] + '.' + parts[1].replace('/', '.');
     }
 
-    private final TranslatableComponentRenderer<Locale> friendlyComponentRenderer = TranslatableComponentRenderer.from(
-        this::getTranslation
-    );
+    private final TranslatableComponentRenderer<Locale> friendlyComponentRenderer = new TranslatableComponentRenderer<>() {
+        protected @Nullable MessageFormat translate(final String key, final Locale context) {
+            return getTranslation(context, key);
+        }
+    };
     private final Table<Locale, String, MessageFormat> translationTable = Tables.newCustomTable(
         new ConcurrentHashMap<>(), ConcurrentHashMap::new
     );
@@ -140,7 +143,12 @@ public class TranslationManager {
         }
     }
 
-    public Component convertText(Component component, Locale locale) {
+    @Deprecated
+    public com.sk89q.worldedit.util.formatting.text.Component convertText(com.sk89q.worldedit.util.formatting.text.Component component, Locale locale) {
+        return LegacyTextHelper.adapt(convert(LegacyTextHelper.adapt(component), locale));
+    }
+
+    public Component convert(Component component, Locale locale) {
         return friendlyComponentRenderer.render(component, locale);
     }
 

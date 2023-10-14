@@ -28,6 +28,7 @@ import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
 import java.util.List;
 
+@Deprecated
 public class CommandListBox extends PaginationBox {
 
     private final List<CommandEntry> commands = Lists.newArrayList();

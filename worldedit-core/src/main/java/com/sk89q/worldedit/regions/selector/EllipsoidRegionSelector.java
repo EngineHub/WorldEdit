@@ -31,11 +31,9 @@ import com.sk89q.worldedit.regions.EllipsoidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
-import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.event.ClickEvent;
+import com.sk89q.worldedit.util.adventure.text.event.HoverEvent;
 import com.sk89q.worldedit.world.World;
 
 import java.util.ArrayList;
@@ -161,15 +159,15 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
     @Override
     public void explainPrimarySelection(Actor player, LocalSession session, BlockVector3 pos) {
         if (isDefined()) {
-            player.printInfo(TranslatableComponent.of(
+            player.printInfo(Component.translatable(
                     "worldedit.selection.ellipsoid.explain.primary-area",
-                    TextComponent.of(region.getCenter().toString()),
-                    TextComponent.of(region.getVolume())
+                    Component.text(region.getCenter().toString()),
+                    Component.text(region.getVolume())
             ));
         } else {
-            player.printInfo(TranslatableComponent.of(
+            player.printInfo(Component.translatable(
                     "worldedit.selection.ellipsoid.explain.primary",
-                    TextComponent.of(region.getCenter().toString())
+                    Component.text(region.getCenter().toString())
             ));
         }
 
@@ -179,15 +177,15 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
     @Override
     public void explainSecondarySelection(Actor player, LocalSession session, BlockVector3 pos) {
         if (isDefined()) {
-            player.printInfo(TranslatableComponent.of(
+            player.printInfo(Component.translatable(
                     "worldedit.selection.ellipsoid.explain.secondary-area",
-                    TextComponent.of(region.getRadius().toString()),
-                    TextComponent.of(region.getVolume())
+                    Component.text(region.getRadius().toString()),
+                    Component.text(region.getVolume())
             ));
         } else {
-            player.printInfo(TranslatableComponent.of(
+            player.printInfo(Component.translatable(
                     "worldedit.selection.ellipsoid.explain.secondary",
-                    TextComponent.of(region.getRadius().toString())
+                    Component.text(region.getRadius().toString())
             ));
         }
 
@@ -235,19 +233,19 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
     }
 
     @Override
-    public List<Component> getSelectionInfoLines() {
+    public List<Component> getSelectionInformationLines() {
         final List<Component> lines = new ArrayList<>();
 
         final Vector3 center = region.getCenter();
         if (center.lengthSq() > 0) {
-            lines.add(TranslatableComponent.of("worldedit.selection.ellipsoid.info.center", TextComponent.of(center.toString())
-                    .clickEvent(ClickEvent.of(ClickEvent.Action.COPY_TO_CLIPBOARD, center.toParserString()))
-                    .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to copy")))));
+            lines.add(Component.translatable("worldedit.selection.ellipsoid.info.center", Component.text(center.toString())
+                    .clickEvent(ClickEvent.copyToClipboard(center.toParserString()))
+                    .hoverEvent(HoverEvent.showText(Component.text("Click to copy")))));
         }
 
         final Vector3 radius = region.getRadius();
         if (radius.lengthSq() > 0) {
-            lines.add(TranslatableComponent.of("worldedit.selection.ellipsoid.info.radius", TextComponent.of(radius.toString())));
+            lines.add(Component.translatable("worldedit.selection.ellipsoid.info.radius", Component.text(radius.toString())));
         }
 
         return lines;

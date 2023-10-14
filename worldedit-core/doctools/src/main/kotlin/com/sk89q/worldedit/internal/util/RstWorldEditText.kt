@@ -20,11 +20,11 @@
 package com.sk89q.worldedit.internal.util
 
 import com.sk89q.worldedit.util.formatting.WorldEditText
-import com.sk89q.worldedit.util.formatting.text.Component
-import com.sk89q.worldedit.util.formatting.text.TextComponent
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent
-import com.sk89q.worldedit.util.formatting.text.event.ClickEvent
-import com.sk89q.worldedit.util.formatting.text.format.TextDecoration
+import com.sk89q.worldedit.util.adventure.text.Component
+import com.sk89q.worldedit.util.adventure.text.TextComponent
+import com.sk89q.worldedit.util.adventure.text.TranslatableComponent
+import com.sk89q.worldedit.util.adventure.text.event.ClickEvent
+import com.sk89q.worldedit.util.adventure.text.format.TextDecoration
 import org.enginehub.piston.util.TextHelper
 import java.util.Locale
 
@@ -41,8 +41,9 @@ private fun formatAsRst(component: Component, currentDeco: String? = null): Char
             val deco = when {
                 // Actions that suggest themselves as commands are marked as code
                 component.isSuggestingAsCommand(content.toString()) -> "``"
-                component.decorations().any { it == TextDecoration.BOLD } -> "**"
-                component.decorations().any { it == TextDecoration.ITALIC } -> "*"
+                // TODO: Fix this somehow
+                //component.decorations().any { it == TextDecoration.BOLD } -> "**"
+                //component.decorations().any { it == TextDecoration.ITALIC } -> "*"
                 else -> null
             }
 

@@ -25,13 +25,13 @@ import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 /**
  * Represents a fragment representing a label.
  */
-public class LabelFormat extends TextComponentProducer {
+@Deprecated
+public class LabelFormat {
 
     /**
      * Create a new instance.
      */
     private LabelFormat() {
-        getBuilder().content("").color(TextColor.YELLOW);
     }
 
     /**
@@ -41,11 +41,12 @@ public class LabelFormat extends TextComponentProducer {
      * @return The Component
      */
     public static TextComponent wrap(String... texts) {
-        LabelFormat label = new LabelFormat();
+        TextComponent.Builder b = TextComponent.builder();
+        b.color(TextColor.YELLOW);
         for (String component : texts) {
-            label.append(component);
+            b.append(component);
         }
 
-        return label.create();
+        return b.build();
     }
 }

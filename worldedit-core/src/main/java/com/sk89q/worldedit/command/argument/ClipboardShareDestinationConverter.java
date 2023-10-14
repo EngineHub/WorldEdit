@@ -21,8 +21,8 @@ package com.sk89q.worldedit.command.argument;
 
 import com.sk89q.worldedit.extent.clipboard.io.share.ClipboardShareDestination;
 import com.sk89q.worldedit.extent.clipboard.io.share.ClipboardShareDestinations;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.TextComponent;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
 import org.enginehub.piston.converter.ConversionResult;
@@ -47,7 +47,7 @@ public class ClipboardShareDestinationConverter implements ArgumentConverter<Cli
     private final TextComponent choices;
 
     private ClipboardShareDestinationConverter() {
-        this.choices = TextComponent.of("any clipboard share destination");
+        this.choices = Component.text("any clipboard share destination");
     }
 
     @Override

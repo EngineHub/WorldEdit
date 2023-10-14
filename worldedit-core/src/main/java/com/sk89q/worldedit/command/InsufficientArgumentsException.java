@@ -20,13 +20,19 @@
 package com.sk89q.worldedit.command;
 
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.formatting.LegacyTextHelper;
 
 public class InsufficientArgumentsException extends WorldEditException {
 
     @Deprecated
     public InsufficientArgumentsException(String error) {
         super(error);
+    }
+
+    @Deprecated
+    public InsufficientArgumentsException(com.sk89q.worldedit.util.formatting.text.Component error) {
+        super(LegacyTextHelper.adapt(error));
     }
 
     public InsufficientArgumentsException(Component error) {

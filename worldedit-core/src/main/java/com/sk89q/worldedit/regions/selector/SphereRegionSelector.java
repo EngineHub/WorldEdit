@@ -25,8 +25,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
@@ -94,13 +93,13 @@ public class SphereRegionSelector extends EllipsoidRegionSelector {
     @Override
     public void explainSecondarySelection(Actor player, LocalSession session, BlockVector3 pos) {
         if (isDefined()) {
-            player.printInfo(TranslatableComponent.of(
+            player.printInfo(Component.translatable(
                     "worldedit.selection.sphere.explain.secondary-defined",
-                    TextComponent.of(region.getRadius().getX()),
-                    TextComponent.of(region.getVolume())
+                    Component.text(region.getRadius().getX()),
+                    Component.text(region.getVolume())
             ));
         } else {
-            player.printInfo(TranslatableComponent.of("worldedit.selection.sphere.explain.secondary", TextComponent.of(region.getRadius().getX())));
+            player.printInfo(Component.translatable("worldedit.selection.sphere.explain.secondary", Component.text(region.getRadius().getX())));
         }
 
         session.describeCUI(player);

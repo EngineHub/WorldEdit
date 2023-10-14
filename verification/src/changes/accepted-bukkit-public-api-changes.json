@@ -1,2 +1,32 @@
 {
+  "Default implementation in interface added": [
+    {
+      "type": "com.sk89q.worldedit.bukkit.BukkitBlockCommandSender",
+      "member": "Method com.sk89q.worldedit.bukkit.BukkitBlockCommandSender.print(com.sk89q.worldedit.util.formatting.text.Component)",
+      "changes": [
+        "METHOD_REMOVED"
+      ]
+    },
+    {
+      "type": "com.sk89q.worldedit.bukkit.BukkitBlockRegistry",
+      "member": "Method com.sk89q.worldedit.bukkit.BukkitBlockRegistry.getRichName(com.sk89q.worldedit.world.block.BlockType)",
+      "changes": [
+        "METHOD_REMOVED"
+      ]
+    },
+    {
+      "type": "com.sk89q.worldedit.bukkit.BukkitCommandSender",
+      "member": "Method com.sk89q.worldedit.bukkit.BukkitCommandSender.print(com.sk89q.worldedit.util.formatting.text.Component)",
+      "changes": [
+        "METHOD_REMOVED"
+      ]
+    },
+    {
+      "type": "com.sk89q.worldedit.bukkit.BukkitPlayer",
+      "member": "Method com.sk89q.worldedit.bukkit.BukkitPlayer.print(com.sk89q.worldedit.util.formatting.text.Component)",
+      "changes": [
+        "METHOD_REMOVED"
+      ]
+    }
+  ]
 }

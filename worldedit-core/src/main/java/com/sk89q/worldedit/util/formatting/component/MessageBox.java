@@ -31,6 +31,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Makes for a box with a border above and below.
  */
+@Deprecated
 public class MessageBox extends TextComponentProducer {
 
     private static final int GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH = 47;

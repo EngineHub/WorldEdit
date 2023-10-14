@@ -110,11 +110,10 @@ import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.util.collection.BlockMap;
 import com.sk89q.worldedit.util.collection.DoubleArrayList;
 import com.sk89q.worldedit.util.eventbus.EventBus;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -932,7 +931,7 @@ public class EditSession implements Extent, AutoCloseable {
         List<TracingExtent> tracingExtents = getActiveTracingExtents();
         assert actor != null;
         if (tracingExtents.isEmpty()) {
-            actor.printError(TranslatableComponent.of("worldedit.trace.no-tracing-extents"));
+            actor.printError(Component.translatable("worldedit.trace.no-tracing-extents"));
             return;
         }
         // find the common stacks
@@ -955,13 +954,12 @@ public class EditSession implements Extent, AutoCloseable {
         stackToPosition.forEach((stack, position) -> {
             // stack can never be empty, something has to have touched the position
             TracingExtent failure = stack.get(0);
-            actor.printDebug(TranslatableComponent.builder("worldedit.trace.action-failed")
+            actor.printDebug(Component.translatable("worldedit.trace.action-failed")
                 .args(
-                    TextComponent.of(failure.getFailedActions().get(position).toString()),
-                    TextComponent.of(position.toString()),
-                    TextComponent.of(failure.getExtent().getClass().getName())
-                )
-                .build());
+                    Component.text(failure.getFailedActions().get(position).toString()),
+                    Component.text(position.toString()),
+                    Component.text(failure.getExtent().getClass().getName())
+                ));
         });
     }
 
@@ -1484,7 +1482,7 @@ public class EditSession implements Extent, AutoCloseable {
         BlockVector3 size = region.getMaximumPoint().subtract(region.getMinimumPoint()).add(1, 1, 1);
         BlockVector3 offsetAbs = offset.abs();
         if (offsetAbs.getX() < size.getX() && offsetAbs.getY() < size.getY() && offsetAbs.getZ() < size.getZ()) {
-            throw new RegionOperationException(TranslatableComponent.of("worldedit.stack.intersecting-region"));
+            throw new RegionOperationException(Component.translatable("worldedit.stack.intersecting-region"));
         }
         BlockVector3 to = region.getMinimumPoint();
         ForwardExtentCopy copy = new ForwardExtentCopy(this, region, this, to);

@@ -26,13 +26,11 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.util.formatting.component.PaginationBox;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
-import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.event.ClickEvent;
+import com.sk89q.worldedit.util.adventure.text.event.HoverEvent;
+import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.formatting.adventure.PaginationBox;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.snapshot.InvalidSnapshotException;
 import com.sk89q.worldedit.world.snapshot.Snapshot;
@@ -65,9 +63,9 @@ class LegacySnapshotCommands {
             List<Snapshot> snapshots = config.snapshotRepo.getSnapshots(true, world.getName());
 
             if (!snapshots.isEmpty()) {
-                actor.print(new SnapshotListBox(world.getName(), snapshots).create(page));
+                actor.print(new SnapshotListBox(world.getName(), snapshots).build(page));
             } else {
-                actor.printError(TranslatableComponent.of("worldedit.restore.none-found-console"));
+                actor.printError(Component.translatable("worldedit.restore.none-found-console"));
 
                 // Okay, let's toss some debugging information!
                 File dir = config.snapshotRepo.getDirectory();
@@ -82,7 +80,7 @@ class LegacySnapshotCommands {
                 }
             }
         } catch (MissingWorldException ex) {
-            actor.printError(TranslatableComponent.of("worldedit.restore.none-for-world"));
+            actor.printError(Component.translatable("worldedit.restore.none-for-world"));
         }
     }
 
@@ -96,19 +94,19 @@ class LegacySnapshotCommands {
 
                 if (snapshot != null) {
                     session.setSnapshot(null);
-                    actor.printInfo(TranslatableComponent.of("worldedit.snapshot.use.newest"));
+                    actor.printInfo(Component.translatable("worldedit.snapshot.use.newest"));
                 } else {
-                    actor.printError(TranslatableComponent.of("worldedit.restore.none-found"));
+                    actor.printError(Component.translatable("worldedit.restore.none-found"));
                 }
             } catch (MissingWorldException ex) {
-                actor.printError(TranslatableComponent.of("worldedit.restore.none-for-world"));
+                actor.printError(Component.translatable("worldedit.restore.none-for-world"));
             }
         } else {
             try {
                 session.setSnapshot(config.snapshotRepo.getSnapshot(name));
-                actor.printInfo(TranslatableComponent.of("worldedit.snapshot.use", TextComponent.of(name)));
+                actor.printInfo(Component.translatable("worldedit.snapshot.use", Component.text(name)));
             } catch (InvalidSnapshotException e) {
-                actor.printError(TranslatableComponent.of("worldedit.restore.not-available"));
+                actor.printError(Component.translatable("worldedit.restore.not-available"));
             }
         }
     }
@@ -117,25 +115,25 @@ class LegacySnapshotCommands {
         LocalConfiguration config = we.getConfiguration();
 
         if (index < 1) {
-            actor.printError(TranslatableComponent.of("worldedit.snapshot.index-above-0"));
+            actor.printError(Component.translatable("worldedit.snapshot.index-above-0"));
             return;
         }
 
         try {
             List<Snapshot> snapshots = config.snapshotRepo.getSnapshots(true, world.getName());
             if (snapshots.size() < index) {
-                actor.printError(TranslatableComponent.of("worldedit.snapshot.index-oob", TextComponent.of(snapshots.size())));
+                actor.printError(Component.translatable("worldedit.snapshot.index-oob", Component.text(snapshots.size())));
                 return;
             }
             Snapshot snapshot = snapshots.get(index - 1);
             if (snapshot == null) {
-                actor.printError(TranslatableComponent.of("worldedit.restore.not-available"));
+                actor.printError(Component.translatable("worldedit.restore.not-available"));
                 return;
             }
             session.setSnapshot(snapshot);
-            actor.printInfo(TranslatableComponent.of("worldedit.snapshot.use", TextComponent.of(snapshot.getName())));
+            actor.printInfo(Component.translatable("worldedit.snapshot.use", Component.text(snapshot.getName())));
         } catch (MissingWorldException e) {
-            actor.printError(TranslatableComponent.of("worldedit.restore.none-for-world"));
+            actor.printError(Component.translatable("worldedit.restore.none-for-world"));
         }
     }
 
@@ -146,16 +144,16 @@ class LegacySnapshotCommands {
             Snapshot snapshot = config.snapshotRepo.getSnapshotBefore(date, world.getName());
 
             if (snapshot == null) {
-                actor.printError(TranslatableComponent.of(
+                actor.printError(Component.translatable(
                     "worldedit.snapshot.none-before",
-                    TextComponent.of(dateFormat.withZone(session.getTimeZone()).format(date)))
+                    Component.text(dateFormat.withZone(session.getTimeZone()).format(date)))
                 );
             } else {
                 session.setSnapshot(snapshot);
-                actor.printInfo(TranslatableComponent.of("worldedit.snapshot.use", TextComponent.of(snapshot.getName())));
+                actor.printInfo(Component.translatable("worldedit.snapshot.use", Component.text(snapshot.getName())));
             }
         } catch (MissingWorldException ex) {
-            actor.printError(TranslatableComponent.of("worldedit.restore.none-for-world"));
+            actor.printError(Component.translatable("worldedit.restore.none-for-world"));
         }
     }
 
@@ -165,16 +163,16 @@ class LegacySnapshotCommands {
         try {
             Snapshot snapshot = config.snapshotRepo.getSnapshotAfter(date, world.getName());
             if (snapshot == null) {
-                actor.printError(TranslatableComponent.of(
+                actor.printError(Component.translatable(
                     "worldedit.snapshot.none-after",
-                    TextComponent.of(dateFormat.withZone(session.getTimeZone()).format(date)))
+                    Component.text(dateFormat.withZone(session.getTimeZone()).format(date)))
                 );
             } else {
                 session.setSnapshot(snapshot);
-                actor.printInfo(TranslatableComponent.of("worldedit.snapshot.use", TextComponent.of(snapshot.getName())));
+                actor.printInfo(Component.translatable("worldedit.snapshot.use", Component.text(snapshot.getName())));
             }
         } catch (MissingWorldException ex) {
-            actor.printError(TranslatableComponent.of("worldedit.restore.none-for-world"));
+            actor.printError(Component.translatable("worldedit.restore.none-for-world"));
         }
     }
 
@@ -187,12 +185,12 @@ class LegacySnapshotCommands {
         }
 
         @Override
-        public Component getComponent(int number) {
+        public Component component(int number) {
             final Snapshot snapshot = snapshots.get(number);
-            return TextComponent.of(number + 1 + ". ", TextColor.GOLD)
-                    .append(TextComponent.of(snapshot.getName(), TextColor.LIGHT_PURPLE)
-                            .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to use")))
-                            .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/snap use " + snapshot.getName())));
+            return Component.text(number + 1 + ". ", NamedTextColor.GOLD)
+                    .append(Component.text(snapshot.getName(), NamedTextColor.LIGHT_PURPLE)
+                            .hoverEvent(HoverEvent.showText(Component.text("Click to use")))
+                            .clickEvent(ClickEvent.runCommand("/snap use " + snapshot.getName())));
         }
 
         @Override

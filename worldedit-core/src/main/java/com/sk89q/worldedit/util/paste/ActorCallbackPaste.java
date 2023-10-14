@@ -21,8 +21,8 @@ package com.sk89q.worldedit.util.paste;
 
 import com.sk89q.worldedit.command.util.AsyncCommandBuilder;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.TranslatableComponent;
 import com.sk89q.worldedit.util.task.Supervisor;
 
 import java.net.URL;
@@ -65,14 +65,36 @@ public final class ActorCallbackPaste {
      * @param sender The sender
      * @param content The content
      * @param successMessage The message builder, given the URL as an arg
+     * @deprecated Use adventure method instead
+     */
+    @Deprecated
+    public static void pastebin(Supervisor supervisor, final Actor sender, String content, final com.sk89q.worldedit.util.formatting.text.TranslatableComponent.Builder successMessage) {
+        Callable<URL> task = paster.paste(content);
+
+        AsyncCommandBuilder.wrap(task, sender)
+                .registerWithSupervisor(supervisor, "Submitting content to a pastebin service.")
+                .setDelayMessage(Component.translatable("worldedit.pastebin.uploading"))
+                .onSuccess((String) null, url -> sender.printInfo(successMessage.args(com.sk89q.worldedit.util.formatting.text.TextComponent.of(url.toString())).build()))
+                .onFailure("Failed to submit paste", null)
+                .buildAndExec(Pasters.getExecutor());
+    }
+
+    /**
+     * Submit data to a pastebin service and inform the sender of
+     * success or failure.
+     *
+     * @param supervisor The supervisor instance
+     * @param sender The sender
+     * @param content The content
+     * @param successMessage The message builder, given the URL as an arg
      */
     public static void pastebin(Supervisor supervisor, final Actor sender, String content, final TranslatableComponent.Builder successMessage) {
         Callable<URL> task = paster.paste(content);
 
         AsyncCommandBuilder.wrap(task, sender)
                 .registerWithSupervisor(supervisor, "Submitting content to a pastebin service.")
-                .setDelayMessage(TranslatableComponent.of("worldedit.pastebin.uploading"))
-                .onSuccess((String) null, url -> sender.printInfo(successMessage.args(TextComponent.of(url.toString())).build()))
+                .setDelayMessage(Component.translatable("worldedit.pastebin.uploading"))
+                .onSuccess((String) null, url -> sender.printInfo(successMessage.args(Component.text(url.toString())).build()))
                 .onFailure("Failed to submit paste", null)
                 .buildAndExec(Pasters.getExecutor());
     }
@@ -88,13 +110,13 @@ public final class ActorCallbackPaste {
      * @param pasteMetadata The paste metadata
      * @param successMessage The message builder, given the URL as an arg
      */
-    public static void pastebin(Supervisor supervisor, final Actor sender, String content, PasteMetadata pasteMetadata, final TranslatableComponent.Builder successMessage) {
+    public static void pastebin(Supervisor supervisor, final Actor sender, String content, PasteMetadata pasteMetadata, final TranslatableComponent successMessage) {
         Callable<URL> task = paster.paste(content, pasteMetadata);
 
         AsyncCommandBuilder.wrap(task, sender)
             .registerWithSupervisor(supervisor, "Submitting content to a pastebin service.")
-            .setDelayMessage(TranslatableComponent.of("worldedit.pastebin.uploading"))
-            .onSuccess((String) null, url -> sender.printInfo(successMessage.args(TextComponent.of(url.toString())).build()))
+            .setDelayMessage(Component.translatable("worldedit.pastebin.uploading"))
+            .onSuccess((String) null, url -> sender.printInfo(successMessage.args(Component.text(url.toString()))))
             .onFailure("Failed to submit paste", null)
             .buildAndExec(Pasters.getExecutor());
     }

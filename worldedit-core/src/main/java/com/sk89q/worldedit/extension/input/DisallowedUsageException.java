@@ -19,12 +19,23 @@
 
 package com.sk89q.worldedit.extension.input;
 
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 
 /**
  * Thrown when usage is disallowed.
  */
 public class DisallowedUsageException extends InputParseException {
+
+    /**
+     * Create with a message.
+     *
+     * @param message the message
+     * @deprecated use {@link DisallowedUsageException#DisallowedUsageException(Component)} instead
+     */
+    @Deprecated
+    public DisallowedUsageException(com.sk89q.worldedit.util.formatting.text.Component message) {
+        super(message);
+    }
 
     /**
      * Create with a message.
@@ -43,6 +54,19 @@ public class DisallowedUsageException extends InputParseException {
     @Deprecated
     public DisallowedUsageException(String message) {
         super(message);
+    }
+
+
+    /**
+     * Create with a message and a cause.
+     *
+     * @param message the message
+     * @param cause the cause
+     * @deprecated use {@link DisallowedUsageException#DisallowedUsageException(Component, Throwable)} instead
+     */
+    @Deprecated
+    public DisallowedUsageException(com.sk89q.worldedit.util.formatting.text.Component message, Throwable cause) {
+        super(message, cause);
     }
 
     /**

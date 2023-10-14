@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
+@Deprecated
 public abstract class PaginationBox extends MessageBox {
 
     private static final int IDEAL_ROWS_FOR_PLAYER = 8;

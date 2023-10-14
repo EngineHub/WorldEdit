@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.util.io.file;
 
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 
 public class FilenameException extends WorldEditException {
 
@@ -28,6 +28,12 @@ public class FilenameException extends WorldEditException {
 
     public FilenameException(String filename) {
         super();
+        this.filename = filename;
+    }
+
+    @Deprecated
+    public FilenameException(String filename, com.sk89q.worldedit.util.formatting.text.Component msg) {
+        super(msg);
         this.filename = filename;
     }
 

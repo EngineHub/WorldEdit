@@ -22,9 +22,14 @@ package com.sk89q.worldedit.util.formatting.component;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 
+/**
+ * Utility class to build components.
+ * @deprecated do not use anymore, use adventure directly
+ */
+@Deprecated
 public class TextComponentProducer {
 
-    private TextComponent.Builder builder = TextComponent.builder().content("");
+    private TextComponent.Builder builder = TextComponent.builder();
 
     public TextComponent.Builder getBuilder() {
         return builder;

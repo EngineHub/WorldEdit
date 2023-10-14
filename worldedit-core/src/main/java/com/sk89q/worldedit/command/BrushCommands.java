@@ -73,14 +73,12 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.request.RequestExtent;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.event.ClickEvent;
+import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
 import com.sk89q.worldedit.util.asset.AssetLoadTask;
 import com.sk89q.worldedit.util.asset.AssetLoader;
 import com.sk89q.worldedit.util.asset.holder.ImageHeightmap;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
@@ -102,9 +100,8 @@ public class BrushCommands {
 
     private final WorldEdit worldEdit;
 
-    private static final Component UNBIND_COMMAND_COMPONENT = TextComponent.builder("/brush unbind", TextColor.AQUA)
-                                                                   .clickEvent(ClickEvent.suggestCommand("/brush unbind"))
-                                                                   .build();
+    private static final Component UNBIND_COMMAND_COMPONENT = Component.text("/brush unbind", NamedTextColor.AQUA)
+                                                                   .clickEvent(ClickEvent.suggestCommand("/brush unbind"));
 
     /**
      * Create a new instance.
@@ -150,7 +147,7 @@ public class BrushCommands {
         tool.setFill(pattern);
         tool.setSize(radius);
 
-        player.printInfo(TranslatableComponent.of("worldedit.brush.sphere.equip", TextComponent.of(String.format("%.0f", radius))));
+        player.printInfo(Component.translatable("worldedit.brush.sphere.equip", Component.text(String.format("%.0f", radius))));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
     }
 
@@ -182,7 +179,7 @@ public class BrushCommands {
         tool.setFill(pattern);
         tool.setSize(radius);
 
-        player.printInfo(TranslatableComponent.of("worldedit.brush.cylinder.equip", TextComponent.of((int) radius), TextComponent.of(height)));
+        player.printInfo(Component.translatable("worldedit.brush.cylinder.equip", Component.text((int) radius), Component.text(height)));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
     }
 
@@ -202,7 +199,7 @@ public class BrushCommands {
         worldEdit.checkMaxBrushRadius(radius);
 
         if (decay < 0 || decay > 10) {
-            player.printError(TranslatableComponent.of("worldedit.brush.splatter.decay-out-of-range", TextComponent.of(decay)));
+            player.printError(Component.translatable("worldedit.brush.splatter.decay-out-of-range", Component.text(decay)));
             return;
         }
 
@@ -214,7 +211,7 @@ public class BrushCommands {
         tool.setFill(pattern);
         tool.setSize(radius);
 
-        player.printInfo(TranslatableComponent.of("worldedit.brush.splatter.equip", TextComponent.of((int) radius), TextComponent.of(decay)));
+        player.printInfo(Component.translatable("worldedit.brush.splatter.equip", Component.text((int) radius), Component.text(decay)));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
     }
 
@@ -257,7 +254,7 @@ public class BrushCommands {
             "worldedit.brush.clipboard"
         );
 
-        player.printInfo(TranslatableComponent.of("worldedit.brush.clipboard.equip"));
+        player.printInfo(Component.translatable("worldedit.brush.clipboard.equip"));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
     }
 
@@ -283,11 +280,11 @@ public class BrushCommands {
         );
         tool.setSize(radius);
 
-        player.printInfo(TranslatableComponent.of(
+        player.printInfo(Component.translatable(
                 "worldedit.brush.smooth.equip",
-                TextComponent.of((int) radius),
-                TextComponent.of(iterations),
-                TranslatableComponent.of("worldedit.brush.smooth." + (mask == null ? "no" : "") + "filter")
+                Component.text((int) radius),
+                Component.text(iterations),
+                Component.translatable("worldedit.brush.smooth." + (mask == null ? "no" : "") + "filter")
         ));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
     }
@@ -316,12 +313,12 @@ public class BrushCommands {
         );
         tool.setSize(radius);
 
-        player.printInfo(TranslatableComponent.of(
+        player.printInfo(Component.translatable(
                 "worldedit.brush.snowsmooth.equip",
-                TextComponent.of((int) radius),
-                TextComponent.of(iterations),
-                TranslatableComponent.of("worldedit.brush.snowsmooth." + (mask == null ? "no" : "") + "filter"),
-                TextComponent.of(snowBlockCount)
+                Component.text((int) radius),
+                Component.text(iterations),
+                Component.translatable("worldedit.brush.snowsmooth." + (mask == null ? "no" : "") + "filter"),
+                Component.text(snowBlockCount)
         ));
     }
 
@@ -345,7 +342,7 @@ public class BrushCommands {
         tool.setSize(radius);
         tool.setMask(new BlockTypeMask(new RequestExtent(), BlockTypes.FIRE));
 
-        player.printInfo(TranslatableComponent.of("worldedit.brush.extinguish.equip", TextComponent.of((int) radius)));
+        player.printInfo(Component.translatable("worldedit.brush.extinguish.equip", Component.text((int) radius)));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
     }
 
@@ -376,7 +373,7 @@ public class BrushCommands {
         );
         tool.setSize(radius);
 
-        player.printInfo(TranslatableComponent.of("worldedit.brush.gravity.equip", TextComponent.of((int) radius)));
+        player.printInfo(Component.translatable("worldedit.brush.gravity.equip", Component.text((int) radius)));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
     }
 
@@ -417,7 +414,7 @@ public class BrushCommands {
             maxRadius = Math.max(config.maxBrushRadius, config.butcherMaxRadius);
         }
         if (radius > maxRadius) {
-            player.printError(TranslatableComponent.of("worldedit.brush.radius-too-large", TextComponent.of(maxRadius)));
+            player.printError(Component.translatable("worldedit.brush.radius-too-large", Component.text(maxRadius)));
             return;
         }
 
@@ -438,7 +435,7 @@ public class BrushCommands {
         );
         tool.setSize(radius);
 
-        player.printInfo(TranslatableComponent.of("worldedit.brush.butcher.equip", TextComponent.of((int) radius)));
+        player.printInfo(Component.translatable("worldedit.brush.butcher.equip", Component.text((int) radius)));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
     }
 
@@ -468,9 +465,9 @@ public class BrushCommands {
             AssetLoadTask<ImageHeightmap> task = new AssetLoadTask<>(loader.get(), imageName);
             AsyncCommandBuilder.wrap(task, player)
                 .registerWithSupervisor(worldEdit.getSupervisor(), "Loading asset " + imageName)
-                .setDelayMessage(TranslatableComponent.of("worldedit.asset.load.loading"))
-                .setWorkingMessage(TranslatableComponent.of("worldedit.asset.load.still-loading"))
-                .onSuccess(TranslatableComponent.of("worldedit.brush.heightmap.equip", TextComponent.of((int) radius)), heightmap -> {
+                .setDelayMessage(Component.translatable("worldedit.asset.load.loading"))
+                .setWorkingMessage(Component.translatable("worldedit.asset.load.still-loading"))
+                .onSuccess(Component.translatable("worldedit.brush.heightmap.equip", Component.text((int) radius)), heightmap -> {
                     BrushTool tool;
                     try {
                         tool = session.forceBrush(
@@ -484,10 +481,10 @@ public class BrushCommands {
                     tool.setSize(radius);
                     ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
                 })
-                .onFailure(TranslatableComponent.of("worldedit.asset.load.failed"), worldEdit.getPlatformManager().getPlatformCommandManager().getExceptionConverter())
+                .onFailure(Component.translatable("worldedit.asset.load.failed"), worldEdit.getPlatformManager().getPlatformCommandManager().getExceptionConverter())
                 .buildAndExec(worldEdit.getExecutorService());
         } else {
-            player.printError(TranslatableComponent.of("worldedit.brush.heightmap.unknown", TextComponent.of(imageName)));
+            player.printError(Component.translatable("worldedit.brush.heightmap.unknown", Component.text(imageName)));
         }
     }
 
@@ -642,14 +639,14 @@ public class BrushCommands {
             } else if (shape instanceof CuboidRegionFactory) {
                 shape = new FixedHeightCuboidRegionFactory(player.getWorld().getMinY(), player.getWorld().getMaxY());
             } else {
-                player.printError(TranslatableComponent.of("worldedit.brush.biome.column-supported-types"));
+                player.printError(Component.translatable("worldedit.brush.biome.column-supported-types"));
                 return;
             }
         }
 
         setOperationBasedBrush(player, localSession, radius,
             new ApplyRegion(new BiomeFactory(biomeType)), shape, "worldedit.brush.biome");
-        player.printInfo(TranslatableComponent.of("worldedit.setbiome.warning"));
+        player.printInfo(Component.translatable("worldedit.setbiome.warning"));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
     }
 
@@ -677,7 +674,7 @@ public class BrushCommands {
         );
         tool.setSize(brushSize);
 
-        player.printInfo(TranslatableComponent.of("worldedit.brush.morph.equip", TextComponent.of((int) brushSize)));
+        player.printInfo(Component.translatable("worldedit.brush.morph.equip", Component.text((int) brushSize)));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
     }
 
@@ -697,7 +694,7 @@ public class BrushCommands {
         );
         tool.setSize(brushSize);
 
-        player.printInfo(TranslatableComponent.of("worldedit.brush.morph.equip", TextComponent.of((int) brushSize)));
+        player.printInfo(Component.translatable("worldedit.brush.morph.equip", Component.text((int) brushSize)));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
     }
 
@@ -717,7 +714,7 @@ public class BrushCommands {
         );
         tool.setSize(brushSize);
 
-        player.printInfo(TranslatableComponent.of("worldedit.brush.morph.equip", TextComponent.of((int) brushSize)));
+        player.printInfo(Component.translatable("worldedit.brush.morph.equip", Component.text((int) brushSize)));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
     }
 
@@ -734,7 +731,7 @@ public class BrushCommands {
         tool.setSize(radius);
         tool.setFill(null);
 
-        player.printInfo(TranslatableComponent.of("worldedit.brush.operation.equip", TextComponent.of(factory.toString())));
+        player.printInfo(Component.translatable("worldedit.brush.operation.equip", Component.text(factory.toString())));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
     }
 }

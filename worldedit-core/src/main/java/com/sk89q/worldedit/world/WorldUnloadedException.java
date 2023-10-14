@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.world;
 
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.adventure.text.Component;
 
 /**
  * Thrown if the world has been unloaded.
@@ -31,6 +31,6 @@ public class WorldUnloadedException extends WorldEditException {
      * Create a new instance.
      */
     public WorldUnloadedException() {
-        super(TranslatableComponent.of("worldedit.error.world-unloaded"));
+        super(Component.translatable("worldedit.error.world-unloaded"));
     }
 }

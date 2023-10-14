@@ -22,8 +22,8 @@ package com.sk89q.worldedit.blocks;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
-import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.item.ItemType;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
@@ -100,8 +100,26 @@ public class BaseItemStack extends BaseItem {
         this.amount = amount;
     }
 
-    public Component getRichName() {
+    /**
+     * Gets the rich name of the item stack.
+     *
+     * @return the rich name
+     * @deprecated Use {@link BaseItemStack#getDisplayName()} instead
+     */
+    @Deprecated
+    public com.sk89q.worldedit.util.formatting.text.Component getRichName() {
         return WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
             .getRegistries().getItemRegistry().getRichName(this);
     }
+
+    /**
+     * Gets the display name of the item stack.
+     *
+     * @return the display name
+     */
+    public Component getDisplayName() {
+        return WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
+                .getRegistries().getItemRegistry().getDisplayName(this);
+    }
+
 }

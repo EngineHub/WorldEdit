@@ -36,8 +36,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.generation.StructureType;
@@ -118,7 +117,7 @@ public class GenerationCommands {
                 break;
 
             default:
-                actor.printError(TranslatableComponent.of("worldedit.cyl.invalid-radius"));
+                actor.printError(Component.translatable("worldedit.cyl.invalid-radius"));
                 return 0;
         }
 
@@ -128,7 +127,7 @@ public class GenerationCommands {
 
         BlockVector3 pos = session.getPlacementPosition(actor);
         int affected = editSession.makeCylinder(pos, pattern, radiusX, radiusZ, height, !hollow);
-        actor.printInfo(TranslatableComponent.of("worldedit.cyl.created", TextComponent.of(affected)));
+        actor.printInfo(Component.translatable("worldedit.cyl.created", Component.text(affected)));
         return affected;
     }
 
@@ -160,7 +159,7 @@ public class GenerationCommands {
                 radiusZ = Math.max(1, radii.get(1));
             }
             default -> {
-                actor.printError(TranslatableComponent.of("worldedit.cone.invalid-radius"));
+                actor.printError(Component.translatable("worldedit.cone.invalid-radius"));
                 return 0;
             }
         }
@@ -171,7 +170,7 @@ public class GenerationCommands {
 
         BlockVector3 pos = session.getPlacementPosition(actor);
         int affected = editSession.makeCone(pos, pattern, radiusX, radiusZ, height, !hollow, thickness);
-        actor.printInfo(TranslatableComponent.of("worldedit.cone.created", TextComponent.of(affected)));
+        actor.printInfo(Component.translatable("worldedit.cone.created", Component.text(affected)));
         return affected;
     }
 
@@ -223,7 +222,7 @@ public class GenerationCommands {
                 break;
 
             default:
-                actor.printError(TranslatableComponent.of("worldedit.sphere.invalid-radius"));
+                actor.printError(Component.translatable("worldedit.sphere.invalid-radius"));
                 return 0;
         }
 
@@ -240,7 +239,7 @@ public class GenerationCommands {
         if (actor instanceof Player) {
             ((Player) actor).findFreePosition();
         }
-        actor.printInfo(TranslatableComponent.of("worldedit.sphere.created", TextComponent.of(affected)));
+        actor.printInfo(Component.translatable("worldedit.sphere.created", Component.text(affected)));
         return affected;
     }
 
@@ -261,7 +260,7 @@ public class GenerationCommands {
         worldEdit.checkMaxRadius(size);
         density /= 100;
         int affected = editSession.makeForest(session.getPlacementPosition(actor), size, density, type);
-        actor.printInfo(TranslatableComponent.of("worldedit.forestgen.created", TextComponent.of(affected)));
+        actor.printInfo(Component.translatable("worldedit.forestgen.created", Component.text(affected)));
         return affected;
     }
 
@@ -276,7 +275,7 @@ public class GenerationCommands {
                             int size) throws WorldEditException {
         worldEdit.checkMaxRadius(size);
         int affected = editSession.makePumpkinPatches(session.getPlacementPosition(actor), size);
-        actor.printInfo(TranslatableComponent.of("worldedit.pumpkins.created", TextComponent.of(affected)));
+        actor.printInfo(Component.translatable("worldedit.pumpkins.created", Component.text(affected)));
         return affected;
     }
 
@@ -290,9 +289,9 @@ public class GenerationCommands {
                        @Arg(desc = "The feature")
                        ConfiguredFeatureType feature) throws WorldEditException {
         if (editSession.getWorld().generateFeature(feature, editSession, session.getPlacementPosition(actor))) {
-            actor.printInfo(TranslatableComponent.of("worldedit.feature.created"));
+            actor.printInfo(Component.translatable("worldedit.feature.created"));
         } else {
-            actor.printError(TranslatableComponent.of("worldedit.feature.failed"));
+            actor.printError(Component.translatable("worldedit.feature.failed"));
         }
         return 0;
     }
@@ -307,9 +306,9 @@ public class GenerationCommands {
                         @Arg(desc = "The structure")
                         StructureType feature) throws WorldEditException {
         if (editSession.getWorld().generateStructure(feature, editSession, session.getPlacementPosition(actor))) {
-            actor.printInfo(TranslatableComponent.of("worldedit.structure.created"));
+            actor.printInfo(Component.translatable("worldedit.structure.created"));
         } else {
-            actor.printError(TranslatableComponent.of("worldedit.structure.failed"));
+            actor.printError(Component.translatable("worldedit.structure.failed"));
         }
         return 0;
     }
@@ -347,7 +346,7 @@ public class GenerationCommands {
         if (actor instanceof Player) {
             ((Player) actor).findFreePosition();
         }
-        actor.printInfo(TranslatableComponent.of("worldedit.pyramid.created", TextComponent.of(affected)));
+        actor.printInfo(Component.translatable("worldedit.pyramid.created", Component.text(affected)));
         return affected;
     }
 
@@ -412,10 +411,10 @@ public class GenerationCommands {
             if (actor instanceof Player) {
                 ((Player) actor).findFreePosition();
             }
-            actor.printInfo(TranslatableComponent.of("worldedit.generate.created", TextComponent.of(affected)));
+            actor.printInfo(Component.translatable("worldedit.generate.created", Component.text(affected)));
             return affected;
         } catch (ExpressionException e) {
-            actor.printError(TextComponent.of(e.getMessage()));
+            actor.printError(Component.text(e.getMessage()));
             return 0;
         }
     }
@@ -477,10 +476,10 @@ public class GenerationCommands {
 
         try {
             final int affected = editSession.makeBiomeShape(region, zero, unit, target, String.join(" ", expression), hollow, session.getTimeout());
-            actor.printInfo(TranslatableComponent.of("worldedit.generatebiome.changed", TextComponent.of(affected)));
+            actor.printInfo(Component.translatable("worldedit.generatebiome.changed", Component.text(affected)));
             return affected;
         } catch (ExpressionException e) {
-            actor.printError(TextComponent.of(e.getMessage()));
+            actor.printError(Component.text(e.getMessage()));
             return 0;
         }
     }

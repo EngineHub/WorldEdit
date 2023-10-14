@@ -20,12 +20,18 @@
 package com.sk89q.worldedit.command.tool;
 
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.world.item.ItemType;
 
 public class InvalidToolBindException extends WorldEditException {
 
     private final ItemType item;
+
+    @Deprecated
+    public InvalidToolBindException(ItemType item, com.sk89q.worldedit.util.formatting.text.Component msg) {
+        super(msg);
+        this.item = item;
+    }
 
     public InvalidToolBindException(ItemType item, Component msg) {
         super(msg);

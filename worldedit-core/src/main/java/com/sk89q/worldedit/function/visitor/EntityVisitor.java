@@ -25,10 +25,8 @@ import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.function.EntityFunction;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
 
 import java.util.Iterator;
 
@@ -81,11 +79,11 @@ public class EntityVisitor implements Operation {
     }
 
     @Override
-    public Iterable<Component> getStatusMessages() {
-        return ImmutableList.of(TranslatableComponent.of(
+    public Iterable<Component> getMessages() {
+        return ImmutableList.of(Component.translatable(
                 "worldedit.operation.affected.entity",
-                TextComponent.of(getAffected())
-        ).color(TextColor.LIGHT_PURPLE));
+                Component.text(getAffected())
+        ).color(NamedTextColor.LIGHT_PURPLE));
     }
 
 }
