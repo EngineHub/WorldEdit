@@ -452,6 +452,7 @@ public class GeneralCommands {
         aliases = {"/placement"},
         desc = "Select which placement to use"
     )
+    @CommandPermissions("worldedit.placement")
     public void placement(Actor actor, LocalSession session,
                           @Arg(desc = "Which placement type to use")
                           PlacementType placementType,
