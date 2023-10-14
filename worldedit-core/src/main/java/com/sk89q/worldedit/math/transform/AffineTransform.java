@@ -152,6 +152,9 @@ public class AffineTransform implements Transform {
      */
     @Override
     public AffineTransform inverse() {
+        if (isIdentity()) {
+            return this;
+        }
         double det = this.determinant();
         return new AffineTransform(
                 (m11 * m22 - m21 * m12) / det,
