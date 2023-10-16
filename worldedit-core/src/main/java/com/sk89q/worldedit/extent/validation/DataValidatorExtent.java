@@ -24,6 +24,7 @@ import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 
@@ -64,4 +65,14 @@ public class DataValidatorExtent extends AbstractDelegateExtent {
         return super.setBlock(location, block);
     }
 
+    @Override
+    public boolean setBiome(BlockVector3 location, BiomeType biome) {
+        final int y = location.getBlockY();
+
+        if (y < world.getMinY() || y > world.getMaxY()) {
+            return false;
+        }
+
+        return super.setBiome(location, biome);
+    }
 }
