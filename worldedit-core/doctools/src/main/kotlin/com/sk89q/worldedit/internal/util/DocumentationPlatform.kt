@@ -64,11 +64,11 @@ class DocumentationPlatform : AbstractPlatform() {
 
     override fun getCapabilities(): MutableMap<Capability, Preference> {
         val capabilities: MutableMap<Capability, Preference> = EnumMap(Capability::class.java)
-        capabilities[Capability.CONFIGURATION] = Preference.NORMAL
-        capabilities[Capability.WORLDEDIT_CUI] = Preference.NORMAL
-        capabilities[Capability.GAME_HOOKS] = Preference.PREFERRED
-        capabilities[Capability.PERMISSIONS] = Preference.PREFERRED
-        capabilities[Capability.USER_COMMANDS] = Preference.PREFERRED
+        capabilities[Capability.CONFIGURATION] = Preference.PREFER_OTHERS
+        capabilities[Capability.WORLDEDIT_CUI] = Preference.PREFER_OTHERS
+        capabilities[Capability.GAME_HOOKS] = Preference.PREFER_OTHERS
+        capabilities[Capability.PERMISSIONS] = Preference.PREFER_OTHERS
+        capabilities[Capability.USER_COMMANDS] = Preference.PREFER_OTHERS
         capabilities[Capability.WORLD_EDITING] = Preference.PREFER_OTHERS
         return capabilities
     }
