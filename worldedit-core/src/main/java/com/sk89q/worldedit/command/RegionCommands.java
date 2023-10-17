@@ -173,6 +173,7 @@ public class RegionCommands {
             return 0;
         }
         checkCommandArgument(thickness >= 0, "Thickness must be >= 0");
+        WorldEdit.getInstance().checkMaxRadius(thickness);
 
         ConvexPolyhedralRegion cpregion = (ConvexPolyhedralRegion) region;
         List<BlockVector3> vectors = new ArrayList<>(cpregion.getVertices());
