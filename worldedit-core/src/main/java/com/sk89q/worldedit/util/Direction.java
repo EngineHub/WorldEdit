@@ -184,81 +184,47 @@ public enum Direction {
      * @return The direction, if applicable
      */
     public static Optional<Direction> fromRotationIndex(int rotation) {
-        switch (rotation) {
-            case 0:
-                return Optional.of(SOUTH);
-            case 1:
-                return Optional.of(SOUTH_SOUTHWEST);
-            case 2:
-                return Optional.of(SOUTHWEST);
-            case 3:
-                return Optional.of(WEST_SOUTHWEST);
-            case 4:
-                return Optional.of(WEST);
-            case 5:
-                return Optional.of(WEST_NORTHWEST);
-            case 6:
-                return Optional.of(NORTHWEST);
-            case 7:
-                return Optional.of(NORTH_NORTHWEST);
-            case 8:
-                return Optional.of(NORTH);
-            case 9:
-                return Optional.of(NORTH_NORTHEAST);
-            case 10:
-                return Optional.of(NORTHEAST);
-            case 11:
-                return Optional.of(EAST_NORTHEAST);
-            case 12:
-                return Optional.of(EAST);
-            case 13:
-                return Optional.of(EAST_SOUTHEAST);
-            case 14:
-                return Optional.of(SOUTHEAST);
-            case 15:
-                return Optional.of(SOUTH_SOUTHEAST);
-            default:
-                return Optional.empty();
-        }
+        return switch (rotation) {
+            case 0 -> Optional.of(SOUTH);
+            case 1 -> Optional.of(SOUTH_SOUTHWEST);
+            case 2 -> Optional.of(SOUTHWEST);
+            case 3 -> Optional.of(WEST_SOUTHWEST);
+            case 4 -> Optional.of(WEST);
+            case 5 -> Optional.of(WEST_NORTHWEST);
+            case 6 -> Optional.of(NORTHWEST);
+            case 7 -> Optional.of(NORTH_NORTHWEST);
+            case 8 -> Optional.of(NORTH);
+            case 9 -> Optional.of(NORTH_NORTHEAST);
+            case 10 -> Optional.of(NORTHEAST);
+            case 11 -> Optional.of(EAST_NORTHEAST);
+            case 12 -> Optional.of(EAST);
+            case 13 -> Optional.of(EAST_SOUTHEAST);
+            case 14 -> Optional.of(SOUTHEAST);
+            case 15 -> Optional.of(SOUTH_SOUTHEAST);
+            default -> Optional.empty();
+        };
     }
 
     public OptionalInt toRotationIndex() {
-        switch (this) {
-            case SOUTH:
-                return OptionalInt.of(0);
-            case SOUTH_SOUTHWEST:
-                return OptionalInt.of(1);
-            case SOUTHWEST:
-                return OptionalInt.of(2);
-            case WEST_SOUTHWEST:
-                return OptionalInt.of(3);
-            case WEST:
-                return OptionalInt.of(4);
-            case WEST_NORTHWEST:
-                return OptionalInt.of(5);
-            case NORTHWEST:
-                return OptionalInt.of(6);
-            case NORTH_NORTHWEST:
-                return OptionalInt.of(7);
-            case NORTH:
-                return OptionalInt.of(8);
-            case NORTH_NORTHEAST:
-                return OptionalInt.of(9);
-            case NORTHEAST:
-                return OptionalInt.of(10);
-            case EAST_NORTHEAST:
-                return OptionalInt.of(11);
-            case EAST:
-                return OptionalInt.of(12);
-            case EAST_SOUTHEAST:
-                return OptionalInt.of(13);
-            case SOUTHEAST:
-                return OptionalInt.of(14);
-            case SOUTH_SOUTHEAST:
-                return OptionalInt.of(15);
-            default:
-                return OptionalInt.empty();
-        }
+        return switch (this) {
+            case SOUTH -> OptionalInt.of(0);
+            case SOUTH_SOUTHWEST -> OptionalInt.of(1);
+            case SOUTHWEST -> OptionalInt.of(2);
+            case WEST_SOUTHWEST -> OptionalInt.of(3);
+            case WEST -> OptionalInt.of(4);
+            case WEST_NORTHWEST -> OptionalInt.of(5);
+            case NORTHWEST -> OptionalInt.of(6);
+            case NORTH_NORTHWEST -> OptionalInt.of(7);
+            case NORTH -> OptionalInt.of(8);
+            case NORTH_NORTHEAST -> OptionalInt.of(9);
+            case NORTHEAST -> OptionalInt.of(10);
+            case EAST_NORTHEAST -> OptionalInt.of(11);
+            case EAST -> OptionalInt.of(12);
+            case EAST_SOUTHEAST -> OptionalInt.of(13);
+            case SOUTHEAST -> OptionalInt.of(14);
+            case SOUTH_SOUTHEAST -> OptionalInt.of(15);
+            default -> OptionalInt.empty();
+        };
     }
 
     /**

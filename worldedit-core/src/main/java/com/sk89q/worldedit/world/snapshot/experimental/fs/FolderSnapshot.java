@@ -134,7 +134,7 @@ public class FolderSnapshot implements Snapshot {
     public LinCompoundTag getChunkTag(BlockVector3 position) throws DataException, IOException {
         BlockVector2 pos = position.toBlockVector2();
         Optional<Path> regFolder = getRegionFolder();
-        if (!regFolder.isPresent()) {
+        if (regFolder.isEmpty()) {
             Path chunkFile = getFolder().resolve(LegacyChunkStore.getFilename(pos, "/"));
             if (!Files.exists(chunkFile)) {
                 throw new MissingChunkException();

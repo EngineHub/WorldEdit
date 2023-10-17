@@ -67,16 +67,11 @@ public class Naturalizer implements LayerFunction {
     }
 
     private BlockState getTargetBlock(int depth) {
-        switch (depth) {
-            case 0:
-                return BlockTypes.GRASS_BLOCK.getDefaultState();
-            case 1:
-            case 2:
-            case 3:
-                return BlockTypes.DIRT.getDefaultState();
-            default:
-                return BlockTypes.STONE.getDefaultState();
-        }
+        return switch (depth) {
+            case 0 -> BlockTypes.GRASS_BLOCK.getDefaultState();
+            case 1, 2, 3 -> BlockTypes.DIRT.getDefaultState();
+            default -> BlockTypes.STONE.getDefaultState();
+        };
     }
 
     private boolean naturalize(BlockVector3 position, int depth) throws WorldEditException {

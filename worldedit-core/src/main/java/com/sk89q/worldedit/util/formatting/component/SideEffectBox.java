@@ -34,7 +34,6 @@ import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 public class SideEffectBox extends PaginationBox {
 

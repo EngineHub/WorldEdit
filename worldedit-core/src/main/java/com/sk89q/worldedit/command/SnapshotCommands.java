@@ -125,8 +125,7 @@ public class SnapshotCommands {
                 TextComponent.of(world.getName())
             ));
 
-            if (config.snapshotDatabase instanceof FileSystemSnapshotDatabase) {
-                FileSystemSnapshotDatabase db = (FileSystemSnapshotDatabase) config.snapshotDatabase;
+            if (config.snapshotDatabase instanceof FileSystemSnapshotDatabase db) {
                 Path root = db.getRoot();
                 if (Files.isDirectory(root)) {
                     WorldEdit.logger.info("No snapshots were found for world '"

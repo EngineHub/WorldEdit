@@ -22,8 +22,6 @@ package com.sk89q.worldedit.function.mask;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.collection.BlockMap;
 
-import javax.annotation.Nullable;
-
 /**
  * A utility mask wrapper that memoizes the results of the given mask.
  *

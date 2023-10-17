@@ -21,8 +21,6 @@ package com.sk89q.worldedit.function.mask;
 
 import com.sk89q.worldedit.math.BlockVector3;
 
-import javax.annotation.Nullable;
-
 import static com.google.common.base.Preconditions.checkArgument;
 
 /**

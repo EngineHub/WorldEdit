@@ -139,7 +139,7 @@ public class PrintCommandHelp {
         List<Command> commands = commandStream
             .filter(command -> command.getCondition().satisfied(store))
             .sorted(byCleanName())
-            .collect(toList());
+            .toList();
 
         String used = commandList.isEmpty() ? null : toCommandString(commandList);
         CommandListBox box = new CommandListBox(

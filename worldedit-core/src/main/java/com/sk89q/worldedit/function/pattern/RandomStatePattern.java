@@ -26,7 +26,6 @@ import com.sk89q.worldedit.world.block.FuzzyBlockState;
 
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 public class RandomStatePattern implements Pattern {
 

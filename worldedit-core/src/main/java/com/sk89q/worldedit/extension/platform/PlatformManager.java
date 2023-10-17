@@ -258,9 +258,7 @@ public class PlatformManager {
     public <T extends Actor> T createProxyActor(T base) {
         checkNotNull(base);
 
-        if (base instanceof Player) {
-            Player player = (Player) base;
-
+        if (base instanceof Player player) {
             Player permActor = queryCapability(Capability.PERMISSIONS).matchPlayer(player);
             if (permActor == null) {
                 permActor = player;
@@ -361,10 +359,9 @@ public class PlatformManager {
         Location location = event.getLocation();
 
         // At this time, only handle interaction from players
-        if (!(actor instanceof Player)) {
+        if (!(actor instanceof Player player)) {
             return;
         }
-        Player player = (Player) actor;
         LocalSession session = worldEdit.getSessionManager().get(actor);
 
         Request.reset();

@@ -76,9 +76,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
     public CuboidRegionSelector(RegionSelector oldSelector) {
         this(checkNotNull(oldSelector).getIncompleteRegion().getWorld());
 
-        if (oldSelector instanceof CuboidRegionSelector) {
-            final CuboidRegionSelector cuboidRegionSelector = (CuboidRegionSelector) oldSelector;
-
+        if (oldSelector instanceof CuboidRegionSelector cuboidRegionSelector) {
             position1 = cuboidRegionSelector.position1;
             position2 = cuboidRegionSelector.position2;
         } else {

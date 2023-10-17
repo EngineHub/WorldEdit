@@ -243,8 +243,7 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
             ExpressionParser.SwitchLabelContext label = ctx.labels.get(i);
             ExpressionParser.StatementsContext body = ctx.bodies.get(i);
             ExecNode node = evaluate(body);
-            if (label instanceof ExpressionParser.CaseContext) {
-                ExpressionParser.CaseContext caseContext = (ExpressionParser.CaseContext) label;
+            if (label instanceof ExpressionParser.CaseContext caseContext) {
                 double key = (double) ExpressionHandles.constantInvoke(evaluateForValue(caseContext.constant));
                 ExpressionHelper.check(!cases.containsKey(key), body, "Duplicate cases detected.");
                 cases.put(key, node);
