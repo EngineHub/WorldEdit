@@ -217,5 +217,14 @@
                 "METHOD_NEW_DEFAULT"
             ]
         }
+    ],
+    "Should not have been extended anyway": [
+        {
+            "type": "com.sk89q.worldedit.math.transform.AffineTransform",
+            "member": "Class com.sk89q.worldedit.math.transform.AffineTransform",
+            "changes": [
+                "CLASS_NOW_FINAL"
+            ]
+        }
     ]
 }
