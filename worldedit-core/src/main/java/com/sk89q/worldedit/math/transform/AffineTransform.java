@@ -71,6 +71,7 @@ public record AffineTransform(
     }
 
     /**
+     * Creates a new affine transform from the given coefficients.
      *
      * @param coefs array of 9 to 12 coefficients
      * @deprecated Use {@link #AffineTransform(double, double, double, double, double, double, double, double, double, double, double, double)} instead
