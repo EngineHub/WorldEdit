@@ -26,7 +26,7 @@ import com.sk89q.worldedit.math.Vector3;
 /**
  * An affine transform.
  *
- * <p>This class is from the
+ * <p>This class is based on the one from the
  * <a href="http://geom-java.sourceforge.net/index.html">JavaGeom project</a>,
  * which is licensed under LGPL v2.1.</p>
  */
