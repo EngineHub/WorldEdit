@@ -26,35 +26,18 @@ import com.sk89q.worldedit.math.Vector3;
 /**
  * An affine transform.
  *
- * <p>This class is from the
+ * <p>This class is based on the one from the
  * <a href="http://geom-java.sourceforge.net/index.html">JavaGeom project</a>,
  * which is licensed under LGPL v2.1.</p>
  */
-public class AffineTransform implements Transform {
-
-    /**
-     * coefficients for x coordinate.
-     */
-    private final double m00;
-    private final double m01;
-    private final double m02;
-    private final double m03;
-
-    /**
-     * coefficients for y coordinate.
-     */
-    private final double m10;
-    private final double m11;
-    private final double m12;
-    private final double m13;
-
-    /**
-     * coefficients for z coordinate.
-     */
-    private final double m20;
-    private final double m21;
-    private final double m22;
-    private final double m23;
+public record AffineTransform(
+    // coefficients for x coordinate.
+    double m00, double m01, double m02, double m03,
+    // coefficients for y coordinate.
+    double m10, double m11, double m12, double m13,
+    // coefficients for z coordinate.
+    double m20, double m21, double m22, double m23
+) implements Transform {
 
     // ===================================================================
     // constructors
@@ -64,58 +47,42 @@ public class AffineTransform implements Transform {
      */
     public AffineTransform() {
         // init to identity matrix
-        m00 = m11 = m22 = 1;
-        m01 = m02 = m03 = 0;
-        m10 = m12 = m13 = 0;
-        m20 = m21 = m23 = 0;
+        this(
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0
+        );
     }
 
-    public AffineTransform(double[] coefs) {
-        if (coefs.length == 9) {
-            m00 = coefs[0];
-            m01 = coefs[1];
-            m02 = coefs[2];
-            m10 = coefs[3];
-            m11 = coefs[4];
-            m12 = coefs[5];
-            m20 = coefs[6];
-            m21 = coefs[7];
-            m22 = coefs[8];
-            m03 = m13 = m23 = 0;
-        } else if (coefs.length == 12) {
-            m00 = coefs[0];
-            m01 = coefs[1];
-            m02 = coefs[2];
-            m03 = coefs[3];
-            m10 = coefs[4];
-            m11 = coefs[5];
-            m12 = coefs[6];
-            m13 = coefs[7];
-            m20 = coefs[8];
-            m21 = coefs[9];
-            m22 = coefs[10];
-            m23 = coefs[11];
-        } else {
-            throw new IllegalArgumentException(
-                    "Input array must have 9 or 12 elements");
+    private static double indexCoeffs(double[] coeffs, int destIndex) {
+        if (coeffs.length == 12) {
+            return coeffs[destIndex];
         }
+        if (coeffs.length != 9) {
+            throw new IllegalArgumentException("Input array must have 9 or 12 elements");
+        }
+        if (destIndex > 0 && destIndex % 3 == 0) {
+            // Length 9 has holes in m03, m13, m23
+            return 0;
+        }
+        // Adjust for missing holes
+        destIndex -= destIndex / 3;
+        return coeffs[destIndex];
     }
 
-    public AffineTransform(double xx, double yx, double zx, double tx,
-                           double xy, double yy, double zy, double ty, double xz, double yz,
-                           double zz, double tz) {
-        m00 = xx;
-        m01 = yx;
-        m02 = zx;
-        m03 = tx;
-        m10 = xy;
-        m11 = yy;
-        m12 = zy;
-        m13 = ty;
-        m20 = xz;
-        m21 = yz;
-        m22 = zz;
-        m23 = tz;
+    /**
+     * Creates a new affine transform from the given coefficients.
+     *
+     * @param coefs array of 9 to 12 coefficients
+     * @deprecated Use {@link #AffineTransform(double, double, double, double, double, double, double, double, double, double, double, double)} instead
+     */
+    @Deprecated
+    public AffineTransform(double[] coefs) {
+        this(
+            indexCoeffs(coefs, 0), indexCoeffs(coefs, 1), indexCoeffs(coefs, 2), indexCoeffs(coefs, 3),
+            indexCoeffs(coefs, 4), indexCoeffs(coefs, 5), indexCoeffs(coefs, 6), indexCoeffs(coefs, 7),
+            indexCoeffs(coefs, 8), indexCoeffs(coefs, 9), indexCoeffs(coefs, 10), indexCoeffs(coefs, 11)
+        );
     }
 
     // ===================================================================
