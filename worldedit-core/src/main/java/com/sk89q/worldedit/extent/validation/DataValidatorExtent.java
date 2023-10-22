@@ -34,7 +34,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class DataValidatorExtent extends AbstractDelegateExtent {
 
-    private final World world;
+    private final int minY;
+    private final int maxY;
 
     /**
      * Create a new instance.
@@ -43,16 +44,27 @@ public class DataValidatorExtent extends AbstractDelegateExtent {
      * @param world the world
      */
     public DataValidatorExtent(Extent extent, World world) {
+        this(extent, checkNotNull(world).getMinY(), world.getMaxY());
+    }
+
+    /**
+     * Create a new instance.
+     *
+     * @param extent The extent
+     * @param minY The minimum Y height to allow (inclusive)
+     * @param maxY The maximum Y height to allow (inclusive)
+     */
+    public DataValidatorExtent(Extent extent, int minY, int maxY) {
         super(extent);
-        checkNotNull(world);
-        this.world = world;
+        this.minY = minY;
+        this.maxY = maxY;
     }
 
     @Override
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 location, B block) throws WorldEditException {
         final int y = location.getBlockY();
         final BlockType type = block.getBlockType();
-        if (y < world.getMinY() || y > world.getMaxY()) {
+        if (y < minY || y > maxY) {
             return false;
         }
 
