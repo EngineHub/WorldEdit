@@ -78,7 +78,7 @@ tasks.named<Copy>("processResources") {
 addJarManifest(WorldEditKind.Plugin, includeClasspath = true)
 
 tasks.named<ShadowJar>("shadowJar") {
-    dependsOn(project.project(":worldedit-bukkit:adapters").subprojects.map { it.tasks.named("assemble") })
+    dependsOn(adapters)
     from(Callable {
         adapters.resolve()
             .map { f ->
