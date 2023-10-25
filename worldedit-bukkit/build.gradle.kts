@@ -78,15 +78,7 @@ tasks.named<Copy>("processResources") {
 addJarManifest(WorldEditKind.Plugin, includeClasspath = true)
 
 tasks.named<ShadowJar>("shadowJar") {
-    dependsOn(adapters)
-    from(Callable {
-        adapters.resolve()
-            .map { f ->
-                zipTree(f).matching {
-                    exclude("META-INF/")
-                }
-            }
-    })
+    configurations.add(adapters)
     dependencies {
         // In tandem with not bundling log4j, we shouldn't relocate base package here.
         // relocate("org.apache.logging", "com.sk89q.worldedit.log4j")
@@ -100,10 +92,20 @@ tasks.named<ShadowJar>("shadowJar") {
         include(dependency("it.unimi.dsi:fastutil"))
         include(dependency("com.sk89q.lib:jlibnoise"))
 
+        exclude(dependency("$group:$name"))
+
         relocate("org.bstats", "com.sk89q.worldedit.bstats")
         relocate("io.papermc.lib", "com.sk89q.worldedit.bukkit.paperlib")
         relocate("it.unimi.dsi.fastutil", "com.sk89q.worldedit.bukkit.fastutil")
         relocate("net.royawesome.jlibnoise", "com.sk89q.worldedit.jlibnoise")
+    }
+    project.project(":worldedit-bukkit:adapters").subprojects.forEach {
+        dependencies {
+            include(dependency("${it.group}:${it.name}"))
+        }
+        minimize {
+            exclude(dependency("${it.group}:${it.name}"))
+        }
     }
 }
 
