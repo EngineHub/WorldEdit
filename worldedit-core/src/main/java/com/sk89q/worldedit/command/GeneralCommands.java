@@ -275,8 +275,10 @@ public class GeneralCommands {
             }
         } else if (newState != null) {
             SideEffectSet applier = session.getSideEffectSet();
-            for (SideEffect sideEffectEntry : SideEffect.values()) {
-                applier = applier.with(sideEffectEntry, newState);
+            for (SideEffect sideEffectEntry : WorldEdit.getInstance().getPlatformManager().getSupportedSideEffects()) {
+                if (sideEffectEntry.isExposed()) {
+                    applier = applier.with(sideEffectEntry, newState);
+                }
             }
             session.setSideEffectSet(applier);
             if (!showInfoBox) {
