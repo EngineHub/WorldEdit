@@ -372,6 +372,10 @@ public class EditSession implements Extent, AutoCloseable {
      */
     @Deprecated
     public void setReorderMode(ReorderMode reorderMode) {
+        if (world == null && reorderMode == ReorderMode.FAST) {
+            // Fast requires a world, for now we can fallback to multi stage, but use "none" in the future.
+            reorderMode = ReorderMode.MULTI_STAGE;
+        }
         if (reorderMode == ReorderMode.FAST && sideEffectExtent == null) {
             throw new IllegalArgumentException("An EditSession without a fast mode tried to use it for reordering!");
         }
