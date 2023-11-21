@@ -410,7 +410,7 @@ public final class BlockTypes {
     @Nullable public static final BlockType GRANITE_SLAB = get("minecraft:granite_slab");
     @Nullable public static final BlockType GRANITE_STAIRS = get("minecraft:granite_stairs");
     @Nullable public static final BlockType GRANITE_WALL = get("minecraft:granite_wall");
-    @Nullable public static final BlockType GRASS = get("minecraft:grass");
+    @Deprecated @Nullable public static final BlockType GRASS = get("minecraft:grass");
     @Nullable public static final BlockType GRASS_BLOCK = get("minecraft:grass_block");
     @Deprecated @Nullable public static final BlockType GRASS_PATH = get("minecraft:grass_path");
     @Nullable public static final BlockType GRAVEL = get("minecraft:gravel");
@@ -839,6 +839,7 @@ public final class BlockTypes {
     @Nullable public static final BlockType SEA_LANTERN = get("minecraft:sea_lantern");
     @Nullable public static final BlockType SEA_PICKLE = get("minecraft:sea_pickle");
     @Nullable public static final BlockType SEAGRASS = get("minecraft:seagrass");
+    @Nullable public static final BlockType SHORT_GRASS = get("minecraft:short_grass");
     @Nullable public static final BlockType SHROOMLIGHT = get("minecraft:shroomlight");
     @Nullable public static final BlockType SHULKER_BOX = get("minecraft:shulker_box");
     @Deprecated @Nullable public static final BlockType SIGN = get("minecraft:sign");
