@@ -38,6 +38,7 @@ public final class EntityTypes {
     @Nullable public static final EntityType BLAZE = get("minecraft:blaze");
     @Nullable public static final EntityType BLOCK_DISPLAY = get("minecraft:block_display");
     @Nullable public static final EntityType BOAT = get("minecraft:boat");
+    @Nullable public static final EntityType BREEZE = get("minecraft:breeze");
     @Nullable public static final EntityType CAMEL = get("minecraft:camel");
     @Nullable public static final EntityType CAT = get("minecraft:cat");
     @Nullable public static final EntityType CAVE_SPIDER = get("minecraft:cave_spider");
@@ -142,6 +143,7 @@ public final class EntityTypes {
     @Nullable public static final EntityType VINDICATOR = get("minecraft:vindicator");
     @Nullable public static final EntityType WANDERING_TRADER = get("minecraft:wandering_trader");
     @Nullable public static final EntityType WARDEN = get("minecraft:warden");
+    @Nullable public static final EntityType WIND_CHARGE = get("minecraft:wind_charge");
     @Nullable public static final EntityType WITCH = get("minecraft:witch");
     @Nullable public static final EntityType WITHER = get("minecraft:wither");
     @Nullable public static final EntityType WITHER_SKELETON = get("minecraft:wither_skeleton");
