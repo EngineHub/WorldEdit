@@ -22,7 +22,7 @@ applyShadowConfiguration()
 apply(plugin = "fabric-loom")
 apply(plugin = "java-library")
 
-val minecraftVersion = "1.20.3-pre1"
+val minecraftVersion = "1.20.3-pre2"
 val loaderVersion = "0.14.24"
 
 val fabricApiConfiguration: Configuration = configurations.create("fabricApi")
