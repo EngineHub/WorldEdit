@@ -23,6 +23,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Futures;
 import com.mojang.datafixers.util.Either;
@@ -968,6 +970,17 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             ChunkPos.rangeClosed(min, max).forEach((chunkPosx) -> structureStart.placeInChunk(proxyLevel, originalWorld.structureManager(), chunkManager.getGenerator(), originalWorld.getRandom(), new BoundingBox(chunkPosx.getMinBlockX(), originalWorld.getMinBuildHeight(), chunkPosx.getMinBlockZ(), chunkPosx.getMaxBlockX(), originalWorld.getMaxBuildHeight(), chunkPosx.getMaxBlockZ()), chunkPosx));
             return true;
         }
+    }
+
+    @Override
+    public void sendBiomeUpdates(World world, Iterable<BlockVector2> chunks) {
+        ServerLevel originalWorld = ((CraftWorld) world).getHandle();
+
+        List<ChunkAccess> nativeChunks = Lists.newArrayListWithCapacity(Iterables.size(chunks));
+        for (BlockVector2 chunk : chunks) {
+            nativeChunks.add(originalWorld.getChunk(chunk.getBlockX(), chunk.getBlockZ(), ChunkStatus.BIOMES, false));
+        }
+        originalWorld.getChunkSource().chunkMap.resendBiomesForChunks(nativeChunks);
     }
 
     // ------------------------------------------------------------------------

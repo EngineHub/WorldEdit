@@ -25,6 +25,7 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
+import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.registry.state.Property;
@@ -313,5 +314,18 @@ public interface BukkitImplAdapter {
      */
     default void initializeRegistries() {
 
+    }
+
+    /**
+     * Sends biome updates for the given chunks.
+     *
+     * <p>This doesn't modify biomes at all, it just sends the current state of the biomes
+     * in the world to all of the nearby players, updating the visual representation of the
+     * biomes on their clients.</p>
+     *
+     * @param world the world
+     * @param chunks a list of chunk coordinates to send biome updates for
+     */
+    default void sendBiomeUpdates(World world, Iterable<BlockVector2> chunks) {
     }
 }

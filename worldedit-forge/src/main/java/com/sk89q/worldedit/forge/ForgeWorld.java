@@ -23,6 +23,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Streams;
 import com.google.common.util.concurrent.Futures;
@@ -506,6 +508,15 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public void fixAfterFastMode(Iterable<BlockVector2> chunks) {
         fixLighting(chunks);
+    }
+
+    @Override
+    public void sendBiomeUpdates(Iterable<BlockVector2> chunks) {
+        List<ChunkAccess> nativeChunks = Lists.newArrayListWithCapacity(Iterables.size(chunks));
+        for (BlockVector2 chunk : chunks) {
+            nativeChunks.add(getWorld().getChunk(chunk.getBlockX(), chunk.getBlockZ(), ChunkStatus.BIOMES, false));
+        }
+        ((ServerLevel) getWorld()).getChunkSource().chunkMap.resendBiomesForChunks(nativeChunks);
     }
 
     @Override

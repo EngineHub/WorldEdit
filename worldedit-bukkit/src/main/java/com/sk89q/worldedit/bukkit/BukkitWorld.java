@@ -330,6 +330,14 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     @Override
+    public void sendBiomeUpdates(Iterable<BlockVector2> chunks) {
+        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+        if (adapter != null) {
+            adapter.sendBiomeUpdates(getWorld(), chunks);
+        }
+    }
+
+    @Override
     public boolean playEffect(Vector3 position, int type, int data) {
         World world = getWorld();
 
