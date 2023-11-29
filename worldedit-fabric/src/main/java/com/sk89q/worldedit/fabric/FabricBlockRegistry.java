@@ -26,7 +26,7 @@ import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
-import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
+import com.sk89q.worldedit.world.registry.BlockRegistry;
 import net.minecraft.world.level.block.Block;
 
 import java.util.Collection;
@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.OptionalInt;
 import java.util.TreeMap;
 
-public class FabricBlockRegistry extends BundledBlockRegistry {
+public class FabricBlockRegistry implements BlockRegistry {
 
     private final Map<net.minecraft.world.level.block.state.BlockState, FabricBlockMaterial> materialMap = new HashMap<>();
 
@@ -49,7 +49,7 @@ public class FabricBlockRegistry extends BundledBlockRegistry {
         Block block = FabricAdapter.adapt(blockType);
         return materialMap.computeIfAbsent(
             block.defaultBlockState(),
-            m -> new FabricBlockMaterial(m, super.getMaterial(blockType))
+            FabricBlockMaterial::new
         );
     }
 
