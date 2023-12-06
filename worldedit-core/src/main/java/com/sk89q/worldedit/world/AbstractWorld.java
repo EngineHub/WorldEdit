@@ -95,6 +95,10 @@ public abstract class AbstractWorld implements World {
     }
 
     @Override
+    public void sendBiomeUpdates(Iterable<BlockVector2> chunks) {
+    }
+
+    @Override
     public void fixLighting(Iterable<BlockVector2> chunks) {
     }
 

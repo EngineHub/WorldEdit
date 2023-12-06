@@ -312,6 +312,17 @@ public interface World extends Extent, Keyed {
     void fixAfterFastMode(Iterable<BlockVector2> chunks);
 
     /**
+     * Sends biome updates for the given chunks.
+     *
+     * <p>This doesn't modify biomes at all, it just sends the current state of the biomes
+     * in the world to all of the nearby players, updating the visual representation of the
+     * biomes on their clients.</p>
+     *
+     * @param chunks a list of chunk coordinates to send biome updates for
+     */
+    void sendBiomeUpdates(Iterable<BlockVector2> chunks);
+
+    /**
      * Relight the given chunks if possible.
      *
      * @param chunks a list of chunk coordinates to fix

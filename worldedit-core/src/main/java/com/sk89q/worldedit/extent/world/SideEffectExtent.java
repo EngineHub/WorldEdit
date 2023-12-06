@@ -29,6 +29,7 @@ import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.collection.BlockMap;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
@@ -50,6 +51,7 @@ public class SideEffectExtent extends AbstractDelegateExtent {
     private final World world;
     private final Map<BlockVector3, BlockState> positions = BlockMap.create();
     private final Set<BlockVector2> dirtyChunks = new HashSet<>();
+    private final Set<BlockVector2> dirtyBiomes = new HashSet<>();
     private SideEffectSet sideEffectSet = SideEffectSet.defaults();
     private boolean postEditSimulation;
 
@@ -97,8 +99,14 @@ public class SideEffectExtent extends AbstractDelegateExtent {
         return world.setBlock(location, block, postEditSimulation ? INTERNAL_NONE : sideEffectSet);
     }
 
+    @Override
+    public boolean setBiome(BlockVector3 position, BiomeType biome) {
+        dirtyBiomes.add(BlockVector2.at(position.getBlockX() >> 4, position.getBlockZ() >> 4));
+        return world.setBiome(position, biome);
+    }
+
     public boolean commitRequired() {
-        return postEditSimulation || !dirtyChunks.isEmpty();
+        return postEditSimulation || !dirtyChunks.isEmpty() || !dirtyBiomes.isEmpty();
     }
 
     @Override
@@ -111,6 +119,10 @@ public class SideEffectExtent extends AbstractDelegateExtent {
             public Operation resume(RunContext run) throws WorldEditException {
                 if (!dirtyChunks.isEmpty()) {
                     world.fixAfterFastMode(dirtyChunks);
+                }
+
+                if (!dirtyBiomes.isEmpty()) {
+                    world.sendBiomeUpdates(dirtyBiomes);
                 }
 
                 if (postEditSimulation) {
