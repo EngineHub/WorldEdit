@@ -610,8 +610,8 @@ public class FabricWorld extends AbstractWorld {
     public List<? extends Entity> getEntities(Region region) {
         final Level world = getWorld();
         AABB box = new AABB(
-            FabricAdapter.toBlockPos(region.getMinimumPoint()),
-            FabricAdapter.toBlockPos(region.getMaximumPoint().add(BlockVector3.ONE))
+            FabricAdapter.toVec3(region.getMinimumPoint()),
+            FabricAdapter.toVec3(region.getMaximumPoint().add(BlockVector3.ONE))
         );
         List<net.minecraft.world.entity.Entity> nmsEntities = world.getEntities(
             (net.minecraft.world.entity.Entity) null,

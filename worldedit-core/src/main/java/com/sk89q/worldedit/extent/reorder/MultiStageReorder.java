@@ -85,7 +85,11 @@ public class MultiStageReorder extends AbstractBufferingExtent implements Reorde
         priorityMap.put(BlockTypes.RED_BED, PlacementPriority.LAST);
         priorityMap.put(BlockTypes.WHITE_BED, PlacementPriority.LAST);
         priorityMap.put(BlockTypes.YELLOW_BED, PlacementPriority.LAST);
-        priorityMap.put(BlockTypes.GRASS, PlacementPriority.LAST);
+        // Keep "grass" for <1.20.3 compat
+        @SuppressWarnings("deprecation")
+        BlockType grass = BlockTypes.GRASS;
+        priorityMap.put(grass, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.SHORT_GRASS, PlacementPriority.LAST);
         priorityMap.put(BlockTypes.TALL_GRASS, PlacementPriority.LAST);
         priorityMap.put(BlockTypes.ROSE_BUSH, PlacementPriority.LAST);
         priorityMap.put(BlockTypes.DANDELION, PlacementPriority.LAST);

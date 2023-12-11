@@ -596,8 +596,8 @@ public class ForgeWorld extends AbstractWorld {
     public List<? extends Entity> getEntities(Region region) {
         final ServerLevel world = getWorld();
         AABB box = new AABB(
-            ForgeAdapter.toBlockPos(region.getMinimumPoint()),
-            ForgeAdapter.toBlockPos(region.getMaximumPoint().add(BlockVector3.ONE))
+            ForgeAdapter.toVec3(region.getMinimumPoint()),
+            ForgeAdapter.toVec3(region.getMaximumPoint().add(BlockVector3.ONE))
         );
         List<net.minecraft.world.entity.Entity> nmsEntities = world.getEntities(
             (net.minecraft.world.entity.Entity) null,

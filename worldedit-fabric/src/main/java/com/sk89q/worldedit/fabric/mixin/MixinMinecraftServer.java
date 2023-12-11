@@ -36,7 +36,7 @@ import java.nio.file.Path;
 public abstract class MixinMinecraftServer implements Watchdog, ExtendedMinecraftServer {
 
     @Shadow
-    private long nextTickTime;
+    private long nextTickTimeNanos;
     @Final
     @Shadow
     protected LevelStorageSource.LevelStorageAccess storageSource;
@@ -44,7 +44,7 @@ public abstract class MixinMinecraftServer implements Watchdog, ExtendedMinecraf
     @Unique
     @Override
     public void tick() {
-        nextTickTime = Util.getMillis();
+        nextTickTimeNanos = Util.getNanos();
     }
 
     @Unique

@@ -22,8 +22,8 @@ applyShadowConfiguration()
 apply(plugin = "fabric-loom")
 apply(plugin = "java-library")
 
-val minecraftVersion = "1.20.2"
-val loaderVersion = "0.14.22"
+val minecraftVersion = "1.20.4"
+val loaderVersion = "0.15.1"
 
 val fabricApiConfiguration: Configuration = configurations.create("fabricApi")
 
@@ -64,7 +64,7 @@ dependencies {
         .toSet()
     // [2] Request the matching dependency from fabric-loom
     for (wantedDependency in wantedDependencies) {
-        val dep = project.the<FabricApiExtension>().module(wantedDependency, "0.89.1+1.20.2")
+        val dep = project.the<FabricApiExtension>().module(wantedDependency, "0.91.1+1.20.4")
         "include"(dep)
         "modImplementation"(dep)
     }

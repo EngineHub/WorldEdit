@@ -26,6 +26,7 @@ import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.RandomPattern;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
 /**
@@ -95,7 +96,12 @@ public class FloraGenerator implements RegionFunction {
      */
     public static Pattern getTemperatePattern() {
         RandomPattern pattern = new RandomPattern();
-        pattern.add(BlockTypes.GRASS.getDefaultState(), 300);
+        BlockType grass = BlockTypes.SHORT_GRASS;
+        if (grass == null) {
+            // Fallback for <1.20.3 compat
+            grass = BlockTypes.GRASS;
+        }
+        pattern.add(grass.getDefaultState(), 300);
         pattern.add(BlockTypes.POPPY.getDefaultState(), 5);
         pattern.add(BlockTypes.DANDELION.getDefaultState(), 5);
         return pattern;
