@@ -51,7 +51,7 @@ public class FileRegistries {
         Path outputFolder = WorldEdit.getInstance().getWorkingDirectoryPath("cli-data");
         Path checkPath = outputFolder.resolve(app.getPlatform().getDataVersion() + "_" + CLI_DATA_VERSION + ".json");
 
-        try(Closer closer = Closer.create()) {
+        try (Closer closer = Closer.create()) {
             Files.createDirectories(outputFolder);
 
             if (!Files.exists(checkPath)) {
