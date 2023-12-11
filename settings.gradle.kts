@@ -2,7 +2,7 @@ rootProject.name = "worldedit"
 
 include("worldedit-libs")
 
-listOf("1.17.1", "1.18.2", "1.19.4", "1.20", "1.20.2").forEach {
+listOf("1.17.1", "1.18.2", "1.19.4", "1.20", "1.20.2", "1.20.4").forEach {
     include("worldedit-bukkit:adapters:adapter-$it")
 }
 

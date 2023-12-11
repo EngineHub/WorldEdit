@@ -47,6 +47,7 @@ public final class BlockCategories {
     public static final BlockCategory BIG_DRIPLEAF_PLACEABLE = get("minecraft:big_dripleaf_placeable");
     public static final BlockCategory BIRCH_LOGS = get("minecraft:birch_logs");
     public static final BlockCategory BUTTONS = get("minecraft:buttons");
+    public static final BlockCategory CAMEL_SAND_STEP_SOUND_BLOCKS = get("minecraft:camel_sand_step_sound_blocks");
     public static final BlockCategory CAMPFIRES = get("minecraft:campfires");
     public static final BlockCategory CANDLE_CAKES = get("minecraft:candle_cakes");
     public static final BlockCategory CANDLES = get("minecraft:candles");
@@ -59,6 +60,7 @@ public final class BlockCategories {
     public static final BlockCategory COAL_ORES = get("minecraft:coal_ores");
     public static final BlockCategory COMBINATION_STEP_SOUND_BLOCKS = get("minecraft:combination_step_sound_blocks");
     public static final BlockCategory COMPLETES_FIND_TREE_TUTORIAL = get("minecraft:completes_find_tree_tutorial");
+    public static final BlockCategory CONCRETE_POWDER = get("minecraft:concrete_powder");
     public static final BlockCategory CONVERTABLE_TO_MUD = get("minecraft:convertable_to_mud");
     public static final BlockCategory COPPER_ORES = get("minecraft:copper_ores");
     public static final BlockCategory CORAL_BLOCKS = get("minecraft:coral_blocks");

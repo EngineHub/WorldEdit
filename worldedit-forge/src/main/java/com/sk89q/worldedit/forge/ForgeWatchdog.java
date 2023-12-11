@@ -33,6 +33,6 @@ class ForgeWatchdog implements Watchdog {
 
     @Override
     public void tick() {
-        server.nextTickTime = Util.getMillis();
+        server.nextTickTimeNanos = Util.getNanos();
     }
 }

@@ -121,7 +121,9 @@ public abstract class LocalConfiguration {
                 BlockTypes.YELLOW_BED,
                 BlockTypes.POWERED_RAIL,
                 BlockTypes.DETECTOR_RAIL,
+                // Keep grass for <1.20.3 compat
                 BlockTypes.GRASS,
+                BlockTypes.SHORT_GRASS,
                 BlockTypes.DEAD_BUSH,
                 BlockTypes.MOVING_PISTON,
                 BlockTypes.PISTON_HEAD,
