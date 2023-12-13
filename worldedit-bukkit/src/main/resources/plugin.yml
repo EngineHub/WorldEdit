@@ -5,4 +5,5 @@ load: STARTUP
 api-version: 1.13
 softdepend: [Vault]
 author: EngineHub
+folia-supported: true
 website: https://enginehub.org/worldedit
