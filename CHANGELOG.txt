@@ -1,3 +1,9 @@
+7.2.18
+- Update to 1.20.4
+- Fixed ellipsoid and cylinder regions not fully clearing
+- Limit //line and //curve thickness by max-radius option
+- Add further validation to biome setting API to prevent errors with invalid positions
+
 7.2.17
 - [Forge] Workaround missing part of Forge in some builds
 
