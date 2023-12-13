@@ -13,7 +13,7 @@
 - Added API to disable history tracking in an EditSession, to improve performance for plugins that don't care about history
 - Added command suggestions for block properties to dynamic patterns such as hand, offhand, pos1, etc
 - Added a feature generator command, `//feature [featureName]`
-- Added a structure generator command, `//structure [structureName`
+- Added a structure generator command, `//structure [structureName]`
 - Added an API to identify the format of a schematic from an InputStream, rather than a File
 - Added a `//placement` command to select the placement type, superseding `//toggleplace`
 - Added `min` placement mode to correspond to minimum position of a selection
@@ -31,6 +31,7 @@
 - Changed the offset mask to not negate itself by default
 - Fixed spline generation not correctly using block centres in some situations
 - Improve general performance across the board
+- Send biome chunk updates to the client when possible
 - [Bukkit] Remove legacy data folder migration code from 2012
 - [Bukkit] Remove support for all versions prior to 1.17.1, and non-latest patches of 1.18 and 1.19
 
