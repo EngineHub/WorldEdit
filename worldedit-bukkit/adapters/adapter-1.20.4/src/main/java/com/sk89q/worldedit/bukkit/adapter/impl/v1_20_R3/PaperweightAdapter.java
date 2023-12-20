@@ -999,8 +999,8 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         }
         if (foreign instanceof net.minecraft.nbt.CompoundTag compoundTag) {
             LinCompoundTag.Builder builder = LinCompoundTag.builder();
-            for (var entry : compoundTag.tags.entrySet()) {
-                builder.put(entry.getKey(), toNative(entry.getValue()));
+            for (var entry : compoundTag.getAllKeys()) {
+                builder.put(entry, toNative(compoundTag.get(entry)));
             }
             return builder.build();
         } else if (foreign instanceof net.minecraft.nbt.ByteTag byteTag) {
