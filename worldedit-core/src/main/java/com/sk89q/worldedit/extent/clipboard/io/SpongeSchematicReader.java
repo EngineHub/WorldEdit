@@ -45,6 +45,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -125,7 +126,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
             BlockArrayClipboard clip = readVersion1(schematicTag);
             return readVersion2(clip, schematicTag);
         }
-        throw new SchematicLoadException(TranslatableComponent.of("worldedit.schematic.load.unsupported-version"));
+        throw new SchematicLoadException(TranslatableComponent.of("worldedit.schematic.load.unsupported-version", TextComponent.of(schematicVersion)));
     }
 
     @Override
@@ -155,7 +156,8 @@ public class SpongeSchematicReader extends NBTSchematicReader {
         // Check
         Map<String, Tag> schematic = schematicTag.getValue();
 
-        // Handle newer versions in a cleaner way
+        // Be lenient about the specific nesting level of the Schematic tag
+        // Also allows checking the version from newer versions of the specification
         if (schematic.size() == 1 && schematic.containsKey("Schematic")) {
             schematicTag = requireTag(schematic, "Schematic", CompoundTag.class);
             schematic = schematicTag.getValue();

@@ -106,7 +106,7 @@
     "worldedit.schematic.load.does-not-exist": "Schematic {0} does not exist!",
     "worldedit.schematic.load.loading": "(Please wait... loading schematic.)",
     "worldedit.schematic.load.still-loading": "(Please wait... still loading schematic.)",
-    "worldedit.schematic.load.unsupported-version": "This schematic version is currently not supported.",
+    "worldedit.schematic.load.unsupported-version": "This schematic version is currently not supported. Version: {0}.",
     "worldedit.schematic.save.already-exists": "That schematic already exists. Use the -f flag to overwrite it.",
     "worldedit.schematic.save.failed-directory": "Could not create folder for schematics!",
     "worldedit.schematic.save.saving": "(Please wait... saving schematic.)",

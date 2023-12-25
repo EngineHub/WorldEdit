@@ -24,7 +24,7 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 /**
  * Raised when a known exception occurs during schematic load.
  */
-public class SchematicLoadException extends RuntimeException {
+public final class SchematicLoadException extends RuntimeException {
 
     private final Component message;
 
