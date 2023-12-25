@@ -25,6 +25,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import com.sk89q.worldedit.internal.util.DeprecationUtil;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import org.enginehub.linbus.tree.LinStringTag;
 import org.enginehub.linbus.tree.LinTagType;
@@ -71,6 +72,7 @@ public class SignCompatibilityHandler implements NBTCompatibilityHandler {
             jsonTextObject.add("text", jsonElement);
             newTag.put("Text" + (i + 1), LinStringTag.of(jsonTextObject.toString()));
         }
+        block = block.toBaseBlock(LazyReference.computed(newTag.build()));
         return block;
     }
 }
