@@ -34,6 +34,14 @@ tasks.register<Jar>("jar") {
         exclude("defaults/worldedit.properties")
         exclude("pack.mcmeta")
     }
+    manifest {
+        from(
+            { zipTree({ remapFabric.get().archiveFile }).single { it.name == "MANIFEST.MF" } }
+        )
+        from(
+            { zipTree({ project(":worldedit-forge").tasks.getByName("shadowJar").outputs.files.singleFile }).single { it.name == "MANIFEST.MF" } }
+        )
+    }
 
     duplicatesStrategy = DuplicatesStrategy.FAIL
     archiveClassifier.set("dist")
