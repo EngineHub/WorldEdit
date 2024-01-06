@@ -28,6 +28,8 @@ import com.sk89q.worldedit.extent.clipboard.io.sponge.ReaderUtil;
 import com.sk89q.worldedit.extent.clipboard.io.sponge.SpongeSchematicV1Reader;
 import com.sk89q.worldedit.extent.clipboard.io.sponge.SpongeSchematicV2Reader;
 import com.sk89q.worldedit.internal.Constants;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 
 import java.io.IOException;
 import java.util.OptionalInt;
@@ -56,7 +58,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
         return switch (version) {
             case 1 -> SpongeSchematicV1Reader.doRead(schematicTag.toLinTag());
             case 2 -> SpongeSchematicV2Reader.doRead(schematicTag.toLinTag());
-            default -> throw new IllegalStateException("Unsupported schematic version: " + version);
+            default -> throw new SchematicLoadException(TranslatableComponent.of("worldedit.schematic.load.unsupported-version", TextComponent.of(version)));
         };
     }
 
