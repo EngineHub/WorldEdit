@@ -44,6 +44,8 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class PaperweightServerLevelDelegateProxy implements InvocationHandler {
 
@@ -136,7 +138,7 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler {
                     return removeBlock(blockPos, bl);
                 }
             }
-            case "j", "addEntity" -> {
+            case "j", "addEntity", "addFreshEntity" -> {
                 if (args.length >= 1 && args[0] instanceof Entity entity) {
                     return addEntity(entity);
                 }
