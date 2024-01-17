@@ -90,6 +90,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -286,6 +287,7 @@ public class FabricWorldEdit implements ModInitializer {
         WorldEdit worldEdit = WorldEdit.getInstance();
         worldEdit.getSessionManager().unload();
         WorldEdit.getInstance().getEventBus().post(new PlatformUnreadyEvent(platform));
+        WorldEdit.getInstance().getExecutorService().shutdown();
     }
 
     private boolean skipEvents() {

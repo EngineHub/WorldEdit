@@ -32,7 +32,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class FutureProgressListener implements Runnable {
 
-    private static final Timer timer = new Timer();
+    private static final Timer timer = new Timer(true);
     private static final int MESSAGE_DELAY = 1000; // 1 second
     private static final int MESSAGE_PERIOD = 10000; // 10 seconds
 
