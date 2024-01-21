@@ -88,7 +88,7 @@ tasks.named("sourcesJar") {
 
 configure<LicenseExtension> {
     exclude {
-        it.file.startsWith(project.buildDir)
+        it.file.startsWith(project.layout.buildDirectory.get().asFile)
     }
 }
 tasks.withType<Checkstyle>().configureEach {
