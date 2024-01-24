@@ -1,4 +1,6 @@
 import net.fabricmc.loom.task.RemapJarTask
+import java.util.jar.Attributes
+import java.util.jar.Manifest
 
 plugins {
     base
@@ -6,14 +8,88 @@ plugins {
 
 applyCommonConfiguration()
 
-tasks.register<Jar>("jar") {
-    val remapFabric = project(":worldedit-fabric").tasks.named<RemapJarTask>("remapShadowJar")
+open class MergeManifests : DefaultTask() {
+    @InputFiles
+    val inputManifests: ConfigurableFileCollection = project.objects.fileCollection()
+
+    @OutputFile
+    val outputManifest: RegularFileProperty = project.objects.fileProperty()
+
+    companion object {
+        private fun assertEqual(old: Any?, new: Any?, key: Attributes.Name): Any? {
+            assert(old == new) { "$key mismatch: $old != $new" }
+            return old
+        }
+
+        private fun throwException(old: Any?, new: Any?, key: Attributes.Name) {
+            throw IllegalStateException("Duplicate $key: $new")
+        }
+
+        private val MERGE_LOGIC = mapOf(
+            Attributes.Name.MANIFEST_VERSION to ::assertEqual,
+            Attributes.Name.IMPLEMENTATION_VERSION to ::assertEqual,
+            Attributes.Name.MAIN_CLASS to ::assertEqual,
+            Attributes.Name("WorldEdit-Version") to ::assertEqual,
+            Attributes.Name("WorldEdit-Kind") to ::assertEqual,
+        )
+    }
+
+    private fun mergeAttributes(aggregate: Attributes, input: Attributes) {
+        input.forEach { (key, value) ->
+            aggregate.merge(key, value) { old, new ->
+                val mergeLogic = MERGE_LOGIC[key] ?: ::throwException
+                mergeLogic(old, new, key as Attributes.Name)
+            }
+        }
+    }
+
+    @TaskAction
+    fun merge() {
+        val manifest = Manifest()
+        inputManifests.forEach { manifestFile ->
+            val inputManifest = manifestFile.inputStream().use { Manifest(it) }
+            mergeAttributes(manifest.mainAttributes, inputManifest.mainAttributes)
+            inputManifest.entries.forEach { (key, value) ->
+                val aggregate = manifest.entries.computeIfAbsent(key) { Attributes() }
+                mergeAttributes(aggregate, value)
+            }
+        }
+        outputManifest.asFile.get().outputStream().use {
+            manifest.write(it)
+        }
+    }
+}
+
+val fabricZipTree = zipTree(
+    project(":worldedit-fabric").tasks.named<RemapJarTask>("remapShadowJar").flatMap { it.archiveFile }
+)
+val forgeZipTree = zipTree(
+    project(":worldedit-forge").tasks.named("shadowJar").map { it.outputs.files.singleFile }
+)
+
+val mergeManifests = tasks.register<MergeManifests>("mergeManifests") {
     dependsOn(
-        remapFabric,
+        project(":worldedit-fabric").tasks.named<RemapJarTask>("remapShadowJar"),
         project(":worldedit-forge").tasks.named("reobfShadowJar")
     )
-    from(zipTree({remapFabric.get().archiveFile}))
-    from(zipTree({project(":worldedit-forge").tasks.getByName("shadowJar").outputs.files.singleFile})) {
+    inputManifests.from(
+        fabricZipTree.matching { include("META-INF/MANIFEST.MF") },
+        forgeZipTree.matching { include("META-INF/MANIFEST.MF") }
+    )
+    outputManifest.set(project.layout.buildDirectory.file("mergeManifests/MANIFEST.MF"))
+}
+
+tasks.register<Jar>("jar") {
+    dependsOn(
+        project(":worldedit-fabric").tasks.named<RemapJarTask>("remapShadowJar"),
+        project(":worldedit-forge").tasks.named("reobfShadowJar"),
+        mergeManifests
+    )
+    from(fabricZipTree) {
+        exclude("META-INF/MANIFEST.MF")
+    }
+    from(forgeZipTree) {
+        exclude("META-INF/MANIFEST.MF")
         // Duplicated first-party files
         exclude("META-INF/services/org.enginehub.piston.CommandManagerService")
         exclude("lang/")
@@ -35,6 +111,9 @@ tasks.register<Jar>("jar") {
         // Questionable excludes. So far the two files from each jar are the same.
         exclude("defaults/worldedit.properties")
         exclude("pack.mcmeta")
+    }
+    manifest {
+        from(mergeManifests.flatMap { it.outputManifest })
     }
 
     duplicatesStrategy = DuplicatesStrategy.FAIL
