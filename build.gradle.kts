@@ -51,12 +51,12 @@ val totalReport = tasks.register<JacocoReport>("jacocoTotalReport") {
         proj.apply(plugin = "jacoco")
         proj.plugins.withId("java") {
             executionData(
-                    fileTree(proj.buildDir.absolutePath).include("**/jacoco/*.exec")
+                    fileTree(proj.layout.buildDirectory).include("**/jacoco/*.exec")
             )
             sourceSets(proj.the<JavaPluginExtension>().sourceSets["main"])
             reports {
                 xml.required.set(true)
-                xml.outputLocation.set(rootProject.buildDir.resolve("reports/jacoco/report.xml"))
+                xml.outputLocation.set(rootProject.layout.buildDirectory.file("reports/jacoco/report.xml"))
                 html.required.set(true)
             }
             dependsOn(proj.tasks.named("test"))
