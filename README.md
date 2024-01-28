@@ -89,5 +89,3 @@ and [YourKit YouMonitor](https://www.yourkit.com/youmonitor/).
 [<img src="https://github.com/Folia-Inquisitors.png" width=80 alt="Folia-Inquisitors">](https://github.com/orgs/Folia-Inquisitors/repositories)
 [<img src="https://github.com/TechnicallyCoded.png" width=80 alt="TechnicallyCoded">](https://github.com/TechnicallyCoded)
 [<img src="https://github.com/Yomamaeatstoes.png" width=80 alt="Yomamaeatstoes">](https://github.com/Yomamaeatstoes)
-
-Up-streamed version from https://github.com/TechnicallyCoded/WorldEdit-Fork
