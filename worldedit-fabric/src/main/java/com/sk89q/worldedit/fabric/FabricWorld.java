@@ -89,6 +89,8 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -551,6 +553,12 @@ public class FabricWorld extends AbstractWorld {
     public boolean playEffect(Vector3 position, int type, int data) {
         // TODO update sound API
         // getWorld().playSound(type, FabricAdapter.toBlockPos(position.toBlockPoint()), data);
+        return true;
+    }
+
+    @Override
+    public boolean playBreakBlockEffect(Vector3 position, BlockState block) {
+        getWorld().globalLevelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, FabricAdapter.toBlockPos(position.toBlockPoint()), Block.getId(FabricAdapter.adapt(block)));
         return true;
     }
 

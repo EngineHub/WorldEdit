@@ -31,8 +31,8 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.SideEffectSet;
+import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
@@ -108,7 +108,12 @@ public abstract class AbstractWorld implements World {
     }
 
     @Override
-    public boolean queueBlockBreakEffect(Platform server, BlockVector3 position, BlockType blockType, double priority) {
+    public boolean playBreakBlockEffect(Vector3 position, BlockState block) {
+        return false;
+    }
+
+    @Override
+    public boolean queueBlockBreakEffect(Platform server, BlockVector3 position, BlockState blockState, double priority) {
         if (taskId == -1) {
             taskId = server.schedule(0, 1, () -> {
                 int max = Math.max(1, Math.min(30, effectQueue.size() / 3));
@@ -126,7 +131,7 @@ public abstract class AbstractWorld implements World {
             return false;
         }
 
-        effectQueue.offer(new QueuedEffect(position.toVector3(), blockType, priority));
+        effectQueue.offer(new QueuedEffect(position.toVector3(), blockState, priority));
 
         return true;
     }
@@ -166,18 +171,17 @@ public abstract class AbstractWorld implements World {
 
     private class QueuedEffect implements Comparable<QueuedEffect> {
         private final Vector3 position;
-        private final BlockType blockType;
+        private final BlockState blockState;
         private final double priority;
 
-        private QueuedEffect(Vector3 position, BlockType blockType, double priority) {
+        private QueuedEffect(Vector3 position, BlockState blockState, double priority) {
             this.position = position;
-            this.blockType = blockType;
+            this.blockState = blockState;
             this.priority = priority;
         }
 
-        @SuppressWarnings("deprecation")
         public void play() {
-            playEffect(position, 2001, blockType.getLegacyId());
+            playBreakBlockEffect(position, blockState);
         }
 
         @Override
