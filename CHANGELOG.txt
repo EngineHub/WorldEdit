@@ -1,3 +1,7 @@
+7.2.19
+- [Forge] Fixed Forge mixin issues in the hybrid mod jar
+- Improve error handling for unsupported Sponge Schematic versions
+
 7.2.18
 - Update to 1.20.4
 - Fixed ellipsoid and cylinder regions not fully clearing
