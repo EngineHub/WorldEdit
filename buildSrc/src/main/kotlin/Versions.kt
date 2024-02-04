@@ -3,7 +3,7 @@ import org.gradle.api.Project
 object Versions {
     const val TEXT = "3.0.4"
     const val TEXT_EXTRAS = "3.0.6"
-    const val PISTON = "0.5.7"
+    const val PISTON = "0.5.8"
     const val AUTO_VALUE = "1.9"
     const val JUNIT = "5.8.1"
     const val MOCKITO = "4.3.1"
