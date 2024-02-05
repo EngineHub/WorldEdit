@@ -32,8 +32,13 @@
 - Fixed spline generation not correctly using block centres in some situations
 - Improve general performance across the board
 - Send biome chunk updates to the client when possible
+- Use Minecraft's "DataFixerUpper" system when loading legacy schematics where possible
 - [Bukkit] Remove legacy data folder migration code from 2012
 - [Bukkit] Remove support for all versions prior to 1.17.1, and non-latest patches of 1.18 and 1.19
+
+7.2.19
+- [Forge] Fixed Forge mixin issues in the hybrid mod jar
+- Improve error handling for unsupported Sponge Schematic versions
 
 7.2.18
 - Update to 1.20.4
