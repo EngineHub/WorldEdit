@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.world.block;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Lists;
@@ -79,22 +80,30 @@ public class BlockState implements BlockStateHolder<BlockState> {
         this.emptyBaseBlock = new BaseBlock(this);
     }
 
+    /**
+     * Generates a map of all possible states for a block type.
+     *
+     * @param blockType The block type
+     * @return The map of states
+     */
     static Map<Map<Property<?>, Object>, BlockState> generateStateMap(BlockType blockType) {
-        ImmutableMap.Builder<Map<Property<?>, Object>, BlockState> stateMapBuilder = ImmutableMap.builder();
         List<? extends Property<?>> properties = blockType.getProperties();
+        ImmutableMap.Builder<Map<Property<?>, Object>, BlockState> stateMapBuilder = null;
 
         if (!properties.isEmpty()) {
-            List<List<Object>> separatedValues = Lists.newArrayList();
+            // Create a list of lists of values, with a copy of the underlying lists
+            List<List<Object>> separatedValues = Lists.newArrayListWithCapacity(properties.size());
             for (Property<?> prop : properties) {
-                List<Object> vals = Lists.newArrayList();
-                vals.addAll(prop.getValues());
-                separatedValues.add(vals);
+                separatedValues.add(ImmutableList.copyOf(prop.getValues()));
             }
+
             List<List<Object>> valueLists = Lists.cartesianProduct(separatedValues);
+            stateMapBuilder = ImmutableMap.builderWithExpectedSize(valueLists.size());
             for (List<Object> valueList : valueLists) {
                 Map<Property<?>, Object> valueMap = Maps.newTreeMap(Comparator.comparing(Property::getName));
                 BlockState stateMaker = new BlockState(blockType);
-                for (int i = 0; i < valueList.size(); i++) {
+                int valueCount = valueList.size();
+                for (int i = 0; i < valueCount; i++) {
                     Property<?> property = properties.get(i);
                     Object value = valueList.get(i);
                     valueMap.put(property, value);
@@ -104,27 +113,40 @@ public class BlockState implements BlockStateHolder<BlockState> {
             }
         }
 
-        ImmutableMap<Map<Property<?>, Object>, BlockState> stateMap = stateMapBuilder.build();
+        ImmutableMap<Map<Property<?>, Object>, BlockState> stateMap;
 
-        if (stateMap.isEmpty()) {
+        if (stateMapBuilder == null) {
             // No properties.
             stateMap = ImmutableMap.of(ImmutableMap.of(), new BlockState(blockType));
+        } else {
+            stateMap = stateMapBuilder.build();
         }
+
+        Watchdog watchdog = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
+            .getWatchdog();
+        long startTime = System.currentTimeMillis();
 
         for (BlockState state : stateMap.values()) {
             state.populate(stateMap);
-        }
 
-        // Sometimes loading can take a while. This is the perfect spot to let MC know we're working.
-        Watchdog watchdog = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
-            .getWatchdog();
-        if (watchdog != null) {
-            watchdog.tick();
+            // Sometimes loading can take a while. This is the perfect spot to let MC know we're working.
+            if (watchdog != null) {
+                watchdog.tick();
+            }
+        }
+        long timeTaken = System.currentTimeMillis() - startTime;
+        if (timeTaken > 5000) {
+            WorldEdit.logger.warn("Took more than 5 seconds to generate complete state map for " + blockType.getId() + ". This block is likely improperly using properties. State count: " + stateMap.size() + ". " + timeTaken + "ms elapsed.");
         }
 
         return stateMap;
     }
 
+    /**
+     * Creates the underlying state table for object lookups.
+     *
+     * @param stateMap The state map to generate the table from
+     */
     private void populate(Map<Map<Property<?>, Object>, BlockState> stateMap) {
         final ImmutableTable.Builder<Property<?>, Object, BlockState> states = ImmutableTable.builder();
 
@@ -148,7 +170,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
     }
 
     private <V> Map<Property<?>, Object> withValue(final Property<V> property, final V value) {
-        final ImmutableMap.Builder<Property<?>, Object> values = ImmutableMap.builder();
+        final ImmutableMap.Builder<Property<?>, Object> values = ImmutableMap.builderWithExpectedSize(this.values.size());
         for (Map.Entry<Property<?>, Object> entry : this.values.entrySet()) {
             if (entry.getKey().equals(property)) {
                 values.put(entry.getKey(), value);
