@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.world.block;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Lists;
@@ -93,7 +94,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
             // Create a list of lists of values, with a copy of the underlying lists
             List<List<Object>> separatedValues = Lists.newArrayListWithCapacity(properties.size());
             for (Property<?> prop : properties) {
-                separatedValues.add(Lists.newArrayList(prop.getValues()));
+                separatedValues.add(ImmutableList.copyOf(prop.getValues()));
             }
 
             List<List<Object>> valueLists = Lists.cartesianProduct(separatedValues);
