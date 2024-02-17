@@ -16,7 +16,7 @@ val minecraftVersion = "1.20.4"
 val nextMajorMinecraftVersion: String = minecraftVersion.split('.').let { (useless, major) ->
     "$useless.${major.toInt() + 1}"
 }
-val forgeVersion = "49.0.3"
+val forgeVersion = "49.0.30"
 
 val apiClasspath = configurations.create("apiClasspath") {
     isCanBeResolved = true
