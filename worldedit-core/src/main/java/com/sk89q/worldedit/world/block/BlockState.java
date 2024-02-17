@@ -133,8 +133,9 @@ public class BlockState implements BlockStateHolder<BlockState> {
                 watchdog.tick();
             }
         }
-        if (System.currentTimeMillis() - startTime > 60000) {
-            WorldEdit.logger.warn("Took more than 60 seconds to generate complete state map for " + blockType.getId() + ". This block is likely improperly using properties. State count: " + stateMap.size());
+        long timeTaken = System.currentTimeMillis() - startTime;
+        if (timeTaken > 5000) {
+            WorldEdit.logger.warn("Took more than 5 seconds to generate complete state map for " + blockType.getId() + ". This block is likely improperly using properties. State count: " + stateMap.size() + ". " + timeTaken + "ms elapsed.");
         }
 
         return stateMap;
