@@ -34,7 +34,10 @@ fun Project.applyRootArtifactoryConfig() {
 }
 
 fun Project.applyCommonArtifactoryConfig() {
-    tasks.named<ArtifactoryTask>("artifactoryPublish") {
-        publications("maven")
+    // Artifactory eagerly evaluates publications, so this must run after all changes to artifacts are done
+    afterEvaluate {
+        tasks.named<ArtifactoryTask>("artifactoryPublish") {
+            publications("maven")
+        }
     }
 }
