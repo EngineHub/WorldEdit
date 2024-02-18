@@ -3,24 +3,13 @@ import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import net.fabricmc.loom.configuration.FabricApiExtension
 import net.fabricmc.loom.task.RemapJarTask
 
-buildscript {
-    repositories {
-        mavenCentral()
-        maven {
-            name = "Fabric"
-            url = uri("https://maven.fabricmc.net/")
-        }
-    }
-    dependencies {
-        classpath("net.fabricmc:fabric-loom:${versions.loom}")
-    }
+plugins {
+    id("fabric-loom")
+    `java-library`
 }
 
 applyPlatformAndCoreConfiguration(javaRelease = 17)
 applyShadowConfiguration()
-
-apply(plugin = "fabric-loom")
-apply(plugin = "java-library")
 
 val minecraftVersion = "1.20.4"
 val loaderVersion = "0.15.1"
