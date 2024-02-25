@@ -45,7 +45,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * <ul>
  *     <li>Logical: &amp;&amp;, ||, ! (unary)</li>
  *     <li>Bitwise: ~ (unary), &gt;&gt;, &lt;&lt;</li>
- *     <li>Arithmetic: +, -, *, /, % (modulo), ^ (power), - (unary), --, ++ (prefix only)</li>
+ *     <li>Arithmetic: +, -, *, /, % (remainder), ^ (power), - (unary), --, ++ (prefix only)</li>
  *     <li>Comparison: &lt;=, &gt;=, &gt;, &lt;, ==, !=, ~= (near)</li>
  * </ul>
  *

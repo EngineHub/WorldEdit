@@ -6,7 +6,7 @@ PLUS : '+' ;
 MINUS : '-' ;
 TIMES : '*' ;
 DIVIDE : '/' ;
-MODULO : '%' ;
+REMAINDER : '%' ;
 POWER : '^' | '**' ;
 LEFT_SHIFT : '<<' ;
 RIGHT_SHIFT : '>>' ;
@@ -17,7 +17,7 @@ PLUS_ASSIGN : '+=' ;
 MINUS_ASSIGN : '-=' ;
 TIMES_ASSIGN : '*=' ;
 DIVIDE_ASSIGN : '/=' ;
-MODULO_ASSIGN : '%=' ;
+REMAINDER_ASSIGN : '%=' ;
 POWER_ASSIGN : '^=' ;
 
 EQUAL : '==' ;
@@ -144,7 +144,7 @@ assignmentOperator
     | POWER_ASSIGN
     | TIMES_ASSIGN
     | DIVIDE_ASSIGN
-    | MODULO_ASSIGN
+    | REMAINDER_ASSIGN
     | PLUS_ASSIGN
     | MINUS_ASSIGN
     ;
@@ -202,7 +202,7 @@ multiplicativeExpression
       op=
       ( TIMES
       | DIVIDE
-      | MODULO
+      | REMAINDER
       ) right=powerExpression # MultiplicativeExpr
     ;
 

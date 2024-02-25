@@ -56,13 +56,13 @@ import static com.sk89q.worldedit.antlr.ExpressionLexer.LESS_THAN;
 import static com.sk89q.worldedit.antlr.ExpressionLexer.LESS_THAN_OR_EQUAL;
 import static com.sk89q.worldedit.antlr.ExpressionLexer.MINUS;
 import static com.sk89q.worldedit.antlr.ExpressionLexer.MINUS_ASSIGN;
-import static com.sk89q.worldedit.antlr.ExpressionLexer.MODULO;
-import static com.sk89q.worldedit.antlr.ExpressionLexer.MODULO_ASSIGN;
 import static com.sk89q.worldedit.antlr.ExpressionLexer.NEAR;
 import static com.sk89q.worldedit.antlr.ExpressionLexer.NOT_EQUAL;
 import static com.sk89q.worldedit.antlr.ExpressionLexer.PLUS;
 import static com.sk89q.worldedit.antlr.ExpressionLexer.PLUS_ASSIGN;
 import static com.sk89q.worldedit.antlr.ExpressionLexer.POWER_ASSIGN;
+import static com.sk89q.worldedit.antlr.ExpressionLexer.REMAINDER;
+import static com.sk89q.worldedit.antlr.ExpressionLexer.REMAINDER_ASSIGN;
 import static com.sk89q.worldedit.antlr.ExpressionLexer.RIGHT_SHIFT;
 import static com.sk89q.worldedit.antlr.ExpressionLexer.TIMES;
 import static com.sk89q.worldedit.antlr.ExpressionLexer.TIMES_ASSIGN;
@@ -403,7 +403,7 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
                     return (l, r) -> l * r;
                 case DIVIDE:
                     return (l, r) -> l / r;
-                case MODULO:
+                case REMAINDER:
                     return (l, r) -> l % r;
                 default:
                     throw ExpressionHelper.evalException(ctx, "Invalid text for multiplicative expr: " + ctx.op.getText());
@@ -555,7 +555,7 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
                     case DIVIDE_ASSIGN:
                         value /= arg;
                         break;
-                    case MODULO_ASSIGN:
+                    case REMAINDER_ASSIGN:
                         value %= arg;
                         break;
                     case PLUS_ASSIGN:
