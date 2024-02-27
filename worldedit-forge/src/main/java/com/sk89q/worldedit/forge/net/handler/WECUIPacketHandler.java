@@ -46,6 +46,10 @@ public final class WECUIPacketHandler {
     }
 
     public static void onPacketData(CustomPayloadEvent event) {
+        if (event.getSource().isClientSide()) {
+            // Ignore client-side packets
+            return;
+        }
         ServerPlayer player = event.getSource().getSender();
         LocalSession session = ForgeWorldEdit.inst.getSession(player);
         String text = event.getPayload().toString(StandardCharsets.UTF_8);
