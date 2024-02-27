@@ -2,6 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.minecraftforge.gradle.common.util.RunConfig
 import net.minecraftforge.gradle.userdev.UserDevExtension
 import net.minecraftforge.gradle.userdev.tasks.RenameJarInPlace
+import org.spongepowered.asm.gradle.plugins.MixinExtension.ConfigureReobfTask
 
 plugins {
     id("net.minecraftforge.gradle")
@@ -71,6 +72,13 @@ configure<UserDevExtension> {
 configure<org.spongepowered.asm.gradle.plugins.MixinExtension> {
     add(sourceSets["main"], "worldedit-forge.mixins.refmap.json")
     config("worldedit-forge.mixins.json")
+}
+
+// Workaround until SpongePowered/MixinGradle#51 is merged
+afterEvaluate {
+    tasks.withType<ConfigureReobfTask>().configureEach {
+        dependsOn(tasks.compileJava)
+    }
 }
 
 configure<BasePluginExtension> {
