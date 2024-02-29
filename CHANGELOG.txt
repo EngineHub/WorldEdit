@@ -36,6 +36,12 @@
 - [Bukkit] Remove legacy data folder migration code from 2012
 - [Bukkit] Remove support for all versions prior to 1.17.1, and non-latest patches of 1.18 and 1.19
 
+7.2.20
+- [Forge] Workaround various Forge issues that could cause crashes in certain situations
+- Minor memory optimisations during startup
+- Add a warning about problematic mods when iterating over list of block states takes too long, to assist in tracking down issues
+- Rename the 'modulo' expressions operator to 'remainder' to better reflect the actual operation being performed
+
 7.2.19
 - [Forge] Fixed Forge mixin issues in the hybrid mod jar
 - Improve error handling for unsupported Sponge Schematic versions
