@@ -466,24 +466,6 @@ public record Vector2(double x, double z) {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof Vector2 other)) {
-            return false;
-        }
-
-        return other.x == this.x && other.z == this.z;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 17;
-        hash = 31 * hash + Double.hashCode(x);
-        hash = 31 * hash + Double.hashCode(z);
-        return hash;
-    }
-
-    @Override
     public String toString() {
         return "(" + x + ", " + z + ")";
     }

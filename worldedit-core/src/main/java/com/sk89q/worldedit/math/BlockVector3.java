@@ -682,20 +682,6 @@ public record BlockVector3(int x, int y, int z) {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof BlockVector3 other)) {
-            return false;
-        }
-
-        return other.x == this.x && other.y == this.y && other.z == this.z;
-    }
-
-    @Override
-    public int hashCode() {
-        return (x ^ (z << 12)) ^ (y << 24);
-    }
-
-    @Override
     public String toString() {
         return "(" + x + ", " + y + ", " + z + ")";
     }

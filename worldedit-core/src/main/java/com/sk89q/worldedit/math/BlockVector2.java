@@ -531,21 +531,6 @@ public record BlockVector2(int x, int z) {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof BlockVector2 other)) {
-            return false;
-        }
-
-        return other.x == this.x && other.z == this.z;
-
-    }
-
-    @Override
-    public int hashCode() {
-        return (x << 16) ^ z;
-    }
-
-    @Override
     public String toString() {
         return "(" + x + ", " + z + ")";
     }

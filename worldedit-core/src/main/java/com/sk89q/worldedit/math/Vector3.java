@@ -605,24 +605,6 @@ public record Vector3(double x, double y, double z) {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof Vector3 other)) {
-            return false;
-        }
-
-        return other.x == this.x && other.y == this.y && other.z == this.z;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 17;
-        hash = 31 * hash + Double.hashCode(x);
-        hash = 31 * hash + Double.hashCode(y);
-        hash = 31 * hash + Double.hashCode(z);
-        return hash;
-    }
-
-    @Override
     public String toString() {
         return "(" + x + ", " + y + ", " + z + ")";
     }
