@@ -37,6 +37,8 @@ import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.lifecycle.Lifecycled;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.registry.Registries;
+import fr.euphyllia.energie.Energie;
+import fr.euphyllia.energie.model.SchedulerType;
 import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -51,6 +53,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -121,7 +124,15 @@ public class BukkitServerInterface extends AbstractPlatform implements MultiUser
 
     @Override
     public int schedule(long delay, long period, Runnable task) {
-        return Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, task, delay, period);
+        AtomicInteger taskId = new AtomicInteger(0);
+        WorldEditPlugin.getEnergieTask().getScheduler(Energie.SchedulerSoft.MINECRAFT)
+                .runAtFixedRate(SchedulerType.GLOBAL, delay, period, schedulerTaskInter -> {
+                    task.run();
+                    if (schedulerTaskInter != null) {
+                        taskId.set(schedulerTaskInter.getTaskId());
+                    }
+                });
+        return taskId.get();
     }
 
     @Override

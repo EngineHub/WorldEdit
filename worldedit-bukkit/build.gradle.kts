@@ -61,6 +61,7 @@ dependencies {
     "implementation"("org.bstats:bstats-bukkit:2.2.1")
     "implementation"("it.unimi.dsi:fastutil")
     "testImplementation"("org.mockito:mockito-core:1.9.0-rc1")
+    "implementation"("com.github.Euphillya:Energie:26cdee42f4")
 
     project.project(":worldedit-bukkit:adapters").subprojects.forEach {
         "adapters"(project(it.path))
@@ -91,6 +92,7 @@ tasks.named<ShadowJar>("shadowJar") {
         include(dependency("io.papermc:paperlib"))
         include(dependency("it.unimi.dsi:fastutil"))
         include(dependency("com.sk89q.lib:jlibnoise"))
+        include(dependency("com.github.Euphillya:Energie"))
 
         exclude(dependency("$group:$name"))
 

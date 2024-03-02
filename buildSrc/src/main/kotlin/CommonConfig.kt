@@ -25,6 +25,7 @@ fun Project.applyCommonConfiguration() {
                 snapshotsOnly()
             }
         }
+        maven { url = uri("https://jitpack.io") }
     }
 
     configurations.all {

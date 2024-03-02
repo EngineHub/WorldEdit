@@ -58,6 +58,7 @@ import com.sk89q.worldedit.world.gamemode.GameModes;
 import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
+import fr.euphyllia.energie.Energie;
 import io.papermc.lib.PaperLib;
 import org.apache.logging.log4j.Logger;
 import org.bstats.bukkit.Metrics;
@@ -116,6 +117,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     public static final String CUI_PLUGIN_CHANNEL = "worldedit:cui";
     private static WorldEditPlugin INSTANCE;
     private static final int BSTATS_PLUGIN_ID = 3328;
+    private static fr.euphyllia.energie.Energie energieTask; // Euphyllia
 
     private final SimpleLifecycled<BukkitImplAdapter> adapter =
         SimpleLifecycled.invalid();
@@ -154,6 +156,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         // Catch bad things being done by naughty plugins that include
         // WorldEdit's classes
         ClassSourceValidator verifier = new ClassSourceValidator(this);
+        energieTask = new Energie(this); // Euphyllia
         verifier.reportMismatches(ImmutableList.of(World.class, CommandManager.class, EditSession.class, Actor.class));
 
         WorldEdit.getInstance().getEventBus().post(new PlatformsRegisteredEvent());
@@ -321,7 +324,8 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         if (config != null) {
             config.unload();
         }
-        this.getServer().getScheduler().cancelTasks(this);
+        getEnergieTask().getScheduler(Energie.SchedulerSoft.MINECRAFT).cancelAllTask();
+        getEnergieTask().getScheduler(Energie.SchedulerSoft.NATIVE).cancelAllTask();
     }
 
     /**
@@ -569,4 +573,10 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             event.setHandled(true);
         }
     }
+
+    // Euphyllia start
+    public static Energie getEnergieTask() {
+        return energieTask;
+    }
+    // Euphyllia end
 }

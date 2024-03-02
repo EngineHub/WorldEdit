@@ -28,6 +28,8 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import fr.euphyllia.energie.Energie;
+import fr.euphyllia.energie.model.SchedulerType;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -156,11 +158,11 @@ public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
                     updateActive();
                 } else {
                     // we should update it eventually
-                    Bukkit.getScheduler().callSyncMethod(plugin,
-                        () -> {
-                            updateActive();
-                            return null;
-                        });
+                    WorldEditPlugin.getEnergieTask().getScheduler(Energie.SchedulerSoft.MINECRAFT).execute(
+                            SchedulerType.GLOBAL, schedulerTaskInter -> {
+                                updateActive();
+                            }
+                    );
                 }
                 return active;
             }
