@@ -117,7 +117,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     public static final String CUI_PLUGIN_CHANNEL = "worldedit:cui";
     private static WorldEditPlugin INSTANCE;
     private static final int BSTATS_PLUGIN_ID = 3328;
-    private static fr.euphyllia.energie.Energie energieTask; // Euphyllia
+    private static fr.euphyllia.energie.Energie energieTask;
 
     private final SimpleLifecycled<BukkitImplAdapter> adapter =
         SimpleLifecycled.invalid();
@@ -156,7 +156,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         // Catch bad things being done by naughty plugins that include
         // WorldEdit's classes
         ClassSourceValidator verifier = new ClassSourceValidator(this);
-        energieTask = new Energie(this); // Euphyllia
+        energieTask = new Energie(this);
         verifier.reportMismatches(ImmutableList.of(World.class, CommandManager.class, EditSession.class, Actor.class));
 
         WorldEdit.getInstance().getEventBus().post(new PlatformsRegisteredEvent());
@@ -574,9 +574,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         }
     }
 
-    // Euphyllia start
     public static Energie getEnergieTask() {
         return energieTask;
     }
-    // Euphyllia end
 }
