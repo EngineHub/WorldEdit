@@ -26,7 +26,7 @@ import java.util.Comparator;
 /**
  * An immutable 2-dimensional vector.
  */
-public final class BlockVector2 {
+public record BlockVector2(int x, int z) {
 
     public static final BlockVector2 ZERO = new BlockVector2(0, 0);
     public static final BlockVector2 UNIT_X = new BlockVector2(1, 0);
@@ -74,25 +74,13 @@ public final class BlockVector2 {
         return new BlockVector2(x, z);
     }
 
-    private final int x;
-    private final int z;
-
-    /**
-     * Construct an instance.
-     *
-     * @param x the X coordinate
-     * @param z the Z coordinate
-     */
-    private BlockVector2(int x, int z) {
-        this.x = x;
-        this.z = z;
-    }
-
     /**
      * Get the X coordinate.
      *
      * @return the x coordinate
+     * @deprecated use {@link #x()} instead
      */
+    @Deprecated(forRemoval = true)
     public int getX() {
         return x;
     }
@@ -101,7 +89,9 @@ public final class BlockVector2 {
      * Get the X coordinate.
      *
      * @return the x coordinate
+     * @deprecated use {@link #x()} instead
      */
+    @Deprecated(forRemoval = true)
     public int getBlockX() {
         return x;
     }
@@ -120,7 +110,9 @@ public final class BlockVector2 {
      * Get the Z coordinate.
      *
      * @return the z coordinate
+     * @deprecated use {@link #z()} instead
      */
+    @Deprecated(forRemoval = true)
     public int getZ() {
         return z;
     }
@@ -129,7 +121,9 @@ public final class BlockVector2 {
      * Get the Z coordinate.
      *
      * @return the z coordinate
+     * @deprecated use {@link #z()} instead
      */
+    @Deprecated(forRemoval = true)
     public int getBlockZ() {
         return z;
     }
