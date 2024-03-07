@@ -19,23 +19,5 @@
 
 package com.sk89q.worldedit.world.registry;
 
-public class SimpleItemMaterial implements ItemMaterial {
-
-    private final int maxStackSize;
-    private final int maxDamage;
-
-    public SimpleItemMaterial(int maxStackSize, int maxDamage) {
-        this.maxStackSize = maxStackSize;
-        this.maxDamage = maxDamage;
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return maxStackSize;
-    }
-
-    @Override
-    public int getMaxDamage() {
-        return maxDamage;
-    }
+public record SimpleItemMaterial(int maxStackSize, int maxDamage) implements ItemMaterial {
 }

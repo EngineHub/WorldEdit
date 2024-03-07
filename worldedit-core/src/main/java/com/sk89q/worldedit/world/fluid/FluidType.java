@@ -23,41 +23,16 @@ import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
 
 /**
- * Minecraft now has a 'fluid' system. This is a
- * stub class to represent what it may be in the future.
+ * Minecraft now has a 'fluid' system. This is a stub class to represent what it may be in the future.
+ *
+ * @param id the id of the fluid
  */
-public class FluidType implements Keyed {
+public record FluidType(String id) implements Keyed {
 
     public static final NamespacedRegistry<FluidType> REGISTRY = new NamespacedRegistry<>("fluid type");
 
-    private final String id;
-
-    public FluidType(String id) {
-        this.id = id;
-    }
-
-    /**
-     * Gets the ID of this block.
-     *
-     * @return The id
-     */
-    @Override
-    public String getId() {
-        return this.id;
-    }
-
     @Override
     public String toString() {
-        return getId();
-    }
-
-    @Override
-    public int hashCode() {
-        return this.id.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof FluidType && this.id.equals(((FluidType) obj).id);
+        return id();
     }
 }

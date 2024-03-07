@@ -2352,8 +2352,8 @@ public class EditSession implements Extent, AutoCloseable {
                     if (expression.evaluate(new double[]{scaled.getX(), scaled.getY(), scaled.getZ(), typeVar, dataVar}, timeout) <= 0) {
                         return null;
                     }
-                    int newType = (int) typeVariable.getValue();
-                    int newData = (int) dataVariable.getValue();
+                    int newType = (int) typeVariable.value();
+                    int newData = (int) dataVariable.value();
                     if (newType != typeVar || newData != dataVar) {
                         BlockState state = LegacyMapper.getInstance().getBlockFromLegacy(newType, newData);
                         return state == null ? defaultMaterial : state.toBaseBlock();
@@ -2450,7 +2450,7 @@ public class EditSession implements Extent, AutoCloseable {
             // transform
             expression.evaluate(new double[]{scaled.getX(), scaled.getY(), scaled.getZ()}, timeout);
 
-            final BlockVector3 sourcePosition = environment.toWorld(x.getValue(), y.getValue(), z.getValue());
+            final BlockVector3 sourcePosition = environment.toWorld(x.value(), y.value(), z.value());
 
             // read block from world
             final BaseBlock material = world.getFullBlock(sourcePosition);

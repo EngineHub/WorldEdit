@@ -180,7 +180,7 @@ class ExpressionHandles {
 
     static LocalSlot.Variable initVariable(ExecutionData data, Token nameToken) {
         String name = nameToken.getText();
-        return data.getSlots().initVariable(name)
+        return data.slots().initVariable(name)
             .orElseThrow(() -> ExpressionHelper.evalException(
                 nameToken, "Cannot overwrite non-variable '" + name + "'"
             ));
@@ -198,7 +198,7 @@ class ExpressionHandles {
 
     static LocalSlot.Variable getVariable(ExecutionData data, Token nameToken) {
         String name = nameToken.getText();
-        LocalSlot slot = data.getSlots().getSlot(name)
+        LocalSlot slot = data.slots().getSlot(name)
             .orElseThrow(varNotInitException(nameToken));
         if (!(slot instanceof LocalSlot.Variable)) {
             throw ExpressionHelper.evalException(
@@ -210,7 +210,7 @@ class ExpressionHandles {
 
     static double getSlotValue(ExecutionData data, Token nameToken) {
         String name = nameToken.getText();
-        return data.getSlots().getSlotValue(name)
+        return data.slots().getSlotValue(name)
             .orElseThrow(varNotInitException(nameToken));
     }
 
@@ -275,11 +275,11 @@ class ExpressionHandles {
             standardInvoke(init, data);
         }
         while ((boolean) standardInvoke(condition, data)) {
-            checkIterations(iterations, body.ctx);
+            checkIterations(iterations, body.positionInLine());
             data.checkDeadline();
             iterations++;
             try {
-                result = (Double) standardInvoke(body.handle, data);
+                result = (Double) standardInvoke(body.handle(), data);
             } catch (BreakException ex) {
                 if (!ex.doContinue) {
                     break;
@@ -302,11 +302,11 @@ class ExpressionHandles {
         Double result = null;
         int iterations = 0;
         do {
-            checkIterations(iterations, body.ctx);
+            checkIterations(iterations, body.positionInLine());
             data.checkDeadline();
             iterations++;
             try {
-                result = (Double) standardInvoke(body.handle, data);
+                result = (Double) standardInvoke(body.handle(), data);
             } catch (BreakException ex) {
                 if (!ex.doContinue) {
                     break;
@@ -335,12 +335,12 @@ class ExpressionHandles {
         double last = (double) standardInvoke(getLast, data);
         LocalSlot.Variable variable = initVariable(data, counterToken);
         for (double i = first; i <= last; i++) {
-            checkIterations(iterations, body.ctx);
+            checkIterations(iterations, body.positionInLine());
             data.checkDeadline();
             iterations++;
             variable.setValue(i);
             try {
-                result = (Double) standardInvoke(body.handle, data);
+                result = (Double) standardInvoke(body.handle(), data);
             } catch (BreakException ex) {
                 if (!ex.doContinue) {
                     break;
@@ -368,10 +368,10 @@ class ExpressionHandles {
             if (falling || entry.getDoubleKey() == value) {
                 matched = true;
                 try {
-                    evaluated = (Double) standardInvoke(entry.getValue().handle, data);
+                    evaluated = (Double) standardInvoke(entry.getValue().handle(), data);
                     falling = true;
                 } catch (BreakException brk) {
-                    check(!brk.doContinue, entry.getValue().ctx, "Cannot continue in a switch");
+                    check(!brk.doContinue, entry.getValue().positionInLine(), "Cannot continue in a switch");
                     falling = false;
                     break;
                 }
@@ -380,9 +380,9 @@ class ExpressionHandles {
         // This if is like the one in the loop, default's "case" is `!matched` & present
         if ((falling || !matched) && defaultCase != null) {
             try {
-                evaluated = (Double) standardInvoke(defaultCase.handle, data);
+                evaluated = (Double) standardInvoke(defaultCase.handle(), data);
             } catch (BreakException brk) {
-                check(!brk.doContinue, defaultCase.ctx, "Cannot continue in a switch");
+                check(!brk.doContinue, defaultCase.positionInLine(), "Cannot continue in a switch");
             }
         }
         return evaluated;

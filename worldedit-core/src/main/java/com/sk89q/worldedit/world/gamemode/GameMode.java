@@ -22,20 +22,9 @@ package com.sk89q.worldedit.world.gamemode;
 import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.Registry;
 
-public class GameMode implements Keyed {
+public record GameMode(String id) implements Keyed {
 
     public static final Registry<GameMode> REGISTRY = new Registry<>("game mode");
-
-    private final String id;
-
-    public GameMode(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return this.id;
-    }
 
     /**
      * Gets the name of this game mode, or the ID if the name cannot be found.
@@ -43,22 +32,11 @@ public class GameMode implements Keyed {
      * @return The name, or ID
      */
     public String getName() {
-        return getId();
+        return id();
     }
 
     @Override
     public String toString() {
-        return getId();
+        return id();
     }
-
-    @Override
-    public int hashCode() {
-        return this.id.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof GameMode && this.id.equals(((GameMode) obj).id);
-    }
-
 }
