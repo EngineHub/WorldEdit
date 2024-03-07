@@ -23,34 +23,21 @@ import java.time.Instant;
 
 import static java.util.Objects.requireNonNull;
 
-public class ExecutionData {
-
+public record ExecutionData(SlotTable slots, Functions functions, Instant deadline) {
     /**
-     * Special execution context for evaluating constant values. As long as no variables are used,
-     * it can be considered constant.
+     * Special execution context for evaluating constant values. As long as no variables are used, it can be considered
+     * constant.
      */
     public static final ExecutionData CONSTANT_EVALUATOR = new ExecutionData(null, null, Instant.MAX);
 
-    private final SlotTable slots;
-    private final Functions functions;
-    private final Instant deadline;
-
-    public ExecutionData(SlotTable slots, Functions functions, Instant deadline) {
-        this.slots = slots;
-        this.functions = functions;
-        this.deadline = deadline;
-    }
-
-    public SlotTable getSlots() {
+    @Override
+    public SlotTable slots() {
         return requireNonNull(slots, "Cannot use variables in a constant");
     }
 
-    public Functions getFunctions() {
+    @Override
+    public Functions functions() {
         return requireNonNull(functions, "Cannot use functions in a constant");
-    }
-
-    public Instant getDeadline() {
-        return deadline;
     }
 
     public void checkDeadline() {

@@ -136,8 +136,8 @@ public final class Functions {
         final double cosF = Math.cos(angle);
         final double sinF = Math.sin(angle);
 
-        final double xOld = x.getValue();
-        final double yOld = y.getValue();
+        final double xOld = x.value();
+        final double yOld = y.value();
 
         x.setValue(xOld * cosF - yOld * sinF);
         y.setValue(xOld * sinF + yOld * cosF);
@@ -147,9 +147,9 @@ public final class Functions {
 
     @ExpressionFunction
     private static double swap(Variable x, Variable y) {
-        final double tmp = x.getValue();
+        final double tmp = x.value();
 
-        x.setValue(y.getValue());
+        x.setValue(y.value());
         y.setValue(tmp);
 
         return 0.0;
@@ -315,8 +315,8 @@ public final class Functions {
     private static double queryInternal(LocalSlot type, LocalSlot data, double typeId, double dataValue) {
         // Compare to input values and determine return value
         // -1 is a wildcard, always true
-        double ret = ((type.getValue() == -1 || typeId == type.getValue())
-            && (data.getValue() == -1 || dataValue == data.getValue())) ? 1.0 : 0.0;
+        double ret = ((type.value() == -1 || typeId == type.value())
+            && (data.value() == -1 || dataValue == data.value())) ? 1.0 : 0.0;
 
         if (type instanceof Variable) {
             ((Variable) type).setValue(typeId);

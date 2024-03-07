@@ -58,7 +58,7 @@ public class SlotTable {
 
     public OptionalDouble getSlotValue(String name) {
         LocalSlot slot = slots.get(name);
-        return slot == null ? OptionalDouble.empty() : OptionalDouble.of(slot.getValue());
+        return slot == null ? OptionalDouble.empty() : OptionalDouble.of(slot.value());
     }
 
 }

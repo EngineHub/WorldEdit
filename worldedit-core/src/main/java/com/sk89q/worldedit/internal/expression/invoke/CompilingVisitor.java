@@ -105,7 +105,7 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
         if (ctx.parent instanceof ParserRuleContext) {
             checkHandle(mh, (ParserRuleContext) ctx.parent);
         }
-        return new ExecNode(ctx, mh);
+        return new ExecNode(ctx.start.getCharPositionInLine(), mh);
     }
 
     private void checkHandle(MethodHandle mh, ParserRuleContext ctx) {
@@ -125,7 +125,7 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
             MethodHandles.identity(Double.class)
         );
         // now pass `result` into `guard`
-        MethodHandle result = evaluate(ctx).handle;
+        MethodHandle result = evaluate(ctx).handle();
         return MethodHandles.collectArguments(guard, 0, result);
     }
 
@@ -147,8 +147,8 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
         // easiest one of the bunch
         return MethodHandles.guardWithTest(
             evaluateBoolean(condition),
-            trueBranch == null ? NULL_DOUBLE : evaluate(trueBranch).handle,
-            falseBranch == null ? NULL_DOUBLE : evaluate(falseBranch).handle
+            trueBranch == null ? NULL_DOUBLE : evaluate(trueBranch).handle(),
+            falseBranch == null ? NULL_DOUBLE : evaluate(falseBranch).handle()
         );
     }
 
@@ -181,10 +181,10 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
     @Override
     public MethodHandle visitForStatement(ExpressionParser.ForStatementContext ctx) {
         return ExpressionHandles.forLoop(
-            evaluate(ctx.init).handle,
+            evaluate(ctx.init).handle(),
             evaluateBoolean(ctx.condition),
             evaluate(ctx.body),
-            evaluate(ctx.update).handle
+            evaluate(ctx.update).handle()
         );
     }
 
@@ -231,7 +231,7 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
             RETURN_STATEMENT_BASE,
             0,
             // map the Double back to ExecutionData via the returnValue
-            evaluate(ctx.value).handle
+            evaluate(ctx.value).handle()
         );
     }
 
@@ -257,7 +257,7 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
 
     @Override
     public MethodHandle visitExpressionStatement(ExpressionParser.ExpressionStatementContext ctx) {
-        return evaluate(ctx.expression()).handle;
+        return evaluate(ctx.expression()).handle();
     }
 
     @Override
@@ -266,7 +266,7 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
         int opType = ctx.op.getType();
         return ExpressionHandles.call(data -> {
             LocalSlot.Variable variable = ExpressionHandles.getVariable(data, target);
-            double value = variable.getValue();
+            double value = variable.value();
             double result = value;
             if (opType == INCREMENT) {
                 value++;
@@ -284,7 +284,7 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
         int opType = ctx.op.getType();
         return ExpressionHandles.call(data -> {
             LocalSlot.Variable variable = ExpressionHandles.getVariable(data, target);
-            double value = variable.getValue();
+            double value = variable.value();
             if (opType == INCREMENT) {
                 value++;
             } else {
@@ -542,7 +542,7 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
                 value = arg;
             } else {
                 variable = ExpressionHandles.getVariable(data, target);
-                value = variable.getValue();
+                value = variable.value();
                 switch (type) {
                     case POWER_ASSIGN:
                         value = Math.pow(value, arg);

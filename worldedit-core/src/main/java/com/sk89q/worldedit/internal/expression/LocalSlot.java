@@ -24,18 +24,7 @@ package com.sk89q.worldedit.internal.expression;
  */
 public interface LocalSlot {
 
-    final class Constant implements LocalSlot {
-        private final double value;
-
-        public Constant(double value) {
-            this.value = value;
-        }
-
-        @Override
-        public double getValue() {
-            return value;
-        }
-
+    record Constant(double value) implements LocalSlot {
         @Override
         public String toString() {
             return String.valueOf(value);
@@ -54,7 +43,7 @@ public interface LocalSlot {
         }
 
         @Override
-        public double getValue() {
+        public double value() {
             return value;
         }
 
@@ -64,6 +53,6 @@ public interface LocalSlot {
         }
     }
 
-    double getValue();
+    double value();
 
 }
