@@ -32,7 +32,7 @@ import static com.sk89q.worldedit.math.BitMath.unpackZ;
 /**
  * An immutable 3-dimensional vector.
  */
-public final class BlockVector3 {
+public record BlockVector3(int x, int y, int z) {
 
     public static final BlockVector3 ZERO = new BlockVector3(0, 0, 0);
     public static final BlockVector3 UNIT_X = new BlockVector3(1, 0, 0);
@@ -112,23 +112,6 @@ public final class BlockVector3 {
         return YzxOrderComparator.YZX_ORDER;
     }
 
-    private final int x;
-    private final int y;
-    private final int z;
-
-    /**
-     * Construct an instance.
-     *
-     * @param x the X coordinate
-     * @param y the Y coordinate
-     * @param z the Z coordinate
-     */
-    private BlockVector3(int x, int y, int z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
-
     public long toLongPackedForm() {
         checkLongPackable(this);
         return (x & BITS_26) | ((z & BITS_26) << 26) | (((y & BITS_12) << (26 + 26)));
@@ -138,7 +121,9 @@ public final class BlockVector3 {
      * Get the X coordinate.
      *
      * @return the x coordinate
+     * @deprecated use {@link #x()} instead
      */
+    @Deprecated(forRemoval = true)
     public int getX() {
         return x;
     }
@@ -147,7 +132,9 @@ public final class BlockVector3 {
      * Get the X coordinate.
      *
      * @return the x coordinate
+     * @deprecated use {@link #x()} instead
      */
+    @Deprecated(forRemoval = true)
     public int getBlockX() {
         return x;
     }
@@ -166,7 +153,9 @@ public final class BlockVector3 {
      * Get the Y coordinate.
      *
      * @return the y coordinate
+     * @deprecated use {@link #y()} instead
      */
+    @Deprecated(forRemoval = true)
     public int getY() {
         return y;
     }
@@ -175,7 +164,9 @@ public final class BlockVector3 {
      * Get the Y coordinate.
      *
      * @return the y coordinate
+     * @deprecated use {@link #y()} instead
      */
+    @Deprecated(forRemoval = true)
     public int getBlockY() {
         return y;
     }
@@ -194,7 +185,9 @@ public final class BlockVector3 {
      * Get the Z coordinate.
      *
      * @return the z coordinate
+     * @deprecated use {@link #z()} instead
      */
+    @Deprecated(forRemoval = true)
     public int getZ() {
         return z;
     }
@@ -203,7 +196,9 @@ public final class BlockVector3 {
      * Get the Z coordinate.
      *
      * @return the z coordinate
+     * @deprecated use {@link #z()} instead
      */
+    @Deprecated(forRemoval = true)
     public int getBlockZ() {
         return z;
     }
@@ -684,20 +679,6 @@ public final class BlockVector3 {
 
     public Vector3 toVector3() {
         return Vector3.at(x, y, z);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof BlockVector3 other)) {
-            return false;
-        }
-
-        return other.x == this.x && other.y == this.y && other.z == this.z;
-    }
-
-    @Override
-    public int hashCode() {
-        return (x ^ (z << 12)) ^ (y << 24);
     }
 
     @Override
