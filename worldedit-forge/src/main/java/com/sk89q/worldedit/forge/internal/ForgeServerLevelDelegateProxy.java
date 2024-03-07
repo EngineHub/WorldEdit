@@ -90,7 +90,7 @@ public class ForgeServerLevelDelegateProxy implements InvocationHandler {
 
     private boolean addEntity(Entity entity) {
         Vector3 pos = ForgeAdapter.adapt(entity.getPosition(0.0f));
-        Location location = new Location(ForgeAdapter.adapt(serverLevel), pos.getX(), pos.getY(), pos.getZ());
+        Location location = new Location(ForgeAdapter.adapt(serverLevel), pos.x(), pos.y(), pos.z());
         BaseEntity baseEntity = new ForgeEntity(entity).getState();
         return editSession.createEntity(location, baseEntity) != null;
     }

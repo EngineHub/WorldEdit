@@ -163,9 +163,9 @@ public class ExtentEntityCopy implements EntityFunction {
                     BlockVector3 newLeash = transform.apply(tilePosition.subtract(from)).add(to).toBlockPoint();
                     return new BaseEntity(state.getType(), LazyReference.computed(tag.toBuilder()
                         .put("Leash", leashCompound.toBuilder()
-                            .putInt("X", newLeash.getBlockX())
-                            .putInt("Y", newLeash.getBlockY())
-                            .putInt("Z", newLeash.getBlockZ())
+                            .putInt("X", newLeash.x())
+                            .putInt("Y", newLeash.y())
+                            .putInt("Z", newLeash.z())
                             .build()
                         ).build()));
                 }
@@ -182,9 +182,9 @@ public class ExtentEntityCopy implements EntityFunction {
                 BlockVector3 newTilePosition = transform.apply(tilePosition.subtract(from)).add(to).toBlockPoint();
 
                 LinCompoundTag.Builder builder = tag.toBuilder()
-                    .putInt("TileX", newTilePosition.getBlockX())
-                    .putInt("TileY", newTilePosition.getBlockY())
-                    .putInt("TileZ", newTilePosition.getBlockZ());
+                    .putInt("TileX", newTilePosition.x())
+                    .putInt("TileY", newTilePosition.y())
+                    .putInt("TileZ", newTilePosition.z());
 
                 if (tag.value().get("Facing") instanceof LinNumberTag<?> tagFacing) {
                     boolean isPainting = state.getType() == EntityTypes.PAINTING; // Paintings have different facing values

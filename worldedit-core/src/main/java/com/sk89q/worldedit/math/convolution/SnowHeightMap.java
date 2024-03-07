@@ -67,10 +67,10 @@ public class SnowHeightMap {
 
         this.layers = BlockTypes.SNOW.getProperty("layers");
 
-        int minX = region.getMinimumPoint().getBlockX();
-        int minY = region.getMinimumPoint().getBlockY();
-        int minZ = region.getMinimumPoint().getBlockZ();
-        int maxY = region.getMaximumPoint().getBlockY();
+        int minX = region.getMinimumPoint().x();
+        int minY = region.getMinimumPoint().y();
+        int minZ = region.getMinimumPoint().z();
+        int maxY = region.getMaximumPoint().y();
 
         // Store current heightmap data
         data = new float[width * height];
@@ -127,11 +127,11 @@ public class SnowHeightMap {
         checkNotNull(data);
 
         BlockVector3 minY = region.getMinimumPoint();
-        int originX = minY.getBlockX();
-        int originY = minY.getBlockY();
-        int originZ = minY.getBlockZ();
+        int originX = minY.x();
+        int originY = minY.y();
+        int originZ = minY.z();
 
-        int maxY = region.getMaximumPoint().getBlockY();
+        int maxY = region.getMaximumPoint().y();
 
         BlockState fillerAir = BlockTypes.AIR.getDefaultState();
         BlockState fillerSnow = BlockTypes.SNOW_BLOCK.getDefaultState();

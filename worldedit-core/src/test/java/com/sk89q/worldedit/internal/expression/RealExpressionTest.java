@@ -72,7 +72,7 @@ class RealExpressionTest extends BaseExpressionTest {
         Expression compiled = compile(expr, "x", "y", "z");
         for (TestCase aCase : cases) {
             Vector3 loc = aCase.loc;
-            assertEquals(aCase.result, compiled.evaluate(loc.getX(), loc.getY(), loc.getZ()), 0,
+            assertEquals(aCase.result, compiled.evaluate(loc.x(), loc.y(), loc.z()), 0,
                 "Test case " + aCase + " failed (result)");
             aCase.postChecks.accept(compiled);
         }

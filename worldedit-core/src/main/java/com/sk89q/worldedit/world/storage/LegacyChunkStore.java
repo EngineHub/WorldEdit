@@ -47,8 +47,8 @@ public abstract class LegacyChunkStore extends ChunkStore {
      * @return pathname
      */
     public static String getFilename(BlockVector2 position, String separator) {
-        int x = position.getBlockX();
-        int z = position.getBlockZ();
+        int x = position.x();
+        int z = position.z();
 
         String folder1 = Integer.toString(divisorMod(x, 64), 36);
         String folder2 = Integer.toString(divisorMod(z, 64), 36);
@@ -71,8 +71,8 @@ public abstract class LegacyChunkStore extends ChunkStore {
 
     @Override
     public LinCompoundTag getChunkData(BlockVector2 position, World world) throws DataException, IOException {
-        int x = position.getBlockX();
-        int z = position.getBlockZ();
+        int x = position.x();
+        int z = position.z();
 
         String folder1 = Integer.toString(divisorMod(x, 64), 36);
         String folder2 = Integer.toString(divisorMod(z, 64), 36);

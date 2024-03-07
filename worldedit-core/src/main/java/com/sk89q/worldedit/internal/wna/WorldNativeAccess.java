@@ -46,9 +46,9 @@ public interface WorldNativeAccess<NC, NBS, NP> {
         checkNotNull(block);
         setCurrentSideEffectSet(sideEffects);
 
-        int x = position.getBlockX();
-        int y = position.getBlockY();
-        int z = position.getBlockZ();
+        int x = position.x();
+        int y = position.y();
+        int z = position.z();
 
         // First set the block
         NC chunk = getChunk(x >> 4, z >> 4);
@@ -68,9 +68,9 @@ public interface WorldNativeAccess<NC, NBS, NP> {
                 LinCompoundTag tag = baseBlock.getNbt();
                 if (tag != null) {
                     LinCompoundTag.Builder tagBuilder = tag.toBuilder()
-                        .putInt("x", position.getX())
-                        .putInt("y", position.getY())
-                        .putInt("z", position.getZ());
+                        .putInt("x", position.x())
+                        .putInt("y", position.y())
+                        .putInt("z", position.z());
                     if (!baseBlock.getNbtId().isBlank()) {
                         tagBuilder.putString("id", baseBlock.getNbtId());
                     }
@@ -94,8 +94,8 @@ public interface WorldNativeAccess<NC, NBS, NP> {
 
     default void applySideEffects(BlockVector3 position, BlockState previousType, SideEffectSet sideEffectSet) {
         setCurrentSideEffectSet(sideEffectSet);
-        NP pos = getPosition(position.getX(), position.getY(), position.getZ());
-        NC chunk = getChunk(position.getX() >> 4, position.getZ() >> 4);
+        NP pos = getPosition(position.x(), position.y(), position.z());
+        NC chunk = getChunk(position.x() >> 4, position.z() >> 4);
         NBS oldData = toNative(previousType);
         NBS newData = getBlockState(chunk, pos);
 

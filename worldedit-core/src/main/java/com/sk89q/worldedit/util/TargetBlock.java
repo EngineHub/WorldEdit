@@ -195,14 +195,14 @@ public class TargetBlock {
         do {
             curDistance += checkDistance;
 
-            targetPosDouble = offset.add(targetPosDouble.getX(),
-                                         targetPosDouble.getY(),
-                                         targetPosDouble.getZ());
+            targetPosDouble = offset.add(targetPosDouble.x(),
+                targetPosDouble.y(),
+                targetPosDouble.z());
             targetPos = targetPosDouble.toBlockPoint();
         } while (curDistance <= maxDistance
-                && targetPos.getBlockX() == prevPos.getBlockX()
-                && targetPos.getBlockY() == prevPos.getBlockY()
-                && targetPos.getBlockZ() == prevPos.getBlockZ());
+                && targetPos.x() == prevPos.x()
+                && targetPos.y() == prevPos.y()
+                && targetPos.z() == prevPos.z());
 
         if (curDistance > maxDistance) {
             return null;

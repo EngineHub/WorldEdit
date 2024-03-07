@@ -150,9 +150,9 @@ public class ReaderUtil {
                     decodeBlockVector3(tileEntity.getTag("Pos", LinTagType.intArrayTag()))
                 );
                 LinCompoundTag.Builder values = extractData(dataIsNested, tileEntity);
-                values.putInt("x", pt.getBlockX());
-                values.putInt("y", pt.getBlockY());
-                values.putInt("z", pt.getBlockZ());
+                values.putInt("x", pt.x());
+                values.putInt("y", pt.y());
+                values.putInt("z", pt.z());
                 values.put("id", tileEntity.value().get("Id"));
                 if (fixer.isActive()) {
                     tileEntity = fixer.fixUp(DataFixer.FixTypes.BLOCK_ENTITY, values.build());

@@ -435,7 +435,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
         final ServerLevel handle = craftWorld.getHandle();
         LevelChunk chunk = handle.getChunk(x >> 4, z >> 4);
-        chunk.setBiome(x >> 2, y >> 2, z >> 2, biomeTypeToNMSCache.computeIfAbsent(biome, b -> ((CraftServer) Bukkit.getServer()).getServer().registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(ResourceKey.create(Registries.BIOME, new ResourceLocation(b.getId())))));
+        chunk.setBiome(x >> 2, y >> 2, z >> 2, biomeTypeToNMSCache.computeIfAbsent(biome, b -> ((CraftServer) Bukkit.getServer()).getServer().registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(ResourceKey.create(Registries.BIOME, new ResourceLocation(b.id())))));
         chunk.setUnsaved(true);
     }
 
@@ -526,7 +526,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         CraftWorld craftWorld = ((CraftWorld) location.getWorld());
         ServerLevel worldServer = craftWorld.getHandle();
 
-        String entityId = state.getType().getId();
+        String entityId = state.getType().id();
 
         LinCompoundTag nativeTag = state.getNbt();
         net.minecraft.nbt.CompoundTag tag;
@@ -621,7 +621,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     public void sendFakeNBT(Player player, BlockVector3 pos, LinCompoundTag nbtData) {
         ((CraftPlayer) player).getHandle().connection.send(ClientboundBlockEntityDataPacket.create(
             new StructureBlockEntity(
-                new BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()),
+                new BlockPos(pos.x(), pos.y(), pos.z()),
                 Blocks.STRUCTURE_BLOCK.defaultBlockState()
             ),
             __ -> (net.minecraft.nbt.CompoundTag) fromNative(nbtData)
@@ -674,10 +674,10 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             return false;
         }
         fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, stack);
-        fakePlayer.absMoveTo(position.getBlockX(), position.getBlockY(), position.getBlockZ(),
+        fakePlayer.absMoveTo(position.x(), position.y(), position.z(),
             (float) face.toVector().toYaw(), (float) face.toVector().toPitch());
 
-        final BlockPos blockPos = new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+        final BlockPos blockPos = new BlockPos(position.x(), position.y(), position.z());
         final Vec3 blockVec = Vec3.atLowerCornerOf(blockPos);
         final net.minecraft.core.Direction enumFacing = adapt(face);
         BlockHitResult rayTrace = new BlockHitResult(blockVec, enumFacing, blockPos, false);
@@ -698,7 +698,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     public boolean canPlaceAt(World world, BlockVector3 position, BlockState blockState) {
         int internalId = BlockStateIdAccess.getBlockStateId(blockState);
         net.minecraft.world.level.block.state.BlockState blockData = Block.stateById(internalId);
-        return blockData.canSurvive(((CraftWorld) world).getHandle(), new BlockPos(position.getX(), position.getY(), position.getZ()));
+        return blockData.canSurvive(((CraftWorld) world).getHandle(), new BlockPos(position.x(), position.y(), position.z()));
     }
 
     @Override
@@ -818,7 +818,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         }
 
         for (BlockVector3 vec : region) {
-            BlockPos pos = new BlockPos(vec.getBlockX(), vec.getBlockY(), vec.getBlockZ());
+            BlockPos pos = new BlockPos(vec.x(), vec.y(), vec.z());
             ChunkAccess chunk = chunks.get(new ChunkPos(pos));
             final net.minecraft.world.level.block.state.BlockState blockData = chunk.getBlockState(pos);
             int internalId = Block.getId(blockData);
@@ -831,7 +831,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             }
             extent.setBlock(vec, state.toBaseBlock());
             if (options.shouldRegenBiomes()) {
-                Biome origBiome = chunk.getNoiseBiome(vec.getX(), vec.getY(), vec.getZ()).value();
+                Biome origBiome = chunk.getNoiseBiome(vec.x(), vec.y(), vec.z()).value();
                 BiomeType adaptedBiome = adapt(serverWorld, origBiome);
                 if (adaptedBiome != null) {
                     extent.setBiome(vec, adaptedBiome);
@@ -850,7 +850,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
                 //noinspection unchecked
                 chunkLoadings.add(
                     ((CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>>)
-                        getChunkFutureMethod.invoke(chunkManager, chunk.getX(), chunk.getZ(), ChunkStatus.FEATURES, true))
+                        getChunkFutureMethod.invoke(chunkManager, chunk.x(), chunk.z(), ChunkStatus.FEATURES, true))
                         .thenApply(either -> either.left().orElse(null))
                 );
             } catch (IllegalAccessException | InvocationTargetException e) {
@@ -890,7 +890,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     public boolean clearContainerBlockContents(World world, BlockVector3 pt) {
         ServerLevel originalWorld = ((CraftWorld) world).getHandle();
 
-        BlockEntity entity = originalWorld.getBlockEntity(new BlockPos(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()));
+        BlockEntity entity = originalWorld.getBlockEntity(new BlockPos(pt.x(), pt.y(), pt.z()));
         if (entity instanceof Clearable) {
             ((Clearable) entity).clearContent();
             return true;
@@ -942,22 +942,22 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
     public boolean generateFeature(ConfiguredFeatureType type, World world, EditSession session, BlockVector3 pt) {
         ServerLevel originalWorld = ((CraftWorld) world).getHandle();
-        ConfiguredFeature<?, ?> k = originalWorld.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).get(ResourceLocation.tryParse(type.getId()));
+        ConfiguredFeature<?, ?> k = originalWorld.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).get(ResourceLocation.tryParse(type.id()));
         ServerChunkCache chunkManager = originalWorld.getChunkSource();
         WorldGenLevel proxyLevel = PaperweightServerLevelDelegateProxy.newInstance(session, originalWorld, this);
-        return k != null && k.place(proxyLevel, chunkManager.getGenerator(), random, new BlockPos(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()));
+        return k != null && k.place(proxyLevel, chunkManager.getGenerator(), random, new BlockPos(pt.x(), pt.y(), pt.z()));
     }
 
     public boolean generateStructure(StructureType type, World world, EditSession session, BlockVector3 pt) {
         ServerLevel originalWorld = ((CraftWorld) world).getHandle();
-        Structure k = originalWorld.registryAccess().registryOrThrow(Registries.STRUCTURE).get(ResourceLocation.tryParse(type.getId()));
+        Structure k = originalWorld.registryAccess().registryOrThrow(Registries.STRUCTURE).get(ResourceLocation.tryParse(type.id()));
         if (k == null) {
             return false;
         }
 
         ServerChunkCache chunkManager = originalWorld.getChunkSource();
         WorldGenLevel proxyLevel = PaperweightServerLevelDelegateProxy.newInstance(session, originalWorld, this);
-        ChunkPos chunkPos = new ChunkPos(new BlockPos(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()));
+        ChunkPos chunkPos = new ChunkPos(new BlockPos(pt.x(), pt.y(), pt.z()));
         StructureStart structureStart = k.generate(originalWorld.registryAccess(), chunkManager.getGenerator(), chunkManager.getGenerator().getBiomeSource(), chunkManager.randomState(), originalWorld.getStructureManager(), originalWorld.getSeed(), chunkPos, 0, proxyLevel, biome -> true);
 
         if (!structureStart.isValid()) {
@@ -977,7 +977,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
         List<ChunkAccess> nativeChunks = chunks instanceof Collection<BlockVector2> chunkCollection ? Lists.newArrayListWithCapacity(chunkCollection.size()) : Lists.newArrayList();
         for (BlockVector2 chunk : chunks) {
-            nativeChunks.add(originalWorld.getChunk(chunk.getBlockX(), chunk.getBlockZ(), ChunkStatus.BIOMES, false));
+            nativeChunks.add(originalWorld.getChunk(chunk.x(), chunk.z(), ChunkStatus.BIOMES, false));
         }
         originalWorld.getChunkSource().chunkMap.resendBiomesForChunks(nativeChunks);
     }

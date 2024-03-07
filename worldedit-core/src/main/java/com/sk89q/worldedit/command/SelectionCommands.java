@@ -290,12 +290,12 @@ public class SelectionCommands {
 
             actor.printInfo(TranslatableComponent.of(
                 "worldedit.chunk.selected-multiple",
-                TextComponent.of(minChunk.getBlockX()),
-                TextComponent.of(minChunk.getBlockY()),
-                TextComponent.of(minChunk.getBlockZ()),
-                TextComponent.of(maxChunk.getBlockX()),
-                TextComponent.of(maxChunk.getBlockY()),
-                TextComponent.of(maxChunk.getBlockZ())
+                TextComponent.of(minChunk.x()),
+                TextComponent.of(minChunk.y()),
+                TextComponent.of(minChunk.z()),
+                TextComponent.of(maxChunk.x()),
+                TextComponent.of(maxChunk.y()),
+                TextComponent.of(maxChunk.z())
             ));
         } else {
             BlockVector3 minChunk;
@@ -317,9 +317,9 @@ public class SelectionCommands {
             max = min.add(15, 255, 15);
 
             actor.printInfo(TranslatableComponent.of("worldedit.chunk.selected",
-                TextComponent.of(minChunk.getBlockX()),
-                TextComponent.of(minChunk.getBlockY()),
-                TextComponent.of(minChunk.getBlockZ())));
+                TextComponent.of(minChunk.x()),
+                TextComponent.of(minChunk.y()),
+                TextComponent.of(minChunk.z())));
         }
 
         final CuboidRegionSelector selector;
@@ -534,9 +534,9 @@ public class SelectionCommands {
         int minY = 0;
         boolean found = false;
 
-        outer: for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
-            for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
-                for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+        outer: for (int y = min.y(); y <= max.y(); y++) {
+            for (int x = min.x(); x <= max.x(); x++) {
+                for (int z = min.z(); z <= max.z(); z++) {
                     BlockVector3 vec = BlockVector3.at(x, y, z);
 
                     if (mask.test(vec)) {
@@ -557,9 +557,9 @@ public class SelectionCommands {
 
         int maxY = minY;
 
-        outer: for (int y = max.getBlockY(); y > minY; y--) {
-            for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
-                for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+        outer: for (int y = max.y(); y > minY; y--) {
+            for (int x = min.x(); x <= max.x(); x++) {
+                for (int z = min.z(); z <= max.z(); z++) {
                     BlockVector3 vec = BlockVector3.at(x, y, z);
 
                     if (mask.test(vec)) {
@@ -572,8 +572,8 @@ public class SelectionCommands {
 
         int minX = 0;
 
-        outer: for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
-            for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+        outer: for (int x = min.x(); x <= max.x(); x++) {
+            for (int z = min.z(); z <= max.z(); z++) {
                 for (int y = minY; y <= maxY; y++) {
                     BlockVector3 vec = BlockVector3.at(x, y, z);
 
@@ -587,8 +587,8 @@ public class SelectionCommands {
 
         int maxX = minX;
 
-        outer: for (int x = max.getBlockX(); x > minX; x--) {
-            for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+        outer: for (int x = max.x(); x > minX; x--) {
+            for (int z = min.z(); z <= max.z(); z++) {
                 for (int y = minY; y <= maxY; y++) {
                     BlockVector3 vec = BlockVector3.at(x, y, z);
 
@@ -602,7 +602,7 @@ public class SelectionCommands {
 
         int minZ = 0;
 
-        outer: for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+        outer: for (int z = min.z(); z <= max.z(); z++) {
             for (int x = minX; x <= maxX; x++) {
                 for (int y = minY; y <= maxY; y++) {
                     BlockVector3 vec = BlockVector3.at(x, y, z);
@@ -617,7 +617,7 @@ public class SelectionCommands {
 
         int maxZ = minZ;
 
-        outer: for (int z = max.getBlockZ(); z > minZ; z--) {
+        outer: for (int z = max.z(); z > minZ; z--) {
             for (int x = minX; x <= maxX; x++) {
                 for (int y = minY; y <= maxY; y++) {
                     BlockVector3 vec = BlockVector3.at(x, y, z);

@@ -40,9 +40,9 @@ public class SelectionEllipsoidPointEvent implements CUIEvent {
     public String[] getParameters() {
         return new String[] {
             String.valueOf(id),
-            String.valueOf(pos.getBlockX()),
-            String.valueOf(pos.getBlockY()),
-            String.valueOf(pos.getBlockZ())
+            String.valueOf(pos.x()),
+            String.valueOf(pos.y()),
+            String.valueOf(pos.z())
         };
     }
 

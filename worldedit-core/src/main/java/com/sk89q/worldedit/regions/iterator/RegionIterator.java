@@ -43,14 +43,14 @@ public class RegionIterator implements Iterator<BlockVector3> {
         this.region = region;
 
         BlockVector3 max = region.getMaximumPoint();
-        this.maxX = max.getBlockX();
-        this.maxY = max.getBlockY();
-        this.maxZ = max.getBlockZ();
+        this.maxX = max.x();
+        this.maxY = max.y();
+        this.maxZ = max.z();
 
         this.min = region.getMinimumPoint();
-        this.nextX = min.getBlockX();
-        this.nextY = min.getBlockY();
-        this.nextZ = min.getBlockZ();
+        this.nextX = min.x();
+        this.nextY = min.y();
+        this.nextZ = min.z();
 
         forward();
     }
@@ -84,12 +84,12 @@ public class RegionIterator implements Iterator<BlockVector3> {
         if (++nextX <= maxX) {
             return;
         }
-        nextX = min.getBlockX();
+        nextX = min.x();
 
         if (++nextY <= maxY) {
             return;
         }
-        nextY = min.getBlockY();
+        nextY = min.y();
 
         if (++nextZ <= maxZ) {
             return;

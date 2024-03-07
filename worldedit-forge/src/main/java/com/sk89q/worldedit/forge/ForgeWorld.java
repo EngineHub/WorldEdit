@@ -223,13 +223,13 @@ public class ForgeWorld extends AbstractWorld {
     public BiomeType getBiome(BlockVector3 position) {
         checkNotNull(position);
 
-        LevelChunk chunk = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4);
+        LevelChunk chunk = getWorld().getChunk(position.x() >> 4, position.z() >> 4);
         return getBiomeInChunk(position, chunk);
     }
 
     private BiomeType getBiomeInChunk(BlockVector3 position, ChunkAccess chunk) {
         return ForgeAdapter.adapt(
-            chunk.getNoiseBiome(position.getX() >> 2, position.getY() >> 2, position.getZ() >> 2).value()
+            chunk.getNoiseBiome(position.x() >> 2, position.y() >> 2, position.z() >> 2).value()
         );
     }
 
@@ -238,13 +238,13 @@ public class ForgeWorld extends AbstractWorld {
         checkNotNull(position);
         checkNotNull(biome);
 
-        LevelChunk chunk = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4);
-        var biomes = (PalettedContainer<Holder<Biome>>) chunk.getSection(chunk.getSectionIndex(position.getY())).getBiomes();
+        LevelChunk chunk = getWorld().getChunk(position.x() >> 4, position.z() >> 4);
+        var biomes = (PalettedContainer<Holder<Biome>>) chunk.getSection(chunk.getSectionIndex(position.y())).getBiomes();
         biomes.getAndSetUnchecked(
-            position.getX() & 3, position.getY() & 3, position.getZ() & 3,
+            position.x() & 3, position.y() & 3, position.z() & 3,
             getWorld().registryAccess().registry(Registries.BIOME)
                 .orElseThrow()
-                .getHolderOrThrow(ResourceKey.create(Registries.BIOME, new ResourceLocation(biome.getId())))
+                .getHolderOrThrow(ResourceKey.create(Registries.BIOME, new ResourceLocation(biome.id())))
         );
         chunk.setUnsaved(true);
         return true;
@@ -264,7 +264,7 @@ public class ForgeWorld extends AbstractWorld {
             return false;
         }
         fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, stack);
-        fakePlayer.absMoveTo(position.getBlockX(), position.getBlockY(), position.getBlockZ(),
+        fakePlayer.absMoveTo(position.x(), position.y(), position.z(),
                 (float) face.toVector().toYaw(), (float) face.toVector().toPitch());
         final BlockPos blockPos = ForgeAdapter.toBlockPos(position);
         final BlockHitResult rayTraceResult = new BlockHitResult(ForgeAdapter.toVec3(position),
@@ -293,7 +293,7 @@ public class ForgeWorld extends AbstractWorld {
             return;
         }
 
-        ItemEntity entity = new ItemEntity(getWorld(), position.getX(), position.getY(), position.getZ(), ForgeAdapter.adapt(item));
+        ItemEntity entity = new ItemEntity(getWorld(), position.x(), position.y(), position.z(), ForgeAdapter.adapt(item));
         entity.setPickUpDelay(10);
         getWorld().addFreshEntity(entity);
     }
@@ -415,7 +415,7 @@ public class ForgeWorld extends AbstractWorld {
         // Pre-gen all the chunks
         for (BlockVector2 chunk : region.getChunks()) {
             chunkLoadings.add(
-                world.getChunkSource().getChunkFutureMainThread(chunk.getX(), chunk.getZ(), ChunkStatus.FEATURES, true)
+                world.getChunkSource().getChunkFutureMainThread(chunk.x(), chunk.z(), ChunkStatus.FEATURES, true)
                     .thenApply(either -> either.left().orElse(null))
             );
         }
@@ -470,7 +470,7 @@ public class ForgeWorld extends AbstractWorld {
 
     public boolean generateFeature(ConfiguredFeatureType type, EditSession editSession, BlockVector3 position) {
         ServerLevel world = getWorld();
-        ConfiguredFeature<?, ?> k = world.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).get(ResourceLocation.tryParse(type.getId()));
+        ConfiguredFeature<?, ?> k = world.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).get(ResourceLocation.tryParse(type.id()));
         ServerChunkCache chunkManager = world.getChunkSource();
         WorldGenLevel levelProxy = ForgeServerLevelDelegateProxy.newInstance(editSession, world);
         return k != null && k.place(levelProxy, chunkManager.getGenerator(), random, ForgeAdapter.toBlockPos(position));
@@ -479,14 +479,14 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public boolean generateStructure(StructureType type, EditSession editSession, BlockVector3 position) {
         ServerLevel world = getWorld();
-        Structure k = world.registryAccess().registryOrThrow(Registries.STRUCTURE).get(ResourceLocation.tryParse(type.getId()));
+        Structure k = world.registryAccess().registryOrThrow(Registries.STRUCTURE).get(ResourceLocation.tryParse(type.id()));
         if (k == null) {
             return false;
         }
 
         ServerChunkCache chunkManager = world.getChunkSource();
         WorldGenLevel proxyLevel = ForgeServerLevelDelegateProxy.newInstance(editSession, world);
-        ChunkPos chunkPos = new ChunkPos(new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ()));
+        ChunkPos chunkPos = new ChunkPos(new BlockPos(position.x(), position.y(), position.z()));
         StructureStart structureStart = k.generate(world.registryAccess(), chunkManager.getGenerator(), chunkManager.getGenerator().getBiomeSource(), chunkManager.randomState(), world.getStructureManager(), world.getSeed(), chunkPos, 0, proxyLevel, biome -> true);
 
         if (!structureStart.isValid()) {
@@ -514,7 +514,7 @@ public class ForgeWorld extends AbstractWorld {
     public void sendBiomeUpdates(Iterable<BlockVector2> chunks) {
         List<ChunkAccess> nativeChunks = chunks instanceof Collection<BlockVector2> chunkCollection ? Lists.newArrayListWithCapacity(chunkCollection.size()) : Lists.newArrayList();
         for (BlockVector2 chunk : chunks) {
-            nativeChunks.add(getWorld().getChunk(chunk.getBlockX(), chunk.getBlockZ(), ChunkStatus.BIOMES, false));
+            nativeChunks.add(getWorld().getChunk(chunk.x(), chunk.z(), ChunkStatus.BIOMES, false));
         }
         ((ServerLevel) getWorld()).getChunkSource().chunkMap.resendBiomesForChunks(nativeChunks);
     }
@@ -526,7 +526,7 @@ public class ForgeWorld extends AbstractWorld {
             // Fetch the chunk after light initialization at least
             // We'll be doing a full relight anyways, so we don't need to be LIGHT yet
             world.getChunkSource().getLightEngine().lightChunk(world.getChunk(
-                chunk.getBlockX(), chunk.getBlockZ(), ChunkStatus.INITIALIZE_LIGHT
+                chunk.x(), chunk.z(), ChunkStatus.INITIALIZE_LIGHT
             ), false);
         }
     }
@@ -608,7 +608,7 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public BlockState getBlock(BlockVector3 position) {
         net.minecraft.world.level.block.state.BlockState mcState = getWorld()
-                .getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4)
+                .getChunk(position.x() >> 4, position.z() >> 4)
                 .getBlockState(ForgeAdapter.toBlockPos(position));
 
         return ForgeAdapter.adapt(mcState);
@@ -616,7 +616,7 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public BaseBlock getFullBlock(BlockVector3 position) {
-        BlockPos pos = new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+        BlockPos pos = new BlockPos(position.x(), position.y(), position.z());
         BlockEntity tile = getWorld().getChunk(pos).getBlockEntity(pos);
 
         if (tile != null) {
@@ -676,7 +676,7 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public Entity createEntity(Location location, BaseEntity entity) {
         ServerLevel world = getWorld();
-        String entityId = entity.getType().getId();
+        String entityId = entity.getType().id();
         final Optional<EntityType<?>> entityType = EntityType.byString(entityId);
         if (entityType.isEmpty()) {
             return null;

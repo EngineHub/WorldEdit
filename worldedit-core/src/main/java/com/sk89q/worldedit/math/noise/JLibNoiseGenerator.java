@@ -47,12 +47,12 @@ abstract class JLibNoiseGenerator<V extends Module> implements NoiseGenerator {
 
     @Override
     public float noise(Vector2 position) {
-        return forceRange(module.GetValue(position.getX(), 0, position.getZ()));
+        return forceRange(module.GetValue(position.x(), 0, position.z()));
     }
 
     @Override
     public float noise(Vector3 position) {
-        return forceRange(module.GetValue(position.getX(), position.getY(), position.getZ()));
+        return forceRange(module.GetValue(position.x(), position.y(), position.z()));
     }
 
     private float forceRange(double value) {

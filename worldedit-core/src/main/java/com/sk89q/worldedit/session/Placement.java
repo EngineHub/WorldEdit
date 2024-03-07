@@ -42,9 +42,9 @@ public record Placement(PlacementType placementType, BlockVector3 offset) {
         } else {
             return TranslatableComponent.of(
                     placementType.getTranslationKeyWithOffset(),
-                    TextComponent.of(offset.getX()),
-                    TextComponent.of(offset.getY()),
-                    TextComponent.of(offset.getZ())
+                    TextComponent.of(offset.x()),
+                    TextComponent.of(offset.y()),
+                    TextComponent.of(offset.z())
             );
         }
     }

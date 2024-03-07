@@ -213,11 +213,11 @@ public record AffineTransform(
     }
 
     public AffineTransform translate(Vector3 vec) {
-        return translate(vec.getX(), vec.getY(), vec.getZ());
+        return translate(vec.x(), vec.y(), vec.z());
     }
 
     public AffineTransform translate(BlockVector3 vec) {
-        return translate(vec.getX(), vec.getY(), vec.getZ());
+        return translate(vec.x(), vec.y(), vec.z());
     }
 
     public AffineTransform translate(double x, double y, double z) {
@@ -263,15 +263,15 @@ public record AffineTransform(
     }
 
     public AffineTransform scale(Vector3 vec) {
-        return scale(vec.getX(), vec.getY(), vec.getZ());
+        return scale(vec.x(), vec.y(), vec.z());
     }
 
     @Override
     public Vector3 apply(Vector3 vector) {
         return Vector3.at(
-                vector.getX() * m00 + vector.getY() * m01 + vector.getZ() * m02 + m03,
-                vector.getX() * m10 + vector.getY() * m11 + vector.getZ() * m12 + m13,
-                vector.getX() * m20 + vector.getY() * m21 + vector.getZ() * m22 + m23);
+                vector.x() * m00 + vector.y() * m01 + vector.z() * m02 + m03,
+                vector.x() * m10 + vector.y() * m11 + vector.z() * m12 + m13,
+                vector.x() * m20 + vector.y() * m21 + vector.z() * m22 + m23);
     }
 
     public AffineTransform combine(AffineTransform other) {

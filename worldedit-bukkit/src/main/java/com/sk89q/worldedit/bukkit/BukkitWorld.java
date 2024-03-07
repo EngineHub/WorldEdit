@@ -141,7 +141,7 @@ public class BukkitWorld extends AbstractWorld {
                     return null;
                 }
             } catch (Exception e) {
-                LOGGER.warn("Corrupt entity found when creating: " + entity.getType().getId(), e);
+                LOGGER.warn("Corrupt entity found when creating: " + entity.getType().id(), e);
                 if (entity.getNbt() != null) {
                     LOGGER.warn(entity.getNbt().toString());
                 }
@@ -183,7 +183,7 @@ public class BukkitWorld extends AbstractWorld {
 
     @Override
     public int getBlockLightLevel(BlockVector3 pt) {
-        return getWorld().getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getLightLevel();
+        return getWorld().getBlockAt(pt.x(), pt.y(), pt.z()).getLightLevel();
     }
 
     @Override
@@ -217,7 +217,7 @@ public class BukkitWorld extends AbstractWorld {
             return false;
         }
 
-        Block block = getWorld().getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
+        Block block = getWorld().getBlockAt(pt.x(), pt.y(), pt.z());
         BlockState state = PaperLib.getBlockState(block, false).getState();
         if (!(state instanceof InventoryHolder inventoryHolder)) {
             return false;
@@ -286,7 +286,7 @@ public class BukkitWorld extends AbstractWorld {
     public void checkLoadedChunk(BlockVector3 pt) {
         World world = getWorld();
 
-        world.getChunkAt(pt.getBlockX() >> 4, pt.getBlockZ() >> 4);
+        world.getChunkAt(pt.x() >> 4, pt.z() >> 4);
     }
 
     @Override
@@ -325,7 +325,7 @@ public class BukkitWorld extends AbstractWorld {
     public void fixAfterFastMode(Iterable<BlockVector2> chunks) {
         World world = getWorld();
         for (BlockVector2 chunkPos : chunks) {
-            world.refreshChunk(chunkPos.getBlockX(), chunkPos.getBlockZ());
+            world.refreshChunk(chunkPos.x(), chunkPos.z());
         }
     }
 
@@ -403,7 +403,7 @@ public class BukkitWorld extends AbstractWorld {
 
     @Override
     public void simulateBlockMine(BlockVector3 pt) {
-        getWorld().getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).breakNaturally();
+        getWorld().getBlockAt(pt.x(), pt.y(), pt.z()).breakNaturally();
     }
 
     @Override
@@ -452,7 +452,7 @@ public class BukkitWorld extends AbstractWorld {
             }
         }
         if (WorldEditPlugin.getInstance().getLocalConfiguration().unsupportedVersionEditing) {
-            Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+            Block bukkitBlock = getWorld().getBlockAt(position.x(), position.y(), position.z());
             return BukkitAdapter.adapt(bukkitBlock.getBlockData());
         } else {
             throw new RuntimeException(new UnsupportedVersionEditException());
@@ -475,7 +475,7 @@ public class BukkitWorld extends AbstractWorld {
             }
         }
         if (WorldEditPlugin.getInstance().getLocalConfiguration().unsupportedVersionEditing) {
-            Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+            Block bukkitBlock = getWorld().getBlockAt(position.x(), position.y(), position.z());
             bukkitBlock.setBlockData(BukkitAdapter.adapt(block), sideEffects.doesApplyAny());
             return true;
         } else {
@@ -529,7 +529,7 @@ public class BukkitWorld extends AbstractWorld {
         if (adapter != null && adapter.hasCustomBiomeSupport()) {
             return adapter.getBiome(BukkitAdapter.adapt(getWorld(), position));
         } else {
-            return BukkitAdapter.adapt(getWorld().getBiome(position.getBlockX(), position.getBlockY(), position.getBlockZ()));
+            return BukkitAdapter.adapt(getWorld().getBiome(position.x(), position.y(), position.z()));
         }
     }
 
@@ -539,7 +539,7 @@ public class BukkitWorld extends AbstractWorld {
         if (adapter != null && adapter.hasCustomBiomeSupport()) {
             adapter.setBiome(BukkitAdapter.adapt(getWorld(), position), biome);
         } else {
-            getWorld().setBiome(position.getBlockX(), position.getBlockY(), position.getBlockZ(), BukkitAdapter.adapt(biome));
+            getWorld().setBiome(position.x(), position.y(), position.z(), BukkitAdapter.adapt(biome));
         }
         return true;
     }

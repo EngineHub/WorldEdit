@@ -57,8 +57,8 @@ class RegionAccess implements AutoCloseable {
     }
 
     private static int indexChunk(BlockVector2 pos) {
-        int x = pos.getBlockX() & 31;
-        int z = pos.getBlockZ() & 31;
+        int x = pos.x() & 31;
+        int z = pos.z() & 31;
         return x + z * 32;
     }
 

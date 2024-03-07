@@ -1046,8 +1046,8 @@ public class EditSession implements Extent, AutoCloseable {
 
         // Avoid int overflow (negative coordinate space allows for overflow back round to positive if the depth is large enough).
         // Depth is always 1 or greater, thus the lower bound should always be <= origin y.
-        int lowerBound = origin.getBlockY() - depth + 1;
-        if (lowerBound > origin.getBlockY()) {
+        int lowerBound = origin.y() - depth + 1;
+        if (lowerBound > origin.y()) {
             lowerBound = Integer.MIN_VALUE;
         }
 
@@ -1055,7 +1055,7 @@ public class EditSession implements Extent, AutoCloseable {
                 new RegionMask(new EllipsoidRegion(null, origin, Vector3.at(radius, radius, radius))),
                 new BoundedHeightMask(
                         Math.max(lowerBound, getWorld().getMinY()),
-                        Math.min(getWorld().getMaxY(), origin.getBlockY())),
+                        Math.min(getWorld().getMaxY(), origin.y())),
                 Masks.negate(new ExistingBlockMask(this)));
 
         // Want to replace blocks
@@ -1066,7 +1066,7 @@ public class EditSession implements Extent, AutoCloseable {
         if (recursive) {
             visitor = new RecursiveVisitor(mask, replace);
         } else {
-            visitor = new DownwardVisitor(mask, replace, origin.getBlockY());
+            visitor = new DownwardVisitor(mask, replace, origin.y());
         }
 
         // Start at the origin
@@ -1239,11 +1239,11 @@ public class EditSession implements Extent, AutoCloseable {
         Vector3 center = region.getCenter();
         Region centerRegion = new CuboidRegion(
                 getWorld(), // Causes clamping of Y range
-                BlockVector3.at(((int) center.getX()), ((int) center.getY()), ((int) center.getZ())),
+                BlockVector3.at(((int) center.x()), ((int) center.y()), ((int) center.z())),
                 BlockVector3.at(
-                        MathUtils.roundHalfUp(center.getX()),
-                        MathUtils.roundHalfUp(center.getY()),
-                        MathUtils.roundHalfUp(center.getZ())));
+                        MathUtils.roundHalfUp(center.x()),
+                        MathUtils.roundHalfUp(center.y()),
+                        MathUtils.roundHalfUp(center.z())));
         return setBlocks(centerRegion, pattern);
     }
 
@@ -1348,8 +1348,8 @@ public class EditSession implements Extent, AutoCloseable {
         if (region instanceof CuboidRegion) {
             return makeCuboidWalls(region, pattern);
         } else {
-            final int minY = region.getMinimumPoint().getBlockY();
-            final int maxY = region.getMaximumPoint().getBlockY();
+            final int minY = region.getMinimumPoint().y();
+            final int maxY = region.getMaximumPoint().y();
             final ArbitraryShape shape = new RegionShape(region) {
                 @Override
                 protected BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial) {
@@ -1483,7 +1483,7 @@ public class EditSession implements Extent, AutoCloseable {
 
         BlockVector3 size = region.getMaximumPoint().subtract(region.getMinimumPoint()).add(1, 1, 1);
         BlockVector3 offsetAbs = offset.abs();
-        if (offsetAbs.getX() < size.getX() && offsetAbs.getY() < size.getY() && offsetAbs.getZ() < size.getZ()) {
+        if (offsetAbs.x() < size.x() && offsetAbs.y() < size.y() && offsetAbs.z() < size.z()) {
             throw new RegionOperationException(TranslatableComponent.of("worldedit.stack.intersecting-region"));
         }
         BlockVector3 to = region.getMinimumPoint();
@@ -1667,7 +1667,7 @@ public class EditSession implements Extent, AutoCloseable {
 
         // There are boundaries that the routine needs to stay in
         MaskIntersection mask = new MaskIntersection(
-                new BoundedHeightMask(getWorld().getMinY(), Math.min(origin.getBlockY(), getWorld().getMaxY())),
+                new BoundedHeightMask(getWorld().getMinY(), Math.min(origin.y(), getWorld().getMaxY())),
                 new RegionMask(new EllipsoidRegion(null, origin, Vector3.at(radius, radius, radius))),
                 blockMask
         );
@@ -1727,10 +1727,10 @@ public class EditSession implements Extent, AutoCloseable {
             pos = pos.subtract(0, height, 0);
         }
 
-        if (pos.getBlockY() < world.getMinY()) {
+        if (pos.y() < world.getMinY()) {
             pos = pos.withY(world.getMinY());
-        } else if (pos.getBlockY() + height - 1 > world.getMaxY()) {
-            height = world.getMaxY() - pos.getBlockY() + 1;
+        } else if (pos.y() + height - 1 > world.getMaxY()) {
+            height = world.getMaxY() - pos.y() + 1;
         }
 
         final double invRadiusX = 1 / radiusX;
@@ -2030,9 +2030,9 @@ public class EditSession implements Extent, AutoCloseable {
         int affected = 0;
         double radiusSq = radius * radius;
 
-        int ox = position.getBlockX();
-        int oy = position.getBlockY();
-        int oz = position.getBlockZ();
+        int ox = position.x();
+        int oy = position.y();
+        int oz = position.z();
 
         BlockState air = BlockTypes.AIR.getDefaultState();
         BlockState water = BlockTypes.WATER.getDefaultState();
@@ -2099,7 +2099,7 @@ public class EditSession implements Extent, AutoCloseable {
     public int simulateSnow(BlockVector3 position, double radius, int height)
         throws MaxChangedBlocksException {
 
-        return simulateSnow(new CylinderRegion(position, Vector2.at(radius, radius), position.getBlockY(), height), false);
+        return simulateSnow(new CylinderRegion(position, Vector2.at(radius, radius), position.y(), height), false);
     }
 
 
@@ -2153,9 +2153,9 @@ public class EditSession implements Extent, AutoCloseable {
         int affected = 0;
         final double radiusSq = radius * radius;
 
-        final int ox = position.getBlockX();
-        final int oy = position.getBlockY();
-        final int oz = position.getBlockZ();
+        final int ox = position.x();
+        final int oy = position.y();
+        final int oz = position.z();
 
         final BlockState grass = BlockTypes.GRASS_BLOCK.getDefaultState();
 
@@ -2349,7 +2349,7 @@ public class EditSession implements Extent, AutoCloseable {
                             dataVar = legacy[1];
                         }
                     }
-                    if (expression.evaluate(new double[]{scaled.getX(), scaled.getY(), scaled.getZ(), typeVar, dataVar}, timeout) <= 0) {
+                    if (expression.evaluate(new double[]{ scaled.x(), scaled.y(), scaled.z(), typeVar, dataVar}, timeout) <= 0) {
                         return null;
                     }
                     int newType = (int) typeVariable.value();
@@ -2448,7 +2448,7 @@ public class EditSession implements Extent, AutoCloseable {
             final Vector3 scaled = position.toVector3().subtract(zero).divide(unit);
 
             // transform
-            expression.evaluate(new double[]{scaled.getX(), scaled.getY(), scaled.getZ()}, timeout);
+            expression.evaluate(new double[]{ scaled.x(), scaled.y(), scaled.z() }, timeout);
 
             final BlockVector3 sourcePosition = environment.toWorld(x.value(), y.value(), z.value());
 
@@ -2491,12 +2491,12 @@ public class EditSession implements Extent, AutoCloseable {
         final BlockVector3 min = region.getMinimumPoint();
         final BlockVector3 max = region.getMaximumPoint();
 
-        final int minX = min.getBlockX();
-        final int minY = min.getBlockY();
-        final int minZ = min.getBlockZ();
-        final int maxX = max.getBlockX();
-        final int maxY = max.getBlockY();
-        final int maxZ = max.getBlockZ();
+        final int minX = min.x();
+        final int minY = min.y();
+        final int minZ = min.z();
+        final int maxX = max.x();
+        final int maxY = max.y();
+        final int maxZ = max.z();
 
         for (int x = minX; x <= maxX; ++x) {
             for (int y = minY; y <= maxY; ++y) {
@@ -2592,12 +2592,12 @@ public class EditSession implements Extent, AutoCloseable {
             BlockVector3 pos1 = vectors.get(i);
             BlockVector3 pos2 = vectors.get(i + 1);
 
-            int x1 = pos1.getBlockX();
-            int y1 = pos1.getBlockY();
-            int z1 = pos1.getBlockZ();
-            int x2 = pos2.getBlockX();
-            int y2 = pos2.getBlockY();
-            int z2 = pos2.getBlockZ();
+            int x1 = pos1.x();
+            int y1 = pos1.y();
+            int z1 = pos1.z();
+            int x2 = pos2.x();
+            int y2 = pos2.y();
+            int z2 = pos2.z();
             int tipx = x1;
             int tipy = y1;
             int tipz = z1;
@@ -2698,9 +2698,9 @@ public class EditSession implements Extent, AutoCloseable {
         double radiusSquare = Math.pow(radius, 2);
 
         for (BlockVector3 v : vset) {
-            int tipx = v.getBlockX();
-            int tipy = v.getBlockY();
-            int tipz = v.getBlockZ();
+            int tipx = v.x();
+            int tipy = v.y();
+            int tipz = v.z();
 
             for (int loopx = tipx - ceilrad; loopx <= tipx + ceilrad; loopx++) {
                 for (int loopy = tipy - ceilrad; loopy <= tipy + ceilrad; loopy++) {
@@ -2718,9 +2718,9 @@ public class EditSession implements Extent, AutoCloseable {
     private static Set<BlockVector3> getHollowed(Set<BlockVector3> vset) {
         Set<BlockVector3> returnset = new HashSet<>();
         for (BlockVector3 v : vset) {
-            double x = v.getX();
-            double y = v.getY();
-            double z = v.getZ();
+            double x = v.x();
+            double y = v.y();
+            double z = v.z();
             if (!(vset.contains(BlockVector3.at(x + 1, y, z))
                 && vset.contains(BlockVector3.at(x - 1, y, z))
                 && vset.contains(BlockVector3.at(x, y + 1, z))
@@ -2782,7 +2782,7 @@ public class EditSession implements Extent, AutoCloseable {
                 final Vector3 scaled = current.subtract(zero).divide(unit);
 
                 try {
-                    if (expression.evaluate(new double[]{scaled.getX(), scaled.getY(), scaled.getZ()}, timeout) <= 0) {
+                    if (expression.evaluate(new double[]{ scaled.x(), scaled.y(), scaled.z() }, timeout) <= 0) {
                         return null;
                     }
 
@@ -2858,7 +2858,7 @@ public class EditSession implements Extent, AutoCloseable {
                         highestFreq = 0;
                         highestState = blockState;
                         for (BlockVector3 vec3 : recurseDirections) {
-                            BlockState adj = currentBuffer[x + 1 + vec3.getX()][y + 1 + vec3.getY()][z + 1 + vec3.getZ()];
+                            BlockState adj = currentBuffer[x + 1 + vec3.x()][y + 1 + vec3.y()][z + 1 + vec3.z()];
 
                             if (!adj.getBlockType().getMaterial().isLiquid() && !adj.getBlockType().getMaterial().isAir()) {
                                 continue;
@@ -2911,7 +2911,7 @@ public class EditSession implements Extent, AutoCloseable {
                         highestFreq = 0;
                         highestState = blockState;
                         for (BlockVector3 vec3 : recurseDirections) {
-                            BlockState adj = currentBuffer[x + 1 + vec3.getX()][y + 1 + vec3.getY()][z + 1 + vec3.getZ()];
+                            BlockState adj = currentBuffer[x + 1 + vec3.x()][y + 1 + vec3.y()][z + 1 + vec3.z()];
                             if (adj.getBlockType().getMaterial().isLiquid() || adj.getBlockType().getMaterial().isAir()) {
                                 continue;
                             }
