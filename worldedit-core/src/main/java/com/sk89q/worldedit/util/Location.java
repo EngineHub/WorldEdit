@@ -321,7 +321,7 @@ public class Location {
      * @return the rounded Z component
      */
     public int getBlockZ() {
-        return position.blockY();
+        return position.blockZ();
     }
 
     /**
