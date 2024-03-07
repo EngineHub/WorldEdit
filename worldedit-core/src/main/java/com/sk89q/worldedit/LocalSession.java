@@ -582,7 +582,7 @@ public class LocalSession {
      * @param placement the placement.
      */
     public void setPlacement(Placement placement) {
-        if (placement.getPlacementType() == PlacementType.HERE) {
+        if (placement.placementType() == PlacementType.HERE) {
             throw new IllegalStateException("PlacementType.HERE cannot be used. Use PLAYER or WORLD instead.");
         }
 
@@ -610,7 +610,7 @@ public class LocalSession {
      */
     @Deprecated
     public boolean isPlaceAtPos1() {
-        return this.placement.getPlacementType() == PlacementType.POS1;
+        return this.placement.placementType() == PlacementType.POS1;
     }
 
     /**
@@ -623,12 +623,12 @@ public class LocalSession {
      */
     @Deprecated
     public boolean togglePlacementPosition() {
-        if (this.placement.getPlacementType() == PlacementType.POS1) {
+        if (this.placement.placementType() == PlacementType.POS1) {
             this.placement = new Placement(PlacementType.PLAYER, BlockVector3.ZERO);
         } else {
             this.placement = new Placement(PlacementType.POS1, BlockVector3.ZERO);
         }
-        return this.placement.getPlacementType() == PlacementType.POS1;
+        return this.placement.placementType() == PlacementType.POS1;
     }
 
     /**

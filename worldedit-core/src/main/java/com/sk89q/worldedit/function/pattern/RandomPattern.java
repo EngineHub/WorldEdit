@@ -58,31 +58,16 @@ public class RandomPattern extends AbstractPattern {
         double offset = 0;
 
         for (Chance chance : patterns) {
-            if (r <= (offset + chance.getChance()) / max) {
-                return chance.getPattern().applyBlock(position);
+            if (r <= (offset + chance.chance()) / max) {
+                return chance.pattern().applyBlock(position);
             }
-            offset += chance.getChance();
+            offset += chance.chance();
         }
 
         throw new RuntimeException("ProportionalFillPattern");
     }
 
-    private static class Chance {
-        private final Pattern pattern;
-        private final double chance;
-
-        private Chance(Pattern pattern, double chance) {
-            this.pattern = pattern;
-            this.chance = chance;
-        }
-
-        public Pattern getPattern() {
-            return pattern;
-        }
-
-        public double getChance() {
-            return chance;
-        }
+    private record Chance(Pattern pattern, double chance) {
     }
 
 }

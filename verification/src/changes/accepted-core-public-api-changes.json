@@ -136,6 +136,27 @@
             "changes": [
                 "METHOD_NEW_DEFAULT"
             ]
+        },
+        {
+            "type": "com.sk89q.worldedit.registry.Keyed",
+            "member": "Method com.sk89q.worldedit.registry.Keyed.id()",
+            "changes": [
+                "METHOD_NEW_DEFAULT"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.registry.ItemMaterial",
+            "member": "Method com.sk89q.worldedit.world.registry.ItemMaterial.maxDamage()",
+            "changes": [
+                "METHOD_NEW_DEFAULT"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.registry.ItemMaterial",
+            "member": "Method com.sk89q.worldedit.world.registry.ItemMaterial.maxStackSize()",
+            "changes": [
+                "METHOD_NEW_DEFAULT"
+            ]
         }
     ],
     "LazyReference was never publicly extensible": [
@@ -224,6 +245,132 @@
             "member": "Class com.sk89q.worldedit.math.transform.AffineTransform",
             "changes": [
                 "CLASS_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.history.change.BiomeChange3D",
+            "member": "Class com.sk89q.worldedit.history.change.BiomeChange3D",
+            "changes": [
+                "CLASS_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.history.change.BlockChange",
+            "member": "Class com.sk89q.worldedit.history.change.BlockChange",
+            "changes": [
+                "CLASS_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.biome.BiomeType",
+            "member": "Class com.sk89q.worldedit.world.biome.BiomeType",
+            "changes": [
+                "CLASS_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.biome.BiomeType",
+            "member": "Method com.sk89q.worldedit.world.biome.BiomeType.equals(java.lang.Object)",
+            "changes": [
+                "METHOD_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.biome.BiomeType",
+            "member": "Method com.sk89q.worldedit.world.biome.BiomeType.hashCode()",
+            "changes": [
+                "METHOD_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.entity.EntityType",
+            "member": "Class com.sk89q.worldedit.world.entity.EntityType",
+            "changes": [
+                "CLASS_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.entity.EntityType",
+            "member": "Method com.sk89q.worldedit.world.entity.EntityType.equals(java.lang.Object)",
+            "changes": [
+                "METHOD_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.entity.EntityType",
+            "member": "Method com.sk89q.worldedit.world.entity.EntityType.hashCode()",
+            "changes": [
+                "METHOD_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.fluid.FluidType",
+            "member": "Class com.sk89q.worldedit.world.fluid.FluidType",
+            "changes": [
+                "CLASS_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.fluid.FluidType",
+            "member": "Method com.sk89q.worldedit.world.fluid.FluidType.equals(java.lang.Object)",
+            "changes": [
+                "METHOD_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.fluid.FluidType",
+            "member": "Method com.sk89q.worldedit.world.fluid.FluidType.hashCode()",
+            "changes": [
+                "METHOD_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.gamemode.GameMode",
+            "member": "Class com.sk89q.worldedit.world.gamemode.GameMode",
+            "changes": [
+                "CLASS_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.gamemode.GameMode",
+            "member": "Method com.sk89q.worldedit.world.gamemode.GameMode.equals(java.lang.Object)",
+            "changes": [
+                "METHOD_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.gamemode.GameMode",
+            "member": "Method com.sk89q.worldedit.world.gamemode.GameMode.hashCode()",
+            "changes": [
+                "METHOD_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.registry.SimpleItemMaterial",
+            "member": "Class com.sk89q.worldedit.world.registry.SimpleItemMaterial",
+            "changes": [
+                "CLASS_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.weather.WeatherType",
+            "member": "Class com.sk89q.worldedit.world.weather.WeatherType",
+            "changes": [
+                "CLASS_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.weather.WeatherType",
+            "member": "Method com.sk89q.worldedit.world.weather.WeatherType.equals(java.lang.Object)",
+            "changes": [
+                "METHOD_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.weather.WeatherType",
+            "member": "Method com.sk89q.worldedit.world.weather.WeatherType.hashCode()",
+            "changes": [
+                "METHOD_NOW_FINAL"
             ]
         }
     ]

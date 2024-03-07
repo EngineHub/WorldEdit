@@ -22,19 +22,8 @@ package com.sk89q.worldedit.world.generation;
 import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
 
-public class StructureType implements Keyed {
+public record StructureType(String id) implements Keyed {
     public static final NamespacedRegistry<StructureType> REGISTRY = new NamespacedRegistry<>("structure type");
-
-    private final String id;
-
-    public StructureType(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return this.id;
-    }
 
     @Override
     public String toString() {

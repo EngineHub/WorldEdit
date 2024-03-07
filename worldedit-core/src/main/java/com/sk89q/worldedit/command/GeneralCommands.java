@@ -442,7 +442,7 @@ public class GeneralCommands {
         desc = "Switch between your position and pos1 for placement"
     )
     public void togglePlace(Actor actor, LocalSession session) {
-        if (session.getPlacement().getPlacementType() == PlacementType.POS1) {
+        if (session.getPlacement().placementType() == PlacementType.POS1) {
             placementImpl(actor, session, new Placement(PlacementType.PLAYER, BlockVector3.ZERO));
         } else {
             placementImpl(actor, session, new Placement(PlacementType.POS1, BlockVector3.ZERO));

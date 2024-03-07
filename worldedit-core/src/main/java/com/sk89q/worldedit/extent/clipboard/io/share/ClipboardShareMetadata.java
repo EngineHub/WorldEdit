@@ -23,27 +23,10 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 
 /**
  * Items of metadata about shared clipboards.
+ *
+ * @param format the format of the clipboard
+ * @param name the name of the clipboard
+ * @param author the author of the clipboard
  */
-public class ClipboardShareMetadata {
-    private final ClipboardFormat format;
-    private final String name;
-    private final String author;
-
-    public ClipboardShareMetadata(ClipboardFormat format, String name, String author) {
-        this.format = format;
-        this.name = name;
-        this.author = author;
-    }
-
-    public ClipboardFormat format() {
-        return this.format;
-    }
-
-    public String name() {
-        return this.name;
-    }
-
-    public String author() {
-        return this.author;
-    }
+public record ClipboardShareMetadata(ClipboardFormat format, String name, String author) {
 }

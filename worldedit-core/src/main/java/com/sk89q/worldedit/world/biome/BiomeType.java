@@ -26,40 +26,16 @@ import com.sk89q.worldedit.registry.NamespacedRegistry;
 
 /**
  * All the types of biomes in the game.
+ *
+ * @param id the id of the biome
  */
-public class BiomeType implements Keyed, BiomePattern {
+public record BiomeType(String id) implements Keyed, BiomePattern {
 
     public static final NamespacedRegistry<BiomeType> REGISTRY = new NamespacedRegistry<>("biome type", true);
 
-    private final String id;
-
-    public BiomeType(String id) {
-        this.id = id;
-    }
-
-    /**
-     * Gets the ID of this biome.
-     *
-     * @return The id
-     */
-    @Override
-    public String getId() {
-        return this.id;
-    }
-
     @Override
     public String toString() {
-        return getId();
-    }
-
-    @Override
-    public int hashCode() {
-        return this.id.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof BiomeType && this.id.equals(((BiomeType) obj).id);
+        return id();
     }
 
     @Override

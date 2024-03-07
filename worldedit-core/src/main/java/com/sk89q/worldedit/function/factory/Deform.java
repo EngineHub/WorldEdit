@@ -156,24 +156,14 @@ public class Deform implements Contextual<Operation> {
                 session == null ? WorldEdit.getInstance().getConfiguration().calculationTimeout : session.getTimeout());
     }
 
-    private static final class DeformOperation implements Operation {
-        private final Extent destination;
-        private final Region region;
-        private final Vector3 zero;
-        private final Vector3 unit;
-        private final Expression expression;
-        private final int timeout;
-
-        private DeformOperation(Extent destination, Region region, Vector3 zero, Vector3 unit, Expression expression,
-                                int timeout) {
-            this.destination = destination;
-            this.region = region;
-            this.zero = zero;
-            this.unit = unit;
-            this.expression = expression;
-            this.timeout = timeout;
-        }
-
+    private record DeformOperation(
+        Extent destination,
+        Region region,
+        Vector3 zero,
+        Vector3 unit,
+        Expression expression,
+        int timeout
+    ) implements Operation {
         @Override
         public Operation resume(RunContext run) throws WorldEditException {
             try {
