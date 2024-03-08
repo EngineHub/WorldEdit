@@ -22,19 +22,8 @@ package com.sk89q.worldedit.world.generation;
 import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
 
-public class ConfiguredFeatureType implements Keyed  {
+public record ConfiguredFeatureType(String id) implements Keyed {
     public static final NamespacedRegistry<ConfiguredFeatureType> REGISTRY = new NamespacedRegistry<>("configured feature type");
-
-    private final String id;
-
-    public ConfiguredFeatureType(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return this.id;
-    }
 
     @Override
     public String toString() {

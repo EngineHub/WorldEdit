@@ -29,7 +29,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 /**
  * An immutable 3-dimensional vector.
  */
-public final class Vector3 {
+public record Vector3(double x, double y, double z) {
 
     public static final Vector3 ZERO = new Vector3(0, 0, 0);
     public static final Vector3 UNIT_X = new Vector3(1, 0, 0);
@@ -80,28 +80,22 @@ public final class Vector3 {
         return YzxOrderComparator.YZX_ORDER;
     }
 
-    private final double x;
-    private final double y;
-    private final double z;
-
     /**
-     * Construct an instance.
+     * Get the X coordinate, aligned to the block grid.
      *
-     * @param x the X coordinate
-     * @param y the Y coordinate
-     * @param z the Z coordinate
+     * @return the block-aligned x coordinate
      */
-    private Vector3(double x, double y, double z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    public int blockX() {
+        return (int) Math.floor(x);
     }
 
     /**
      * Get the X coordinate.
      *
      * @return the x coordinate
+     * @deprecated use {@link #x()} instead
      */
+    @Deprecated(forRemoval = true)
     public double getX() {
         return x;
     }
@@ -117,10 +111,21 @@ public final class Vector3 {
     }
 
     /**
+     * Get the Y coordinate, aligned to the block grid.
+     *
+     * @return the block-aligned y coordinate
+     */
+    public int blockY() {
+        return (int) Math.floor(y);
+    }
+
+    /**
      * Get the Y coordinate.
      *
      * @return the y coordinate
+     * @deprecated use {@link #y()} instead
      */
+    @Deprecated(forRemoval = true)
     public double getY() {
         return y;
     }
@@ -136,10 +141,21 @@ public final class Vector3 {
     }
 
     /**
+     * Get the Z coordinate, aligned to the block grid.
+     *
+     * @return the block-aligned z coordinate
+     */
+    public int blockZ() {
+        return (int) Math.floor(z);
+    }
+
+    /**
      * Get the Z coordinate.
      *
      * @return the z coordinate
+     * @deprecated use {@link #z()} instead
      */
+    @Deprecated(forRemoval = true)
     public double getZ() {
         return z;
     }
@@ -586,24 +602,6 @@ public final class Vector3 {
      */
     public Vector2 toVector2() {
         return Vector2.at(x, z);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof Vector3 other)) {
-            return false;
-        }
-
-        return other.x == this.x && other.y == this.y && other.z == this.z;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 17;
-        hash = 31 * hash + Double.hashCode(x);
-        hash = 31 * hash + Double.hashCode(y);
-        hash = 31 * hash + Double.hashCode(z);
-        return hash;
     }
 
     @Override

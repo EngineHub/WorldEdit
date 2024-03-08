@@ -27,24 +27,7 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 
-public class Placement {
-    private final PlacementType placementType;
-
-    private final BlockVector3 offset;
-
-    public Placement(PlacementType placementType, BlockVector3 offset) {
-        this.placementType = placementType;
-        this.offset = offset;
-    }
-
-    public PlacementType getPlacementType() {
-        return placementType;
-    }
-
-    public BlockVector3 getOffset() {
-        return offset;
-    }
-
+public record Placement(PlacementType placementType, BlockVector3 offset) {
     public BlockVector3 getPlacementPosition(RegionSelector selector, Actor actor) throws IncompleteRegionException {
         return placementType.getPlacementPosition(selector, actor).add(offset);
     }

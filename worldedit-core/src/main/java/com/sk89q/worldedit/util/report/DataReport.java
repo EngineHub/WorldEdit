@@ -168,14 +168,7 @@ public class DataReport implements Report {
         }
     }
 
-    private static class Line {
-        private final String key;
-        private final String value;
-
-        public Line(String key, String value) {
-            this.key = key;
-            this.value = value;
-        }
+    private record Line(String key, String value) {
     }
 
 }

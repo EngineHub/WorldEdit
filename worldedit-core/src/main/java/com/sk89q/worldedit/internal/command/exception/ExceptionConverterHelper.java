@@ -88,15 +88,10 @@ public abstract class ExceptionConverterHelper implements ExceptionConverter {
         }
     }
 
-    private static class ExceptionHandler implements Comparable<ExceptionHandler> {
-        final Class<? extends Throwable> cls;
-        final Method method;
-
-        private ExceptionHandler(Class<? extends Throwable> cls, Method method) {
-            this.cls = cls;
-            this.method = method;
-        }
-
+    private record ExceptionHandler(
+        Class<? extends Throwable> cls,
+        Method method
+    ) implements Comparable<ExceptionHandler> {
         @Override
         public int compareTo(ExceptionHandler o) {
             if (cls.equals(o.cls)) {

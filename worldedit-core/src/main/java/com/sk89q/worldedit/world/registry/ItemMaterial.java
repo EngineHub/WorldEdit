@@ -19,18 +19,51 @@
 
 package com.sk89q.worldedit.world.registry;
 
+import com.sk89q.worldedit.internal.util.DeprecationUtil;
+import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
+
 public interface ItemMaterial {
     /**
      * Gets the the maximum quantity of this item that can be in a single stack.
      *
      * @return the maximum quantity
+     * @deprecated Use {@link #maxStackSize()} instead.
      */
-    int getMaxStackSize();
+    @Deprecated(forRemoval = true)
+    default int getMaxStackSize() {
+        return maxStackSize();
+    }
+
+    /**
+     * Gets the the maximum quantity of this item that can be in a single stack.
+     *
+     * @return the maximum quantity
+     */
+    @NonAbstractForCompatibility(delegateName = "getMaxStackSize", delegateParams = {})
+    default int maxStackSize() {
+        DeprecationUtil.checkDelegatingOverride(getClass());
+        return getMaxStackSize();
+    }
+
+    /**
+     * Gets the the maximum damage this item can take before being broken.
+     *
+     * @return the maximum damage, or 0 if not applicable
+     * @deprecated Use {@link #maxDamage()} instead.
+     */
+    @Deprecated(forRemoval = true)
+    default int getMaxDamage() {
+        return maxDamage();
+    }
 
     /**
      * Gets the the maximum damage this item can take before being broken.
      *
      * @return the maximum damage, or 0 if not applicable
      */
-    int getMaxDamage();
+    @NonAbstractForCompatibility(delegateName = "getMaxDamage", delegateParams = {})
+    default int maxDamage() {
+        DeprecationUtil.checkDelegatingOverride(getClass());
+        return getMaxDamage();
+    }
 }

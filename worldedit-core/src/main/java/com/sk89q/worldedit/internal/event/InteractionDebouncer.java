@@ -57,13 +57,6 @@ public class InteractionDebouncer {
         return Optional.empty();
     }
 
-    private static class Interaction {
-        public final long tick;
-        public final boolean result;
-
-        public Interaction(long tick, boolean result) {
-            this.tick = tick;
-            this.result = result;
-        }
+    private record Interaction(long tick, boolean result) {
     }
 }

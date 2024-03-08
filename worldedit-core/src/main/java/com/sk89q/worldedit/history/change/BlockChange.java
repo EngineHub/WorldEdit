@@ -34,12 +34,21 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * <p>This block change does not have an {@link Extent} assigned to it because
  * one will be taken from the passed {@link UndoContext}. If the context
  * does not have an extent (it is null), cryptic errors may occur.</p>
+ *
+ * @param position the position
+ * @param previous the previous block
+ * @param current the current block
  */
-public class BlockChange implements Change {
+public record BlockChange(BlockVector3 position, BaseBlock previous, BaseBlock current) implements Change {
 
-    private final BlockVector3 position;
-    private final BaseBlock previous;
-    private final BaseBlock current;
+    /**
+     * Create a new block change.
+     */
+    public BlockChange {
+        checkNotNull(position);
+        checkNotNull(previous);
+        checkNotNull(current);
+    }
 
     /**
      * Create a new block change.
@@ -49,19 +58,16 @@ public class BlockChange implements Change {
      * @param current the current block
      */
     public <BP extends BlockStateHolder<BP>, BC extends BlockStateHolder<BC>> BlockChange(BlockVector3 position, BP previous, BC current) {
-        checkNotNull(position);
-        checkNotNull(previous);
-        checkNotNull(current);
-        this.position = position;
-        this.previous = previous.toBaseBlock();
-        this.current = current.toBaseBlock();
+        this(position, previous.toBaseBlock(), current.toBaseBlock());
     }
 
     /**
      * Get the position.
      *
      * @return the position
+     * @deprecated use {@link #position()}
      */
+    @Deprecated(forRemoval = true)
     public BlockVector3 getPosition() {
         return position;
     }
@@ -70,7 +76,9 @@ public class BlockChange implements Change {
      * Get the previous block.
      *
      * @return the previous block
+     * @deprecated use {@link #previous()}
      */
+    @Deprecated(forRemoval = true)
     public BaseBlock getPrevious() {
         return previous;
     }
@@ -79,7 +87,9 @@ public class BlockChange implements Change {
      * Get the current block.
      *
      * @return the current block
+     * @deprecated use {@link #current()}
      */
+    @Deprecated(forRemoval = true)
     public BaseBlock getCurrent() {
         return current;
     }

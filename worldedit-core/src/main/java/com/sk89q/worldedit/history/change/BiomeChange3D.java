@@ -33,34 +33,30 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * <p>This biome change does not have an {@link Extent} assigned to it because
  * one will be taken from the passed {@link UndoContext}. If the context
  * does not have an extent (it is null), cryptic errors may occur.</p>
+ *
+ * @param position the position
+ * @param previous the previous biome
+ * @param current the current biome
  */
-public class BiomeChange3D implements Change {
-
-    private final BlockVector3 position;
-    private final BiomeType previous;
-    private final BiomeType current;
+public record BiomeChange3D(BlockVector3 position, BiomeType previous, BiomeType current) implements Change {
 
     /**
      * Create a new biome change.
      *
-     * @param position the position
-     * @param previous the previous biome
-     * @param current the current biome
      */
-    public BiomeChange3D(BlockVector3 position, BiomeType previous, BiomeType current) {
+    public BiomeChange3D {
         checkNotNull(position);
         checkNotNull(previous);
         checkNotNull(current);
-        this.position = position;
-        this.previous = previous;
-        this.current = current;
     }
 
     /**
      * Get the position.
      *
      * @return the position
+     * @deprecated Use {@link #position()}.
      */
+    @Deprecated(forRemoval = true)
     public BlockVector3 getPosition() {
         return position;
     }
@@ -69,7 +65,9 @@ public class BiomeChange3D implements Change {
      * Get the previous biome.
      *
      * @return the previous biome
+     * @deprecated Use {@link #previous()}.
      */
+    @Deprecated(forRemoval = true)
     public BiomeType getPrevious() {
         return previous;
     }
@@ -78,7 +76,9 @@ public class BiomeChange3D implements Change {
      * Get the current biome.
      *
      * @return the current biome
+     * @deprecated Use {@link #current()}.
      */
+    @Deprecated(forRemoval = true)
     public BiomeType getCurrent() {
         return current;
     }
