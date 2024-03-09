@@ -90,7 +90,7 @@ public class FabricServerLevelDelegateProxy implements InvocationHandler {
 
     private boolean addEntity(Entity entity) {
         Vector3 pos = FabricAdapter.adapt(entity.getPosition(0.0f));
-        Location location = new Location(FabricAdapter.adapt(serverLevel), pos.getX(), pos.getY(), pos.getZ());
+        Location location = new Location(FabricAdapter.adapt(serverLevel), pos.x(), pos.y(), pos.z());
         BaseEntity baseEntity = new FabricEntity(entity).getState();
         return editSession.createEntity(location, baseEntity) != null;
     }

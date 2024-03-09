@@ -85,15 +85,15 @@ public class BlockMap<V> extends AbstractMap<BlockVector3, V> {
     private static final int BITS_6 = mask(6);
 
     private static long toGroupKey(BlockVector3 location) {
-        return ((location.getX() >>> 6) & BITS_20)
-            | (((location.getZ() >>> 6) & BITS_20) << 20)
-            | (((location.getY() >>> 8) & BITS_24) << (20 + 20));
+        return ((location.x() >>> 6) & BITS_20)
+            | (((location.z() >>> 6) & BITS_20) << 20)
+            | (((location.y() >>> 8) & BITS_24) << (20 + 20));
     }
 
     private static int toInnerKey(BlockVector3 location) {
-        return (location.getX() & BITS_6)
-            | ((location.getZ() & BITS_6) << 6)
-            | ((location.getY() & BITS_8) << (6 + 6));
+        return (location.x() & BITS_6)
+            | ((location.z() & BITS_6) << 6)
+            | ((location.y() & BITS_8) << (6 + 6));
     }
 
     private static final long GROUP_X = BITS_20;

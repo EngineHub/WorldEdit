@@ -62,13 +62,13 @@ public class RegionOptimizedVectorSorter {
     private static final long FLIP_REGION_Z_SIGN = 0x1_00_00L << REGION_Z_SHIFT;
 
     private static long key(BlockVector3 elem) {
-        long x = elem.getX();
-        long z = elem.getZ();
+        long x = elem.x();
+        long z = elem.z();
         return (((x << (REGION_X_SHIFT - 9)) & REGION_X_MASK) ^ FLIP_REGION_X_SIGN)
             | (((z << (REGION_Z_SHIFT - 9)) & REGION_Z_MASK) ^ FLIP_REGION_Z_SIGN)
             | ((x << (CHUNK_X_SHIFT - 4)) & CHUNK_X_MASK)
             | ((z << (CHUNK_Z_SHIFT - 4)) & CHUNK_Z_MASK)
-            | (Y_MAX - elem.getY());
+            | (Y_MAX - elem.y());
     }
 
     private static final int NUMBER_OF_BITS = 64;

@@ -114,28 +114,28 @@ public class YAMLNode {
         if (value instanceof Vector3) {
             Map<String, Double> out = new LinkedHashMap<>();
             Vector3 vec = (Vector3) value;
-            out.put("x", vec.getX());
-            out.put("y", vec.getY());
-            out.put("z", vec.getZ());
+            out.put("x", vec.x());
+            out.put("y", vec.y());
+            out.put("z", vec.z());
             return out;
         } else if (value instanceof BlockVector3) {
             Map<String, Integer> out = new LinkedHashMap<>();
             BlockVector3 vec = (BlockVector3) value;
-            out.put("x", vec.getBlockX());
-            out.put("y", vec.getBlockY());
-            out.put("z", vec.getBlockZ());
+            out.put("x", vec.x());
+            out.put("y", vec.y());
+            out.put("z", vec.z());
             return out;
         } else if (value instanceof Vector2) {
             Map<String, Double> out = new LinkedHashMap<>();
             Vector2 vec = (Vector2) value;
-            out.put("x", vec.getX());
-            out.put("z", vec.getZ());
+            out.put("x", vec.x());
+            out.put("z", vec.z());
             return out;
         } else if (value instanceof BlockVector2) {
             Map<String, Integer> out = new LinkedHashMap<>();
             BlockVector2 vec = (BlockVector2) value;
-            out.put("x", vec.getBlockX());
-            out.put("z", vec.getBlockZ());
+            out.put("x", vec.x());
+            out.put("z", vec.z());
             return out;
         }
 

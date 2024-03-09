@@ -76,9 +76,9 @@ public record BlockVector3(int x, int y, int z) {
     }
 
     public static boolean isLongPackable(BlockVector3 location) {
-        return isHorizontallyInBounds(location.getX())
-            && isHorizontallyInBounds(location.getZ())
-            && WORLD_Y_MIN <= location.getY() && location.getY() <= WORLD_Y_MAX;
+        return isHorizontallyInBounds(location.x)
+            && isHorizontallyInBounds(location.z)
+            && WORLD_Y_MIN <= location.y && location.y <= WORLD_Y_MAX;
     }
 
     public static void checkLongPackable(BlockVector3 location) {
@@ -96,9 +96,9 @@ public record BlockVector3(int x, int y, int z) {
     // thread-safe initialization idiom
     private static final class YzxOrderComparator {
         private static final Comparator<BlockVector3> YZX_ORDER =
-            Comparator.comparingInt(BlockVector3::getY)
-                .thenComparingInt(BlockVector3::getZ)
-                .thenComparingInt(BlockVector3::getX);
+            Comparator.comparingInt(BlockVector3::y)
+                .thenComparingInt(BlockVector3::z)
+                .thenComparingInt(BlockVector3::x);
     }
 
     /**
@@ -612,16 +612,16 @@ public record BlockVector3(int x, int y, int z) {
      * @return pitch in radians
      */
     public double toPitch() {
-        double x = getX();
-        double z = getZ();
+        double x = this.x;
+        double z = this.z;
 
         if (x == 0 && z == 0) {
-            return getY() > 0 ? -90 : 90;
+            return y > 0 ? -90 : 90;
         } else {
             double x2 = x * x;
             double z2 = z * z;
             double xz = Math.sqrt(x2 + z2);
-            return Math.toDegrees(Math.atan(-getY() / xz));
+            return Math.toDegrees(Math.atan(-y / xz));
         }
     }
 
@@ -631,8 +631,8 @@ public record BlockVector3(int x, int y, int z) {
      * @return yaw in radians
      */
     public double toYaw() {
-        double x = getX();
-        double z = getZ();
+        double x = this.x;
+        double z = this.z;
 
         double t = Math.atan2(-x, z);
         double tau = 2 * Math.PI;

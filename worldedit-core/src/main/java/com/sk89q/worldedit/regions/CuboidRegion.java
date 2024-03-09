@@ -121,16 +121,16 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
 
         return new RegionIntersection(
                 // Project to Z-Y plane
-                new CuboidRegion(pos1.withX(min.getX()), pos2.withX(min.getX())),
-                new CuboidRegion(pos1.withX(max.getX()), pos2.withX(max.getX())),
+                new CuboidRegion(pos1.withX(min.x()), pos2.withX(min.x())),
+                new CuboidRegion(pos1.withX(max.x()), pos2.withX(max.x())),
 
                 // Project to X-Y plane
-                new CuboidRegion(pos1.withZ(min.getZ()), pos2.withZ(min.getZ())),
-                new CuboidRegion(pos1.withZ(max.getZ()), pos2.withZ(max.getZ())),
+                new CuboidRegion(pos1.withZ(min.z()), pos2.withZ(min.z())),
+                new CuboidRegion(pos1.withZ(max.z()), pos2.withZ(max.z())),
 
                 // Project to the X-Z plane
-                new CuboidRegion(pos1.withY(min.getY()), pos2.withY(min.getY())),
-                new CuboidRegion(pos1.withY(max.getY()), pos2.withY(max.getY())));
+                new CuboidRegion(pos1.withY(min.y()), pos2.withY(min.y())),
+                new CuboidRegion(pos1.withY(max.y()), pos2.withY(max.y())));
     }
 
     /**
@@ -145,12 +145,12 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
 
         return new RegionIntersection(
                 // Project to Z-Y plane
-                new CuboidRegion(pos1.withX(min.getX()), pos2.withX(min.getX())),
-                new CuboidRegion(pos1.withX(max.getX()), pos2.withX(max.getX())),
+                new CuboidRegion(pos1.withX(min.x()), pos2.withX(min.x())),
+                new CuboidRegion(pos1.withX(max.x()), pos2.withX(max.x())),
 
                 // Project to X-Y plane
-                new CuboidRegion(pos1.withZ(min.getZ()), pos2.withZ(min.getZ())),
-                new CuboidRegion(pos1.withZ(max.getZ()), pos2.withZ(max.getZ())));
+                new CuboidRegion(pos1.withZ(min.z()), pos2.withZ(min.z())),
+                new CuboidRegion(pos1.withZ(max.z()), pos2.withZ(max.z())));
     }
 
     @Override
@@ -170,12 +170,12 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
 
     @Override
     public int getMinimumY() {
-        return Math.min(pos1.getBlockY(), pos2.getBlockY());
+        return Math.min(pos1.y(), pos2.y());
     }
 
     @Override
     public int getMaximumY() {
-        return Math.max(pos1.getBlockY(), pos2.getBlockY());
+        return Math.max(pos1.y(), pos2.y());
     }
 
     @Override
@@ -183,45 +183,45 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         checkNotNull(changes);
 
         for (BlockVector3 change : changes) {
-            if (change.getX() > 0) {
-                if (Math.max(pos1.getX(), pos2.getX()) == pos1.getX()) {
-                    pos1 = pos1.add(change.getX(), 0, 0);
+            if (change.x() > 0) {
+                if (Math.max(pos1.x(), pos2.x()) == pos1.x()) {
+                    pos1 = pos1.add(change.x(), 0, 0);
                 } else {
-                    pos2 = pos2.add(change.getX(), 0, 0);
+                    pos2 = pos2.add(change.x(), 0, 0);
                 }
             } else {
-                if (Math.min(pos1.getX(), pos2.getX()) == pos1.getX()) {
-                    pos1 = pos1.add(change.getX(), 0, 0);
+                if (Math.min(pos1.x(), pos2.x()) == pos1.x()) {
+                    pos1 = pos1.add(change.x(), 0, 0);
                 } else {
-                    pos2 = pos2.add(change.getX(), 0, 0);
+                    pos2 = pos2.add(change.x(), 0, 0);
                 }
             }
 
-            if (change.getY() > 0) {
-                if (Math.max(pos1.getY(), pos2.getY()) == pos1.getY()) {
-                    pos1 = pos1.add(0, change.getY(), 0);
+            if (change.y() > 0) {
+                if (Math.max(pos1.y(), pos2.y()) == pos1.y()) {
+                    pos1 = pos1.add(0, change.y(), 0);
                 } else {
-                    pos2 = pos2.add(0, change.getY(), 0);
+                    pos2 = pos2.add(0, change.y(), 0);
                 }
             } else {
-                if (Math.min(pos1.getY(), pos2.getY()) == pos1.getY()) {
-                    pos1 = pos1.add(0, change.getY(), 0);
+                if (Math.min(pos1.y(), pos2.y()) == pos1.y()) {
+                    pos1 = pos1.add(0, change.y(), 0);
                 } else {
-                    pos2 = pos2.add(0, change.getY(), 0);
+                    pos2 = pos2.add(0, change.y(), 0);
                 }
             }
 
-            if (change.getZ() > 0) {
-                if (Math.max(pos1.getZ(), pos2.getZ()) == pos1.getZ()) {
-                    pos1 = pos1.add(0, 0, change.getZ());
+            if (change.z() > 0) {
+                if (Math.max(pos1.z(), pos2.z()) == pos1.z()) {
+                    pos1 = pos1.add(0, 0, change.z());
                 } else {
-                    pos2 = pos2.add(0, 0, change.getZ());
+                    pos2 = pos2.add(0, 0, change.z());
                 }
             } else {
-                if (Math.min(pos1.getZ(), pos2.getZ()) == pos1.getZ()) {
-                    pos1 = pos1.add(0, 0, change.getZ());
+                if (Math.min(pos1.z(), pos2.z()) == pos1.z()) {
+                    pos1 = pos1.add(0, 0, change.z());
                 } else {
-                    pos2 = pos2.add(0, 0, change.getZ());
+                    pos2 = pos2.add(0, 0, change.z());
                 }
             }
         }
@@ -234,45 +234,45 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         checkNotNull(changes);
 
         for (BlockVector3 change : changes) {
-            if (change.getX() < 0) {
-                if (Math.max(pos1.getX(), pos2.getX()) == pos1.getX()) {
-                    pos1 = pos1.add(change.getX(), 0, 0);
+            if (change.x() < 0) {
+                if (Math.max(pos1.x(), pos2.x()) == pos1.x()) {
+                    pos1 = pos1.add(change.x(), 0, 0);
                 } else {
-                    pos2 = pos2.add(change.getX(), 0, 0);
+                    pos2 = pos2.add(change.x(), 0, 0);
                 }
             } else {
-                if (Math.min(pos1.getX(), pos2.getX()) == pos1.getX()) {
-                    pos1 = pos1.add(change.getX(), 0, 0);
+                if (Math.min(pos1.x(), pos2.x()) == pos1.x()) {
+                    pos1 = pos1.add(change.x(), 0, 0);
                 } else {
-                    pos2 = pos2.add(change.getX(), 0, 0);
+                    pos2 = pos2.add(change.x(), 0, 0);
                 }
             }
 
-            if (change.getY() < 0) {
-                if (Math.max(pos1.getY(), pos2.getY()) == pos1.getY()) {
-                    pos1 = pos1.add(0, change.getY(), 0);
+            if (change.y() < 0) {
+                if (Math.max(pos1.y(), pos2.y()) == pos1.y()) {
+                    pos1 = pos1.add(0, change.y(), 0);
                 } else {
-                    pos2 = pos2.add(0, change.getY(), 0);
+                    pos2 = pos2.add(0, change.y(), 0);
                 }
             } else {
-                if (Math.min(pos1.getY(), pos2.getY()) == pos1.getY()) {
-                    pos1 = pos1.add(0, change.getY(), 0);
+                if (Math.min(pos1.y(), pos2.y()) == pos1.y()) {
+                    pos1 = pos1.add(0, change.y(), 0);
                 } else {
-                    pos2 = pos2.add(0, change.getY(), 0);
+                    pos2 = pos2.add(0, change.y(), 0);
                 }
             }
 
-            if (change.getZ() < 0) {
-                if (Math.max(pos1.getZ(), pos2.getZ()) == pos1.getZ()) {
-                    pos1 = pos1.add(0, 0, change.getZ());
+            if (change.z() < 0) {
+                if (Math.max(pos1.z(), pos2.z()) == pos1.z()) {
+                    pos1 = pos1.add(0, 0, change.z());
                 } else {
-                    pos2 = pos2.add(0, 0, change.getZ());
+                    pos2 = pos2.add(0, 0, change.z());
                 }
             } else {
-                if (Math.min(pos1.getZ(), pos2.getZ()) == pos1.getZ()) {
-                    pos1 = pos1.add(0, 0, change.getZ());
+                if (Math.min(pos1.z(), pos2.z()) == pos1.z()) {
+                    pos1 = pos1.add(0, 0, change.z());
                 } else {
-                    pos2 = pos2.add(0, 0, change.getZ());
+                    pos2 = pos2.add(0, 0, change.z());
                 }
             }
         }
@@ -295,8 +295,8 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         BlockVector3 min = getMinimumPoint();
         BlockVector3 max = getMaximumPoint();
 
-        for (int x = min.getBlockX() >> ChunkStore.CHUNK_SHIFTS; x <= max.getBlockX() >> ChunkStore.CHUNK_SHIFTS; ++x) {
-            for (int z = min.getBlockZ() >> ChunkStore.CHUNK_SHIFTS; z <= max.getBlockZ() >> ChunkStore.CHUNK_SHIFTS; ++z) {
+        for (int x = min.x() >> ChunkStore.CHUNK_SHIFTS; x <= max.x() >> ChunkStore.CHUNK_SHIFTS; ++x) {
+            for (int z = min.z() >> ChunkStore.CHUNK_SHIFTS; z <= max.z() >> ChunkStore.CHUNK_SHIFTS; ++z) {
                 chunks.add(BlockVector2.at(x, z));
             }
         }
@@ -311,9 +311,9 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         BlockVector3 min = getMinimumPoint();
         BlockVector3 max = getMaximumPoint();
 
-        for (int x = min.getBlockX() >> ChunkStore.CHUNK_SHIFTS; x <= max.getBlockX() >> ChunkStore.CHUNK_SHIFTS; ++x) {
-            for (int z = min.getBlockZ() >> ChunkStore.CHUNK_SHIFTS; z <= max.getBlockZ() >> ChunkStore.CHUNK_SHIFTS; ++z) {
-                for (int y = min.getBlockY() >> ChunkStore.CHUNK_SHIFTS; y <= max.getBlockY() >> ChunkStore.CHUNK_SHIFTS; ++y) {
+        for (int x = min.x() >> ChunkStore.CHUNK_SHIFTS; x <= max.x() >> ChunkStore.CHUNK_SHIFTS; ++x) {
+            for (int z = min.z() >> ChunkStore.CHUNK_SHIFTS; z <= max.z() >> ChunkStore.CHUNK_SHIFTS; ++z) {
+                for (int y = min.y() >> ChunkStore.CHUNK_SHIFTS; y <= max.y() >> ChunkStore.CHUNK_SHIFTS; ++y) {
                     chunks.add(BlockVector3.at(x, y, z));
                 }
             }
@@ -335,9 +335,9 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         return new Iterator<BlockVector3>() {
             private final BlockVector3 min = getMinimumPoint();
             private final BlockVector3 max = getMaximumPoint();
-            private int nextX = min.getBlockX();
-            private int nextY = min.getBlockY();
-            private int nextZ = min.getBlockZ();
+            private int nextX = min.x();
+            private int nextY = min.y();
+            private int nextZ = min.z();
 
             @Override
             public boolean hasNext() {
@@ -350,11 +350,11 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
                     throw new NoSuchElementException();
                 }
                 BlockVector3 answer = BlockVector3.at(nextX, nextY, nextZ);
-                if (++nextX > max.getBlockX()) {
-                    nextX = min.getBlockX();
-                    if (++nextZ > max.getBlockZ()) {
-                        nextZ = min.getBlockZ();
-                        if (++nextY > max.getBlockY()) {
+                if (++nextX > max.x()) {
+                    nextX = min.x();
+                    if (++nextZ > max.z()) {
+                        nextZ = min.z();
+                        if (++nextY > max.y()) {
                             nextX = Integer.MIN_VALUE;
                         }
                     }
@@ -369,8 +369,8 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         return () -> new Iterator<BlockVector2>() {
             private final BlockVector3 min = getMinimumPoint();
             private final BlockVector3 max = getMaximumPoint();
-            private int nextX = min.getBlockX();
-            private int nextZ = min.getBlockZ();
+            private int nextX = min.x();
+            private int nextZ = min.z();
 
             @Override
             public boolean hasNext() {
@@ -383,9 +383,9 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
                     throw new NoSuchElementException();
                 }
                 BlockVector2 answer = BlockVector2.at(nextX, nextZ);
-                if (++nextX > max.getBlockX()) {
-                    nextX = min.getBlockX();
-                    if (++nextZ > max.getBlockZ()) {
+                if (++nextX > max.x()) {
+                    nextX = min.x();
+                    if (++nextZ > max.z()) {
                         nextX = Integer.MIN_VALUE;
                     }
                 }

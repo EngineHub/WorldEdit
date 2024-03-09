@@ -178,7 +178,7 @@ public class SpongePlayer extends AbstractPlayerActor {
     @Override
     public boolean trySetPosition(Vector3 pos, float pitch, float yaw) {
         ServerLocation loc = ServerLocation.of(
-            this.player.world(), pos.getX(), pos.getY(), pos.getZ()
+            this.player.world(), pos.x(), pos.y(), pos.z()
         );
 
         return this.player.setLocationAndRotation(loc, new Vector3d(pitch, yaw, 0));
@@ -214,7 +214,7 @@ public class SpongePlayer extends AbstractPlayerActor {
     public void setGameMode(GameMode gameMode) {
         player.gameMode().set(
             Sponge.game().registry(RegistryTypes.GAME_MODE).value(
-                ResourceKey.resolve(gameMode.getId())
+                ResourceKey.resolve(gameMode.id())
             )
         );
     }
@@ -232,10 +232,10 @@ public class SpongePlayer extends AbstractPlayerActor {
     @Override
     public <B extends BlockStateHolder<B>> void sendFakeBlock(BlockVector3 pos, B block) {
         if (block == null) {
-            player.resetBlockChange(pos.getX(), pos.getY(), pos.getZ());
+            player.resetBlockChange(pos.x(), pos.y(), pos.z());
         } else {
             BlockState spongeBlock = SpongeAdapter.adapt(block.toImmutableState());
-            player.sendBlockChange(pos.getX(), pos.getY(), pos.getZ(), spongeBlock);
+            player.sendBlockChange(pos.x(), pos.y(), pos.z(), spongeBlock);
             if (block instanceof final BaseBlock baseBlock
                 && block.getBlockType().equals(com.sk89q.worldedit.world.block.BlockTypes.STRUCTURE_BLOCK)) {
                 final LinCompoundTag nbtData = baseBlock.getNbt();
@@ -247,7 +247,7 @@ public class SpongePlayer extends AbstractPlayerActor {
                         ((net.minecraft.server.level.ServerPlayer) player);
 
                     StructureBlockEntity structureBlockEntity =
-                        new StructureBlockEntity(new BlockPos(pos.getX(), pos.getY(), pos.getZ()), nativeBlock);
+                        new StructureBlockEntity(new BlockPos(pos.x(), pos.y(), pos.z()), nativeBlock);
                     structureBlockEntity.load(nativeNbtData);
                     nativePlayer.connection.send(
                         ClientboundBlockEntityDataPacket.create(structureBlockEntity, it -> nativeNbtData));

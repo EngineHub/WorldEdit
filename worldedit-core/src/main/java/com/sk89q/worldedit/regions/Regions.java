@@ -35,7 +35,7 @@ public final class Regions {
      * @return the Y coordinate
      */
     public static double minimumY(Region region) {
-        return region.getMinimumPoint().getY();
+        return region.getMinimumPoint().y();
     }
 
     /**
@@ -46,7 +46,7 @@ public final class Regions {
      * @return the Y coordinate
      */
     public static double maximumY(Region region) {
-        return region.getMaximumPoint().getY();
+        return region.getMaximumPoint().y();
     }
 
     /**
@@ -57,7 +57,7 @@ public final class Regions {
      * @return the Y coordinate
      */
     public static int minimumBlockY(Region region) {
-        return region.getMinimumPoint().getBlockY();
+        return region.getMinimumPoint().y();
     }
 
     /**
@@ -68,7 +68,7 @@ public final class Regions {
      * @return the Y coordinate
      */
     public static int maximumBlockY(Region region) {
-        return region.getMaximumPoint().getBlockY();
+        return region.getMaximumPoint().y();
     }
 
     /**

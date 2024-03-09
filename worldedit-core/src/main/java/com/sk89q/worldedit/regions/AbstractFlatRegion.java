@@ -29,12 +29,12 @@ public abstract class AbstractFlatRegion extends AbstractRegion implements FlatR
 
     @Override
     public int getMinimumY() {
-        return getMinimumPoint().getBlockY();
+        return getMinimumPoint().y();
     }
 
     @Override
     public int getMaximumY() {
-        return getMaximumPoint().getBlockY();
+        return getMaximumPoint().y();
     }
 
 }

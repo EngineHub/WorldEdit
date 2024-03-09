@@ -65,13 +65,13 @@ public abstract class ArbitraryShape {
         BlockVector3 min = extent.getMinimumPoint();
         BlockVector3 max = extent.getMaximumPoint();
 
-        cacheOffsetX = min.getBlockX() - 1;
-        cacheOffsetY = min.getBlockY() - 1;
-        cacheOffsetZ = min.getBlockZ() - 1;
+        cacheOffsetX = min.x() - 1;
+        cacheOffsetY = min.y() - 1;
+        cacheOffsetZ = min.z() - 1;
 
-        cacheSizeX = max.getX() - cacheOffsetX + 2;
-        cacheSizeY = max.getY() - cacheOffsetY + 2;
-        cacheSizeZ = max.getZ() - cacheOffsetZ + 2;
+        cacheSizeX = max.x() - cacheOffsetX + 2;
+        cacheSizeY = max.y() - cacheOffsetY + 2;
+        cacheSizeZ = max.z() - cacheOffsetZ + 2;
     }
 
     protected Region getExtent() {
@@ -117,9 +117,9 @@ public abstract class ArbitraryShape {
     }
 
     private BaseBlock getMaterial(BlockVector3 position, Pattern pattern, boolean hollow) {
-        int x = position.getBlockX();
-        int y = position.getBlockY();
-        int z = position.getBlockZ();
+        int x = position.x();
+        int y = position.y();
+        int z = position.z();
 
         if (!hollow) {
             return getMaterial(x, y, z, pattern.applyBlock(position));

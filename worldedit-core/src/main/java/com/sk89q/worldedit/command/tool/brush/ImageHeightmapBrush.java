@@ -52,8 +52,8 @@ public class ImageHeightmapBrush implements Brush {
         double random = randomize ? ThreadLocalRandom.current().nextDouble() : 0;
         for (int offX = -size; offX <= size; offX++) {
             for (int offZ = -size; offZ <= size; offZ++) {
-                int posX = position.getX() + offX;
-                int posZ = position.getZ() + offZ;
+                int posX = position.x() + offX;
+                int posZ = position.z() + offZ;
                 int posY = editSession.getHighestTerrainBlock(posX, posZ, 0, 255, editSession.getMask());
                 BlockVector3 block = BlockVector3.at(posX, posY, posZ);
                 if (editSession.getMask() != null && !editSession.getMask().test(block)) {
@@ -70,11 +70,11 @@ public class ImageHeightmapBrush implements Brush {
                 for (int y = 0; y < height; y++) {
                     if (erase) {
                         // Remove blocks if using the erase flag
-                        if (!flatten || block.getY() - y > position.getY()) {
-                            editSession.setBlock(block.withY(block.getY() - y), BlockTypes.AIR.getDefaultState());
+                        if (!flatten || block.y() - y > position.y()) {
+                            editSession.setBlock(block.withY(block.y() - y), BlockTypes.AIR.getDefaultState());
                         }
-                    } else if (!flatten || block.getY() + y <= position.getY()) {
-                        editSession.setBlock(block.withY(block.getY() + y), baseBlock);
+                    } else if (!flatten || block.y() + y <= position.y()) {
+                        editSession.setBlock(block.withY(block.y() + y), baseBlock);
                     }
                 }
             }

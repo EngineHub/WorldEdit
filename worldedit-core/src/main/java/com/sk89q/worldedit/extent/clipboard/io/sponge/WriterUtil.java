@@ -68,7 +68,7 @@ class WriterUtil {
         } else {
             fullTagBuilder.putAll(dataTagBuilder.build().value());
         }
-        fullTagBuilder.putString("Id", state.getType().getId());
+        fullTagBuilder.putString("Id", state.getType().id());
         fullTagBuilder.put("Pos", encodeVector(pos));
 
         return fullTagBuilder.build();
@@ -76,9 +76,9 @@ class WriterUtil {
 
     static LinListTag<LinDoubleTag> encodeVector(Vector3 vector) {
         return LinListTag.builder(LinTagType.doubleTag())
-            .add(LinDoubleTag.of(vector.getX()))
-            .add(LinDoubleTag.of(vector.getY()))
-            .add(LinDoubleTag.of(vector.getZ()))
+            .add(LinDoubleTag.of(vector.x()))
+            .add(LinDoubleTag.of(vector.y()))
+            .add(LinDoubleTag.of(vector.z()))
             .build();
     }
 

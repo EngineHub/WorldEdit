@@ -254,7 +254,7 @@ public class Location {
      * @return the X component
      */
     public double getX() {
-        return position.getX();
+        return position.x();
     }
 
     /**
@@ -263,7 +263,7 @@ public class Location {
      * @return the rounded X component
      */
     public int getBlockX() {
-        return (int) Math.floor(position.getX());
+        return position.blockX();
     }
 
     /**
@@ -283,7 +283,7 @@ public class Location {
      * @return the Y component
      */
     public double getY() {
-        return position.getY();
+        return position.y();
     }
 
     /**
@@ -292,7 +292,7 @@ public class Location {
      * @return the rounded Y component
      */
     public int getBlockY() {
-        return (int) Math.floor(position.getY());
+        return position.blockY();
     }
 
     /**
@@ -312,7 +312,7 @@ public class Location {
      * @return the Z component
      */
     public double getZ() {
-        return position.getZ();
+        return position.z();
     }
 
     /**
@@ -321,7 +321,7 @@ public class Location {
      * @return the rounded Z component
      */
     public int getBlockZ() {
-        return (int) Math.floor(position.getZ());
+        return position.blockZ();
     }
 
     /**

@@ -182,7 +182,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public boolean trySetPosition(Vector3 pos, float pitch, float yaw) {
-        this.player.connection.teleport(pos.getX(), pos.getY(), pos.getZ(), yaw, pitch);
+        this.player.connection.teleport(pos.x(), pos.y(), pos.z(), yaw, pitch);
         return true;
     }
 
@@ -246,7 +246,7 @@ public class ForgePlayer extends AbstractPlayerActor {
                 final LinCompoundTag nbtData = baseBlock.getNbt();
                 if (nbtData != null) {
                     player.connection.send(new ClientboundBlockEntityDataPacket(
-                        new BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()),
+                        new BlockPos(pos.x(), pos.y(), pos.z()),
                         BlockEntityType.STRUCTURE_BLOCK,
                         NBTConverter.toNative(nbtData)
                     ));

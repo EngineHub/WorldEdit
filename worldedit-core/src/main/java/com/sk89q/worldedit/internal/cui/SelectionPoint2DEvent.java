@@ -32,30 +32,30 @@ public class SelectionPoint2DEvent implements CUIEvent {
     @Deprecated
     public SelectionPoint2DEvent(int id, BlockVector2 pos, int area) {
         this.id = id;
-        this.blockX = pos.getX();
-        this.blockZ = pos.getZ();
+        this.blockX = pos.x();
+        this.blockZ = pos.z();
         this.area = area;
     }
 
     @Deprecated
     public SelectionPoint2DEvent(int id, BlockVector3 pos, int area) {
         this.id = id;
-        this.blockX = pos.getX();
-        this.blockZ = pos.getZ();
+        this.blockX = pos.x();
+        this.blockZ = pos.z();
         this.area = area;
     }
 
     public SelectionPoint2DEvent(int id, BlockVector2 pos, long area) {
         this.id = id;
-        this.blockX = pos.getX();
-        this.blockZ = pos.getZ();
+        this.blockX = pos.x();
+        this.blockZ = pos.z();
         this.area = area;
     }
 
     public SelectionPoint2DEvent(int id, BlockVector3 pos, long area) {
         this.id = id;
-        this.blockX = pos.getX();
-        this.blockZ = pos.getZ();
+        this.blockX = pos.x();
+        this.blockZ = pos.z();
         this.area = area;
     }
 

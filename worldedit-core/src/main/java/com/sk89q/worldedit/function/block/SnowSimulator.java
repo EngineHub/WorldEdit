@@ -100,7 +100,7 @@ public class SnowSimulator implements LayerFunction {
         }
 
         // Can't put snow this far up
-        if (position.getBlockY() == this.extent.getMaximumPoint().getBlockY()) {
+        if (position.y() == this.extent.getMaximumPoint().y()) {
             return false;
         }
 

@@ -96,9 +96,9 @@ public class SpongeSchematicV2Writer implements ClipboardWriter {
         );
 
         LinCompoundTag.Builder metadata = LinCompoundTag.builder();
-        metadata.putInt("WEOffsetX", offset.getBlockX());
-        metadata.putInt("WEOffsetY", offset.getBlockY());
-        metadata.putInt("WEOffsetZ", offset.getBlockZ());
+        metadata.putInt("WEOffsetX", offset.x());
+        metadata.putInt("WEOffsetY", offset.y());
+        metadata.putInt("WEOffsetZ", offset.z());
 
         LinCompoundTag.Builder worldEditSection = LinCompoundTag.builder();
         worldEditSection.putString("Version", WorldEdit.getVersion());
@@ -107,7 +107,7 @@ public class SpongeSchematicV2Writer implements ClipboardWriter {
             WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getId()
         );
         worldEditSection.putIntArray("Offset", new int[] {
-            offset.getBlockX(), offset.getBlockY(), offset.getBlockZ()
+            offset.x(), offset.y(), offset.z()
         });
 
         LinCompoundTag.Builder platformsSection = LinCompoundTag.builder();
@@ -132,9 +132,9 @@ public class SpongeSchematicV2Writer implements ClipboardWriter {
 
         // The Sponge format Offset refers to the 'min' points location in the world. That's our 'Origin'
         schematic.putIntArray("Offset", new int[] {
-            min.getBlockX(),
-            min.getBlockY(),
-            min.getBlockZ(),
+            min.x(),
+            min.y(),
+            min.z(),
         });
 
         int paletteMax = 0;
@@ -145,11 +145,11 @@ public class SpongeSchematicV2Writer implements ClipboardWriter {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream(width * height * length);
 
         for (int y = 0; y < height; y++) {
-            int y0 = min.getBlockY() + y;
+            int y0 = min.y() + y;
             for (int z = 0; z < length; z++) {
-                int z0 = min.getBlockZ() + z;
+                int z0 = min.z() + z;
                 for (int x = 0; x < width; x++) {
-                    int x0 = min.getBlockX() + x;
+                    int x0 = min.x() + x;
                     BlockVector3 point = BlockVector3.at(x0, y0, z0);
                     BaseBlock block = clipboard.getFullBlock(point);
                     LinCompoundTag nbt = block.getNbt();
@@ -223,13 +223,13 @@ public class SpongeSchematicV2Writer implements ClipboardWriter {
         Object2IntMap<String> palette = new Object2IntLinkedOpenHashMap<>();
 
         for (int z = 0; z < length; z++) {
-            int z0 = min.getBlockZ() + z;
+            int z0 = min.z() + z;
             for (int x = 0; x < width; x++) {
-                int x0 = min.getBlockX() + x;
-                BlockVector3 pt = BlockVector3.at(x0, min.getBlockY(), z0);
+                int x0 = min.x() + x;
+                BlockVector3 pt = BlockVector3.at(x0, min.y(), z0);
                 BiomeType biome = clipboard.getBiome(pt);
 
-                String biomeKey = biome.getId();
+                String biomeKey = biome.id();
                 int biomeId;
                 if (palette.containsKey(biomeKey)) {
                     biomeId = palette.getInt(biomeKey);

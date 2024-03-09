@@ -79,12 +79,12 @@ public class ClipboardTransformBaker {
         Vector3[] corners = new Vector3[] {
             minimum,
             maximum,
-            minimum.withX(maximum.getX()),
-            minimum.withY(maximum.getY()),
-            minimum.withZ(maximum.getZ()),
-            maximum.withX(minimum.getX()),
-            maximum.withY(minimum.getY()),
-            maximum.withZ(minimum.getZ())
+            minimum.withX(maximum.x()),
+            minimum.withY(maximum.y()),
+            minimum.withZ(maximum.z()),
+            maximum.withX(minimum.x()),
+            maximum.withY(minimum.y()),
+            maximum.withZ(minimum.z())
         };
 
         for (int i = 0; i < corners.length; i++) {

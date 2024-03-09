@@ -93,10 +93,10 @@ public class RegionOptimizedVectorSorterTest {
         for (int i = 0; i < toSort.size() - 1; i++) {
             BlockVector3 curr = toSort.get(i);
             BlockVector3 next = toSort.get(i + 1);
-            int currChunkX = curr.getX() >> 4;
-            int nextChunkX = next.getX() >> 4;
-            int currChunkZ = curr.getZ() >> 4;
-            int nextChunkZ = next.getZ() >> 4;
+            int currChunkX = curr.x() >> 4;
+            int nextChunkX = next.x() >> 4;
+            int currChunkZ = curr.z() >> 4;
+            int nextChunkZ = next.z() >> 4;
             int currRegionX = currChunkX >> 5;
             int nextRegionX = nextChunkX >> 5;
             int currRegionZ = currChunkZ >> 5;
@@ -118,7 +118,7 @@ public class RegionOptimizedVectorSorterTest {
                             fail(spaceship + " "
                                 + currChunkZ + " chunk z should be less than or equal to " + nextChunkZ);
                         } else if (currChunkZ == nextChunkZ) {
-                            if (curr.getY() < next.getY()) {
+                            if (curr.y() < next.y()) {
                                 fail(spaceship + " "
                                     + curr + " y should be greater than or equal to " + next);
                             }

@@ -106,8 +106,8 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
             region.setCenter(center.toBlockVector2());
             region.setRadius(pos2.toBlockVector2().subtract(center.toBlockVector2()).toVector2());
 
-            region.setMaximumY(Math.max(pos1.getBlockY(), pos2.getBlockY()));
-            region.setMinimumY(Math.min(pos1.getBlockY(), pos2.getBlockY()));
+            region.setMaximumY(Math.max(pos1.y(), pos2.y()));
+            region.setMinimumY(Math.min(pos1.y(), pos2.y()));
 
             selectedCenter = true;
             selectedRadius = true;
@@ -155,7 +155,7 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
 
         region = new CylinderRegion(region.getWorld());
         region.setCenter(position.toBlockVector2());
-        region.setY(position.getBlockY());
+        region.setY(position.y());
 
         selectedCenter = true;
         selectedRadius = false;
@@ -173,7 +173,7 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
         final Vector2 minRadius = diff.getMaximum(diff.multiply(-1.0));
         region.extendRadius(minRadius);
 
-        region.setY(position.getBlockY());
+        region.setY(position.y());
 
         selectedRadius = true;
 
@@ -192,8 +192,8 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
         if (selectedCenter) {
             player.printInfo(TranslatableComponent.of(
                     "worldedit.selection.cylinder.explain.secondary",
-                    TextComponent.of(NUMBER_FORMAT.format(region.getRadius().getX())),
-                    TextComponent.of(NUMBER_FORMAT.format(region.getRadius().getZ())),
+                    TextComponent.of(NUMBER_FORMAT.format(region.getRadius().x())),
+                    TextComponent.of(NUMBER_FORMAT.format(region.getRadius().z())),
                     TextComponent.of(region.getVolume())
             ));
         } else {

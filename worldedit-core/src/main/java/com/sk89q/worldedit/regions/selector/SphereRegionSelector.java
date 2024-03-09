@@ -61,7 +61,7 @@ public class SphereRegionSelector extends EllipsoidRegionSelector {
         super(oldSelector);
         if (selectedRadius) {
             final Vector3 radius = region.getRadius();
-            final double radiusScalar = Math.max(Math.max(radius.getX(), radius.getY()), radius.getZ());
+            final double radiusScalar = Math.max(Math.max(radius.x(), radius.y()), radius.z());
             region.setRadius(Vector3.at(radiusScalar, radiusScalar, radiusScalar));
         }
     }
@@ -96,11 +96,11 @@ public class SphereRegionSelector extends EllipsoidRegionSelector {
         if (isDefined()) {
             player.printInfo(TranslatableComponent.of(
                     "worldedit.selection.sphere.explain.secondary-defined",
-                    TextComponent.of(region.getRadius().getX()),
+                    TextComponent.of(region.getRadius().x()),
                     TextComponent.of(region.getVolume())
             ));
         } else {
-            player.printInfo(TranslatableComponent.of("worldedit.selection.sphere.explain.secondary", TextComponent.of(region.getRadius().getX())));
+            player.printInfo(TranslatableComponent.of("worldedit.selection.sphere.explain.secondary", TextComponent.of(region.getRadius().x())));
         }
 
         session.describeCUI(player);

@@ -88,7 +88,7 @@ public final class FabricAdapter {
 
     public static Biome adapt(BiomeType biomeType) {
         return FabricWorldEdit.getRegistry(Registries.BIOME)
-            .get(new ResourceLocation(biomeType.getId()));
+            .get(new ResourceLocation(biomeType.id()));
     }
 
     public static BiomeType adapt(Biome biome) {
@@ -106,7 +106,7 @@ public final class FabricAdapter {
     }
 
     public static Vec3 toVec3(BlockVector3 vector) {
-        return new Vec3(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
+        return new Vec3(vector.x(), vector.y(), vector.z());
     }
 
     public static net.minecraft.core.Direction adapt(Direction face) {
@@ -149,7 +149,7 @@ public final class FabricAdapter {
     }
 
     public static BlockPos toBlockPos(BlockVector3 vector) {
-        return new BlockPos(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
+        return new BlockPos(vector.x(), vector.y(), vector.z());
     }
 
     /**

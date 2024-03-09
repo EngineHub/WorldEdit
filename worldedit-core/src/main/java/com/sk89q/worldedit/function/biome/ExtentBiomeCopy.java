@@ -102,7 +102,7 @@ public class ExtentBiomeCopy implements FlatRegionFunction, RegionFunction {
     @Deprecated
     public boolean apply(BlockVector2 position) throws WorldEditException {
         boolean success = false;
-        for (int y = destination.getMinimumPoint().getY(); y <= destination.getMaximumPoint().getY(); y++) {
+        for (int y = destination.getMinimumPoint().y(); y <= destination.getMaximumPoint().y(); y++) {
             success |= apply(position.toBlockVector3(y));
         }
         return success;

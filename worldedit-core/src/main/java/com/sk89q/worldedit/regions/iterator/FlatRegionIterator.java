@@ -46,15 +46,15 @@ public class FlatRegionIterator implements Iterator<BlockVector2>  {
         BlockVector3 min = region.getMinimumPoint();
         BlockVector3 max = region.getMaximumPoint();
 
-        this.y = min.getBlockY();
+        this.y = min.y();
 
-        this.minX = min.getBlockX();
+        this.minX = min.x();
 
         this.nextX = minX;
-        this.nextZ = min.getBlockZ();
+        this.nextZ = min.z();
 
-        this.maxX = max.getBlockX();
-        this.maxZ = max.getBlockZ();
+        this.maxX = max.x();
+        this.maxZ = max.z();
 
         forward();
     }

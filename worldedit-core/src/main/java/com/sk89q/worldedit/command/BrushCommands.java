@@ -247,9 +247,9 @@ public class BrushCommands {
 
         BlockVector3 size = clipboard.getDimensions();
 
-        worldEdit.checkMaxBrushRadius(size.getBlockX() / 2D - 1);
-        worldEdit.checkMaxBrushRadius(size.getBlockY() / 2D - 1);
-        worldEdit.checkMaxBrushRadius(size.getBlockZ() / 2D - 1);
+        worldEdit.checkMaxBrushRadius(size.x() / 2D - 1);
+        worldEdit.checkMaxBrushRadius(size.y() / 2D - 1);
+        worldEdit.checkMaxBrushRadius(size.z() / 2D - 1);
 
         session.forceBrush(
             player.getItemInHand(HandSide.MAIN_HAND).getType(),

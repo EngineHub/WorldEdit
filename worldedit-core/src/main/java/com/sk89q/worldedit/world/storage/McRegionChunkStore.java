@@ -42,8 +42,8 @@ public abstract class McRegionChunkStore extends ChunkStore {
      * @return the filename
      */
     public static String getFilename(BlockVector2 position) {
-        int x = position.getBlockX();
-        int z = position.getBlockZ();
+        int x = position.x();
+        int z = position.z();
 
         return "r." + (x >> 5) + "." + (z >> 5) + ".mca";
     }
