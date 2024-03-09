@@ -17,20 +17,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.cli;
+package com.sk89q.worldedit.cli.data;
 
-import com.sk89q.worldedit.util.PropertiesConfiguration;
+import java.util.List;
+import java.util.Map;
 
-import java.nio.file.Path;
+public record DataFile(Map<String, List<String>> itemtags,
+                       Map<String, List<String>> blocktags,
+                       Map<String, List<String>> entitytags,
+                       List<String> items,
+                       List<String> entities,
+                       List<String> biomes,
+                       Map<String, BlockManifest> blocks) {
 
-public class CLIConfiguration extends PropertiesConfiguration {
-
-    public CLIConfiguration(CLIWorldEdit app) {
-        super(app.getWorkingDir().resolve("worldedit.properties"));
+    public record BlockManifest(String defaultstate, Map<String, BlockProperty> properties) {
     }
 
-    @Override
-    public Path getWorkingDirectoryPath() {
-        return CLIWorldEdit.inst.getWorkingDir();
+    public record BlockProperty(List<String> values, String type) {
     }
 }
