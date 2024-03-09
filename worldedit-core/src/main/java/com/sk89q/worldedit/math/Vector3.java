@@ -518,16 +518,16 @@ public record Vector3(double x, double y, double z) {
      * @return pitch in radians
      */
     public double toPitch() {
-        double x = getX();
-        double z = getZ();
+        double x = this.x;
+        double z = this.z;
 
         if (x == 0 && z == 0) {
-            return getY() > 0 ? -90 : 90;
+            return y > 0 ? -90 : 90;
         } else {
             double x2 = x * x;
             double z2 = z * z;
             double xz = Math.sqrt(x2 + z2);
-            return Math.toDegrees(Math.atan(-getY() / xz));
+            return Math.toDegrees(Math.atan(-y / xz));
         }
     }
 
@@ -537,8 +537,8 @@ public record Vector3(double x, double y, double z) {
      * @return yaw in radians
      */
     public double toYaw() {
-        double x = getX();
-        double z = getZ();
+        double x = this.x;
+        double z = this.z;
 
         double t = Math.atan2(-x, z);
         double tau = 2 * Math.PI;

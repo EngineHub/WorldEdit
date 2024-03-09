@@ -189,9 +189,9 @@ public class AnvilChunk18 implements Chunk {
 
     @Override
     public BaseBlock getBlock(BlockVector3 position) throws DataException {
-        int x = position.getX() - rootX * 16;
-        int y = position.getY();
-        int z = position.getZ() - rootZ * 16;
+        int x = position.x() - rootX * 16;
+        int y = position.y();
+        int z = position.z() - rootZ * 16;
 
         int section = y >> 4;
         int yIndex = y & 0x0F;

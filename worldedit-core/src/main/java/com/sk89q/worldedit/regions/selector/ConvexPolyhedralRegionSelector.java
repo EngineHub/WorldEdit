@@ -92,8 +92,8 @@ public class ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion
                 return;
             }
 
-            final int minY = oldRegion.getMinimumPoint().getBlockY();
-            final int maxY = oldRegion.getMaximumPoint().getBlockY();
+            final int minY = oldRegion.getMinimumPoint().y();
+            final int maxY = oldRegion.getMaximumPoint().y();
 
             region = new ConvexPolyhedralRegion(oldRegion.getWorld());
 

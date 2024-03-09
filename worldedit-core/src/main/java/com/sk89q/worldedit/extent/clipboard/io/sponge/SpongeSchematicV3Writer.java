@@ -110,7 +110,7 @@ public class SpongeSchematicV3Writer implements ClipboardWriter {
             WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getId()
         );
         worldEditSection.putIntArray("Origin", new int[] {
-            origin.getBlockX(), origin.getBlockY(), origin.getBlockZ()
+            origin.x(), origin.y(), origin.z()
         });
 
         LinCompoundTag.Builder platformsSection = LinCompoundTag.builder();
@@ -134,9 +134,9 @@ public class SpongeSchematicV3Writer implements ClipboardWriter {
         schematic.putShort("Length", (short) length);
 
         schematic.putIntArray("Offset", new int[] {
-            offset.getBlockX(),
-            offset.getBlockY(),
-            offset.getBlockZ(),
+            offset.x(),
+            offset.y(),
+            offset.z(),
         });
 
         schematic.put("Blocks", encodeBlocks(clipboard));
@@ -189,9 +189,9 @@ public class SpongeSchematicV3Writer implements ClipboardWriter {
                 builder.putString("Id", block.getNbtId());
                 BlockVector3 adjustedPos = point.subtract(clipboard.getMinimumPoint());
                 builder.putIntArray("Pos", new int[] {
-                    adjustedPos.getBlockX(),
-                    adjustedPos.getBlockY(),
-                    adjustedPos.getBlockZ()
+                    adjustedPos.x(),
+                    adjustedPos.y(),
+                    adjustedPos.z()
                 });
                 builder.put("Data", nbt);
 
@@ -206,7 +206,7 @@ public class SpongeSchematicV3Writer implements ClipboardWriter {
     }
 
     private LinCompoundTag encodeBiomes(Clipboard clipboard) {
-        return encodePalettedData(clipboard, point -> clipboard.getBiome(point).getId()).build();
+        return encodePalettedData(clipboard, point -> clipboard.getBiome(point).id()).build();
     }
 
     private LinCompoundTag.Builder encodePalettedData(Clipboard clipboard,

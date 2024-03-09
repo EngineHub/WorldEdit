@@ -132,7 +132,7 @@ public class SpongeAdapter {
     }
 
     public static RegistryReference<Biome> adapt(BiomeType biomeType) {
-        return RegistryKey.of(RegistryTypes.BIOME, ResourceKey.resolve(biomeType.getId()))
+        return RegistryKey.of(RegistryTypes.BIOME, ResourceKey.resolve(biomeType.id()))
             .asReference();
     }
 
@@ -168,7 +168,7 @@ public class SpongeAdapter {
         Vector3 position = location.toVector();
         return ServerLocation.of(
             adapt((World) location.getExtent()),
-            position.getX(), position.getY(), position.getZ()
+            position.x(), position.y(), position.z()
         );
     }
 
@@ -236,7 +236,7 @@ public class SpongeAdapter {
     }
 
     public static Vector3i adaptVector3i(BlockVector3 bv3) {
-        return new Vector3i(bv3.getX(), bv3.getY(), bv3.getZ());
+        return new Vector3i(bv3.x(), bv3.y(), bv3.z());
     }
 
     public static BlockVector3 adaptVector3i(Vector3i vec3i) {

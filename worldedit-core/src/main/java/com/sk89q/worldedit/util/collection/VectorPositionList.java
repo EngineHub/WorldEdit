@@ -44,9 +44,9 @@ class VectorPositionList implements PositionList {
 
     @Override
     public void add(BlockVector3 vector) {
-        delegateX.add(vector.getX());
-        delegateY.add(vector.getY());
-        delegateZ.add(vector.getZ());
+        delegateX.add(vector.x());
+        delegateY.add(vector.y());
+        delegateZ.add(vector.z());
     }
 
     @Override

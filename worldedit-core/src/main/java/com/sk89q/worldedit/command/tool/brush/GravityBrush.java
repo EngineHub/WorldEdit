@@ -44,12 +44,12 @@ public class GravityBrush implements Brush {
     @Override
     public void build(EditSession editSession, BlockVector3 position, Pattern pattern, double size) throws MaxChangedBlocksException {
         double sizeOffset = overrideHeight ? heightOffset : size;
-        double yMax = Math.min(position.getY() + sizeOffset, editSession.getWorld().getMaxY());
-        double yMin = Math.max(position.getY() - sizeOffset, editSession.getWorld().getMinY());
+        double yMax = Math.min(position.y() + sizeOffset, editSession.getWorld().getMaxY());
+        double yMin = Math.max(position.y() - sizeOffset, editSession.getWorld().getMinY());
         LocatedBlockList column = new LocatedBlockList();
         Set<BlockVector3> removedBlocks = new LinkedHashSet<>();
-        for (double x = position.getX() - size; x <= position.getX() + size; x++) {
-            for (double z = position.getZ() - size; z <= position.getZ() + size; z++) {
+        for (double x = position.x() - size; x <= position.x() + size; x++) {
+            for (double z = position.z() - size; z <= position.z() + size; z++) {
                 /*
                  * Algorithm:
                  * 1. Find the lowest air block in the selection -> $lowestAir = position

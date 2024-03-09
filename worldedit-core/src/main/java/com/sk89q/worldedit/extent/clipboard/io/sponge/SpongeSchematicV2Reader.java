@@ -123,7 +123,7 @@ public class SpongeSchematicV2Reader implements ClipboardReader {
 
         Int2ObjectMap<BiomeType> palette = ReaderUtil.readBiomePalette(fixer, paletteTag, LOGGER);
 
-        int width = clipboard.getDimensions().getX();
+        int width = clipboard.getDimensions().x();
 
         byte[] biomes = dataTag.value();
         BlockVector3 min = clipboard.getMinimumPoint();
@@ -135,8 +135,8 @@ public class SpongeSchematicV2Reader implements ClipboardReader {
             BlockVector3 hackDecode = ReaderUtil.decodePositionFromDataIndex(
                 width, 1, index
             );
-            int x = hackDecode.getX();
-            int z = hackDecode.getY();
+            int x = hackDecode.x();
+            int z = hackDecode.y();
             for (int y = 0; y < clipboard.getRegion().getHeight(); y++) {
                 clipboard.setBiome(min.add(x, y, z), type);
             }

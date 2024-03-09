@@ -63,7 +63,7 @@ public class DataValidatorExtent extends AbstractDelegateExtent {
 
     @Override
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 location, B block) throws WorldEditException {
-        final int y = location.getBlockY();
+        final int y = location.y();
         final BlockType type = block.getBlockType();
         if (y < minY || y > maxY) {
             return false;
@@ -79,7 +79,7 @@ public class DataValidatorExtent extends AbstractDelegateExtent {
 
     @Override
     public boolean setBiome(BlockVector3 location, BiomeType biome) {
-        final int y = location.getBlockY();
+        final int y = location.y();
 
         if (y < minY || y > maxY) {
             return false;

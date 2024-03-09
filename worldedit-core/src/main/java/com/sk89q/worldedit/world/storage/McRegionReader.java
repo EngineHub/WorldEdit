@@ -119,8 +119,8 @@ public class McRegionReader {
      * @throws DataException if there is an error getting the chunk data
      */
     public synchronized InputStream getChunkInputStream(BlockVector2 position) throws IOException, DataException {
-        int x = position.getBlockX() & 31;
-        int z = position.getBlockZ() & 31;
+        int x = position.x() & 31;
+        int z = position.z() & 31;
 
         int offset = getOffset(x, z);
 

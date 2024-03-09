@@ -91,8 +91,8 @@ public final class ForgeAdapter {
         return ServerLifecycleHooks.getCurrentServer()
             .registryAccess()
             .registryOrThrow(Registries.BIOME)
-            .getOptional(new ResourceLocation(biomeType.getId()))
-            .orElseThrow(() -> new IllegalStateException("No biome for " + biomeType.getId()));
+            .getOptional(new ResourceLocation(biomeType.id()))
+            .orElseThrow(() -> new IllegalStateException("No biome for " + biomeType.id()));
     }
 
     public static BiomeType adapt(Biome biome) {
@@ -113,7 +113,7 @@ public final class ForgeAdapter {
     }
 
     public static Vec3 toVec3(BlockVector3 vector) {
-        return new Vec3(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
+        return new Vec3(vector.x(), vector.y(), vector.z());
     }
 
     public static net.minecraft.core.Direction adapt(Direction face) {
@@ -146,7 +146,7 @@ public final class ForgeAdapter {
     }
 
     public static BlockPos toBlockPos(BlockVector3 vector) {
-        return new BlockPos(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
+        return new BlockPos(vector.x(), vector.y(), vector.z());
     }
 
     /**

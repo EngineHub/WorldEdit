@@ -228,13 +228,13 @@ public class FabricWorld extends AbstractWorld {
     @Override
     public BiomeType getBiome(BlockVector3 position) {
         checkNotNull(position);
-        ChunkAccess chunk = getWorld().getChunk(position.getX() >> 4, position.getZ() >> 4);
+        ChunkAccess chunk = getWorld().getChunk(position.x() >> 4, position.z() >> 4);
         return getBiomeInChunk(position, chunk);
     }
 
     private BiomeType getBiomeInChunk(BlockVector3 position, ChunkAccess chunk) {
         return FabricAdapter.adapt(
-            chunk.getNoiseBiome(position.getX() >> 2, position.getY() >> 2, position.getZ() >> 2).value()
+            chunk.getNoiseBiome(position.x() >> 2, position.y() >> 2, position.z() >> 2).value()
         );
     }
 
@@ -243,14 +243,14 @@ public class FabricWorld extends AbstractWorld {
         checkNotNull(position);
         checkNotNull(biome);
 
-        ChunkAccess chunk = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4);
+        ChunkAccess chunk = getWorld().getChunk(position.x() >> 4, position.z() >> 4);
         // Screw it, we know it's really mutable...
-        var biomeArray = (PalettedContainer<Holder<Biome>>) chunk.getSection(chunk.getSectionIndex(position.getY())).getBiomes();
+        var biomeArray = (PalettedContainer<Holder<Biome>>) chunk.getSection(chunk.getSectionIndex(position.y())).getBiomes();
         biomeArray.getAndSetUnchecked(
-            position.getX() & 3, position.getY() & 3, position.getZ() & 3,
+            position.x() & 3, position.y() & 3, position.z() & 3,
             getWorld().registryAccess().registry(Registries.BIOME)
                 .orElseThrow()
-                .getHolderOrThrow(ResourceKey.create(Registries.BIOME, new ResourceLocation(biome.getId())))
+                .getHolderOrThrow(ResourceKey.create(Registries.BIOME, new ResourceLocation(biome.id())))
         );
         chunk.setUnsaved(true);
         return true;
@@ -270,7 +270,7 @@ public class FabricWorld extends AbstractWorld {
             return false;
         }
         fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, stack);
-        fakePlayer.absMoveTo(position.getBlockX(), position.getBlockY(), position.getBlockZ(),
+        fakePlayer.absMoveTo(position.x(), position.y(), position.z(),
                 (float) face.toVector().toYaw(), (float) face.toVector().toPitch());
         final BlockPos blockPos = FabricAdapter.toBlockPos(position);
         final BlockHitResult rayTraceResult = new BlockHitResult(FabricAdapter.toVec3(position),
@@ -296,7 +296,7 @@ public class FabricWorld extends AbstractWorld {
             return;
         }
 
-        ItemEntity entity = new ItemEntity(getWorld(), position.getX(), position.getY(), position.getZ(), FabricAdapter.adapt(item));
+        ItemEntity entity = new ItemEntity(getWorld(), position.x(), position.y(), position.z(), FabricAdapter.adapt(item));
         entity.setPickUpDelay(10);
         getWorld().addFreshEntity(entity);
     }
@@ -431,7 +431,7 @@ public class FabricWorld extends AbstractWorld {
         // Pre-gen all the chunks
         for (BlockVector2 chunk : region.getChunks()) {
             chunkLoadings.add(
-                world.getChunkSource().getChunkFuture(chunk.getX(), chunk.getZ(), ChunkStatus.FEATURES, true)
+                world.getChunkSource().getChunkFuture(chunk.x(), chunk.z(), ChunkStatus.FEATURES, true)
                     .thenApply(either -> either.left().orElse(null))
             );
         }
@@ -488,7 +488,7 @@ public class FabricWorld extends AbstractWorld {
 
     public boolean generateFeature(ConfiguredFeatureType type, EditSession editSession, BlockVector3 position) {
         ServerLevel world = (ServerLevel) getWorld();
-        ConfiguredFeature<?, ?> k = world.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).get(ResourceLocation.tryParse(type.getId()));
+        ConfiguredFeature<?, ?> k = world.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).get(ResourceLocation.tryParse(type.id()));
         ServerChunkCache chunkManager = world.getChunkSource();
         WorldGenLevel proxyLevel = FabricServerLevelDelegateProxy.newInstance(editSession, world);
         return k != null && k.place(proxyLevel, chunkManager.getGenerator(), random, FabricAdapter.toBlockPos(position));
@@ -497,14 +497,14 @@ public class FabricWorld extends AbstractWorld {
     @Override
     public boolean generateStructure(StructureType type, EditSession editSession, BlockVector3 position) {
         ServerLevel world = (ServerLevel) getWorld();
-        Structure k = world.registryAccess().registryOrThrow(Registries.STRUCTURE).get(ResourceLocation.tryParse(type.getId()));
+        Structure k = world.registryAccess().registryOrThrow(Registries.STRUCTURE).get(ResourceLocation.tryParse(type.id()));
         if (k == null) {
             return false;
         }
 
         ServerChunkCache chunkManager = world.getChunkSource();
         WorldGenLevel proxyLevel = FabricServerLevelDelegateProxy.newInstance(editSession, world);
-        ChunkPos chunkPos = new ChunkPos(new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ()));
+        ChunkPos chunkPos = new ChunkPos(new BlockPos(position.x(), position.y(), position.z()));
         StructureStart structureStart = k.generate(world.registryAccess(), chunkManager.getGenerator(), chunkManager.getGenerator().getBiomeSource(), chunkManager.randomState(), world.getStructureManager(), world.getSeed(), chunkPos, 0, proxyLevel, biome -> true);
 
         if (!structureStart.isValid()) {
@@ -532,7 +532,7 @@ public class FabricWorld extends AbstractWorld {
     public void sendBiomeUpdates(Iterable<BlockVector2> chunks) {
         List<ChunkAccess> nativeChunks = chunks instanceof Collection<BlockVector2> chunkCollection ? Lists.newArrayListWithCapacity(chunkCollection.size()) : Lists.newArrayList();
         for (BlockVector2 chunk : chunks) {
-            nativeChunks.add(getWorld().getChunk(chunk.getBlockX(), chunk.getBlockZ(), ChunkStatus.BIOMES, false));
+            nativeChunks.add(getWorld().getChunk(chunk.x(), chunk.z(), ChunkStatus.BIOMES, false));
         }
         ((ServerLevel) getWorld()).getChunkSource().chunkMap.resendBiomesForChunks(nativeChunks);
     }
@@ -542,7 +542,7 @@ public class FabricWorld extends AbstractWorld {
         Level world = getWorld();
         for (BlockVector2 chunk : chunks) {
             world.getChunkSource().getLightEngine().setLightEnabled(
-                new ChunkPos(chunk.getBlockX(), chunk.getBlockZ()), true
+                new ChunkPos(chunk.x(), chunk.z()), true
             );
         }
     }
@@ -624,7 +624,7 @@ public class FabricWorld extends AbstractWorld {
     @Override
     public BlockState getBlock(BlockVector3 position) {
         net.minecraft.world.level.block.state.BlockState mcState = getWorld()
-                .getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4)
+                .getChunk(position.x() >> 4, position.z() >> 4)
                 .getBlockState(FabricAdapter.toBlockPos(position));
 
         return FabricAdapter.adapt(mcState);
@@ -632,7 +632,7 @@ public class FabricWorld extends AbstractWorld {
 
     @Override
     public BaseBlock getFullBlock(BlockVector3 position) {
-        BlockPos pos = new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+        BlockPos pos = new BlockPos(position.x(), position.y(), position.z());
         // Avoid creation by using the CHECK mode -- if it's needed, it'll be re-created anyways
         BlockEntity tile = ((LevelChunk) getWorld().getChunk(pos)).getBlockEntity(pos, LevelChunk.EntityCreationType.CHECK);
 
@@ -694,7 +694,7 @@ public class FabricWorld extends AbstractWorld {
     @Override
     public Entity createEntity(Location location, BaseEntity entity) {
         ServerLevel world = (ServerLevel) getWorld();
-        String entityId = entity.getType().getId();
+        String entityId = entity.getType().id();
         final Optional<EntityType<?>> entityType = EntityType.byString(entityId);
         if (entityType.isEmpty()) {
             return null;

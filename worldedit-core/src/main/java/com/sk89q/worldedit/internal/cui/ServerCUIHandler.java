@@ -79,9 +79,9 @@ public class ServerCUIHandler {
                 try {
                     CuboidRegion region = ((CuboidRegionSelector) regionSelector).getRegion();
 
-                    posX = region.getMinimumPoint().getBlockX();
-                    posY = region.getMinimumPoint().getBlockY();
-                    posZ = region.getMinimumPoint().getBlockZ();
+                    posX = region.getMinimumPoint().x();
+                    posY = region.getMinimumPoint().y();
+                    posZ = region.getMinimumPoint().z();
 
                     width = region.getWidth();
                     height = region.getHeight();
@@ -104,9 +104,9 @@ public class ServerCUIHandler {
                 }
 
                 // Just select the point.
-                posX = point.getBlockX();
-                posY = point.getBlockY();
-                posZ = point.getBlockZ();
+                posX = point.x();
+                posY = point.y();
+                posZ = point.z();
                 width = 1;
                 height = 1;
                 length = 1;

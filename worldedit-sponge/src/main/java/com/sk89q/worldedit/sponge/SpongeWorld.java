@@ -151,14 +151,14 @@ public final class SpongeWorld extends AbstractWorld {
     @Override
     public BlockState getBlock(BlockVector3 position) {
         return SpongeAdapter.adapt(getWorld().block(
-            position.getX(), position.getY(), position.getZ()
+            position.x(), position.y(), position.z()
         ));
     }
 
     @Override
     public BaseBlock getFullBlock(BlockVector3 position) {
         BlockEntity blockEntity = getWorld().blockEntity(
-                position.getX(), position.getY(), position.getZ()
+            position.x(), position.y(), position.z()
         ).orElse(null);
         LinCompoundTag blockEntityData = null;
         if (blockEntity != null) {
@@ -170,9 +170,9 @@ public final class SpongeWorld extends AbstractWorld {
             // Add ID and position since Sponge's #blockEntityData does not save metadata
             LinCompoundTag.Builder fullBlockEntityDataBuilder = blockEntityData.toBuilder();
             fullBlockEntityDataBuilder.put("id", LinStringTag.of(blockEntityId.formatted()));
-            fullBlockEntityDataBuilder.put("x", LinIntTag.of(position.getX()));
-            fullBlockEntityDataBuilder.put("y", LinIntTag.of(position.getY()));
-            fullBlockEntityDataBuilder.put("z", LinIntTag.of(position.getZ()));
+            fullBlockEntityDataBuilder.put("x", LinIntTag.of(position.x()));
+            fullBlockEntityDataBuilder.put("y", LinIntTag.of(position.y()));
+            fullBlockEntityDataBuilder.put("z", LinIntTag.of(position.z()));
             blockEntityData = fullBlockEntityDataBuilder.build();
         }
         return getBlock(position).toBaseBlock(blockEntityData);
@@ -188,7 +188,7 @@ public final class SpongeWorld extends AbstractWorld {
         org.spongepowered.api.block.BlockState newState = SpongeAdapter.adapt(block.toImmutableState());
 
         boolean didSet = world.setBlock(
-            position.getX(), position.getY(), position.getZ(),
+            position.x(), position.y(), position.z(),
             newState,
             BlockChangeFlags.NONE
                 .withUpdateNeighbors(sideEffects.shouldApply(SideEffect.NEIGHBORS))
@@ -204,7 +204,7 @@ public final class SpongeWorld extends AbstractWorld {
         );
         if (!didSet) {
             // still update NBT if the block is the same
-            if (world.block(position.getX(), position.getY(), position.getZ()) == newState) {
+            if (world.block(position.x(), position.y(), position.z()) == newState) {
                 didSet = block.toBaseBlock().getNbt() != null;
             }
         }
@@ -221,7 +221,7 @@ public final class SpongeWorld extends AbstractWorld {
                     .blockEntityData(NbtAdapter.adaptFromWorldEdit(nbt))
                     .state(newState)
                     .build()
-                    .apply(ServerLocation.of(world, position.getX(), position.getY(), position.getZ()));
+                    .apply(ServerLocation.of(world, position.x(), position.y(), position.z()));
             }
         }
 
@@ -242,7 +242,7 @@ public final class SpongeWorld extends AbstractWorld {
 
     @Override
     public boolean clearContainerBlockContents(BlockVector3 position) {
-        getWorld().removeBlockEntity(position.getX(), position.getY(), position.getZ());
+        getWorld().removeBlockEntity(position.x(), position.y(), position.z());
         return true;
     }
 
@@ -272,7 +272,7 @@ public final class SpongeWorld extends AbstractWorld {
             // We need to also pull one more chunk in every direction
             CuboidRegion expandedPreGen = new CuboidRegion(region.getMinimumPoint().subtract(16, 16, 16), region.getMaximumPoint().add(16, 16, 16));
             for (BlockVector3 chunk : expandedPreGen.getChunkCubes()) {
-                tempWorld.loadChunk(chunk.getBlockX(), chunk.getBlockY(), chunk.getBlockZ(), true);
+                tempWorld.loadChunk(chunk.x(), chunk.y(), chunk.z(), true);
             }
 
             World from = SpongeAdapter.adapt(tempWorld);
@@ -332,7 +332,7 @@ public final class SpongeWorld extends AbstractWorld {
             .orElse(null);
         return generator != null && generator.place(
             world, world.getChunkSource().getGenerator(), random,
-            new BlockPos(position.getX(), position.getY(), position.getZ())
+            new BlockPos(position.x(), position.y(), position.z())
         );
     }
 
@@ -340,8 +340,8 @@ public final class SpongeWorld extends AbstractWorld {
     public int getBlockLightLevel(BlockVector3 position) {
         checkNotNull(position);
 
-        int skyLight = getWorld().light(LightTypes.SKY, position.getX(), position.getY(), position.getZ());
-        int groundLight = getWorld().light(LightTypes.BLOCK, position.getX(), position.getY(), position.getZ());
+        int skyLight = getWorld().light(LightTypes.SKY, position.x(), position.y(), position.z());
+        int groundLight = getWorld().light(LightTypes.BLOCK, position.x(), position.y(), position.z());
 
         return Math.max(skyLight, groundLight);
 
@@ -352,7 +352,7 @@ public final class SpongeWorld extends AbstractWorld {
         checkNotNull(position);
         return BiomeType.REGISTRY.get(
             getWorld().registry(RegistryTypes.BIOME)
-                .valueKey(getWorld().biome(position.getBlockX(), position.getBlockY(), position.getBlockZ()))
+                .valueKey(getWorld().biome(position.x(), position.y(), position.z()))
                 .asString()
         );
     }
@@ -363,9 +363,9 @@ public final class SpongeWorld extends AbstractWorld {
         checkNotNull(biome);
 
         getWorld().setBiome(
-            position.getBlockX(), position.getY(), position.getBlockZ(),
+            position.x(), position.y(), position.z(),
             getWorld().registry(RegistryTypes.BIOME).value(
-                ResourceKey.resolve(biome.getId())
+                ResourceKey.resolve(biome.id())
             )
         );
         return true;
@@ -382,7 +382,7 @@ public final class SpongeWorld extends AbstractWorld {
 
         Item itemEntity = getWorld().createEntity(
             EntityTypes.ITEM,
-            new Vector3d(position.getX(), position.getY(), position.getZ())
+            new Vector3d(position.x(), position.y(), position.z())
         );
 
         itemEntity.item().set(
@@ -394,7 +394,7 @@ public final class SpongeWorld extends AbstractWorld {
     @Override
     public void simulateBlockMine(BlockVector3 position) {
         getWorld().destroyBlock(
-            new Vector3i(position.getX(), position.getY(), position.getZ()),
+            new Vector3i(position.x(), position.y(), position.z()),
             true
         );
     }
@@ -404,7 +404,7 @@ public final class SpongeWorld extends AbstractWorld {
         return ((net.minecraft.world.level.block.state.BlockState) SpongeAdapter.adapt(blockState))
             .canSurvive(
                 ((LevelReader) getWorld()),
-                new BlockPos(position.getX(), position.getY(), position.getZ())
+                new BlockPos(position.x(), position.y(), position.z())
             );
     }
 
@@ -455,7 +455,7 @@ public final class SpongeWorld extends AbstractWorld {
     @Override
     public Entity createEntity(Location location, BaseEntity entity) {
         Optional<EntityType<?>> entityType = Sponge.game().registry(RegistryTypes.ENTITY_TYPE)
-                .findValue(ResourceKey.resolve(entity.getType().getId()));
+                .findValue(ResourceKey.resolve(entity.getType().id()));
         if (entityType.isEmpty()) {
             return null;
         }
@@ -483,7 +483,7 @@ public final class SpongeWorld extends AbstractWorld {
     public void setWeather(WeatherType weatherType) {
         getWorld().setWeather(
             Sponge.game().registry(RegistryTypes.WEATHER_TYPE).value(
-                ResourceKey.resolve(weatherType.getId())
+                ResourceKey.resolve(weatherType.id())
             )
         );
     }
@@ -492,7 +492,7 @@ public final class SpongeWorld extends AbstractWorld {
     public void setWeather(WeatherType weatherType, long duration) {
         getWorld().setWeather(
             Sponge.game().registry(RegistryTypes.WEATHER_TYPE).value(
-                ResourceKey.resolve(weatherType.getId())
+                ResourceKey.resolve(weatherType.id())
             ),
             Ticks.of(duration)
         );

@@ -190,8 +190,8 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
 
     @Override
     public long getVolume() {
-        return BigDecimal.valueOf(radius.getX())
-                .multiply(BigDecimal.valueOf(radius.getZ()))
+        return BigDecimal.valueOf(radius.x())
+                .multiply(BigDecimal.valueOf(radius.z()))
                 .multiply(PI)
                 .multiply(BigDecimal.valueOf(getHeight()))
                 .setScale(0, RoundingMode.FLOOR)
@@ -200,7 +200,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
 
     @Override
     public int getWidth() {
-        return (int) (2 * radius.getX());
+        return (int) (2 * radius.x());
     }
 
     @Override
@@ -210,7 +210,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
 
     @Override
     public int getLength() {
-        return (int) (2 * radius.getZ());
+        return (int) (2 * radius.z());
     }
 
     private BlockVector2 calculateDiff2D(BlockVector3... changes) throws RegionOperationException {
@@ -219,7 +219,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
             diff = diff.add(change.toBlockVector2());
         }
 
-        if ((diff.getBlockX() & 1) + (diff.getBlockZ() & 1) != 0) {
+        if ((diff.x() & 1) + (diff.z() & 1) != 0) {
             throw new RegionOperationException(TranslatableComponent.of("worldedit.selection.cylinder.error.even-horizontal"));
         }
 
@@ -240,7 +240,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
         center = center.add(calculateDiff2D(changes));
         radius = radius.add(calculateChanges2D(changes).toVector2());
         for (BlockVector3 change : changes) {
-            int changeY = change.getBlockY();
+            int changeY = change.y();
             if (changeY > 0) {
                 maxY += changeY;
             } else {
@@ -256,7 +256,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
         radius = Vector2.at(1.5, 1.5).getMaximum(newRadius);
         for (BlockVector3 change : changes) {
             int height = maxY - minY;
-            int changeY = change.getBlockY();
+            int changeY = change.y();
             if (changeY > 0) {
                 minY += Math.min(height, changeY);
             } else {
@@ -269,7 +269,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
     public void shift(BlockVector3 change) throws RegionOperationException {
         center = center.add(change.toBlockVector2());
 
-        int changeY = change.getBlockY();
+        int changeY = change.y();
         maxY += changeY;
         minY += changeY;
     }
@@ -279,7 +279,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
      */
     @Override
     public boolean contains(BlockVector3 position) {
-        final int blockY = position.getBlockY();
+        final int blockY = position.y();
         if (blockY < minY || blockY > maxY) {
             return false;
         }
@@ -350,8 +350,8 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
         checkNotNull(extent);
         checkNotNull(center);
         Vector2 radiusVec = Vector2.at(radius, radius);
-        int minY = extent.getMinimumPoint().getBlockY();
-        int maxY = extent.getMaximumPoint().getBlockY();
+        int minY = extent.getMinimumPoint().y();
+        int maxY = extent.getMaximumPoint().y();
         return new CylinderRegion(center, radiusVec, minY, maxY);
     }
 

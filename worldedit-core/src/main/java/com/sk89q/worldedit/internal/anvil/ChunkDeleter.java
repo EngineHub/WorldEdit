@@ -55,7 +55,7 @@ public final class ChunkDeleter {
     private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     private static final Comparator<BlockVector2> chunkSorter = Comparator.comparing(
-        pos -> (pos.getBlockX() & 31) + (pos.getBlockZ() & 31) * 32
+        pos -> (pos.x() & 31) + (pos.z() & 31) * 32
     );
 
     private static final Gson chunkDeleterGson = new GsonBuilder()
@@ -180,14 +180,14 @@ public final class ChunkDeleter {
                     int startZ = regZ << 5;
                     int endZ = (regZ << 5) + 31;
 
-                    int minX = Math.max(Math.min(startX, endX), minChunk.getBlockX());
-                    int minZ = Math.max(Math.min(startZ, endZ), minChunk.getBlockZ());
-                    int maxX = Math.min(Math.max(startX, endX), maxChunk.getBlockX());
-                    int maxZ = Math.min(Math.max(startZ, endZ), maxChunk.getBlockZ());
+                    int minX = Math.max(Math.min(startX, endX), minChunk.x());
+                    int minZ = Math.max(Math.min(startZ, endZ), minChunk.z());
+                    int maxX = Math.min(Math.max(startX, endX), maxChunk.x());
+                    int maxZ = Math.min(Math.max(startZ, endZ), maxChunk.z());
                     Stream<BlockVector2> stream = Stream.iterate(BlockVector2.at(minX, minZ),
                         bv2 -> {
-                            int nextX = bv2.getBlockX();
-                            int nextZ = bv2.getBlockZ();
+                            int nextX = bv2.x();
+                            int nextZ = bv2.z();
                             if (++nextX > maxX) {
                                 nextX = minX;
                                 if (++nextZ > maxZ) {
@@ -286,8 +286,8 @@ public final class ChunkDeleter {
         @Override
         public void write(JsonWriter out, BlockVector2 value) throws IOException {
             out.beginArray();
-            out.value(value.getBlockX());
-            out.value(value.getBlockZ());
+            out.value(value.x());
+            out.value(value.z());
             out.endArray();
         }
 
@@ -306,8 +306,8 @@ public final class ChunkDeleter {
         private final int z;
 
         RegionFilePos(BlockVector2 chunk) {
-            this.x = chunk.getBlockX() >> 5;
-            this.z = chunk.getBlockZ() >> 5;
+            this.x = chunk.x() >> 5;
+            this.z = chunk.z() >> 5;
         }
 
         RegionFilePos(int regX, int regZ) {

@@ -108,8 +108,8 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
     public void findFreePosition(Location searchPos) {
         Extent world = searchPos.getExtent();
 
-        int worldMinY = world.getMinimumPoint().getY();
-        int worldMaxY = world.getMaximumPoint().getY();
+        int worldMinY = world.getMinimumPoint().y();
+        int worldMaxY = world.getMaximumPoint().y();
 
         int x = searchPos.getBlockX();
         int y = Math.max(worldMinY, searchPos.getBlockY());
@@ -147,7 +147,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
     public void setOnGround(Location searchPos) {
         Extent world = searchPos.getExtent();
 
-        int worldMinY = world.getMinimumPoint().getY();
+        int worldMinY = world.getMinimumPoint().y();
 
         int x = searchPos.getBlockX();
         int y = Math.max(worldMinY, searchPos.getBlockY());

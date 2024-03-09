@@ -241,7 +241,7 @@ public class BukkitAdapter {
         Vector3 position = location.toVector();
         return new org.bukkit.Location(
                 adapt((World) location.getExtent()),
-                position.getX(), position.getY(), position.getZ(),
+            position.x(), position.y(), position.z(),
                 location.getYaw(),
                 location.getPitch());
     }
@@ -258,7 +258,7 @@ public class BukkitAdapter {
         checkNotNull(position);
         return new org.bukkit.Location(
                 world,
-                position.getX(), position.getY(), position.getZ());
+            position.x(), position.y(), position.z());
     }
 
     /**
@@ -273,7 +273,7 @@ public class BukkitAdapter {
         checkNotNull(position);
         return new org.bukkit.Location(
                 world,
-                position.getX(), position.getY(), position.getZ());
+            position.x(), position.y(), position.z());
     }
 
     /**
@@ -375,9 +375,9 @@ public class BukkitAdapter {
     }
 
     public static Biome adapt(BiomeType biomeType) {
-        NamespacedKey biomeKey = NamespacedKey.fromString(biomeType.getId());
+        NamespacedKey biomeKey = NamespacedKey.fromString(biomeType.id());
         if (biomeKey == null) {
-            throw new IllegalArgumentException("Biome key '" + biomeType.getId() + "' does not map to Bukkit");
+            throw new IllegalArgumentException("Biome key '" + biomeType.id() + "' does not map to Bukkit");
         }
         try {
             return biomeTypeBiomeCache.computeIfAbsent(biomeType, type -> Registry.BIOME.get(biomeKey));
@@ -397,9 +397,9 @@ public class BukkitAdapter {
     }
 
     public static org.bukkit.entity.EntityType adapt(EntityType entityType) {
-        NamespacedKey entityKey = NamespacedKey.fromString(entityType.getId());
+        NamespacedKey entityKey = NamespacedKey.fromString(entityType.id());
         if (entityKey == null) {
-            throw new IllegalArgumentException("Entity key '" + entityType.getId() + "' does not map to Bukkit");
+            throw new IllegalArgumentException("Entity key '" + entityType.id() + "' does not map to Bukkit");
         }
 
         return Registry.ENTITY_TYPE.get(entityKey);

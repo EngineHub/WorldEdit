@@ -119,17 +119,17 @@ public class TransformRegion extends AbstractRegion {
 
     @Override
     public int getWidth() {
-        return getMaximumPoint().subtract(getMinimumPoint()).getBlockX() + 1;
+        return getMaximumPoint().subtract(getMinimumPoint()).x() + 1;
     }
 
     @Override
     public int getHeight() {
-        return getMaximumPoint().subtract(getMinimumPoint()).getBlockY() + 1;
+        return getMaximumPoint().subtract(getMinimumPoint()).y() + 1;
     }
 
     @Override
     public int getLength() {
-        return getMaximumPoint().subtract(getMinimumPoint()).getBlockZ() + 1;
+        return getMaximumPoint().subtract(getMinimumPoint()).z() + 1;
     }
 
     @Override

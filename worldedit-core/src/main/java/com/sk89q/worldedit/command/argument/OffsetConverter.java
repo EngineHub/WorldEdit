@@ -98,9 +98,9 @@ public class OffsetConverter implements ArgumentConverter<BlockVector3> {
 
         // Create an affine transform of the columns (col4 is empty due to no translation)
         AffineTransform transform = new AffineTransform(
-            m1.getX(), m2.getX(), m3.getX(), 0,
-            m1.getY(), m2.getY(), m3.getY(), 0,
-            m1.getZ(), m2.getZ(), m3.getZ(), 0
+            m1.x(), m2.x(), m3.x(), 0,
+            m1.y(), m2.y(), m3.y(), 0,
+            m1.z(), m2.z(), m3.z(), 0
         );
 
         return transform

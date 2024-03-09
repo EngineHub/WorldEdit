@@ -64,7 +64,7 @@ public class BlockArrayClipboard implements Clipboard {
         this.origin = region.getMinimumPoint();
 
         BlockVector3 dimensions = getDimensions();
-        blocks = new BaseBlock[dimensions.getBlockX()][dimensions.getBlockY()][dimensions.getBlockZ()];
+        blocks = new BaseBlock[dimensions.x()][dimensions.y()][dimensions.z()];
     }
 
     @Override
@@ -125,7 +125,7 @@ public class BlockArrayClipboard implements Clipboard {
     public BlockState getBlock(BlockVector3 position) {
         if (region.contains(position)) {
             BlockVector3 v = position.subtract(region.getMinimumPoint());
-            BaseBlock block = blocks[v.getBlockX()][v.getBlockY()][v.getBlockZ()];
+            BaseBlock block = blocks[v.x()][v.y()][v.z()];
             if (block != null) {
                 return block.toImmutableState();
             }
@@ -138,7 +138,7 @@ public class BlockArrayClipboard implements Clipboard {
     public BaseBlock getFullBlock(BlockVector3 position) {
         if (region.contains(position)) {
             BlockVector3 v = position.subtract(region.getMinimumPoint());
-            BaseBlock block = blocks[v.getBlockX()][v.getBlockY()][v.getBlockZ()];
+            BaseBlock block = blocks[v.x()][v.y()][v.z()];
             if (block != null) {
                 return block;
             }
@@ -151,7 +151,7 @@ public class BlockArrayClipboard implements Clipboard {
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block) {
         if (region.contains(position)) {
             BlockVector3 v = position.subtract(region.getMinimumPoint());
-            blocks[v.getBlockX()][v.getBlockY()][v.getBlockZ()] = block.toBaseBlock();
+            blocks[v.x()][v.y()][v.z()] = block.toBaseBlock();
             return true;
         } else {
             return false;
@@ -168,7 +168,7 @@ public class BlockArrayClipboard implements Clipboard {
         if (biomes != null
                 && position.containedWithin(getMinimumPoint(), getMaximumPoint())) {
             BlockVector3 v = position.subtract(region.getMinimumPoint());
-            BiomeType biomeType = biomes[v.getBlockX()][v.getBlockY()][v.getBlockZ()];
+            BiomeType biomeType = biomes[v.x()][v.y()][v.z()];
             if (biomeType != null) {
                 return biomeType;
             }
@@ -184,7 +184,7 @@ public class BlockArrayClipboard implements Clipboard {
             if (biomes == null) {
                 biomes = new BiomeType[region.getWidth()][region.getHeight()][region.getLength()];
             }
-            biomes[v.getBlockX()][v.getBlockY()][v.getBlockZ()] = biome;
+            biomes[v.x()][v.y()][v.z()] = biome;
             return true;
         }
         return false;

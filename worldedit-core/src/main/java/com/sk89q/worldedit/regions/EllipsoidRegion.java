@@ -88,32 +88,32 @@ public class EllipsoidRegion extends AbstractRegion {
     @Override
     public long getVolume() {
         return ELLIPSOID_BASE_MULTIPLIER
-                .multiply(BigDecimal.valueOf(radius.getX()))
-                .multiply(BigDecimal.valueOf(radius.getY()))
-                .multiply(BigDecimal.valueOf(radius.getZ()))
+                .multiply(BigDecimal.valueOf(radius.x()))
+                .multiply(BigDecimal.valueOf(radius.y()))
+                .multiply(BigDecimal.valueOf(radius.z()))
                 .setScale(0, RoundingMode.FLOOR)
                 .longValue();
     }
 
     @Override
     public int getWidth() {
-        return (int) (2 * radius.getX());
+        return (int) (2 * radius.x());
     }
 
     @Override
     public int getHeight() {
-        return (int) (2 * radius.getY());
+        return (int) (2 * radius.y());
     }
 
     @Override
     public int getLength() {
-        return (int) (2 * radius.getZ());
+        return (int) (2 * radius.z());
     }
 
     private BlockVector3 calculateDiff(BlockVector3... changes) throws RegionOperationException {
         BlockVector3 diff = BlockVector3.ZERO.add(changes);
 
-        if ((diff.getBlockX() & 1) + (diff.getBlockY() & 1) + (diff.getBlockZ() & 1) != 0) {
+        if ((diff.x() & 1) + (diff.y() & 1) + (diff.z() & 1) != 0) {
             throw new RegionOperationException(TranslatableComponent.of("worldedit.selection.ellipsoid.error.even-horizontal"));
         }
 
@@ -190,10 +190,10 @@ public class EllipsoidRegion extends AbstractRegion {
 
         final BlockVector3 min = getMinimumPoint();
         final BlockVector3 max = getMaximumPoint();
-        final int centerY = center.getBlockY();
+        final int centerY = center.y();
 
-        for (int x = min.getBlockX(); x <= max.getBlockX(); ++x) {
-            for (int z = min.getBlockZ(); z <= max.getBlockZ(); ++z) {
+        for (int x = min.x(); x <= max.x(); ++x) {
+            for (int z = min.z(); z <= max.z(); ++z) {
                 if (!contains(BlockVector3.at(x, centerY, z))) {
                     continue;
                 }
