@@ -160,8 +160,15 @@ public class PlatformManager {
      * @return the platform
      * @throws NoCapablePlatformException thrown if no platform is capable
      */
-    public synchronized Platform queryCapability(Capability capability) throws NoCapablePlatformException {
+    public Platform queryCapability(Capability capability) throws NoCapablePlatformException {
         Platform platform = preferences.get(checkNotNull(capability));
+
+        if (platform == null) {
+            synchronized(this) {
+                platform = preferences.get(checkNotNull(capability));
+            }
+        }
+
         if (platform != null) {
             return platform;
         } else {
