@@ -63,7 +63,7 @@ public class WorldConverter implements ArgumentConverter<World> {
     @Override
     public List<String> getSuggestions(String input, InjectedValueAccess context) {
         return getWorlds()
-                .map(World::getId)
+                .map(World::getName)
                 .filter(world -> world.startsWith(input))
                 .collect(Collectors.toList());
     }
@@ -71,7 +71,7 @@ public class WorldConverter implements ArgumentConverter<World> {
     @Override
     public ConversionResult<World> convert(String s, InjectedValueAccess injectedValueAccess) {
         World result = getWorlds()
-                .filter(world -> world.getId().equals(s))
+                .filter(world -> world.getName().equals(s))
                 .findAny().orElse(null);
         return result == null
                 ? FailedConversion.from(new IllegalArgumentException(
