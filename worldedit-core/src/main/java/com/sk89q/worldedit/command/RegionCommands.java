@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.util.CommandPermissions;
@@ -30,6 +31,9 @@ import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extent.MaskingExtent;
+import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.GroundFunction;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.block.BlockReplace;
@@ -37,7 +41,9 @@ import com.sk89q.worldedit.function.generator.FloraGenerator;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.MaskIntersection;
+import com.sk89q.worldedit.function.mask.MatchMask;
 import com.sk89q.worldedit.function.mask.NoiseFilter2D;
+import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.visitor.LayerVisitor;
@@ -63,6 +69,7 @@ import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.RegenOptions;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BlockTypes;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
@@ -462,6 +469,36 @@ public class RegionCommands {
         } else {
             actor.printError(TranslatableComponent.of("worldedit.regen.failed"));
         }
+    }
+
+    @Command(
+        name = "/ungen",
+        desc = "Ungenerates the contents of the selection"
+    )
+    @CommandPermissions("worldedit.regen")
+    @Logging(REGION)
+    void ungenerate(Actor actor, World world, LocalSession session, EditSession editSession,
+                    @Selection Region region,
+                    @Arg(desc = "The seed to ungenerate with, otherwise uses world seed", def = "")
+                    Long seed) throws MaxChangedBlocksException {
+        Mask mask = session.getMask();
+        try {
+            session.setMask(null);
+            RegenOptions options = RegenOptions.builder()
+                .seed(seed)
+                .regenBiomes(false)
+                .build();
+            Clipboard clipboard = new BlockArrayClipboard(region);
+            world.regenerate(region, clipboard, options);
+
+            BlockReplace replace = new BlockReplace(new MaskingExtent(editSession, new MatchMask(editSession, clipboard)), BlockTypes.AIR.getDefaultState());
+            RegionVisitor visitor = new RegionVisitor(region, replace);
+            Operations.completeLegacy(visitor);
+        } finally {
+            session.setMask(mask);
+        }
+
+        actor.printInfo(TranslatableComponent.of("worldedit.regen.ungenerated"));
     }
 
     @Command(
