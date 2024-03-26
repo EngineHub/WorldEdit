@@ -258,14 +258,6 @@ public interface BukkitImplAdapter {
     }
 
     /**
-     * Checks if this adapter supports custom biomes.
-     * @return if custom biomes are supported
-     */
-    default boolean hasCustomBiomeSupport() {
-        return false;
-    }
-
-    /**
      * Set the biome at a location.
      * @param location the location
      * @param biome the new biome

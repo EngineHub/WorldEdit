@@ -518,15 +518,9 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean fullySupports3DBiomes() {
-        // Supports if API does and we're not in the overworld
-        return getWorld().getEnvironment() != World.Environment.NORMAL || PaperLib.isVersion(18);
-    }
-
-    @Override
     public BiomeType getBiome(BlockVector3 position) {
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
-        if (adapter != null && adapter.hasCustomBiomeSupport()) {
+        if (adapter != null) {
             return adapter.getBiome(BukkitAdapter.adapt(getWorld(), position));
         } else {
             return BukkitAdapter.adapt(getWorld().getBiome(position.x(), position.y(), position.z()));
@@ -536,7 +530,7 @@ public class BukkitWorld extends AbstractWorld {
     @Override
     public boolean setBiome(BlockVector3 position, BiomeType biome) {
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
-        if (adapter != null && adapter.hasCustomBiomeSupport()) {
+        if (adapter != null) {
             adapter.setBiome(BukkitAdapter.adapt(getWorld(), position), biome);
         } else {
             getWorld().setBiome(position.x(), position.y(), position.z(), BukkitAdapter.adapt(biome));

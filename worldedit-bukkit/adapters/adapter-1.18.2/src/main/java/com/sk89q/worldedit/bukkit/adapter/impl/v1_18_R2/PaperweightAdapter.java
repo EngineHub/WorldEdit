@@ -367,10 +367,6 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         return state.toBaseBlock();
     }
 
-    public boolean hasCustomBiomeSupport() {
-        return true;
-    }
-
     private static final HashMap<BiomeType, Holder<Biome>> biomeTypeToNMSCache = new HashMap<>();
     private static final HashMap<Holder<Biome>, BiomeType> biomeTypeFromNMSCache = new HashMap<>();
 
