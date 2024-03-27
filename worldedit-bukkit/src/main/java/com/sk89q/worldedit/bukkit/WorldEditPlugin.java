@@ -297,6 +297,11 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             Platform platform = worldEdit.getPlatformManager().queryCapability(Capability.WORLD_EDITING);
             if (platform instanceof BukkitServerInterface) {
                 LOGGER.warn(e.getMessage());
+                try {
+                    Class.forName("org.spigotmc.SpigotConfig");
+                } catch (ClassNotFoundException e1) {
+                    LOGGER.warn("CraftBukkit is not a supported Bukkit platform. Please use a supported platform, such as Paper.");
+                }
             } else {
                 LOGGER.info("WorldEdit could not find a Bukkit adapter for this MC version, "
                     + "but it seems that you have another implementation of WorldEdit installed (" + platform.getPlatformName() + ") "
