@@ -65,7 +65,9 @@ public interface OutputExtent {
      * </p>
      *
      * @return if the extent fully supports 3D biomes
+     * @deprecated All supported platforms now support this, the check is no longer necessary
      */
+    @Deprecated
     default boolean fullySupports3DBiomes() {
         return true;
     }
