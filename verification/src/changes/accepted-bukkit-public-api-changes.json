@@ -1,2 +1,11 @@
 {
+  "Removal of override method that exists in superclass": [
+    {
+      "type": "com.sk89q.worldedit.bukkit.BukkitWorld",
+      "member": "Method com.sk89q.worldedit.bukkit.BukkitWorld.fullySupports3DBiomes()",
+      "changes": [
+        "METHOD_REMOVED"
+      ]
+    }
+  ]
 }
