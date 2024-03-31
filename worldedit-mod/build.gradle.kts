@@ -22,7 +22,7 @@ open class MergeManifests : DefaultTask() {
         }
 
         private fun throwException(old: Any?, new: Any?, key: Attributes.Name) {
-            throw IllegalStateException("Duplicate $key: $new")
+            throw IllegalStateException("Duplicate $key: was $old, trying to add $new")
         }
 
         private val MERGE_LOGIC = mapOf(
