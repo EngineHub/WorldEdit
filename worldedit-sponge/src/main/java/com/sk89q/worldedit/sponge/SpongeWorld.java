@@ -110,7 +110,7 @@ public final class SpongeWorld extends AbstractWorld {
      *
      * @param world the world
      */
-    protected SpongeWorld(ServerWorld world) {
+    SpongeWorld(ServerWorld world) {
         checkNotNull(world);
         this.worldRef = new WeakReference<>(world);
         this.worldNativeAccess = new SpongeWorldNativeAccess(new WeakReference<>((ServerLevel) world));
@@ -139,7 +139,7 @@ public final class SpongeWorld extends AbstractWorld {
     }
 
     @Override
-    public String getId() {
+    public String id() {
         return getWorld().key().asString();
     }
 
@@ -214,9 +214,9 @@ public final class SpongeWorld extends AbstractWorld {
             LinCompoundTag nbt = baseBlock.getNbt();
             if (nbt != null) {
                 BlockEntityArchetype.builder()
-                    .blockEntity((BlockEntityType)
+                    .blockEntity(
                         Sponge.game().registry(RegistryTypes.BLOCK_ENTITY_TYPE)
-                            .value(ResourceKey.resolve(baseBlock.getNbtId()))
+                            .<BlockEntityType>value(ResourceKey.resolve(baseBlock.getNbtId()))
                     )
                     .blockEntityData(NbtAdapter.adaptFromWorldEdit(nbt))
                     .state(newState)
@@ -319,7 +319,8 @@ public final class SpongeWorld extends AbstractWorld {
             case MANGROVE -> TreeFeatures.MANGROVE;
             case TALL_MANGROVE -> TreeFeatures.TALL_MANGROVE;
             case CHERRY -> TreeFeatures.CHERRY;
-            case RANDOM -> createTreeFeatureGenerator(TreeGenerator.TreeType.values()[ThreadLocalRandom.current().nextInt(TreeGenerator.TreeType.values().length)]);
+            case RANDOM ->
+                createTreeFeatureGenerator(TreeGenerator.TreeType.values()[ThreadLocalRandom.current().nextInt(TreeGenerator.TreeType.values().length)]);
             default -> null;
         };
     }
@@ -455,7 +456,7 @@ public final class SpongeWorld extends AbstractWorld {
     @Override
     public Entity createEntity(Location location, BaseEntity entity) {
         Optional<EntityType<?>> entityType = Sponge.game().registry(RegistryTypes.ENTITY_TYPE)
-                .findValue(ResourceKey.resolve(entity.getType().id()));
+            .findValue(ResourceKey.resolve(entity.getType().id()));
         if (entityType.isEmpty()) {
             return null;
         }

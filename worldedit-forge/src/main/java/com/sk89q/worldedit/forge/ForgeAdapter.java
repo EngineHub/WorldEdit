@@ -195,7 +195,7 @@ public final class ForgeAdapter {
     }
 
     public static Block adapt(BlockType blockType) {
-        return ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockType.getId()));
+        return ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockType.id()));
     }
 
     public static BlockType adapt(Block block) {
@@ -203,7 +203,7 @@ public final class ForgeAdapter {
     }
 
     public static Item adapt(ItemType itemType) {
-        return ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemType.getId()));
+        return ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemType.id()));
     }
 
     public static ItemType adapt(Item item) {

@@ -209,7 +209,7 @@ public final class FabricAdapter {
     }
 
     public static Block adapt(BlockType blockType) {
-        return FabricWorldEdit.getRegistry(Registries.BLOCK).get(new ResourceLocation(blockType.getId()));
+        return FabricWorldEdit.getRegistry(Registries.BLOCK).get(new ResourceLocation(blockType.id()));
     }
 
     public static BlockType adapt(Block block) {
@@ -217,7 +217,7 @@ public final class FabricAdapter {
     }
 
     public static Item adapt(ItemType itemType) {
-        return FabricWorldEdit.getRegistry(Registries.ITEM).get(new ResourceLocation(itemType.getId()));
+        return FabricWorldEdit.getRegistry(Registries.ITEM).get(new ResourceLocation(itemType.id()));
     }
 
     public static ItemType adapt(Item item) {

@@ -20,8 +20,6 @@
 package com.sk89q.worldedit.util.collection;
 
 import com.google.common.collect.ImmutableMap;
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.StringTag;
 import com.sk89q.worldedit.BaseWorldEditTest;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.Registry;
@@ -29,6 +27,7 @@ import com.sk89q.worldedit.util.test.VariedVectorGenerator;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import org.enginehub.linbus.tree.LinCompoundTag;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -91,7 +90,9 @@ class BlockMapTest extends BaseWorldEditTest {
 
     private final BaseBlock air = checkNotNull(BlockTypes.AIR).getDefaultState().toBaseBlock();
     private final BaseBlock oakWood = checkNotNull(BlockTypes.OAK_WOOD).getDefaultState().toBaseBlock();
-    private final BaseBlock chestWithNbt = checkNotNull(BlockTypes.CHEST).getDefaultState().toBaseBlock(new CompoundTag(ImmutableMap.of("dummy", new StringTag("value"))));
+    private final BaseBlock chestWithNbt = checkNotNull(BlockTypes.CHEST).getDefaultState().toBaseBlock(
+        LinCompoundTag.builder().putString("dummy", "value").build()
+    );
 
     private AutoCloseable mocks;
 
@@ -176,6 +177,7 @@ class BlockMapTest extends BaseWorldEditTest {
 
         @Test
         @DisplayName("never calls the forEach action")
+        @SuppressWarnings("try")
         void neverCallsForEachAction() throws Exception {
             try (AutoCloseable ignored = MockitoAnnotations.openMocks(this)) {
                 BlockMap<BaseBlock> map = BlockMap.createForBaseBlock();
@@ -186,6 +188,7 @@ class BlockMapTest extends BaseWorldEditTest {
 
         @Test
         @DisplayName("never calls the replaceAll function")
+        @SuppressWarnings("try")
         void neverCallsReplaceAllFunction() throws Exception {
             try (AutoCloseable ignored = MockitoAnnotations.openMocks(this)) {
                 BlockMap<BaseBlock> map = BlockMap.createForBaseBlock();
@@ -255,6 +258,7 @@ class BlockMapTest extends BaseWorldEditTest {
 
         @Test
         @DisplayName("inserts on merge, without calling merge function")
+        @SuppressWarnings("try")
         void insertsOnMerge() throws Exception {
             try (AutoCloseable ignored = MockitoAnnotations.openMocks(this)) {
                 BlockMap<BaseBlock> map = BlockMap.createForBaseBlock();
@@ -450,6 +454,7 @@ class BlockMapTest extends BaseWorldEditTest {
 
         @Test
         @DisplayName("calls the forEach action once")
+        @SuppressWarnings("try")
         void neverCallsForEachAction() {
             generator.makeVectorsStream().sequential().forEach(vec -> {
                 try (AutoCloseable ignored = MockitoAnnotations.openMocks(this)) {

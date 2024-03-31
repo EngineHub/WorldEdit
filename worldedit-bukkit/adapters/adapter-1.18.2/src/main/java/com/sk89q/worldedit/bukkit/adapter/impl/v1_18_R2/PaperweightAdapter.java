@@ -297,11 +297,11 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     }
 
     private static Block getBlockFromType(BlockType blockType) {
-        return Registry.BLOCK.get(ResourceLocation.tryParse(blockType.getId()));
+        return Registry.BLOCK.get(ResourceLocation.tryParse(blockType.id()));
     }
 
     private static Item getItemFromType(ItemType itemType) {
-        return Registry.ITEM.get(ResourceLocation.tryParse(itemType.getId()));
+        return Registry.ITEM.get(ResourceLocation.tryParse(itemType.id()));
     }
 
     @Override
@@ -599,7 +599,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
     @Override
     public org.bukkit.inventory.ItemStack adapt(BaseItemStack item) {
-        ItemStack stack = new ItemStack(Registry.ITEM.get(ResourceLocation.tryParse(item.getType().getId())), item.getAmount());
+        ItemStack stack = new ItemStack(Registry.ITEM.get(ResourceLocation.tryParse(item.getType().id())), item.getAmount());
         stack.setTag(((CompoundTag) fromNative(item.getNbt())));
         return CraftItemStack.asCraftMirror(stack);
     }

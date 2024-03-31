@@ -58,6 +58,9 @@ dependencies {
     implementation("org.bstats:bstats-sponge:3.0.0")
     implementation("it.unimi.dsi:fastutil")
     testImplementation("org.mockito:mockito-core:${Versions.MOCKITO}")
+
+    // Silence some warnings, since apparently this isn't on the compile classpath like it should be.
+    compileOnly("com.google.errorprone:error_prone_annotations:2.11.0")
 }
 
 configure<BasePluginExtension> {

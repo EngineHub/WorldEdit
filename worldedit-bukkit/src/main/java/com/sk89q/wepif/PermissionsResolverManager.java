@@ -277,6 +277,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
         @EventHandler
         public void onPluginEnable(PluginEnableEvent event) {
             Plugin plugin = event.getPlugin();
+            @SuppressWarnings("deprecation")
             String name = plugin.getDescription().getName();
             if (plugin instanceof PermissionsProvider) {
                 setPluginPermissionsResolver(plugin);
@@ -289,6 +290,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
 
         @EventHandler
         public void onPluginDisable(PluginDisableEvent event) {
+            @SuppressWarnings("deprecation")
             String name = event.getPlugin().getDescription().getName();
 
             if (event.getPlugin() instanceof PermissionsProvider
