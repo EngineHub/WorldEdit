@@ -65,7 +65,7 @@ public class NullWorld extends AbstractWorld {
     }
 
     @Override
-    public String getId() {
+    public String id() {
         return "null";
     }
 

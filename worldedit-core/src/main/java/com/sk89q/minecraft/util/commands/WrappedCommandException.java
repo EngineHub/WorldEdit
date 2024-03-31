@@ -19,6 +19,7 @@
 
 package com.sk89q.minecraft.util.commands;
 
+@Deprecated
 public class WrappedCommandException extends CommandException {
 
     public WrappedCommandException(Throwable t) {

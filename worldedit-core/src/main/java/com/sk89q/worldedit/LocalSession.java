@@ -789,7 +789,7 @@ public class LocalSession {
             }, this.navWandItem, item);
         } else if (tool == null) {
             // Check if un-setting sel/nav
-            String id = item.getId();
+            String id = item.id();
             if (id.equals(this.wandItem)) {
                 this.wandItem = null;
                 setDirty();
@@ -809,7 +809,7 @@ public class LocalSession {
                 this.tools.remove(item);
             }
         }
-        setter.accept(newItem.getId());
+        setter.accept(newItem.id());
         setDirty();
     }
 

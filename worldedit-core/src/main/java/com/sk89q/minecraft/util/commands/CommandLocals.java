@@ -22,6 +22,7 @@ package com.sk89q.minecraft.util.commands;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 public class CommandLocals {
     
     private final Map<Object, Object> locals = new HashMap<>();

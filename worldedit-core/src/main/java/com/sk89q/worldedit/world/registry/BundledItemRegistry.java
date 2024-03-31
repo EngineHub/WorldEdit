@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
 public class BundledItemRegistry implements ItemRegistry {
 
     private BundledItemData.ItemEntry getEntryById(ItemType itemType) {
-        return BundledItemData.getInstance().findById(itemType.getId());
+        return BundledItemData.getInstance().findById(itemType.id());
     }
 
     @Override
@@ -48,7 +48,7 @@ public class BundledItemRegistry implements ItemRegistry {
             return TextComponent.of(itemEntry.localizedName);
         }
         return TranslatableComponent.of(
-            TranslationManager.makeTranslationKey("item", itemType.getId())
+            TranslationManager.makeTranslationKey("item", itemType.id())
         );
     }
 
@@ -62,7 +62,7 @@ public class BundledItemRegistry implements ItemRegistry {
         if (itemEntry != null) {
             String localized = itemEntry.localizedName;
             if (localized.equals("Air")) {
-                String id = itemType.getId();
+                String id = itemType.id();
                 int c = id.indexOf(':');
                 return c < 0 ? id : id.substring(c + 1);
             }
@@ -74,6 +74,6 @@ public class BundledItemRegistry implements ItemRegistry {
     @Nullable
     @Override
     public ItemMaterial getMaterial(ItemType itemType) {
-        return new PassthroughItemMaterial(BundledItemData.getInstance().getMaterialById(itemType.getId()));
+        return new PassthroughItemMaterial(BundledItemData.getInstance().getMaterialById(itemType.id()));
     }
 }

@@ -23,7 +23,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public abstract class Category<T extends Keyed> {
+import static com.google.common.base.Preconditions.checkState;
+
+public abstract class Category<T extends Keyed> implements Keyed {
     private final Set<T> set = new HashSet<>();
     private final Supplier<Set<T>> supplier;
     protected final String id;
@@ -39,17 +41,14 @@ public abstract class Category<T extends Keyed> {
         this.supplier = contentSupplier;
     }
 
-    public final String getId() {
+    @Override
+    public final String id() {
         return this.id;
     }
 
     public final Set<T> getAll() {
         if (this.empty) {
-            if (supplier != null) {
-                this.set.addAll(this.supplier.get());
-            } else {
-                this.set.addAll(this.load());
-            }
+            this.set.addAll(this.load());
             this.empty = false;
         }
         return this.set;
@@ -63,7 +62,10 @@ public abstract class Category<T extends Keyed> {
      *     the platforms via the supplier constructor.
      */
     @Deprecated
-    protected abstract Set<T> load();
+    protected Set<T> load() {
+        checkState(this.supplier != null, "load() should be overriden or a supplier should be provided in the constructor.");
+        return this.supplier.get();
+    }
 
     /**
      * Checks if this category contains {@code object}.
@@ -82,6 +84,6 @@ public abstract class Category<T extends Keyed> {
 
     @Override
     public String toString() {
-        return getId();
+        return id();
     }
 }

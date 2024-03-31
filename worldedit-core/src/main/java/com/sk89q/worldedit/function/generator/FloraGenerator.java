@@ -99,7 +99,9 @@ public class FloraGenerator implements RegionFunction {
         BlockType grass = BlockTypes.SHORT_GRASS;
         if (grass == null) {
             // Fallback for <1.20.3 compat
-            grass = BlockTypes.GRASS;
+            @SuppressWarnings("deprecation")
+            BlockType deprecatedGrass = BlockTypes.GRASS;
+            grass = deprecatedGrass;
         }
         pattern.add(grass.getDefaultState(), 300);
         pattern.add(BlockTypes.POPPY.getDefaultState(), 5);

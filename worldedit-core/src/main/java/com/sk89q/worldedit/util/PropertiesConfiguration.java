@@ -107,7 +107,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         registerHelp = getBool("register-help", registerHelp);
         wandItem = getString("wand-item", wandItem).toLowerCase(Locale.ROOT);
         try {
-            wandItem = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(wandItem)).getId();
+            wandItem = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(wandItem)).id();
         } catch (Throwable ignored) {
         }
         superPickaxeDrop = getBool("super-pickaxe-drop-items", superPickaxeDrop);
@@ -117,7 +117,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         useInventoryCreativeOverride = getBool("use-inventory-creative-override", useInventoryCreativeOverride);
         navigationWand = getString("nav-wand-item", navigationWand).toLowerCase(Locale.ROOT);
         try {
-            navigationWand = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(navigationWand)).getId();
+            navigationWand = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(navigationWand)).id();
         } catch (Throwable ignored) {
         }
         navigationWandMaxDistance = getInt("nav-wand-distance", navigationWandMaxDistance);

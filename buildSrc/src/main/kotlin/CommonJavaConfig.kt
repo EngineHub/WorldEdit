@@ -22,13 +22,14 @@ fun Project.applyCommonJavaConfiguration(sourcesJar: Boolean, javaRelease: Int =
         .matching { it.name == "compileJava" || it.name == "compileTestJava" }
         .configureEach {
             val disabledLint = listOf(
-                "processing", "path", "fallthrough", "serial"
+                "processing", "path", "fallthrough", "serial", "overloads",
             )
             options.release.set(javaRelease)
             options.compilerArgs.addAll(listOf("-Xlint:all") + disabledLint.map { "-Xlint:-$it" })
             options.isDeprecation = true
             options.encoding = "UTF-8"
             options.compilerArgs.add("-parameters")
+            options.compilerArgs.add("-Werror")
         }
 
     configure<CheckstyleExtension> {

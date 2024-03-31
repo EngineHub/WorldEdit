@@ -27,6 +27,7 @@ import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinTag;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -73,7 +74,6 @@ public interface NBTCompatibilityHandler {
         delegateName = "updateNBT",
         delegateParams = { BlockStateHolder.class, Map.class }
     )
-    @SuppressWarnings("deprecated")
     default BaseBlock updateNbt(BaseBlock block) {
         DeprecationUtil.checkDelegatingOverride(getClass());
         if (!isAffectedBlock(block)) {
@@ -87,8 +87,9 @@ public interface NBTCompatibilityHandler {
         BlockStateHolder<?> changedBlock = updateNBT(block, values);
         return changedBlock.toBaseBlock(LazyReference.from(() -> {
             var builder = LinCompoundTag.builder();
-            for (var entry : values.entrySet()) {
-                builder.put(entry.getKey(), entry.getValue().toLinTag());
+            for (@SuppressWarnings("deprecation") var entry : values.entrySet()) {
+                LinTag<?> linTag = entry.getValue().toLinTag();
+                builder.put(entry.getKey(), linTag);
             }
             return builder.build();
         }));

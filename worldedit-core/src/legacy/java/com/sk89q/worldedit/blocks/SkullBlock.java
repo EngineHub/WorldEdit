@@ -113,7 +113,7 @@ public class SkullBlock extends LegacyBaseBlockWrapper {
 
         Map<String, Tag<?, ?>> values = rootTag.getValue();
 
-        Tag t;
+        Tag<?, ?> t;
 
         t = values.get("id");
         if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals(getNbtId())) {

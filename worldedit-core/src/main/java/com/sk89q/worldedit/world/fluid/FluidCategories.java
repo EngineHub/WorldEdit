@@ -37,7 +37,7 @@ public final class FluidCategories {
     }
 
     public static FluidCategory register(final FluidCategory tag) {
-        return FluidCategory.REGISTRY.register(tag.getId(), tag);
+        return FluidCategory.REGISTRY.register(tag.id(), tag);
     }
 
     public static @Nullable FluidCategory get(final String id) {

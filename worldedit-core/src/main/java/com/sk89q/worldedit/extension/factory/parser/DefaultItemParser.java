@@ -50,7 +50,7 @@ public class DefaultItemParser extends InputParser<BaseItem> {
     }
 
     @Override
-    public Stream<String> getSuggestions(String input) {
+    public Stream<String> getSuggestions(String input, ParserContext context) {
         return SuggestionHelper.getNamespacedRegistrySuggestions(ItemType.REGISTRY, input);
     }
 
