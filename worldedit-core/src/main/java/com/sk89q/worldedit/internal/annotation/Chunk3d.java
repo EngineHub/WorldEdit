@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
  * Indicates that this value is for 3d-chunk compatibility.
  *
  * <p>
- * For vectors, this means that the vector supports 2D & 3D inputs,
+ * For vectors, this means that the vector supports 2D &amp; 3D inputs,
  * with 2D getting a Y value of 0.
  * </p>
  */

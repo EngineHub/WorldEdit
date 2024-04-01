@@ -54,7 +54,9 @@ fun Project.applyCommonJavaConfiguration(sourcesJar: Boolean, javaRelease: Int =
     tasks.withType<Javadoc>().configureEach {
         options.encoding = "UTF-8"
         (options as StandardJavadocDocletOptions).apply {
-            addStringOption("Xdoclint:none", "-quiet")
+            addBooleanOption("Werror", true)
+            addBooleanOption("Xdoclint:all", true)
+            addBooleanOption("Xdoclint:-missing", true)
             tags(
                 "apiNote:a:API Note:",
                 "implSpec:a:Implementation Requirements:",

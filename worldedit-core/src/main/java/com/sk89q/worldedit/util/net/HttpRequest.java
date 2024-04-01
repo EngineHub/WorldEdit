@@ -125,7 +125,7 @@ public class HttpRequest implements Closeable {
 
     /**
      * Execute the request.
-     * <p/>
+     * <p>
      * After execution, {@link #close()} should be called.
      *
      * @return this object

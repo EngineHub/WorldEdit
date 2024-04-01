@@ -52,7 +52,6 @@ import javax.annotation.Nullable;
  *     <li>{@code 2019-06-15-10-20-30}</li>
  *     <li>{@code 2019-6-1-1-2-3}</li>
  * </ul>
- * </p>
  */
 public class FileNameDateTimeParser implements SnapshotDateTimeParser {
 
