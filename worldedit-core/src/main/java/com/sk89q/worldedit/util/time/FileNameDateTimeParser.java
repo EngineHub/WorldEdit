@@ -41,8 +41,7 @@ import javax.annotation.Nullable;
  * zeroes.
  * </p>
  *
- * <p>
- * Valid file name examples:
+ * <p>Valid file name examples:
  * <ul>
  *     <li>{@code 2019-06-15}</li>
  *     <li>{@code 2019-06-15 10:20:30}</li>
