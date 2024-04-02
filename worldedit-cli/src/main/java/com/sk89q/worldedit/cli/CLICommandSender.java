@@ -43,14 +43,11 @@ public class CLICommandSender implements Actor {
      */
     private static final UUID DEFAULT_ID = UUID.fromString("a233eb4b-4cab-42cd-9fd9-7e7b9a3f74be");
 
-    private final CLIWorldEdit app;
     private final Logger sender;
 
-    public CLICommandSender(CLIWorldEdit app, Logger sender) {
-        checkNotNull(app);
+    public CLICommandSender(Logger sender) {
         checkNotNull(sender);
 
-        this.app = app;
         this.sender = sender;
     }
 

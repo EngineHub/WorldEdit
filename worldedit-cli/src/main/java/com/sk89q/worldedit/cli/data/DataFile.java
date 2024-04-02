@@ -17,20 +17,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.cli;
+package com.sk89q.worldedit.cli.data;
 
-import com.sk89q.worldedit.util.PropertiesConfiguration;
+import com.google.gson.annotations.SerializedName;
 
-import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
 
-public class CLIConfiguration extends PropertiesConfiguration {
+public record DataFile(@SerializedName("itemtags") Map<String, List<String>> itemTags,
+                       @SerializedName("blocktags") Map<String, List<String>> blockTags,
+                       @SerializedName("entitytags") Map<String, List<String>> entityTags,
+                       List<String> items,
+                       List<String> entities,
+                       List<String> biomes,
+                       Map<String, BlockManifest> blocks) {
 
-    public CLIConfiguration(CLIWorldEdit app) {
-        super(app.getWorkingDir().resolve("worldedit.properties"));
+    public record BlockManifest(@SerializedName("defaultstate") String defaultState, Map<String, BlockProperty> properties) {
     }
 
-    @Override
-    public Path getWorkingDirectoryPath() {
-        return CLIWorldEdit.inst.getWorkingDir();
+    public record BlockProperty(List<String> values, String type) {
     }
 }

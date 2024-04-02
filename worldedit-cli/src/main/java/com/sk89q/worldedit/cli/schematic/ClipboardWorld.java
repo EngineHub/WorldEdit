@@ -29,7 +29,7 @@ import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -56,13 +56,15 @@ import javax.annotation.Nullable;
 public class ClipboardWorld extends AbstractWorld implements Clipboard, CLIWorld {
 
     private final File file;
+    private final ClipboardFormat format;
     private final Clipboard clipboard;
     private final String name;
 
     private boolean dirty = false;
 
-    public ClipboardWorld(File file, Clipboard clipboard, String name) {
+    public ClipboardWorld(File file, ClipboardFormat format, Clipboard clipboard, String name) {
         this.file = file;
+        this.format = format;
         this.clipboard = clipboard;
         this.name = name;
     }
@@ -74,7 +76,7 @@ public class ClipboardWorld extends AbstractWorld implements Clipboard, CLIWorld
 
     @Override
     public String id() {
-        return getName().replace(" ", "_").toLowerCase(Locale.ROOT);
+        return name.replace(" ", "_").toLowerCase(Locale.ROOT);
     }
 
     @Override
@@ -208,7 +210,7 @@ public class ClipboardWorld extends AbstractWorld implements Clipboard, CLIWorld
     @Override
     public void save(boolean force) {
         if (dirty || force) {
-            try (ClipboardWriter writer = ClipboardFormats.findByFile(file).getWriter(new FileOutputStream(file))) {
+            try (ClipboardWriter writer = format.getWriter(new FileOutputStream(file))) {
                 writer.write(this);
                 dirty = false;
             } catch (IOException e) {
