@@ -6,9 +6,7 @@
             "changes": [
                 "METHOD_REMOVED"
             ]
-        }
-    ],
-    "Removed overridden method": [
+        },
         {
             "type": "com.sk89q.worldedit.cli.CLIConfiguration",
             "member": "Method com.sk89q.worldedit.cli.CLIConfiguration.loadExtra()",

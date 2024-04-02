@@ -129,7 +129,7 @@ public class CLIWorldEdit {
                     context.setRestricted(false);
                     try {
                         FuzzyBlockState state = (FuzzyBlockState) WorldEdit.getInstance().getBlockFactory().parseFromInput(
-                            manifestEntry.getValue().defaultstate(),
+                            manifestEntry.getValue().defaultState(),
                             context
                         ).toImmutableState();
                         BlockState defaultState = input.getBlockType().getAllStates().get(0);
@@ -169,13 +169,13 @@ public class CLIWorldEdit {
         }
         // Tags
         BlockCategory.REGISTRY.clear();
-        for (String name : fileRegistries.getDataFile().blocktags().keySet()) {
+        for (String name : fileRegistries.getDataFile().blockTags().keySet()) {
             if (BlockCategory.REGISTRY.get(name) == null) {
                 BlockCategory.REGISTRY.register(name, new BlockCategory(name));
             }
         }
         ItemCategory.REGISTRY.clear();
-        for (String name : fileRegistries.getDataFile().itemtags().keySet()) {
+        for (String name : fileRegistries.getDataFile().itemTags().keySet()) {
             if (ItemCategory.REGISTRY.get(name) == null) {
                 ItemCategory.REGISTRY.register(name, new ItemCategory(name));
             }

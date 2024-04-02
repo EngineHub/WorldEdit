@@ -51,15 +51,15 @@ public class FileRegistries {
         Path outputFolder = WorldEdit.getInstance().getWorkingDirectoryPath("cli-data");
         Path checkPath = outputFolder.resolve(app.getPlatform().getDataVersion() + "_" + CLI_DATA_VERSION + ".json");
 
-        try (Closer closer = Closer.create()) {
+        try {
             Files.createDirectories(outputFolder);
 
             if (!Files.exists(checkPath)) {
                 URL url = new URL(DATA_FILE_DOWNLOAD_URL + app.getPlatform().getDataVersion() + "/" + CLI_DATA_VERSION);
-                ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
 
-                FileOutputStream fileOutputStream = closer.register(new FileOutputStream(checkPath.toFile()));
-                fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+                try (var stream = url.openStream()) {
+                    Files.copy(stream, checkPath);
+                }
             }
 
             this.dataFile = gson.fromJson(Files.readString(checkPath), DataFile.class);

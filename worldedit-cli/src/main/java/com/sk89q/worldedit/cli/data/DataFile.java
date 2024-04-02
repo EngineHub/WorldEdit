@@ -19,18 +19,20 @@
 
 package com.sk89q.worldedit.cli.data;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 import java.util.Map;
 
-public record DataFile(Map<String, List<String>> itemtags,
-                       Map<String, List<String>> blocktags,
-                       Map<String, List<String>> entitytags,
+public record DataFile(@SerializedName("itemtags") Map<String, List<String>> itemTags,
+                       @SerializedName("blocktags") Map<String, List<String>> blockTags,
+                       @SerializedName("entitytags") Map<String, List<String>> entityTags,
                        List<String> items,
                        List<String> entities,
                        List<String> biomes,
                        Map<String, BlockManifest> blocks) {
 
-    public record BlockManifest(String defaultstate, Map<String, BlockProperty> properties) {
+    public record BlockManifest(@SerializedName("defaultstate") String defaultState, Map<String, BlockProperty> properties) {
     }
 
     public record BlockProperty(List<String> values, String type) {
