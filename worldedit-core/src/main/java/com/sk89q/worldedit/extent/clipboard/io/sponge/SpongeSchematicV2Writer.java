@@ -104,7 +104,7 @@ public class SpongeSchematicV2Writer implements ClipboardWriter {
         worldEditSection.putString("Version", WorldEdit.getVersion());
         worldEditSection.putString(
             "EditingPlatform",
-            WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getId()
+            WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).id()
         );
         worldEditSection.putIntArray("Offset", new int[] {
             offset.x(), offset.y(), offset.z()
@@ -113,7 +113,7 @@ public class SpongeSchematicV2Writer implements ClipboardWriter {
         LinCompoundTag.Builder platformsSection = LinCompoundTag.builder();
         for (Platform platform : WorldEdit.getInstance().getPlatformManager().getPlatforms()) {
             platformsSection.put(
-                platform.getId(),
+                platform.id(),
                 LinCompoundTag.builder()
                     .putString("Name", platform.getPlatformName())
                     .putString("Version", platform.getPlatformVersion())

@@ -22,6 +22,7 @@ package com.sk89q.minecraft.util.commands;
 /**
  * Thrown when not enough permissions are satisfied.
  */
+@Deprecated
 public class CommandPermissionsException extends CommandException {
 
 }

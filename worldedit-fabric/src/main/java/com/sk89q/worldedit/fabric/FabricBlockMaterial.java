@@ -51,11 +51,13 @@ public class FabricBlockMaterial extends PassthroughBlockMaterial {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean isLiquid() {
         return block.liquid();
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean isSolid() {
         return block.isSolid();
     }
@@ -71,6 +73,7 @@ public class FabricBlockMaterial extends PassthroughBlockMaterial {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean isMovementBlocker() {
         return block.blocksMotion();
     }

@@ -125,8 +125,8 @@ public class HttpRequest implements Closeable {
 
     /**
      * Execute the request.
-     * <p/>
-     * After execution, {@link #close()} should be called.
+     *
+     * <p>After execution, {@link #close()} should be called.
      *
      * @return this object
      * @throws java.io.IOException on I/O error

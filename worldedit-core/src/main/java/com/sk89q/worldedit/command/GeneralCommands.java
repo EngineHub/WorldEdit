@@ -381,7 +381,7 @@ public class GeneralCommands {
         if (world == null) {
             actor.printInfo(TranslatableComponent.of("worldedit.world.remove"));
         } else {
-            actor.printInfo(TranslatableComponent.of("worldedit.world.set", TextComponent.of(world.getId())));
+            actor.printInfo(TranslatableComponent.of("worldedit.world.set", TextComponent.of(world.id())));
         }
     }
 
@@ -532,7 +532,7 @@ public class GeneralCommands {
                 if (itemsOnly && searchType.hasBlockType()) {
                     continue;
                 }
-                final String id = searchType.getId();
+                final String id = searchType.id();
                 if (id.contains(idMatch)) {
                     Component name = searchType.getRichName();
                     results.put(id, TextComponent.builder()

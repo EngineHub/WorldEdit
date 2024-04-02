@@ -839,7 +839,7 @@ public class SelectionCommands {
                 toolTip = TextComponent.of(state.getAsString(), TextColor.GRAY);
                 blockName = blockName.append(TextComponent.of("*", TextColor.LIGHT_PURPLE));
             } else {
-                toolTip = TextComponent.of(blockType.getId(), TextColor.GRAY);
+                toolTip = TextComponent.of(blockType.id(), TextColor.GRAY);
             }
             blockName = blockName.hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, toolTip));
             line.append(blockName);

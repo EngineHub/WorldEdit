@@ -45,7 +45,7 @@ public class BiomeMaskParser extends InputParser<Mask> {
     }
 
     @Override
-    public Stream<String> getSuggestions(String input) {
+    public Stream<String> getSuggestions(String input, ParserContext context) {
         if (input.isEmpty()) {
             return Stream.of("$");
         }

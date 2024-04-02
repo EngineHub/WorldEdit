@@ -19,6 +19,7 @@
 
 package com.sk89q.minecraft.util.commands;
 
+@Deprecated
 public class SuggestionContext {
 
     private static final SuggestionContext FOR_LAST = new SuggestionContext(null, true);

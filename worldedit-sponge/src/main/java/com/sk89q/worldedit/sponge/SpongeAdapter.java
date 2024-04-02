@@ -218,7 +218,7 @@ public class SpongeAdapter {
     public static ItemStack adapt(BaseItemStack itemStack) {
         ItemStack stack = ItemStack.builder()
             .itemType(() -> Sponge.game().registry(RegistryTypes.ITEM_TYPE)
-                .value(ResourceKey.resolve(itemStack.getType().getId())))
+                .value(ResourceKey.resolve(itemStack.getType().id())))
             .quantity(itemStack.getAmount())
             .build();
         LinCompoundTag nbt = itemStack.getNbt();

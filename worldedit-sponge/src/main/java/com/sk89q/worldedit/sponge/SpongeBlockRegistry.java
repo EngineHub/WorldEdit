@@ -46,14 +46,14 @@ public class SpongeBlockRegistry extends BundledBlockRegistry {
     @Override
     public Component getRichName(BlockType blockType) {
         return SpongeTextAdapter.convert(Sponge.game().registry(RegistryTypes.BLOCK_TYPE)
-            .value(ResourceKey.resolve(blockType.getId())).asComponent());
+            .value(ResourceKey.resolve(blockType.id())).asComponent());
     }
 
     @Override
     public BlockMaterial getMaterial(BlockType blockType) {
         org.spongepowered.api.block.BlockType spongeBlockType =
             Sponge.game().registry(RegistryTypes.BLOCK_TYPE)
-                .value(ResourceKey.resolve(blockType.getId()));
+                .value(ResourceKey.resolve(blockType.id()));
         return materialMap.computeIfAbsent(
             spongeBlockType.defaultState(),
             m -> {
@@ -71,7 +71,7 @@ public class SpongeBlockRegistry extends BundledBlockRegistry {
     public Map<String, ? extends Property<?>> getProperties(BlockType blockType) {
         org.spongepowered.api.block.BlockType spongeBlockType =
             Sponge.game().registry(RegistryTypes.BLOCK_TYPE)
-                .value(ResourceKey.resolve(blockType.getId()));
+                .value(ResourceKey.resolve(blockType.id()));
         Map<String, Property<?>> map = new TreeMap<>();
         Collection<StateProperty<?>> propertyKeys = spongeBlockType
             .defaultState().stateProperties();

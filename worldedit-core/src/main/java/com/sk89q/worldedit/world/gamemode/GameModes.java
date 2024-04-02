@@ -36,7 +36,7 @@ public final class GameModes {
     }
 
     public static GameMode register(final GameMode gameMode) {
-        return GameMode.REGISTRY.register(gameMode.getId(), gameMode);
+        return GameMode.REGISTRY.register(gameMode.id(), gameMode);
     }
 
     @Nullable

@@ -183,7 +183,7 @@ public class FabricWorld extends AbstractWorld {
     }
 
     @Override
-    public String getId() {
+    public String id() {
         return getName() + "_" + getDimensionRegistryKey(getWorld());
     }
 

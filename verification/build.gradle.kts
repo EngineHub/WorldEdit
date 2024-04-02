@@ -44,7 +44,8 @@ tasks.check {
 // Pull the version before our current version.
 val baseVersion = "(,${rootProject.version.toString().substringBefore("-SNAPSHOT")}["
 for (projectFragment in listOf("bukkit", "cli", "core", "fabric", "forge", "sponge")) {
-    val capitalizedFragment = projectFragment.capitalize(Locale.ROOT)
+    val capitalizedFragment =
+        projectFragment.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
     val proj = project(":worldedit-$projectFragment")
     evaluationDependsOn(proj.path)
 

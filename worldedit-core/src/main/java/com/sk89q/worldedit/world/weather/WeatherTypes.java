@@ -35,7 +35,7 @@ public final class WeatherTypes {
     }
 
     public static WeatherType register(WeatherType weather) {
-        return WeatherType.REGISTRY.register(weather.getId(), weather);
+        return WeatherType.REGISTRY.register(weather.id(), weather);
     }
 
     @Nullable

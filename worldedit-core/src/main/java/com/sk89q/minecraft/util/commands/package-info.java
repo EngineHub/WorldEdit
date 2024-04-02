@@ -21,5 +21,4 @@
  * This package contains the old command system. It is no longer in use. Please switch
  * to Piston, Intake, ACF, or similar systems.
  */
-@Deprecated
 package com.sk89q.minecraft.util.commands;

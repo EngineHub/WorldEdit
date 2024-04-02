@@ -29,7 +29,7 @@ public class Pre13HangingCompatibilityHandler implements EntityNBTCompatibilityH
 
     @Override
     public LinCompoundTag updateNbt(EntityType type, LinCompoundTag tag) {
-        if (!type.getId().startsWith("minecraft:")) {
+        if (!type.id().startsWith("minecraft:")) {
             return tag;
         }
         Direction newDirection;

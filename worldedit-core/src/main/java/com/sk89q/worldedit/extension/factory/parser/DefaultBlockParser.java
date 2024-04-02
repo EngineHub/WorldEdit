@@ -123,22 +123,22 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
     @SuppressWarnings("ConstantConditions")
     private String woolMapper(String string) {
         return switch (string.toLowerCase(Locale.ROOT)) {
-            case "white" -> BlockTypes.WHITE_WOOL.getId();
-            case "black" -> BlockTypes.BLACK_WOOL.getId();
-            case "blue" -> BlockTypes.BLUE_WOOL.getId();
-            case "brown" -> BlockTypes.BROWN_WOOL.getId();
-            case "cyan" -> BlockTypes.CYAN_WOOL.getId();
-            case "gray", "grey" -> BlockTypes.GRAY_WOOL.getId();
-            case "green" -> BlockTypes.GREEN_WOOL.getId();
-            case "light_blue", "lightblue" -> BlockTypes.LIGHT_BLUE_WOOL.getId();
-            case "light_gray", "light_grey", "lightgray", "lightgrey" -> BlockTypes.LIGHT_GRAY_WOOL.getId();
-            case "lime" -> BlockTypes.LIME_WOOL.getId();
-            case "magenta" -> BlockTypes.MAGENTA_WOOL.getId();
-            case "orange" -> BlockTypes.ORANGE_WOOL.getId();
-            case "pink" -> BlockTypes.PINK_WOOL.getId();
-            case "purple" -> BlockTypes.PURPLE_WOOL.getId();
-            case "yellow" -> BlockTypes.YELLOW_WOOL.getId();
-            case "red" -> BlockTypes.RED_WOOL.getId();
+            case "white" -> BlockTypes.WHITE_WOOL.id();
+            case "black" -> BlockTypes.BLACK_WOOL.id();
+            case "blue" -> BlockTypes.BLUE_WOOL.id();
+            case "brown" -> BlockTypes.BROWN_WOOL.id();
+            case "cyan" -> BlockTypes.CYAN_WOOL.id();
+            case "gray", "grey" -> BlockTypes.GRAY_WOOL.id();
+            case "green" -> BlockTypes.GREEN_WOOL.id();
+            case "light_blue", "lightblue" -> BlockTypes.LIGHT_BLUE_WOOL.id();
+            case "light_gray", "light_grey", "lightgray", "lightgrey" -> BlockTypes.LIGHT_GRAY_WOOL.id();
+            case "lime" -> BlockTypes.LIME_WOOL.id();
+            case "magenta" -> BlockTypes.MAGENTA_WOOL.id();
+            case "orange" -> BlockTypes.ORANGE_WOOL.id();
+            case "pink" -> BlockTypes.PINK_WOOL.id();
+            case "purple" -> BlockTypes.PURPLE_WOOL.id();
+            case "yellow" -> BlockTypes.YELLOW_WOOL.id();
+            case "red" -> BlockTypes.RED_WOOL.id();
             default -> string;
         };
     }
@@ -164,10 +164,10 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                         throw new NoMatchException(TranslatableComponent.of(
                                 "worldedit.error.parser.unknown-property",
                                 TextComponent.of(parts[0]),
-                                TextComponent.of(type.getId())
+                                TextComponent.of(type.id())
                         ));
                     } else {
-                        WorldEdit.logger.debug("Unknown property " + parts[0] + " for block " + type.getId());
+                        WorldEdit.logger.debug("Unknown property " + parts[0] + " for block " + type.id());
                     }
                     return Map.of();
                 }
@@ -423,7 +423,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
         if (context.isRestricted()) {
             Actor actor = context.requireActor();
             if (actor != null && !actor.hasPermission("worldedit.anyblock")
-                    && worldEdit.getConfiguration().disallowedBlocks.contains(blockType.getId())) {
+                    && worldEdit.getConfiguration().disallowedBlocks.contains(blockType.id())) {
                 throw new DisallowedUsageException(TranslatableComponent.of("worldedit.error.disallowed-block", TextComponent.of(input)));
             }
         }
@@ -437,7 +437,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
         if (DeprecationUtil.isSign(blockType) && blockAndExtraData.length > 1) {
             // Allow special sign text syntax
             String[] text = new String[4];
-            text[0] = blockAndExtraData.length > 1 ? blockAndExtraData[1] : "";
+            text[0] = blockAndExtraData[1];
             text[1] = blockAndExtraData.length > 2 ? blockAndExtraData[2] : "";
             text[2] = blockAndExtraData.length > 3 ? blockAndExtraData[3] : "";
             text[3] = blockAndExtraData.length > 4 ? blockAndExtraData[4] : "";
@@ -453,19 +453,19 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                 if (ent == null) {
                     throw new NoMatchException(TranslatableComponent.of("worldedit.error.unknown-entity", TextComponent.of(mobName)));
                 }
-                mobName = ent.getId();
+                mobName = ent.id();
                 if (!worldEdit.getPlatformManager().queryCapability(Capability.USER_COMMANDS).isValidMobType(mobName)) {
                     throw new NoMatchException(TranslatableComponent.of("worldedit.error.unknown-mob", TextComponent.of(mobName)));
                 }
             } else {
-                mobName = EntityTypes.PIG.getId();
+                mobName = EntityTypes.PIG.id();
             }
             @SuppressWarnings("deprecation")
             MobSpawnerBlock mobSpawnerBlock = new MobSpawnerBlock(state, mobName);
             return mobSpawnerBlock;
         } else if ((blockType == BlockTypes.PLAYER_HEAD || blockType == BlockTypes.PLAYER_WALL_HEAD) && (blockAndExtraData.length > 1 || blockNbtData != null)) {
             // allow setting type/player/rotation
-            if (blockAndExtraData.length <= 1) {
+            if (blockAndExtraData.length == 1) {
                 @SuppressWarnings("deprecation")
                 SkullBlock skullBlock = new SkullBlock(state);
                 return skullBlock;

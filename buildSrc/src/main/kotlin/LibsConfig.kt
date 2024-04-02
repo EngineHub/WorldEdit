@@ -52,6 +52,7 @@ fun Project.applyLibrariesConfiguration() {
             exclude(dependency("com.google.guava:guava"))
             exclude(dependency("com.google.code.gson:gson"))
             exclude(dependency("com.google.errorprone:error_prone_annotations"))
+            exclude(dependency("com.google.guava:failureaccess"))
             exclude(dependency("org.checkerframework:checker-qual"))
             exclude(dependency("org.jetbrains:annotations"))
             exclude(dependency("org.apache.logging.log4j:log4j-api"))

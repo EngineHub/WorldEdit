@@ -25,8 +25,6 @@ import com.sk89q.worldedit.registry.Category;
 import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
 
-import java.util.Set;
-
 /**
  * A category of blocks. This is due to the splitting up of
  * blocks such as wool into separate ids.
@@ -36,14 +34,9 @@ public class BlockCategory extends Category<BlockType> implements Keyed {
     public static final NamespacedRegistry<BlockCategory> REGISTRY = new NamespacedRegistry<>("block tag", true);
 
     public BlockCategory(final String id) {
-        super(id);
-    }
-
-    @Override
-    protected Set<BlockType> load() {
-        return WorldEdit.getInstance().getPlatformManager()
-                .queryCapability(Capability.GAME_HOOKS).getRegistries()
-                .getBlockCategoryRegistry().getAll(this);
+        super(id, () -> WorldEdit.getInstance().getPlatformManager()
+            .queryCapability(Capability.GAME_HOOKS).getRegistries()
+            .getBlockCategoryRegistry().getCategorisedByName(id));
     }
 
     /**
