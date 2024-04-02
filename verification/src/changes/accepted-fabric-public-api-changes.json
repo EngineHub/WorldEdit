@@ -1,2 +1,11 @@
 {
+    "Incorrect removal detection due to problems with classpath": [
+        {
+            "type": "com.sk89q.worldedit.fabric.FabricWorld",
+            "member": "Method com.sk89q.worldedit.fabric.FabricWorld.getId()",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        }
+    ]
 }

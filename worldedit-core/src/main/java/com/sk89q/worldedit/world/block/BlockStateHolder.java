@@ -135,14 +135,14 @@ public interface BlockStateHolder<B extends BlockStateHolder<B>> extends Pattern
 
     default String getAsString() {
         if (getStates().isEmpty()) {
-            return this.getBlockType().getId();
+            return this.getBlockType().id();
         } else {
             String properties = getStates().entrySet().stream()
                 .map(entry -> entry.getKey().getName()
                     + "="
                     + entry.getValue().toString().toLowerCase(Locale.ROOT))
                 .collect(Collectors.joining(","));
-            return this.getBlockType().getId() + "[" + properties + "]";
+            return this.getBlockType().id() + "[" + properties + "]";
         }
     }
 }

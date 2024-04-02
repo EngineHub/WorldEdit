@@ -40,7 +40,7 @@ public class BundledBlockRegistry implements BlockRegistry {
 
     @Override
     public Component getRichName(BlockType blockType) {
-        BundledBlockData.BlockEntry blockEntry = BundledBlockData.getInstance().findById(blockType.getId());
+        BundledBlockData.BlockEntry blockEntry = BundledBlockData.getInstance().findById(blockType.id());
         if (blockEntry != null) {
             // This is more likely to be "right", but not translated
             // Some vanilla MC blocks have overrides so we need this name here
@@ -49,7 +49,7 @@ public class BundledBlockRegistry implements BlockRegistry {
             return TextComponent.of(blockEntry.localizedName);
         }
         return TranslatableComponent.of(
-            TranslationManager.makeTranslationKey("block", blockType.getId())
+            TranslationManager.makeTranslationKey("block", blockType.id())
         );
     }
 
@@ -59,14 +59,14 @@ public class BundledBlockRegistry implements BlockRegistry {
     // dumb_intellij.jpg
     @SuppressWarnings("deprecation")
     public String getName(BlockType blockType) {
-        BundledBlockData.BlockEntry blockEntry = BundledBlockData.getInstance().findById(blockType.getId());
+        BundledBlockData.BlockEntry blockEntry = BundledBlockData.getInstance().findById(blockType.id());
         return blockEntry != null ? blockEntry.localizedName : null;
     }
 
     @Nullable
     @Override
     public BlockMaterial getMaterial(BlockType blockType) {
-        return new PassthroughBlockMaterial(BundledBlockData.getInstance().getMaterialById(blockType.getId()));
+        return new PassthroughBlockMaterial(BundledBlockData.getInstance().getMaterialById(blockType.id()));
     }
 
     @Nullable

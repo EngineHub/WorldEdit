@@ -91,7 +91,7 @@ public class BiomeCommands {
             PaginationBox paginationBox = PaginationBox.fromComponents("Available Biomes", "/biomelist -p %page%",
                 BiomeType.REGISTRY.values().stream()
                     .map(biomeType -> TextComponent.builder()
-                        .append(biomeType.getId())
+                        .append(biomeType.id())
                         .append(" (")
                         .append(biomeRegistry.getRichName(biomeType))
                         .append(")")
@@ -155,7 +155,7 @@ public class BiomeCommands {
 
         List<Component> components = biomes.stream().map(biome ->
             biomeRegistry.getRichName(biome).hoverEvent(
-                HoverEvent.showText(TextComponent.of(biome.getId()))
+                HoverEvent.showText(TextComponent.of(biome.id()))
             )
         ).collect(Collectors.toList());
         actor.printInfo(TranslatableComponent.of(messageKey, TextUtils.join(components, TextComponent.of(", "))));

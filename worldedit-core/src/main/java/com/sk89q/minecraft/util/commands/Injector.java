@@ -24,6 +24,7 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * Constructs new instances.
  */
+@Deprecated
 public interface Injector {
 
     /**

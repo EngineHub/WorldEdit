@@ -48,12 +48,8 @@ dependencies {
     "implementation"("com.thoughtworks.paranamer:paranamer:2.6")
     "implementation"("com.sk89q.lib:jlibnoise:1.0.0")
     "api"(platform("org.enginehub.lin-bus:lin-bus-bom:${Versions.LIN_BUS}"))
-    "api"("org.enginehub.lin-bus:lin-bus-tree") {
-        exclude(group = "org.jetbrains", module = "annotations")
-    }
-    "api"("org.enginehub.lin-bus.format:lin-bus-format-snbt") {
-        exclude(group = "org.jetbrains", module = "annotations")
-    }
+    "api"("org.enginehub.lin-bus:lin-bus-tree")
+    "api"("org.enginehub.lin-bus.format:lin-bus-format-snbt")
 
     "implementation"("org.apache.logging.log4j:log4j-api:${Versions.LOG4J}") {
         because("Mojang provides Log4J")
@@ -72,21 +68,25 @@ dependencies {
     "compileOnly"("com.google.auto.value:auto-value-annotations:${Versions.AUTO_VALUE}")
     "annotationProcessor"("com.google.auto.value:auto-value:${Versions.AUTO_VALUE}")
 
+    "compileOnly"("com.google.auto.service:auto-service:1.1.1") {
+        because("Needed to resolve annotations in Piston")
+    }
+
     "languageFiles"("${project.group}:worldedit-lang:7.3.1:1309@zip")
 
     "testRuntimeOnly"("org.apache.logging.log4j:log4j-core:${Versions.LOG4J}")
 }
 
-tasks.named<Test>("test") {
+tasks.test {
     maxHeapSize = "1G"
 }
 
-tasks.withType<JavaCompile>().configureEach {
+tasks.compileJava {
     dependsOn(":worldedit-libs:build")
     options.compilerArgs.add("-Aarg.name.key.prefix=")
 }
 
-tasks.named<AntlrTask>("generateGrammarSource").configure {
+tasks.generateGrammarSource {
     val pkg = "com.sk89q.worldedit.antlr"
     outputDirectory = file("build/generated-src/antlr/main/${pkg.replace('.', '/')}")
     arguments = listOf(

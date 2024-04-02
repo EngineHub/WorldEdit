@@ -22,6 +22,7 @@ package com.sk89q.worldedit.bukkit;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
@@ -29,6 +30,7 @@ import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.bukkit.adapter.UnsupportedVersionEditException;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
 import com.sk89q.worldedit.math.BlockVector2;
@@ -69,6 +71,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -167,7 +170,7 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     @Override
-    public String getId() {
+    public String id() {
         return getWorld().getName().replace(" ", "_").toLowerCase(Locale.ROOT);
     }
 
@@ -272,8 +275,23 @@ public class BukkitWorld extends AbstractWorld {
         if (bukkitType == TreeType.CHORUS_PLANT) {
             pt = pt.add(0, 1, 0); // bukkit skips the feature gen which does this offset normally, so we have to add it back
         }
-        return type != null && world.generateTree(BukkitAdapter.adapt(world, pt), bukkitType,
-                new EditSessionBlockChangeDelegate(editSession));
+        return type != null && world.generateTree(
+            BukkitAdapter.adapt(world, pt),
+            ThreadLocalRandom.current(),
+            bukkitType,
+            block -> {
+                Mask mask = editSession.getMask();
+                var blockVector = BukkitAdapter.asBlockVector(block.getLocation());
+                if (mask != null && !mask.test(blockVector)) {
+                    return false;
+                }
+                try {
+                    editSession.setBlock(blockVector, BukkitAdapter.adapt(block.getBlockData()));
+                } catch (MaxChangedBlocksException ignored) {
+                }
+                return false;
+            }
+        );
     }
 
     @Override

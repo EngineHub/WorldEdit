@@ -34,16 +34,10 @@ public class BiomeCategory extends Category<BiomeType> implements Keyed {
     public static final NamespacedRegistry<BiomeCategory> REGISTRY = new NamespacedRegistry<>("biome tag", true);
 
     public BiomeCategory(final String id) {
-        super(id);
+        super(id, Set::of);
     }
 
     public BiomeCategory(final String id, final Supplier<Set<BiomeType>> contentSupplier) {
         super(id, contentSupplier);
     }
-
-    @Override
-    protected Set<BiomeType> load() {
-        return Set.of();
-    }
-
 }

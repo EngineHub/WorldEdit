@@ -38,6 +38,7 @@ import java.util.Map;
  * @deprecated WorldEdit does not handle interpreting NBT,
  *     deprecated for removal without replacement
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 @Deprecated
 public class MobSpawnerBlock extends LegacyBaseBlockWrapper {
 
@@ -48,7 +49,7 @@ public class MobSpawnerBlock extends LegacyBaseBlockWrapper {
     private short spawnCount = 4;
     private short spawnRange = 4;
     private CompoundTag spawnData;
-    private ListTag spawnPotentials;
+    private ListTag<?, ?> spawnPotentials;
     private short minSpawnDelay = 200;
     private short maxSpawnDelay = 800;
     private short maxNearbyEntities = 6;

@@ -28,6 +28,7 @@ import java.lang.annotation.RetentionPolicy;
  * Note that the method name can actually be anything.
  */
 @Retention(RetentionPolicy.RUNTIME)
+@Deprecated
 public @interface Command {
 
     /**

@@ -50,7 +50,7 @@ public final class NBTConversions {
      * @deprecated Use {@link #toLocation(Extent, LinListTag, LinListTag)} instead.
      */
     @Deprecated
-    public static Location toLocation(Extent extent, ListTag positionTag, ListTag directionTag) {
+    public static Location toLocation(Extent extent, ListTag<?, ?> positionTag, ListTag<?, ?> directionTag) {
         checkNotNull(extent);
         checkNotNull(positionTag);
         checkNotNull(directionTag);

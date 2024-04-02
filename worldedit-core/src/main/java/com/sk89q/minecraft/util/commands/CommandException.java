@@ -27,6 +27,7 @@ import java.util.ListIterator;
 
 import javax.annotation.Nullable;
 
+@Deprecated
 public class CommandException extends Exception {
 
     private final List<String> commandStack = new ArrayList<>();

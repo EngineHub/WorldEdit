@@ -308,7 +308,7 @@ public class PlatformManager {
 
     /**
      * Get the initialized state of the Platform.
-     * {@return if the platform manager is initialized}
+     * @return if the platform manager is initialized
      */
     public boolean isInitialized() {
         return initialized.get();

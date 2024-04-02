@@ -152,6 +152,7 @@ class BukkitEntityProperties implements EntityProperties {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean isTagged() {
         return entity instanceof LivingEntity && entity.getCustomName() != null;
     }

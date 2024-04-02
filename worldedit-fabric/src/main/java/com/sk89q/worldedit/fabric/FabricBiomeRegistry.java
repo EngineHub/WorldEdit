@@ -34,7 +34,7 @@ class FabricBiomeRegistry implements BiomeRegistry {
 
     @Override
     public Component getRichName(BiomeType biomeType) {
-        return TranslatableComponent.of(Util.makeDescriptionId("biome", new ResourceLocation(biomeType.getId())));
+        return TranslatableComponent.of(Util.makeDescriptionId("biome", new ResourceLocation(biomeType.id())));
     }
 
     @Deprecated
@@ -62,7 +62,7 @@ class FabricBiomeRegistry implements BiomeRegistry {
         @SuppressWarnings("deprecation")
         @Override
         public String getName() {
-            return biome.getId();
+            return biome.id();
         }
     }
 

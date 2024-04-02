@@ -112,7 +112,7 @@ class CLIPlatform extends AbstractPlatform {
     @Override
     public World matchWorld(World world) {
         return this.worlds.stream()
-                .filter(w -> w.getId().equals(world.getId()))
+                .filter(w -> w.id().equals(world.id()))
                 .findAny()
                 .orElse(null);
     }
@@ -146,7 +146,7 @@ class CLIPlatform extends AbstractPlatform {
     }
 
     @Override
-    public String getId() {
+    public String id() {
         return "enginehub:cli";
     }
 

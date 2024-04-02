@@ -47,7 +47,7 @@ public abstract class InputParser<E> {
      * @return a stream of suggestions
      * @deprecated Use the version that takes a {@link ParserContext}, {@link #getSuggestions(String, ParserContext)}
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public Stream<String> getSuggestions(String input) {
         return Stream.empty();
     }

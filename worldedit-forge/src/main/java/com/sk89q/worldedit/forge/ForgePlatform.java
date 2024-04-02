@@ -207,7 +207,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
     }
 
     @Override
-    public String getId() {
+    public String id() {
         return "enginehub:forge";
     }
 

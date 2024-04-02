@@ -197,6 +197,7 @@ public class BukkitServerInterface extends AbstractPlatform implements MultiUser
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public String getVersion() {
         return plugin.getDescription().getVersion();
     }
@@ -207,12 +208,13 @@ public class BukkitServerInterface extends AbstractPlatform implements MultiUser
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public String getPlatformVersion() {
         return plugin.getDescription().getVersion();
     }
 
     @Override
-    public String getId() {
+    public String id() {
         return "enginehub:bukkit";
     }
 

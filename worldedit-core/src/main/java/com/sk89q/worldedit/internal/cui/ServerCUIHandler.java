@@ -162,7 +162,7 @@ public class ServerCUIHandler {
         structureTag.putString("mode", "SAVE");
         structureTag.putByte("ignoreEntities", (byte) 1);
         structureTag.putByte("showboundingbox", (byte) 1);
-        structureTag.putString("id", BlockTypes.STRUCTURE_BLOCK.getId());
+        structureTag.putString("id", BlockTypes.STRUCTURE_BLOCK.id());
 
         return BlockTypes.STRUCTURE_BLOCK.getDefaultState().toBaseBlock(structureTag.build());
     }

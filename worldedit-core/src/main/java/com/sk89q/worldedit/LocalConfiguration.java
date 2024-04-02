@@ -95,6 +95,7 @@ public abstract class LocalConfiguration {
     public String defaultLocaleName = "default";
     public Locale defaultLocale = Locale.getDefault();
 
+    @SuppressWarnings("deprecation")
     protected String[] getDefaultDisallowedBlocks() {
         List<BlockType> blockTypes = Lists.newArrayList(
                 BlockTypes.OAK_SAPLING,
@@ -161,7 +162,7 @@ public abstract class LocalConfiguration {
                 // ores and stuff
                 BlockTypes.BEDROCK
         );
-        return blockTypes.stream().filter(Objects::nonNull).map(BlockType::getId).toArray(String[]::new);
+        return blockTypes.stream().filter(Objects::nonNull).map(BlockType::id).toArray(String[]::new);
     }
 
     /**
@@ -224,7 +225,7 @@ public abstract class LocalConfiguration {
                 id = Integer.parseInt(splitter[0]);
                 data = Byte.parseByte(splitter[1]);
             }
-            item = LegacyMapper.getInstance().getItemFromLegacy(id, data).getId();
+            item = LegacyMapper.getInstance().getItemFromLegacy(id, data).id();
         } catch (Throwable ignored) {
         }
 

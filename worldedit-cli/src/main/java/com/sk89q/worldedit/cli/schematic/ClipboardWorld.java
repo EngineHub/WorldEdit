@@ -73,7 +73,7 @@ public class ClipboardWorld extends AbstractWorld implements Clipboard, CLIWorld
     }
 
     @Override
-    public String getId() {
+    public String id() {
         return getName().replace(" ", "_").toLowerCase(Locale.ROOT);
     }
 
