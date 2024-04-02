@@ -142,5 +142,14 @@
                 "CONSTRUCTOR_REMOVED"
             ]
         }
+    ],
+    "Constructor added with required data to not trigger race condition": [
+        {
+            "type": "com.sk89q.worldedit.cli.schematic.ClipboardWorld",
+            "member": "Constructor com.sk89q.worldedit.cli.schematic.ClipboardWorld(java.io.File,com.sk89q.worldedit.extent.clipboard.Clipboard,java.lang.String)",
+            "changes": [
+                "CONSTRUCTOR_REMOVED"
+            ]
+        }
     ]
 }

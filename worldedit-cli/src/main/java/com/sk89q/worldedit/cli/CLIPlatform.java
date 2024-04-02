@@ -126,6 +126,9 @@ class CLIPlatform extends AbstractPlatform {
 
     @Override
     public String getVersion() {
+        if (app.getInternalVersion() == null) {
+            return "unknown"; // Run from IDE
+        }
         return app.getInternalVersion();
     }
 
@@ -136,7 +139,7 @@ class CLIPlatform extends AbstractPlatform {
 
     @Override
     public String getPlatformVersion() {
-        return app.getInternalVersion();
+        return this.getVersion();
     }
 
     @Override

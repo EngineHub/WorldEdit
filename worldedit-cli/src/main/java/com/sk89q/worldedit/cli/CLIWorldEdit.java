@@ -341,6 +341,7 @@ public class CLIWorldEdit {
                     try (ClipboardReader clipboardReader = format.getReader(Files.newInputStream(file.toPath(), StandardOpenOption.READ))) {
                         world = new ClipboardWorld(
                                 file,
+                                format,
                                 clipboardReader.read(),
                                 file.getName()
                         );
