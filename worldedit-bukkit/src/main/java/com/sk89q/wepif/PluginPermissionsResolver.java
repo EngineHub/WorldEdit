@@ -98,6 +98,7 @@ public class PluginPermissionsResolver implements PermissionsResolver {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public String getDetectionMessage() {
         return "Using plugin '" + this.plugin.getDescription().getName() + "' for permissions.";
     }

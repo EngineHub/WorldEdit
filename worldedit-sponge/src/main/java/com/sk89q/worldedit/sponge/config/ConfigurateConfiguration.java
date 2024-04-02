@@ -65,7 +65,7 @@ public class ConfigurateConfiguration extends LocalConfiguration {
         traceUnflushedSessions = node.node("debugging", "trace-unflushed-sessions").getBoolean(traceUnflushedSessions);
         wandItem = node.node("wand-item").getString(wandItem).toLowerCase(Locale.ROOT);
         try {
-            wandItem = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(wandItem)).getId();
+            wandItem = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(wandItem)).id();
         } catch (Throwable ignored) {
         }
 
@@ -116,7 +116,7 @@ public class ConfigurateConfiguration extends LocalConfiguration {
 
         navigationWand = node.node("navigation-wand", "item").getString(navigationWand).toLowerCase(Locale.ROOT);
         try {
-            navigationWand = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(navigationWand)).getId();
+            navigationWand = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(navigationWand)).id();
         } catch (Throwable ignored) {
         }
         navigationWandMaxDistance = node.node("navigation-wand", "max-distance").getInt(navigationWandMaxDistance);

@@ -25,6 +25,7 @@ import org.apache.logging.log4j.Logger;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+@Deprecated
 public class SimpleInjector implements Injector {
 
     private static final Logger LOGGER = LogManagerCompat.getLogger();

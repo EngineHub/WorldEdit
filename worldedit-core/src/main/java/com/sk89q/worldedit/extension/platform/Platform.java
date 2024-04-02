@@ -203,7 +203,7 @@ public interface Platform extends Keyed {
      */
     @NonAbstractForCompatibility(delegateName = "getPlatformName", delegateParams = {})
     @Override
-    default String getId() {
+    default String id() {
         return "legacy:" + getPlatformName().toLowerCase(Locale.ROOT).replaceAll("[^a-z_.-]", "_");
     }
 

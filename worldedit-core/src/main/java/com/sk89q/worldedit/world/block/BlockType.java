@@ -97,7 +97,7 @@ public class BlockType implements Keyed {
      * @return The id
      */
     @Override
-    public String getId() {
+    public String id() {
         return this.id;
     }
 
@@ -116,7 +116,7 @@ public class BlockType implements Keyed {
     public String getName() {
         String name = this.name.getValue();
         if (name == null || name.isEmpty()) {
-            return getId();
+            return id();
         }
         return name;
     }
@@ -249,7 +249,7 @@ public class BlockType implements Keyed {
 
     @Override
     public String toString() {
-        return getId();
+        return id();
     }
 
     @Override

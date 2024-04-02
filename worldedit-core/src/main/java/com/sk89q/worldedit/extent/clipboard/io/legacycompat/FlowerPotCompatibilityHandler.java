@@ -68,7 +68,7 @@ public class FlowerPotCompatibilityHandler implements NBTCompatibilityHandler {
         } else {
             BlockState plantedWithData = LegacyMapper.getInstance().getBlockFromLegacy(newId, data);
             if (plantedWithData != null) {
-                plantedName = plantedWithData.getBlockType().getId().substring(10); // remove "minecraft:"
+                plantedName = plantedWithData.getBlockType().id().substring(10); // remove "minecraft:"
             }
         }
         if (plantedName != null) {

@@ -31,6 +31,7 @@ import java.lang.annotation.RetentionPolicy;
  * are still required.
  */
 @Retention(RetentionPolicy.RUNTIME)
+@Deprecated
 public @interface NestedCommand {
 
     /**

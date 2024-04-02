@@ -92,7 +92,7 @@ public class BukkitAdapter {
      * @return If they are equal
      */
     public static boolean equals(BlockType blockType, Material type) {
-        return Objects.equals(blockType.getId(), type.getKey().toString());
+        return Objects.equals(blockType.id(), type.getKey().toString());
     }
 
     /**
@@ -334,7 +334,7 @@ public class BukkitAdapter {
      */
     public static Material adapt(ItemType itemType) {
         checkNotNull(itemType);
-        return Material.matchMaterial(itemType.getId());
+        return Material.matchMaterial(itemType.id());
     }
 
     /**
@@ -345,7 +345,7 @@ public class BukkitAdapter {
      */
     public static Material adapt(BlockType blockType) {
         checkNotNull(blockType);
-        return Material.matchMaterial(blockType.getId());
+        return Material.matchMaterial(blockType.id());
     }
 
     /**

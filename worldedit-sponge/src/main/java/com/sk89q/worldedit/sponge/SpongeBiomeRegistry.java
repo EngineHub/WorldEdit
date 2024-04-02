@@ -37,7 +37,7 @@ class SpongeBiomeRegistry implements BiomeRegistry {
     @Override
     public Component getRichName(com.sk89q.worldedit.world.biome.BiomeType biomeType) {
         return TranslatableComponent.of(
-            TranslationManager.makeTranslationKey("biome", biomeType.getId())
+            TranslationManager.makeTranslationKey("biome", biomeType.id())
         );
     }
 

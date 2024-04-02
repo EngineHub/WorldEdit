@@ -111,6 +111,6 @@ public class BaseItem implements NbtValued {
             nbtString = LinStringIO.writeToString(nbtData.getValue());
         }
 
-        return getType().getId() + nbtString;
+        return getType().id() + nbtString;
     }
 }

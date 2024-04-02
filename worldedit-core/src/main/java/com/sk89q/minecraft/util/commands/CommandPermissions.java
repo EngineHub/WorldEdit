@@ -26,6 +26,7 @@ import java.lang.annotation.RetentionPolicy;
  * Indicates a list of permissions that should be checked.
  */
 @Retention(RetentionPolicy.RUNTIME)
+@Deprecated
 public @interface CommandPermissions {
 
     /**

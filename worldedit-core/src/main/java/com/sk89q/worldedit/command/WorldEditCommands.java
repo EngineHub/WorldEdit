@@ -86,7 +86,7 @@ public class WorldEditCommands {
             producer.append(
                     TextComponent.of("* ", TextColor.GRAY)
                     .append(TextComponent.of(platform.getPlatformName())
-                        .hoverEvent(HoverEvent.showText(TextComponent.of(platform.getId()))))
+                        .hoverEvent(HoverEvent.showText(TextComponent.of(platform.id()))))
                     .append(TextComponent.of("(" + platform.getPlatformVersion() + ")"))
             ).newline();
         }

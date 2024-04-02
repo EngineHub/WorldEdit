@@ -170,7 +170,7 @@ public class SpongeWorldEdit {
                     id,
                     input -> {
                         BlockType spongeBlockType = Sponge.game().registry(RegistryTypes.BLOCK_TYPE).value(
-                            ResourceKey.resolve(input.getBlockType().getId())
+                            ResourceKey.resolve(input.getBlockType().id())
                         );
                         return SpongeAdapter.adapt(spongeBlockType.defaultState());
                     }

@@ -144,8 +144,8 @@ public class ToolCommands {
         throws InvalidToolBindException {
         ItemType type = player.getItemInHand(HandSide.MAIN_HAND).getType();
         boolean set = session.getTool(type) != null
-            || type.getId().equals(session.getWandItem())
-            || type.getId().equals(session.getNavWandItem());
+            || type.id().equals(session.getWandItem())
+            || type.id().equals(session.getNavWandItem());
         if (set) {
             session.setTool(type, null);
             player.printInfo(TranslatableComponent.of(isBrush ? "worldedit.brush.none.equip" : "worldedit.tool.none.equip"));

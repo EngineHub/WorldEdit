@@ -68,6 +68,7 @@ public class CommandRegistration {
         return null;
     }
 
+    @SuppressWarnings("deprecation")
     public boolean register(List<CommandInfo> registered) {
         CommandMap commandMap = getCommandMap();
         if (registered == null || commandMap == null) {
@@ -82,6 +83,7 @@ public class CommandRegistration {
         return true;
     }
 
+    @SuppressWarnings("deprecation")
     public CommandMap getCommandMap() {
         if (serverCommandMap != null) {
             return serverCommandMap;

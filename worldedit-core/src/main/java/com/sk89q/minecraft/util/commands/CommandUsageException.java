@@ -19,6 +19,7 @@
 
 package com.sk89q.minecraft.util.commands;
 
+@Deprecated
 public class CommandUsageException extends CommandException {
 
     protected String usage;

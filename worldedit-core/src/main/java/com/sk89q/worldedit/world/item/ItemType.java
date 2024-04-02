@@ -44,7 +44,7 @@ public class ItemType implements Keyed {
                 .getRegistries().getItemRegistry().getName(this),
             ""
         );
-        return name.isEmpty() ? getId() : name;
+        return name.isEmpty() ? id() : name;
     });
     private final LazyReference<Component> richName = LazyReference.from(() ->
         WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
@@ -64,7 +64,7 @@ public class ItemType implements Keyed {
     }
 
     @Override
-    public String getId() {
+    public String id() {
         return this.id;
     }
 
@@ -114,7 +114,7 @@ public class ItemType implements Keyed {
 
     @Override
     public String toString() {
-        return getId();
+        return id();
     }
 
     @Override

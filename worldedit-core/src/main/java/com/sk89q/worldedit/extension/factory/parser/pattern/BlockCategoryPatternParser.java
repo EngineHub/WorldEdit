@@ -43,7 +43,7 @@ public class BlockCategoryPatternParser extends InputParser<Pattern> {
     }
 
     @Override
-    public Stream<String> getSuggestions(String input) {
+    public Stream<String> getSuggestions(String input, ParserContext context) {
         return SuggestionHelper.getBlockCategorySuggestions(input, true);
     }
 
@@ -67,7 +67,7 @@ public class BlockCategoryPatternParser extends InputParser<Pattern> {
 
         Set<BlockType> blocks = category.getAll();
         if (blocks.isEmpty()) {
-            throw new InputParseException(TranslatableComponent.of("worldedit.error.empty-tag", TextComponent.of(category.getId())));
+            throw new InputParseException(TranslatableComponent.of("worldedit.error.empty-tag", TextComponent.of(category.id())));
         }
 
         if (anyState) {

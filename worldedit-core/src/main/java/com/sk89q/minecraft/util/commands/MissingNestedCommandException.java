@@ -19,6 +19,7 @@
 
 package com.sk89q.minecraft.util.commands;
 
+@Deprecated
 public class MissingNestedCommandException extends CommandUsageException {
 
     public MissingNestedCommandException(String message, String usage) {

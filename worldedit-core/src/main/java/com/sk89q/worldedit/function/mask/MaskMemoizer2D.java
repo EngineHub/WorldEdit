@@ -51,7 +51,7 @@ public class MaskMemoizer2D extends AbstractMask2D implements AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         clear();
     }
 }

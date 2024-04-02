@@ -41,7 +41,7 @@ public class BlockCategoryMaskParser extends InputParser<Mask> {
     }
 
     @Override
-    public Stream<String> getSuggestions(String input) {
+    public Stream<String> getSuggestions(String input, ParserContext context) {
         return SuggestionHelper.getBlockCategorySuggestions(input, false);
     }
 

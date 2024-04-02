@@ -179,7 +179,7 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Override
-    public String getId() {
+    public String id() {
         return getName() + "_" + getDimensionRegistryKey(getWorld());
     }
 
@@ -516,7 +516,7 @@ public class ForgeWorld extends AbstractWorld {
         for (BlockVector2 chunk : chunks) {
             nativeChunks.add(getWorld().getChunk(chunk.x(), chunk.z(), ChunkStatus.BIOMES, false));
         }
-        ((ServerLevel) getWorld()).getChunkSource().chunkMap.resendBiomesForChunks(nativeChunks);
+        getWorld().getChunkSource().chunkMap.resendBiomesForChunks(nativeChunks);
     }
 
     @Override
