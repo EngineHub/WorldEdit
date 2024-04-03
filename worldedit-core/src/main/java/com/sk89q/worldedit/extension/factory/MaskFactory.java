@@ -29,6 +29,7 @@ import com.sk89q.worldedit.extension.factory.parser.mask.ExistingMaskParser;
 import com.sk89q.worldedit.extension.factory.parser.mask.ExposedMaskParser;
 import com.sk89q.worldedit.extension.factory.parser.mask.ExpressionMaskParser;
 import com.sk89q.worldedit.extension.factory.parser.mask.LazyRegionMaskParser;
+import com.sk89q.worldedit.extension.factory.parser.mask.MatchMaskParser;
 import com.sk89q.worldedit.extension.factory.parser.mask.NegateMaskParser;
 import com.sk89q.worldedit.extension.factory.parser.mask.NoiseMaskParser;
 import com.sk89q.worldedit.extension.factory.parser.mask.OffsetMaskParser;
@@ -65,6 +66,7 @@ public final class MaskFactory extends AbstractFactory<Mask> {
     public MaskFactory(WorldEdit worldEdit) {
         super(worldEdit, new BlocksMaskParser(worldEdit));
 
+        register(new MatchMaskParser(worldEdit));
         register(new ExistingMaskParser(worldEdit));
         register(new AirMaskParser(worldEdit));
         register(new ExposedMaskParser(worldEdit));
