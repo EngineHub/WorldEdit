@@ -31,11 +31,11 @@ import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 
 import java.util.List;
 
-public class MatchMaskParser extends SimpleInputParser<Mask> {
+public class ClipboardMaskParser extends SimpleInputParser<Mask> {
 
-    private final List<String> aliases = ImmutableList.of("#match");
+    private final List<String> aliases = ImmutableList.of("#clipboard");
 
-    public MatchMaskParser(WorldEdit worldEdit) {
+    public ClipboardMaskParser(WorldEdit worldEdit) {
         super(worldEdit);
     }
 
