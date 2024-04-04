@@ -32,7 +32,6 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
-import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.GroundFunction;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.block.BlockReplace;
@@ -460,14 +459,14 @@ public class RegionCommands {
                 .regenBiomes(regenBiomes)
                 .build();
             Extent outputExtent = editSession;
+            BlockArrayClipboard clipboard = null;
             if (toClipboard) {
-                var clipboard = new BlockArrayClipboard(region);
+                clipboard = new BlockArrayClipboard(region);
                 clipboard.setOrigin(session.getPlacementPosition(actor));
                 outputExtent = clipboard;
             }
             success = world.regenerate(region, outputExtent, options);
             if (success && toClipboard) {
-                Clipboard clipboard = (Clipboard) outputExtent;
                 session.setClipboard(new ClipboardHolder(clipboard));
             }
         } finally {
