@@ -459,13 +459,16 @@ public class RegionCommands {
                 .regenBiomes(regenBiomes)
                 .build();
             Extent outputExtent = editSession;
+            BlockArrayClipboard clipboard = null;
             if (toClipboard) {
-                var clipboard = new BlockArrayClipboard(region);
+                clipboard = new BlockArrayClipboard(region);
                 clipboard.setOrigin(session.getPlacementPosition(actor));
-                session.setClipboard(new ClipboardHolder(clipboard));
                 outputExtent = clipboard;
             }
             success = world.regenerate(region, outputExtent, options);
+            if (success && toClipboard) {
+                session.setClipboard(new ClipboardHolder(clipboard));
+            }
         } finally {
             session.setMask(mask);
         }
