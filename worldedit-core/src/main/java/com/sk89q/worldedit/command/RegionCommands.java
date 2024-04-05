@@ -30,6 +30,8 @@ import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.function.GroundFunction;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.block.BlockReplace;
@@ -56,6 +58,7 @@ import com.sk89q.worldedit.regions.ConvexPolyhedralRegion;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
+import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.util.formatting.component.TextUtils;
 import com.sk89q.worldedit.util.formatting.text.Component;
@@ -444,7 +447,9 @@ public class RegionCommands {
                     @Arg(desc = "The seed to regenerate with, otherwise uses world seed", def = "")
                         Long seed,
                     @Switch(name = 'b', desc = "Regenerate biomes as well")
-                        boolean regenBiomes) {
+                        boolean regenBiomes,
+                    @Switch(name = 'c', desc = "Regenerate to the clipboard")
+                        boolean toClipboard) throws WorldEditException {
         Mask mask = session.getMask();
         boolean success;
         try {
@@ -453,7 +458,17 @@ public class RegionCommands {
                 .seed(seed)
                 .regenBiomes(regenBiomes)
                 .build();
-            success = world.regenerate(region, editSession, options);
+            Extent outputExtent = editSession;
+            BlockArrayClipboard clipboard = null;
+            if (toClipboard) {
+                clipboard = new BlockArrayClipboard(region);
+                clipboard.setOrigin(session.getPlacementPosition(actor));
+                outputExtent = clipboard;
+            }
+            success = world.regenerate(region, outputExtent, options);
+            if (success && toClipboard) {
+                session.setClipboard(new ClipboardHolder(clipboard));
+            }
         } finally {
             session.setMask(mask);
         }
