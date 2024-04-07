@@ -4,7 +4,7 @@ import org.gradle.kotlin.dsl.dependencies
 
 // For specific version pinning, see
 // https://repo.papermc.io/service/rest/repository/browse/maven-public/io/papermc/paper/dev-bundle/
-fun Project.applyPaperweightAdapterConfiguration(javaRelease: Int = 17) {
+fun Project.applyPaperweightAdapterConfiguration(javaRelease: Int = 21) {
     applyCommonConfiguration()
     apply(plugin = "java-library")
     applyCommonJavaConfiguration(
@@ -16,6 +16,11 @@ fun Project.applyPaperweightAdapterConfiguration(javaRelease: Int = 17) {
 
     dependencies {
         "implementation"(project(":worldedit-bukkit"))
+        constraints {
+            "remapper"("net.fabricmc:tiny-remapper:[0.8.11,)") {
+                because("Need remapper to support Java 21")
+            }
+        }
     }
 
     tasks.named("assemble") {

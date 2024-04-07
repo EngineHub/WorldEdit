@@ -10,7 +10,7 @@ plugins {
     `java-library`
 }
 
-applyPlatformAndCoreConfiguration(javaRelease = 17)
+applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
 
 val minecraftVersion = "1.20.4"

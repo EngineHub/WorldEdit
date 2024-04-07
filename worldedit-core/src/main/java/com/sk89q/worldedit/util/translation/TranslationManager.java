@@ -158,7 +158,7 @@ public class TranslationManager {
             // Recurse into other options if not already at the base condition (defaultLocale)
             if (!locale.getCountry().isEmpty()) {
                 // try without country modifier
-                return getTranslation(new Locale(locale.getLanguage()), key);
+                return getTranslation(Locale.of(locale.getLanguage()), key);
             }
             // otherwise, try the default locale
             return getTranslation(defaultLocale, key);

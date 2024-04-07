@@ -1,15 +1,9 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
-    kotlin("jvm") version "1.8.20"
+    kotlin("jvm") version "1.9.23"
     application
 }
 
 applyCommonConfiguration()
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "17"
-}
 
 application.mainClass.set("com.sk89q.worldedit.internal.util.DocumentationPrinter")
 tasks.named<JavaExec>("run") {

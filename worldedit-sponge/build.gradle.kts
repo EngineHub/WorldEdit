@@ -7,7 +7,7 @@ plugins {
     id("org.spongepowered.gradle.vanilla")
 }
 
-applyPlatformAndCoreConfiguration(javaRelease = 17)
+applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
 
 repositories {

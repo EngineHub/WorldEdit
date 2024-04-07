@@ -23,6 +23,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.util.io.WorldEditResourceLoader;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 
 public class ForgeResourceLoader extends WorldEditResourceLoader  {
@@ -33,9 +34,9 @@ public class ForgeResourceLoader extends WorldEditResourceLoader  {
 
     private static URL getResourceForgeHack(String location) throws IOException {
         try {
-            URL url = new URL("modjar://worldedit/" + location);
+            URL url = URI.create("modjar://worldedit/" + location).toURL();
             try {
-                url.openStream();
+                url.openStream().close();
             } catch (IOException e) {
                 // doesn't actually exist
                 return null;

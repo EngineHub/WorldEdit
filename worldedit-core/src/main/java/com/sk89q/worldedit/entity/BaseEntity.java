@@ -55,6 +55,7 @@ public class BaseEntity implements NbtValued {
      * @param nbtData NBT data
      * @deprecated Use {@link BaseEntity#BaseEntity(EntityType, LazyReference)}
      */
+    @SuppressWarnings("this-escape")
     @Deprecated
     public BaseEntity(EntityType type, CompoundTag nbtData) {
         this(type);
@@ -67,6 +68,7 @@ public class BaseEntity implements NbtValued {
      * @param type the entity type
      * @param nbtData NBT data
      */
+    @SuppressWarnings("this-escape")
     public BaseEntity(EntityType type, LazyReference<LinCompoundTag> nbtData) {
         this(type);
         setNbtReference(nbtData);
@@ -86,6 +88,7 @@ public class BaseEntity implements NbtValued {
      *
      * @param other the object to clone
      */
+    @SuppressWarnings("this-escape")
     public BaseEntity(BaseEntity other) {
         checkNotNull(other);
         this.type = other.getType();
