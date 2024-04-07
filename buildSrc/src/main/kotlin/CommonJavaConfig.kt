@@ -21,8 +21,9 @@ fun Project.applyCommonJavaConfiguration(sourcesJar: Boolean, javaRelease: Int =
         .withType<JavaCompile>()
         .matching { it.name == "compileJava" || it.name == "compileTestJava" }
         .configureEach {
+            // TODO: re-enable this-escape when ANTLR suppresses it properly
             val disabledLint = listOf(
-                "processing", "path", "fallthrough", "serial", "overloads",
+                "processing", "path", "fallthrough", "serial", "overloads", "this-escape",
             )
             options.release.set(javaRelease)
             options.compilerArgs.addAll(listOf("-Xlint:all") + disabledLint.map { "-Xlint:-$it" })

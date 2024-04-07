@@ -353,7 +353,7 @@ public class HttpRequest implements Closeable {
      */
     public static URL url(String url) {
         try {
-            return new URL(url);
+            return URI.create(url).toURL();
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
@@ -367,12 +367,7 @@ public class HttpRequest implements Closeable {
      */
     private static URL reformat(URL existing) {
         try {
-            URL url = new URL(existing.toString());
-            URI uri = new URI(
-                    url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(),
-                    url.getPath(), url.getQuery(), url.getRef());
-            url = uri.toURL();
-            return url;
+            return existing.toURI().toURL();
         } catch (MalformedURLException | URISyntaxException e) {
             return existing;
         }

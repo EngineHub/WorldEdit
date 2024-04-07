@@ -43,6 +43,7 @@ public class BlockChangeLimiter extends AbstractDelegateExtent {
      * @param extent the extent
      * @param limit the limit (&gt;= 0) or -1 for no limit
      */
+    @SuppressWarnings("this-escape") // Unlikely anyone is extending this in practice
     public BlockChangeLimiter(Extent extent, int limit) {
         super(extent);
         setLimit(limit);
