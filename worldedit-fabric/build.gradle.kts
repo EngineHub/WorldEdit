@@ -2,6 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import net.fabricmc.loom.configuration.FabricApiExtension
 import net.fabricmc.loom.task.RemapJarTask
+import net.fabricmc.loom.task.RunGameTask
 
 plugins {
     id("fabric-loom")
@@ -18,6 +19,10 @@ val fabricApiConfiguration: Configuration = configurations.create("fabricApi")
 
 configure<LoomGradleExtensionAPI> {
     accessWidenerPath.set(project.file("src/main/resources/worldedit.accesswidener"))
+}
+
+tasks.withType<RunGameTask>().configureEach {
+    javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
 }
 
 repositories {
