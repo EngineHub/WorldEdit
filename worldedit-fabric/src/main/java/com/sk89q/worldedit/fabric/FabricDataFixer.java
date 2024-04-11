@@ -38,6 +38,7 @@ import com.mojang.datafixers.schemas.Schema;
 import com.mojang.serialization.Dynamic;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
 import net.minecraft.core.Direction;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.FloatTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
@@ -1881,7 +1882,7 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
 
                                 if (object == null) {
                                     try {
-                                        object = Component.Serializer.fromJson(s);
+                                        object = Component.Serializer.fromJson(s, RegistryAccess.EMPTY);
                                     } catch (JsonParseException jsonparseexception1) {
                                         ;
                                     }
@@ -1889,7 +1890,7 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
 
                                 if (object == null) {
                                     try {
-                                        object = Component.Serializer.fromJsonLenient(s);
+                                        object = Component.Serializer.fromJsonLenient(s, RegistryAccess.EMPTY);
                                     } catch (JsonParseException jsonparseexception2) {
                                         ;
                                     }
@@ -1903,7 +1904,7 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
                             object = Component.literal("");
                         }
 
-                        nbttaglist.set(i, StringTag.valueOf(Component.Serializer.toJson((Component) object)));
+                        nbttaglist.set(i, StringTag.valueOf(Component.Serializer.toJson((Component) object, RegistryAccess.EMPTY)));
                     }
 
                     nbttagcompound1.put("pages", nbttaglist);
@@ -2546,7 +2547,7 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
 
                     if (object == null) {
                         try {
-                            object = Component.Serializer.fromJson(s1);
+                            object = Component.Serializer.fromJson(s1, RegistryAccess.EMPTY);
                         } catch (JsonParseException jsonparseexception1) {
                             ;
                         }
@@ -2554,7 +2555,7 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
 
                     if (object == null) {
                         try {
-                            object = Component.Serializer.fromJsonLenient(s1);
+                            object = Component.Serializer.fromJsonLenient(s1, RegistryAccess.EMPTY);
                         } catch (JsonParseException jsonparseexception2) {
                             ;
                         }
@@ -2568,7 +2569,7 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
                 object = Component.literal("");
             }
 
-            nbttagcompound.putString(s, Component.Serializer.toJson((Component) object));
+            nbttagcompound.putString(s, Component.Serializer.toJson((Component) object, RegistryAccess.EMPTY));
         }
     }
 

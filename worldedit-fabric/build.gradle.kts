@@ -12,8 +12,8 @@ plugins {
 applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
 
-val minecraftVersion = "1.20.4"
-val loaderVersion = "0.15.1"
+val minecraftVersion = "1.20.5-pre1"
+val loaderVersion = "0.15.9"
 
 val fabricApiConfiguration: Configuration = configurations.create("fabricApi")
 
@@ -58,13 +58,13 @@ dependencies {
         .toSet()
     // [2] Request the matching dependency from fabric-loom
     for (wantedDependency in wantedDependencies) {
-        val dep = project.the<FabricApiExtension>().module(wantedDependency, "0.91.1+1.20.4")
+        val dep = project.the<FabricApiExtension>().module(wantedDependency, "0.96.15+1.20.5")
         "include"(dep)
         "modImplementation"(dep)
     }
 
     // No need for this at runtime
-    "modCompileOnly"("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
+    "modCompileOnly"("me.lucko:fabric-permissions-api:0.3-SNAPSHOT")
 
     // Hook these up manually, because Fabric doesn't seem to quite do it properly.
     "compileOnly"("net.fabricmc:sponge-mixin:${project.versions.mixin}")

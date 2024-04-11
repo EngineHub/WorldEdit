@@ -40,7 +40,12 @@ import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.StringRepresentable;
@@ -56,6 +61,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.TreeMap;
 import javax.annotation.Nullable;
 
@@ -199,13 +205,13 @@ public final class FabricAdapter {
         return worldEdit;
     }
 
-    public static BaseBlock adapt(BlockEntity blockEntity) {
+    public static BaseBlock adapt(BlockEntity blockEntity, HolderLookup.Provider provider) {
         int blockStateId = Block.getId(blockEntity.getBlockState());
         BlockState worldEdit = BlockStateIdAccess.getBlockStateById(blockStateId);
         if (worldEdit == null) {
             worldEdit = FabricTransmogrifier.transmogToWorldEdit(blockEntity.getBlockState());
         }
-        return worldEdit.toBaseBlock(LazyReference.from(() -> NBTConverter.fromNative(blockEntity.saveWithId())));
+        return worldEdit.toBaseBlock(LazyReference.from(() -> NBTConverter.fromNative(blockEntity.saveWithId(provider))));
     }
 
     public static Block adapt(BlockType blockType) {
@@ -224,27 +230,26 @@ public final class FabricAdapter {
         return ItemTypes.get(FabricWorldEdit.getRegistry(Registries.ITEM).getKey(item).toString());
     }
 
-    public static ItemStack adapt(BaseItemStack baseItemStack) {
+    public static ItemStack adapt(BaseItemStack baseItemStack, HolderLookup.Provider provider) {
         net.minecraft.nbt.CompoundTag fabricCompound = null;
         if (baseItemStack.getNbt() != null) {
             fabricCompound = NBTConverter.toNative(baseItemStack.getNbt());
         }
         final ItemStack itemStack = new ItemStack(adapt(baseItemStack.getType()), baseItemStack.getAmount());
-        itemStack.setTag(fabricCompound);
+
+        Optional<DataComponentPatch> optionalPatch = DataComponentPatch.CODEC.parse(provider.createSerializationContext(NbtOps.INSTANCE), fabricCompound).result();
+        optionalPatch.ifPresent(itemStack::applyComponents);
         return itemStack;
     }
 
-    public static BaseItemStack adapt(ItemStack itemStack) {
-        net.minecraft.nbt.CompoundTag tag = itemStack.save(new net.minecraft.nbt.CompoundTag());
-        if (tag.isEmpty()) {
-            tag = null;
+    public static BaseItemStack adapt(ItemStack itemStack, HolderLookup.Provider provider) {
+        DataComponentPatch componentsPatch = itemStack.getComponentsPatch();
+        Tag tagTag = DataComponentPatch.CODEC.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), componentsPatch).getOrThrow();
+        net.minecraft.nbt.CompoundTag tag;
+        if (tagTag instanceof net.minecraft.nbt.CompoundTag) {
+            tag = (CompoundTag) tagTag;
         } else {
-            final net.minecraft.nbt.Tag tagTag = tag.get("tag");
-            if (tagTag instanceof net.minecraft.nbt.CompoundTag) {
-                tag = ((net.minecraft.nbt.CompoundTag) tagTag);
-            } else {
-                tag = null;
-            }
+            tag = null;
         }
         net.minecraft.nbt.CompoundTag finalTag = tag;
         return new BaseItemStack(

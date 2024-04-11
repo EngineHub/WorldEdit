@@ -25,7 +25,7 @@ import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
-import com.sk89q.worldedit.fabric.net.handler.WECUIPacketHandler;
+import com.sk89q.worldedit.fabric.net.handler.CUIPayload;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -40,11 +40,9 @@ import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
-import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
@@ -55,7 +53,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.UUID;
 import javax.annotation.Nullable;
@@ -77,7 +74,7 @@ public class FabricPlayer extends AbstractPlayerActor {
     @Override
     public BaseItemStack getItemInHand(HandSide handSide) {
         ItemStack is = this.player.getItemInHand(handSide == HandSide.MAIN_HAND ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
-        return FabricAdapter.adapt(is);
+        return FabricAdapter.adapt(is, this.player.registryAccess());
     }
 
     @Override
@@ -121,7 +118,7 @@ public class FabricPlayer extends AbstractPlayerActor {
 
     @Override
     public void giveItem(BaseItemStack itemStack) {
-        this.player.getInventory().add(FabricAdapter.adapt(itemStack));
+        this.player.getInventory().add(FabricAdapter.adapt(itemStack, this.player.registryAccess()));
     }
 
     @Override
@@ -131,11 +128,7 @@ public class FabricPlayer extends AbstractPlayerActor {
         if (params.length > 0) {
             send = send + "|" + StringUtil.joinString(params, "|");
         }
-        ServerPlayNetworking.send(
-                this.player,
-                WECUIPacketHandler.CUI_IDENTIFIER,
-                new FriendlyByteBuf(Unpooled.copiedBuffer(send, StandardCharsets.UTF_8))
-        );
+        ServerPlayNetworking.send(this.player, new CUIPayload(send));
     }
 
     @Override
@@ -173,7 +166,7 @@ public class FabricPlayer extends AbstractPlayerActor {
 
     @Override
     public void print(Component component) {
-        this.player.sendSystemMessage(net.minecraft.network.chat.Component.Serializer.fromJson(GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale()))));
+        this.player.sendSystemMessage(net.minecraft.network.chat.Component.Serializer.fromJson(GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale())), player.registryAccess()));
     }
 
     private void sendColorized(String msg, ChatFormatting formatting) {

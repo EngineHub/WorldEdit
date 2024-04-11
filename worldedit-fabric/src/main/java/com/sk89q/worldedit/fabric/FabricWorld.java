@@ -93,9 +93,9 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkSource;
-import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.PalettedContainer;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
@@ -261,8 +261,8 @@ public class FabricWorld extends AbstractWorld {
 
     @Override
     public boolean useItem(BlockVector3 position, BaseItem item, Direction face) {
-        ItemStack stack = FabricAdapter.adapt(new BaseItemStack(item.getType(), item.getNbtReference(), 1));
         ServerLevel world = (ServerLevel) getWorld();
+        ItemStack stack = FabricAdapter.adapt(new BaseItemStack(item.getType(), item.getNbtReference(), 1), world.registryAccess());
         final WorldEditFakePlayer fakePlayer;
         try {
             fakePlayer = fakePlayers.get(world);
@@ -279,7 +279,7 @@ public class FabricWorld extends AbstractWorld {
         InteractionResult used = stack.useOn(itemUseContext);
         if (used != InteractionResult.SUCCESS) {
             // try activating the block
-            used = getWorld().getBlockState(blockPos).use(world, fakePlayer, InteractionHand.MAIN_HAND, rayTraceResult);
+            used = getWorld().getBlockState(blockPos).useItemOn(stack, world, fakePlayer, InteractionHand.MAIN_HAND, rayTraceResult).result();
         }
         if (used != InteractionResult.SUCCESS) {
             used = stack.use(world, fakePlayer, InteractionHand.MAIN_HAND).getResult();
@@ -296,7 +296,7 @@ public class FabricWorld extends AbstractWorld {
             return;
         }
 
-        ItemEntity entity = new ItemEntity(getWorld(), position.x(), position.y(), position.z(), FabricAdapter.adapt(item));
+        ItemEntity entity = new ItemEntity(getWorld(), position.x(), position.y(), position.z(), FabricAdapter.adapt(item, getWorld().registryAccess()));
         entity.setPickUpDelay(10);
         getWorld().addFreshEntity(entity);
     }
@@ -414,7 +414,7 @@ public class FabricWorld extends AbstractWorld {
             BlockStateHolder<?> state = FabricAdapter.adapt(chunk.getBlockState(pos));
             BlockEntity blockEntity = chunk.getBlockEntity(pos);
             if (blockEntity != null) {
-                net.minecraft.nbt.CompoundTag tag = blockEntity.saveWithId();
+                net.minecraft.nbt.CompoundTag tag = blockEntity.saveWithId(serverWorld.registryAccess());
                 state = state.toBaseBlock(LazyReference.from(() -> NBTConverter.fromNative(tag)));
             }
             extent.setBlock(vec, state.toBaseBlock());
@@ -432,7 +432,7 @@ public class FabricWorld extends AbstractWorld {
         for (BlockVector2 chunk : region.getChunks()) {
             chunkLoadings.add(
                 world.getChunkSource().getChunkFuture(chunk.x(), chunk.z(), ChunkStatus.FEATURES, true)
-                    .thenApply(either -> either.left().orElse(null))
+                    .thenApply(result -> result.orElse(null))
             );
         }
         return chunkLoadings;
@@ -613,11 +613,11 @@ public class FabricWorld extends AbstractWorld {
 
     @Override
     public BlockVector3 getSpawnPosition() {
-        LevelData worldProps = getWorld().getLevelData();
+        BlockPos spawnPos = getWorld().getLevelData().getSpawnPos();
         return BlockVector3.at(
-            worldProps.getXSpawn(),
-            worldProps.getYSpawn(),
-            worldProps.getZSpawn()
+            spawnPos.getX(),
+            spawnPos.getY(),
+            spawnPos.getZ()
         );
     }
 
@@ -637,7 +637,7 @@ public class FabricWorld extends AbstractWorld {
         BlockEntity tile = ((LevelChunk) getWorld().getChunk(pos)).getBlockEntity(pos, LevelChunk.EntityCreationType.CHECK);
 
         if (tile != null) {
-            net.minecraft.nbt.CompoundTag tag = tile.saveWithId();
+            net.minecraft.nbt.CompoundTag tag = tile.saveWithId(getWorld().registryAccess());
             return getBlock(position).toBaseBlock(LazyReference.from(() -> NBTConverter.fromNative(tag)));
         } else {
             return getBlock(position).toBaseBlock();

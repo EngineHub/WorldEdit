@@ -24,6 +24,7 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.BundledItemRegistry;
+import net.minecraft.core.RegistryAccess;
 
 public class FabricItemRegistry extends BundledItemRegistry {
 
@@ -37,7 +38,7 @@ public class FabricItemRegistry extends BundledItemRegistry {
     @Override
     public Component getRichName(BaseItemStack itemStack) {
         return TranslatableComponent.of(
-            FabricAdapter.adapt(itemStack).getDescriptionId()
+            FabricAdapter.adapt(itemStack, RegistryAccess.EMPTY).getDescriptionId()
         );
     }
 
