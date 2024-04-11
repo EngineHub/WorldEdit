@@ -272,7 +272,7 @@ public class EditSession implements Extent, AutoCloseable {
             @SuppressWarnings("deprecation")
             MultiStageReorder reorder = new MultiStageReorder(extent, false);
             extent = traceIfNeeded(reorderExtent = reorder);
-            extent = traceIfNeeded(chunkBatchingExtent = new ChunkBatchingExtent(extent));
+            extent = traceIfNeeded(chunkBatchingExtent = new ChunkBatchingExtent(extent, false));
             extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_REORDER);
             if (watchdog != null) {
                 // reset before buffering extents, since they may buffer all changes
@@ -360,9 +360,6 @@ public class EditSession implements Extent, AutoCloseable {
      * chunk batching}.
      */
     public void enableStandardMode() {
-        if (chunkBatchingExtent != null) {
-            setBatchingChunks(true);
-        }
     }
 
     /**
