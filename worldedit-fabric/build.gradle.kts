@@ -12,8 +12,7 @@ plugins {
 applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
 
-val minecraftVersion = "1.20.4"
-val loaderVersion = "0.15.1"
+val minecraftVersion = "1.20.5-pre2"
 
 val fabricApiConfiguration: Configuration = configurations.create("fabricApi")
 
@@ -45,7 +44,7 @@ dependencies {
 
     "minecraft"("com.mojang:minecraft:$minecraftVersion")
     "mappings"(project.the<LoomGradleExtensionAPI>().officialMojangMappings())
-    "modImplementation"("net.fabricmc:fabric-loader:$loaderVersion")
+    "modImplementation"("net.fabricmc:fabric-loader:0.15.10")
 
 
     // [1] Load the API dependencies from the fabric mod json...
@@ -58,7 +57,7 @@ dependencies {
         .toSet()
     // [2] Request the matching dependency from fabric-loom
     for (wantedDependency in wantedDependencies) {
-        val dep = project.the<FabricApiExtension>().module(wantedDependency, "0.91.1+1.20.4")
+        val dep = project.the<FabricApiExtension>().module(wantedDependency, "0.97.1+1.20.5")
         "include"(dep)
         "modImplementation"(dep)
     }

@@ -26,7 +26,6 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.fabric.FabricAdapter;
 import com.sk89q.worldedit.fabric.FabricEntityProperties;
 import com.sk89q.worldedit.fabric.FabricWorldEdit;
-import com.sk89q.worldedit.fabric.internal.NBTConverter;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
@@ -34,7 +33,9 @@ import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.entity.EntityTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.ResourceLocation;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.lang.ref.WeakReference;
 import javax.annotation.Nullable;
@@ -59,7 +60,10 @@ public class FabricEntity implements Entity {
         ResourceLocation id = FabricWorldEdit.getRegistry(Registries.ENTITY_TYPE).getKey(entity.getType());
         CompoundTag tag = new CompoundTag();
         entity.saveWithoutId(tag);
-        return new BaseEntity(EntityTypes.get(id.toString()), LazyReference.from(() -> NBTConverter.fromNative(tag)));
+        return new BaseEntity(
+            EntityTypes.get(id.toString()),
+            LazyReference.from(() -> NBTConverter.fromNative(tag))
+        );
     }
 
     @Override

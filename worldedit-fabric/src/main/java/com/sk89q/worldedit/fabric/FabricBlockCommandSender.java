@@ -85,7 +85,8 @@ public class FabricBlockCommandSender extends AbstractCommandBlockActor {
     @Override
     public void print(Component component) {
         sendMessage(net.minecraft.network.chat.Component.Serializer.fromJson(
-            GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale()))
+            GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale())),
+            this.sender.getLevel().registryAccess()
         ));
     }
 

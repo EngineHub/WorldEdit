@@ -23,7 +23,9 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.fabric.FabricAdapter;
 import com.sk89q.worldedit.fabric.FabricPlayer;
 import com.sk89q.worldedit.fabric.FabricWorldEdit;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
 import java.nio.charset.StandardCharsets;
@@ -34,12 +36,27 @@ public final class WECUIPacketHandler {
 
     public static final ResourceLocation CUI_IDENTIFIER = new ResourceLocation(FabricWorldEdit.MOD_ID, FabricWorldEdit.CUI_PLUGIN_CHANNEL);
 
+    public record CuiInitializationPacket(String text) implements CustomPacketPayload {
+        public static final Type<CuiInitializationPacket> TYPE = new Type<>(CUI_IDENTIFIER);
+
+        @Override
+        public Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
+    }
+
     public static void init() {
-        ServerPlayNetworking.registerGlobalReceiver(CUI_IDENTIFIER, (server, player, handler, buf, responder) -> {
-            LocalSession session = FabricWorldEdit.inst.getSession(player);
-            String text = buf.toString(StandardCharsets.UTF_8);
-            FabricPlayer actor = FabricAdapter.adaptPlayer(player);
-            session.handleCUIInitializationMessage(text, actor);
+        PayloadTypeRegistry.playC2S().register(
+            CuiInitializationPacket.TYPE,
+            CustomPacketPayload.codec(
+                (packet, buffer) -> buffer.writeCharSequence(packet.text(), StandardCharsets.UTF_8),
+                buffer -> new CuiInitializationPacket(buffer.toString(StandardCharsets.UTF_8))
+            )
+        );
+        ServerPlayNetworking.registerGlobalReceiver(CuiInitializationPacket.TYPE, (payload, context) -> {
+            LocalSession session = FabricWorldEdit.inst.getSession(context.player());
+            FabricPlayer actor = FabricAdapter.adaptPlayer(context.player());
+            session.handleCUIInitializationMessage(payload.text(), actor);
         });
     }
 }

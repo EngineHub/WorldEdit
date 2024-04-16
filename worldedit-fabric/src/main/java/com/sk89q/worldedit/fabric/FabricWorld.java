@@ -41,7 +41,6 @@ import com.sk89q.worldedit.fabric.internal.FabricWorldNativeAccess;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
 import com.sk89q.worldedit.function.mask.AbstractExtentMask;
 import com.sk89q.worldedit.function.mask.Mask;
-import com.sk89q.worldedit.function.mask.Mask2D;
 import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -93,9 +92,9 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkSource;
-import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.PalettedContainer;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
@@ -279,7 +278,8 @@ public class FabricWorld extends AbstractWorld {
         InteractionResult used = stack.useOn(itemUseContext);
         if (used != InteractionResult.SUCCESS) {
             // try activating the block
-            used = getWorld().getBlockState(blockPos).use(world, fakePlayer, InteractionHand.MAIN_HAND, rayTraceResult);
+            used = getWorld().getBlockState(blockPos).useItemOn(stack, world, fakePlayer, InteractionHand.MAIN_HAND, rayTraceResult)
+                .result();
         }
         if (used != InteractionResult.SUCCESS) {
             used = stack.use(world, fakePlayer, InteractionHand.MAIN_HAND).getResult();
@@ -414,7 +414,7 @@ public class FabricWorld extends AbstractWorld {
             BlockStateHolder<?> state = FabricAdapter.adapt(chunk.getBlockState(pos));
             BlockEntity blockEntity = chunk.getBlockEntity(pos);
             if (blockEntity != null) {
-                net.minecraft.nbt.CompoundTag tag = blockEntity.saveWithId();
+                net.minecraft.nbt.CompoundTag tag = blockEntity.saveWithId(serverWorld.registryAccess());
                 state = state.toBaseBlock(LazyReference.from(() -> NBTConverter.fromNative(tag)));
             }
             extent.setBlock(vec, state.toBaseBlock());
@@ -432,7 +432,7 @@ public class FabricWorld extends AbstractWorld {
         for (BlockVector2 chunk : region.getChunks()) {
             chunkLoadings.add(
                 world.getChunkSource().getChunkFuture(chunk.x(), chunk.z(), ChunkStatus.FEATURES, true)
-                    .thenApply(either -> either.left().orElse(null))
+                    .thenApply(either -> either.orElse(null))
             );
         }
         return chunkLoadings;
@@ -613,12 +613,7 @@ public class FabricWorld extends AbstractWorld {
 
     @Override
     public BlockVector3 getSpawnPosition() {
-        LevelData worldProps = getWorld().getLevelData();
-        return BlockVector3.at(
-            worldProps.getXSpawn(),
-            worldProps.getYSpawn(),
-            worldProps.getZSpawn()
-        );
+        return FabricAdapter.adapt(getWorld().getLevelData().getSpawnPos());
     }
 
     @Override
@@ -637,7 +632,7 @@ public class FabricWorld extends AbstractWorld {
         BlockEntity tile = ((LevelChunk) getWorld().getChunk(pos)).getBlockEntity(pos, LevelChunk.EntityCreationType.CHECK);
 
         if (tile != null) {
-            net.minecraft.nbt.CompoundTag tag = tile.saveWithId();
+            net.minecraft.nbt.CompoundTag tag = tile.saveWithId(getWorld().registryAccess());
             return getBlock(position).toBaseBlock(LazyReference.from(() -> NBTConverter.fromNative(tag)));
         } else {
             return getBlock(position).toBaseBlock();
@@ -699,10 +694,10 @@ public class FabricWorld extends AbstractWorld {
         if (entityType.isEmpty()) {
             return null;
         }
-        LinCompoundTag nativeTag = entity.getNbt();
+        LinCompoundTag linTag = entity.getNbt();
         net.minecraft.nbt.CompoundTag tag;
-        if (nativeTag != null) {
-            tag = NBTConverter.toNative(nativeTag);
+        if (linTag != null) {
+            tag = NBTConverter.toNative(linTag);
             removeUnwantedEntityTagsRecursively(tag);
         } else {
             tag = new net.minecraft.nbt.CompoundTag();
@@ -742,14 +737,7 @@ public class FabricWorld extends AbstractWorld {
             public boolean test(BlockVector3 vector) {
                 return FabricAdapter.adapt(getExtent().getBlock(vector)).getBlock() instanceof LiquidBlock;
             }
-
-            @Nullable
-            @Override
-            public Mask2D toMask2D() {
-                return null;
-            }
         };
     }
-
 
 }
