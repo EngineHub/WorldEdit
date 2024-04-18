@@ -30,7 +30,10 @@ import javax.annotation.Nullable;
 /**
  * A item registry that uses {@link BundledItemRegistry} to serve information
  * about items.
+ *
+ * @deprecated Use the platform Item Registries
  */
+@Deprecated
 public class BundledItemRegistry implements ItemRegistry {
 
     private BundledItemData.ItemEntry getEntryById(ItemType itemType) {
@@ -73,6 +76,8 @@ public class BundledItemRegistry implements ItemRegistry {
 
     @Nullable
     @Override
+    @Deprecated
+    @SuppressWarnings("removal")
     public ItemMaterial getMaterial(ItemType itemType) {
         return new PassthroughItemMaterial(BundledItemData.getInstance().getMaterialById(itemType.id()));
     }

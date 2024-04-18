@@ -24,6 +24,7 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.BundledItemRegistry;
 
+@SuppressWarnings("deprecation")
 class BukkitItemRegistry extends BundledItemRegistry {
     @Override
     public Component getRichName(ItemType itemType) {
