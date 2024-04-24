@@ -458,6 +458,7 @@ public final class BlockTypes {
     @Nullable public static final BlockType GRINDSTONE = get("minecraft:grindstone");
     @Nullable public static final BlockType HANGING_ROOTS = get("minecraft:hanging_roots");
     @Nullable public static final BlockType HAY_BLOCK = get("minecraft:hay_block");
+    @Nullable public static final BlockType HEAVY_CORE = get("minecraft:heavy_core");
     @Nullable public static final BlockType HEAVY_WEIGHTED_PRESSURE_PLATE = get("minecraft:heavy_weighted_pressure_plate");
     @Nullable public static final BlockType HONEY_BLOCK = get("minecraft:honey_block");
     @Nullable public static final BlockType HONEYCOMB_BLOCK = get("minecraft:honeycomb_block");
@@ -981,6 +982,7 @@ public final class BlockTypes {
     @Nullable public static final BlockType TURTLE_EGG = get("minecraft:turtle_egg");
     @Nullable public static final BlockType TWISTING_VINES = get("minecraft:twisting_vines");
     @Nullable public static final BlockType TWISTING_VINES_PLANT = get("minecraft:twisting_vines_plant");
+    @Nullable public static final BlockType VAULT = get("minecraft:vault");
     @Nullable public static final BlockType VERDANT_FROGLIGHT = get("minecraft:verdant_froglight");
     @Nullable public static final BlockType VINE = get("minecraft:vine");
     @Nullable public static final BlockType VOID_AIR = get("minecraft:void_air");

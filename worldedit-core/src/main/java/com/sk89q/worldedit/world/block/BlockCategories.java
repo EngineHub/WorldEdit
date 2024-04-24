@@ -32,9 +32,11 @@ public final class BlockCategories {
     public static final BlockCategory ANCIENT_CITY_REPLACEABLE = get("minecraft:ancient_city_replaceable");
     public static final BlockCategory ANIMALS_SPAWNABLE_ON = get("minecraft:animals_spawnable_on");
     public static final BlockCategory ANVIL = get("minecraft:anvil");
+    public static final BlockCategory ARMADILLO_SPAWNABLE_ON = get("minecraft:armadillo_spawnable_on");
     public static final BlockCategory AXOLOTLS_SPAWNABLE_ON = get("minecraft:axolotls_spawnable_on");
     public static final BlockCategory AZALEA_GROWS_ON = get("minecraft:azalea_grows_on");
     public static final BlockCategory AZALEA_ROOT_REPLACEABLE = get("minecraft:azalea_root_replaceable");
+    public static final BlockCategory BADLANDS_TERRACOTTA = get("minecraft:badlands_terracotta");
     public static final BlockCategory BAMBOO_BLOCKS = get("minecraft:bamboo_blocks");
     public static final BlockCategory BAMBOO_PLANTABLE_ON = get("minecraft:bamboo_plantable_on");
     public static final BlockCategory BANNERS = get("minecraft:banners");
@@ -76,6 +78,7 @@ public final class BlockCategories {
     public static final BlockCategory DIAMOND_ORES = get("minecraft:diamond_ores");
     public static final BlockCategory DIRT = get("minecraft:dirt");
     @Deprecated public static final BlockCategory DIRT_LIKE = get("minecraft:dirt_like");
+    public static final BlockCategory DOES_NOT_BLOCK_HOPPERS = get("minecraft:does_not_block_hoppers");
     public static final BlockCategory DOORS = get("minecraft:doors");
     public static final BlockCategory DRAGON_IMMUNE = get("minecraft:dragon_immune");
     public static final BlockCategory DRAGON_TRANSPARENT = get("minecraft:dragon_transparent");
@@ -101,6 +104,12 @@ public final class BlockCategories {
     public static final BlockCategory HOGLIN_REPELLENTS = get("minecraft:hoglin_repellents");
     public static final BlockCategory ICE = get("minecraft:ice");
     public static final BlockCategory IMPERMEABLE = get("minecraft:impermeable");
+    public static final BlockCategory INCORRECT_FOR_DIAMOND_TOOL = get("minecraft:incorrect_for_diamond_tool");
+    public static final BlockCategory INCORRECT_FOR_GOLD_TOOL = get("minecraft:incorrect_for_gold_tool");
+    public static final BlockCategory INCORRECT_FOR_IRON_TOOL = get("minecraft:incorrect_for_iron_tool");
+    public static final BlockCategory INCORRECT_FOR_NETHERITE_TOOL = get("minecraft:incorrect_for_netherite_tool");
+    public static final BlockCategory INCORRECT_FOR_STONE_TOOL = get("minecraft:incorrect_for_stone_tool");
+    public static final BlockCategory INCORRECT_FOR_WOODEN_TOOL = get("minecraft:incorrect_for_wooden_tool");
     public static final BlockCategory INFINIBURN_END = get("minecraft:infiniburn_end");
     public static final BlockCategory INFINIBURN_NETHER = get("minecraft:infiniburn_nether");
     public static final BlockCategory INFINIBURN_OVERWORLD = get("minecraft:infiniburn_overworld");
