@@ -75,6 +75,9 @@ subsystems {
         minecraftVersion = "1.20.4"
         mappingsVersion = "2024.04.14"
     }
+    decompiler {
+        maxMemory("2G")
+    }
 }
 
 configure<BasePluginExtension> {
