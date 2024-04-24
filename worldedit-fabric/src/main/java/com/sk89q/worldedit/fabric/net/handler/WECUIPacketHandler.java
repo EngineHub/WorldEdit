@@ -36,8 +36,8 @@ public final class WECUIPacketHandler {
 
     public static final ResourceLocation CUI_IDENTIFIER = new ResourceLocation(FabricWorldEdit.MOD_ID, FabricWorldEdit.CUI_PLUGIN_CHANNEL);
 
-    public record CuiInitializationPacket(String text) implements CustomPacketPayload {
-        public static final Type<CuiInitializationPacket> TYPE = new Type<>(CUI_IDENTIFIER);
+    public record CuiPacket(String text) implements CustomPacketPayload {
+        public static final Type<CuiPacket> TYPE = new Type<>(CUI_IDENTIFIER);
 
         @Override
         public Type<? extends CustomPacketPayload> type() {
@@ -47,13 +47,20 @@ public final class WECUIPacketHandler {
 
     public static void init() {
         PayloadTypeRegistry.playC2S().register(
-            CuiInitializationPacket.TYPE,
+            CuiPacket.TYPE,
             CustomPacketPayload.codec(
                 (packet, buffer) -> buffer.writeCharSequence(packet.text(), StandardCharsets.UTF_8),
-                buffer -> new CuiInitializationPacket(buffer.toString(StandardCharsets.UTF_8))
+                buffer -> new CuiPacket(buffer.toString(StandardCharsets.UTF_8))
             )
         );
-        ServerPlayNetworking.registerGlobalReceiver(CuiInitializationPacket.TYPE, (payload, context) -> {
+        PayloadTypeRegistry.playS2C().register(
+            CuiPacket.TYPE,
+            CustomPacketPayload.codec(
+                (packet, buffer) -> buffer.writeCharSequence(packet.text(), StandardCharsets.UTF_8),
+                buffer -> new CuiPacket(buffer.toString(StandardCharsets.UTF_8))
+            )
+        );
+        ServerPlayNetworking.registerGlobalReceiver(CuiPacket.TYPE, (payload, context) -> {
             LocalSession session = FabricWorldEdit.inst.getSession(context.player());
             FabricPlayer actor = FabricAdapter.adaptPlayer(context.player());
             session.handleCUIInitializationMessage(payload.text(), actor);

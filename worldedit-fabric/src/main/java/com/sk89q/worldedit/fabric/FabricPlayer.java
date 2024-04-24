@@ -130,7 +130,7 @@ public class FabricPlayer extends AbstractPlayerActor {
         }
         ServerPlayNetworking.send(
             this.player,
-            new WECUIPacketHandler.CuiInitializationPacket(send)
+            new WECUIPacketHandler.CuiPacket(send)
         );
     }
 
