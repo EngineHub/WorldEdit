@@ -23,7 +23,6 @@ import com.sk89q.worldedit.LocalSession;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 /**

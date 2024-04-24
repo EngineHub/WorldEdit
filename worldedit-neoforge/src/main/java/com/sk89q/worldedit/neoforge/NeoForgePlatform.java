@@ -59,8 +59,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 
-import static java.util.stream.Collectors.toList;
-
 class NeoForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     private final NeoForgeWorldEdit mod;
