@@ -12,7 +12,7 @@ plugins {
 applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
 
-val minecraftVersion = "1.20.5-pre2"
+val minecraftVersion = "1.20.5"
 
 val fabricApiConfiguration: Configuration = configurations.create("fabricApi")
 
@@ -57,7 +57,7 @@ dependencies {
         .toSet()
     // [2] Request the matching dependency from fabric-loom
     for (wantedDependency in wantedDependencies) {
-        val dep = project.the<FabricApiExtension>().module(wantedDependency, "0.97.1+1.20.5")
+        val dep = project.the<FabricApiExtension>().module(wantedDependency, "0.97.6+1.20.5")
         "include"(dep)
         "modImplementation"(dep)
     }
