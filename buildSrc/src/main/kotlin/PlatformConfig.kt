@@ -19,7 +19,7 @@ fun Project.applyPlatformAndCoreConfiguration(javaRelease: Int = 21) {
     applyCommonJavaConfiguration(
         sourcesJar = name in setOf("worldedit-core", "worldedit-bukkit", "worldedit-fabric"),
         javaRelease = javaRelease,
-        banSlf4j = name !in setOf("worldedit-fabric", "worldedit-forge", "worldedit-sponge"),
+        banSlf4j = name !in setOf("worldedit-fabric", "worldedit-neoforge", "worldedit-sponge"),
     )
 
     ext["internalVersion"] = "$version+${rootProject.ext["gitCommitHash"]}"

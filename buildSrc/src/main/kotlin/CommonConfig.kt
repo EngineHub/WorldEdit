@@ -7,6 +7,7 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.repositories
 import org.gradle.kotlin.dsl.the
+import org.gradle.plugins.ide.idea.model.IdeaModel
 
 fun Project.applyCommonConfiguration() {
     group = rootProject.group
@@ -67,5 +68,14 @@ fun Project.applyCommonConfiguration() {
         header(rootProject.file("HEADER.txt"))
         include("**/*.java")
         include("**/*.kt")
+    }
+
+    plugins.withId("idea") {
+        configure<IdeaModel> {
+            module {
+                isDownloadSources = true
+                isDownloadJavadoc = true
+            }
+        }
     }
 }

@@ -20,7 +20,7 @@ listOf("1.19.4", "1.20", "1.20.2", "1.20.4").forEach {
     include("worldedit-bukkit:adapters:adapter-$it")
 }
 
-listOf("bukkit", "core", "fabric", "forge", "cli").forEach {
+listOf("bukkit", "core", "fabric", "neoforge", "cli").forEach {
     include("worldedit-libs:$it")
     include("worldedit-$it")
 }

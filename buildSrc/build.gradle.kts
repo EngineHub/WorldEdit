@@ -9,14 +9,14 @@ repositories {
         name = "PaperMC"
         url = uri("https://repo.papermc.io/repository/maven-public/")
         content {
-            includeGroupByRegex("io\\.papermc\\..*")
+            includeGroupAndSubgroups("io.papermc")
         }
     }
     maven {
-        name = "Forge Maven"
-        url = uri("https://maven.minecraftforge.net/")
+        name = "NeoForged Maven"
+        url = uri("https://maven.neoforged.net/releases")
         content {
-            includeGroupByRegex("net\\.minecraftforge(|\\..*)$")
+            includeGroupAndSubgroups("net.neoforged")
         }
     }
     mavenCentral()
@@ -52,12 +52,13 @@ dependencies {
     implementation("org.jfrog.buildinfo:build-info-extractor-gradle:5.2.0")
     implementation("org.spongepowered:spongegradle-plugin-development:2.2.0")
     implementation("org.spongepowered:vanillagradle:0.2.1-20231105.223944-69")
-    implementation("net.minecraftforge.gradle:ForgeGradle:6.0.21")
+    val neoGradleVersion = "7.0.107"
+    implementation("net.neoforged.gradle:userdev:$neoGradleVersion")
+    implementation("net.neoforged.gradle:mixin:$neoGradleVersion")
     implementation("net.fabricmc:fabric-loom:$loomVersion")
     implementation("net.fabricmc:sponge-mixin:$mixinVersion")
     implementation("org.enginehub.gradle:gradle-codecov-plugin:0.2.0")
     implementation("io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:1.5.13")
-    implementation("org.spongepowered:mixingradle:0.7.38")
     constraints {
         val asmVersion = "[9.7,)"
         implementation("org.ow2.asm:asm:$asmVersion") {
