@@ -49,7 +49,7 @@ import javax.annotation.Nullable;
  *
  * @deprecated Deprecated without replacement.
  */
-@Deprecated
+@Deprecated(forRemoval = true)
 public final class BundledItemData {
 
     private static final Logger LOGGER = LogManagerCompat.getLogger();
@@ -111,7 +111,7 @@ public final class BundledItemData {
      * @deprecated Deprecated without alternative
      */
     @Nullable
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @SuppressWarnings("removal")
     public ItemMaterial getMaterialById(String id) {
         ItemEntry entry = findById(id);

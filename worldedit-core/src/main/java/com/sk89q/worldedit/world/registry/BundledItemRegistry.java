@@ -33,14 +33,16 @@ import javax.annotation.Nullable;
  *
  * @deprecated Use the platform Item Registries
  */
-@Deprecated
+@Deprecated(forRemoval = true)
 public class BundledItemRegistry implements ItemRegistry {
 
+    @SuppressWarnings("removal")
     private BundledItemData.ItemEntry getEntryById(ItemType itemType) {
         return BundledItemData.getInstance().findById(itemType.id());
     }
 
     @Override
+    @SuppressWarnings("removal")
     public Component getRichName(ItemType itemType) {
         BundledItemData.ItemEntry itemEntry = getEntryById(itemType);
         if (itemEntry != null && !itemEntry.localizedName.equals("Air")) {
@@ -59,7 +61,7 @@ public class BundledItemRegistry implements ItemRegistry {
     @Override
     @Deprecated
     // dumb_intellij.jpg
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({"deprecation", "removal"})
     public String getName(ItemType itemType) {
         BundledItemData.ItemEntry itemEntry = getEntryById(itemType);
         if (itemEntry != null) {
@@ -76,7 +78,7 @@ public class BundledItemRegistry implements ItemRegistry {
 
     @Nullable
     @Override
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @SuppressWarnings("removal")
     public ItemMaterial getMaterial(ItemType itemType) {
         return new PassthroughItemMaterial(BundledItemData.getInstance().getMaterialById(itemType.id()));

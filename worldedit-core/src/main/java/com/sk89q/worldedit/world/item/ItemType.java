@@ -111,7 +111,7 @@ public class ItemType implements Keyed {
      * @return The material
      * @deprecated Deprecated without alternative
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @SuppressWarnings("removal")
     public ItemMaterial getMaterial() {
         return itemMaterial.getValue();

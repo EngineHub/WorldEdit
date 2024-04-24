@@ -25,7 +25,7 @@ import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.BundledItemRegistry;
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings("removal")
 public class FabricItemRegistry extends BundledItemRegistry {
 
     @Override
