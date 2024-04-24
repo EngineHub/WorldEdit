@@ -76,7 +76,7 @@ subsystems {
         mappingsVersion = "2024.04.14"
     }
     decompiler {
-        maxMemory("2G")
+        maxMemory("3G")
     }
 }
 
