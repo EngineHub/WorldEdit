@@ -22,7 +22,7 @@ package com.sk89q.worldedit.neoforge;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.Collections;
@@ -51,11 +51,7 @@ public class ThreadSafeCache {
     }
 
     @SubscribeEvent
-    public void tickStart(TickEvent.ServerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) {
-            return;
-        }
-
+    public void onEndTick(ServerTickEvent.Post event) {
         long now = System.currentTimeMillis();
 
         if (now - lastRefresh > REFRESH_DELAY) {
