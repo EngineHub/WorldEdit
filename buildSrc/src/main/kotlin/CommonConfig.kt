@@ -45,7 +45,7 @@ fun Project.applyCommonConfiguration() {
             if (!configurations.names.contains(conf)) {
                 continue
             }
-            add(conf, enforcedPlatform(stringyLibs.getLibrary("log4j-bom")).map {
+            add(conf, platform(stringyLibs.getLibrary("log4j-bom")).map {
                 val dep = create(it)
                 dep.because("Mojang provides Log4j")
                 dep
