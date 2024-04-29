@@ -17,7 +17,7 @@ fun Project.applyPaperweightAdapterConfiguration(javaRelease: Int = 21) {
     dependencies {
         "implementation"(project(":worldedit-bukkit"))
         constraints {
-            "remapper"("net.fabricmc:tiny-remapper:[0.8.11,)") {
+            "remapper"("net.fabricmc:tiny-remapper:[${stringyLibs.getVersion("minimumTinyRemapper")},)") {
                 because("Need remapper to support Java 21")
             }
         }

@@ -71,11 +71,19 @@ fun Project.applyLibrariesConfiguration() {
             .filterIsInstance<ModuleDependency>()
             .map { it.copy() }
             .map { dependency ->
-                dependency.artifact {
-                    name = dependency.name
-                    type = artifactType
-                    extension = "jar"
-                    classifier = artifactType
+                val category = dependency.attributes.getAttribute(Category.CATEGORY_ATTRIBUTE)?.name
+                if (category == Category.REGULAR_PLATFORM || category == Category.ENFORCED_PLATFORM) {
+                    return@map dependency
+                }
+                try {
+                    dependency.artifact {
+                        name = dependency.name
+                        type = artifactType
+                        extension = "jar"
+                        classifier = artifactType
+                    }
+                } catch (e: Exception) {
+                    throw RuntimeException("Failed to add artifact to dependency: $dependency", e)
                 }
                 dependency
             }

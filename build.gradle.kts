@@ -10,7 +10,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath("net.fabricmc:fabric-loom:${versions.loom}")
+        classpath(libs.fabric.loom)
     }
 }
 plugins {

@@ -1,13 +1,13 @@
+import groovy.lang.Closure
 import org.cadixdev.gradle.licenser.LicenseExtension
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Dependency
+import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.jvm.toolchain.JavaLanguageVersion
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.repositories
-import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.*
 import org.gradle.plugins.ide.idea.model.IdeaModel
+import java.util.concurrent.TimeUnit
 
 fun Project.applyCommonConfiguration() {
     group = rootProject.group
@@ -30,7 +30,7 @@ fun Project.applyCommonConfiguration() {
 
     configurations.all {
         resolutionStrategy {
-            cacheChangingModulesFor(5, "MINUTES")
+            cacheChangingModulesFor(1, TimeUnit.DAYS)
         }
     }
 
@@ -41,22 +41,23 @@ fun Project.applyCommonConfiguration() {
     }
 
     dependencies {
-        constraints {
-            for (conf in configurations) {
-                if (conf.isCanBeConsumed || conf.isCanBeResolved) {
-                    // dependencies don't get declared in these
-                    continue
-                }
-                add(conf.name, "com.google.guava:guava") {
-                    version { require(Versions.GUAVA) }
+        for (conf in listOf("implementation", "api")) {
+            if (!configurations.names.contains(conf)) {
+                continue
+            }
+            add(conf, enforcedPlatform(stringyLibs.getLibrary("log4j-bom")).map {
+                val dep = create(it)
+                dep.because("Mojang provides Log4j")
+                dep
+            })
+            constraints {
+                add(conf, stringyLibs.getLibrary("guava")) {
                     because("Mojang provides Guava")
                 }
-                add(conf.name, "com.google.code.gson:gson") {
-                    version { require(Versions.GSON) }
+                add(conf, stringyLibs.getLibrary("gson")) {
                     because("Mojang provides Gson")
                 }
-                add(conf.name, "it.unimi.dsi:fastutil") {
-                    version { require(Versions.FAST_UTIL) }
+                add(conf, stringyLibs.getLibrary("fastutil")) {
                     because("Mojang provides FastUtil")
                 }
             }

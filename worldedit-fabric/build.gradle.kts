@@ -12,8 +12,6 @@ plugins {
 applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
 
-val minecraftVersion = "1.20.5"
-
 val fabricApiConfiguration: Configuration = configurations.create("fabricApi")
 
 configure<LoomGradleExtensionAPI> {
@@ -38,13 +36,10 @@ repositories {
 
 dependencies {
     "api"(project(":worldedit-core"))
-    "implementation"(platform("org.apache.logging.log4j:log4j-bom:${Versions.LOG4J}") {
-        because("Mojang provides Log4J")
-    })
 
-    "minecraft"("com.mojang:minecraft:$minecraftVersion")
+    "minecraft"(libs.fabric.minecraft)
     "mappings"(project.the<LoomGradleExtensionAPI>().officialMojangMappings())
-    "modImplementation"("net.fabricmc:fabric-loader:0.15.10")
+    "modImplementation"(libs.fabric.loader)
 
 
     // [1] Load the API dependencies from the fabric mod json...
@@ -57,25 +52,25 @@ dependencies {
         .toSet()
     // [2] Request the matching dependency from fabric-loom
     for (wantedDependency in wantedDependencies) {
-        val dep = project.the<FabricApiExtension>().module(wantedDependency, "0.97.6+1.20.5")
+        val dep = project.the<FabricApiExtension>().module(wantedDependency, libs.versions.fabric.api.get())
         "include"(dep)
         "modImplementation"(dep)
     }
 
     // No need for this at runtime
-    "modCompileOnly"("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
+    "modCompileOnly"(libs.fabric.permissions.api)
 
     // Hook these up manually, because Fabric doesn't seem to quite do it properly.
-    "compileOnly"("net.fabricmc:sponge-mixin:${project.versions.mixin}")
-    "annotationProcessor"("net.fabricmc:sponge-mixin:${project.versions.mixin}")
-    "annotationProcessor"("net.fabricmc:fabric-loom:${project.versions.loom}")
+    "compileOnly"(libs.fabric.mixin)
+    "annotationProcessor"(libs.fabric.mixin)
+    "annotationProcessor"(libs.fabric.loom)
 
     // Silence some warnings, since apparently this isn't on the compile classpath like it should be.
-    "compileOnly"("com.google.errorprone:error_prone_annotations:2.11.0")
+    "compileOnly"(libs.errorprone.annotations)
 }
 
 configure<BasePluginExtension> {
-    archivesName.set("${project.name}-mc$minecraftVersion")
+    archivesName.set("${project.name}-mc${libs.fabric.minecraft.get().version}")
 }
 
 configure<PublishingExtension> {

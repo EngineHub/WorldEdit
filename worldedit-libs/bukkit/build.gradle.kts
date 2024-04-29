@@ -9,5 +9,5 @@ repositories {
 }
 
 dependencies {
-    "shade"("net.kyori:text-adapter-bukkit:${Versions.TEXT_EXTRAS}")
+    "shade"(libs.kyoriText.adapter.bukkit)
 }
