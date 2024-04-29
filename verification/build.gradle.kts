@@ -134,8 +134,3 @@ tasks.named<JapicmpTask>("checkFabricApiCompatibility") {
     // Need to check against the reobf JAR
     newClasspath.setFrom(project(":worldedit-fabric").tasks.named("remapJar"))
 }
-//tasks.named<JapicmpTask>("checkForgeApiCompatibility") {
-//    // Need to check against the reobf JAR
-//    newClasspath.builtBy(project(":worldedit-neoforge").tasks.named("reobfJar"))
-//}
-""
