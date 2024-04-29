@@ -9,11 +9,10 @@ plugins {
 applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
 
-val minecraftVersion = "1.20.5"
+val minecraftVersion = libs.versions.neoforge.minecraft.get()
 val nextMajorMinecraftVersion: String = minecraftVersion.split('.').let { (useless, major) ->
     "$useless.${major.toInt() + 1}"
 }
-val neoVersion = "20.5.16-beta"
 
 val apiClasspath = configurations.create("apiClasspath") {
     isCanBeResolved = true
@@ -40,11 +39,8 @@ repositories {
 
 dependencies {
     "api"(project(":worldedit-core"))
-    "implementation"(platform("org.apache.logging.log4j:log4j-bom:${Versions.LOG4J}") {
-        because("Mojang provides Log4J")
-    })
 
-    "implementation"("net.neoforged:neoforge:$neoVersion")
+    "implementation"(libs.neoforge)
 }
 
 minecraft {
@@ -71,9 +67,8 @@ runs {
 
 subsystems {
     parchment {
-        // https://parchmentmc.org/docs/getting-started; note that we use older MC versions some times which is OK
-        minecraftVersion = "1.20.4"
-        mappingsVersion = "2024.04.14"
+        minecraftVersion = libs.versions.parchment.minecraft.get()
+        mappingsVersion = libs.versions.parchment.mappings.get()
     }
     decompiler {
         maxMemory("3G")
@@ -95,7 +90,7 @@ tasks.named<Copy>("processResources") {
     // this will ensure that this task is redone when the versions change.
     val properties = mapOf(
         "version" to project.ext["internalVersion"],
-        "neoVersion" to neoVersion,
+        "neoVersion" to libs.neoforge.get().version,
         "minecraftVersion" to minecraftVersion,
         "nextMajorMinecraftVersion" to nextMajorMinecraftVersion
     )

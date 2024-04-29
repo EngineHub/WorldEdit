@@ -43,12 +43,14 @@ fun Project.applyCommonJavaConfiguration(sourcesJar: Boolean, javaRelease: Int =
     }
 
     dependencies {
-        "compileOnly"("com.google.code.findbugs:jsr305:3.0.2")
-        "testImplementation"("org.junit.jupiter:junit-jupiter-api:${Versions.JUNIT}")
-        "testImplementation"("org.junit.jupiter:junit-jupiter-params:${Versions.JUNIT}")
-        "testImplementation"("org.mockito:mockito-core:${Versions.MOCKITO}")
-        "testImplementation"("org.mockito:mockito-junit-jupiter:${Versions.MOCKITO}")
-        "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:${Versions.JUNIT}")
+        "compileOnly"(stringyLibs.getLibrary("jsr305"))
+        "testImplementation"(platform(stringyLibs.getLibrary("junit-bom")))
+        "testImplementation"(stringyLibs.getLibrary("junit-jupiter-api"))
+        "testImplementation"(stringyLibs.getLibrary("junit-jupiter-params"))
+        "testImplementation"(platform(stringyLibs.getLibrary("mockito-bom")))
+        "testImplementation"(stringyLibs.getLibrary("mockito-core"))
+        "testImplementation"(stringyLibs.getLibrary("mockito-junit-jupiter"))
+        "testRuntimeOnly"(stringyLibs.getLibrary("junit-jupiter-engine"))
     }
 
     // Java 8 turns on doclint which we fail

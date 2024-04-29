@@ -15,5 +15,5 @@ dependencies {
     "implementation"(project(":worldedit-core"))
     "implementation"(kotlin("stdlib-jdk8"))
     "implementation"(kotlin("reflect"))
-    "implementation"("com.google.guava:guava")
+    "implementation"(libs.guava)
 }
