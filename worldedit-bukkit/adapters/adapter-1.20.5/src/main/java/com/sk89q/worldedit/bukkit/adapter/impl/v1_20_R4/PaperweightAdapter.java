@@ -217,8 +217,8 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         CraftServer.class.cast(Bukkit.getServer());
 
         int dataVersion = CraftMagicNumbers.INSTANCE.getDataVersion();
-        if (dataVersion != 3837) {
-            throw new UnsupportedClassVersionError("Not 1.20.5!");
+        if (dataVersion != 3837 && dataVersion != 3839) {
+            throw new UnsupportedClassVersionError("Not 1.20.(5/6)!");
         }
 
         serverWorldsField = CraftServer.class.getDeclaredField("worlds");
