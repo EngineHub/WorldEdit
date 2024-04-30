@@ -1,6 +1,9 @@
-[versions]
-neoGradle = "7.0.107"
+[plugins]
+codecov = "org.enginehub.codecov:0.2.0"
+neogradle-userdev = "net.neoforged.gradle.userdev:7.0.107"
+fabric-loom = "fabric-loom:1.6.9"
 
+[versions]
 kyoriText = "3.0.4"
 piston = "0.5.10"
 autoValue = "1.10.4"
@@ -29,10 +32,8 @@ japicmp = "me.champeau.gradle:japicmp-gradle-plugin:0.4.2"
 shadow = "com.github.johnrengelman:shadow:8.1.1"
 jfrog-buildinfo = "org.jfrog.buildinfo:build-info-extractor-gradle:5.2.0"
 
-fabric-loom = "net.fabricmc:fabric-loom:1.6.9"
 fabric-mixin = "net.fabricmc:sponge-mixin:0.13.3+mixin.0.8.5"
 
-codecov = "org.enginehub.gradle:gradle-codecov-plugin:0.2.0"
 paperweight = "io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:1.6.0"
 
 linBus-bom = "org.enginehub.lin-bus:lin-bus-bom:0.1.0-SNAPSHOT"
@@ -88,10 +89,6 @@ fastutil = "it.unimi.dsi:fastutil:8.5.12!!"
 # Note that we need to balance support for older MC versus working at all on newer ones, so the exact versions here
 # may not be the same as the ones in the latest Bukkit API.
 snakeyaml = "org.yaml:snakeyaml:2.0"
-
-[libraries.neoGradle-userdev]
-module = "net.neoforged.gradle:userdev"
-version.ref = "neoGradle"
 
 [libraries.kyoriText-api]
 module = "net.kyori:text-api"

@@ -1,10 +1,9 @@
 pluginManagement {
     repositories {
-        mavenCentral()
         gradlePluginPortal()
         maven {
-            name = "Fabric"
-            url = uri("https://maven.fabricmc.net/")
+            name = "EngineHub"
+            url = uri("https://maven.enginehub.org/repo/")
         }
     }
 }
@@ -12,7 +11,23 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
 
+logger.lifecycle("""
+*******************************************
+ You are building WorldEdit!
+
+ If you encounter trouble:
+ 1) Read COMPILING.md if you haven't yet
+ 2) Try running 'build' in a separate Gradle run
+ 3) Use gradlew and not gradle
+ 4) If you still need help, ask on Discord! https://discord.gg/enginehub
+
+ Output files will be in [subproject]/build/libs
+*******************************************
+""")
+
 rootProject.name = "worldedit"
+
+includeBuild("build-logic")
 
 include("worldedit-libs")
 

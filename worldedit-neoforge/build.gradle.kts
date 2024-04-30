@@ -2,12 +2,19 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.neoforged.gradle.dsl.common.runs.run.Run
 
 plugins {
-    id("net.neoforged.gradle.userdev")
+    alias(libs.plugins.neogradle.userdev)
     `java-library`
+    id("buildlogic.platform")
 }
 
-applyPlatformAndCoreConfiguration()
-applyShadowConfiguration()
+commonJava {
+    // Not easy to do, because it's in a bunch of separate configurations
+    banSlf4j = false
+}
+
+platform {
+    kind = buildlogic.WorldEditKind.Mod
+}
 
 val minecraftVersion = libs.versions.neoforge.minecraft.get()
 val nextMajorMinecraftVersion: String = minecraftVersion.split('.').let { (useless, major) ->
@@ -20,20 +27,16 @@ val apiClasspath = configurations.create("apiClasspath") {
 }
 
 repositories {
+    val toRemove = mutableListOf<MavenArtifactRepository>()
     for (repo in project.repositories) {
         if (repo is MavenArtifactRepository && repo.url.toString() == "https://maven.neoforged.net/releases/") {
-            repo.mavenContent {
-                includeGroupAndSubgroups("net.neoforged")
-            }
+            toRemove.add(repo)
         }
     }
-    // For Fabric's mixin fork
+    toRemove.forEach { remove(it) }
     maven {
-        name = "Fabric"
-        url = uri("https://maven.fabricmc.net/")
-        mavenContent {
-            includeGroup("net.fabricmc")
-        }
+        name = "EngineHub"
+        url = uri("https://maven.enginehub.org/repo/")
     }
 }
 
@@ -105,8 +108,6 @@ tasks.named<Copy>("processResources") {
     // copy from -core resources as well
     from(project(":worldedit-core").tasks.named("processResources"))
 }
-
-addJarManifest(WorldEditKind.Mod, includeClasspath = false)
 
 tasks.named<ShadowJar>("shadowJar") {
     dependencies {
