@@ -5,12 +5,20 @@ import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.RunGameTask
 
 plugins {
-    id("fabric-loom")
+    alias(libs.plugins.fabric.loom)
     `java-library`
+    id("buildlogic.platform")
 }
 
-applyPlatformAndCoreConfiguration()
-applyShadowConfiguration()
+commonJava {
+    // Not easy to do, because it's in a bunch of separate configurations
+    banSlf4j = false
+}
+
+platform {
+    kind = buildlogic.WorldEditKind.Mod
+    includeClasspath = true
+}
 
 val fabricApiConfiguration: Configuration = configurations.create("fabricApi")
 
@@ -24,12 +32,12 @@ tasks.withType<RunGameTask>().configureEach {
 
 repositories {
     maven {
-        name = "Fabric"
-        url = uri("https://maven.fabricmc.net/")
+        name = "EngineHub"
+        url = uri("https://maven.enginehub.org/repo/")
     }
     getByName("Mojang") {
         content {
-            includeGroupByRegex("com\\.mojang\\..*")
+            includeGroupAndSubgroups("com.mojang")
         }
     }
 }
@@ -60,11 +68,6 @@ dependencies {
     // No need for this at runtime
     "modCompileOnly"(libs.fabric.permissions.api)
 
-    // Hook these up manually, because Fabric doesn't seem to quite do it properly.
-    "compileOnly"(libs.fabric.mixin)
-    "annotationProcessor"(libs.fabric.mixin)
-    "annotationProcessor"(libs.fabric.loom)
-
     // Silence some warnings, since apparently this isn't on the compile classpath like it should be.
     "compileOnly"(libs.errorprone.annotations)
 }
@@ -87,8 +90,6 @@ tasks.named<Copy>("processResources") {
         this.expand("version" to project.ext["internalVersion"])
     }
 }
-
-addJarManifest(WorldEditKind.Mod, includeClasspath = true)
 
 tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("dist-dev")

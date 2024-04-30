@@ -4,9 +4,8 @@ import org.gradle.plugins.ide.idea.model.IdeaModel
 plugins {
     `java-library`
     antlr
+    id("buildlogic.core-and-platform")
 }
-
-applyPlatformAndCoreConfiguration()
 
 repositories {
     ivy {

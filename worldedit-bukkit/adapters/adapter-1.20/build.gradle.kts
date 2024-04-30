@@ -1,6 +1,8 @@
 import io.papermc.paperweight.userdev.PaperweightUserDependenciesExtension
 
-applyPaperweightAdapterConfiguration()
+plugins {
+    id("buildlogic.adapter")
+}
 
 dependencies {
     // https://repo.papermc.io/service/rest/repository/browse/maven-public/io/papermc/paper/dev-bundle/

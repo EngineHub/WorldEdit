@@ -1,4 +1,6 @@
-applyLibrariesConfiguration()
+plugins {
+    id("buildlogic.libs")
+}
 
 dependencies {
     "shade"(libs.kyoriText.api)

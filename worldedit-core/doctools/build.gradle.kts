@@ -1,9 +1,8 @@
 plugins {
     kotlin("jvm") version "1.9.23"
     application
+    id("buildlogic.common")
 }
-
-applyCommonConfiguration()
 
 application.mainClass.set("com.sk89q.worldedit.internal.util.DocumentationPrinter")
 tasks.named<JavaExec>("run") {

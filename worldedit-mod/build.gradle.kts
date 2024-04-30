@@ -4,9 +4,9 @@ import java.util.jar.Manifest
 
 plugins {
     base
+    id("buildlogic.common")
+    alias(libs.plugins.fabric.loom) apply false
 }
-
-applyCommonConfiguration()
 
 open class MergeManifests : DefaultTask() {
     @InputFiles

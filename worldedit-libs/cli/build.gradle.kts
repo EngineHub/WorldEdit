@@ -1,1 +1,3 @@
-applyLibrariesConfiguration()
+plugins {
+    id("buildlogic.libs")
+}

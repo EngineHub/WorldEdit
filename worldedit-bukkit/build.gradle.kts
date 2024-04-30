@@ -3,14 +3,19 @@ import io.papermc.paperweight.userdev.attribute.Obfuscation
 
 plugins {
     `java-library`
+    id("buildlogic.platform")
 }
 
-applyPlatformAndCoreConfiguration()
-applyShadowConfiguration()
+platform {
+    kind = buildlogic.WorldEditKind.Plugin
+    includeClasspath = true
+}
 
 repositories {
-    maven { url = uri("https://hub.spigotmc.org/nexus/content/groups/public") }
-    maven { url = uri("https://repo.papermc.io/repository/maven-public/") }
+    maven {
+        name = "Spigot"
+        url = uri("https://hub.spigotmc.org/nexus/content/groups/public")
+    }
 }
 
 val localImplementation = configurations.create("localImplementation") {
@@ -78,8 +83,6 @@ tasks.named<Copy>("processResources") {
         expand("internalVersion" to internalVersion)
     }
 }
-
-addJarManifest(WorldEditKind.Plugin, includeClasspath = true)
 
 tasks.named<ShadowJar>("shadowJar") {
     configurations.add(adapters)
