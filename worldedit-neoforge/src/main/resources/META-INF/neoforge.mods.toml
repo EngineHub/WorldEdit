@@ -1,0 +1,36 @@
+modLoader = "javafml"
+loaderVersion = "[3,)"
+issueTrackerURL = "https://discord.gg/enginehub"
+license = "GPLv3"
+
+[[mods]]
+modId = "worldedit"
+version = "${version}"
+displayName = "WorldEdit"
+displayURL = "https://enginehub.org/worldedit/"
+description = '''
+WorldEdit is an easy-to-use in-game world editor for Minecraft, supporting both single- and multi-player.
+'''
+authors = "EngineHub"
+logoFile = "worldedit-icon.png"
+displayTest = "IGNORE_SERVER_VERSION"
+
+[[mixins]]
+config = "worldedit-neoforge.mixins.json"
+
+[[accessTransformers]]
+file = "META-INF/accesstransformer.cfg"
+
+[[dependencies.worldedit]]
+modId = "minecraft"
+type = "required"
+versionRange = "[${minecraftVersion},${nextMajorMinecraftVersion})"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.worldedit]]
+modId = "neoforge"
+type = "required"
+versionRange = "[${neoVersion},)"
+ordering = "NONE"
+side = "BOTH"

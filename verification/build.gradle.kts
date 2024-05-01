@@ -43,7 +43,7 @@ tasks.check {
 // Generic setup for all tasks
 // Pull the version before our current version.
 val baseVersion = "(,${rootProject.version.toString().substringBefore("-SNAPSHOT")}["
-for (projectFragment in listOf("bukkit", "core", "fabric", "forge", "sponge")) {
+for (projectFragment in listOf("bukkit", "cli", "core", "fabric", "neoforge")) {
     val capitalizedFragment =
         projectFragment.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
     val proj = project(":worldedit-$projectFragment")
@@ -74,6 +74,19 @@ for (projectFragment in listOf("bukkit", "core", "fabric", "forge", "sponge")) {
             (this as? ModuleDependency)?.isTransitive = false
         }
     )
+    val resolvedOldJar = files({
+        try {
+            conf.resolvedConfiguration.rethrowFailure()
+            conf
+        } catch (e: ResolveException) {
+            if (e.cause is ModuleVersionNotFoundException) {
+                logger.warn("Skipping check for $projectFragment API compatibility because there is no jar to compare against")
+                setOf<File>()
+            } else {
+                throw e
+            }
+        }
+    })
     val checkApi = tasks.register<JapicmpTask>("check${capitalizedFragment}ApiCompatibility") {
         group = "API Compatibility"
         description = "Check API compatibility for $capitalizedFragment API"
@@ -89,20 +102,10 @@ for (projectFragment in listOf("bukkit", "core", "fabric", "forge", "sponge")) {
 
         onlyIf {
             // Only check if we have a jar to compare against
-            try {
-                conf.resolvedConfiguration.rethrowFailure()
-                true
-            } catch (e: ResolveException) {
-                if (e.cause is ModuleVersionNotFoundException) {
-                    it.logger.warn("Skipping check for $projectFragment API compatibility because there is no jar to compare against")
-                    false
-                } else {
-                    throw e
-                }
-            }
+            !resolvedOldJar.isEmpty
         }
 
-        oldClasspath.from(conf)
+        oldClasspath.from(resolvedOldJar)
         newClasspath.from(proj.tasks.named("jar"))
         onlyModified.set(false)
         failOnModification.set(false) // report does the failing (so we can accept)
@@ -133,8 +136,4 @@ tasks.named<JapicmpTask>("checkBukkitApiCompatibility") {
 tasks.named<JapicmpTask>("checkFabricApiCompatibility") {
     // Need to check against the reobf JAR
     newClasspath.setFrom(project(":worldedit-fabric").tasks.named("remapJar"))
-}
-tasks.named<JapicmpTask>("checkForgeApiCompatibility") {
-    // Need to check against the reobf JAR
-    newClasspath.builtBy(project(":worldedit-forge").tasks.named("reobfJar"))
 }

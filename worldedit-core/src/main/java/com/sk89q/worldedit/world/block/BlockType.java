@@ -49,21 +49,28 @@ public class BlockType implements Keyed {
     private final Function<BlockState, BlockState> values;
     private final LazyReference<BlockState> defaultState
         = LazyReference.from(this::computeDefaultState);
+    @SuppressWarnings("this-escape")
     private final LazyReference<FuzzyBlockState> emptyFuzzy
         = LazyReference.from(() -> new FuzzyBlockState(this));
+    @SuppressWarnings("this-escape")
     private final LazyReference<Map<String, ? extends Property<?>>> properties
         = LazyReference.from(() -> ImmutableMap.copyOf(WorldEdit.getInstance().getPlatformManager()
         .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getProperties(this)));
+    @SuppressWarnings("this-escape")
     private final LazyReference<BlockMaterial> blockMaterial
         = LazyReference.from(() -> WorldEdit.getInstance().getPlatformManager()
         .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getMaterial(this));
+    @SuppressWarnings("this-escape")
     private final LazyReference<Map<Map<Property<?>, Object>, BlockState>> blockStatesMap
         = LazyReference.from(() -> BlockState.generateStateMap(this));
 
+    @SuppressWarnings("this-escape")
     @Deprecated
     private final LazyReference<String> name = LazyReference.from(() -> WorldEdit.getInstance().getPlatformManager()
         .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getName(this));
+    @SuppressWarnings("this-escape")
     private final LazyReference<Integer> legacyId = LazyReference.from(() -> computeLegacy(0));
+    @SuppressWarnings("this-escape")
     private final LazyReference<Integer> legacyData = LazyReference.from(() -> computeLegacy(1));
 
     public BlockType(String id) {

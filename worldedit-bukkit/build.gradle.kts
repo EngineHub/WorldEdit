@@ -3,14 +3,19 @@ import io.papermc.paperweight.userdev.attribute.Obfuscation
 
 plugins {
     `java-library`
+    id("buildlogic.platform")
 }
 
-applyPlatformAndCoreConfiguration()
-applyShadowConfiguration()
+platform {
+    kind = buildlogic.WorldEditKind.Plugin
+    includeClasspath = true
+}
 
 repositories {
-    maven { url = uri("https://hub.spigotmc.org/nexus/content/groups/public") }
-    maven { url = uri("https://repo.papermc.io/repository/maven-public/") }
+    maven {
+        name = "Spigot"
+        url = uri("https://hub.spigotmc.org/nexus/content/groups/public")
+    }
 }
 
 val localImplementation = configurations.create("localImplementation") {
@@ -42,25 +47,29 @@ dependencies {
     "api"(project(":worldedit-libs:bukkit"))
     // Technically this is api, but everyone should already have some form of the bukkit API
     // Avoid pulling in another one, especially one so outdated.
-    "localImplementation"("org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT") {
+    "localImplementation"(libs.spigot) {
         exclude("junit", "junit")
     }
 
-    "localImplementation"(platform("org.apache.logging.log4j:log4j-bom:${Versions.LOG4J}") {
+    "localImplementation"(platform(libs.log4j.bom)) {
         because("Spigot provides Log4J (sort of, not in API, implicitly part of server)")
-    })
-    "localImplementation"("org.apache.logging.log4j:log4j-api")
+    }
+    "localImplementation"(libs.log4j.api)
 
-    "compileOnly"("org.jetbrains:annotations:20.1.0")
-    "compileOnly"("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT") {
+    "compileOnly"(libs.jetbrains.annotations) {
+        because("Resolving Spigot annotations")
+    }
+    "testCompileOnly"(libs.jetbrains.annotations) {
+        because("Resolving Spigot annotations")
+    }
+    "compileOnly"(libs.paperApi) {
         exclude("org.slf4j", "slf4j-api")
         exclude("junit", "junit")
     }
-    "implementation"("io.papermc:paperlib:1.0.7")
-    "compileOnly"("com.sk89q:dummypermscompat:1.10")
-    "implementation"("org.bstats:bstats-bukkit:2.2.1")
-    "implementation"("it.unimi.dsi:fastutil")
-    "testImplementation"("org.mockito:mockito-core:1.9.0-rc1")
+    "implementation"(libs.paperLib)
+    "compileOnly"(libs.dummypermscompat)
+    "implementation"(libs.bstats.bukkit)
+    "implementation"(libs.fastutil)
 
     project.project(":worldedit-bukkit:adapters").subprojects.forEach {
         "adapters"(project(it.path))
@@ -74,8 +83,6 @@ tasks.named<Copy>("processResources") {
         expand("internalVersion" to internalVersion)
     }
 }
-
-addJarManifest(WorldEditKind.Plugin, includeClasspath = true)
 
 tasks.named<ShadowJar>("shadowJar") {
     configurations.add(adapters)

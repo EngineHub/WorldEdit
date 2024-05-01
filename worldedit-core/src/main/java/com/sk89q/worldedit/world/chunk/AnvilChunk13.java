@@ -156,7 +156,7 @@ public class AnvilChunk13 implements Chunk {
                     throw new InvalidFormatException("Too short block state table");
                 }
                 currentSerializedValue = blockStatesSerialized[nextSerializedItem++];
-                localBlockId |= (currentSerializedValue & ((1L << bitsNextLong) - 1)) << remainingBits;
+                localBlockId |= (int) (currentSerializedValue & ((1L << bitsNextLong) - 1)) << remainingBits;
                 currentSerializedValue >>>= bitsNextLong;
                 remainingBits = 64 - bitsNextLong;
             } else {

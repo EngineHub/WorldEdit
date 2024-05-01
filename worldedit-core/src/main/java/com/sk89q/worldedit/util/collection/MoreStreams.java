@@ -21,17 +21,22 @@ package com.sk89q.worldedit.util.collection;
 
 import com.google.common.collect.AbstractIterator;
 
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.nio.LongBuffer;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static java.util.Objects.requireNonNull;
 
 /**
- * Additionally stream facilities.
+ * Additional stream facilities.
  */
 public class MoreStreams {
 
@@ -76,6 +81,38 @@ public class MoreStreams {
         return StreamSupport.stream(Spliterators.spliterator(
             iter, spliterator.estimateSize(), chars
         ), stream.isParallel()).onClose(stream::close);
+    }
+
+    /**
+     * Create a stream of every element in the given buffer view, from it's current position to it's current limit.
+     * The position of the buffer is not modified.
+     *
+     * <p>The bytes are sign-extended to be ints. This means {@code -1} will still be {@code -1}.</p>
+     *
+     * @param buffer the buffer to stream
+     */
+    public static IntStream bufferStream(ByteBuffer buffer) {
+        return IntStream.range(buffer.position(), buffer.limit()).map(buffer::get);
+    }
+
+    /**
+     * Create a stream of every element in the given buffer view, from it's current position to it's current limit.
+     * The position of the buffer is not modified.
+     *
+     * @param buffer the buffer to stream
+     */
+    public static IntStream bufferStream(IntBuffer buffer) {
+        return IntStream.range(buffer.position(), buffer.limit()).map(buffer::get);
+    }
+
+    /**
+     * Create a stream of every element in the given buffer view, from it's current position to it's current limit.
+     * The position of the buffer is not modified.
+     *
+     * @param buffer the buffer to stream
+     */
+    public static LongStream bufferStream(LongBuffer buffer) {
+        return IntStream.range(buffer.position(), buffer.limit()).mapToLong(buffer::get);
     }
 
     private MoreStreams() {

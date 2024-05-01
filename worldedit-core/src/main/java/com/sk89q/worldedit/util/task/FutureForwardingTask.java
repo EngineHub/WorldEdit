@@ -82,21 +82,22 @@ public class FutureForwardingTask<V> extends AbstractTask<V> {
         return future.get(timeout, unit);
     }
 
+    // TODO: consider deprecating in favor of Future.State?
     @Override
-    public State getState() {
+    public Task.State getState() {
         if (isCancelled()) {
-            return State.CANCELLED;
+            return Task.State.CANCELLED;
         } else if (isDone()) {
             try {
                 get();
-                return State.SUCCEEDED;
+                return Task.State.SUCCEEDED;
             } catch (InterruptedException e) {
-                return State.CANCELLED;
+                return Task.State.CANCELLED;
             } catch (ExecutionException e) {
-                return State.FAILED;
+                return Task.State.FAILED;
             }
         } else {
-            return State.RUNNING;
+            return Task.State.RUNNING;
         }
     }
 

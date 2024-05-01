@@ -61,6 +61,8 @@ public final class ItemTypes {
     @Nullable public static final ItemType ANVIL = get("minecraft:anvil");
     @Nullable public static final ItemType APPLE = get("minecraft:apple");
     @Nullable public static final ItemType ARCHER_POTTERY_SHERD = get("minecraft:archer_pottery_sherd");
+    @Nullable public static final ItemType ARMADILLO_SCUTE = get("minecraft:armadillo_scute");
+    @Nullable public static final ItemType ARMADILLO_SPAWN_EGG = get("minecraft:armadillo_spawn_egg");
     @Nullable public static final ItemType ARMOR_STAND = get("minecraft:armor_stand");
     @Nullable public static final ItemType ARMS_UP_POTTERY_SHERD = get("minecraft:arms_up_pottery_sherd");
     @Nullable public static final ItemType ARROW = get("minecraft:arrow");
@@ -157,6 +159,8 @@ public final class ItemTypes {
     @Nullable public static final ItemType BLUE_STAINED_GLASS_PANE = get("minecraft:blue_stained_glass_pane");
     @Nullable public static final ItemType BLUE_TERRACOTTA = get("minecraft:blue_terracotta");
     @Nullable public static final ItemType BLUE_WOOL = get("minecraft:blue_wool");
+    @Nullable public static final ItemType BOGGED_SPAWN_EGG = get("minecraft:bogged_spawn_egg");
+    @Nullable public static final ItemType BOLT_ARMOR_TRIM_SMITHING_TEMPLATE = get("minecraft:bolt_armor_trim_smithing_template");
     @Nullable public static final ItemType BONE = get("minecraft:bone");
     @Nullable public static final ItemType BONE_BLOCK = get("minecraft:bone_block");
     @Nullable public static final ItemType BONE_MEAL = get("minecraft:bone_meal");
@@ -168,6 +172,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType BRAIN_CORAL_BLOCK = get("minecraft:brain_coral_block");
     @Nullable public static final ItemType BRAIN_CORAL_FAN = get("minecraft:brain_coral_fan");
     @Nullable public static final ItemType BREAD = get("minecraft:bread");
+    @Nullable public static final ItemType BREEZE_ROD = get("minecraft:breeze_rod");
     @Nullable public static final ItemType BREEZE_SPAWN_EGG = get("minecraft:breeze_spawn_egg");
     @Nullable public static final ItemType BREWER_POTTERY_SHERD = get("minecraft:brewer_pottery_sherd");
     @Nullable public static final ItemType BREWING_STAND = get("minecraft:brewing_stand");
@@ -494,6 +499,9 @@ public final class ItemTypes {
     @Nullable public static final ItemType FLETCHING_TABLE = get("minecraft:fletching_table");
     @Nullable public static final ItemType FLINT = get("minecraft:flint");
     @Nullable public static final ItemType FLINT_AND_STEEL = get("minecraft:flint_and_steel");
+    @Nullable public static final ItemType FLOW_ARMOR_TRIM_SMITHING_TEMPLATE = get("minecraft:flow_armor_trim_smithing_template");
+    @Nullable public static final ItemType FLOW_BANNER_PATTERN = get("minecraft:flow_banner_pattern");
+    @Nullable public static final ItemType FLOW_POTTERY_SHERD = get("minecraft:flow_pottery_sherd");
     @Nullable public static final ItemType FLOWER_BANNER_PATTERN = get("minecraft:flower_banner_pattern");
     @Nullable public static final ItemType FLOWER_POT = get("minecraft:flower_pot");
     @Nullable public static final ItemType FLOWERING_AZALEA = get("minecraft:flowering_azalea");
@@ -574,11 +582,14 @@ public final class ItemTypes {
     @Nullable public static final ItemType GRINDSTONE = get("minecraft:grindstone");
     @Nullable public static final ItemType GUARDIAN_SPAWN_EGG = get("minecraft:guardian_spawn_egg");
     @Nullable public static final ItemType GUNPOWDER = get("minecraft:gunpowder");
+    @Nullable public static final ItemType GUSTER_BANNER_PATTERN = get("minecraft:guster_banner_pattern");
+    @Nullable public static final ItemType GUSTER_POTTERY_SHERD = get("minecraft:guster_pottery_sherd");
     @Nullable public static final ItemType HANGING_ROOTS = get("minecraft:hanging_roots");
     @Nullable public static final ItemType HAY_BLOCK = get("minecraft:hay_block");
     @Nullable public static final ItemType HEART_OF_THE_SEA = get("minecraft:heart_of_the_sea");
     @Nullable public static final ItemType HEART_POTTERY_SHERD = get("minecraft:heart_pottery_sherd");
     @Nullable public static final ItemType HEARTBREAK_POTTERY_SHERD = get("minecraft:heartbreak_pottery_sherd");
+    @Nullable public static final ItemType HEAVY_CORE = get("minecraft:heavy_core");
     @Nullable public static final ItemType HEAVY_WEIGHTED_PRESSURE_PLATE = get("minecraft:heavy_weighted_pressure_plate");
     @Nullable public static final ItemType HOGLIN_SPAWN_EGG = get("minecraft:hoglin_spawn_egg");
     @Nullable public static final ItemType HONEY_BLOCK = get("minecraft:honey_block");
@@ -710,6 +721,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType LLAMA_SPAWN_EGG = get("minecraft:llama_spawn_egg");
     @Nullable public static final ItemType LODESTONE = get("minecraft:lodestone");
     @Nullable public static final ItemType LOOM = get("minecraft:loom");
+    @Nullable public static final ItemType MACE = get("minecraft:mace");
     @Nullable public static final ItemType MAGENTA_BANNER = get("minecraft:magenta_banner");
     @Nullable public static final ItemType MAGENTA_BED = get("minecraft:magenta_bed");
     @Nullable public static final ItemType MAGENTA_CANDLE = get("minecraft:magenta_candle");
@@ -842,6 +854,8 @@ public final class ItemTypes {
     @Nullable public static final ItemType OBSIDIAN = get("minecraft:obsidian");
     @Nullable public static final ItemType OCELOT_SPAWN_EGG = get("minecraft:ocelot_spawn_egg");
     @Nullable public static final ItemType OCHRE_FROGLIGHT = get("minecraft:ochre_froglight");
+    @Nullable public static final ItemType OMINOUS_BOTTLE = get("minecraft:ominous_bottle");
+    @Nullable public static final ItemType OMINOUS_TRIAL_KEY = get("minecraft:ominous_trial_key");
     @Nullable public static final ItemType ORANGE_BANNER = get("minecraft:orange_banner");
     @Nullable public static final ItemType ORANGE_BED = get("minecraft:orange_bed");
     @Nullable public static final ItemType ORANGE_CANDLE = get("minecraft:orange_candle");
@@ -1045,12 +1059,13 @@ public final class ItemTypes {
     @Nullable public static final ItemType SANDSTONE_STAIRS = get("minecraft:sandstone_stairs");
     @Nullable public static final ItemType SANDSTONE_WALL = get("minecraft:sandstone_wall");
     @Nullable public static final ItemType SCAFFOLDING = get("minecraft:scaffolding");
+    @Nullable public static final ItemType SCRAPE_POTTERY_SHERD = get("minecraft:scrape_pottery_sherd");
     @Nullable public static final ItemType SCULK = get("minecraft:sculk");
     @Nullable public static final ItemType SCULK_CATALYST = get("minecraft:sculk_catalyst");
     @Nullable public static final ItemType SCULK_SENSOR = get("minecraft:sculk_sensor");
     @Nullable public static final ItemType SCULK_SHRIEKER = get("minecraft:sculk_shrieker");
     @Nullable public static final ItemType SCULK_VEIN = get("minecraft:sculk_vein");
-    @Nullable public static final ItemType SCUTE = get("minecraft:scute");
+    @Deprecated @Nullable public static final ItemType SCUTE = get("minecraft:scute");
     @Nullable public static final ItemType SEA_LANTERN = get("minecraft:sea_lantern");
     @Nullable public static final ItemType SEA_PICKLE = get("minecraft:sea_pickle");
     @Nullable public static final ItemType SEAGRASS = get("minecraft:seagrass");
@@ -1219,8 +1234,10 @@ public final class ItemTypes {
     @Nullable public static final ItemType TUFF_WALL = get("minecraft:tuff_wall");
     @Nullable public static final ItemType TURTLE_EGG = get("minecraft:turtle_egg");
     @Nullable public static final ItemType TURTLE_HELMET = get("minecraft:turtle_helmet");
+    @Nullable public static final ItemType TURTLE_SCUTE = get("minecraft:turtle_scute");
     @Nullable public static final ItemType TURTLE_SPAWN_EGG = get("minecraft:turtle_spawn_egg");
     @Nullable public static final ItemType TWISTING_VINES = get("minecraft:twisting_vines");
+    @Nullable public static final ItemType VAULT = get("minecraft:vault");
     @Nullable public static final ItemType VERDANT_FROGLIGHT = get("minecraft:verdant_froglight");
     @Nullable public static final ItemType VEX_ARMOR_TRIM_SMITHING_TEMPLATE = get("minecraft:vex_armor_trim_smithing_template");
     @Nullable public static final ItemType VEX_SPAWN_EGG = get("minecraft:vex_spawn_egg");
@@ -1314,11 +1331,13 @@ public final class ItemTypes {
     @Nullable public static final ItemType WHITE_TULIP = get("minecraft:white_tulip");
     @Nullable public static final ItemType WHITE_WOOL = get("minecraft:white_wool");
     @Nullable public static final ItemType WILD_ARMOR_TRIM_SMITHING_TEMPLATE = get("minecraft:wild_armor_trim_smithing_template");
+    @Nullable public static final ItemType WIND_CHARGE = get("minecraft:wind_charge");
     @Nullable public static final ItemType WITCH_SPAWN_EGG = get("minecraft:witch_spawn_egg");
     @Nullable public static final ItemType WITHER_ROSE = get("minecraft:wither_rose");
     @Nullable public static final ItemType WITHER_SKELETON_SKULL = get("minecraft:wither_skeleton_skull");
     @Nullable public static final ItemType WITHER_SKELETON_SPAWN_EGG = get("minecraft:wither_skeleton_spawn_egg");
     @Nullable public static final ItemType WITHER_SPAWN_EGG = get("minecraft:wither_spawn_egg");
+    @Nullable public static final ItemType WOLF_ARMOR = get("minecraft:wolf_armor");
     @Nullable public static final ItemType WOLF_SPAWN_EGG = get("minecraft:wolf_spawn_egg");
     @Nullable public static final ItemType WOODEN_AXE = get("minecraft:wooden_axe");
     @Nullable public static final ItemType WOODEN_HOE = get("minecraft:wooden_hoe");

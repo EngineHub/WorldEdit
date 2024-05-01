@@ -1,21 +1,10 @@
 import org.ajoberstar.grgit.Grgit
 
-// needed for fabric to know where FF executor is....
-buildscript {
-    repositories {
-        mavenCentral()
-        maven {
-            name = "Fabric"
-            url = uri("https://maven.fabricmc.net/")
-        }
-    }
-    dependencies {
-        classpath("net.fabricmc:fabric-loom:${versions.loom}")
-    }
-}
 plugins {
-    id("org.enginehub.codecov")
+    alias(libs.plugins.codecov)
     jacoco
+    id("buildlogic.common")
+    id("buildlogic.artifactory-root")
 }
 
 if (!project.hasProperty("gitCommitHash")) {
@@ -28,23 +17,6 @@ if (!project.hasProperty("gitCommitHash")) {
         "no.git.id"
     }
 }
-
-logger.lifecycle("""
-*******************************************
- You are building WorldEdit!
-
- If you encounter trouble:
- 1) Read COMPILING.md if you haven't yet
- 2) Try running 'build' in a separate Gradle run
- 3) Use gradlew and not gradle
- 4) If you still need help, ask on Discord! https://discord.gg/enginehub
-
- Output files will be in [subproject]/build/libs
-*******************************************
-""")
-
-applyCommonConfiguration()
-applyRootArtifactoryConfig()
 
 val totalReport = tasks.register<JacocoReport>("jacocoTotalReport") {
     for (proj in subprojects) {

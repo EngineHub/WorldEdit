@@ -106,11 +106,12 @@ public class FabricWorldNativeAccess implements WorldNativeAccess<LevelChunk, Bl
     @Override
     public boolean updateTileEntity(BlockPos position, LinCompoundTag tag) {
         CompoundTag nativeTag = NBTConverter.toNative(tag);
-        BlockEntity tileEntity = getWorld().getChunkAt(position).getBlockEntity(position);
+        Level level = getWorld();
+        BlockEntity tileEntity = level.getChunkAt(position).getBlockEntity(position);
         if (tileEntity == null) {
             return false;
         }
-        tileEntity.load(nativeTag);
+        tileEntity.loadWithComponents(nativeTag, level.registryAccess());
         tileEntity.setChanged();
         return true;
     }

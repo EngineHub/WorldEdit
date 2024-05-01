@@ -4,9 +4,8 @@ import org.gradle.plugins.ide.idea.model.IdeaModel
 plugins {
     `java-library`
     antlr
+    id("buildlogic.core-and-platform")
 }
-
-applyPlatformAndCoreConfiguration()
 
 repositories {
     ivy {
@@ -28,53 +27,53 @@ configurations {
 
 dependencies {
     constraints {
-        "implementation"( "org.yaml:snakeyaml") {
-            version { require("2.0") }
+        "implementation"(libs.snakeyaml) {
             because("Bukkit provides SnakeYaml")
         }
     }
 
     "api"(project(":worldedit-libs:core"))
-    "compileOnly"("de.schlichtherle:truezip:6.8.4")
-    "implementation"("org.mozilla:rhino-runtime:1.7.13")
-    "implementation"("org.yaml:snakeyaml:2.0")
-    "implementation"("com.google.guava:guava")
-    "compileOnlyApi"("com.google.code.findbugs:jsr305:1.3.9")
-    "implementation"("com.google.code.gson:gson")
+    "compileOnly"(libs.trueZip)
+    "implementation"(libs.rhino)
+    "implementation"(libs.snakeyaml)
+    "implementation"(libs.guava)
+    "compileOnlyApi"(libs.jsr305)
+    "implementation"(libs.gson)
 
-    "implementation"("com.sk89q:jchronic:0.2.4a") {
+    "implementation"(libs.jchronic) {
         exclude(group = "junit", module = "junit")
     }
-    "implementation"("com.thoughtworks.paranamer:paranamer:2.6")
-    "implementation"("com.sk89q.lib:jlibnoise:1.0.0")
-    "api"(platform("org.enginehub.lin-bus:lin-bus-bom:${Versions.LIN_BUS}"))
-    "api"("org.enginehub.lin-bus:lin-bus-tree")
-    "api"("org.enginehub.lin-bus.format:lin-bus-format-snbt")
+    "implementation"(libs.jlibnoise)
 
-    "implementation"("org.apache.logging.log4j:log4j-api:${Versions.LOG4J}") {
-        because("Mojang provides Log4J")
-    }
+    "implementation"(libs.log4j.api)
 
-    "implementation"("it.unimi.dsi:fastutil")
+    "implementation"(libs.fastutil)
 
-    val antlrVersion = "4.9.1"
-    "antlr"("org.antlr:antlr4:$antlrVersion")
-    "implementation"("org.antlr:antlr4-runtime:$antlrVersion")
+    "antlr"(libs.antlr4)
+    "implementation"(libs.antlr4.runtime)
 
     "compileOnly"(project(":worldedit-libs:core:ap"))
     "annotationProcessor"(project(":worldedit-libs:core:ap"))
     // ensure this is on the classpath for the AP
-    "annotationProcessor"("com.google.guava:guava:${Versions.GUAVA}")
-    "compileOnly"("com.google.auto.value:auto-value-annotations:${Versions.AUTO_VALUE}")
-    "annotationProcessor"("com.google.auto.value:auto-value:${Versions.AUTO_VALUE}")
+    "annotationProcessor"(libs.guava)
+    "compileOnly"(libs.autoValue.annotations)
+    "annotationProcessor"(libs.autoValue)
 
-    "compileOnly"("com.google.auto.service:auto-service:1.1.1") {
+    "compileOnly"(libs.autoService) {
         because("Needed to resolve annotations in Piston")
     }
+    "compileOnly"(libs.jetbrains.annotations) {
+        because("Needed to resolve annotations in lin-bus")
+    }
+    "testCompileOnly"(libs.jetbrains.annotations) {
+        because("Needed to resolve annotations in lin-bus")
+    }
 
-    "languageFiles"("${project.group}:worldedit-lang:7.3.1:1309@zip")
+    "languageFiles"(
+        "${project.group}:worldedit-lang:${libs.versions.lang.worldeditBase.get()}:${libs.versions.lang.version.get()}@zip"
+    )
 
-    "testRuntimeOnly"("org.apache.logging.log4j:log4j-core:${Versions.LOG4J}")
+    "testRuntimeOnly"(libs.log4j.core)
 }
 
 tasks.test {

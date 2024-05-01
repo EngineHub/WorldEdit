@@ -30,6 +30,7 @@ import javax.annotation.Nullable;
 public final class EntityTypes {
     @Nullable public static final EntityType ALLAY = get("minecraft:allay");
     @Nullable public static final EntityType AREA_EFFECT_CLOUD = get("minecraft:area_effect_cloud");
+    @Nullable public static final EntityType ARMADILLO = get("minecraft:armadillo");
     @Nullable public static final EntityType ARMOR_STAND = get("minecraft:armor_stand");
     @Nullable public static final EntityType ARROW = get("minecraft:arrow");
     @Nullable public static final EntityType AXOLOTL = get("minecraft:axolotl");
@@ -38,7 +39,9 @@ public final class EntityTypes {
     @Nullable public static final EntityType BLAZE = get("minecraft:blaze");
     @Nullable public static final EntityType BLOCK_DISPLAY = get("minecraft:block_display");
     @Nullable public static final EntityType BOAT = get("minecraft:boat");
+    @Nullable public static final EntityType BOGGED = get("minecraft:bogged");
     @Nullable public static final EntityType BREEZE = get("minecraft:breeze");
+    @Nullable public static final EntityType BREEZE_WIND_CHARGE = get("minecraft:breeze_wind_charge");
     @Nullable public static final EntityType CAMEL = get("minecraft:camel");
     @Nullable public static final EntityType CAT = get("minecraft:cat");
     @Nullable public static final EntityType CAVE_SPIDER = get("minecraft:cave_spider");
@@ -98,6 +101,7 @@ public final class EntityTypes {
     @Nullable public static final EntityType MOOSHROOM = get("minecraft:mooshroom");
     @Nullable public static final EntityType MULE = get("minecraft:mule");
     @Nullable public static final EntityType OCELOT = get("minecraft:ocelot");
+    @Nullable public static final EntityType OMINOUS_ITEM_SPAWNER = get("minecraft:ominous_item_spawner");
     @Nullable public static final EntityType PAINTING = get("minecraft:painting");
     @Nullable public static final EntityType PANDA = get("minecraft:panda");
     @Nullable public static final EntityType PARROT = get("minecraft:parrot");

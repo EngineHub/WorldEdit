@@ -38,6 +38,7 @@ import com.mojang.datafixers.schemas.Schema;
 import com.mojang.serialization.Dynamic;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.FloatTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
@@ -66,6 +67,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Executor;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
@@ -107,22 +109,22 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
         return original;
     }
 
+    private static LinCompoundTag applyAsNbt(LinCompoundTag original, Function<CompoundTag, CompoundTag> function) {
+        CompoundTag originalNative = NBTConverter.toNative(original);
+        CompoundTag fixedNative = function.apply(originalNative);
+        return NBTConverter.fromNative(fixedNative);
+    }
+
     private LinCompoundTag fixChunk(LinCompoundTag originalChunk, int srcVer) {
-        net.minecraft.nbt.CompoundTag tag = NBTConverter.toNative(originalChunk);
-        net.minecraft.nbt.CompoundTag fixed = convert(LegacyType.CHUNK, tag, srcVer);
-        return NBTConverter.fromNative(fixed);
+        return applyAsNbt(originalChunk, tag -> convert(References.CHUNK, tag, srcVer));
     }
 
     private LinCompoundTag fixBlockEntity(LinCompoundTag origTileEnt, int srcVer) {
-        net.minecraft.nbt.CompoundTag tag = NBTConverter.toNative(origTileEnt);
-        net.minecraft.nbt.CompoundTag fixed = convert(LegacyType.BLOCK_ENTITY, tag, srcVer);
-        return NBTConverter.fromNative(fixed);
+        return applyAsNbt(origTileEnt, tag -> convert(References.BLOCK_ENTITY, tag, srcVer));
     }
 
     private LinCompoundTag fixEntity(LinCompoundTag origEnt, int srcVer) {
-        net.minecraft.nbt.CompoundTag tag = NBTConverter.toNative(origEnt);
-        net.minecraft.nbt.CompoundTag fixed = convert(LegacyType.ENTITY, tag, srcVer);
-        return NBTConverter.fromNative(fixed);
+        return applyAsNbt(origEnt, tag -> convert(References.ENTITY, tag, srcVer));
     }
 
     private String fixBlockState(String blockState, int srcVer) {
@@ -1881,7 +1883,7 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
 
                                 if (object == null) {
                                     try {
-                                        object = Component.Serializer.fromJson(s);
+                                        object = Component.Serializer.fromJson(s, FabricWorldEdit.registryAccess());
                                     } catch (JsonParseException jsonparseexception1) {
                                         ;
                                     }
@@ -1889,7 +1891,7 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
 
                                 if (object == null) {
                                     try {
-                                        object = Component.Serializer.fromJsonLenient(s);
+                                        object = Component.Serializer.fromJsonLenient(s, FabricWorldEdit.registryAccess());
                                     } catch (JsonParseException jsonparseexception2) {
                                         ;
                                     }
@@ -1903,7 +1905,7 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
                             object = Component.literal("");
                         }
 
-                        nbttaglist.set(i, StringTag.valueOf(Component.Serializer.toJson((Component) object)));
+                        nbttaglist.set(i, StringTag.valueOf(Component.Serializer.toJson((Component) object, FabricWorldEdit.registryAccess())));
                     }
 
                     nbttagcompound1.put("pages", nbttaglist);
@@ -2546,7 +2548,7 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
 
                     if (object == null) {
                         try {
-                            object = Component.Serializer.fromJson(s1);
+                            object = Component.Serializer.fromJson(s1, FabricWorldEdit.registryAccess());
                         } catch (JsonParseException jsonparseexception1) {
                             ;
                         }
@@ -2554,7 +2556,7 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
 
                     if (object == null) {
                         try {
-                            object = Component.Serializer.fromJsonLenient(s1);
+                            object = Component.Serializer.fromJsonLenient(s1, FabricWorldEdit.registryAccess());
                         } catch (JsonParseException jsonparseexception2) {
                             ;
                         }
@@ -2568,7 +2570,7 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
                 object = Component.literal("");
             }
 
-            nbttagcompound.putString(s, Component.Serializer.toJson((Component) object));
+            nbttagcompound.putString(s, Component.Serializer.toJson((Component) object, FabricWorldEdit.registryAccess()));
         }
     }
 

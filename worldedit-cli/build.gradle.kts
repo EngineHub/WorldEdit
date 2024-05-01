@@ -2,31 +2,28 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     `java-library`
+    id("buildlogic.platform")
 }
 
-applyPlatformAndCoreConfiguration()
-applyShadowConfiguration()
-addJarManifest(
-    WorldEditKind.Standalone("com.sk89q.worldedit.cli.CLIWorldEdit"),
+platform {
+    kind = buildlogic.WorldEditKind.Standalone("com.sk89q.worldedit.cli.CLIWorldEdit")
     extraAttributes = mapOf(
         // We don't have any multi-release stuff, but Log4J does.
         "Multi-Release" to "true",
-    ),
-)
+    )
+}
 
 dependencies {
     "compileOnly"(project(":worldedit-libs:core:ap"))
     "annotationProcessor"(project(":worldedit-libs:core:ap"))
-    "annotationProcessor"("com.google.guava:guava:${Versions.GUAVA}")
+    "annotationProcessor"(libs.guava)
     "api"(project(":worldedit-core"))
-    "implementation"(platform("org.apache.logging.log4j:log4j-bom:${Versions.LOG4J}") {
-        because("We control Log4J on this platform")
-    })
-    "implementation"("org.apache.logging.log4j:log4j-api")
-    "implementation"("org.apache.logging.log4j:log4j-core")
-    "implementation"("commons-cli:commons-cli:1.4")
-    "implementation"("com.google.guava:guava")
-    "implementation"("com.google.code.gson:gson")
+    "implementation"(platform(libs.log4j.bom))
+    "implementation"(libs.log4j.api)
+    "implementation"(libs.log4j.core)
+    "implementation"(libs.commonsCli)
+    "implementation"(libs.guava)
+    "implementation"(libs.gson)
 }
 
 tasks.named<ShadowJar>("shadowJar") {

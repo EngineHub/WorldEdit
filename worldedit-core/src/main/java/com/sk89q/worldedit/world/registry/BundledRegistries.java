@@ -43,11 +43,6 @@ public class BundledRegistries implements Registries {
 
     static {
         TreeRangeMap<Integer, String> versionMap = TreeRangeMap.create();
-        versionMap.put(Range.atLeast(Constants.DATA_VERSION_MC_1_14), "114");
-        versionMap.put(Range.atLeast(Constants.DATA_VERSION_MC_1_15), "115");
-        versionMap.put(Range.atLeast(Constants.DATA_VERSION_MC_1_16), "116");
-        versionMap.put(Range.atLeast(Constants.DATA_VERSION_MC_1_17), "117");
-        // 1.18 did have one item change, but we didn't get it. It's fine.
         versionMap.put(Range.atLeast(Constants.DATA_VERSION_MC_1_19), "119");
         versionMap.put(Range.atLeast(Constants.DATA_VERSION_MC_1_20), "120");
         VERSION_MAP = ImmutableRangeMap.copyOf(versionMap);

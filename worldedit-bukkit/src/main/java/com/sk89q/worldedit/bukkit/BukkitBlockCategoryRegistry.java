@@ -30,8 +30,6 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 public class BukkitBlockCategoryRegistry implements BlockCategoryRegistry {
 
     private Set<BlockType> getFromBukkitTag(Tag<Material> tag) {
