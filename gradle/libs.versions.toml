@@ -9,9 +9,9 @@ piston = "0.5.10"
 autoValue = "1.10.4"
 antlr = "4.13.1"
 
-fabric-api = "0.97.6+1.20.5"
+fabric-api = "0.97.8+1.20.6"
 
-neoforge-minecraft = "1.20.5"
+neoforge-minecraft = "1.20.6"
 
 # https://parchmentmc.org/docs/getting-started; note that we use older MC versions some times which is OK
 parchment-minecraft = "1.20.4"
@@ -71,11 +71,11 @@ rhino = "org.mozilla:rhino-runtime:1.7.13"
 jchronic = "com.sk89q:jchronic:0.2.4a"
 jlibnoise = "com.sk89q.lib:jlibnoise:1.0.0"
 
-fabric-minecraft = "com.mojang:minecraft:1.20.5"
+fabric-minecraft = "com.mojang:minecraft:1.20.6"
 fabric-loader = "net.fabricmc:fabric-loader:0.15.10"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.1-SNAPSHOT"
 
-neoforge = "net.neoforged:neoforge:20.5.16-beta"
+neoforge = "net.neoforged:neoforge:20.6.11-beta"
 
 # Mojang-provided libraries, CHECK AGAINST MINECRAFT for versions
 guava = "com.google.guava:guava:32.1.3-jre!!"
