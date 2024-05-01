@@ -1,20 +1,5 @@
 import org.ajoberstar.grgit.Grgit
 
-buildscript {
-    repositories {
-        maven {
-            name = "EngineHub"
-            url = uri("https://maven.enginehub.org/repo/")
-        }
-        maven {
-            name = "Fabric"
-            url = uri("https://maven.fabricmc.net/")
-        }
-    }
-    dependencies {
-        // needed for fabric to know where FF executor is....
-    }
-}
 plugins {
     alias(libs.plugins.codecov)
     jacoco
