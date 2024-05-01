@@ -44,8 +44,6 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public class PaperweightServerLevelDelegateProxy implements InvocationHandler {
 

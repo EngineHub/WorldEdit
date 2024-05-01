@@ -2,17 +2,23 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import net.fabricmc.loom.configuration.FabricApiExtension
 import net.fabricmc.loom.task.RemapJarTask
+import net.fabricmc.loom.task.RunGameTask
 
 plugins {
-    id("fabric-loom")
+    alias(libs.plugins.fabric.loom)
     `java-library`
+    id("buildlogic.platform")
 }
 
-applyPlatformAndCoreConfiguration(javaRelease = 17)
-applyShadowConfiguration()
+commonJava {
+    // Not easy to do, because it's in a bunch of separate configurations
+    banSlf4j = false
+}
 
-val minecraftVersion = "1.20.4"
-val loaderVersion = "0.15.1"
+platform {
+    kind = buildlogic.WorldEditKind.Mod
+    includeClasspath = true
+}
 
 val fabricApiConfiguration: Configuration = configurations.create("fabricApi")
 
@@ -20,27 +26,28 @@ configure<LoomGradleExtensionAPI> {
     accessWidenerPath.set(project.file("src/main/resources/worldedit.accesswidener"))
 }
 
+tasks.withType<RunGameTask>().configureEach {
+    javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
+}
+
 repositories {
     maven {
-        name = "Fabric"
-        url = uri("https://maven.fabricmc.net/")
+        name = "EngineHub"
+        url = uri("https://maven.enginehub.org/repo/")
     }
     getByName("Mojang") {
         content {
-            includeGroupByRegex("com\\.mojang\\..*")
+            includeGroupAndSubgroups("com.mojang")
         }
     }
 }
 
 dependencies {
     "api"(project(":worldedit-core"))
-    "implementation"(platform("org.apache.logging.log4j:log4j-bom:${Versions.LOG4J}") {
-        because("Mojang provides Log4J")
-    })
 
-    "minecraft"("com.mojang:minecraft:$minecraftVersion")
+    "minecraft"(libs.fabric.minecraft)
     "mappings"(project.the<LoomGradleExtensionAPI>().officialMojangMappings())
-    "modImplementation"("net.fabricmc:fabric-loader:$loaderVersion")
+    "modImplementation"(libs.fabric.loader)
 
 
     // [1] Load the API dependencies from the fabric mod json...
@@ -53,25 +60,20 @@ dependencies {
         .toSet()
     // [2] Request the matching dependency from fabric-loom
     for (wantedDependency in wantedDependencies) {
-        val dep = project.the<FabricApiExtension>().module(wantedDependency, "0.91.1+1.20.4")
+        val dep = project.the<FabricApiExtension>().module(wantedDependency, libs.versions.fabric.api.get())
         "include"(dep)
         "modImplementation"(dep)
     }
 
     // No need for this at runtime
-    "modCompileOnly"("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
-
-    // Hook these up manually, because Fabric doesn't seem to quite do it properly.
-    "compileOnly"("net.fabricmc:sponge-mixin:${project.versions.mixin}")
-    "annotationProcessor"("net.fabricmc:sponge-mixin:${project.versions.mixin}")
-    "annotationProcessor"("net.fabricmc:fabric-loom:${project.versions.loom}")
+    "modCompileOnly"(libs.fabric.permissions.api)
 
     // Silence some warnings, since apparently this isn't on the compile classpath like it should be.
-    "compileOnly"("com.google.errorprone:error_prone_annotations:2.11.0")
+    "compileOnly"(libs.errorprone.annotations)
 }
 
 configure<BasePluginExtension> {
-    archivesName.set("${project.name}-mc$minecraftVersion")
+    archivesName.set("${project.name}-mc${libs.fabric.minecraft.get().version}")
 }
 
 configure<PublishingExtension> {
@@ -88,8 +90,6 @@ tasks.named<Copy>("processResources") {
         this.expand("version" to project.ext["internalVersion"])
     }
 }
-
-addJarManifest(WorldEditKind.Mod, includeClasspath = true)
 
 tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("dist-dev")

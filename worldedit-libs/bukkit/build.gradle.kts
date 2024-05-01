@@ -1,13 +1,7 @@
-applyLibrariesConfiguration()
-constrainDependenciesToLibsCore()
-
-repositories {
-    maven {
-        name = "SpigotMC"
-        url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
-    }
+plugins {
+    id("buildlogic.libs")
 }
 
 dependencies {
-    "shade"("net.kyori:text-adapter-bukkit:${Versions.TEXT_EXTRAS}")
+    "shade"(libs.kyoriText.adapter.bukkit)
 }

@@ -1,0 +1,16 @@
+{
+    "required": true,
+    "package": "com.sk89q.worldedit.neoforge.mixin",
+    "compatibilityLevel": "JAVA_17",
+    "mixins": [
+        "AccessorServerPlayerGameMode",
+        "MixinLevelChunkSetBlockHook",
+        "MixinServerGamePacketListenerImpl"
+    ],
+    "server": [
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    },
+    "refmap": "worldedit-neoforge.mixins.refmap.json"
+}

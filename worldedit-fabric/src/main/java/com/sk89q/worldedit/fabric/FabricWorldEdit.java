@@ -64,6 +64,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -114,6 +115,18 @@ public class FabricWorldEdit implements ModInitializer {
         LIFECYCLED_SERVER = lifecycledServer;
     }
 
+    /**
+     * {@return current server's registry access} Not for long-term storage.
+     */
+    public static RegistryAccess registryAccess() {
+        return LIFECYCLED_SERVER.valueOrThrow().registryAccess();
+    }
+
+    /**
+     * {@return current server's registry} Not for long-term storage.
+     *
+     * @param key the registry key
+     */
     public static <T> Registry<T> getRegistry(ResourceKey<Registry<T>> key) {
         return LIFECYCLED_SERVER.valueOrThrow().registryAccess().registryOrThrow(key);
     }
@@ -255,13 +268,13 @@ public class FabricWorldEdit implements ModInitializer {
             }
         });
         // Features
-        for (ResourceLocation name: server.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).keySet()) {
+        for (ResourceLocation name : server.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).keySet()) {
             if (ConfiguredFeatureType.REGISTRY.get(name.toString()) == null) {
                 ConfiguredFeatureType.REGISTRY.register(name.toString(), new ConfiguredFeatureType(name.toString()));
             }
         }
         // Structures
-        for (ResourceLocation name: server.registryAccess().registryOrThrow(Registries.STRUCTURE).keySet()) {
+        for (ResourceLocation name : server.registryAccess().registryOrThrow(Registries.STRUCTURE).keySet()) {
             if (StructureType.REGISTRY.get(name.toString()) == null) {
                 StructureType.REGISTRY.register(name.toString(), new StructureType(name.toString()));
             }

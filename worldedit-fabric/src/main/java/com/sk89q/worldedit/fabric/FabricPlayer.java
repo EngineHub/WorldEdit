@@ -40,11 +40,9 @@ import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
-import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
@@ -55,7 +53,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.UUID;
 import javax.annotation.Nullable;
@@ -94,10 +91,10 @@ public class FabricPlayer extends AbstractPlayerActor {
     public Location getLocation() {
         Vector3 position = Vector3.at(this.player.getX(), this.player.getY(), this.player.getZ());
         return new Location(
-                FabricWorldEdit.inst.getWorld(this.player.serverLevel()),
-                position,
-                this.player.getYRot(),
-                this.player.getXRot());
+            FabricWorldEdit.inst.getWorld(this.player.serverLevel()),
+            position,
+            this.player.getYRot(),
+            this.player.getXRot());
     }
 
     @Override
@@ -132,9 +129,8 @@ public class FabricPlayer extends AbstractPlayerActor {
             send = send + "|" + StringUtil.joinString(params, "|");
         }
         ServerPlayNetworking.send(
-                this.player,
-                WECUIPacketHandler.CUI_IDENTIFIER,
-                new FriendlyByteBuf(Unpooled.copiedBuffer(send, StandardCharsets.UTF_8))
+            this.player,
+            new WECUIPacketHandler.CuiPacket(send)
         );
     }
 
@@ -173,7 +169,10 @@ public class FabricPlayer extends AbstractPlayerActor {
 
     @Override
     public void print(Component component) {
-        this.player.sendSystemMessage(net.minecraft.network.chat.Component.Serializer.fromJson(GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale()))));
+        this.player.sendSystemMessage(net.minecraft.network.chat.Component.Serializer.fromJson(
+            GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale())),
+            player.level().registryAccess()
+        ));
     }
 
     private void sendColorized(String msg, ChatFormatting formatting) {
@@ -246,8 +245,8 @@ public class FabricPlayer extends AbstractPlayerActor {
                     player.connection.send(new ClientboundBlockEntityDataPacket(
                         new BlockPos(pos.x(), pos.y(), pos.z()),
                         BlockEntityType.STRUCTURE_BLOCK,
-                        NBTConverter.toNative(nbtData))
-                    );
+                        NBTConverter.toNative(nbtData)
+                    ));
                 }
             }
         }

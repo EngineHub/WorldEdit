@@ -1,14 +1,7 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
-    kotlin("jvm") version "1.8.20"
+    kotlin("jvm") version "1.9.23"
     application
-}
-
-applyCommonConfiguration()
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "17"
+    id("buildlogic.common")
 }
 
 application.mainClass.set("com.sk89q.worldedit.internal.util.DocumentationPrinter")
@@ -21,5 +14,5 @@ dependencies {
     "implementation"(project(":worldedit-core"))
     "implementation"(kotlin("stdlib-jdk8"))
     "implementation"(kotlin("reflect"))
-    "implementation"("com.google.guava:guava")
+    "implementation"(libs.guava)
 }

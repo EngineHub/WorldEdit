@@ -4,9 +4,9 @@ import java.util.jar.Manifest
 
 plugins {
     base
+    id("buildlogic.common")
+    alias(libs.plugins.fabric.loom) apply false
 }
-
-applyCommonConfiguration()
 
 open class MergeManifests : DefaultTask() {
     @InputFiles
@@ -64,13 +64,13 @@ val fabricZipTree = zipTree(
     project(":worldedit-fabric").tasks.named<RemapJarTask>("remapShadowJar").flatMap { it.archiveFile }
 )
 val forgeZipTree = zipTree(
-    project(":worldedit-forge").tasks.named("shadowJar").map { it.outputs.files.singleFile }
+    project(":worldedit-neoforge").tasks.named("shadowJar").map { it.outputs.files.singleFile }
 )
 
 val mergeManifests = tasks.register<MergeManifests>("mergeManifests") {
     dependsOn(
         project(":worldedit-fabric").tasks.named<RemapJarTask>("remapShadowJar"),
-        project(":worldedit-forge").tasks.named("reobfShadowJar")
+        project(":worldedit-neoforge").tasks.named("shadowJar")
     )
     inputManifests.from(
         fabricZipTree.matching { include("META-INF/MANIFEST.MF") },
@@ -82,7 +82,7 @@ val mergeManifests = tasks.register<MergeManifests>("mergeManifests") {
 tasks.register<Jar>("jar") {
     dependsOn(
         project(":worldedit-fabric").tasks.named<RemapJarTask>("remapShadowJar"),
-        project(":worldedit-forge").tasks.named("reobfShadowJar"),
+        project(":worldedit-neoforge").tasks.named("shadowJar"),
         mergeManifests
     )
     from(fabricZipTree) {
@@ -106,7 +106,7 @@ tasks.register<Jar>("jar") {
         // Exclude worldedit-core
         exclude {
             val pathString = it.relativePath.pathString
-            pathString.startsWith("com/sk89q/worldedit/") && !pathString.startsWith("com/sk89q/worldedit/forge/")
+            pathString.startsWith("com/sk89q/worldedit/") && !pathString.startsWith("com/sk89q/worldedit/neoforge/")
         }
         // Questionable excludes. So far the two files from each jar are the same.
         exclude("defaults/worldedit.properties")

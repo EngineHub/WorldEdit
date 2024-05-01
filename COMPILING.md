@@ -1,18 +1,15 @@
 Compiling
 =========
 
-You can compile WorldEdit as long as you have some version of Java greater than or equal to 16 installed. Gradle will download JDK 16 specifically if needed,
+You can compile WorldEdit as long as you have some version of Java greater than or equal to 21 installed. Gradle will download JDK 21 specifically if needed,
 but it needs some version of Java to bootstrap from.
-
-Note that if you have JRE 16 installed, Gradle will currently attempt to use that to compile, which will not work. It is easiest to uninstall JRE 16 and
-replace it with JDK 16.
 
 The build process uses Gradle, which you do *not* need to download. WorldEdit is a multi-module project with four modules:
 
 * `worldedit-core` contains the WorldEdit API
 * `worldedit-bukkit` is the Bukkit plugin
 * `worldedit-sponge` is the Sponge plugin
-* `worldedit-forge` is the Forge mod
+* `worldedit-neoforge` is the NeoForge mod
 * `worldedit-fabric` is the Fabric mod
 
 ## To compile...
@@ -34,7 +31,7 @@ You will find:
 * The core WorldEdit API in **worldedit-core/build/libs**
 * WorldEdit for Bukkit in **worldedit-bukkit/build/libs**
 * WorldEdit for Sponge in **worldedit-sponge/build/libs**
-* WorldEdit for Forge in **worldedit-forge/build/libs**
+* WorldEdit for NeoForge in **worldedit-neoforge/build/libs**
 * WorldEdit for Fabric in **worldedit-fabric/build/libs**
 
 If you want to use WorldEdit, use the `-dist` version.

@@ -43,7 +43,6 @@ import java.util.stream.Stream;
 
 import static com.sk89q.worldedit.internal.command.CommandUtil.byCleanName;
 import static com.sk89q.worldedit.internal.command.CommandUtil.getSubCommands;
-import static java.util.stream.Collectors.toList;
 
 /**
  * Implementation of the //help command.
