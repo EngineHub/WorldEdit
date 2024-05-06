@@ -27,6 +27,7 @@ import com.sk89q.worldedit.util.io.Closer;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -55,7 +56,7 @@ public class FileRegistries {
             Files.createDirectories(outputFolder);
 
             if (!Files.exists(checkPath)) {
-                URL url = new URL(DATA_FILE_DOWNLOAD_URL + app.getPlatform().getDataVersion() + "/" + CLI_DATA_VERSION);
+                URL url = URI.create(DATA_FILE_DOWNLOAD_URL + app.getPlatform().getDataVersion() + "/" + CLI_DATA_VERSION).toURL();
 
                 try (var stream = url.openStream()) {
                     Files.copy(stream, checkPath);
