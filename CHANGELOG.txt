@@ -1,3 +1,9 @@
+7.3.1
+- Added support for 1.20.5/1.20.6
+- Improved warnings when run on unsupported platforms
+- Removed some old data that was inflating the jar size
+- Disable chunk batching by default. We don't feel it makes sense in modern MC outside of potentially niche situations
+
 7.3.0
 - Added an `//update [sideEffect]` command to apply side effects to a selection
 - Added a schematic sharing system and corresponding API, with `/schem share`
