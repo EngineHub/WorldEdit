@@ -54,6 +54,7 @@ for (projectFragment in listOf("bukkit", "cli", "core", "fabric", "neoforge")) {
     val resetChangeFileTask = tasks.register("reset${capitalizedFragment}AcceptedApiChangesFile") {
         group = "API Compatibility"
         description = "Reset the accepted API changes file for $projectFragment"
+        outputs.file(changeFile)
 
         doFirst {
             Files.newBufferedWriter(changeFile, StandardCharsets.UTF_8).use {
@@ -90,6 +91,7 @@ for (projectFragment in listOf("bukkit", "cli", "core", "fabric", "neoforge")) {
     val checkApi = tasks.register<JapicmpTask>("check${capitalizedFragment}ApiCompatibility") {
         group = "API Compatibility"
         description = "Check API compatibility for $capitalizedFragment API"
+        inputs.file(changeFile)
         richReport {
             addSetupRule(
                 AcceptingSetupRule::class.java, AcceptingSetupRule.createParams(
