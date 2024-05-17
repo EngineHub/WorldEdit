@@ -73,7 +73,7 @@ jlibnoise = "com.sk89q.lib:jlibnoise:1.0.0"
 
 fabric-minecraft = "com.mojang:minecraft:1.20.6"
 fabric-loader = "net.fabricmc:fabric-loader:0.15.10"
-fabric-permissions-api = "me.lucko:fabric-permissions-api:0.1-SNAPSHOT"
+fabric-permissions-api = "me.lucko:fabric-permissions-api:0.3.1"
 
 neoforge = "net.neoforged:neoforge:20.6.42-beta"
 
