@@ -34,7 +34,7 @@ jfrog-buildinfo = "org.jfrog.buildinfo:build-info-extractor-gradle:5.2.0"
 
 fabric-mixin = "net.fabricmc:sponge-mixin:0.13.3+mixin.0.8.5"
 
-paperweight = "io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:1.6.0"
+paperweight = "io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:1.7.1"
 
 linBus-bom = "org.enginehub.lin-bus:lin-bus-bom:0.1.0-SNAPSHOT"
 linBus-common.module = "org.enginehub.lin-bus:lin-bus-common"
@@ -59,9 +59,9 @@ mockito-junit-jupiter.module = "org.mockito:mockito-junit-jupiter"
 
 commonsCli = "commons-cli:commons-cli:1.4"
 
-spigot = "org.spigotmc:spigot-api:1.20.1-R0.1-20230921.163938-66"
-paperApi = "io.papermc.paper:paper-api:1.20.1-R0.1-20230921.165944-178"
-paperLib = "io.papermc:paperlib:1.0.7"
+spigot = "org.spigotmc:spigot-api:1.20.2-R0.1-20231205.164257-71"
+paperApi = "io.papermc.paper:paper-api:1.20.2-R0.1-20231203.034718-122"
+paperLib = "io.papermc:paperlib:1.0.8"
 
 dummypermscompat = "com.sk89q:dummypermscompat:1.10"
 bstats-bukkit = "org.bstats:bstats-bukkit:2.2.1"
@@ -73,7 +73,7 @@ jlibnoise = "com.sk89q.lib:jlibnoise:1.0.0"
 
 fabric-minecraft = "com.mojang:minecraft:1.20.6"
 fabric-loader = "net.fabricmc:fabric-loader:0.15.10"
-fabric-permissions-api = "me.lucko:fabric-permissions-api:0.1-SNAPSHOT"
+fabric-permissions-api = "me.lucko:fabric-permissions-api:0.3.1"
 
 neoforge = "net.neoforged:neoforge:20.6.42-beta"
 

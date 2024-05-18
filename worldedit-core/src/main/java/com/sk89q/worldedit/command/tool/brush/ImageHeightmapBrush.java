@@ -54,7 +54,7 @@ public class ImageHeightmapBrush implements Brush {
             for (int offZ = -size; offZ <= size; offZ++) {
                 int posX = position.x() + offX;
                 int posZ = position.z() + offZ;
-                int posY = editSession.getHighestTerrainBlock(posX, posZ, 0, 255, editSession.getMask());
+                int posY = editSession.getHighestTerrainBlock(posX, posZ, editSession.getMinimumPoint().y(), editSession.getMaximumPoint().y(), editSession.getMask());
                 BlockVector3 block = BlockVector3.at(posX, posY, posZ);
                 if (editSession.getMask() != null && !editSession.getMask().test(block)) {
                     continue;

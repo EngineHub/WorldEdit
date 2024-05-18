@@ -10,6 +10,7 @@ group = rootProject.group
 version = rootProject.version
 
 repositories {
+    mavenCentral()
     maven {
         name = "EngineHub"
         url = uri("https://maven.enginehub.org/repo/")
