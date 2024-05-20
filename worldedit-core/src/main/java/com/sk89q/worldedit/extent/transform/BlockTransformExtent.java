@@ -126,7 +126,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
 
         for (Property<?> property : properties) {
             if (property instanceof DirectionalProperty dirProp) {
-                Direction value = (Direction) block.getState(property);
+                Direction value = (Direction) result.getState(property);
                 if (value != null) {
                     Vector3 newValue = getNewStateValue(dirProp.getValues(), transform, value.toVector());
                     if (newValue != null) {
@@ -136,7 +136,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
             } else if (property instanceof EnumProperty enumProp) {
                 if (property.getName().equals("axis")) {
                     // We have an axis - this is something we can do the rotations to :sunglasses:
-                    Direction value = switch ((String) block.getState(property)) {
+                    Direction value = switch ((String) result.getState(property)) {
                         case "x" -> Direction.EAST;
                         case "y" -> Direction.UP;
                         case "z" -> Direction.NORTH;
@@ -145,75 +145,100 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                     if (value != null) {
                         Vector3 newValue = getNewStateValue(Direction.valuesOf(Direction.Flag.UPRIGHT | Direction.Flag.CARDINAL), transform, value.toVector());
                         if (newValue != null) {
-                            String axis = null;
+                            String axis;
                             Direction newDir = Direction.findClosest(newValue, Direction.Flag.UPRIGHT | Direction.Flag.CARDINAL);
-                            if (newDir == Direction.NORTH || newDir == Direction.SOUTH) {
-                                axis = "z";
-                            } else if (newDir == Direction.EAST || newDir == Direction.WEST) {
-                                axis = "x";
-                            } else if (newDir == Direction.UP || newDir == Direction.DOWN) {
-                                axis = "y";
-                            }
+                            axis = switch (newDir) {
+                                case NORTH, SOUTH -> "z";
+                                case EAST, WEST -> "x";
+                                case UP, DOWN -> "y";
+                                default -> null;
+                            };
                             if (axis != null) {
                                 result = result.with(enumProp, axis);
                             }
                         }
                     }
-                } else if (property.getName().equals("type") && transform instanceof AffineTransform) {
+                } else if (property.getName().equals("type") && transform instanceof AffineTransform affineTransform) {
                     // chests
-                    if (((AffineTransform) transform).isHorizontalFlip()) {
-                        String value = (String) block.getState(property);
-                        String newValue = null;
-                        if ("left".equals(value)) {
-                            newValue = "right";
-                        } else if ("right".equals(value)) {
-                            newValue = "left";
-                        }
+                    if (affineTransform.isHorizontalFlip()) {
+                        String value = (String) result.getState(property);
+                        String newValue = switch (value) {
+                            case "left" -> "right";
+                            case "right" -> "left";
+                            default -> null;
+                        };
                         if (newValue != null && enumProp.getValues().contains(newValue)) {
                             result = result.with(enumProp, newValue);
                         }
                     }
                     // slabs
-                    if (((AffineTransform) transform).isVerticalFlip()) {
-                        String value = (String) block.getState(property);
-                        String newValue = null;
-                        if ("bottom".equals(value)) {
-                            newValue = "top";
-                        } else if ("top".equals(value)) {
-                            newValue = "bottom";
-                        }
+                    if (affineTransform.isVerticalFlip()) {
+                        String value = (String) result.getState(property);
+                        String newValue = switch (value) {
+                            case "bottom" -> "top";
+                            case "top" -> "bottom";
+                            default -> null;
+                        };
                         if (newValue != null && enumProp.getValues().contains(newValue)) {
                             result = result.with(enumProp, newValue);
                         }
                     }
-                } else if (property.getName().equals("half") && transform instanceof AffineTransform) {
+                } else if (property.getName().equals("half") && transform instanceof AffineTransform affineTransform) {
                     // stairs
-                    if (((AffineTransform) transform).isVerticalFlip()) {
-                        String value = (String) block.getState(property);
-                        String newValue = null;
-                        if ("bottom".equals(value)) {
-                            newValue = "top";
-                        } else if ("top".equals(value)) {
-                            newValue = "bottom";
-                        }
+                    if (affineTransform.isVerticalFlip()) {
+                        String value = (String) result.getState(property);
+                        String newValue = switch (value) {
+                            case "bottom" -> "top";
+                            case "top" -> "bottom";
+                            default -> null;
+                        };
                         if (newValue != null && enumProp.getValues().contains(newValue)) {
                             result = result.with(enumProp, newValue);
                         }
                     }
-                } else if (property.getName().equals("shape") && transform instanceof AffineTransform) {
+                } else if (property.getName().equals("shape") && transform instanceof AffineTransform affineTransform) {
                     // stairs
-                    if (((AffineTransform) transform).isHorizontalFlip()) {
-                        String value = (String) block.getState(property);
-                        String newValue = null;
-                        if ("outer_left".equals(value)) {
-                            newValue = "outer_right";
-                        } else if ("outer_right".equals(value)) {
-                            newValue = "outer_left";
-                        } else if ("inner_left".equals(value)) {
-                            newValue = "inner_right";
-                        } else if ("inner_right".equals(value)) {
-                            newValue = "inner_left";
+                    if (affineTransform.isHorizontalFlip()) {
+                        String value = (String) result.getState(property);
+                        String newValue = switch (value) {
+                            case "outer_left" -> "outer_right";
+                            case "outer_right" -> "outer_left";
+                            case "inner_left" -> "inner_right";
+                            case "inner_right" -> "inner_left";
+                            default -> null;
+                        };
+                        if (newValue != null && enumProp.getValues().contains(newValue)) {
+                            result = result.with(enumProp, newValue);
                         }
+                    }
+                } else if (property.getName().equals("orientation") && transform instanceof AffineTransform affineTransform) {
+                    // crafters
+                    if (affineTransform.isHorizontalFlip()) {
+                        String value = (String) result.getState(property);
+                        String newValue = switch (value) {
+                            case "north_up" -> "south_up";
+                            case "south_up" -> "north_up";
+                            case "east_up" -> "west_up";
+                            case "west_up" -> "east_up";
+                            default -> null;
+                        };
+                        if (newValue != null && enumProp.getValues().contains(newValue)) {
+                            result = result.with(enumProp, newValue);
+                        }
+                    }
+                    if (affineTransform.isVerticalFlip()) {
+                        String value = (String) result.getState(property);
+                        String newValue = switch (value) {
+                            case "down_east" -> "up_east";
+                            case "down_north" -> "up_north";
+                            case "down_south" -> "up_south";
+                            case "down_west" -> "up_west";
+                            case "up_east" -> "down_east";
+                            case "up_north" -> "down_north";
+                            case "up_south" -> "down_south";
+                            case "up_west" -> "down_west";
+                            default -> null;
+                        };
                         if (newValue != null && enumProp.getValues().contains(newValue)) {
                             result = result.with(enumProp, newValue);
                         }
@@ -222,7 +247,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
             } else if (property instanceof IntegerProperty intProp) {
                 if (property.getName().equals("rotation")) {
                     if (intProp.getValues().size() == 16) {
-                        Optional<Direction> direction = Direction.fromRotationIndex(block.getState(intProp));
+                        Optional<Direction> direction = Direction.fromRotationIndex(result.getState(intProp));
                         int horizontalFlags = Direction.Flag.CARDINAL | Direction.Flag.ORDINAL | Direction.Flag.SECONDARY_ORDINAL;
                         if (direction.isPresent()) {
                             Vector3 vec = getNewStateValue(Direction.valuesOf(horizontalFlags), transform, direction.get().toVector());
@@ -241,8 +266,9 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
         Map<String, Object> directionalProperties = new HashMap<>();
         for (Property<?> prop : properties) {
             if (directionNames.contains(prop.getName())) {
-                if (prop instanceof BooleanProperty && (Boolean) block.getState(prop)
-                        || prop instanceof EnumProperty && !block.getState(prop).toString().equals("none")) {
+                var state = result.getState(prop);
+                if (prop instanceof BooleanProperty && (Boolean) state
+                        || prop instanceof EnumProperty && !state.toString().equals("none")) {
                     String origProp = prop.getName().toUpperCase(Locale.ROOT);
                     Direction dir = Direction.valueOf(origProp);
                     Direction closest = Direction.findClosest(transform.apply(dir.toVector()), Direction.Flag.CARDINAL);
@@ -257,7 +283,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                                 Property<Object> propAsObj = (Property<Object>) prop;
                                 result = result.with(propAsObj, "none");
                             }
-                            directionalProperties.put(closestProp, block.getState(prop));
+                            directionalProperties.put(closestProp, result.getState(prop));
                         }
                     }
                 }
