@@ -1,3 +1,13 @@
+7.3.2
+- [Paper] Worked around future Paper API change to prevent compatibility issues
+- [Bukkit] Dropped 1.19.4-1.20.1 support due to tooling compatibility issues
+- [Fabric] Updated the Permissions API to 0.3.1
+- [NeoForge] Fixed an issue where the client mod was required for the server mod to function
+- Fixed heightmap brush not behaving correctly below Y=0
+- Fixed paintings not getting rotated correctly
+- Fixed the crafter block not behaving correctly during flips
+- Fixed an issue where selection commands could kick some clients in certain circumstances
+
 7.3.1
 - Added support for 1.20.5/1.20.6
 - Improved warnings when run on unsupported platforms
