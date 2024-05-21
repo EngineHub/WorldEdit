@@ -55,7 +55,7 @@ public final class WECUIPacketHandler {
                 CuiPacket.TYPE,
                 CustomPacketPayload.codec(
                     (packet, buffer) -> buffer.writeCharSequence(packet.text(), StandardCharsets.UTF_8),
-                    buffer -> new CuiPacket(buffer.toString(StandardCharsets.UTF_8))
+                    buffer -> new CuiPacket(buffer.readCharSequence(buffer.readableBytes(), StandardCharsets.UTF_8).toString())
                 ),
                 (payload, context) -> {
                     if (!(context.player() instanceof ServerPlayer player)) {
