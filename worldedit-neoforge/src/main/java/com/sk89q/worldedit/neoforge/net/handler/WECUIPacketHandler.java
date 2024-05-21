@@ -51,6 +51,7 @@ public final class WECUIPacketHandler {
     @SubscribeEvent
     public static void register(RegisterPayloadHandlersEvent event) {
         event.registrar(PROTOCOL_VERSION)
+            .optional()
             .playBidirectional(
                 CuiPacket.TYPE,
                 CustomPacketPayload.codec(
