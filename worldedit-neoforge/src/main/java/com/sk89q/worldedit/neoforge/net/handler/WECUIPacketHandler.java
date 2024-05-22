@@ -51,11 +51,12 @@ public final class WECUIPacketHandler {
     @SubscribeEvent
     public static void register(RegisterPayloadHandlersEvent event) {
         event.registrar(PROTOCOL_VERSION)
+            .optional()
             .playBidirectional(
                 CuiPacket.TYPE,
                 CustomPacketPayload.codec(
                     (packet, buffer) -> buffer.writeCharSequence(packet.text(), StandardCharsets.UTF_8),
-                    buffer -> new CuiPacket(buffer.toString(StandardCharsets.UTF_8))
+                    buffer -> new CuiPacket(buffer.readCharSequence(buffer.readableBytes(), StandardCharsets.UTF_8).toString())
                 ),
                 (payload, context) -> {
                     if (!(context.player() instanceof ServerPlayer player)) {
