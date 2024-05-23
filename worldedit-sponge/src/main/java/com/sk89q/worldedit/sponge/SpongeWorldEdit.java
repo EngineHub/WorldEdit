@@ -37,7 +37,6 @@ import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.internal.event.InteractionDebouncer;
 import com.sk89q.worldedit.sponge.config.SpongeConfiguration;
-import com.sk89q.worldedit.util.Identifiable;
 import com.sk89q.worldedit.world.biome.BiomeCategory;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
@@ -214,7 +213,7 @@ public class SpongeWorldEdit {
                 ItemCategory.REGISTRY.register(id, new ItemCategory(id));
             }
         });
-        event.game().registry(RegistryTypes.BIOME).tags().forEach(biomeTag -> {
+        Sponge.server().registry(RegistryTypes.BIOME).tags().forEach(biomeTag -> {
             String id = biomeTag.key().asString();
             if (!BiomeCategory.REGISTRY.keySet().contains(id)) {
                 BiomeCategory.REGISTRY.register(id, new BiomeCategory(id, () -> event.game().registry(RegistryTypes.BIOME).taggedValues(biomeTag).stream().map(SpongeAdapter::adapt).collect(Collectors.toSet())));

@@ -56,16 +56,16 @@ sponge {
 }
 
 dependencies {
-    api(project(":worldedit-core"))
-    api(project(":worldedit-libs:sponge"))
+    "api"(project(":worldedit-core"))
+    "api"(project(":worldedit-libs:sponge"))
 
-    api("org.apache.logging.log4j:log4j-api")
-    implementation("org.bstats:bstats-sponge:3.0.0")
-    implementation("it.unimi.dsi:fastutil")
+    "api"("org.apache.logging.log4j:log4j-api")
+    "implementation"("org.bstats:bstats-sponge:3.0.0")
+    "implementation"("it.unimi.dsi:fastutil")
     "testImplementation"(libs.mockito.core)
 
     // Silence some warnings, since apparently this isn't on the compile classpath like it should be.
-    compileOnly("com.google.errorprone:error_prone_annotations:2.11.0")
+    "compileOnly"("com.google.errorprone:error_prone_annotations:2.11.0")
 }
 
 configure<BasePluginExtension> {

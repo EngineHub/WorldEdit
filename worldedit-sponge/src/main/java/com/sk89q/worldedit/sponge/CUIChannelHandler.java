@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.sponge;
 
-import java.nio.charset.StandardCharsets;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.util.lifecycle.SimpleLifecycled;
@@ -31,6 +30,8 @@ import org.spongepowered.api.network.ServerConnectionState;
 import org.spongepowered.api.network.channel.ChannelBuf;
 import org.spongepowered.api.network.channel.raw.RawDataChannel;
 import org.spongepowered.api.network.channel.raw.play.RawPlayDataHandler;
+
+import java.nio.charset.StandardCharsets;
 
 public class CUIChannelHandler implements RawPlayDataHandler<ServerConnectionState.Game> {
     public static final ResourceKey CUI_PLUGIN_CHANNEL = ResourceKey.of("worldedit", "cui");
