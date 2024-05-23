@@ -26,7 +26,7 @@ minecraft {
     version("1.20.6")
 }
 
-val spongeApiVersion = "11.0.0-SNAPSHOT";
+val spongeApiVersion = "11.0.0-20240520.134918-37";
 
 sponge {
     apiVersion(spongeApiVersion)
