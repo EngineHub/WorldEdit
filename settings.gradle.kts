@@ -5,6 +5,10 @@ pluginManagement {
             name = "EngineHub"
             url = uri("https://maven.enginehub.org/repo/")
         }
+        maven {
+            name = "SpongePowered"
+            url = uri("https://repo.spongepowered.org/repository/maven-public/")
+        }
     }
 }
 plugins {
@@ -35,7 +39,7 @@ listOf("1.20.2", "1.20.4", "1.20.5").forEach {
     include("worldedit-bukkit:adapters:adapter-$it")
 }
 
-listOf("bukkit", "core", "fabric", "neoforge", "cli").forEach {
+listOf("bukkit", "core", "fabric", "neoforge", "sponge", "cli").forEach {
     include("worldedit-libs:$it")
     include("worldedit-$it")
 }

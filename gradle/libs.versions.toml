@@ -2,6 +2,8 @@
 codecov = "org.enginehub.codecov:0.2.0"
 neogradle-userdev = "net.neoforged.gradle.userdev:7.0.107"
 fabric-loom = "fabric-loom:1.6.9"
+sponge-spongegradle = "org.spongepowered.gradle.plugin:2.2.0"
+sponge-vanillagradle = "org.spongepowered.gradle.vanilla:0.2.1-20240507.024226-82"
 
 [versions]
 kyoriText = "3.0.4"
@@ -26,6 +28,9 @@ lang-worldeditBase = "7.3.1"
 lang-version = "1309"
 
 [libraries]
+neogradle-userdev = "net.neoforged.gradle:neoform:7.0.107"
+sponge-vanillagradle = "org.spongepowered:vanillagradle:0.2.1-20240507.024226-82"
+
 licenser = "gradle.plugin.org.cadixdev.gradle:licenser:0.6.1"
 grgit = "org.ajoberstar.grgit:grgit-gradle:5.2.2"
 japicmp = "me.champeau.gradle:japicmp-gradle-plugin:0.4.2"
