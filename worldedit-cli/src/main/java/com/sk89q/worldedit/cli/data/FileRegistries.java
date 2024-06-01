@@ -23,14 +23,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.cli.CLIWorldEdit;
-import com.sk89q.worldedit.util.io.Closer;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
