@@ -1,7 +1,7 @@
 [plugins]
 codecov = "org.enginehub.codecov:0.2.0"
 neogradle-userdev = "net.neoforged.gradle.userdev:7.0.107"
-fabric-loom = "fabric-loom:1.6.9"
+fabric-loom = "fabric-loom:1.6.12"
 sponge-spongegradle = "org.spongepowered.gradle.plugin:2.2.0"
 sponge-vanillagradle = "org.spongepowered.gradle.vanilla:0.2.1-20240507.024226-82"
 
@@ -11,13 +11,13 @@ piston = "0.5.10"
 autoValue = "1.10.4"
 antlr = "4.13.1"
 
-fabric-api = "0.97.8+1.20.6"
+fabric-api = "0.100.0+1.21"
 
 neoforge-minecraft = "1.20.6"
 
 # https://parchmentmc.org/docs/getting-started; note that we use older MC versions some times which is OK
-parchment-minecraft = "1.20.4"
-parchment-mappings = "2024.04.14"
+parchment-minecraft = "1.20.6"
+parchment-mappings = "2024.06.02"
 
 # Minimum versions we apply to make dependencies support newer Java
 minimumAsm = "9.7"
@@ -76,8 +76,8 @@ rhino = "org.mozilla:rhino-runtime:1.7.13"
 jchronic = "com.sk89q:jchronic:0.2.4a"
 jlibnoise = "com.sk89q.lib:jlibnoise:1.0.0"
 
-fabric-minecraft = "com.mojang:minecraft:1.20.6"
-fabric-loader = "net.fabricmc:fabric-loader:0.15.10"
+fabric-minecraft = "com.mojang:minecraft:1.21-rc1"
+fabric-loader = "net.fabricmc:fabric-loader:0.15.11"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.3.1"
 
 neoforge = "net.neoforged:neoforge:20.6.88-beta"

@@ -36,7 +36,7 @@ public final class WECUIPacketHandler {
     private WECUIPacketHandler() {
     }
 
-    public static final ResourceLocation CUI_IDENTIFIER = new ResourceLocation(FabricWorldEdit.MOD_ID, FabricWorldEdit.CUI_PLUGIN_CHANNEL);
+    public static final ResourceLocation CUI_IDENTIFIER = ResourceLocation.fromNamespaceAndPath(FabricWorldEdit.MOD_ID, FabricWorldEdit.CUI_PLUGIN_CHANNEL);
 
     public record CuiPacket(String text) implements CustomPacketPayload {
         public static final Type<CuiPacket> TYPE = new Type<>(CUI_IDENTIFIER);
