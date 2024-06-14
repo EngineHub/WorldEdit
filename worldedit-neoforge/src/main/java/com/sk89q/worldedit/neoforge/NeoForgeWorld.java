@@ -242,7 +242,7 @@ public class NeoForgeWorld extends AbstractWorld {
             position.x() & 3, position.y() & 3, position.z() & 3,
             getWorld().registryAccess().registry(Registries.BIOME)
                 .orElseThrow()
-                .getHolderOrThrow(ResourceKey.create(Registries.BIOME, new ResourceLocation(biome.id())))
+                .getHolderOrThrow(ResourceKey.create(Registries.BIOME, ResourceLocation.parse(biome.id())))
         );
         chunk.setUnsaved(true);
         return true;

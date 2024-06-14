@@ -96,7 +96,7 @@ public final class NeoForgeAdapter {
         return ServerLifecycleHooks.getCurrentServer()
             .registryAccess()
             .registryOrThrow(Registries.BIOME)
-            .getOptional(new ResourceLocation(biomeType.id()))
+            .getOptional(ResourceLocation.parse(biomeType.id()))
             .orElseThrow(() -> new IllegalStateException("No biome for " + biomeType.id()));
     }
 
@@ -202,7 +202,7 @@ public final class NeoForgeAdapter {
     }
 
     public static Block adapt(BlockType blockType) {
-        return BuiltInRegistries.BLOCK.get(new ResourceLocation(blockType.id()));
+        return BuiltInRegistries.BLOCK.get(ResourceLocation.parse(blockType.id()));
     }
 
     public static BlockType adapt(Block block) {
@@ -210,7 +210,7 @@ public final class NeoForgeAdapter {
     }
 
     public static Item adapt(ItemType itemType) {
-        return BuiltInRegistries.ITEM.get(new ResourceLocation(itemType.id()));
+        return BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemType.id()));
     }
 
     public static ItemType adapt(Item item) {
