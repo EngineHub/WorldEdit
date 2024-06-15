@@ -128,7 +128,9 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler {
         MethodHandle spreader = methodHandle.asSpreader(
             1, Object[].class, methodHandle.type().parameterCount() - 1
         );
-        table.put(methodName, methodHandle.type(), spreader);
+        // We drop the first argument, which is our receiver
+        // We also drop the return type, which is not important
+        table.put(methodName, methodHandle.type().dropParameterTypes(0, 1).changeReturnType(void.class), spreader);
     }
 
     private static final Table<String, MethodType, MethodHandle> METHOD_MAP;
@@ -221,7 +223,8 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         MethodHandle delegate = METHOD_MAP.get(
-            method.getName(), MethodType.methodType(method.getReturnType(), method.getParameterTypes())
+            // ignore return type, we only need the parameter types
+            method.getName(), MethodType.methodType(void.class, method.getParameterTypes())
         );
         if (delegate != null) {
             return delegate.invoke(this, args);
