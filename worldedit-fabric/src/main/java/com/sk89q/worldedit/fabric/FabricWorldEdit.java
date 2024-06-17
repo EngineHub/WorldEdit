@@ -30,7 +30,6 @@ import com.sk89q.worldedit.event.platform.SessionIdleEvent;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
-import com.sk89q.worldedit.fabric.net.handler.WECUIPacketHandler;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.internal.event.InteractionDebouncer;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
@@ -82,6 +81,8 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.phys.BlockHitResult;
 import org.apache.logging.log4j.Logger;
 import org.enginehub.piston.Command;
+import org.enginehub.worldeditcui.protocol.CUIPacket;
+import org.enginehub.worldeditcui.protocol.CUIPacketHandler;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -169,7 +170,7 @@ public class FabricWorldEdit implements ModInitializer {
         config = new FabricConfiguration(this);
         this.provider = getInitialPermissionsProvider();
 
-        WECUIPacketHandler.init();
+        CUIPacketHandler.instance().registerServerboundHandler(this::onCuiPacket);
 
         ServerTickEvents.END_SERVER_TICK.register(ThreadSafeCache.getInstance());
         CommandRegistrationCallback.EVENT.register(this::registerCommands);
@@ -393,6 +394,12 @@ public class FabricWorldEdit implements ModInitializer {
 
         WorldEdit.getInstance().getEventBus()
             .post(new SessionIdleEvent(new FabricPlayer.SessionKeyImpl(handler.player)));
+    }
+
+    private void onCuiPacket(CUIPacket payload, CUIPacketHandler.PacketContext context) {
+        LocalSession session = FabricWorldEdit.inst.getSession((ServerPlayer) context.player());
+        FabricPlayer actor = FabricAdapter.adaptPlayer((ServerPlayer) context.player());
+        session.handleCUIInitializationMessage(payload.eventType() + "|" + String.join("|", payload.args()), actor);
     }
 
     /**

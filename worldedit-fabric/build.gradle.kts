@@ -38,6 +38,7 @@ repositories {
     getByName("Mojang") {
         content {
             includeGroupAndSubgroups("com.mojang")
+            includeGroupAndSubgroups("org.lwjgl")
         }
     }
 }
@@ -48,6 +49,8 @@ dependencies {
     "minecraft"(libs.fabric.minecraft)
     "mappings"(project.the<LoomGradleExtensionAPI>().officialMojangMappings())
     "modImplementation"(libs.fabric.loader)
+    "modImplementation"(libs.cuiProtocol.fabric)
+    "include"(libs.cuiProtocol.fabric)
 
 
     // [1] Load the API dependencies from the fabric mod json...

@@ -22,6 +22,18 @@ repositories {
     mavenCentral()
 }
 
+afterEvaluate {
+    repositories.forEach { repo ->
+        if (repo is MavenArtifactRepository && repo.url.toString() == "https://libraries.minecraft.net/") {
+            repositories.exclusiveContent {
+                forRepositories(repo).filter {
+                    includeGroupAndSubgroups("org.lwjgl")
+                }
+            }
+        }
+    }
+}
+
 minecraft {
     version("1.20.6")
 }

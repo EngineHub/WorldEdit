@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.neoforge;
 
-import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
@@ -28,7 +27,6 @@ import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.neoforge.internal.NBTConverter;
-import com.sk89q.worldedit.neoforge.net.handler.WECUIPacketHandler;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
@@ -55,6 +53,7 @@ import org.enginehub.linbus.tree.LinCompoundTag;
 import java.util.Locale;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import org.enginehub.worldeditcui.protocol.CUIPacket;
 
 public class NeoForgePlayer extends AbstractPlayerActor {
 
@@ -124,12 +123,7 @@ public class NeoForgePlayer extends AbstractPlayerActor {
 
     @Override
     public void dispatchCUIEvent(CUIEvent event) {
-        String[] params = event.getParameters();
-        String send = event.getTypeId();
-        if (params.length > 0) {
-            send = send + "|" + StringUtil.joinString(params, "|");
-        }
-        PacketDistributor.sendToPlayer(this.player, new WECUIPacketHandler.CuiPacket(send));
+        PacketDistributor.sendToPlayer(this.player, new CUIPacket(event.getTypeId(), event.getParameters()));
     }
 
     private void sendMessage(net.minecraft.network.chat.Component textComponent) {

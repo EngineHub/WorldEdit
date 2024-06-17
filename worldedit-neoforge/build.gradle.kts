@@ -25,12 +25,19 @@ val apiClasspath = configurations.create("apiClasspath") {
     isCanBeResolved = true
     extendsFrom(configurations.api.get())
 }
+jarJar.disableDefaultSources()
 
 repositories {
     val toRemove = mutableListOf<MavenArtifactRepository>()
     for (repo in project.repositories) {
         if (repo is MavenArtifactRepository && repo.url.toString() == "https://maven.neoforged.net/releases/") {
             toRemove.add(repo)
+        } else if (repo is MavenArtifactRepository && repo.url.toString() == "https://libraries.minecraft.net/") {
+            exclusiveContent {
+                forRepositories(repo).filter {
+                    includeGroupAndSubgroups("org.lwjgl")
+                }
+            }
         }
     }
     toRemove.forEach { remove(it) }
@@ -44,6 +51,8 @@ dependencies {
     "api"(project(":worldedit-core"))
 
     "implementation"(libs.neoforge)
+    "implementation"(libs.cuiProtocol.neoforge)
+    jarJar(libs.cuiProtocol.neoforge)
 }
 
 minecraft {
@@ -110,6 +119,7 @@ tasks.named<Copy>("processResources") {
 }
 
 tasks.named<ShadowJar>("shadowJar") {
+    archiveClassifier = "dist-slim"
     dependencies {
         relocate("org.antlr.v4", "com.sk89q.worldedit.antlr4")
         relocate("net.royawesome.jlibnoise", "com.sk89q.worldedit.jlibnoise")
@@ -121,4 +131,14 @@ tasks.named<ShadowJar>("shadowJar") {
     minimize {
         exclude(dependency("org.mozilla:rhino-runtime"))
     }
+}
+
+tasks.jarJar {
+    archiveClassifier = "dist"
+    val shadowJar = tasks.shadowJar.get()
+    dependsOn(shadowJar)
+    manifest.inheritFrom(shadowJar.manifest)
+    from(project.zipTree(shadowJar.archiveFile).matching {
+        exclude("META-INF/MANIFEST.MF")
+    })
 }

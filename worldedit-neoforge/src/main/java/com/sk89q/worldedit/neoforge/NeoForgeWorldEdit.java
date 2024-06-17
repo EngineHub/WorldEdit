@@ -34,7 +34,6 @@ import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.internal.event.InteractionDebouncer;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
-import com.sk89q.worldedit.neoforge.net.handler.WECUIPacketHandler;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.biome.BiomeCategory;
@@ -88,6 +87,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.enginehub.worldeditcui.protocol.CUIPacket;
+import org.enginehub.worldeditcui.protocol.CUIPacketHandler;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAME;
@@ -119,7 +120,6 @@ public class NeoForgeWorldEdit {
         inst = this;
 
         modBus.addListener(this::init);
-        modBus.register(WECUIPacketHandler.class);
 
         NeoForge.EVENT_BUS.register(ThreadSafeCache.getInstance());
         NeoForge.EVENT_BUS.register(this);
@@ -137,6 +137,8 @@ public class NeoForgeWorldEdit {
                 throw new UncheckedIOException(e);
             }
         }
+
+        CUIPacketHandler.instance().registerServerboundHandler(this::onCuiPacket);
 
         setupPlatform();
 
@@ -388,6 +390,15 @@ public class NeoForgeWorldEdit {
             WorldEdit.getInstance().getEventBus()
                 .post(new SessionIdleEvent(new NeoForgePlayer.SessionKeyImpl(player)));
         }
+    }
+    private void onCuiPacket(CUIPacket payload, CUIPacketHandler.PacketContext context) {
+        if (!(context.player() instanceof ServerPlayer player)) {
+            // Client-side packet, ignore (this is for WECUI to handle)
+            return;
+        }
+        LocalSession session = NeoForgeWorldEdit.inst.getSession(player);
+        NeoForgePlayer actor = NeoForgeAdapter.adaptPlayer(player);
+        session.handleCUIInitializationMessage(payload.eventType() + "|" + String.join("|", payload.args()), actor);
     }
 
     /**

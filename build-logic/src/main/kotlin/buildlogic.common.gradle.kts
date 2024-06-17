@@ -10,6 +10,12 @@ group = rootProject.group
 version = rootProject.version
 
 repositories {
+    mavenLocal {
+        mavenContent {
+            snapshotsOnly()
+            includeGroup("org.enginehub.worldeditcui")
+        }
+    }
     mavenCentral()
     maven {
         name = "EngineHub"
