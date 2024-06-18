@@ -23,13 +23,11 @@ repositories {
 }
 
 minecraft {
-    version("1.20.6")
+    version(libs.versions.sponge.minecraft.get())
 }
 
-val spongeApiVersion = "11.0.0-20240520.134918-37";
-
 sponge {
-    apiVersion(spongeApiVersion)
+    apiVersion(libs.versions.sponge.api.asProvider().get())
     license("GPL-3.0-or-later")
     plugin("worldedit") {
         loader {
@@ -69,7 +67,7 @@ dependencies {
 }
 
 configure<BasePluginExtension> {
-    archivesName.set("${project.name}-api$spongeApiVersion")
+    archivesName.set("${project.name}-api${libs.versions.sponge.api.major.get()}")
 }
 
 tasks.named<ShadowJar>("shadowJar") {
