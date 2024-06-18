@@ -201,6 +201,21 @@ public class SpongeWorldEdit {
             });
         }
 
+        // Disabled until https://github.com/SpongePowered/SpongeAPI/issues/2520 is resolved
+        // Will also need implementations in SpongeWorld to do placement
+        //        Sponge.server().registry(RegistryTypes.FEATURE).streamEntries().forEach(feature -> {
+        //            String id = feature.key().asString();
+        //            if (!ConfiguredFeatureType.REGISTRY.keySet().contains(id)) {
+        //                ConfiguredFeatureType.REGISTRY.register(id, new ConfiguredFeatureType(id));
+        //            }
+        //        });
+        //        Sponge.server().registry(RegistryTypes.STRUCTURE).streamEntries().forEach(structure -> {
+        //            String id = structure.key().asString();
+        //            if (!StructureType.REGISTRY.keySet().contains(id)) {
+        //                StructureType.REGISTRY.register(id, new StructureType(id));
+        //            }
+        //        });
+
         event.game().registry(RegistryTypes.BLOCK_TYPE).tags().forEach(blockTypeTag -> {
             String id = blockTypeTag.key().asString();
             if (!BlockCategory.REGISTRY.keySet().contains(id)) {

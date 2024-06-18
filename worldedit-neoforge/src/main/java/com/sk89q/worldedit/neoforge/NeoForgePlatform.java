@@ -98,7 +98,7 @@ class NeoForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public boolean isValidMobType(String type) {
-        return BuiltInRegistries.ENTITY_TYPE.containsKey(new ResourceLocation(type));
+        return BuiltInRegistries.ENTITY_TYPE.containsKey(ResourceLocation.parse(type));
     }
 
     @Override

@@ -25,7 +25,7 @@ dependencies {
     implementation(libs.gson)
 
     implementation(libs.sponge.vanillagradle)
-    implementation(libs.neogradle.userdev)
+    implementation(libs.neogradle.neoform)
 
     constraints {
         val asmVersion = "[${libs.versions.minimumAsm.get()},)"

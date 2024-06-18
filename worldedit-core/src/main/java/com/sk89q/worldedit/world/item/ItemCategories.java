@@ -81,6 +81,7 @@ public final class ItemCategories {
     public static final ItemCategory ENCHANTABLE_FOOT_ARMOR = get("minecraft:enchantable/foot_armor");
     public static final ItemCategory ENCHANTABLE_HEAD_ARMOR = get("minecraft:enchantable/head_armor");
     public static final ItemCategory ENCHANTABLE_LEG_ARMOR = get("minecraft:enchantable/leg_armor");
+    public static final ItemCategory ENCHANTABLE_MACE = get("minecraft:enchantable/mace");
     public static final ItemCategory ENCHANTABLE_MINING = get("minecraft:enchantable/mining");
     public static final ItemCategory ENCHANTABLE_MINING_LOOT = get("minecraft:enchantable/mining_loot");
     public static final ItemCategory ENCHANTABLE_SHARP_WEAPON = get("minecraft:enchantable/sharp_weapon");
@@ -118,7 +119,7 @@ public final class ItemCategories {
     public static final ItemCategory LOGS_THAT_BURN = get("minecraft:logs_that_burn");
     public static final ItemCategory MANGROVE_LOGS = get("minecraft:mangrove_logs");
     public static final ItemCategory MEAT = get("minecraft:meat");
-    public static final ItemCategory MUSIC_DISCS = get("minecraft:music_discs");
+    @Deprecated public static final ItemCategory MUSIC_DISCS = get("minecraft:music_discs");
     public static final ItemCategory NON_FLAMMABLE_WOOD = get("minecraft:non_flammable_wood");
     public static final ItemCategory NOTEBLOCK_TOP_INSTRUMENTS = get("minecraft:noteblock_top_instruments");
     public static final ItemCategory OAK_LOGS = get("minecraft:oak_logs");

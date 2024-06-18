@@ -85,4 +85,9 @@ public final class Constants {
      */
     public static final int DATA_VERSION_MC_1_20 = 3463;
 
+    /**
+     * The DataVersion for Minecraft 1.21
+     */
+    public static final int DATA_VERSION_MC_1_21 = 3953;
+
 }

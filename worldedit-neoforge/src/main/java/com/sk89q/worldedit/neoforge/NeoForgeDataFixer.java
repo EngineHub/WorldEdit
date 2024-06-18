@@ -29,10 +29,8 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DSL.TypeReference;
 import com.mojang.datafixers.DataFixer;
-import com.mojang.datafixers.DataFixerBuilder;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.serialization.Dynamic;
 import com.sk89q.worldedit.neoforge.internal.NBTConverter;
@@ -66,7 +64,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
@@ -88,7 +85,7 @@ import javax.annotation.Nullable;
  * </p>
  */
 @SuppressWarnings({ "UnnecessarilyQualifiedStaticUsage", "unchecked", "rawtypes" })
-class NeoForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.world.DataFixer {
+class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
 
     @SuppressWarnings("unchecked")
     @Override
@@ -213,22 +210,11 @@ class NeoForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.
     }
 
     NeoForgeDataFixer(int dataVersion) {
-        super(dataVersion);
         DATA_VERSION = dataVersion;
         INSTANCE = this;
         registerConverters();
         registerInspectors();
         this.fixer = new WrappedDataFixer(DataFixers.getDataFixer());
-    }
-
-    @Override
-    public DataFixer buildUnoptimized() {
-        return fixer;
-    }
-
-    @Override
-    public DataFixer buildOptimized(final Set<DSL.TypeReference> requiredTypes, final Executor executor) {
-        return fixer;
     }
 
     private class WrappedDataFixer implements DataFixer {
@@ -476,114 +462,114 @@ class NeoForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.
 
     static {
         final Map<String, ResourceLocation> map = OLD_ID_TO_KEY_MAP;
-        map.put("EntityItem", new ResourceLocation("item"));
-        map.put("EntityExperienceOrb", new ResourceLocation("xp_orb"));
-        map.put("EntityAreaEffectCloud", new ResourceLocation("area_effect_cloud"));
-        map.put("EntityGuardianElder", new ResourceLocation("elder_guardian"));
-        map.put("EntitySkeletonWither", new ResourceLocation("wither_skeleton"));
-        map.put("EntitySkeletonStray", new ResourceLocation("stray"));
-        map.put("EntityEgg", new ResourceLocation("egg"));
-        map.put("EntityLeash", new ResourceLocation("leash_knot"));
-        map.put("EntityPainting", new ResourceLocation("painting"));
-        map.put("EntityTippedArrow", new ResourceLocation("arrow"));
-        map.put("EntitySnowball", new ResourceLocation("snowball"));
-        map.put("EntityLargeFireball", new ResourceLocation("fireball"));
-        map.put("EntitySmallFireball", new ResourceLocation("small_fireball"));
-        map.put("EntityEnderPearl", new ResourceLocation("ender_pearl"));
-        map.put("EntityEnderSignal", new ResourceLocation("eye_of_ender_signal"));
-        map.put("EntityPotion", new ResourceLocation("potion"));
-        map.put("EntityThrownExpBottle", new ResourceLocation("xp_bottle"));
-        map.put("EntityItemFrame", new ResourceLocation("item_frame"));
-        map.put("EntityWitherSkull", new ResourceLocation("wither_skull"));
-        map.put("EntityTNTPrimed", new ResourceLocation("tnt"));
-        map.put("EntityFallingBlock", new ResourceLocation("falling_block"));
-        map.put("EntityFireworks", new ResourceLocation("fireworks_rocket"));
-        map.put("EntityZombieHusk", new ResourceLocation("husk"));
-        map.put("EntitySpectralArrow", new ResourceLocation("spectral_arrow"));
-        map.put("EntityShulkerBullet", new ResourceLocation("shulker_bullet"));
-        map.put("EntityDragonFireball", new ResourceLocation("dragon_fireball"));
-        map.put("EntityZombieVillager", new ResourceLocation("zombie_villager"));
-        map.put("EntityHorseSkeleton", new ResourceLocation("skeleton_horse"));
-        map.put("EntityHorseZombie", new ResourceLocation("zombie_horse"));
-        map.put("EntityArmorStand", new ResourceLocation("armor_stand"));
-        map.put("EntityHorseDonkey", new ResourceLocation("donkey"));
-        map.put("EntityHorseMule", new ResourceLocation("mule"));
-        map.put("EntityEvokerFangs", new ResourceLocation("evocation_fangs"));
-        map.put("EntityEvoker", new ResourceLocation("evocation_illager"));
-        map.put("EntityVex", new ResourceLocation("vex"));
-        map.put("EntityVindicator", new ResourceLocation("vindication_illager"));
-        map.put("EntityIllagerIllusioner", new ResourceLocation("illusion_illager"));
-        map.put("EntityMinecartCommandBlock", new ResourceLocation("commandblock_minecart"));
-        map.put("EntityBoat", new ResourceLocation("boat"));
-        map.put("EntityMinecartRideable", new ResourceLocation("minecart"));
-        map.put("EntityMinecartChest", new ResourceLocation("chest_minecart"));
-        map.put("EntityMinecartFurnace", new ResourceLocation("furnace_minecart"));
-        map.put("EntityMinecartTNT", new ResourceLocation("tnt_minecart"));
-        map.put("EntityMinecartHopper", new ResourceLocation("hopper_minecart"));
-        map.put("EntityMinecartMobSpawner", new ResourceLocation("spawner_minecart"));
-        map.put("EntityCreeper", new ResourceLocation("creeper"));
-        map.put("EntitySkeleton", new ResourceLocation("skeleton"));
-        map.put("EntitySpider", new ResourceLocation("spider"));
-        map.put("EntityGiantZombie", new ResourceLocation("giant"));
-        map.put("EntityZombie", new ResourceLocation("zombie"));
-        map.put("EntitySlime", new ResourceLocation("slime"));
-        map.put("EntityGhast", new ResourceLocation("ghast"));
-        map.put("EntityPigZombie", new ResourceLocation("zombie_pigman"));
-        map.put("EntityEnderman", new ResourceLocation("enderman"));
-        map.put("EntityCaveSpider", new ResourceLocation("cave_spider"));
-        map.put("EntitySilverfish", new ResourceLocation("silverfish"));
-        map.put("EntityBlaze", new ResourceLocation("blaze"));
-        map.put("EntityMagmaCube", new ResourceLocation("magma_cube"));
-        map.put("EntityEnderDragon", new ResourceLocation("ender_dragon"));
-        map.put("EntityWither", new ResourceLocation("wither"));
-        map.put("EntityBat", new ResourceLocation("bat"));
-        map.put("EntityWitch", new ResourceLocation("witch"));
-        map.put("EntityEndermite", new ResourceLocation("endermite"));
-        map.put("EntityGuardian", new ResourceLocation("guardian"));
-        map.put("EntityShulker", new ResourceLocation("shulker"));
-        map.put("EntityPig", new ResourceLocation("pig"));
-        map.put("EntitySheep", new ResourceLocation("sheep"));
-        map.put("EntityCow", new ResourceLocation("cow"));
-        map.put("EntityChicken", new ResourceLocation("chicken"));
-        map.put("EntitySquid", new ResourceLocation("squid"));
-        map.put("EntityWolf", new ResourceLocation("wolf"));
-        map.put("EntityMushroomCow", new ResourceLocation("mooshroom"));
-        map.put("EntitySnowman", new ResourceLocation("snowman"));
-        map.put("EntityOcelot", new ResourceLocation("ocelot"));
-        map.put("EntityIronGolem", new ResourceLocation("villager_golem"));
-        map.put("EntityHorse", new ResourceLocation("horse"));
-        map.put("EntityRabbit", new ResourceLocation("rabbit"));
-        map.put("EntityPolarBear", new ResourceLocation("polar_bear"));
-        map.put("EntityLlama", new ResourceLocation("llama"));
-        map.put("EntityLlamaSpit", new ResourceLocation("llama_spit"));
-        map.put("EntityParrot", new ResourceLocation("parrot"));
-        map.put("EntityVillager", new ResourceLocation("villager"));
-        map.put("EntityEnderCrystal", new ResourceLocation("ender_crystal"));
-        map.put("TileEntityFurnace", new ResourceLocation("furnace"));
-        map.put("TileEntityChest", new ResourceLocation("chest"));
-        map.put("TileEntityEnderChest", new ResourceLocation("ender_chest"));
-        map.put("TileEntityRecordPlayer", new ResourceLocation("jukebox"));
-        map.put("TileEntityDispenser", new ResourceLocation("dispenser"));
-        map.put("TileEntityDropper", new ResourceLocation("dropper"));
-        map.put("TileEntitySign", new ResourceLocation("sign"));
-        map.put("TileEntityMobSpawner", new ResourceLocation("mob_spawner"));
-        map.put("TileEntityNote", new ResourceLocation("noteblock"));
-        map.put("TileEntityPiston", new ResourceLocation("piston"));
-        map.put("TileEntityBrewingStand", new ResourceLocation("brewing_stand"));
-        map.put("TileEntityEnchantTable", new ResourceLocation("enchanting_table"));
-        map.put("TileEntityEnderPortal", new ResourceLocation("end_portal"));
-        map.put("TileEntityBeacon", new ResourceLocation("beacon"));
-        map.put("TileEntitySkull", new ResourceLocation("skull"));
-        map.put("TileEntityLightDetector", new ResourceLocation("daylight_detector"));
-        map.put("TileEntityHopper", new ResourceLocation("hopper"));
-        map.put("TileEntityComparator", new ResourceLocation("comparator"));
-        map.put("TileEntityFlowerPot", new ResourceLocation("flower_pot"));
-        map.put("TileEntityBanner", new ResourceLocation("banner"));
-        map.put("TileEntityStructure", new ResourceLocation("structure_block"));
-        map.put("TileEntityEndGateway", new ResourceLocation("end_gateway"));
-        map.put("TileEntityCommand", new ResourceLocation("command_block"));
-        map.put("TileEntityShulkerBox", new ResourceLocation("shulker_box"));
-        map.put("TileEntityBed", new ResourceLocation("bed"));
+        map.put("EntityItem", ResourceLocation.parse("item"));
+        map.put("EntityExperienceOrb", ResourceLocation.parse("xp_orb"));
+        map.put("EntityAreaEffectCloud", ResourceLocation.parse("area_effect_cloud"));
+        map.put("EntityGuardianElder", ResourceLocation.parse("elder_guardian"));
+        map.put("EntitySkeletonWither", ResourceLocation.parse("wither_skeleton"));
+        map.put("EntitySkeletonStray", ResourceLocation.parse("stray"));
+        map.put("EntityEgg", ResourceLocation.parse("egg"));
+        map.put("EntityLeash", ResourceLocation.parse("leash_knot"));
+        map.put("EntityPainting", ResourceLocation.parse("painting"));
+        map.put("EntityTippedArrow", ResourceLocation.parse("arrow"));
+        map.put("EntitySnowball", ResourceLocation.parse("snowball"));
+        map.put("EntityLargeFireball", ResourceLocation.parse("fireball"));
+        map.put("EntitySmallFireball", ResourceLocation.parse("small_fireball"));
+        map.put("EntityEnderPearl", ResourceLocation.parse("ender_pearl"));
+        map.put("EntityEnderSignal", ResourceLocation.parse("eye_of_ender_signal"));
+        map.put("EntityPotion", ResourceLocation.parse("potion"));
+        map.put("EntityThrownExpBottle", ResourceLocation.parse("xp_bottle"));
+        map.put("EntityItemFrame", ResourceLocation.parse("item_frame"));
+        map.put("EntityWitherSkull", ResourceLocation.parse("wither_skull"));
+        map.put("EntityTNTPrimed", ResourceLocation.parse("tnt"));
+        map.put("EntityFallingBlock", ResourceLocation.parse("falling_block"));
+        map.put("EntityFireworks", ResourceLocation.parse("fireworks_rocket"));
+        map.put("EntityZombieHusk", ResourceLocation.parse("husk"));
+        map.put("EntitySpectralArrow", ResourceLocation.parse("spectral_arrow"));
+        map.put("EntityShulkerBullet", ResourceLocation.parse("shulker_bullet"));
+        map.put("EntityDragonFireball", ResourceLocation.parse("dragon_fireball"));
+        map.put("EntityZombieVillager", ResourceLocation.parse("zombie_villager"));
+        map.put("EntityHorseSkeleton", ResourceLocation.parse("skeleton_horse"));
+        map.put("EntityHorseZombie", ResourceLocation.parse("zombie_horse"));
+        map.put("EntityArmorStand", ResourceLocation.parse("armor_stand"));
+        map.put("EntityHorseDonkey", ResourceLocation.parse("donkey"));
+        map.put("EntityHorseMule", ResourceLocation.parse("mule"));
+        map.put("EntityEvokerFangs", ResourceLocation.parse("evocation_fangs"));
+        map.put("EntityEvoker", ResourceLocation.parse("evocation_illager"));
+        map.put("EntityVex", ResourceLocation.parse("vex"));
+        map.put("EntityVindicator", ResourceLocation.parse("vindication_illager"));
+        map.put("EntityIllagerIllusioner", ResourceLocation.parse("illusion_illager"));
+        map.put("EntityMinecartCommandBlock", ResourceLocation.parse("commandblock_minecart"));
+        map.put("EntityBoat", ResourceLocation.parse("boat"));
+        map.put("EntityMinecartRideable", ResourceLocation.parse("minecart"));
+        map.put("EntityMinecartChest", ResourceLocation.parse("chest_minecart"));
+        map.put("EntityMinecartFurnace", ResourceLocation.parse("furnace_minecart"));
+        map.put("EntityMinecartTNT", ResourceLocation.parse("tnt_minecart"));
+        map.put("EntityMinecartHopper", ResourceLocation.parse("hopper_minecart"));
+        map.put("EntityMinecartMobSpawner", ResourceLocation.parse("spawner_minecart"));
+        map.put("EntityCreeper", ResourceLocation.parse("creeper"));
+        map.put("EntitySkeleton", ResourceLocation.parse("skeleton"));
+        map.put("EntitySpider", ResourceLocation.parse("spider"));
+        map.put("EntityGiantZombie", ResourceLocation.parse("giant"));
+        map.put("EntityZombie", ResourceLocation.parse("zombie"));
+        map.put("EntitySlime", ResourceLocation.parse("slime"));
+        map.put("EntityGhast", ResourceLocation.parse("ghast"));
+        map.put("EntityPigZombie", ResourceLocation.parse("zombie_pigman"));
+        map.put("EntityEnderman", ResourceLocation.parse("enderman"));
+        map.put("EntityCaveSpider", ResourceLocation.parse("cave_spider"));
+        map.put("EntitySilverfish", ResourceLocation.parse("silverfish"));
+        map.put("EntityBlaze", ResourceLocation.parse("blaze"));
+        map.put("EntityMagmaCube", ResourceLocation.parse("magma_cube"));
+        map.put("EntityEnderDragon", ResourceLocation.parse("ender_dragon"));
+        map.put("EntityWither", ResourceLocation.parse("wither"));
+        map.put("EntityBat", ResourceLocation.parse("bat"));
+        map.put("EntityWitch", ResourceLocation.parse("witch"));
+        map.put("EntityEndermite", ResourceLocation.parse("endermite"));
+        map.put("EntityGuardian", ResourceLocation.parse("guardian"));
+        map.put("EntityShulker", ResourceLocation.parse("shulker"));
+        map.put("EntityPig", ResourceLocation.parse("pig"));
+        map.put("EntitySheep", ResourceLocation.parse("sheep"));
+        map.put("EntityCow", ResourceLocation.parse("cow"));
+        map.put("EntityChicken", ResourceLocation.parse("chicken"));
+        map.put("EntitySquid", ResourceLocation.parse("squid"));
+        map.put("EntityWolf", ResourceLocation.parse("wolf"));
+        map.put("EntityMushroomCow", ResourceLocation.parse("mooshroom"));
+        map.put("EntitySnowman", ResourceLocation.parse("snowman"));
+        map.put("EntityOcelot", ResourceLocation.parse("ocelot"));
+        map.put("EntityIronGolem", ResourceLocation.parse("villager_golem"));
+        map.put("EntityHorse", ResourceLocation.parse("horse"));
+        map.put("EntityRabbit", ResourceLocation.parse("rabbit"));
+        map.put("EntityPolarBear", ResourceLocation.parse("polar_bear"));
+        map.put("EntityLlama", ResourceLocation.parse("llama"));
+        map.put("EntityLlamaSpit", ResourceLocation.parse("llama_spit"));
+        map.put("EntityParrot", ResourceLocation.parse("parrot"));
+        map.put("EntityVillager", ResourceLocation.parse("villager"));
+        map.put("EntityEnderCrystal", ResourceLocation.parse("ender_crystal"));
+        map.put("TileEntityFurnace", ResourceLocation.parse("furnace"));
+        map.put("TileEntityChest", ResourceLocation.parse("chest"));
+        map.put("TileEntityEnderChest", ResourceLocation.parse("ender_chest"));
+        map.put("TileEntityRecordPlayer", ResourceLocation.parse("jukebox"));
+        map.put("TileEntityDispenser", ResourceLocation.parse("dispenser"));
+        map.put("TileEntityDropper", ResourceLocation.parse("dropper"));
+        map.put("TileEntitySign", ResourceLocation.parse("sign"));
+        map.put("TileEntityMobSpawner", ResourceLocation.parse("mob_spawner"));
+        map.put("TileEntityNote", ResourceLocation.parse("noteblock"));
+        map.put("TileEntityPiston", ResourceLocation.parse("piston"));
+        map.put("TileEntityBrewingStand", ResourceLocation.parse("brewing_stand"));
+        map.put("TileEntityEnchantTable", ResourceLocation.parse("enchanting_table"));
+        map.put("TileEntityEnderPortal", ResourceLocation.parse("end_portal"));
+        map.put("TileEntityBeacon", ResourceLocation.parse("beacon"));
+        map.put("TileEntitySkull", ResourceLocation.parse("skull"));
+        map.put("TileEntityLightDetector", ResourceLocation.parse("daylight_detector"));
+        map.put("TileEntityHopper", ResourceLocation.parse("hopper"));
+        map.put("TileEntityComparator", ResourceLocation.parse("comparator"));
+        map.put("TileEntityFlowerPot", ResourceLocation.parse("flower_pot"));
+        map.put("TileEntityBanner", ResourceLocation.parse("banner"));
+        map.put("TileEntityStructure", ResourceLocation.parse("structure_block"));
+        map.put("TileEntityEndGateway", ResourceLocation.parse("end_gateway"));
+        map.put("TileEntityCommand", ResourceLocation.parse("command_block"));
+        map.put("TileEntityShulkerBox", ResourceLocation.parse("shulker_box"));
+        map.put("TileEntityBed", ResourceLocation.parse("bed"));
     }
 
     private static ResourceLocation getKey(String type) {
@@ -684,7 +670,7 @@ class NeoForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.
 
         @Nullable
         private static String convertEntityId(int i, String s) {
-            String key = new ResourceLocation(s).toString();
+            String key = ResourceLocation.parse(s).toString();
             if (i < 515 && DataInspectorBlockEntity.b.containsKey(key)) {
                 return DataInspectorBlockEntity.b.get(key);
             } else {
@@ -873,7 +859,7 @@ class NeoForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.
         }
 
         public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
-            if (this.key.equals(new ResourceLocation(cmp.getString("id")))) {
+            if (this.key.equals(ResourceLocation.parse(cmp.getString("id")))) {
                 cmp = this.inspectChecked(cmp, sourceVer, targetVer);
             }
 
@@ -1918,7 +1904,7 @@ class NeoForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.
 
     private static class DataConverterCookedFish implements DataConverter {
 
-        private static final ResourceLocation a = new ResourceLocation("cooked_fished");
+        private static final ResourceLocation a = ResourceLocation.parse("cooked_fished");
 
         DataConverterCookedFish() {
         }
@@ -1928,7 +1914,7 @@ class NeoForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.
         }
 
         public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
-            if (cmp.contains("id", 8) && DataConverterCookedFish.a.equals(new ResourceLocation(cmp.getString("id")))) {
+            if (cmp.contains("id", 8) && DataConverterCookedFish.a.equals(ResourceLocation.parse(cmp.getString("id")))) {
                 cmp.putString("id", "minecraft:cooked_fish");
             }
 
@@ -2699,7 +2685,7 @@ class NeoForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.
 
         @Override
         public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
-            if (entityVillager.equals(new ResourceLocation(cmp.getString("id"))) && cmp.contains("Offers", 10)) {
+            if (entityVillager.equals(ResourceLocation.parse(cmp.getString("id"))) && cmp.contains("Offers", 10)) {
                 net.minecraft.nbt.CompoundTag nbttagcompound1 = cmp.getCompound("Offers");
 
                 if (nbttagcompound1.contains("Recipes", 9)) {
@@ -2727,7 +2713,7 @@ class NeoForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.
         @Override
         public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
             String s = cmp.getString("id");
-            if (entityMinecartMobSpawner.equals(new ResourceLocation(s))) {
+            if (entityMinecartMobSpawner.equals(ResourceLocation.parse(s))) {
                 cmp.putString("id", tileEntityMobSpawner.toString());
                 convert(LegacyType.BLOCK_ENTITY, cmp, sourceVer, targetVer);
                 cmp.putString("id", s);
@@ -2742,7 +2728,7 @@ class NeoForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.
 
         @Override
         public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
-            if (tileEntityMobSpawner.equals(new ResourceLocation(cmp.getString("id")))) {
+            if (tileEntityMobSpawner.equals(ResourceLocation.parse(cmp.getString("id")))) {
                 if (cmp.contains("SpawnPotentials", 9)) {
                     ListTag nbttaglist = cmp.getList("SpawnPotentials", 10);
 
@@ -2765,7 +2751,7 @@ class NeoForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.
 
         @Override
         public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
-            if (tileEntityCommand.equals(new ResourceLocation(cmp.getString("id")))) {
+            if (tileEntityCommand.equals(ResourceLocation.parse(cmp.getString("id")))) {
                 cmp.putString("id", "Control");
                 convert(LegacyType.BLOCK_ENTITY, cmp, sourceVer, targetVer);
                 cmp.putString("id", "MinecartCommandBlock");

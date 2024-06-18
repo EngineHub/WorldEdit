@@ -37,7 +37,7 @@ public class NeoForgeBlockCategoryRegistry implements BlockCategoryRegistry {
         return ServerLifecycleHooks.getCurrentServer().registryAccess().registryOrThrow(Registries.BLOCK)
             .getTag(TagKey.create(
                 Registries.BLOCK,
-                new ResourceLocation(category)
+                ResourceLocation.parse(category)
             ))
             .stream()
             .flatMap(HolderSet.Named::stream)

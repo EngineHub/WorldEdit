@@ -56,6 +56,7 @@ public final class BiomeCategories {
     public static final BiomeCategory HAS_STRUCTURE_STRONGHOLD = get("minecraft:has_structure/stronghold");
     public static final BiomeCategory HAS_STRUCTURE_SWAMP_HUT = get("minecraft:has_structure/swamp_hut");
     public static final BiomeCategory HAS_STRUCTURE_TRAIL_RUINS = get("minecraft:has_structure/trail_ruins");
+    public static final BiomeCategory HAS_STRUCTURE_TRIAL_CHAMBERS = get("minecraft:has_structure/trial_chambers");
     public static final BiomeCategory HAS_STRUCTURE_VILLAGE_DESERT = get("minecraft:has_structure/village_desert");
     public static final BiomeCategory HAS_STRUCTURE_VILLAGE_PLAINS = get("minecraft:has_structure/village_plains");
     public static final BiomeCategory HAS_STRUCTURE_VILLAGE_SAVANNA = get("minecraft:has_structure/village_savanna");

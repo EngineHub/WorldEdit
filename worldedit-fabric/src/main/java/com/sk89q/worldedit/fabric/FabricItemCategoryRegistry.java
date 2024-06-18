@@ -34,7 +34,7 @@ public class FabricItemCategoryRegistry implements ItemCategoryRegistry {
     @Override
     public Set<ItemType> getCategorisedByName(String category) {
         return FabricWorldEdit.getRegistry(Registries.ITEM)
-            .getTag(TagKey.create(Registries.ITEM, new ResourceLocation(category)))
+            .getTag(TagKey.create(Registries.ITEM, ResourceLocation.parse(category)))
             .stream()
             .flatMap(HolderSet.Named::stream)
             .map(Holder::value)

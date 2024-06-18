@@ -37,7 +37,7 @@ public class NeoForgeItemCategoryRegistry implements ItemCategoryRegistry {
         return ServerLifecycleHooks.getCurrentServer().registryAccess().registryOrThrow(Registries.ITEM)
             .getTag(TagKey.create(
                 Registries.ITEM,
-                new ResourceLocation(category)
+                ResourceLocation.parse(category)
             ))
             .stream()
             .flatMap(HolderSet.Named::stream)

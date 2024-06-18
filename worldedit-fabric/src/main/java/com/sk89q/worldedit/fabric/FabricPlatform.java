@@ -95,7 +95,7 @@ class FabricPlatform extends AbstractPlatform implements MultiUserPlatform {
     @Override
     public boolean isValidMobType(String type) {
         return FabricWorldEdit.getRegistry(net.minecraft.core.registries.Registries.ENTITY_TYPE)
-            .containsKey(new ResourceLocation(type));
+            .containsKey(ResourceLocation.parse(type));
     }
 
     @Override
