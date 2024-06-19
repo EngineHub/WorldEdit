@@ -37,7 +37,7 @@ public final class WECUIPacketHandler {
 
     private static final String PROTOCOL_VERSION = "1";
 
-    public static final ResourceLocation CUI_IDENTIFIER = new ResourceLocation(NeoForgeWorldEdit.MOD_ID, NeoForgeWorldEdit.CUI_PLUGIN_CHANNEL);
+    public static final ResourceLocation CUI_IDENTIFIER = ResourceLocation.fromNamespaceAndPath(NeoForgeWorldEdit.MOD_ID, NeoForgeWorldEdit.CUI_PLUGIN_CHANNEL);
 
     public record CuiPacket(String text) implements CustomPacketPayload {
         public static final Type<CuiPacket> TYPE = new Type<>(CUI_IDENTIFIER);

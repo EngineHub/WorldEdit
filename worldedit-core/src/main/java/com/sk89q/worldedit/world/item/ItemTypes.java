@@ -792,11 +792,14 @@ public final class ItemTypes {
     @Nullable public static final ItemType MUSIC_DISC_BLOCKS = get("minecraft:music_disc_blocks");
     @Nullable public static final ItemType MUSIC_DISC_CAT = get("minecraft:music_disc_cat");
     @Nullable public static final ItemType MUSIC_DISC_CHIRP = get("minecraft:music_disc_chirp");
+    @Nullable public static final ItemType MUSIC_DISC_CREATOR = get("minecraft:music_disc_creator");
+    @Nullable public static final ItemType MUSIC_DISC_CREATOR_MUSIC_BOX = get("minecraft:music_disc_creator_music_box");
     @Nullable public static final ItemType MUSIC_DISC_FAR = get("minecraft:music_disc_far");
     @Nullable public static final ItemType MUSIC_DISC_MALL = get("minecraft:music_disc_mall");
     @Nullable public static final ItemType MUSIC_DISC_MELLOHI = get("minecraft:music_disc_mellohi");
     @Nullable public static final ItemType MUSIC_DISC_OTHERSIDE = get("minecraft:music_disc_otherside");
     @Nullable public static final ItemType MUSIC_DISC_PIGSTEP = get("minecraft:music_disc_pigstep");
+    @Nullable public static final ItemType MUSIC_DISC_PRECIPICE = get("minecraft:music_disc_precipice");
     @Nullable public static final ItemType MUSIC_DISC_RELIC = get("minecraft:music_disc_relic");
     @Nullable public static final ItemType MUSIC_DISC_STAL = get("minecraft:music_disc_stal");
     @Nullable public static final ItemType MUSIC_DISC_STRAD = get("minecraft:music_disc_strad");

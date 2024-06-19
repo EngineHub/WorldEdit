@@ -61,7 +61,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.biome.Biome;
-import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -278,7 +277,7 @@ public class NeoForgeWorldEdit {
 
     @SubscribeEvent
     public void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
-        if (skipInteractionEvent(event.getEntity(), event.getHand()) || event.getUseItem() == Event.Result.DENY) {
+        if (skipInteractionEvent(event.getEntity(), event.getHand()) || event.getUseItem().isFalse()) {
             return;
         }
 
@@ -301,7 +300,7 @@ public class NeoForgeWorldEdit {
 
     @SubscribeEvent
     public void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
-        if (skipInteractionEvent(event.getEntity(), event.getHand()) || event.getUseItem() == Event.Result.DENY) {
+        if (skipInteractionEvent(event.getEntity(), event.getHand()) || event.getUseItem().isFalse()) {
             return;
         }
 

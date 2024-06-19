@@ -5,7 +5,7 @@ Thank you for your interest in contributing to WorldEdit! We appreciate your
 effort, but to make sure that the inclusion of your patch is a smooth process, we
 ask that you make note of the following guidelines.
 
-* **Target Java 16 for source and compilation.** Make sure to mark methods with
+* **Target Java 21 for source and compilation.** Make sure to mark methods with
   ` @Override` that override methods of parent classes, or that implement
   methods of interfaces.
 * **Use only spaces for indentation.** Our indents are 4-spaces long, and tabs

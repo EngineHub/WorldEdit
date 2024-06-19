@@ -1,3 +1,10 @@
+7.3.4
+- Added support for 1.21
+
+7.3.3
+- [Sponge] Re-add Sponge support
+- [NeoForge] Update NeoForge version to workaround API break
+
 7.3.2
 - [Paper] Worked around future Paper API change to prevent compatibility issues
 - [Bukkit] Dropped 1.19.4-1.20.1 support due to tooling compatibility issues

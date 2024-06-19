@@ -34,7 +34,7 @@ class NeoForgeBiomeRegistry implements BiomeRegistry {
 
     @Override
     public Component getRichName(BiomeType biomeType) {
-        return TranslatableComponent.of(Util.makeDescriptionId("biome", new ResourceLocation(biomeType.id())));
+        return TranslatableComponent.of(Util.makeDescriptionId("biome", ResourceLocation.parse(biomeType.id())));
     }
 
     @Deprecated

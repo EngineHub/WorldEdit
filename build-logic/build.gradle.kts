@@ -8,6 +8,10 @@ repositories {
         name = "EngineHub Repository"
         url = uri("https://maven.enginehub.org/repo/")
     }
+    maven {
+        name = "SpongePowered"
+        url = uri("https://repo.spongepowered.org/repository/maven-public/")
+    }
 }
 
 dependencies {
@@ -19,6 +23,10 @@ dependencies {
     implementation(libs.jfrog.buildinfo)
     implementation(libs.paperweight)
     implementation(libs.gson)
+
+    implementation(libs.sponge.vanillagradle)
+    implementation(libs.neogradle.neoform)
+
     constraints {
         val asmVersion = "[${libs.versions.minimumAsm.get()},)"
         implementation("org.ow2.asm:asm:$asmVersion") {

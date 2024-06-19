@@ -23,8 +23,8 @@ Edit the Code
 Want to add new features to WorldEdit or fix bugs yourself? You can get the game running, with WorldEdit, from the code here, without any additional outside steps, by doing the following *four* things:
 
 1. Download WorldEdit's source code and put it somewhere. We recommend you use something called Git if you already know how to use it, but [you can also just download a .zip file](https://github.com/EngineHub/WorldEdit/archive/master.zip). (If you plan on contributing the changes, you will need to figure out Git.)
-2. Install any version of Java greater than or equal to 16.
-   * Note that if you do _not_ install JDK 16 exactly, Gradle will download it for you on first run. However, it is still required to have some form of Java installed for Gradle to start at all.
+2. Install any version of Java greater than or equal to 21.
+   * Note that if you do _not_ install JDK 21 exactly, Gradle will download it for you on first run. However, it is still required to have some form of Java installed for Gradle to start at all.
 3. Open terminal / command prompt / bash and navigate to the directory where you put the source code.
 4. Run **one** of these following commands:
    * Mac OS X / Linux: `./gradlew :worldedit-fabric:runClient`
