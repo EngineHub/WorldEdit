@@ -1,3 +1,6 @@
+7.3.4
+- Added support for 1.21
+
 7.3.3
 - [Sponge] Re-add Sponge support
 - [NeoForge] Update NeoForge version to workaround API break
