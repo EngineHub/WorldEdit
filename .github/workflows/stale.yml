@@ -1,6 +1,8 @@
 name: 'Handle stale issues'
 on:
   workflow_dispatch:
+  issues: # Run the bot on issue activity for faster response to changes
+  issue_comment: # Run the bot on issue comment activity for faster response to changes
   schedule:
     - cron: '42 1 * * *'
 
