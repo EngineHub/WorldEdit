@@ -82,6 +82,7 @@ import com.sk89q.worldedit.command.argument.HeightConverter;
 import com.sk89q.worldedit.command.argument.OffsetConverter;
 import com.sk89q.worldedit.command.argument.RegionFactoryConverter;
 import com.sk89q.worldedit.command.argument.RegistryConverter;
+import com.sk89q.worldedit.command.argument.SchematicConverter;
 import com.sk89q.worldedit.command.argument.SelectorChoiceConverter;
 import com.sk89q.worldedit.command.argument.SideEffectConverter;
 import com.sk89q.worldedit.command.argument.SideEffectSetConverter;
@@ -232,6 +233,7 @@ public final class PlatformCommandManager {
         ClipboardFormatConverter.register(commandManager);
         ClipboardShareDestinationConverter.register(commandManager);
         SelectorChoiceConverter.register(commandManager);
+        SchematicConverter.register(worldEdit, commandManager);
     }
 
     private void registerAlwaysInjectedValues() {
