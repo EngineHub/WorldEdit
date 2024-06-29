@@ -25,6 +25,7 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonParseException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
+import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.gson.GsonUtil;
 import org.apache.logging.log4j.Logger;
 
@@ -77,7 +78,9 @@ public class JsonFileSessionStore implements SessionStore {
         this.dir = dir;
 
         GsonBuilder builder = GsonUtil.createBuilder();
-        gson = builder.create();
+        gson = builder
+            .registerTypeAdapter(SideEffectSet.class, new SideEffectSet.GsonSerializer())
+            .create();
     }
 
     /**
