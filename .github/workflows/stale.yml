@@ -1,0 +1,23 @@
+name: 'Handle stale issues'
+on:
+  workflow_dispatch:
+  issues: # Run the bot on issue activity for faster response to changes
+  issue_comment: # Run the bot on issue comment activity for faster response to changes
+  schedule:
+    - cron: '42 1 * * *'
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v9
+        with:
+          only-labels: 'status:pending,type:bug'
+          stale-issue-label: 'status:stale'
+          stale-issue-message: >
+            This issue has been automatically marked as stale because it has not been fully confirmed.
+            It will be closed if no further activity occurs. Thank you for your contributions.
+          days-before-stale: 30
+          days-before-close: 7
+          days-before-pr-stale: -1
+          days-before-pr-close: -1

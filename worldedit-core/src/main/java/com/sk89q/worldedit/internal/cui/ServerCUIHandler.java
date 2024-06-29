@@ -29,6 +29,7 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import org.enginehub.linbus.tree.LinCompoundTag;
@@ -65,7 +66,11 @@ public class ServerCUIHandler {
     @Nullable
     public static BaseBlock createStructureBlock(Player player) {
         LocalSession session = WorldEdit.getInstance().getSessionManager().get(player);
-        RegionSelector regionSelector = session.getRegionSelector(player.getWorld());
+        World selectionWorld = session.getSelectionWorld();
+        if (!player.getWorld().equals(selectionWorld)) {
+            return null;
+        }
+        RegionSelector regionSelector = session.getRegionSelector(selectionWorld);
 
         int posX;
         int posY;
