@@ -491,7 +491,7 @@ public class BukkitAdapter {
         if (cacheKey == BlockStateIdAccess.invalidId()) {
             cacheKey = block.hashCode();
         }
-        return blockDataCache.computeIfAbsent(cacheKey, input -> Bukkit.createBlockData(block.getAsString())).clone();
+        return blockDataCache.computeIfAbsent(cacheKey, input -> Bukkit.createBlockData(block.toImmutableState().getAsString())).clone();
     }
 
     /**
