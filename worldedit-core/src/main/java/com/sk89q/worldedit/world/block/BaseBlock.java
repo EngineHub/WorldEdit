@@ -193,7 +193,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
     }
 
     /**
-     * Gets a string representation of this BaseBlock, in the format expected WorldEdit's block parsers.
+     * Gets a string representation of this BaseBlock, in the format expected by WorldEdit's block parsers.
      *
      * <p>
      * If NBT data is present, it will be included in the string. If you only want the underlying block state, call
