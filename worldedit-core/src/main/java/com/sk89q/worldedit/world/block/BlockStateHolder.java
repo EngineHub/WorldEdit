@@ -134,7 +134,7 @@ public interface BlockStateHolder<B extends BlockStateHolder<B>> extends Pattern
     }
 
     /**
-     * Gets a String representation of this BlockStateHolder, in the format expected by the block parser.
+     * Gets a String representation of this BlockStateHolder, in the format expected by WorldEdit's block parsers.
      *
      * @return a string representation
      */
