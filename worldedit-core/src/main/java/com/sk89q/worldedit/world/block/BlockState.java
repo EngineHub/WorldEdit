@@ -66,6 +66,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
     private final Map<Property<?>, Object> values;
 
     private final BaseBlock emptyBaseBlock;
+    private final LazyReference<String> lazyStringRepresentation;
 
     // Neighbouring state table.
     private Table<Property<?>, Object, BlockState> states;
@@ -79,6 +80,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
         this.blockType = blockType;
         this.values = new LinkedHashMap<>();
         this.emptyBaseBlock = new BaseBlock(this);
+        this.lazyStringRepresentation = LazyReference.from(BlockStateHolder.super::getAsString);
     }
 
     /**
@@ -268,6 +270,11 @@ public class BlockState implements BlockStateHolder<BlockState> {
     BlockState setState(final Property<?> property, final Object value) {
         this.values.put(property, value);
         return this;
+    }
+
+    @Override
+    public String getAsString() {
+        return lazyStringRepresentation.getValue();
     }
 
     @Override

@@ -192,14 +192,29 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
         return ret;
     }
 
+    /**
+     * Gets a string representation of this BaseBlock, in the format expected by WorldEdit's block parsers.
+     *
+     * <p>
+     * If NBT data is present, it will be included in the string. If you only want the underlying block state, call
+     * this method on the return value from {@link #toImmutableState()} instead.
+     * </p>
+     *
+     * @return The string representation
+     */
     @Override
-    public String toString() {
+    public String getAsString() {
         String nbtString = "";
         if (nbtData != null) {
             nbtString = LinStringIO.writeToString(nbtData.getValue());
         }
 
         return blockState.getAsString() + nbtString;
+    }
+
+    @Override
+    public String toString() {
+        return getAsString();
     }
 
 }
