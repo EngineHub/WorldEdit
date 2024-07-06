@@ -22,16 +22,36 @@ package com.sk89q.worldedit.function.mask;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.BlockVector3;
 
+/**
+ * A mask that returns true if the two given extents have the same block at the given position, with offset support.
+ */
 public class MatchMask extends AbstractMask {
 
     private final Extent extent;
     private final Extent matchExtent;
     private final BlockVector3 offset;
 
+    /**
+     * Create a new match mask.
+     *
+     * <p>
+     * This will assume an offset of zero. To specify an offset, use {@link #MatchMask(Extent, Extent, BlockVector3)}.
+     * </p>
+     *
+     * @param extent The base extent
+     * @param matchExtent The match extent
+     */
     public MatchMask(Extent extent, Extent matchExtent) {
         this(extent, matchExtent, BlockVector3.ZERO);
     }
 
+    /**
+     * Create a new match mask.
+     *
+     * @param extent The base extent
+     * @param matchExtent The match extent
+     * @param offset The offset of comparisons applied to the match extent
+     */
     public MatchMask(Extent extent, Extent matchExtent, BlockVector3 offset) {
         this.extent = extent;
         this.matchExtent = matchExtent;
