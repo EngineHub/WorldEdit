@@ -193,7 +193,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
     }
 
     /**
-     * Gets a string representation of this BaseBlock.
+     * Gets a string representation of this BaseBlock, in the format expected by the block parser.
      *
      * <p>
      * If NBT data is present, it will be included in the string. If you only want the underlying block state, call

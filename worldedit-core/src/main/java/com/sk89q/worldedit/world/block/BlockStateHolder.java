@@ -134,7 +134,7 @@ public interface BlockStateHolder<B extends BlockStateHolder<B>> extends Pattern
     }
 
     /**
-     * Gets a String representation of this BlockStateHolder.
+     * Gets a String representation of this BlockStateHolder, in the format expected by the block parser.
      *
      * @return a string representation
      */
