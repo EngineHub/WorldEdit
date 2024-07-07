@@ -90,11 +90,6 @@ public class NullExtent implements Extent {
     }
 
     @Override
-    public boolean fullySupports3DBiomes() {
-        return false;
-    }
-
-    @Override
     public boolean setBiome(BlockVector3 position, BiomeType biome) {
         return false;
     }
