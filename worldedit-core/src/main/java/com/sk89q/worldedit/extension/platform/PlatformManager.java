@@ -251,16 +251,7 @@ public class PlatformManager {
         Platform preferred = null;
         Preference highest = null;
 
-        List<Platform> availablePlatforms;
-        platformsLock.readLock().lock();
-
-        try {
-            availablePlatforms = getPlatforms();
-        } finally {
-            platformsLock.readLock().unlock();
-        }
-
-        for (Platform platform : availablePlatforms) {
+        for (Platform platform : getPlatforms()) {
             Preference preference = platform.getCapabilities().get(capability);
             if (preference != null && (highest == null || preference.isPreferredOver(highest))) {
                 preferred = platform;
