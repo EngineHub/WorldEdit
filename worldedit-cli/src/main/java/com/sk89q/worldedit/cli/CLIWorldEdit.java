@@ -205,6 +205,7 @@ public class CLIWorldEdit {
         WorldEdit worldEdit = WorldEdit.getInstance();
         worldEdit.getSessionManager().unload();
         worldEdit.getPlatformManager().unregister(platform);
+        WorldEdit.getInstance().getExecutorService().shutdown();
     }
 
     public FileRegistries getFileRegistries() {

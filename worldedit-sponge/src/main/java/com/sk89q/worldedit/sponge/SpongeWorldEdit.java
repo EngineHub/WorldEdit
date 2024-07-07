@@ -244,6 +244,7 @@ public class SpongeWorldEdit {
         WorldEdit worldEdit = WorldEdit.getInstance();
         worldEdit.getSessionManager().unload();
         WorldEdit.getInstance().getEventBus().post(new PlatformUnreadyEvent(platform));
+        WorldEdit.getInstance().getExecutorService().shutdown();
     }
 
     @Listener

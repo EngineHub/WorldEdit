@@ -327,6 +327,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             config.unload();
         }
         this.getServer().getScheduler().cancelTasks(this);
+        worldEdit.getExecutorService().shutdown();
     }
 
     /**
