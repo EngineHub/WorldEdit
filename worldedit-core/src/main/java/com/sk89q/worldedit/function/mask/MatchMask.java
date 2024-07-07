@@ -25,7 +25,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 /**
  * A mask that returns true if the two given extents have the same block at the given position, with offset support.
  */
-public class MatchMask extends AbstractMask {
+public final class MatchMask extends AbstractMask {
 
     private final Extent extent;
     private final Extent matchExtent;
