@@ -35,8 +35,6 @@ import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.event.platform.PlatformUnreadyEvent;
 import com.sk89q.worldedit.event.platform.PlatformsRegisteredEvent;
-import com.sk89q.worldedit.extension.input.InputParseException;
-import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
@@ -44,15 +42,12 @@ import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
-import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.lifecycle.Lifecycled;
 import com.sk89q.worldedit.util.lifecycle.SimpleLifecycled;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
-import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.block.FuzzyBlockState;
 import com.sk89q.worldedit.world.entity.EntityType;
 import com.sk89q.worldedit.world.gamemode.GameModes;
 import com.sk89q.worldedit.world.item.ItemCategory;
@@ -87,7 +82,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 
@@ -205,7 +199,6 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent(platform));
     }
 
-    @SuppressWarnings({ "unchecked" })
     private void initializeRegistries() {
         // Biome
         Registry.BIOME.forEach(biome -> {
@@ -216,31 +209,12 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         });
         // Block & Item
         Registry.MATERIAL.forEach(material -> {
+            String key = material.getKey().toString();
             if (material.isBlock()) {
-                BlockType.REGISTRY.register(material.getKey().toString(), new BlockType(material.getKey().toString(), blockState -> {
-                    // TODO Use something way less hacky than this.
-                    ParserContext context = new ParserContext();
-                    context.setPreferringWildcard(true);
-                    context.setTryLegacy(false);
-                    context.setRestricted(false);
-                    try {
-                        FuzzyBlockState state = (FuzzyBlockState) WorldEdit.getInstance().getBlockFactory().parseFromInput(
-                                BukkitAdapter.adapt(blockState.getBlockType()).createBlockData().getAsString(), context
-                        ).toImmutableState();
-                        BlockState defaultState = blockState.getBlockType().getAllStates().get(0);
-                        for (Map.Entry<Property<?>, Object> propertyObjectEntry : state.getStates().entrySet()) {
-                            //noinspection unchecked
-                            defaultState = defaultState.with((Property<Object>) propertyObjectEntry.getKey(), propertyObjectEntry.getValue());
-                        }
-                        return defaultState;
-                    } catch (InputParseException e) {
-                        getLogger().log(Level.WARNING, "Error loading block state for " + material.getKey(), e);
-                        return blockState;
-                    }
-                }));
+                BlockType.REGISTRY.register(key, new BlockType(key, blockState -> BukkitAdapter.adapt(BukkitAdapter.adapt(blockState.getBlockType()).createBlockData())));
             }
             if (material.isItem()) {
-                ItemType.REGISTRY.register(material.getKey().toString(), new ItemType(material.getKey().toString()));
+                ItemType.REGISTRY.register(key, new ItemType(key));
             }
         });
         // Entity
@@ -262,10 +236,12 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     private void setupTags() {
         // Tags
         for (Tag<Material> blockTag : Bukkit.getTags(Tag.REGISTRY_BLOCKS, Material.class)) {
-            BlockCategory.REGISTRY.register(blockTag.getKey().toString(), new BlockCategory(blockTag.getKey().toString()));
+            String key = blockTag.getKey().toString();
+            BlockCategory.REGISTRY.register(key, new BlockCategory(key));
         }
         for (Tag<Material> itemTag : Bukkit.getTags(Tag.REGISTRY_ITEMS, Material.class)) {
-            ItemCategory.REGISTRY.register(itemTag.getKey().toString(), new ItemCategory(itemTag.getKey().toString()));
+            String key = itemTag.getKey().toString();
+            ItemCategory.REGISTRY.register(key, new ItemCategory(key));
         }
     }
 
