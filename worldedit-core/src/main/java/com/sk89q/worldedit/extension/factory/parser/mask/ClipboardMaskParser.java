@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.extension.factory.parser.mask;
 
-import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.EmptyClipboardException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.InputParseException;
@@ -33,7 +32,7 @@ import java.util.List;
 
 public class ClipboardMaskParser extends SimpleInputParser<Mask> {
 
-    private static final List<String> aliases = ImmutableList.of("#clipboard", "#copy");
+    private static final List<String> aliases = List.of("#clipboard", "#copy");
 
     public ClipboardMaskParser(WorldEdit worldEdit) {
         super(worldEdit);
