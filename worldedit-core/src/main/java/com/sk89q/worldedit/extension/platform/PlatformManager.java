@@ -141,36 +141,36 @@ public class PlatformManager {
 
         try {
             removed = platforms.remove(platform);
+
+            if (removed) {
+                LOGGER.info("Unregistering " + platform.getClass().getCanonicalName() + " from WorldEdit");
+
+                boolean choosePreferred = false;
+
+                preferencesLock.writeLock().lock();
+
+                try {
+                    // Check whether this platform was chosen to be the preferred one
+                    // for any capability and be sure to remove it
+                    Iterator<Entry<Capability, Platform>> it = preferences.entrySet().iterator();
+                    while (it.hasNext()) {
+                        Entry<Capability, Platform> entry = it.next();
+                        if (entry.getValue().equals(platform)) {
+                            entry.getKey().uninitialize(this, entry.getValue());
+                            it.remove();
+                            choosePreferred = true; // Have to choose new favorites
+                        }
+                    }
+                } finally {
+                    preferencesLock.writeLock().unlock();
+                }
+
+                if (choosePreferred) {
+                    choosePreferred();
+                }
+            }
         } finally {
             platformsLock.writeLock().unlock();
-        }
-
-        if (removed) {
-            LOGGER.info("Unregistering " + platform.getClass().getCanonicalName() + " from WorldEdit");
-
-            boolean choosePreferred = false;
-
-            preferencesLock.writeLock().lock();
-
-            try {
-                // Check whether this platform was chosen to be the preferred one
-                // for any capability and be sure to remove it
-                Iterator<Entry<Capability, Platform>> it = preferences.entrySet().iterator();
-                while (it.hasNext()) {
-                    Entry<Capability, Platform> entry = it.next();
-                    if (entry.getValue().equals(platform)) {
-                        entry.getKey().uninitialize(this, entry.getValue());
-                        it.remove();
-                        choosePreferred = true; // Have to choose new favorites
-                    }
-                }
-            } finally {
-                preferencesLock.writeLock().unlock();
-            }
-
-            if (choosePreferred) {
-                choosePreferred();
-            }
         }
 
         return removed;
