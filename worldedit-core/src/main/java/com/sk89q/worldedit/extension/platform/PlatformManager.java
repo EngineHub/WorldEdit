@@ -53,6 +53,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -75,6 +77,9 @@ public class PlatformManager {
     private final AtomicBoolean initialized = new AtomicBoolean();
     private final AtomicBoolean configured = new AtomicBoolean();
 
+    private final ReadWriteLock platformsLock = new ReentrantReadWriteLock();
+    private final ReadWriteLock preferencesLock = new ReentrantReadWriteLock();
+
     /**
      * Create a new platform manager.
      *
@@ -94,14 +99,19 @@ public class PlatformManager {
      *
      * @param platform the platform
      */
-    public synchronized void register(Platform platform) {
+    public void register(Platform platform) {
         checkNotNull(platform);
 
         LOGGER.info("Got request to register " + platform.getClass() + " with WorldEdit [" + super.toString() + "]");
 
         // Just add the platform to the list of platforms: we'll pick favorites
         // once all the platforms have been loaded
-        platforms.add(platform);
+        platformsLock.writeLock().lock();
+        try {
+            platforms.add(platform);
+        } finally {
+            platformsLock.writeLock().unlock();
+        }
 
         // Make sure that versions are in sync
         if (firstSeenVersion != null) {
@@ -123,26 +133,39 @@ public class PlatformManager {
      *
      * @param platform the platform
      */
-    public synchronized boolean unregister(Platform platform) {
+    public boolean unregister(Platform platform) {
         checkNotNull(platform);
 
-        boolean removed = platforms.remove(platform);
+        boolean removed;
+        platformsLock.writeLock().lock();
+
+        try {
+            removed = platforms.remove(platform);
+        } finally {
+            platformsLock.writeLock().unlock();
+        }
 
         if (removed) {
             LOGGER.info("Unregistering " + platform.getClass().getCanonicalName() + " from WorldEdit");
 
             boolean choosePreferred = false;
 
-            // Check whether this platform was chosen to be the preferred one
-            // for any capability and be sure to remove it
-            Iterator<Entry<Capability, Platform>> it = preferences.entrySet().iterator();
-            while (it.hasNext()) {
-                Entry<Capability, Platform> entry = it.next();
-                if (entry.getValue().equals(platform)) {
-                    entry.getKey().uninitialize(this, entry.getValue());
-                    it.remove();
-                    choosePreferred = true; // Have to choose new favorites
+            preferencesLock.writeLock().lock();
+
+            try {
+                // Check whether this platform was chosen to be the preferred one
+                // for any capability and be sure to remove it
+                Iterator<Entry<Capability, Platform>> it = preferences.entrySet().iterator();
+                while (it.hasNext()) {
+                    Entry<Capability, Platform> entry = it.next();
+                    if (entry.getValue().equals(platform)) {
+                        entry.getKey().uninitialize(this, entry.getValue());
+                        it.remove();
+                        choosePreferred = true; // Have to choose new favorites
+                    }
                 }
+            } finally {
+                preferencesLock.writeLock().unlock();
             }
 
             if (choosePreferred) {
@@ -160,44 +183,60 @@ public class PlatformManager {
      * @return the platform
      * @throws NoCapablePlatformException thrown if no platform is capable
      */
-    public synchronized Platform queryCapability(Capability capability) throws NoCapablePlatformException {
-        Platform platform = preferences.get(checkNotNull(capability));
-        if (platform != null) {
-            return platform;
-        } else {
-            if (preferences.isEmpty()) {
-                // Not all platforms registered, this is being called too early!
-                throw new NoCapablePlatformException(
-                    "Not all platforms have been registered yet!"
-                        + " Please wait until WorldEdit is initialized."
-                );
+    public Platform queryCapability(Capability capability) throws NoCapablePlatformException {
+        preferencesLock.readLock().lock();
+
+        try {
+            Platform platform = preferences.get(checkNotNull(capability));
+            if (platform != null) {
+                return platform;
+            } else {
+                if (preferences.isEmpty()) {
+                    // Not all platforms registered, this is being called too early!
+                    throw new NoCapablePlatformException(
+                        "Not all platforms have been registered yet!"
+                            + " Please wait until WorldEdit is initialized."
+                    );
+                }
+                throw new NoCapablePlatformException("No platform was found supporting " + capability.name());
             }
-            throw new NoCapablePlatformException("No platform was found supporting " + capability.name());
+        } finally {
+            preferencesLock.readLock().unlock();
         }
     }
 
     /**
      * Choose preferred platforms and perform necessary initialization.
      */
-    private synchronized void choosePreferred() {
+    private void choosePreferred() {
         for (Capability capability : Capability.values()) {
             Platform preferred = findMostPreferred(capability);
             if (preferred != null) {
-                Platform oldPreferred = preferences.put(capability, preferred);
-                // only (re)initialize if it changed
-                if (preferred != oldPreferred) {
-                    // uninitialize if needed
-                    if (oldPreferred != null) {
-                        capability.uninitialize(this, oldPreferred);
+                preferencesLock.writeLock().lock();
+                try {
+                    Platform oldPreferred = preferences.put(capability, preferred);
+                    // only (re)initialize if it changed
+                    if (preferred != oldPreferred) {
+                        // uninitialize if needed
+                        if (oldPreferred != null) {
+                            capability.uninitialize(this, oldPreferred);
+                        }
+                        capability.initialize(this, preferred);
                     }
-                    capability.initialize(this, preferred);
+                } finally {
+                    preferencesLock.writeLock().unlock();
                 }
             }
         }
 
-        // Fire configuration event
-        if (preferences.containsKey(Capability.CONFIGURATION) && configured.compareAndSet(false, true)) {
-            worldEdit.getEventBus().post(new ConfigurationLoadEvent(queryCapability(Capability.CONFIGURATION).getConfiguration()));
+        preferencesLock.readLock().lock();
+        try {
+            // Fire configuration event
+            if (preferences.containsKey(Capability.CONFIGURATION) && configured.compareAndSet(false, true)) {
+                worldEdit.getEventBus().post(new ConfigurationLoadEvent(queryCapability(Capability.CONFIGURATION).getConfiguration()));
+            }
+        } finally {
+            preferencesLock.readLock().unlock();
         }
     }
 
@@ -208,11 +247,20 @@ public class PlatformManager {
      * @param capability the capability
      * @return the most preferred platform, or null if no platform was found
      */
-    private synchronized @Nullable Platform findMostPreferred(Capability capability) {
+    private @Nullable Platform findMostPreferred(Capability capability) {
         Platform preferred = null;
         Preference highest = null;
 
-        for (Platform platform : platforms) {
+        List<Platform> availablePlatforms;
+        platformsLock.readLock().lock();
+
+        try {
+            availablePlatforms = getPlatforms();
+        } finally {
+            platformsLock.readLock().unlock();
+        }
+
+        for (Platform platform : availablePlatforms) {
             Preference preference = platform.getCapabilities().get(capability);
             if (preference != null && (highest == null || preference.isPreferredOver(highest))) {
                 preferred = platform;
@@ -230,8 +278,13 @@ public class PlatformManager {
      *
      * @return a list of platforms
      */
-    public synchronized List<Platform> getPlatforms() {
-        return new ArrayList<>(platforms);
+    public List<Platform> getPlatforms() {
+        platformsLock.readLock().lock();
+        try {
+            return new ArrayList<>(platforms);
+        } finally {
+            platformsLock.readLock().unlock();
+        }
     }
 
     /**
