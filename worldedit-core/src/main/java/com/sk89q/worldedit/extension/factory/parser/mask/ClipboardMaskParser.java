@@ -33,7 +33,7 @@ import java.util.List;
 
 public class ClipboardMaskParser extends SimpleInputParser<Mask> {
 
-    private static final List<String> aliases = ImmutableList.of("#clipboard");
+    private static final List<String> aliases = ImmutableList.of("#clipboard", "#copy");
 
     public ClipboardMaskParser(WorldEdit worldEdit) {
         super(worldEdit);
