@@ -41,3 +41,8 @@ jobs:
         name: logs for ${{ matrix.os }}
         path: '**/*.log'
 
+    - name: Upload WorldEdit jar
+      uses: actions/upload-artifact@v2
+      with:
+        name: WorldEdit-Folia-Snapshot
+        path: worldedit-bukkit/build/libs/*

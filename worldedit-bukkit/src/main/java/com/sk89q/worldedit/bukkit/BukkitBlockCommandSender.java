@@ -156,11 +156,13 @@ public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
                     updateActive();
                 } else {
                     // we should update it eventually
-                    Bukkit.getScheduler().callSyncMethod(plugin,
+                    Bukkit.getGlobalRegionScheduler().execute(plugin,
+                            this::updateActive);
+                    /*Bukkit.getScheduler().callSyncMethod(plugin,
                         () -> {
                             updateActive();
                             return null;
-                        });
+                        });*/
                 }
                 return active;
             }

@@ -1,8 +1,9 @@
 name: WorldEdit
 main: com.sk89q.worldedit.bukkit.WorldEditPlugin
-version: "${internalVersion}"
+version: "${internalVersion}-Folia"
 load: STARTUP
 api-version: 1.13
 softdepend: [Vault]
 author: EngineHub
 website: https://enginehub.org/worldedit
+folia-supported: true
