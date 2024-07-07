@@ -47,10 +47,7 @@ public class ServerCUIHandler {
     }
 
     public static int getMaxServerCuiSize() {
-        int dataVersion = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS).getDataVersion();
-
-        // 1.16 increased maxSize to 48.
-        return dataVersion >= 2566 ? 48 : 32;
+        return 48;
     }
 
     /**
