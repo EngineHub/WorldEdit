@@ -31,6 +31,7 @@ import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extent.InputExtent;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.function.GroundFunction;
 import com.sk89q.worldedit.function.RegionFunction;
@@ -504,9 +505,10 @@ public class RegionCommands {
                           boolean offsetCenter) throws WorldEditException {
 
         final Transform transform = TransformUtil.createTransformForExpressionCommand(actor, session, region, useRawCoords, offsetPlacement, offsetCenter);
+        final InputExtent inputExtent = editSession.getWorld();
 
         try {
-            final int affected = editSession.deformRegion(region, transform, String.join(" ", expression), session.getTimeout());
+            final int affected = editSession.deformRegion(region, transform, String.join(" ", expression), session.getTimeout(), inputExtent, transform);
             if (actor instanceof Player) {
                 ((Player) actor).findFreePosition();
             }

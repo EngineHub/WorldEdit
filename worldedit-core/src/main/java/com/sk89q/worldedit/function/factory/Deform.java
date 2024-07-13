@@ -170,7 +170,8 @@ public class Deform implements Contextual<Operation> {
         public Operation resume(RunContext run) throws WorldEditException {
             try {
                 // TODO: Move deformation code
-                ((EditSession) destination).deformRegion(region, transform, expression, timeout);
+                final EditSession editSession = (EditSession) destination;
+                editSession.deformRegion(region, transform, expression, timeout, editSession.getWorld(), transform);
                 return null;
             } catch (ExpressionException e) {
                 throw new RuntimeException("Failed to execute expression", e); // TODO: Better exception to throw here?
