@@ -49,13 +49,14 @@ import com.sk89q.worldedit.function.visitor.RegionVisitor;
 import com.sk89q.worldedit.internal.annotation.Offset;
 import com.sk89q.worldedit.internal.annotation.Selection;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
+import com.sk89q.worldedit.internal.util.TransformUtil;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.math.convolution.GaussianKernel;
 import com.sk89q.worldedit.math.convolution.HeightMap;
 import com.sk89q.worldedit.math.convolution.HeightMapFilter;
 import com.sk89q.worldedit.math.convolution.SnowHeightMap;
 import com.sk89q.worldedit.math.noise.RandomNoise;
+import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.regions.ConvexPolyhedralRegion;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
@@ -501,41 +502,11 @@ public class RegionCommands {
                           boolean offsetPlacement,
                       @Switch(name = 'c', desc = "Use the selection's center as origin")
                           boolean offsetCenter) throws WorldEditException {
-        final Vector3 zero;
-        Vector3 unit;
 
-        if (useRawCoords) {
-            zero = Vector3.ZERO;
-            unit = Vector3.ONE;
-        } else if (offsetPlacement) {
-            zero = session.getPlacementPosition(actor).toVector3();
-            unit = Vector3.ONE;
-        } else if (offsetCenter) {
-            final Vector3 min = region.getMinimumPoint().toVector3();
-            final Vector3 max = region.getMaximumPoint().toVector3();
-
-            zero = max.add(min).multiply(0.5);
-            unit = Vector3.ONE;
-        } else {
-            final Vector3 min = region.getMinimumPoint().toVector3();
-            final Vector3 max = region.getMaximumPoint().toVector3();
-
-            zero = max.add(min).divide(2);
-            unit = max.subtract(zero);
-
-            if (unit.x() == 0) {
-                unit = unit.withX(1.0);
-            }
-            if (unit.y() == 0) {
-                unit = unit.withY(1.0);
-            }
-            if (unit.z() == 0) {
-                unit = unit.withZ(1.0);
-            }
-        }
+        final Transform transform = TransformUtil.createTransformForExpressionCommand(actor, session, region, useRawCoords, offsetPlacement, offsetCenter);
 
         try {
-            final int affected = editSession.deformRegion(region, zero, unit, String.join(" ", expression), session.getTimeout());
+            final int affected = editSession.deformRegion(region, transform, String.join(" ", expression), session.getTimeout());
             if (actor instanceof Player) {
                 ((Player) actor).findFreePosition();
             }
