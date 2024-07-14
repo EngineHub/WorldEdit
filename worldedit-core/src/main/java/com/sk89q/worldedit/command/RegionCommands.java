@@ -33,6 +33,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.InputExtent;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.GroundFunction;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.RegionMaskingFilter;
@@ -52,6 +53,7 @@ import com.sk89q.worldedit.internal.annotation.Selection;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.internal.util.TransformUtil;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.math.convolution.GaussianKernel;
 import com.sk89q.worldedit.math.convolution.HeightMap;
 import com.sk89q.worldedit.math.convolution.HeightMapFilter;
@@ -502,13 +504,28 @@ public class RegionCommands {
                       @Switch(name = 'o', desc = "Use the placement's coordinate origin")
                           boolean offsetPlacement,
                       @Switch(name = 'c', desc = "Use the selection's center as origin")
-                          boolean offsetCenter) throws WorldEditException {
+                          boolean offsetCenter,
+                      @Switch(name = 'l', desc = "Fetch from the clipboard instead of the world")
+                          boolean useClipboard) throws WorldEditException {
+        final Transform targetTransform = TransformUtil.createTransformForExpressionCommand(actor, session, region, useRawCoords, offsetPlacement, offsetCenter);
 
-        final Transform transform = TransformUtil.createTransformForExpressionCommand(actor, session, region, useRawCoords, offsetPlacement, offsetCenter);
-        final InputExtent inputExtent = editSession.getWorld();
+        final InputExtent sourceExtent;
+        final Transform sourceTransform;
+        if (useClipboard) {
+            final Clipboard clipboard = session.getClipboard().getClipboard();
+            sourceExtent = clipboard;
+
+            final Vector3 clipboardMin = clipboard.getMinimumPoint().toVector3();
+            final Vector3 clipboardMax = clipboard.getMaximumPoint().toVector3();
+
+            sourceTransform = TransformUtil.createTransformForExpressionCommand(useRawCoords, offsetPlacement, offsetCenter, clipboardMin, clipboardMax, clipboardMin);
+        } else {
+            sourceExtent = editSession.getWorld();
+            sourceTransform = targetTransform;
+        }
 
         try {
-            final int affected = editSession.deformRegion(region, transform, String.join(" ", expression), session.getTimeout(), inputExtent, transform);
+            final int affected = editSession.deformRegion(region, targetTransform, String.join(" ", expression), session.getTimeout(), sourceExtent, sourceTransform);
             if (actor instanceof Player) {
                 ((Player) actor).findFreePosition();
             }
