@@ -22,6 +22,7 @@ package com.sk89q.worldedit.internal.util;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.function.factory.Deform;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.math.transform.Identity;
 import com.sk89q.worldedit.math.transform.ScaleAndTranslateTransform;
@@ -93,5 +94,28 @@ public final class TransformUtil {
             scale = scale.withZ(1.0);
         }
         return new ScaleAndTranslateTransform(center, scale);
+    }
+
+    /**
+     * Creates a {@link Transform} for the //deform command with clipboard support.
+     *
+     * @param mode            The coordinate mode to use
+     * @param min             Minimum of the selection/clipboard
+     * @param max             Maximum of the selection/clipboard
+     * @param placement       Placement position
+     * @return                A transform from the expression coordinate system to the world/clipboard coordinate system
+     */
+    public static Transform createTransformForExpressionCommand(Deform.Mode mode, Vector3 min, Vector3 max, Vector3 placement) {
+        switch (mode) {
+            case UNIT_CUBE:
+                return createTransformForExpressionCommand(false, false, false, min, max, placement);
+
+            case RAW_COORD:
+                return createTransformForExpressionCommand(true, false, false, min, max, placement);
+
+            case OFFSET:
+            default:
+                return createTransformForExpressionCommand(false, true, false, min, max, placement);
+        }
     }
 }

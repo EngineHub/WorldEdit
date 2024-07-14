@@ -32,9 +32,8 @@ import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
+import com.sk89q.worldedit.internal.util.TransformUtil;
 import com.sk89q.worldedit.math.Vector3;
-import com.sk89q.worldedit.math.transform.Identity;
-import com.sk89q.worldedit.math.transform.ScaleAndTranslateTransform;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.regions.NullRegion;
 import com.sk89q.worldedit.regions.Region;
@@ -123,37 +122,10 @@ public class Deform implements Contextual<Operation> {
     public Operation createFromContext(final EditContext context) {
 
         Region region = firstNonNull(context.getRegion(), this.region);
+        final Vector3 min = region.getMinimumPoint().toVector3();
+        final Vector3 max = region.getMaximumPoint().toVector3();
 
-        final Transform transform;
-        switch (mode) {
-            case UNIT_CUBE:
-                final Vector3 min = region.getMinimumPoint().toVector3();
-                final Vector3 max = region.getMaximumPoint().toVector3();
-                final Vector3 zero = max.add(min).multiply(0.5);
-                Vector3 unit = max.subtract(zero);
-
-                if (unit.x() == 0) {
-                    unit = unit.withX(1.0);
-                }
-                if (unit.y() == 0) {
-                    unit = unit.withY(1.0);
-                }
-                if (unit.z() == 0) {
-                    unit = unit.withZ(1.0);
-                }
-
-                transform = new ScaleAndTranslateTransform(zero, unit);
-                break;
-
-            case RAW_COORD:
-                transform = new Identity();
-                break;
-
-            case OFFSET:
-            default:
-                transform = new ScaleAndTranslateTransform(offset, Vector3.ONE);
-                break;
-        }
+        final Transform transform = TransformUtil.createTransformForExpressionCommand(mode, min, max, offset);
         LocalSession session = context.getSession();
         return new DeformOperation(context.getDestination(), region, transform, expression,
                 session == null ? WorldEdit.getInstance().getConfiguration().calculationTimeout : session.getTimeout());
