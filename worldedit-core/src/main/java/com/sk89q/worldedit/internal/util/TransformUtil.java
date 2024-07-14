@@ -48,18 +48,33 @@ public final class TransformUtil {
      * @return                A transform from the expression coordinate system to the raw coordinate system
      */
     public static Transform createTransformForExpressionCommand(Actor actor, LocalSession session, Region region, boolean useRawCoords, boolean offsetPlacement, boolean offsetCenter) throws IncompleteRegionException {
+        final Vector3 placement = session.getPlacementPosition(actor).toVector3();
+        final Vector3 min = region.getMinimumPoint().toVector3();
+        final Vector3 max = region.getMaximumPoint().toVector3();
+
+        return createTransformForExpressionCommand(useRawCoords, offsetPlacement, offsetCenter, min, max, placement);
+    }
+
+    /**
+     * Creates a {@link Transform} for the //deform command with clipboard support.
+     *
+     * @param useRawCoords    Use the game's coordinate origin
+     * @param offsetPlacement Use the placement's coordinate origin
+     * @param offsetCenter    Use the selection's center as origin
+     * @param min             Minimum of the selection/clipboard
+     * @param max             Maximum of the selection/clipboard
+     * @param placement       Placement position
+     * @return                A transform from the expression coordinate system to the world/clipboard coordinate system
+     */
+    public static Transform createTransformForExpressionCommand(boolean useRawCoords, boolean offsetPlacement, boolean offsetCenter, Vector3 min, Vector3 max, Vector3 placement) {
         if (useRawCoords) {
             return new Identity();
         }
 
         if (offsetPlacement) {
-            final Vector3 placement = session.getPlacementPosition(actor).toVector3();
-
             return new ScaleAndTranslateTransform(placement, Vector3.ONE);
         }
 
-        final Vector3 min = region.getMinimumPoint().toVector3();
-        final Vector3 max = region.getMaximumPoint().toVector3();
         final Vector3 center = max.add(min).multiply(0.5);
 
         if (offsetCenter) {
