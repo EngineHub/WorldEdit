@@ -25,6 +25,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extent.InputExtent;
 import com.sk89q.worldedit.extent.NullExtent;
 import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.EditContext;
@@ -127,23 +128,26 @@ public class Deform implements Contextual<Operation> {
 
         final Transform transform = TransformUtil.createTransformForExpressionCommand(mode, min, max, offset);
         LocalSession session = context.getSession();
+        EditSession editSession = (EditSession) context.getDestination();
         return new DeformOperation(context.getDestination(), region, transform, expression,
-                session == null ? WorldEdit.getInstance().getConfiguration().calculationTimeout : session.getTimeout());
+                session == null ? WorldEdit.getInstance().getConfiguration().calculationTimeout : session.getTimeout(), editSession.getWorld(), transform);
     }
 
     private record DeformOperation(
         Extent destination,
         Region region,
-        Transform transform,
+        Transform targetTransform,
         Expression expression,
-        int timeout
+        int timeout,
+        InputExtent sourceExtent,
+        Transform sourceTransform
     ) implements Operation {
         @Override
         public Operation resume(RunContext run) throws WorldEditException {
             try {
                 // TODO: Move deformation code
                 final EditSession editSession = (EditSession) destination;
-                editSession.deformRegion(region, transform, expression, timeout, editSession.getWorld(), transform);
+                editSession.deformRegion(region, targetTransform, expression, timeout, sourceExtent, sourceTransform);
                 return null;
             } catch (ExpressionException e) {
                 throw new RuntimeException("Failed to execute expression", e); // TODO: Better exception to throw here?
