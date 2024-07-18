@@ -11,21 +11,6 @@ plugins {
     id("me.champeau.gradle.japicmp")
 }
 
-repositories {
-    maven {
-        name = "EngineHub Repository (Releases Only)"
-        url = uri("https://maven.enginehub.org/artifactory/libs-release-local/")
-    }
-    maven {
-        name = "EngineHub Repository (Snapshots Only)"
-        url = uri("https://maven.enginehub.org/artifactory/libs-snapshot-local/")
-        content {
-            excludeGroup("com.sk89q.worldedit")
-        }
-    }
-    mavenCentral()
-}
-
 val resetAcceptedApiChangesFiles by tasks.registering {
     group = "API Compatibility"
     description = "Resets ALL the accepted API changes files"

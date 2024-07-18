@@ -27,16 +27,9 @@ val apiClasspath = configurations.create("apiClasspath") {
 }
 
 repositories {
-    val toRemove = mutableListOf<MavenArtifactRepository>()
-    for (repo in project.repositories) {
-        if (repo is MavenArtifactRepository && repo.url.toString() == "https://maven.neoforged.net/releases/") {
-            toRemove.add(repo)
-        }
-    }
-    toRemove.forEach { remove(it) }
-    maven {
-        name = "EngineHub"
-        url = uri("https://maven.enginehub.org/repo/")
+    mavenCentral()
+    afterEvaluate {
+        replaceNonEngineHubRepositoriesUrl()
     }
 }
 
@@ -72,6 +65,7 @@ subsystems {
     parchment {
         minecraftVersion = libs.versions.parchment.minecraft.get()
         mappingsVersion = libs.versions.parchment.mappings.get()
+        addRepository = false
     }
     decompiler {
         maxMemory("3G")

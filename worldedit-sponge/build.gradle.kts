@@ -18,12 +18,15 @@ commonJava {
     banSlf4j = false
 }
 
-repositories {
-    mavenCentral()
-}
-
 minecraft {
     version(libs.versions.sponge.minecraft.get())
+}
+
+repositories {
+    mavenCentral()
+    afterEvaluate {
+        replaceNonEngineHubRepositoriesUrl()
+    }
 }
 
 sponge {
