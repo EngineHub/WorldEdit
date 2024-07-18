@@ -2371,7 +2371,7 @@ public class EditSession implements Extent, AutoCloseable {
             protected BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial) {
                 final Vector3 current = Vector3.at(x, y, z);
                 environment.setCurrentBlock(current);
-                final Vector3 scaled = current.subtract(zero).divide(unit);
+                final Vector3 inputPosition = current.subtract(zero).divide(unit);
 
                 try {
                     int[] legacy = LegacyMapper.getInstance().getLegacyFromBlock(defaultMaterial.toImmutableState());
@@ -2383,7 +2383,7 @@ public class EditSession implements Extent, AutoCloseable {
                             dataVar = legacy[1];
                         }
                     }
-                    if (expression.evaluate(new double[]{ scaled.x(), scaled.y(), scaled.z(), typeVar, dataVar}, timeout) <= 0) {
+                    if (expression.evaluate(new double[]{ inputPosition.x(), inputPosition.y(), inputPosition.z(), typeVar, dataVar}, timeout) <= 0) {
                         return null;
                     }
                     int newType = (int) typeVariable.value();
@@ -2482,10 +2482,10 @@ public class EditSession implements Extent, AutoCloseable {
             environment.setCurrentBlock(targetPosition);
 
             // transform from target coordinates
-            final Vector3 scaled = targetPosition.subtract(zero).divide(unit);
+            final Vector3 inputPosition = targetPosition.subtract(zero).divide(unit);
 
             // deform
-            expression.evaluate(new double[]{ scaled.x(), scaled.y(), scaled.z() }, timeout);
+            expression.evaluate(new double[]{ inputPosition.x(), inputPosition.y(), inputPosition.z() }, timeout);
 
             // transform to source coordinates, round-nearest
             final BlockVector3 sourcePosition = environment.toWorld(x.value(), y.value(), z.value());
@@ -2499,11 +2499,11 @@ public class EditSession implements Extent, AutoCloseable {
 
         int affected = 0;
         for (Map.Entry<BlockVector3, BaseBlock> entry : queue) {
-            BlockVector3 position = entry.getKey();
+            BlockVector3 targetPosition = entry.getKey();
             BaseBlock material = entry.getValue();
 
-            // set at new position
-            if (setBlock(position, material)) {
+            // set at new targetPosition
+            if (setBlock(targetPosition, material)) {
                 ++affected;
             }
         }
@@ -2817,10 +2817,10 @@ public class EditSession implements Extent, AutoCloseable {
             protected BiomeType getBiome(int x, int y, int z, BiomeType defaultBiomeType) {
                 final Vector3 current = Vector3.at(x, y, z);
                 environment.setCurrentBlock(current);
-                final Vector3 scaled = current.subtract(zero).divide(unit);
+                final Vector3 inputPosition = current.subtract(zero).divide(unit);
 
                 try {
-                    if (expression.evaluate(new double[]{ scaled.x(), scaled.y(), scaled.z() }, timeout) <= 0) {
+                    if (expression.evaluate(new double[]{ inputPosition.x(), inputPosition.y(), inputPosition.z() }, timeout) <= 0) {
                         return null;
                     }
 
