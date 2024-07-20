@@ -63,7 +63,10 @@ public interface ItemRegistry {
      *
      * @param itemType the item
      * @return the material, or null if the material information is not known
+     * @deprecated ItemMaterial is deprecated with no alternative.
      */
+    @Deprecated(forRemoval = true)
     @Nullable
+    @SuppressWarnings("removal")
     ItemMaterial getMaterial(ItemType itemType);
 }
