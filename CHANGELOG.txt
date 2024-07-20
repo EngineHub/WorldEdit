@@ -1,5 +1,7 @@
 7.3.4
 - Added support for 1.21
+- Fixed an issue where //drawsel can prevent using //world overrides in some situation
+- Improved performance of repeatedly getting string representations of a block
 
 7.3.3
 - [Sponge] Re-add Sponge support

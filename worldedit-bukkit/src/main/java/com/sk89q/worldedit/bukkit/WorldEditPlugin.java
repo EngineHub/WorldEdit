@@ -63,8 +63,8 @@ import org.apache.logging.log4j.Logger;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Registry;
 import org.bukkit.Tag;
-import org.bukkit.block.Biome;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -208,14 +208,14 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     @SuppressWarnings({ "unchecked" })
     private void initializeRegistries() {
         // Biome
-        for (Biome biome : Biome.values()) {
+        Registry.BIOME.forEach(biome -> {
             if (!biome.name().equals("CUSTOM")) {
                 String key = biome.getKey().toString();
                 BiomeType.REGISTRY.register(key, new BiomeType(key));
             }
-        }
+        });
         // Block & Item
-        for (Material material : Material.values()) {
+        Registry.MATERIAL.forEach(material -> {
             if (material.isBlock()) {
                 BlockType.REGISTRY.register(material.getKey().toString(), new BlockType(material.getKey().toString(), blockState -> {
                     // TODO Use something way less hacky than this.
@@ -242,16 +242,13 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             if (material.isItem()) {
                 ItemType.REGISTRY.register(material.getKey().toString(), new ItemType(material.getKey().toString()));
             }
-        }
+        });
         // Entity
-        for (org.bukkit.entity.EntityType entityType : org.bukkit.entity.EntityType.values()) {
-            if (entityType == org.bukkit.entity.EntityType.UNKNOWN) {
-                // This doesn't have a key - skip it
-                continue;
-            }
+        Registry.ENTITY_TYPE.forEach(entityType -> {
             String key = entityType.getKey().toString();
             EntityType.REGISTRY.register(key, new EntityType(key));
-        }
+        });
+
         // ... :|
         GameModes.get("");
         WeatherTypes.get("");
@@ -327,6 +324,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             config.unload();
         }
         this.getServer().getScheduler().cancelTasks(this);
+        worldEdit.getExecutorService().shutdown();
     }
 
     /**

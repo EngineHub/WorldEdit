@@ -2,7 +2,7 @@
 set -e
 
 # For snapshots, please specify the full version (with date and time)
-cdist_version="0.1.0-20210612.072458-9"
+cdist_version="0.1.0-20240706.110724-10"
 cdist_path_version="$cdist_version"
 
 if [ -n "${cdist_version#*-}" ]; then

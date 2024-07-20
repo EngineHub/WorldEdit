@@ -2433,9 +2433,12 @@ public class EditSession implements Extent, AutoCloseable {
 
         final DoubleArrayList<BlockVector3, BaseBlock> queue = new DoubleArrayList<>(false);
 
-        for (BlockVector3 position : region) {
+        for (BlockVector3 targetBlockPosition : region) {
+            final Vector3 targetPosition = targetBlockPosition.toVector3();
+            environment.setCurrentBlock(targetPosition);
+
             // offset, scale
-            final Vector3 scaled = position.toVector3().subtract(zero).divide(unit);
+            final Vector3 scaled = targetPosition.subtract(zero).divide(unit);
 
             // transform
             expression.evaluate(new double[]{ scaled.x(), scaled.y(), scaled.z() }, timeout);
@@ -2446,7 +2449,7 @@ public class EditSession implements Extent, AutoCloseable {
             final BaseBlock material = world.getFullBlock(sourcePosition);
 
             // queue operation
-            queue.put(position, material);
+            queue.put(targetBlockPosition, material);
         }
 
         int affected = 0;
