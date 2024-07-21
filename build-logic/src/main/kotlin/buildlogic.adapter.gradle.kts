@@ -23,7 +23,7 @@ repositories {
     }
     mavenCentral()
     afterEvaluate {
-        replaceNonEngineHubRepositoriesUrl()
+        killNonEngineHubRepositories()
     }
 }
 

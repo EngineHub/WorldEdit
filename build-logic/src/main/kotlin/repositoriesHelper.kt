@@ -1,7 +1,6 @@
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.api.logging.Logging
-import java.net.URI
 
 // The primary point of this is repository up-time. We replace most other repositories with EngineHub's repository.
 // This is because we have stronger up-time guarantees for our repository. However, Maven Central and Sonatype are
@@ -15,13 +14,15 @@ private val ALLOWED_PREFIXES = listOf(
 )
 private val LOGGER = Logging.getLogger("repositoriesHelper")
 
-fun RepositoryHandler.replaceNonEngineHubRepositoriesUrl() {
+fun RepositoryHandler.killNonEngineHubRepositories() {
+    val toRemove = mutableListOf<MavenArtifactRepository>()
     for (repo in this) {
         if (repo is MavenArtifactRepository && !ALLOWED_PREFIXES.any { repo.url.toString().startsWith(it) }) {
-            LOGGER.info("Replacing non-EngineHub repository: {}", repo.url)
-            repo.url = URI.create("https://maven.enginehub.org/repo/")
+            LOGGER.info("Removing non-EngineHub repository: {}", repo.url)
+            toRemove.add(repo)
         }
     }
+    toRemove.forEach { remove(it) }
 }
 
 fun RepositoryHandler.verifyEngineHubRepositories() {

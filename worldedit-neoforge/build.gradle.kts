@@ -27,9 +27,14 @@ val apiClasspath = configurations.create("apiClasspath") {
 }
 
 repositories {
+    maven {
+        name = "EngineHub"
+        url = uri("https://maven.enginehub.org/repo/")
+    }
     mavenCentral()
+    killNonEngineHubRepositories()
     afterEvaluate {
-        replaceNonEngineHubRepositoriesUrl()
+        killNonEngineHubRepositories()
     }
 }
 
