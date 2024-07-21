@@ -531,12 +531,13 @@ public class GeneralCommands {
     )
     @CommandPermissions("worldedit.registry")
     public void registry(Actor actor,
-                           @RegistryType
-                           Registry<?> registry,
-                           @ArgFlag(name = 'p', desc = "Page of results to return", def = "1")
-                           int page,
-                           @Arg(desc = "Search query", variable = true)
-                           List<String> query) {
+                         @Arg(desc = "The registry to search through")
+                         @RegistryType
+                            Registry<?> registry,
+                         @ArgFlag(name = 'p', desc = "Page of results to return", def = "1")
+                            int page,
+                         @Arg(desc = "Search query", variable = true)
+                            List<String> query) {
         String search = String.join(" ", query);
 
         WorldEditAsyncCommandBuilder.createAndSendMessage(actor, new RegistrySearcher(registry, search, page),
