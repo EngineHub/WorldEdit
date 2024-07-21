@@ -32,20 +32,33 @@ public final class NamespacedRegistry<V extends Keyed> extends Registry<V> {
     private final Set<String> knownNamespaces = new HashSet<>();
     private final String defaultNamespace;
 
+    @Deprecated
     public NamespacedRegistry(final String name) {
         this(name, MINECRAFT_NAMESPACE);
     }
 
+    @Deprecated
     public NamespacedRegistry(final String name, final boolean checkInitialized) {
         this(name, MINECRAFT_NAMESPACE, checkInitialized);
     }
 
+    @Deprecated
     public NamespacedRegistry(final String name, final String defaultNamespace) {
         this(name, defaultNamespace, false);
     }
 
+    @Deprecated
     public NamespacedRegistry(final String name, final String defaultNamespace, final boolean checkInitialized) {
         super(name, checkInitialized);
+        this.defaultNamespace = defaultNamespace;
+    }
+
+    public NamespacedRegistry(final String name, final String id, final String defaultNamespace) {
+        this(name, id, defaultNamespace, false);
+    }
+
+    public NamespacedRegistry(final String name, final String id, final String defaultNamespace, final boolean checkInitialized) {
+        super(name, id, checkInitialized);
         this.defaultNamespace = defaultNamespace;
     }
 

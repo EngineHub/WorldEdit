@@ -17,25 +17,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.weather;
+package com.sk89q.worldedit.internal.annotation;
 
-import com.sk89q.worldedit.registry.Keyed;
-import com.sk89q.worldedit.registry.Registry;
+import org.enginehub.piston.inject.InjectAnnotation;
 
-public record WeatherType(String id) implements Keyed {
-    public static final Registry<WeatherType> REGISTRY = new Registry<>("weather type", "weather_type");
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    /**
-     * Gets the name of this weather, or the ID if the name cannot be found.
-     *
-     * @return The name, or ID
-     */
-    public String getName() {
-        return id();
-    }
-
-    @Override
-    public String toString() {
-        return id();
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PARAMETER)
+@InjectAnnotation
+public @interface RegistryType {
 }

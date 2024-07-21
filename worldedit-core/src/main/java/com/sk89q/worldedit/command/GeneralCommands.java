@@ -35,10 +35,13 @@ import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Locatable;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.annotation.Offset;
+import com.sk89q.worldedit.internal.annotation.RegistryType;
 import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.internal.cui.ServerCUIHandler;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.registry.Keyed;
+import com.sk89q.worldedit.registry.Registry;
 import com.sk89q.worldedit.session.Placement;
 import com.sk89q.worldedit.session.PlacementType;
 import com.sk89q.worldedit.util.SideEffect;
@@ -49,8 +52,11 @@ import com.sk89q.worldedit.util.formatting.component.SideEffectBox;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.biome.BiomeType;
+import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.item.ItemType;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.CommandManagerService;
@@ -511,6 +517,61 @@ public class GeneralCommands {
                         .append(name)
                         .append(" (" + id + ")")
                         .build());
+                }
+            }
+            List<Component> list = new ArrayList<>(results.values());
+            return PaginationBox.fromComponents("Search results for '" + search + "'", command, list)
+                .create(page);
+        }
+    }
+
+    @Command(
+        name = "/registry",
+        desc = "Search through the given registry"
+    )
+    @CommandPermissions("worldedit.registry")
+    public void registry(Actor actor,
+                           @RegistryType
+                           Registry<?> registry,
+                           @ArgFlag(name = 'p', desc = "Page of results to return", def = "1")
+                           int page,
+                           @Arg(desc = "Search query", variable = true)
+                           List<String> query) {
+        String search = String.join(" ", query);
+
+        WorldEditAsyncCommandBuilder.createAndSendMessage(actor, new RegistrySearcher(registry, search, page),
+            TranslatableComponent.of("worldedit.registry.searching"));
+    }
+
+    private static class RegistrySearcher implements Callable<Component> {
+        private final Registry<?> registry;
+        private final String search;
+        private final int page;
+
+        RegistrySearcher(Registry<?> registry, String search, int page) {
+            this.registry = registry;
+            this.search = search;
+            this.page = page;
+        }
+
+        @Override
+        public Component call() throws Exception {
+            String command = "//registry " + registry.id() + "-p %page% " + search;
+            Map<String, Component> results = new TreeMap<>();
+            String idMatch = search.replace(' ', '_');
+            for (Keyed searchType : registry) {
+                final String id = searchType.id();
+                if (id.contains(idMatch)) {
+                    var builder = TextComponent.builder()
+                        .append(searchType.id());
+                    switch (searchType) {
+                        case ItemType itemType -> builder.hoverEvent(HoverEvent.showText(itemType.getRichName()));
+                        case BlockType blockType -> builder.hoverEvent(HoverEvent.showText(blockType.getRichName()));
+                        case BiomeType biomeType -> builder.hoverEvent(HoverEvent.showText(biomeType.getRichName()));
+                        default -> {
+                        }
+                    }
+                    results.put(id, builder.build());
                 }
             }
             List<Component> list = new ArrayList<>(results.values());

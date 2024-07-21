@@ -31,7 +31,7 @@ import com.sk89q.worldedit.registry.NamespacedRegistry;
  */
 public class BlockCategory extends Category<BlockType> implements Keyed {
 
-    public static final NamespacedRegistry<BlockCategory> REGISTRY = new NamespacedRegistry<>("block tag", true);
+    public static final NamespacedRegistry<BlockCategory> REGISTRY = new NamespacedRegistry<>("block tag", "block_tag", "minecraft", true);
 
     public BlockCategory(final String id) {
         super(id, () -> WorldEdit.getInstance().getPlatformManager()

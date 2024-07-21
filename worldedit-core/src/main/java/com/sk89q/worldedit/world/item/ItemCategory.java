@@ -32,7 +32,7 @@ import com.sk89q.worldedit.registry.NamespacedRegistry;
  */
 public class ItemCategory extends Category<ItemType> implements Keyed {
 
-    public static final NamespacedRegistry<ItemCategory> REGISTRY = new NamespacedRegistry<>("item tag");
+    public static final NamespacedRegistry<ItemCategory> REGISTRY = new NamespacedRegistry<>("item tag", "item_tag", "minecraft");
 
     public ItemCategory(final String id) {
         super(id, () -> WorldEdit.getInstance().getPlatformManager()
