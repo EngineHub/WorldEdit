@@ -22,7 +22,6 @@ package com.sk89q.worldedit.command.argument;
 import com.google.common.collect.ImmutableList;
 import com.google.common.reflect.TypeToken;
 import com.sk89q.worldedit.command.util.SuggestionHelper;
-import com.sk89q.worldedit.internal.annotation.RegistryType;
 import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.Registry;
 import com.sk89q.worldedit.util.formatting.text.Component;
@@ -76,7 +75,7 @@ public final class RegistryConverter<V extends Keyed> implements ArgumentConvert
             );
 
         // This must be separate as it has a generic type
-        commandManager.registerConverter(Key.of(new TypeToken<>() {}, RegistryType.class), new RegistryConverter<>(Registry.REGISTRY));
+        commandManager.registerConverter(Key.of(new TypeToken<>() {}), new RegistryConverter<>(Registry.REGISTRY));
     }
 
     @SuppressWarnings("unchecked")
