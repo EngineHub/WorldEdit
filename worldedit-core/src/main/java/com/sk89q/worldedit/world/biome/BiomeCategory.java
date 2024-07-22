@@ -31,7 +31,7 @@ import java.util.function.Supplier;
  */
 public class BiomeCategory extends Category<BiomeType> implements Keyed {
 
-    public static final NamespacedRegistry<BiomeCategory> REGISTRY = new NamespacedRegistry<>("biome tag", true);
+    public static final NamespacedRegistry<BiomeCategory> REGISTRY = new NamespacedRegistry<>("biome tag", "biome_tag", "minecraft", true);
 
     public BiomeCategory(final String id) {
         super(id, Set::of);

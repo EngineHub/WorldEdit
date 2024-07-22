@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
 
 public class ItemType implements Keyed {
 
-    public static final NamespacedRegistry<ItemType> REGISTRY = new NamespacedRegistry<>("item type", true);
+    public static final NamespacedRegistry<ItemType> REGISTRY = new NamespacedRegistry<>("item type", "item_type", "minecraft", true);
 
     private final String id;
     @SuppressWarnings({"deprecation", "this-escape"})
