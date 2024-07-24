@@ -335,7 +335,7 @@ public class BukkitAdapter {
      */
     public static Material adapt(ItemType itemType) {
         checkNotNull(itemType);
-        var key = checkNotNull(NamespacedKey.fromString(itemType.id()), "Item type key is invalid");
+        NamespacedKey key = checkNotNull(NamespacedKey.fromString(itemType.id()), "Item type key is invalid");
         return Registry.MATERIAL.get(key);
     }
 
@@ -347,7 +347,7 @@ public class BukkitAdapter {
      */
     public static Material adapt(BlockType blockType) {
         checkNotNull(blockType);
-        var key = checkNotNull(NamespacedKey.fromString(blockType.id()), "Item type key is invalid");
+        NamespacedKey key = checkNotNull(NamespacedKey.fromString(blockType.id()), "Block type key is invalid");
         return Registry.MATERIAL.get(key);
     }
 
