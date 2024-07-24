@@ -12,6 +12,21 @@ configure<buildlogic.CommonJavaExtension> {
     banSlf4j = false
 }
 
+paperweight {
+    injectPaperRepository = false
+}
+
+repositories {
+    maven {
+        name = "EngineHub"
+        url = uri("https://maven.enginehub.org/repo/")
+    }
+    mavenCentral()
+    afterEvaluate {
+        killNonEngineHubRepositories()
+    }
+}
+
 dependencies {
     "implementation"(project(":worldedit-bukkit"))
     constraints {
