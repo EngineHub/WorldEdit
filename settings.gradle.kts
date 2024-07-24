@@ -51,8 +51,7 @@ dependencyResolutionManagement {
     }
 }
 
-logger.lifecycle(
-    """
+logger.lifecycle("""
 *******************************************
  You are building WorldEdit!
 
@@ -64,8 +63,7 @@ logger.lifecycle(
 
  Output files will be in [subproject]/build/libs
 *******************************************
-"""
-)
+""")
 
 rootProject.name = "worldedit"
 
