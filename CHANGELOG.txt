@@ -1,3 +1,9 @@
+7.3.5
+- [Bukkit] Utilise new Bukkit registry API, allowing WorldEdit to work with Commodore disabled (`paper.disableOldApiSupport` flag on Paper)
+- Fix queryRel not behaving correctly in //deform and the deform brush
+- Shutdown the executor service on disable, to prevent waiting on async tasks before shutting down
+- Remove legacy code for pre-1.16 //drawsel handling
+
 7.3.4
 - Added support for 1.21
 - Fixed an issue where //drawsel can prevent using //world overrides in some situation
