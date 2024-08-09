@@ -31,14 +31,8 @@ tasks.withType<RunGameTask>().configureEach {
 }
 
 repositories {
-    maven {
-        name = "EngineHub"
-        url = uri("https://maven.enginehub.org/repo/")
-    }
-    getByName("Mojang") {
-        content {
-            includeGroupAndSubgroups("com.mojang")
-        }
+    afterEvaluate {
+        verifyEngineHubRepositories()
     }
 }
 

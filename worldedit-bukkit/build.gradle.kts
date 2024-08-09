@@ -11,13 +11,6 @@ platform {
     includeClasspath = true
 }
 
-repositories {
-    maven {
-        name = "Spigot"
-        url = uri("https://hub.spigotmc.org/nexus/content/groups/public")
-    }
-}
-
 val localImplementation = configurations.create("localImplementation") {
     description = "Dependencies used locally, but provided by the runtime Bukkit implementation"
     isCanBeConsumed = false

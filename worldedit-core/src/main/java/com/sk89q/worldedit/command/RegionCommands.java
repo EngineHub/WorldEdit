@@ -34,6 +34,8 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.function.GroundFunction;
 import com.sk89q.worldedit.function.RegionFunction;
+import com.sk89q.worldedit.function.RegionMaskingFilter;
+import com.sk89q.worldedit.function.block.ApplySideEffect;
 import com.sk89q.worldedit.function.block.BlockReplace;
 import com.sk89q.worldedit.function.generator.FloraGenerator;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
@@ -59,6 +61,7 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.util.formatting.component.TextUtils;
 import com.sk89q.worldedit.util.formatting.text.Component;
@@ -603,4 +606,26 @@ public class RegionCommands {
         return affected;
     }
 
+    @Command(
+        name = "/update",
+        desc = "Apply side effects to your selection"
+    )
+    @CommandPermissions("worldedit.update")
+    void update(Actor actor, LocalSession session, World injectedWorld,
+                @Arg(desc = "The side effects", def = "")
+                SideEffectSet sideEffectSet) throws WorldEditException {
+        if (sideEffectSet == null) {
+            // Use defaults if none supplied.
+            sideEffectSet = SideEffectSet.defaults();
+        }
+        RegionFunction apply = new ApplySideEffect(injectedWorld, sideEffectSet);
+        if (session.getMask() != null) {
+            apply = new RegionMaskingFilter(session.getMask(), apply);
+        }
+
+        RegionVisitor visitor = new RegionVisitor(session.getSelection(injectedWorld), apply);
+        Operations.complete(visitor);
+
+        actor.printInfo(TranslatableComponent.of("worldedit.update"));
+    }
 }

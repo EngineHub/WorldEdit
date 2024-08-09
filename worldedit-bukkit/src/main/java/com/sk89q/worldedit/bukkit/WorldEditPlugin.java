@@ -216,8 +216,9 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         });
         // Block & Item
         Registry.MATERIAL.forEach(material -> {
+            String key = material.getKey().toString();
             if (material.isBlock()) {
-                BlockType.REGISTRY.register(material.getKey().toString(), new BlockType(material.getKey().toString(), blockState -> {
+                BlockType.REGISTRY.register(key, new BlockType(key, blockState -> {
                     // TODO Use something way less hacky than this.
                     ParserContext context = new ParserContext();
                     context.setPreferringWildcard(true);
@@ -234,13 +235,13 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
                         }
                         return defaultState;
                     } catch (InputParseException e) {
-                        getLogger().log(Level.WARNING, "Error loading block state for " + material.getKey(), e);
+                        getLogger().log(Level.WARNING, "Error loading block state for " + key, e);
                         return blockState;
                     }
                 }));
             }
             if (material.isItem()) {
-                ItemType.REGISTRY.register(material.getKey().toString(), new ItemType(material.getKey().toString()));
+                ItemType.REGISTRY.register(key, new ItemType(key));
             }
         });
         // Entity
@@ -262,10 +263,12 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     private void setupTags() {
         // Tags
         for (Tag<Material> blockTag : Bukkit.getTags(Tag.REGISTRY_BLOCKS, Material.class)) {
-            BlockCategory.REGISTRY.register(blockTag.getKey().toString(), new BlockCategory(blockTag.getKey().toString()));
+            String key = blockTag.getKey().toString();
+            BlockCategory.REGISTRY.register(key, new BlockCategory(key));
         }
         for (Tag<Material> itemTag : Bukkit.getTags(Tag.REGISTRY_ITEMS, Material.class)) {
-            ItemCategory.REGISTRY.register(itemTag.getKey().toString(), new ItemCategory(itemTag.getKey().toString()));
+            String key = itemTag.getKey().toString();
+            ItemCategory.REGISTRY.register(key, new ItemCategory(key));
         }
     }
 
@@ -324,7 +327,6 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             config.unload();
         }
         this.getServer().getScheduler().cancelTasks(this);
-        worldEdit.getExecutorService().shutdown();
     }
 
     /**

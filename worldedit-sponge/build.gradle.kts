@@ -18,15 +18,25 @@ commonJava {
     banSlf4j = false
 }
 
-repositories {
-    mavenCentral()
-}
-
 minecraft {
+    injectRepositories(false)
     version(libs.versions.sponge.minecraft.get())
 }
 
+repositories {
+    maven {
+        name = "EngineHub"
+        url = uri("https://maven.enginehub.org/repo/")
+    }
+    mavenCentral()
+    verifyEngineHubRepositories()
+    afterEvaluate {
+        verifyEngineHubRepositories()
+    }
+}
+
 sponge {
+    injectRepositories(false)
     apiVersion(libs.versions.sponge.api.asProvider().get())
     license("GPL-3.0-or-later")
     plugin("worldedit") {

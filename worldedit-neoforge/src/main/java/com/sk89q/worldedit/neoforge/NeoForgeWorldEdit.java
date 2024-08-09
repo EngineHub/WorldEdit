@@ -157,38 +157,44 @@ public class NeoForgeWorldEdit {
     private void setupRegistries(MinecraftServer server) {
         // Blocks
         for (ResourceLocation name : BuiltInRegistries.BLOCK.keySet()) {
-            if (BlockType.REGISTRY.get(name.toString()) == null) {
-                BlockType.REGISTRY.register(name.toString(), new BlockType(name.toString(),
+            String key = name.toString();
+            if (BlockType.REGISTRY.get(key) == null) {
+                BlockType.REGISTRY.register(key, new BlockType(key,
                     input -> NeoForgeAdapter.adapt(NeoForgeAdapter.adapt(input.getBlockType()).defaultBlockState())));
             }
         }
         // Items
         for (ResourceLocation name : BuiltInRegistries.ITEM.keySet()) {
-            if (ItemType.REGISTRY.get(name.toString()) == null) {
-                ItemType.REGISTRY.register(name.toString(), new ItemType(name.toString()));
+            String key = name.toString();
+            if (ItemType.REGISTRY.get(key) == null) {
+                ItemType.REGISTRY.register(key, new ItemType(key));
             }
         }
         // Entities
         for (ResourceLocation name : BuiltInRegistries.ENTITY_TYPE.keySet()) {
-            if (EntityType.REGISTRY.get(name.toString()) == null) {
-                EntityType.REGISTRY.register(name.toString(), new EntityType(name.toString()));
+            String key = name.toString();
+            if (EntityType.REGISTRY.get(key) == null) {
+                EntityType.REGISTRY.register(key, new EntityType(key));
             }
         }
         // Biomes
         for (ResourceLocation name : server.registryAccess().registryOrThrow(Registries.BIOME).keySet()) {
-            if (BiomeType.REGISTRY.get(name.toString()) == null) {
-                BiomeType.REGISTRY.register(name.toString(), new BiomeType(name.toString()));
+            String key = name.toString();
+            if (BiomeType.REGISTRY.get(key) == null) {
+                BiomeType.REGISTRY.register(key, new BiomeType(key));
             }
         }
         // Tags
         server.registryAccess().registryOrThrow(Registries.BLOCK).getTagNames().map(TagKey::location).forEach(name -> {
-            if (BlockCategory.REGISTRY.get(name.toString()) == null) {
-                BlockCategory.REGISTRY.register(name.toString(), new BlockCategory(name.toString()));
+            String key = name.toString();
+            if (BlockCategory.REGISTRY.get(key) == null) {
+                BlockCategory.REGISTRY.register(key, new BlockCategory(key));
             }
         });
         server.registryAccess().registryOrThrow(Registries.ITEM).getTagNames().map(TagKey::location).forEach(name -> {
-            if (ItemCategory.REGISTRY.get(name.toString()) == null) {
-                ItemCategory.REGISTRY.register(name.toString(), new ItemCategory(name.toString()));
+            String key = name.toString();
+            if (ItemCategory.REGISTRY.get(key) == null) {
+                ItemCategory.REGISTRY.register(key, new ItemCategory(key));
             }
         });
         Registry<Biome> biomeRegistry = server.registryAccess().registryOrThrow(Registries.BIOME);
@@ -208,14 +214,16 @@ public class NeoForgeWorldEdit {
         });
         // Features
         for (ResourceLocation name : server.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).keySet()) {
-            if (ConfiguredFeatureType.REGISTRY.get(name.toString()) == null) {
-                ConfiguredFeatureType.REGISTRY.register(name.toString(), new ConfiguredFeatureType(name.toString()));
+            String key = name.toString();
+            if (ConfiguredFeatureType.REGISTRY.get(key) == null) {
+                ConfiguredFeatureType.REGISTRY.register(key, new ConfiguredFeatureType(key));
             }
         }
         // Structures
         for (ResourceLocation name : server.registryAccess().registryOrThrow(Registries.STRUCTURE).keySet()) {
-            if (StructureType.REGISTRY.get(name.toString()) == null) {
-                StructureType.REGISTRY.register(name.toString(), new StructureType(name.toString()));
+            String key = name.toString();
+            if (StructureType.REGISTRY.get(key) == null) {
+                StructureType.REGISTRY.register(key, new StructureType(key));
             }
         }
     }
@@ -257,7 +265,6 @@ public class NeoForgeWorldEdit {
         WorldEdit worldEdit = WorldEdit.getInstance();
         worldEdit.getSessionManager().unload();
         WorldEdit.getInstance().getEventBus().post(new PlatformUnreadyEvent(platform));
-        WorldEdit.getInstance().getExecutorService().shutdown();
     }
 
     @SubscribeEvent

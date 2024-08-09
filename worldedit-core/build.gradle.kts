@@ -7,20 +7,6 @@ plugins {
     id("buildlogic.core-and-platform")
 }
 
-repositories {
-    ivy {
-        url = uri("https://repo.enginehub.org/language-files/")
-        name = "EngineHub Language Files"
-        patternLayout {
-            artifact("[organisation]/[module]/[revision]/[artifact]-[revision](+[classifier])(.[ext])")
-            setM2compatible(true)
-        }
-        metadataSources {
-            artifact()
-        }
-    }
-}
-
 configurations {
     register("languageFiles")
 }
