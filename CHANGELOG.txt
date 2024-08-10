@@ -1,3 +1,7 @@
+7.3.6
+- [Bukkit] Allow 1.21 Paper adapter to load on 1.21.1
+- Revert "Shutdown the executor service on disable, to prevent waiting on async tasks before shutting down" due to it causing issues in some situations
+
 7.3.5
 - [Bukkit] Utilise new Bukkit registry API, allowing WorldEdit to work with Commodore disabled (`paper.disableOldApiSupport` flag on Paper)
 - Fix queryRel not behaving correctly in //deform and the deform brush

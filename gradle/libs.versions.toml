@@ -47,7 +47,7 @@ jfrog-buildinfo = "org.jfrog.buildinfo:build-info-extractor-gradle:5.2.0"
 
 fabric-mixin = "net.fabricmc:sponge-mixin:0.13.3+mixin.0.8.5"
 
-paperweight = "io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:1.7.1"
+paperweight = "io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:1.7.2"
 
 linBus-bom = "org.enginehub.lin-bus:lin-bus-bom:0.1.0"
 linBus-common.module = "org.enginehub.lin-bus:lin-bus-common"
