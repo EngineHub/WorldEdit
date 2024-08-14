@@ -283,7 +283,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                                 Property<Object> propAsObj = (Property<Object>) prop;
                                 result = result.with(propAsObj, "none");
                             }
-                            directionalProperties.put(closestProp, result.getState(prop));
+                            directionalProperties.put(closestProp, state);
                         }
                     }
                 }
