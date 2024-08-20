@@ -12,10 +12,9 @@ Java Edition required. WorldEdit is compatible with Forge, Fabric, Bukkit, Spigo
 
 ## Download WorldEdit
 
-This place contains the Java code for WorldEdit, but if you want to just use WorldEdit, get the mod or plugin from these pages:
+This place contains the Java code for WorldEdit, but if you want to just use WorldEdit, get the mod or plugin from Modrinth:
 
-* For the mod: https://www.curseforge.com/minecraft/mc-mods/worldedit
-* For the server plugin: https://dev.bukkit.org/projects/worldedit
+https://modrinth.com/plugin/worldedit/versions
 
 Edit the Code
 ---------
