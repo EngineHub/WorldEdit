@@ -8,9 +8,6 @@ plugins {
     id("buildlogic.common")
 }
 
-val commonJava = extensions.create<buildlogic.CommonJavaExtension>("commonJava")
-commonJava.banSlf4j.convention(true)
-
 tasks
     .withType<JavaCompile>()
     .matching { it.name == "compileJava" || it.name == "compileTestJava" }
@@ -65,16 +62,6 @@ tasks.withType<Javadoc>().configureEach {
 configure<JavaPluginExtension> {
     withJavadocJar()
     withSourcesJar()
-}
-
-configurations["compileClasspath"].apply {
-    resolutionStrategy.componentSelection {
-        withModule("org.slf4j:slf4j-api") {
-            if (commonJava.banSlf4j.get()) {
-                reject("No SLF4J allowed on compile classpath")
-            }
-        }
-    }
 }
 
 tasks.named("check").configure {

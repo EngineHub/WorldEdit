@@ -56,7 +56,6 @@ dependencies {
         because("Resolving Spigot annotations")
     }
     "compileOnly"(libs.paperApi) {
-        exclude("org.slf4j", "slf4j-api")
         exclude("junit", "junit")
     }
     "implementation"(libs.paperLib)
