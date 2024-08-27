@@ -8,10 +8,6 @@ plugins {
     id("io.papermc.paperweight.userdev")
 }
 
-configure<buildlogic.CommonJavaExtension> {
-    banSlf4j = false
-}
-
 paperweight {
     injectPaperRepository = false
 }

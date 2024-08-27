@@ -7,11 +7,6 @@ plugins {
     id("buildlogic.platform")
 }
 
-commonJava {
-    // Not easy to do, because it's in a bunch of separate configurations
-    banSlf4j = false
-}
-
 platform {
     kind = buildlogic.WorldEditKind.Mod
 }

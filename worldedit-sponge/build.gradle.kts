@@ -14,10 +14,6 @@ platform {
     includeClasspath = true
 }
 
-commonJava {
-    banSlf4j = false
-}
-
 minecraft {
     injectRepositories(false)
     version(libs.versions.sponge.minecraft.get())
