@@ -88,4 +88,19 @@ public final class StaticRefraction {
     public static final String DESTROY_BLOCK_BREAKING_ENTITY_MAX_UPDATE = Refraction.pickName(
         "destroyBlock", "a"
     );
+    public static final String GET_VISIBLE_CHUNK_IF_PRESENT = Refraction.pickName(
+        "getVisibleChunkIfPresent", "b"
+    );
+    public static final String CHANGED_BLOCKS_PER_SECTION = Refraction.pickName(
+        "changedBlocksPerSection", "n"
+    );
+    public static final String HAS_CHANGED_SECTIONS = Refraction.pickName(
+        "hasChangedSections", "m"
+    );
+    /**
+     * {@code updateBlockEntityTicker(BlockEntity blockEntity)}.
+     */
+    public static final String UPDATE_BLOCK_ENTITY_TICKER = Refraction.pickName(
+        "updateBlockEntityTicker", "c"
+    );
 }

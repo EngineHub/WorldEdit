@@ -131,6 +131,8 @@ public class YAMLConfiguration extends LocalConfiguration {
         setDefaultLocaleName(config.getString("default-locale", defaultLocaleName));
 
         commandBlockSupport = config.getBoolean("command-block-support", false);
+
+        chunkSectionEditing = config.getBoolean("chunk-section-editing", chunkSectionEditing);
     }
 
     public void unload() {

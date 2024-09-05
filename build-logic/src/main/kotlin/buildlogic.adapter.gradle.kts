@@ -1,3 +1,4 @@
+import buildlogic.getLibrary
 import buildlogic.stringyLibs
 import buildlogic.getVersion
 
@@ -25,6 +26,7 @@ repositories {
 
 dependencies {
     "implementation"(project(":worldedit-bukkit"))
+    "implementation"(stringyLibs.getLibrary("paperLib"))
     constraints {
         "remapper"("net.fabricmc:tiny-remapper:[${stringyLibs.getVersion("minimumTinyRemapper")},)") {
             because("Need remapper to support Java 21")

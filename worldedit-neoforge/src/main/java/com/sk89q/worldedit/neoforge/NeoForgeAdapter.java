@@ -23,6 +23,9 @@ import com.mojang.serialization.Codec;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
+import com.sk89q.worldedit.internal.wna.NativeAdapter;
+import com.sk89q.worldedit.internal.wna.NativeBlockState;
+import com.sk89q.worldedit.internal.wna.NativePosition;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.neoforge.internal.NBTConverter;
@@ -67,6 +70,26 @@ import javax.annotation.Nullable;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class NeoForgeAdapter {
+    private static final NativeAdapter NATIVE_ADAPTER = new NativeAdapter() {
+        @Override
+        public NativeBlockState toNative(BlockState state) {
+            return (NativeBlockState) NeoForgeAdapter.adapt(state);
+        }
+
+        @Override
+        public BlockState fromNative(NativeBlockState state) {
+            return NeoForgeAdapter.adapt((net.minecraft.world.level.block.state.BlockState) state);
+        }
+
+        @Override
+        public NativePosition newBlockPos(BlockVector3 pos) {
+            return (NativePosition) new BlockPos(pos.x(), pos.y(), pos.z());
+        }
+    };
+
+    public static NativeAdapter asNativeAdapter() {
+        return NATIVE_ADAPTER;
+    }
 
     private NeoForgeAdapter() {
     }

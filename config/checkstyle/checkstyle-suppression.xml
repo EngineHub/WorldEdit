@@ -9,8 +9,8 @@
     <suppress files=".*[\\/]worldedit[\\/]bukkit[\\/]adapter[\\/]impl[\\/].*\.java" checks="PackageName"/>
     <suppress files=".*[\\/]MathUtils.java" checks="MethodName"/>
     <suppress files=".*[\\/]bPermissionsResolver.java" checks="TypeName"/>
-    <!-- This thing only works via the use of a finalizer. -->
-    <suppress files=".*[\\/]TracedEditSession.java" checks="NoFinalizer"/>
     <!-- None of the old command stuff really matters -->
     <suppress files=".*[\\/]minecraft[\\/]util[\\/]commands[\\/].*\.java" checks=".*"/>
+    <!-- The mixins are allowed to use weird method names -->
+    <suppress files=".*Mixin.*\.java" checks="MethodName"/>
 </suppressions>

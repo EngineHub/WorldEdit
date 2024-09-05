@@ -26,6 +26,7 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.mask.BlockTypeMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.internal.wna.NativeWorld;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -48,6 +49,13 @@ public abstract class AbstractWorld implements World {
 
     private final PriorityQueue<QueuedEffect> effectQueue = new PriorityQueue<>();
     private int taskId = -1;
+
+    /**
+     * {@return the native interface to the world} <strong>Internal use only.</strong>
+     */
+    public @Nullable NativeWorld getNativeInterface() {
+        return null;
+    }
 
     @Override
     public boolean useItem(BlockVector3 position, BaseItem item, Direction face) {

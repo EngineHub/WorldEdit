@@ -13,3 +13,8 @@ accessible field net/minecraft/world/level/storage/PrimaryLevelData worldOptions
 mutable field net/minecraft/world/level/storage/PrimaryLevelData worldOptions Lnet/minecraft/world/level/levelgen/WorldOptions;
 
 accessible method net/minecraft/network/protocol/game/ClientboundBlockEntityDataPacket <init> (Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/entity/BlockEntityType;Lnet/minecraft/nbt/CompoundTag;)V
+
+# Ability to mark sections changed
+accessible method net/minecraft/server/level/ServerChunkCache getVisibleChunkIfPresent (J)Lnet/minecraft/server/level/ChunkHolder;
+accessible field net/minecraft/server/level/ChunkHolder changedBlocksPerSection [Lit/unimi/dsi/fastutil/shorts/ShortSet;
+accessible field net/minecraft/server/level/ChunkHolder hasChangedSections Z

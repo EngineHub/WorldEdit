@@ -5,9 +5,12 @@
     "mixins": [
         "AccessorServerPlayerGameMode",
         "MixinLevelChunkSetBlockHook",
+        "MixinNativeBlockState",
+        "MixinNativeChunk",
+        "MixinNativeChunkSection",
+        "MixinNativePosition",
+        "MixinNativeWorld",
         "MixinServerGamePacketListenerImpl"
-    ],
-    "server": [
     ],
     "injectors": {
         "defaultRequire": 1

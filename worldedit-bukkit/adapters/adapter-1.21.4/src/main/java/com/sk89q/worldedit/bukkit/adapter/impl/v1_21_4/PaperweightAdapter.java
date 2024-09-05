@@ -35,12 +35,17 @@ import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
+import com.sk89q.worldedit.bukkit.adapter.impl.v1_21_4.wna.PaperweightNativeBlockState;
+import com.sk89q.worldedit.bukkit.adapter.impl.v1_21_4.wna.PaperweightNativeWorld;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.Watchdog;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
-import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
+import com.sk89q.worldedit.internal.wna.NativeAdapter;
+import com.sk89q.worldedit.internal.wna.NativeBlockState;
+import com.sk89q.worldedit.internal.wna.NativePosition;
+import com.sk89q.worldedit.internal.wna.NativeWorld;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
@@ -171,7 +176,6 @@ import org.enginehub.linbus.tree.LinTagType;
 import org.spigotmc.SpigotConfig;
 import org.spigotmc.WatchdogThread;
 
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -199,8 +203,27 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 public final class PaperweightAdapter implements BukkitImplAdapter {
+    public static BlockPos adaptPos(NativePosition pos) {
+        return new BlockPos(pos.x(), pos.y(), pos.z());
+    }
 
     private final Logger logger = Logger.getLogger(getClass().getCanonicalName());
+
+    private final NativeAdapter nativeAdapter = new NativeAdapter() {
+        @Override
+        public NativeBlockState toNative(BlockState state) {
+            return new PaperweightNativeBlockState(adapt(state));
+        }
+
+        @Override
+        public BlockState fromNative(NativeBlockState state) {
+            return adapt(((PaperweightNativeBlockState) state).delegate());
+        }
+
+        @Override public NativePosition newBlockPos(BlockVector3 pos) {
+            return pos;
+        }
+    };
 
     private final Field serverWorldsField;
     private final Method getChunkFutureMethod;
@@ -257,6 +280,10 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             SpigotConfig.config.set("world-settings.worldeditregentempworld.verbose", false);
         } catch (ClassNotFoundException ignored) {
         }
+    }
+
+    public NativeAdapter asNativeAdapter() {
+        return nativeAdapter;
     }
 
     @Override
@@ -417,8 +444,8 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     }
 
     @Override
-    public WorldNativeAccess<?, ?, ?> createWorldNativeAccess(World world) {
-        return new PaperweightWorldNativeAccess(this, new WeakReference<>(((CraftWorld) world).getHandle()));
+    public NativeWorld createNativeInterface(World world) {
+        return new PaperweightNativeWorld(this, ((CraftWorld) world).getHandle());
     }
 
     private static net.minecraft.core.Direction adapt(Direction face) {
@@ -1090,7 +1117,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
      * @param foreign structure to convert
      * @return non-native structure
      */
-    Tag fromNative(LinTag<?> foreign) {
+    public Tag fromNative(LinTag<?> foreign) {
         if (foreign == null) {
             return null;
         }
