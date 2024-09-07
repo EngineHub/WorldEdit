@@ -30,7 +30,9 @@ configure<CheckstyleExtension> {
 }
 
 tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        includeEngines("junit-jupiter", "jqwik")
+    }
 }
 
 dependencies {
@@ -38,6 +40,7 @@ dependencies {
     "testImplementation"(platform(stringyLibs.getLibrary("junit-bom")))
     "testImplementation"(stringyLibs.getLibrary("junit-jupiter-api"))
     "testImplementation"(stringyLibs.getLibrary("junit-jupiter-params"))
+    "testImplementation"(stringyLibs.getLibrary("jqwik"))
     "testImplementation"(platform(stringyLibs.getLibrary("mockito-bom")))
     "testImplementation"(stringyLibs.getLibrary("mockito-core"))
     "testImplementation"(stringyLibs.getLibrary("mockito-junit-jupiter"))
