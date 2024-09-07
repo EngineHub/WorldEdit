@@ -559,7 +559,7 @@ public class EditSession implements Extent, AutoCloseable {
      */
     @Deprecated
     public boolean hasFastMode() {
-        return sideEffectExtent != null && this.sideEffectExtent.getSideEffectSet().doesApplyAny();
+        return sideEffectExtent != null && !this.sideEffectExtent.getSideEffectSet().doesApplyAny();
     }
 
     public SideEffectSet getSideEffectApplier() {
