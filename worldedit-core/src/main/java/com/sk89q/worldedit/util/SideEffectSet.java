@@ -19,11 +19,12 @@
 
 package com.sk89q.worldedit.util;
 
+import com.google.common.base.Verify;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import java.util.Arrays;
-import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -37,33 +38,73 @@ public class SideEffectSet {
             .collect(Collectors.toMap(Function.identity(), state -> SideEffect.State.OFF))
     );
 
-    private final Map<SideEffect, SideEffect.State> sideEffects;
-    private final Set<SideEffect> appliedSideEffects;
-    private final boolean appliesAny;
+    static {
+        Verify.verify(
+            SideEffect.State.values().length == 3,
+            "Implementation requires specifically 3 values in the SideEffect.State enum"
+        );
+        int maxEffects = Integer.SIZE / 2;
+        Verify.verify(
+            SideEffect.values().length <= maxEffects,
+            "Implementation requires less than " + maxEffects + " side effects"
+        );
+        Verify.verify(
+            SideEffect.State.OFF.ordinal() == 0,
+            "Implementation requires SideEffect.State.OFF to be the first value"
+        );
+    }
+
+    private static int shift(SideEffect effect) {
+        return effect.ordinal() * 2;
+    }
+
+    private static int computeSideEffectsBitmap(Map<SideEffect, SideEffect.State> sideEffects) {
+        int sideEffectsBitmap = 0;
+        for (SideEffect effect : SideEffect.values()) {
+            SideEffect.State state = sideEffects.getOrDefault(effect, effect.getDefaultValue());
+            sideEffectsBitmap |= (state.ordinal() << shift(effect));
+        }
+        return sideEffectsBitmap;
+    }
+
+    /**
+     * Side-effects and state are encoded into this field, 2 bits per side-effect. Least-significant bit is first.
+     */
+    private final int sideEffectsBitmap;
+    private final Set<SideEffect> sideEffectsToApply;
 
     public SideEffectSet(Map<SideEffect, SideEffect.State> sideEffects) {
-        this.sideEffects = Maps.immutableEnumMap(sideEffects);
+        this(computeSideEffectsBitmap(sideEffects));
+    }
 
-        appliedSideEffects = sideEffects.entrySet()
-                .stream()
-                .filter(entry -> entry.getValue() != SideEffect.State.OFF)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toSet());
-        appliesAny = !appliedSideEffects.isEmpty();
+    private SideEffectSet(int sideEffectsBitmap) {
+        this.sideEffectsBitmap = sideEffectsBitmap;
+        var sideEffectsToApply = EnumSet.noneOf(SideEffect.class);
+        for (SideEffect effect : SideEffect.values()) {
+            if (shouldApply(effect)) {
+                sideEffectsToApply.add(effect);
+            }
+        }
+        this.sideEffectsToApply = Sets.immutableEnumSet(sideEffectsToApply);
     }
 
     public SideEffectSet with(SideEffect sideEffect, SideEffect.State state) {
-        Map<SideEffect, SideEffect.State> entries = this.sideEffects.isEmpty() ? Maps.newEnumMap(SideEffect.class) : new EnumMap<>(this.sideEffects);
-        entries.put(sideEffect, state);
-        return new SideEffectSet(entries);
+        int mask = 0b11 << shift(sideEffect);
+        int newState = (state.ordinal() << shift(sideEffect)) & mask;
+        int newBitmap = (sideEffectsBitmap & ~mask) | newState;
+        return new SideEffectSet(newBitmap);
     }
 
     public boolean doesApplyAny() {
-        return this.appliesAny;
+        return sideEffectsBitmap != 0;
     }
 
     public SideEffect.State getState(SideEffect effect) {
-        return sideEffects.getOrDefault(effect, effect.getDefaultValue());
+        return SideEffect.State.values()[getRawState(effect)];
+    }
+
+    private int getRawState(SideEffect effect) {
+        return (sideEffectsBitmap >> shift(effect)) & 0b11;
     }
 
     /**
@@ -77,11 +118,11 @@ public class SideEffectSet {
      * @return Whether it should apply
      */
     public boolean shouldApply(SideEffect effect) {
-        return getState(effect) != SideEffect.State.OFF;
+        return getRawState(effect) != 0;
     }
 
     public Set<SideEffect> getSideEffectsToApply() {
-        return this.appliedSideEffects;
+        return sideEffectsToApply;
     }
 
     public static SideEffectSet defaults() {
