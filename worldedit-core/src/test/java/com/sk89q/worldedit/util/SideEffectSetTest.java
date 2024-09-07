@@ -19,107 +19,60 @@
 
 package com.sk89q.worldedit.util;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
-import org.junit.jupiter.api.Test;
+import net.jqwik.api.ForAll;
+import net.jqwik.api.Property;
 
-import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SideEffectSetTest {
-    private static void assertAppliesWithState(Map<SideEffect, SideEffect.State> expected, SideEffectSet set) {
-        Preconditions.checkArgument(
-            expected.keySet().containsAll(EnumSet.allOf(SideEffect.class)),
-            "Expected map must contain all side effects"
-        );
+    @Property
+    public boolean stateOrDefaultIsCorrect(
+        @ForAll Map<SideEffect, SideEffect.State> stateMap,
+        @ForAll SideEffect effectToTest
+    ) {
+        SideEffectSet set = new SideEffectSet(stateMap);
+        return set.getState(effectToTest) == stateMap.getOrDefault(effectToTest, effectToTest.getDefaultValue());
+    }
 
-        Set<SideEffect> appliedSet = expected.entrySet().stream()
-            .filter(e -> e.getValue() != SideEffect.State.OFF)
-            .map(Map.Entry::getKey)
-            .collect(Collectors.toSet());
-        assertEquals(appliedSet, set.getSideEffectsToApply());
-        assertEquals(!appliedSet.isEmpty(), set.doesApplyAny());
+    @Property
+    public boolean shouldApplyUnlessOff(
+        @ForAll Map<SideEffect, SideEffect.State> stateMap,
+        @ForAll SideEffect effectToTest
+    ) {
+        SideEffectSet set = new SideEffectSet(stateMap);
+        return set.shouldApply(effectToTest)
+            == (stateMap.getOrDefault(effectToTest, effectToTest.getDefaultValue()) != SideEffect.State.OFF);
+    }
+
+    @Property
+    public boolean withChangesState(
+        @ForAll Map<SideEffect, SideEffect.State> stateMap,
+        @ForAll SideEffect effectToTest,
+        @ForAll SideEffect.State stateToSet
+    ) {
+        SideEffectSet set = new SideEffectSet(stateMap).with(effectToTest, stateToSet);
+        return set.getState(effectToTest) == stateToSet;
+    }
+
+    @Property
+    public boolean anyShouldApplyEqualsDoesApplyAny(@ForAll Map<SideEffect, SideEffect.State> stateMap) {
+        SideEffectSet set = new SideEffectSet(stateMap);
+        boolean anyShouldApply = false;
         for (SideEffect effect : SideEffect.values()) {
-            assertEquals(
-                appliedSet.contains(effect), set.shouldApply(effect), "Does not apply expected effect: " + effect
-            );
-            assertEquals(
-                expected.get(effect), set.getState(effect),
-                "Does not have expected state for effect: " + effect
-            );
-        }
-    }
-
-    private static Map<SideEffect, SideEffect.State> initStateMap(Function<SideEffect, SideEffect.State> stateFunction) {
-        return Arrays.stream(SideEffect.values()).collect(Collectors.toMap(Function.identity(), stateFunction));
-    }
-
-    @Test
-    public void defaults() {
-        assertAppliesWithState(
-            initStateMap(SideEffect::getDefaultValue),
-            SideEffectSet.defaults()
-        );
-    }
-
-    @Test
-    public void noneExposed() {
-        assertAppliesWithState(
-            initStateMap(effect -> {
-                if (effect.isExposed()) {
-                    return SideEffect.State.OFF;
-                } else {
-                    return effect.getDefaultValue();
-                }
-            }),
-            SideEffectSet.none()
-        );
-    }
-
-    @Test
-    public void allOn() {
-        Map<SideEffect, SideEffect.State> expected = initStateMap(effect -> SideEffect.State.ON);
-        assertAppliesWithState(
-            expected,
-            new SideEffectSet(expected)
-        );
-    }
-
-    @Test
-    public void allDelayed() {
-        Map<SideEffect, SideEffect.State> expected = initStateMap(effect -> SideEffect.State.DELAYED);
-        assertAppliesWithState(
-            expected,
-            new SideEffectSet(expected)
-        );
-    }
-
-    @Test
-    public void allOff() {
-        Map<SideEffect, SideEffect.State> expected = initStateMap(effect -> SideEffect.State.OFF);
-        assertAppliesWithState(
-            expected,
-            new SideEffectSet(expected)
-        );
-    }
-
-    @Test
-    public void with() {
-        Map<SideEffect, SideEffect.State> expected = initStateMap(SideEffect::getDefaultValue);
-        SideEffectSet set = SideEffectSet.defaults();
-
-        for (SideEffect effect : SideEffect.values()) {
-            for (SideEffect.State state : SideEffect.State.values()) {
-                expected = Maps.transformEntries(expected, (e, s) -> e == effect ? state : s);
-                set = set.with(effect, state);
-                assertAppliesWithState(expected, set);
+            if (set.shouldApply(effect)) {
+                anyShouldApply = true;
+                break;
             }
         }
+        return anyShouldApply == set.doesApplyAny();
+    }
+
+    @Property
+    public boolean shouldApplyEqualsApplySetContains(
+        @ForAll Map<SideEffect, SideEffect.State> stateMap,
+        @ForAll SideEffect effectToTest
+    ) {
+        SideEffectSet set = new SideEffectSet(stateMap);
+        return set.shouldApply(effectToTest) == set.getSideEffectsToApply().contains(effectToTest);
     }
 }
