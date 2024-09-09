@@ -66,6 +66,8 @@ junit-jupiter-api.module = "org.junit.jupiter:junit-jupiter-api"
 junit-jupiter-params.module = "org.junit.jupiter:junit-jupiter-params"
 junit-jupiter-engine.module = "org.junit.jupiter:junit-jupiter-engine"
 
+jqwik = "net.jqwik:jqwik:1.9.0"
+
 mockito-bom = "org.mockito:mockito-bom:5.11.0"
 mockito-core.module = "org.mockito:mockito-core"
 mockito-junit-jupiter.module = "org.mockito:mockito-junit-jupiter"

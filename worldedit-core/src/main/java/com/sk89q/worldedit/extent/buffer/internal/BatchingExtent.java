@@ -17,38 +17,32 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extent.reorder;
+package com.sk89q.worldedit.extent.buffer.internal;
 
+import com.google.common.base.Throwables;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.AbstractBufferingExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
-import com.sk89q.worldedit.internal.util.RegionOptimizedVectorSorter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.collection.BlockMap;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * A special extent that batches changes into Minecraft chunks. This helps
- * improve the speed of setting the blocks, since chunks do not need to be
- * loaded repeatedly, however it does take more memory due to caching the
- * blocks.
+ * An extent that buffers all changes until completed.
  */
-public class ChunkBatchingExtent extends AbstractBufferingExtent {
+public class BatchingExtent extends AbstractBufferingExtent {
 
     private final BlockMap<BaseBlock> blockMap = BlockMap.createForBaseBlock();
     private boolean enabled;
 
-    public ChunkBatchingExtent(Extent extent) {
+    public BatchingExtent(Extent extent) {
         this(extent, true);
     }
 
-    public ChunkBatchingExtent(Extent extent, boolean enabled) {
+    public BatchingExtent(Extent extent, boolean enabled) {
         super(extent);
         this.enabled = enabled;
     }
@@ -92,11 +86,17 @@ public class ChunkBatchingExtent extends AbstractBufferingExtent {
 
             @Override
             public Operation resume(RunContext run) throws WorldEditException {
-                List<BlockVector3> blockVectors = new ArrayList<>(blockMap.keySet());
-                RegionOptimizedVectorSorter.sort(blockVectors);
-                for (BlockVector3 position : blockVectors) {
-                    BaseBlock block = blockMap.get(position);
-                    getExtent().setBlock(position, block);
+                try {
+                    blockMap.forEach((position, block) -> {
+                        try {
+                            getExtent().setBlock(position, block);
+                        } catch (WorldEditException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                } catch (RuntimeException e) {
+                    Throwables.throwIfInstanceOf(e.getCause(), WorldEditException.class);
+                    throw e;
                 }
                 blockMap.clear();
                 return null;
