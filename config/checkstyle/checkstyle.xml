@@ -145,6 +145,10 @@ Checks based on Google Checks, modified for EngineHub.
             <property name="sortImportsInGroupAlphabetically" value="true"/>
             <property name="customImportOrderRules" value="THIRD_PARTY_PACKAGE###STANDARD_JAVA_PACKAGE###STATIC"/>
         </module>
+        <module name="IllegalImport">
+            <property name="illegalPkgs" value="org.slf4j"/>
+            <message key="name.invalidPattern" value="Illegal import - {0}. Use Log4J instead."/>
+        </module>
         <module name="MethodParamPad"/>
         <module name="OperatorWrap">
             <property name="option" value="NL"/>

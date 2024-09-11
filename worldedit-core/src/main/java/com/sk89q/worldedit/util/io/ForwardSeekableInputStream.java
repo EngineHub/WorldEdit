@@ -86,7 +86,6 @@ public class ForwardSeekableInputStream extends InputStream {
 
     public void seek(long n) throws IOException {
         long diff = n - position;
-        System.err.println("Seek to " + n + " from position " + position + " using " + diff);
 
         if (diff < 0) {
             throw new IOException("Can't seek backwards");

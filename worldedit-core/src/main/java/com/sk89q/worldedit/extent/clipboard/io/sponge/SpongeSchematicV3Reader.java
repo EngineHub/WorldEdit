@@ -143,7 +143,7 @@ public class SpongeSchematicV3Reader implements ClipboardReader {
         );
 
         byte[] blocks = blockContainer.getTag("Data", LinTagType.byteArrayTag()).value();
-        LinListTag<LinCompoundTag> blockEntities = blockContainer.getListTag("BlockEntities", LinTagType.compoundTag());
+        LinListTag<LinCompoundTag> blockEntities = blockContainer.findListTag("BlockEntities", LinTagType.compoundTag());
 
         ReaderUtil.initializeClipboardFromBlocks(
             clipboard, palette, blocks, blockEntities, fixer, true

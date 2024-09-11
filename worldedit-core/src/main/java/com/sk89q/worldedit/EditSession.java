@@ -32,6 +32,7 @@ import com.sk89q.worldedit.extent.MaskingExtent;
 import com.sk89q.worldedit.extent.NullExtent;
 import com.sk89q.worldedit.extent.TracingExtent;
 import com.sk89q.worldedit.extent.buffer.ForgetfulExtentBuffer;
+import com.sk89q.worldedit.extent.buffer.internal.BatchingExtent;
 import com.sk89q.worldedit.extent.cache.LastAccessExtentCache;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.extent.inventory.BlockBagExtent;
@@ -199,6 +200,7 @@ public class EditSession implements Extent, AutoCloseable {
 
     private @Nullable SideEffectExtent sideEffectExtent;
     private final SurvivalModeExtent survivalExtent;
+    private @Nullable BatchingExtent batchingExtent;
     private @Nullable ChunkBatchingExtent chunkBatchingExtent;
     private final BlockBagExtent blockBagExtent;
     @SuppressWarnings("deprecation")
@@ -267,6 +269,7 @@ public class EditSession implements Extent, AutoCloseable {
             this.bypassReorderHistory = traceIfNeeded(new DataValidatorExtent(extent, world));
 
             // This extent can be skipped by calling rawSetBlock()
+            extent = traceIfNeeded(batchingExtent = new BatchingExtent(extent));
             @SuppressWarnings("deprecation")
             MultiStageReorder reorder = new MultiStageReorder(extent, false);
             extent = traceIfNeeded(reorderExtent = reorder);
@@ -557,7 +560,7 @@ public class EditSession implements Extent, AutoCloseable {
      */
     @Deprecated
     public boolean hasFastMode() {
-        return sideEffectExtent != null && this.sideEffectExtent.getSideEffectSet().doesApplyAny();
+        return sideEffectExtent != null && !this.sideEffectExtent.getSideEffectSet().doesApplyAny();
     }
 
     public SideEffectSet getSideEffectApplier() {
@@ -616,10 +619,12 @@ public class EditSession implements Extent, AutoCloseable {
             }
             return;
         }
+        assert batchingExtent != null : "same nullness as chunkBatchingExtent";
         if (!batchingChunks && isBatchingChunks()) {
             internalFlushSession();
         }
         chunkBatchingExtent.setEnabled(batchingChunks);
+        batchingExtent.setEnabled(!batchingChunks);
     }
 
     /**
@@ -648,6 +653,8 @@ public class EditSession implements Extent, AutoCloseable {
         setReorderMode(ReorderMode.NONE);
         if (chunkBatchingExtent != null) {
             chunkBatchingExtent.setEnabled(false);
+            assert batchingExtent != null : "same nullness as chunkBatchingExtent";
+            batchingExtent.setEnabled(true);
         }
     }
 
