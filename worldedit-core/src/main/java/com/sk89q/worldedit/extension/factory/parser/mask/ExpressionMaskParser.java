@@ -27,7 +27,7 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.internal.registry.InputParser;
-import com.sk89q.worldedit.math.Vector3;
+import com.sk89q.worldedit.math.transform.Identity;
 import com.sk89q.worldedit.regions.shape.WorldEditExpressionEnvironment;
 import com.sk89q.worldedit.session.SessionOwner;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
@@ -58,7 +58,7 @@ public class ExpressionMaskParser extends InputParser<Mask> {
         try {
             Expression exp = Expression.compile(input.substring(1), "x", "y", "z");
             WorldEditExpressionEnvironment env = new WorldEditExpressionEnvironment(
-                    context.requireExtent(), Vector3.ONE, Vector3.ZERO);
+                    context.requireExtent(), new Identity());
             exp.setEnvironment(env);
             if (context.getActor() != null) {
                 SessionOwner owner = context.getActor();
