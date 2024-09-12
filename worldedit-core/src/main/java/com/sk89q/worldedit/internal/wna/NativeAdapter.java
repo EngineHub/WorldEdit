@@ -17,12 +17,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * "WNA", or WorldEdit Native Access.
- *
- * <p>
- * Contains internal helper functions for sharing code between platforms. "Native*" interfaces are wrapped around or
- * mixed in to the native structures.
- * </p>
- */
 package com.sk89q.worldedit.internal.wna;
+
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.world.block.BlockState;
+
+/**
+ * Methods for adapting data to the native types.
+ */
+public interface NativeAdapter {
+    NativeBlockState toNative(BlockState state);
+
+    BlockState fromNative(NativeBlockState state);
+
+    NativePosition newBlockPos(BlockVector3 pos);
+}

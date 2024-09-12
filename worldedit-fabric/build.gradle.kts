@@ -35,7 +35,10 @@ dependencies {
     "api"(project(":worldedit-core"))
 
     "minecraft"(libs.fabric.minecraft)
-    "mappings"(project.the<LoomGradleExtensionAPI>().officialMojangMappings())
+    "mappings"(project.the<LoomGradleExtensionAPI>().layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${libs.versions.parchment.minecraft.get()}:${libs.versions.parchment.mappings.get()}@zip")
+    })
     "modImplementation"(libs.fabric.loader)
 
 

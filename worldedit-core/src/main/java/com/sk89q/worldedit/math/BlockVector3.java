@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.math;
 
+import com.sk89q.worldedit.internal.wna.NativePosition;
 import com.sk89q.worldedit.math.transform.AffineTransform;
 
 import java.util.Comparator;
@@ -32,7 +33,8 @@ import static com.sk89q.worldedit.math.BitMath.unpackZ;
 /**
  * An immutable 3-dimensional vector.
  */
-public record BlockVector3(int x, int y, int z) {
+// This implements the internal `NativePosition` interface so that Bukkit can use this as its native position type
+public record BlockVector3(int x, int y, int z) implements NativePosition {
 
     public static final BlockVector3 ZERO = new BlockVector3(0, 0, 0);
     public static final BlockVector3 UNIT_X = new BlockVector3(1, 0, 0);

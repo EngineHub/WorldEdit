@@ -25,6 +25,9 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.fabric.internal.FabricTransmogrifier;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
+import com.sk89q.worldedit.internal.wna.NativeAdapter;
+import com.sk89q.worldedit.internal.wna.NativeBlockState;
+import com.sk89q.worldedit.internal.wna.NativePosition;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.registry.state.Property;
@@ -67,6 +70,27 @@ import javax.annotation.Nullable;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class FabricAdapter {
+
+    private static final NativeAdapter NATIVE_ADAPTER = new NativeAdapter() {
+        @Override
+        public NativeBlockState toNative(BlockState state) {
+            return (NativeBlockState) FabricAdapter.adapt(state);
+        }
+
+        @Override
+        public BlockState fromNative(NativeBlockState state) {
+            return FabricAdapter.adapt((net.minecraft.world.level.block.state.BlockState) state);
+        }
+
+        @Override
+        public NativePosition newBlockPos(BlockVector3 pos) {
+            return (NativePosition) new BlockPos(pos.x(), pos.y(), pos.z());
+        }
+    };
+
+    public static NativeAdapter asNativeAdapter() {
+        return NATIVE_ADAPTER;
+    }
 
     private FabricAdapter() {
     }

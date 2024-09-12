@@ -13,3 +13,18 @@ accessible field net/minecraft/world/level/storage/PrimaryLevelData worldOptions
 mutable field net/minecraft/world/level/storage/PrimaryLevelData worldOptions Lnet/minecraft/world/level/levelgen/WorldOptions;
 
 accessible method net/minecraft/network/protocol/game/ClientboundBlockEntityDataPacket <init> (Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/entity/BlockEntityType;Lnet/minecraft/nbt/CompoundTag;)V
+
+# Ability to mark sections changed
+accessible method net/minecraft/server/level/ServerChunkCache getVisibleChunkIfPresent (J)Lnet/minecraft/server/level/ChunkHolder;
+accessible field net/minecraft/server/level/ChunkHolder changedBlocksPerSection [Lit/unimi/dsi/fastutil/shorts/ShortSet;
+accessible field net/minecraft/server/level/ChunkHolder hasChangedSections Z
+
+# Ability to make a copy of the container
+accessible method net/minecraft/world/level/chunk/PalettedContainer <init> (Lnet/minecraft/core/IdMap;Lnet/minecraft/world/level/chunk/PalettedContainer$Strategy;Lnet/minecraft/world/level/chunk/PalettedContainer$Data;)V
+accessible field net/minecraft/world/level/chunk/PalettedContainer registry Lnet/minecraft/core/IdMap;
+accessible field net/minecraft/world/level/chunk/PalettedContainer strategy Lnet/minecraft/world/level/chunk/PalettedContainer$Strategy;
+accessible class net/minecraft/world/level/chunk/PalettedContainer$Data
+accessible field net/minecraft/world/level/chunk/PalettedContainer data Lnet/minecraft/world/level/chunk/PalettedContainer$Data;
+
+# Ability to recreate the data using Mojang's logic
+accessible method net/minecraft/world/level/chunk/PalettedContainer createOrReuseData (Lnet/minecraft/world/level/chunk/PalettedContainer$Data;I)Lnet/minecraft/world/level/chunk/PalettedContainer$Data;
