@@ -503,7 +503,33 @@ public final class PlatformCommandManager {
             // exceptions without writing a hook into every dispatcher, we need to unwrap these
             // exceptions and rethrow their converted form, if their is one.
             try {
-                commandManager.execute(context, ImmutableList.copyOf(split));
+                try {
+                    commandManager.execute(context, ImmutableList.copyOf(split));
+                } finally {
+                    Optional<EditSession> editSessionOpt =
+                        context.snapshotMemory().injectedValue(Key.of(EditSession.class));
+
+                    if (editSessionOpt.isPresent()) {
+                        EditSession editSession = editSessionOpt.get();
+                        session.remember(editSession);
+                        editSession.close();
+
+                        if (config.profile) {
+                            long time = System.currentTimeMillis() - start;
+                            double timeS = (time / 1000.0);
+                            int changed = editSession.getBlockChangeCount();
+                            double throughput = timeS == 0 ? changed : changed / timeS;
+                            actor.printDebug(TranslatableComponent.of(
+                                "worldedit.command.time-elapsed",
+                                TextComponent.of(timeS),
+                                TextComponent.of(changed),
+                                TextComponent.of(Math.round(throughput))
+                            ));
+                        }
+
+                        worldEdit.flushBlockBag(actor, editSession);
+                    }
+                }
             } catch (Throwable t) {
                 // Use the exception converter to convert the exception if any of its causes
                 // can be converted, otherwise throw the original exception
@@ -540,29 +566,6 @@ public final class PlatformCommandManager {
         } catch (Throwable t) {
             handleUnknownException(actor, t);
         } finally {
-            Optional<EditSession> editSessionOpt =
-                context.snapshotMemory().injectedValue(Key.of(EditSession.class));
-
-            if (editSessionOpt.isPresent()) {
-                EditSession editSession = editSessionOpt.get();
-                session.remember(editSession);
-                editSession.close();
-
-                if (config.profile) {
-                    long time = System.currentTimeMillis() - start;
-                    double timeS = (time / 1000.0);
-                    int changed = editSession.getBlockChangeCount();
-                    double throughput = timeS == 0 ? changed : changed / timeS;
-                    actor.printDebug(TranslatableComponent.of(
-                            "worldedit.command.time-elapsed",
-                            TextComponent.of(timeS),
-                            TextComponent.of(changed),
-                            TextComponent.of(Math.round(throughput))
-                    ));
-                }
-
-                worldEdit.flushBlockBag(actor, editSession);
-            }
             Request.reset();
         }
 
