@@ -33,6 +33,8 @@ import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.weather.WeatherType;
 
+import javax.annotation.Nullable;
+
 public class Registries {
     public static final Registry<BlockType> BLOCK_TYPE = addRegistry(BlockType.REGISTRY);
     public static final Registry<BlockCategory> BLOCK_CATEGORY = addRegistry(BlockCategory.REGISTRY);
@@ -51,5 +53,10 @@ public class Registries {
     private static <T extends Keyed> Registry<T> addRegistry(Registry<T> registry) {
         Registry.REGISTRY.register(registry.id(), registry);
         return registry;
+    }
+
+    @Nullable
+    public static Registry<?> get(final String id) {
+        return Registry.REGISTRY.get(id);
     }
 }

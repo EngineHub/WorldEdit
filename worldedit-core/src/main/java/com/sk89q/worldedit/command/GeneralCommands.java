@@ -51,6 +51,7 @@ import com.sk89q.worldedit.util.formatting.component.SideEffectBox;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.World;
@@ -555,14 +556,15 @@ public class GeneralCommands {
 
         @Override
         public Component call() throws Exception {
-            String command = "//registry " + registry.id() + "-p %page% " + search;
+            String command = "//registry " + registry.id() + " -p %page% " + search;
             Map<String, Component> results = new TreeMap<>();
             String idMatch = search.replace(' ', '_');
             for (Keyed searchType : registry) {
                 final String id = searchType.id();
                 if (id.contains(idMatch)) {
                     var builder = TextComponent.builder()
-                        .append(searchType.id());
+                        .append(searchType.id())
+                        .clickEvent(ClickEvent.copyToClipboard(searchType.id()));
                     switch (searchType) {
                         case ItemType itemType -> builder.hoverEvent(HoverEvent.showText(itemType.getRichName()));
                         case BlockType blockType -> builder.hoverEvent(HoverEvent.showText(blockType.getRichName()));
