@@ -535,7 +535,7 @@ public class GeneralCommands {
                             Registry<?> registry,
                          @ArgFlag(name = 'p', desc = "Page of results to return", def = "1")
                             int page,
-                         @Arg(desc = "Search query", variable = true)
+                         @Arg(desc = "Search query", variable = true, def = "")
                             List<String> query) {
         String search = String.join(" ", query);
 
@@ -576,7 +576,8 @@ public class GeneralCommands {
                 }
             }
             List<Component> list = new ArrayList<>(results.values());
-            return PaginationBox.fromComponents("Search results for '" + search + "'", command, list)
+            String title = search.isBlank() ? "Registry contents" : "Search results for '" + search + "'";
+            return PaginationBox.fromComponents(title, command, list)
                 .create(page);
         }
     }
