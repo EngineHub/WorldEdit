@@ -49,7 +49,7 @@ fabric-mixin = "net.fabricmc:sponge-mixin:0.13.3+mixin.0.8.5"
 
 paperweight = "io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:1.7.2"
 
-linBus-bom = "org.enginehub.lin-bus:lin-bus-bom:0.1.0"
+linBus-bom = "org.enginehub.lin-bus:lin-bus-bom:0.2.0"
 linBus-common.module = "org.enginehub.lin-bus:lin-bus-common"
 linBus-stream.module = "org.enginehub.lin-bus:lin-bus-stream"
 linBus-tree.module = "org.enginehub.lin-bus:lin-bus-tree"
