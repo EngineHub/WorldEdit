@@ -26,6 +26,7 @@ import com.sk89q.worldedit.extent.clipboard.io.sponge.SpongeSchematicV2Writer;
 import com.sk89q.worldedit.extent.clipboard.io.sponge.SpongeSchematicV3Reader;
 import com.sk89q.worldedit.extent.clipboard.io.sponge.SpongeSchematicV3Writer;
 import org.enginehub.linbus.stream.LinBinaryIO;
+import org.enginehub.linbus.stream.LinReadOptions;
 import org.enginehub.linbus.tree.LinCompoundTag;
 import org.enginehub.linbus.tree.LinIntTag;
 import org.enginehub.linbus.tree.LinRootEntry;
@@ -58,7 +59,8 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
         @Override
         public ClipboardReader getReader(InputStream inputStream) throws IOException {
             return new MCEditSchematicReader(LinBinaryIO.read(
-                new DataInputStream(new GZIPInputStream(inputStream))
+                new DataInputStream(new GZIPInputStream(inputStream)),
+                LEGACY_OPTIONS
             ));
         }
 
@@ -72,7 +74,7 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
             LinRootEntry rootEntry;
             try {
                 DataInputStream stream = new DataInputStream(new GZIPInputStream(inputStream));
-                rootEntry = LinBinaryIO.readUsing(stream, LinRootEntry::readFrom);
+                rootEntry = LinBinaryIO.readUsing(stream, LEGACY_OPTIONS, LinRootEntry::readFrom);
             } catch (Exception e) {
                 return false;
             }
@@ -92,7 +94,7 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
         @Override
         public ClipboardReader getReader(InputStream inputStream) throws IOException {
             return new SpongeSchematicV1Reader(LinBinaryIO.read(
-                new DataInputStream(new GZIPInputStream(inputStream))
+                new DataInputStream(new GZIPInputStream(inputStream)), LEGACY_OPTIONS
             ));
         }
 
@@ -116,7 +118,7 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
         @Override
         public ClipboardReader getReader(InputStream inputStream) throws IOException {
             return new SpongeSchematicV2Reader(LinBinaryIO.read(
-                new DataInputStream(new GZIPInputStream(inputStream))
+                new DataInputStream(new GZIPInputStream(inputStream)), LEGACY_OPTIONS
             ));
         }
 
@@ -175,7 +177,7 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
         LinRootEntry rootEntry;
         try {
             DataInputStream stream = new DataInputStream(new GZIPInputStream(inputStream));
-            rootEntry = LinBinaryIO.readUsing(stream, LinRootEntry::readFrom);
+            rootEntry = LinBinaryIO.readUsing(stream, LEGACY_OPTIONS, LinRootEntry::readFrom);
         } catch (Exception e) {
             return false;
         }
@@ -199,6 +201,8 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
      */
     @Deprecated
     public static final BuiltInClipboardFormat SPONGE_SCHEMATIC = SPONGE_V2_SCHEMATIC;
+
+    private static final LinReadOptions LEGACY_OPTIONS = LinReadOptions.builder().allowNormalUtf8Encoding(true).build();
 
     private final ImmutableSet<String> aliases;
 

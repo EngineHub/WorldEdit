@@ -1,10 +1,22 @@
+7.3.7
+- Fixed handling of some time-related commands in the snapshot system
+- Fixed some situations where rotated pastes can behave oddly with the update side effect disabled
+- Fixed an error that can occur when generating completions starting with a `"`
+- Fixed Sponge v3 schematics lacking the `BlockEntities` not loading
+- Fixed the `//curve` and `//line` commands not accepting decimal values for thickness
+- Fixed WorldEdit not using typical error handling systems when an error is thrown during post-edit
+- Fixed NBT parsing for certain legacy schematics with non-standard string formatting
+- Improved performance of the side effect system, and fixed some API inconsistencies
+- Re-enabled the buffering system, due to some systems depending on it in certain situations
+- [Sponge] Added `-y` value support that was missing in some situations
+
 7.3.6
 - [Bukkit] Allow 1.21 Paper adapter to load on 1.21.1
 - Revert "Shutdown the executor service on disable, to prevent waiting on async tasks before shutting down" due to it causing issues in some situations
 
 7.3.5
 - [Bukkit] Utilise new Bukkit registry API, allowing WorldEdit to work with Commodore disabled (`paper.disableOldApiSupport` flag on Paper)
-- Fix queryRel not behaving correctly in //deform and the deform brush
+- Fixed queryRel not behaving correctly in //deform and the deform brush
 - Shutdown the executor service on disable, to prevent waiting on async tasks before shutting down
 - Remove legacy code for pre-1.16 //drawsel handling
 

@@ -415,6 +415,16 @@ public final class SpongeWorld extends AbstractWorld {
     }
 
     @Override
+    public int getMaxY() {
+        return getWorld().max().y();
+    }
+
+    @Override
+    public int getMinY() {
+        return getWorld().min().y();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (o == null) {
             return false;
