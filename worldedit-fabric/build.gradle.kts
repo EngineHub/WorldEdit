@@ -5,7 +5,7 @@ import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.RunGameTask
 
 plugins {
-    alias(libs.plugins.fabric.loom)
+    id("fabric-loom")
     `java-library`
     id("buildlogic.platform")
 }
@@ -17,7 +17,7 @@ platform {
 
 val fabricApiConfiguration: Configuration = configurations.create("fabricApi")
 
-configure<LoomGradleExtensionAPI> {
+loom {
     accessWidenerPath.set(project.file("src/main/resources/worldedit.accesswidener"))
 }
 
@@ -35,7 +35,10 @@ dependencies {
     "api"(project(":worldedit-core"))
 
     "minecraft"(libs.fabric.minecraft)
-    "mappings"(project.the<LoomGradleExtensionAPI>().officialMojangMappings())
+    "mappings"(loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${libs.versions.parchment.minecraft.get()}:${libs.versions.parchment.mappings.get()}@zip")
+    })
     "modImplementation"(libs.fabric.loader)
 
 
@@ -73,10 +76,11 @@ configure<PublishingExtension> {
 }
 
 tasks.named<Copy>("processResources") {
+    val internalVersion = project.ext["internalVersion"]
     // this will ensure that this task is redone when the versions change.
-    inputs.property("version", project.ext["internalVersion"])
+    inputs.property("version", internalVersion)
     filesMatching("fabric.mod.json") {
-        this.expand("version" to project.ext["internalVersion"])
+        this.expand("version" to internalVersion)
     }
 }
 
