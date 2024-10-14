@@ -31,8 +31,8 @@ minimumAsm = "9.7"
 minimumJdependency = "2.10"
 minimumTinyRemapper = "0.8.11"
 
-lang-worldeditBase = "7.3.4"
-lang-version = "1450"
+lang-worldeditBase = "7.3.7"
+lang-version = "1589"
 
 [libraries]
 neogradle-neoform = "net.neoforged.gradle:neoform:7.0.142"
