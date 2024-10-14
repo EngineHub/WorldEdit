@@ -51,7 +51,7 @@ public class ItemType implements Keyed {
         WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
             .getRegistries().getItemRegistry().getRichName(this)
     );
-    @SuppressWarnings("this-escape")
+    @SuppressWarnings("removal")
     private final LazyReference<ItemMaterial> itemMaterial = LazyReference.from(() ->
         WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
             .getRegistries().getItemRegistry().getMaterial(this)
@@ -109,7 +109,10 @@ public class ItemType implements Keyed {
      * Get the material for this ItemType.
      *
      * @return The material
+     * @deprecated Deprecated without alternative
      */
+    @Deprecated(forRemoval = true)
+    @SuppressWarnings("removal")
     public ItemMaterial getMaterial() {
         return itemMaterial.getValue();
     }
