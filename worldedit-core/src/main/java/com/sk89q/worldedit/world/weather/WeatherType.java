@@ -23,7 +23,7 @@ import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.Registry;
 
 public record WeatherType(String id) implements Keyed {
-    public static final Registry<WeatherType> REGISTRY = new Registry<>("weather type");
+    public static final Registry<WeatherType> REGISTRY = new Registry<>("weather type", "weather_type");
 
     /**
      * Gets the name of this weather, or the ID if the name cannot be found.

@@ -19,10 +19,13 @@
 
 package com.sk89q.worldedit.world.biome;
 
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.function.pattern.BiomePattern;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
+import com.sk89q.worldedit.util.formatting.text.Component;
 
 /**
  * All the types of biomes in the game.
@@ -31,7 +34,7 @@ import com.sk89q.worldedit.registry.NamespacedRegistry;
  */
 public record BiomeType(String id) implements Keyed, BiomePattern {
 
-    public static final NamespacedRegistry<BiomeType> REGISTRY = new NamespacedRegistry<>("biome type", true);
+    public static final NamespacedRegistry<BiomeType> REGISTRY = new NamespacedRegistry<>("biome type", "biome_type", "minecraft", true);
 
     @Override
     public String toString() {
@@ -41,5 +44,10 @@ public record BiomeType(String id) implements Keyed, BiomePattern {
     @Override
     public BiomeType applyBiome(BlockVector3 position) {
         return this;
+    }
+
+    public Component getRichName() {
+        return WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
+            .getRegistries().getBiomeRegistry().getRichName(this);
     }
 }

@@ -33,22 +33,71 @@ import javax.annotation.Nullable;
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
 
-public class Registry<V extends Keyed> implements Iterable<V> {
+public class Registry<V extends Keyed> implements Iterable<V>, Keyed {
+    public static final Registry<Registry<?>> REGISTRY = new Registry<>("registry", "registry");
+
     private final Map<String, V> map = new HashMap<>();
     private final String name;
+    private final String id;
     private final boolean checkInitialized;
 
+    private static String nameToId(String name) {
+        return name.toLowerCase(Locale.ROOT).replace(' ', '_');
+    }
+
+    /**
+     * Creates a new Registry.
+     *
+     * @param name The name of the registry
+     * @deprecated Use {@link #Registry(String, String)} instead to provide an ID
+     */
+    @Deprecated
     public Registry(final String name) {
         this(name, false);
     }
 
+    /**
+     * Creates a new Registry.
+     *
+     * @param name The name of the registry
+     * @param checkInitialized Whether to check if WorldEdit is initialized
+     * @deprecated Use {@link #Registry(String, String, boolean)} instead to provide an ID
+     */
+    @Deprecated
     public Registry(final String name, final boolean checkInitialized) {
+        this(name, nameToId(name), checkInitialized);
+    }
+
+    /**
+     * Creates a new Registry.
+     *
+     * @param name The name of the registry
+     * @param id The ID of the registry
+     */
+    public Registry(final String name, final String id) {
+        this(name, id, false);
+    }
+
+    /**
+     * Creates a new Registry.
+     *
+     * @param name The name of the registry
+     * @param id The ID of the registry
+     * @param checkInitialized Whether to check if WorldEdit is initialized
+     */
+    public Registry(final String name, final String id, final boolean checkInitialized) {
         this.name = name;
+        this.id = id;
         this.checkInitialized = checkInitialized;
     }
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String id() {
+        return this.id;
     }
 
     @Nullable
