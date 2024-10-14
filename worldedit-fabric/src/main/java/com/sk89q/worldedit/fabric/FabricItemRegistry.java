@@ -37,7 +37,7 @@ public class FabricItemRegistry extends BundledItemRegistry {
     @Override
     public Component getRichName(BaseItemStack itemStack) {
         return TranslatableComponent.of(
-            FabricAdapter.adapt(itemStack).getDescriptionId()
+            FabricAdapter.adapt(itemStack).getItem().getDescriptionId()
         );
     }
 
