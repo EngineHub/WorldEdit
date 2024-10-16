@@ -68,6 +68,7 @@ import com.sk89q.worldedit.world.entity.EntityTypes;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.generation.StructureType;
 import com.sk89q.worldedit.world.item.ItemType;
+import net.minecraft.SharedConstants;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -146,7 +147,6 @@ import org.bukkit.craftbukkit.block.data.CraftBlockData;
 import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.util.CraftMagicNumbers;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.generator.ChunkGenerator;
@@ -216,7 +216,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         // A simple test
         CraftServer.class.cast(Bukkit.getServer());
 
-        int dataVersion = CraftMagicNumbers.INSTANCE.getDataVersion();
+        int dataVersion = SharedConstants.getCurrentVersion().getDataVersion().getVersion();
         if (dataVersion != 3953 && dataVersion != 3955) {
             throw new UnsupportedClassVersionError("Not 1.21(.1)!");
         }
@@ -235,7 +235,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         );
         chunkProviderExecutorField.setAccessible(true);
 
-        this.dataFixer = new PaperweightDataConverters(CraftMagicNumbers.INSTANCE.getDataVersion(), this);
+        this.dataFixer = new PaperweightDataConverters(dataVersion, this);
 
         Watchdog watchdog;
         try {
