@@ -80,6 +80,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.Clearable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -142,7 +143,7 @@ public class FabricWorld extends AbstractWorld {
     private static ResourceLocation getDimensionRegistryKey(Level world) {
         return Objects.requireNonNull(world.getServer(), "server cannot be null")
             .registryAccess()
-            .registryOrThrow(Registries.DIMENSION_TYPE)
+            .lookupOrThrow(Registries.DIMENSION_TYPE)
             .getKey(world.dimensionType());
     }
 
@@ -247,11 +248,11 @@ public class FabricWorld extends AbstractWorld {
         var biomeArray = (PalettedContainer<Holder<Biome>>) chunk.getSection(chunk.getSectionIndex(position.y())).getBiomes();
         biomeArray.getAndSetUnchecked(
             position.x() & 3, position.y() & 3, position.z() & 3,
-            getWorld().registryAccess().registry(Registries.BIOME)
+            getWorld().registryAccess().lookup(Registries.BIOME)
                 .orElseThrow()
-                .getHolderOrThrow(ResourceKey.create(Registries.BIOME, ResourceLocation.parse(biome.id())))
+                .getOrThrow(ResourceKey.create(Registries.BIOME, ResourceLocation.parse(biome.id())))
         );
-        chunk.setUnsaved(true);
+        chunk.markUnsaved();
         return true;
     }
 
@@ -278,11 +279,10 @@ public class FabricWorld extends AbstractWorld {
         InteractionResult used = stack.useOn(itemUseContext);
         if (used != InteractionResult.SUCCESS) {
             // try activating the block
-            used = getWorld().getBlockState(blockPos).useItemOn(stack, world, fakePlayer, InteractionHand.MAIN_HAND, rayTraceResult)
-                .result();
+            used = getWorld().getBlockState(blockPos).useItemOn(stack, world, fakePlayer, InteractionHand.MAIN_HAND, rayTraceResult);
         }
         if (used != InteractionResult.SUCCESS) {
-            used = stack.use(world, fakePlayer, InteractionHand.MAIN_HAND).getResult();
+            used = stack.use(world, fakePlayer, InteractionHand.MAIN_HAND);
         }
         return used == InteractionResult.SUCCESS;
     }
@@ -473,7 +473,7 @@ public class FabricWorld extends AbstractWorld {
     public boolean generateTree(TreeType type, EditSession editSession, BlockVector3 position) {
         ServerLevel world = (ServerLevel) getWorld();
         ConfiguredFeature<?, ?> generator = Optional.ofNullable(createTreeFeatureGenerator(type))
-            .map(k -> world.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).get(k))
+            .map(k -> world.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).getValue(k))
             .orElse(null);
         ServerChunkCache chunkManager = world.getChunkSource();
         if (type == TreeType.CHORUS_PLANT) {
@@ -488,7 +488,7 @@ public class FabricWorld extends AbstractWorld {
 
     public boolean generateFeature(ConfiguredFeatureType type, EditSession editSession, BlockVector3 position) {
         ServerLevel world = (ServerLevel) getWorld();
-        ConfiguredFeature<?, ?> k = world.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).get(ResourceLocation.tryParse(type.id()));
+        ConfiguredFeature<?, ?> k = world.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).getValue(ResourceLocation.tryParse(type.id()));
         ServerChunkCache chunkManager = world.getChunkSource();
         WorldGenLevel proxyLevel = FabricServerLevelDelegateProxy.newInstance(editSession, world);
         return k != null && k.place(proxyLevel, chunkManager.getGenerator(), random, FabricAdapter.toBlockPos(position));
@@ -497,7 +497,7 @@ public class FabricWorld extends AbstractWorld {
     @Override
     public boolean generateStructure(StructureType type, EditSession editSession, BlockVector3 position) {
         ServerLevel world = (ServerLevel) getWorld();
-        Structure k = world.registryAccess().registryOrThrow(Registries.STRUCTURE).get(ResourceLocation.tryParse(type.id()));
+        Structure k = world.registryAccess().lookupOrThrow(Registries.STRUCTURE).getValue(ResourceLocation.tryParse(type.id()));
         if (k == null) {
             return false;
         }
@@ -513,7 +513,7 @@ public class FabricWorld extends AbstractWorld {
             BoundingBox boundingBox = structureStart.getBoundingBox();
             ChunkPos min = new ChunkPos(SectionPos.blockToSectionCoord(boundingBox.minX()), SectionPos.blockToSectionCoord(boundingBox.minZ()));
             ChunkPos max = new ChunkPos(SectionPos.blockToSectionCoord(boundingBox.maxX()), SectionPos.blockToSectionCoord(boundingBox.maxZ()));
-            ChunkPos.rangeClosed(min, max).forEach((chunkPosx) -> structureStart.placeInChunk(proxyLevel, world.structureManager(), chunkManager.getGenerator(), world.getRandom(), new BoundingBox(chunkPosx.getMinBlockX(), world.getMinBuildHeight(), chunkPosx.getMinBlockZ(), chunkPosx.getMaxBlockX(), world.getMaxBuildHeight(), chunkPosx.getMaxBlockZ()), chunkPosx));
+            ChunkPos.rangeClosed(min, max).forEach((chunkPosx) -> structureStart.placeInChunk(proxyLevel, world.structureManager(), chunkManager.getGenerator(), world.getRandom(), new BoundingBox(chunkPosx.getMinBlockX(), world.getMinY(), chunkPosx.getMinBlockZ(), chunkPosx.getMaxBlockX(), world.getMaxY(), chunkPosx.getMaxBlockZ()), chunkPosx));
             return true;
         }
     }
@@ -603,12 +603,12 @@ public class FabricWorld extends AbstractWorld {
 
     @Override
     public int getMinY() {
-        return getWorld().getMinBuildHeight();
+        return getWorld().getMinY();
     }
 
     @Override
     public int getMaxY() {
-        return getWorld().getMaxBuildHeight() - 1;
+        return getWorld().getMaxY() - 1;
     }
 
     @Override
@@ -704,7 +704,7 @@ public class FabricWorld extends AbstractWorld {
         }
         tag.putString("id", entityId);
 
-        net.minecraft.world.entity.Entity createdEntity = EntityType.loadEntityRecursive(tag, world, (loadedEntity) -> {
+        net.minecraft.world.entity.Entity createdEntity = EntityType.loadEntityRecursive(tag, world, EntitySpawnReason.COMMAND, (loadedEntity) -> {
             loadedEntity.absMoveTo(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
             return loadedEntity;
         });
