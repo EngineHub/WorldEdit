@@ -1,3 +1,6 @@
+7.3.8
+- [Bukkit] Update 1.21.1 adapter for Spigot breakage
+
 7.3.7
 - Fixed handling of some time-related commands in the snapshot system
 - Fixed some situations where rotated pastes can behave oddly with the update side effect disabled
