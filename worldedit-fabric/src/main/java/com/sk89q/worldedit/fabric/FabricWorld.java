@@ -256,14 +256,14 @@ public class FabricWorld extends AbstractWorld {
         return true;
     }
 
-    private static final LoadingCache<ServerLevel, WorldEditFakePlayer> fakePlayers
-            = CacheBuilder.newBuilder().weakKeys().softValues().build(CacheLoader.from(WorldEditFakePlayer::new));
+    private static final LoadingCache<ServerLevel, FabricFakePlayer> fakePlayers
+            = CacheBuilder.newBuilder().weakKeys().softValues().build(CacheLoader.from(FabricFakePlayer::new));
 
     @Override
     public boolean useItem(BlockVector3 position, BaseItem item, Direction face) {
         ItemStack stack = FabricAdapter.adapt(new BaseItemStack(item.getType(), item.getNbtReference(), 1));
         ServerLevel world = (ServerLevel) getWorld();
-        final WorldEditFakePlayer fakePlayer;
+        final FabricFakePlayer fakePlayer;
         try {
             fakePlayer = fakePlayers.get(world);
         } catch (ExecutionException ignored) {

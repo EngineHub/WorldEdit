@@ -176,7 +176,7 @@ public class FabricWorldEdit implements ModInitializer {
         ServerPlayConnectionEvents.DISCONNECT.register(this::onPlayerDisconnect);
         AttackBlockCallback.EVENT.register(this::onLeftClickBlock);
         UseBlockCallback.EVENT.register(this::onRightClickBlock);
-        UseItemCallback.EVENT.register(this::onRightClickAir);
+        UseItemCallback.EVENT.register(this::onRightClickItem);
         LOGGER.info("WorldEdit for Fabric (version " + getInternalVersion() + ") is loaded");
     }
 
@@ -373,7 +373,7 @@ public class FabricWorldEdit implements ModInitializer {
         debouncer.setLastInteraction(player, result);
     }
 
-    private InteractionResult onRightClickAir(Player playerEntity, Level world, InteractionHand hand) {
+    private InteractionResult onRightClickItem(Player playerEntity, Level world, InteractionHand hand) {
         if (skipInteractionEvent(playerEntity, hand)) {
             return InteractionResult.PASS;
         }

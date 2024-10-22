@@ -30,10 +30,10 @@ import com.sk89q.worldedit.registry.state.EnumProperty;
 import com.sk89q.worldedit.registry.state.IntegerProperty;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
+import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 
 import java.util.Comparator;
@@ -66,7 +66,7 @@ public class FabricTransmogrifier {
                         .map(x -> x.getSerializedName())
                         .collect(ImmutableList.toImmutableList()));
                 }
-                default -> new PropertyAdapter<>(property);
+                default -> new FabricPropertyAdapter<>(property);
             };
         }
     });
@@ -93,7 +93,7 @@ public class FabricTransmogrifier {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private static net.minecraft.world.level.block.state.BlockState transmogToMinecraftProperties(
-        StateDefinition<Block, BlockState> stateContainer,
+        StateDefinition<Block, net.minecraft.world.level.block.state.BlockState> stateContainer,
         net.minecraft.world.level.block.state.BlockState newState,
         Map<Property<?>, Object> states
     ) {
@@ -118,7 +118,7 @@ public class FabricTransmogrifier {
         return newState;
     }
 
-    public static net.minecraft.world.level.block.state.BlockState transmogToMinecraft(com.sk89q.worldedit.world.block.BlockState blockState) {
+    public static net.minecraft.world.level.block.state.BlockState transmogToMinecraft(BlockState blockState) {
         Block mcBlock = FabricAdapter.adapt(blockState.getBlockType());
         net.minecraft.world.level.block.state.BlockState newState = mcBlock.defaultBlockState();
         Map<Property<?>, Object> states = blockState.getStates();

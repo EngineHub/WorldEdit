@@ -32,6 +32,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.redstone.ExperimentalRedstoneUtils;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.lang.ref.WeakReference;
@@ -140,14 +141,10 @@ public class NeoForgeWorldNativeAccess implements WorldNativeAccess<LevelChunk, 
         if (sideEffectSet.shouldApply(SideEffect.EVENTS)) {
             world.updateNeighborsAt(pos, oldState.getBlock());
         } else {
-            // Manually update each side
-            Block block = oldState.getBlock();
-            world.neighborChanged(pos.west(), block, pos);
-            world.neighborChanged(pos.east(), block, pos);
-            world.neighborChanged(pos.below(), block, pos);
-            world.neighborChanged(pos.above(), block, pos);
-            world.neighborChanged(pos.north(), block, pos);
-            world.neighborChanged(pos.south(), block, pos);
+            // Bypasses events currently, watch for changes...
+            world.updateNeighborsAt(pos, oldState.getBlock(), ExperimentalRedstoneUtils.initialOrientation(
+                world, null, null
+            ));
         }
         if (newState.hasAnalogOutputSignal()) {
             world.updateNeighbourForOutputSignal(pos, newState.getBlock());
