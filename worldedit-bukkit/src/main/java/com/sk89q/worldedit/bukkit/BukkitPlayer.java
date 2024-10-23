@@ -146,8 +146,8 @@ public class BukkitPlayer extends AbstractPlayerActor {
 
     @Override
     public boolean trySetPosition(Vector3 pos, float pitch, float yaw) {
-        player.teleportAsync(new Location(player.getWorld(), pos.x(), pos.y(),
-            pos.z(), yaw, pitch));
+        player.getScheduler().run(WorldEditPlugin.getInstance(), scheduledTask -> player.teleportAsync(new Location(player.getWorld(), pos.x(), pos.y(),
+                pos.z(), yaw, pitch)), null);
         return true;
     }
 
@@ -225,7 +225,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
 
     @Override
     public boolean setLocation(com.sk89q.worldedit.util.Location location) {
-        player.teleportAsync(BukkitAdapter.adapt(location));
+        player.getScheduler().run(WorldEditPlugin.getInstance(), scheduledTask -> player.teleportAsync(BukkitAdapter.adapt(location)), null);
         return true;
     }
 
