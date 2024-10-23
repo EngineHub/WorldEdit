@@ -121,7 +121,7 @@ public class BukkitServerInterface extends AbstractPlatform implements MultiUser
 
     @Override
     public int schedule(long delay, long period, Runnable task) {
-        io.papermc.paper.threadedregions.scheduler.ScheduledTask scheduledTask = Bukkit.getGlobalRegionScheduler().runAtFixedRate(plugin, task1 -> task.run(), delay, period);
+        io.papermc.paper.threadedregions.scheduler.ScheduledTask scheduledTask = Bukkit.getGlobalRegionScheduler().runAtFixedRate(plugin, task1 -> task.run(), java.lang.Math.max(1L, delay), java.lang.Math.max(1L, period));
         return scheduledTask.getExecutionState() == io.papermc.paper.threadedregions.scheduler.ScheduledTask.ExecutionState.CANCELLED ? -1 : scheduledTask.hashCode();
         //return Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, task, delay, period);
     }
