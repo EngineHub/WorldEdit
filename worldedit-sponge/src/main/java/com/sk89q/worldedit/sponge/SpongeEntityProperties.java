@@ -37,10 +37,10 @@ import org.spongepowered.api.entity.living.animal.Animal;
 import org.spongepowered.api.entity.living.aquatic.Aquatic;
 import org.spongepowered.api.entity.living.golem.Golem;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.entity.living.trader.Trader;
 import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.api.entity.vehicle.Boat;
 import org.spongepowered.api.entity.vehicle.minecart.Minecart;
+import org.spongepowered.api.item.merchant.Merchant;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -120,7 +120,7 @@ public class SpongeEntityProperties implements EntityProperties {
 
     @Override
     public boolean isNPC() {
-        return entity instanceof Trader;
+        return entity instanceof Merchant;
     }
 
     @Override

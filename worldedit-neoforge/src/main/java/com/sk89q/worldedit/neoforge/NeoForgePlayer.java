@@ -53,6 +53,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 import javax.annotation.Nullable;
 
@@ -106,7 +107,9 @@ public class NeoForgePlayer extends AbstractPlayerActor {
         this.player.teleportTo(
             level,
             location.getX(), location.getY(), location.getZ(),
-            location.getYaw(), location.getPitch()
+            Set.of(),
+            location.getYaw(), location.getPitch(),
+            true
         );
         // This may be false if the teleport was cancelled by a mod
         return this.player.serverLevel() == level;

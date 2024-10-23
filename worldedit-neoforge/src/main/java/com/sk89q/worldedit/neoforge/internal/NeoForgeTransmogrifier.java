@@ -35,12 +35,10 @@ import com.sk89q.worldedit.world.block.BlockType;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
 
 import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 /**
  * Raw, un-cached transformations.
@@ -50,26 +48,26 @@ public class NeoForgeTransmogrifier {
     private static final LoadingCache<net.minecraft.world.level.block.state.properties.Property<?>, Property<?>> PROPERTY_CACHE = CacheBuilder.newBuilder().build(new CacheLoader<>() {
         @Override
         public Property<?> load(net.minecraft.world.level.block.state.properties.Property<?> property) throws Exception {
-            if (property instanceof net.minecraft.world.level.block.state.properties.BooleanProperty) {
-                return new BooleanProperty(property.getName(), ImmutableList.copyOf(((net.minecraft.world.level.block.state.properties.BooleanProperty) property).getPossibleValues()));
-            }
-            if (property instanceof net.minecraft.world.level.block.state.properties.IntegerProperty) {
-                return new IntegerProperty(property.getName(), ImmutableList.copyOf(((net.minecraft.world.level.block.state.properties.IntegerProperty) property).getPossibleValues()));
-            }
-            if (property instanceof DirectionProperty) {
-                return new DirectionalProperty(property.getName(), ((DirectionProperty) property).getPossibleValues().stream()
-                    .map(NeoForgeAdapter::adaptEnumFacing)
-                    .collect(Collectors.toList()));
-            }
-            if (property instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
-                // Note: do not make x.getSerializedName a method reference.
-                // It will cause runtime bootstrap exceptions.
-                //noinspection Convert2MethodRef
-                return new EnumProperty(property.getName(), ((net.minecraft.world.level.block.state.properties.EnumProperty<?>) property).getPossibleValues().stream()
-                    .map(x -> x.getSerializedName())
-                    .collect(Collectors.toList()));
-            }
-            return new IPropertyAdapter<>(property);
+            return switch (property) {
+                case net.minecraft.world.level.block.state.properties.BooleanProperty booleanProperty ->
+                    new BooleanProperty(property.getName(), ImmutableList.copyOf(booleanProperty.getPossibleValues()));
+                case net.minecraft.world.level.block.state.properties.IntegerProperty integerProperty ->
+                    new IntegerProperty(property.getName(), ImmutableList.copyOf(integerProperty.getPossibleValues()));
+                case net.minecraft.world.level.block.state.properties.EnumProperty<?> enumProperty -> {
+                    if (property.getValueClass() == net.minecraft.core.Direction.class) {
+                        yield new DirectionalProperty(property.getName(), property.getPossibleValues().stream()
+                            .map(v -> NeoForgeAdapter.adaptEnumFacing((net.minecraft.core.Direction) v))
+                            .collect(ImmutableList.toImmutableList()));
+                    }
+                    // Note: do not make x.asString a method reference.
+                    // It will cause runtime bootstrap exceptions.
+                    //noinspection Convert2MethodRef
+                    yield new EnumProperty(property.getName(), enumProperty.getPossibleValues().stream()
+                        .map(x -> x.getSerializedName())
+                        .collect(ImmutableList.toImmutableList()));
+                }
+                default -> new NeoForgePropertyAdapter<>(property);
+            };
         }
     });
 
@@ -81,29 +79,38 @@ public class NeoForgeTransmogrifier {
         Map<Property<?>, Object> props = new TreeMap<>(Comparator.comparing(Property::getName));
         for (Map.Entry<net.minecraft.world.level.block.state.properties.Property<?>, Comparable<?>> prop : mcProps.entrySet()) {
             Object value = prop.getValue();
-            if (prop.getKey() instanceof DirectionProperty) {
-                value = NeoForgeAdapter.adaptEnumFacing((net.minecraft.core.Direction) value);
-            } else if (prop.getKey() instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
-                value = ((StringRepresentable) value).getSerializedName();
+            if (prop.getKey() instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
+                if (prop.getKey().getValueClass() == net.minecraft.core.Direction.class) {
+                    value = NeoForgeAdapter.adaptEnumFacing((net.minecraft.core.Direction) value);
+                } else {
+                    value = ((StringRepresentable) value).getSerializedName();
+                }
+                props.put(block.getProperty(prop.getKey().getName()), value);
             }
-            props.put(block.getProperty(prop.getKey().getName()), value);
         }
         return props;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static net.minecraft.world.level.block.state.BlockState transmogToMinecraftProperties(StateDefinition<Block, net.minecraft.world.level.block.state.BlockState> stateContainer, net.minecraft.world.level.block.state.BlockState newState, Map<Property<?>, Object> states) {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static net.minecraft.world.level.block.state.BlockState transmogToMinecraftProperties(
+        StateDefinition<Block, net.minecraft.world.level.block.state.BlockState> stateContainer,
+        net.minecraft.world.level.block.state.BlockState newState,
+        Map<Property<?>, Object> states
+    ) {
         for (Map.Entry<Property<?>, Object> state : states.entrySet()) {
             net.minecraft.world.level.block.state.properties.Property property = stateContainer.getProperty(state.getKey().getName());
             Comparable value = (Comparable) state.getValue();
             // we may need to adapt this value, depending on the source prop
-            if (property instanceof DirectionProperty) {
-                Direction dir = (Direction) value;
-                value = NeoForgeAdapter.adapt(dir);
-            } else if (property instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
-                String enumName = (String) value;
-                value = ((net.minecraft.world.level.block.state.properties.EnumProperty<?>) property).getValue((String) value)
-                    .orElseThrow(() -> new IllegalStateException("Enum property " + property.getName() + " does not contain " + enumName));
+            if (property instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
+                if (property.getValueClass() == net.minecraft.core.Direction.class) {
+                    Direction dir = (Direction) value;
+                    value = NeoForgeAdapter.adapt(dir);
+                } else {
+                    String enumName = (String) value;
+                    value = ((net.minecraft.world.level.block.state.properties.EnumProperty<?>) property).getValue((String) value).orElseThrow(() ->
+                        new IllegalStateException("Enum property " + property.getName() + " does not contain " + enumName)
+                    );
+                }
             }
 
             newState = newState.setValue(property, value);

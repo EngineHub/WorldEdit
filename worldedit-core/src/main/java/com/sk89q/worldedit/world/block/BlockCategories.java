@@ -43,6 +43,7 @@ public final class BlockCategories {
     public static final BlockCategory BANNERS = get("minecraft:banners");
     public static final BlockCategory BASE_STONE_NETHER = get("minecraft:base_stone_nether");
     public static final BlockCategory BASE_STONE_OVERWORLD = get("minecraft:base_stone_overworld");
+    public static final BlockCategory BATS_SPAWNABLE_ON = get("minecraft:bats_spawnable_on");
     public static final BlockCategory BEACON_BASE_BLOCKS = get("minecraft:beacon_base_blocks");
     public static final BlockCategory BEDS = get("minecraft:beds");
     public static final BlockCategory BEE_GROWABLES = get("minecraft:bee_growables");

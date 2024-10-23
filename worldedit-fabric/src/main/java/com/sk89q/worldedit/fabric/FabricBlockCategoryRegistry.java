@@ -34,7 +34,7 @@ public class FabricBlockCategoryRegistry implements BlockCategoryRegistry {
     @Override
     public Set<BlockType> getCategorisedByName(String category) {
         return FabricWorldEdit.getRegistry(Registries.BLOCK)
-            .getTag(TagKey.create(Registries.BLOCK, ResourceLocation.parse(category)))
+            .get(TagKey.create(Registries.BLOCK, ResourceLocation.parse(category)))
             .stream()
             .flatMap(HolderSet.Named::stream)
             .map(Holder::value)

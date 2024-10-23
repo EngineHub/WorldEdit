@@ -5,7 +5,6 @@ import java.util.jar.Manifest
 plugins {
     base
     id("buildlogic.common")
-    alias(libs.plugins.fabric.loom) apply false
 }
 
 open class MergeManifests : DefaultTask() {

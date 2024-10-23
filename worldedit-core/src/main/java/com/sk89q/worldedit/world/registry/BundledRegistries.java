@@ -45,6 +45,7 @@ public class BundledRegistries implements Registries {
         TreeRangeMap<Integer, String> versionMap = TreeRangeMap.create();
         versionMap.put(Range.atLeast(Constants.DATA_VERSION_MC_1_20), "120");
         versionMap.put(Range.atLeast(Constants.DATA_VERSION_MC_1_21), "121");
+        versionMap.put(Range.atLeast(Constants.DATA_VERSION_MC_1_21_2), "1212");
         VERSION_MAP = ImmutableRangeMap.copyOf(versionMap);
     }
 

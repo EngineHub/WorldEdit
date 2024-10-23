@@ -34,8 +34,8 @@ import java.util.Set;
 public class NeoForgeBlockCategoryRegistry implements BlockCategoryRegistry {
     @Override
     public Set<BlockType> getCategorisedByName(String category) {
-        return ServerLifecycleHooks.getCurrentServer().registryAccess().registryOrThrow(Registries.BLOCK)
-            .getTag(TagKey.create(
+        return ServerLifecycleHooks.getCurrentServer().registryAccess().lookupOrThrow(Registries.BLOCK)
+            .get(TagKey.create(
                 Registries.BLOCK,
                 ResourceLocation.parse(category)
             ))

@@ -79,6 +79,7 @@ import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.Clearable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -138,7 +139,7 @@ public class NeoForgeWorld extends AbstractWorld {
     private static ResourceLocation getDimensionRegistryKey(ServerLevel world) {
         return Objects.requireNonNull(world.getServer(), "server cannot be null")
             .registryAccess()
-            .registryOrThrow(Registries.DIMENSION_TYPE)
+            .lookupOrThrow(Registries.DIMENSION_TYPE)
             .getKey(world.dimensionType());
     }
 
@@ -240,22 +241,21 @@ public class NeoForgeWorld extends AbstractWorld {
         var biomes = (PalettedContainer<Holder<Biome>>) chunk.getSection(chunk.getSectionIndex(position.y())).getBiomes();
         biomes.getAndSetUnchecked(
             position.x() & 3, position.y() & 3, position.z() & 3,
-            getWorld().registryAccess().registry(Registries.BIOME)
-                .orElseThrow()
-                .getHolderOrThrow(ResourceKey.create(Registries.BIOME, ResourceLocation.parse(biome.id())))
+            getWorld().registryAccess().lookupOrThrow(Registries.BIOME)
+                .getOrThrow(ResourceKey.create(Registries.BIOME, ResourceLocation.parse(biome.id())))
         );
-        chunk.setUnsaved(true);
+        chunk.markUnsaved();
         return true;
     }
 
-    private static final LoadingCache<ServerLevel, WorldEditFakePlayer> fakePlayers
-            = CacheBuilder.newBuilder().weakKeys().softValues().build(CacheLoader.from(WorldEditFakePlayer::new));
+    private static final LoadingCache<ServerLevel, NeoForgeFakePlayer> fakePlayers
+            = CacheBuilder.newBuilder().weakKeys().softValues().build(CacheLoader.from(NeoForgeFakePlayer::new));
 
     @Override
     public boolean useItem(BlockVector3 position, BaseItem item, Direction face) {
         ItemStack stack = NeoForgeAdapter.adapt(new BaseItemStack(item.getType(), item.getNbtReference(), 1));
         ServerLevel world = getWorld();
-        final WorldEditFakePlayer fakePlayer;
+        final NeoForgeFakePlayer fakePlayer;
         try {
             fakePlayer = fakePlayers.get(world);
         } catch (ExecutionException ignored) {
@@ -271,12 +271,11 @@ public class NeoForgeWorld extends AbstractWorld {
         InteractionResult used = stack.onItemUseFirst(itemUseContext);
         if (used != InteractionResult.SUCCESS) {
             // try activating the block
-            InteractionResult resultType = getWorld().getBlockState(blockPos).useItemOn(stack, world, fakePlayer, InteractionHand.MAIN_HAND, rayTraceResult)
-                .result();
+            InteractionResult resultType = getWorld().getBlockState(blockPos).useItemOn(stack, world, fakePlayer, InteractionHand.MAIN_HAND, rayTraceResult);
             if (resultType.consumesAction()) {
                 used = resultType;
             } else {
-                used = stack.getItem().use(world, fakePlayer, InteractionHand.MAIN_HAND).getResult();
+                used = stack.getItem().use(world, fakePlayer, InteractionHand.MAIN_HAND);
             }
         }
         return used == InteractionResult.SUCCESS;
@@ -455,7 +454,7 @@ public class NeoForgeWorld extends AbstractWorld {
     public boolean generateTree(TreeType type, EditSession editSession, BlockVector3 position) {
         ServerLevel world = getWorld();
         ConfiguredFeature<?, ?> generator = Optional.ofNullable(createTreeFeatureGenerator(type))
-            .map(k -> world.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).get(k))
+            .flatMap(k -> world.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).getOptional(k))
             .orElse(null);
         ServerChunkCache chunkManager = world.getChunkSource();
         if (type == TreeType.CHORUS_PLANT) {
@@ -469,7 +468,7 @@ public class NeoForgeWorld extends AbstractWorld {
 
     public boolean generateFeature(ConfiguredFeatureType type, EditSession editSession, BlockVector3 position) {
         ServerLevel world = getWorld();
-        ConfiguredFeature<?, ?> k = world.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).get(ResourceLocation.tryParse(type.id()));
+        ConfiguredFeature<?, ?> k = world.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).getValue(ResourceLocation.tryParse(type.id()));
         ServerChunkCache chunkManager = world.getChunkSource();
         WorldGenLevel levelProxy = NeoForgeServerLevelDelegateProxy.newInstance(editSession, world);
         return k != null && k.place(levelProxy, chunkManager.getGenerator(), random, NeoForgeAdapter.toBlockPos(position));
@@ -478,7 +477,7 @@ public class NeoForgeWorld extends AbstractWorld {
     @Override
     public boolean generateStructure(StructureType type, EditSession editSession, BlockVector3 position) {
         ServerLevel world = getWorld();
-        Structure k = world.registryAccess().registryOrThrow(Registries.STRUCTURE).get(ResourceLocation.tryParse(type.id()));
+        Structure k = world.registryAccess().lookupOrThrow(Registries.STRUCTURE).getValue(ResourceLocation.tryParse(type.id()));
         if (k == null) {
             return false;
         }
@@ -494,7 +493,7 @@ public class NeoForgeWorld extends AbstractWorld {
             BoundingBox boundingBox = structureStart.getBoundingBox();
             ChunkPos min = new ChunkPos(SectionPos.blockToSectionCoord(boundingBox.minX()), SectionPos.blockToSectionCoord(boundingBox.minZ()));
             ChunkPos max = new ChunkPos(SectionPos.blockToSectionCoord(boundingBox.maxX()), SectionPos.blockToSectionCoord(boundingBox.maxZ()));
-            ChunkPos.rangeClosed(min, max).forEach((chunkPosx) -> structureStart.placeInChunk(proxyLevel, world.structureManager(), chunkManager.getGenerator(), world.getRandom(), new BoundingBox(chunkPosx.getMinBlockX(), world.getMinBuildHeight(), chunkPosx.getMinBlockZ(), chunkPosx.getMaxBlockX(), world.getMaxBuildHeight(), chunkPosx.getMaxBlockZ()), chunkPosx));
+            ChunkPos.rangeClosed(min, max).forEach((chunkPosx) -> structureStart.placeInChunk(proxyLevel, world.structureManager(), chunkManager.getGenerator(), world.getRandom(), new BoundingBox(chunkPosx.getMinBlockX(), world.getMinY(), chunkPosx.getMinBlockZ(), chunkPosx.getMaxBlockX(), world.getMaxY(), chunkPosx.getMaxBlockZ()), chunkPosx));
             return true;
         }
     }
@@ -586,12 +585,12 @@ public class NeoForgeWorld extends AbstractWorld {
 
     @Override
     public int getMinY() {
-        return getWorld().getMinBuildHeight();
+        return getWorld().getMinY();
     }
 
     @Override
     public int getMaxY() {
-        return getWorld().getMaxBuildHeight() - 1;
+        return getWorld().getMaxY() - 1;
     }
 
     @Override
@@ -685,7 +684,7 @@ public class NeoForgeWorld extends AbstractWorld {
         }
         tag.putString("id", entityId);
 
-        net.minecraft.world.entity.Entity createdEntity = EntityType.loadEntityRecursive(tag, world, (loadedEntity) -> {
+        net.minecraft.world.entity.Entity createdEntity = EntityType.loadEntityRecursive(tag, world, EntitySpawnReason.COMMAND, (loadedEntity) -> {
             loadedEntity.absMoveTo(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
             return loadedEntity;
         });

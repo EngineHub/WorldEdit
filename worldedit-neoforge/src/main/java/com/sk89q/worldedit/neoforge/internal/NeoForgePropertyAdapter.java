@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.fabric.internal;
+package com.sk89q.worldedit.neoforge.internal;
 
 import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.registry.state.Property;
@@ -27,12 +27,12 @@ import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-class PropertyAdapter<T extends Comparable<T>> implements Property<T> {
+class NeoForgePropertyAdapter<T extends Comparable<T>> implements Property<T> {
 
     private final net.minecraft.world.level.block.state.properties.Property<T> property;
     private final List<T> values;
 
-    public PropertyAdapter(net.minecraft.world.level.block.state.properties.Property<T> property) {
+    public NeoForgePropertyAdapter(net.minecraft.world.level.block.state.properties.Property<T> property) {
         this.property = property;
         this.values = ImmutableList.copyOf(property.getPossibleValues());
     }

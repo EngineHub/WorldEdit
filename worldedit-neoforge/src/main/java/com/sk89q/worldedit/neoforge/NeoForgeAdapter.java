@@ -54,7 +54,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BaseCommandBlock;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.enginehub.linbus.tree.LinCompoundTag;
@@ -95,7 +94,7 @@ public final class NeoForgeAdapter {
     public static Biome adapt(BiomeType biomeType) {
         return ServerLifecycleHooks.getCurrentServer()
             .registryAccess()
-            .registryOrThrow(Registries.BIOME)
+            .lookupOrThrow(Registries.BIOME)
             .getOptional(ResourceLocation.parse(biomeType.id()))
             .orElseThrow(() -> new IllegalStateException("No biome for " + biomeType.id()));
     }
@@ -103,7 +102,7 @@ public final class NeoForgeAdapter {
     public static BiomeType adapt(Biome biome) {
         ResourceLocation id = ServerLifecycleHooks.getCurrentServer()
             .registryAccess()
-            .registryOrThrow(Registries.BIOME)
+            .lookupOrThrow(Registries.BIOME)
             .getKey(biome);
         Objects.requireNonNull(id, "biome is not registered");
         return BiomeTypes.get(id.toString());
@@ -122,32 +121,28 @@ public final class NeoForgeAdapter {
     }
 
     public static net.minecraft.core.Direction adapt(Direction face) {
-        switch (face) {
-            case NORTH: return net.minecraft.core.Direction.NORTH;
-            case SOUTH: return net.minecraft.core.Direction.SOUTH;
-            case WEST: return net.minecraft.core.Direction.WEST;
-            case EAST: return net.minecraft.core.Direction.EAST;
-            case DOWN: return net.minecraft.core.Direction.DOWN;
-            case UP:
-            default:
-                return net.minecraft.core.Direction.UP;
-        }
+        return switch (face) {
+            case NORTH -> net.minecraft.core.Direction.NORTH;
+            case SOUTH -> net.minecraft.core.Direction.SOUTH;
+            case WEST -> net.minecraft.core.Direction.WEST;
+            case EAST -> net.minecraft.core.Direction.EAST;
+            case DOWN -> net.minecraft.core.Direction.DOWN;
+            default -> net.minecraft.core.Direction.UP;
+        };
     }
 
     public static Direction adaptEnumFacing(@Nullable net.minecraft.core.Direction face) {
         if (face == null) {
             return null;
         }
-        switch (face) {
-            case NORTH: return Direction.NORTH;
-            case SOUTH: return Direction.SOUTH;
-            case WEST: return Direction.WEST;
-            case EAST: return Direction.EAST;
-            case DOWN: return Direction.DOWN;
-            case UP:
-            default:
-                return Direction.UP;
-        }
+        return switch (face) {
+            case NORTH -> Direction.NORTH;
+            case SOUTH -> Direction.SOUTH;
+            case WEST -> Direction.WEST;
+            case EAST -> Direction.EAST;
+            case DOWN -> Direction.DOWN;
+            default -> Direction.UP;
+        };
     }
 
     public static BlockPos toBlockPos(BlockVector3 vector) {
@@ -174,10 +169,12 @@ public final class NeoForgeAdapter {
         Map<Property<?>, Object> props = new TreeMap<>(Comparator.comparing(Property::getName));
         for (Map.Entry<net.minecraft.world.level.block.state.properties.Property<?>, Comparable<?>> prop : mcProps.entrySet()) {
             Object value = prop.getValue();
-            if (prop.getKey() instanceof DirectionProperty) {
-                value = adaptEnumFacing((net.minecraft.core.Direction) value);
-            } else if (prop.getKey() instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
-                value = ((StringRepresentable) value).getSerializedName();
+            if (prop.getKey() instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
+                if (prop.getKey().getValueClass() == net.minecraft.core.Direction.class) {
+                    value = adaptEnumFacing((net.minecraft.core.Direction) value);
+                } else {
+                    value = ((StringRepresentable) value).getSerializedName();
+                }
             }
             props.put(block.getProperty(prop.getKey().getName()), value);
         }
@@ -202,7 +199,7 @@ public final class NeoForgeAdapter {
     }
 
     public static Block adapt(BlockType blockType) {
-        return BuiltInRegistries.BLOCK.get(ResourceLocation.parse(blockType.id()));
+        return BuiltInRegistries.BLOCK.getValue(ResourceLocation.parse(blockType.id()));
     }
 
     public static BlockType adapt(Block block) {
@@ -210,7 +207,7 @@ public final class NeoForgeAdapter {
     }
 
     public static Item adapt(ItemType itemType) {
-        return BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemType.id()));
+        return BuiltInRegistries.ITEM.getValue(ResourceLocation.parse(itemType.id()));
     }
 
     public static ItemType adapt(Item item) {
