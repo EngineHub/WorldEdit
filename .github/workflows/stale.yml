@@ -6,6 +6,9 @@ on:
   schedule:
     - cron: '42 1 * * *'
 
+concurrency:
+  group: stale
+
 jobs:
   stale:
     runs-on: ubuntu-latest
