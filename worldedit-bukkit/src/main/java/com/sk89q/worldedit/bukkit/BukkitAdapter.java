@@ -60,8 +60,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Collections;
-import java.util.EnumMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -362,9 +360,7 @@ public class BukkitAdapter {
         return GameModes.get(gameMode.name().toLowerCase(Locale.ROOT));
     }
 
-    private static final Map<Biome, BiomeType> biomeBiomeTypeCache = Collections.synchronizedMap(
-        new EnumMap<>(Biome.class)
-    );
+    private static final Map<Biome, BiomeType> biomeBiomeTypeCache = new ConcurrentHashMap<>();
     private static final Map<BiomeType, Biome> biomeTypeBiomeCache = new ConcurrentHashMap<>();
 
     /**
@@ -408,12 +404,8 @@ public class BukkitAdapter {
         return Registry.ENTITY_TYPE.get(entityKey);
     }
 
-    private static final Map<Material, BlockType> materialBlockTypeCache = Collections.synchronizedMap(
-        new EnumMap<>(Material.class)
-    );
-    private static final Map<Material, ItemType> materialItemTypeCache = Collections.synchronizedMap(
-        new EnumMap<>(Material.class)
-    );
+    private static final Map<Material, BlockType> materialBlockTypeCache = new ConcurrentHashMap<>();
+    private static final Map<Material, ItemType> materialItemTypeCache = new ConcurrentHashMap<>();
 
     /**
      * Converts a Material to a BlockType.
