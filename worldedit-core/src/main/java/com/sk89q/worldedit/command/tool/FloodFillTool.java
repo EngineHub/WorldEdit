@@ -59,7 +59,7 @@ public class FloodFillTool implements BlockTool {
 
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked, @Nullable Direction face) {
-        World world = (World) clicked.getExtent();
+        World world = BlockTool.requireWorld(clicked);
 
         BlockVector3 origin = clicked.toVector().toBlockPoint();
         BlockType initialType = world.getBlock(origin).getBlockType();
@@ -72,7 +72,7 @@ public class FloodFillTool implements BlockTool {
             return true;
         }
 
-        try (EditSession editSession = session.createEditSession(player)) {
+        try (EditSession editSession = BlockTool.createEditSession(player, session, clicked)) {
             try {
                 recurse(editSession, origin, origin, range, initialType, new HashSet<>());
             } catch (MaxChangedBlocksException e) {

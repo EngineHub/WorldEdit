@@ -48,14 +48,14 @@ public class SinglePickaxe implements BlockTool {
 
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked, @Nullable Direction face) {
-        World world = (World) clicked.getExtent();
+        World world = BlockTool.requireWorld(clicked);
         BlockVector3 blockPoint = clicked.toVector().toBlockPoint();
         final BlockType blockType = world.getBlock(blockPoint).getBlockType();
         if (blockType == BlockTypes.BEDROCK && !player.canDestroyBedrock()) {
             return false;
         }
 
-        try (EditSession editSession = session.createEditSession(player)) {
+        try (EditSession editSession = BlockTool.createEditSession(player, session, clicked)) {
             editSession.getSurvivalExtent().setToolUse(config.superPickaxeDrop);
             editSession.setBlock(blockPoint, BlockTypes.AIR.getDefaultState());
         } catch (MaxChangedBlocksException e) {
