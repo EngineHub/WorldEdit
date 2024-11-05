@@ -97,14 +97,16 @@ import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.internal.annotation.OptionalArg;
 import com.sk89q.worldedit.internal.annotation.Selection;
+import com.sk89q.worldedit.internal.command.CommandArgParseException;
 import com.sk89q.worldedit.internal.command.CommandArgParser;
 import com.sk89q.worldedit.internal.command.CommandLoggingHandler;
 import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
+import com.sk89q.worldedit.internal.command.ExtractedArg;
+import com.sk89q.worldedit.internal.command.FullStringSuggestion;
 import com.sk89q.worldedit.internal.command.exception.ExceptionConverter;
 import com.sk89q.worldedit.internal.command.exception.WorldEditExceptionConverter;
 import com.sk89q.worldedit.internal.util.ErrorReporting;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
-import com.sk89q.worldedit.internal.util.Substring;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
@@ -466,25 +468,46 @@ public final class PlatformCommandManager {
         dynamicHandler.setHandler(null);
     }
 
-    private Stream<Substring> parseArgs(String input) {
-        return CommandArgParser.forArgString(input.substring(1)).parseArgs();
+    /**
+     * Check that the input starts with {@code /}. Some sources, such as the CLI or command blocks, can pass arbitrary
+     * text that should not be treated as a WorldEdit command.
+     */
+    private static boolean isCommandInput(String input) {
+        return input.startsWith("/");
+    }
+
+    private Stream<ExtractedArg> parseArgs(String input, boolean forCompletions) {
+        return CommandArgParser.parse(input.substring(1), forCompletions);
     }
 
     @Subscribe
     public void handleCommand(CommandEvent event) {
-        String[] splitArgs = parseArgs(event.getArguments())
-            .map(Substring::getSubstring)
-            .toArray(String[]::new);
-
-        // No command found!
-        if (!commandManager.containsCommand(splitArgs[0])) {
+        if (!isCommandInput(event.getArguments())) {
+            return;
+        }
+        List<String> split;
+        try {
+            split = parseArgs(event.getArguments(), false)
+                .map(ExtractedArg::parsedText)
+                .collect(ImmutableList.toImmutableList());
+        } catch (CommandArgParseException e) {
+            platformManager.createProxyActor(event.getActor()).printError(TranslatableComponent.of(
+                "worldedit.command.parse-error", e.getRichMessage()
+            ));
+            // We reported the error, so this command is handled
+            event.setCancelled(true);
             return;
         }
 
-        Request.runWithRequest(() -> executeCommand(event, splitArgs));
+        // No command found!
+        if (!commandManager.containsCommand(split.getFirst())) {
+            return;
+        }
+
+        Request.runWithRequest(() -> executeCommand(event, split));
     }
 
-    private void executeCommand(CommandEvent event, String[] splitArgs) {
+    private void executeCommand(CommandEvent event, List<String> split) {
         Actor actor = platformManager.createProxyActor(event.getActor());
         LocalSession session = worldEdit.getSessionManager().get(actor);
         Request.request().setSession(session);
@@ -501,10 +524,10 @@ public final class PlatformCommandManager {
             // This is a bit of a hack, since the call method can only throw CommandExceptions
             // everything needs to be wrapped at least once. Which means to handle all WorldEdit
             // exceptions without writing a hook into every dispatcher, we need to unwrap these
-            // exceptions and rethrow their converted form, if their is one.
+            // exceptions and rethrow their converted form, if there is one.
             try {
                 try {
-                    commandManager.execute(context, ImmutableList.copyOf(splitArgs));
+                    commandManager.execute(context, split);
                 } finally {
                     Optional<EditSession> editSessionOpt =
                         context.snapshotMemory().injectedValue(Key.of(EditSession.class));
@@ -603,14 +626,23 @@ public final class PlatformCommandManager {
     public void handleCommandSuggestion(CommandSuggestionEvent event) {
         try {
             String arguments = event.getArguments();
-            List<Substring> split = parseArgs(arguments).toList();
-            List<String> argStrings = split.stream()
-                .map(Substring::getSubstring)
-                .collect(Collectors.toList());
+            if (!isCommandInput(arguments)) {
+                return;
+            }
+            List<ExtractedArg> extractedArgs;
+            try {
+                extractedArgs = parseArgs(arguments, true).toList();
+            } catch (CommandArgParseException e) {
+                LOGGER.debug("Failed to parse command arguments for suggestions: " + arguments, e);
+                return;
+            }
+            List<String> extractedArgStrings = extractedArgs.stream()
+                .map(ExtractedArg::parsedText)
+                .collect(ImmutableList.toImmutableList());
             MemoizingValueAccess access = initializeInjectedValues(() -> arguments, event.getActor());
             ImmutableSet<Suggestion> suggestions;
             try {
-                suggestions = commandManager.getSuggestions(access, argStrings);
+                suggestions = commandManager.getSuggestions(access, extractedArgStrings);
             } catch (Throwable t) { // catch errors which are *not* command exceptions generated by parsers/suggesters
                 if (!(t instanceof CommandException)) {
                     LOGGER.debug("Unexpected error occurred while generating suggestions for input: " + arguments, t);
@@ -621,16 +653,38 @@ public final class PlatformCommandManager {
 
             event.setSuggestions(suggestions.stream()
                 .map(suggestion -> {
-                    int noSlashLength = arguments.length() - 1;
-                    Substring original = suggestion.getReplacedArgument() == split.size()
-                        ? Substring.from(arguments, noSlashLength, noSlashLength)
-                        : split.get(suggestion.getReplacedArgument());
-                    // increase original points by 1, for removed `/` in `parseArgs`
-                    return Substring.wrap(
-                        suggestion.getSuggestion(),
-                        original.getStart() + 1,
-                        original.getEnd() + 1
-                    );
+                    if (suggestion.getReplacedArgument() == extractedArgs.size()) {
+                        ExtractedArg last = extractedArgs.getLast();
+                        if (last.unclosedQuote()) {
+                            // Re-quote the last argument so it's closed, otherwise the new argument would be
+                            // inside the quote. This also drops any partial escape at the end.
+                            // +1 to compensate for the removal of / in parseArgs
+                            int start = last.originalStart() + 1;
+                            return new FullStringSuggestion(
+                                CommandArgParser.quote(last.parsedText(), arguments.charAt(start))
+                                    + " " + CommandArgParser.escape(suggestion.getSuggestion()),
+                                start,
+                                arguments.length()
+                            );
+                        }
+                        // Argument addition, use end of string as target
+                        // Also add a space on the front to cause it to be a new argument
+                        return new FullStringSuggestion(
+                            " " + CommandArgParser.escape(suggestion.getSuggestion()),
+                            arguments.length(),
+                            arguments.length()
+                        );
+                    } else {
+                        ExtractedArg arg = extractedArgs.get(suggestion.getReplacedArgument());
+                        // +1 to compensate for the removal of / in parseArgs
+                        int start = arg.originalStart() + 1;
+                        // Keep the user's quote style, otherwise the suggestion won't match what they typed
+                        char firstChar = start < arguments.length() ? arguments.charAt(start) : ' ';
+                        String escapedText = firstChar == '"' || firstChar == '\''
+                            ? CommandArgParser.quote(suggestion.getSuggestion(), firstChar)
+                            : CommandArgParser.escape(suggestion.getSuggestion());
+                        return new FullStringSuggestion(escapedText, start, arg.originalEnd() + 1);
+                    }
                 }).collect(Collectors.toList()));
         } catch (ConditionFailedException e) {
             if (e.getCondition() instanceof PermissionCondition) {
