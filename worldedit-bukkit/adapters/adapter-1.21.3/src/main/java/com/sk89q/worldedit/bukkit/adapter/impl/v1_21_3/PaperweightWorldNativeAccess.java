@@ -17,36 +17,41 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.neoforge.internal;
+package com.sk89q.worldedit.bukkit.adapter.impl.v1_21_3;
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
-import com.sk89q.worldedit.neoforge.NeoForgeAdapter;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
+import com.sk89q.worldedit.world.block.BlockState;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.FullChunkStatus;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.redstone.ExperimentalRedstoneUtils;
+import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
+import org.bukkit.event.block.BlockPhysicsEvent;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.lang.ref.WeakReference;
 import java.util.Objects;
 import javax.annotation.Nullable;
 
-public class NeoForgeWorldNativeAccess implements WorldNativeAccess<LevelChunk, BlockState, BlockPos> {
+public class PaperweightWorldNativeAccess implements WorldNativeAccess<LevelChunk, net.minecraft.world.level.block.state.BlockState, BlockPos> {
     private static final int UPDATE = 1;
     private static final int NOTIFY = 2;
 
+    private final PaperweightAdapter adapter;
     private final WeakReference<ServerLevel> world;
     private SideEffectSet sideEffectSet;
 
-    public NeoForgeWorldNativeAccess(WeakReference<ServerLevel> world) {
+    public PaperweightWorldNativeAccess(PaperweightAdapter adapter, WeakReference<ServerLevel> world) {
+        this.adapter = adapter;
         this.world = world;
     }
 
@@ -65,31 +70,26 @@ public class NeoForgeWorldNativeAccess implements WorldNativeAccess<LevelChunk, 
     }
 
     @Override
-    public BlockState toNative(com.sk89q.worldedit.world.block.BlockState state) {
+    public net.minecraft.world.level.block.state.BlockState toNative(BlockState state) {
         int stateId = BlockStateIdAccess.getBlockStateId(state);
         return BlockStateIdAccess.isValidInternalId(stateId)
             ? Block.stateById(stateId)
-            : NeoForgeAdapter.adapt(state);
+            : ((CraftBlockData) BukkitAdapter.adapt(state)).getState();
     }
 
     @Override
-    public BlockState getBlockState(LevelChunk chunk, BlockPos position) {
+    public net.minecraft.world.level.block.state.BlockState getBlockState(LevelChunk chunk, BlockPos position) {
         return chunk.getBlockState(position);
     }
 
     @Nullable
     @Override
-    public BlockState setBlockState(LevelChunk chunk, BlockPos position, BlockState state) {
-        if (chunk instanceof ExtendedChunk) {
-            return ((ExtendedChunk) chunk).setBlockState(
-                position, state, false, sideEffectSet.shouldApply(SideEffect.UPDATE)
-            );
-        }
-        return chunk.setBlockState(position, state, false);
+    public net.minecraft.world.level.block.state.BlockState setBlockState(LevelChunk chunk, BlockPos position, net.minecraft.world.level.block.state.BlockState state) {
+        return chunk.setBlockState(position, state, false, this.sideEffectSet.shouldApply(SideEffect.UPDATE));
     }
 
     @Override
-    public BlockState getValidBlockForPosition(BlockState block, BlockPos position) {
+    public net.minecraft.world.level.block.state.BlockState getValidBlockForPosition(net.minecraft.world.level.block.state.BlockState block, BlockPos position) {
         return Block.updateFromNeighbourShapes(block, getWorld(), position);
     }
 
@@ -105,19 +105,18 @@ public class NeoForgeWorldNativeAccess implements WorldNativeAccess<LevelChunk, 
 
     @Override
     public boolean updateTileEntity(BlockPos position, LinCompoundTag tag) {
-        net.minecraft.nbt.CompoundTag nativeTag = NBTConverter.toNative(tag);
-        Level level = getWorld();
-        BlockEntity tileEntity = level.getChunkAt(position).getBlockEntity(position);
+        // We will assume that the tile entity was created for us
+        BlockEntity tileEntity = getWorld().getBlockEntity(position);
         if (tileEntity == null) {
             return false;
         }
-        tileEntity.loadWithComponents(nativeTag, level.registryAccess());
-        tileEntity.setChanged();
+        Tag nativeTag = adapter.fromNative(tag);
+        PaperweightAdapter.readTagIntoTileEntity((net.minecraft.nbt.CompoundTag) nativeTag, tileEntity);
         return true;
     }
 
     @Override
-    public void notifyBlockUpdate(LevelChunk chunk, BlockPos position, BlockState oldState, BlockState newState) {
+    public void notifyBlockUpdate(LevelChunk chunk, BlockPos position, net.minecraft.world.level.block.state.BlockState oldState, net.minecraft.world.level.block.state.BlockState newState) {
         if (chunk.getSections()[getWorld().getSectionIndex(position.getY())] != null) {
             getWorld().sendBlockUpdated(position, oldState, newState, UPDATE | NOTIFY);
         }
@@ -136,15 +135,19 @@ public class NeoForgeWorldNativeAccess implements WorldNativeAccess<LevelChunk, 
     }
 
     @Override
-    public void notifyNeighbors(BlockPos pos, BlockState oldState, BlockState newState) {
+    public void notifyNeighbors(BlockPos pos, net.minecraft.world.level.block.state.BlockState oldState, net.minecraft.world.level.block.state.BlockState newState) {
         ServerLevel world = getWorld();
         if (sideEffectSet.shouldApply(SideEffect.EVENTS)) {
             world.updateNeighborsAt(pos, oldState.getBlock());
         } else {
-            // Bypasses events currently, watch for changes...
-            world.updateNeighborsAt(pos, oldState.getBlock(), ExperimentalRedstoneUtils.initialOrientation(
-                world, null, null
-            ));
+            // When we don't want events, manually run the physics without them.
+            Block block = oldState.getBlock();
+            fireNeighborChanged(pos, world, block, pos.west());
+            fireNeighborChanged(pos, world, block, pos.east());
+            fireNeighborChanged(pos, world, block, pos.below());
+            fireNeighborChanged(pos, world, block, pos.above());
+            fireNeighborChanged(pos, world, block, pos.north());
+            fireNeighborChanged(pos, world, block, pos.south());
         }
         if (newState.hasAnalogOutputSignal()) {
             world.updateNeighbourForOutputSignal(pos, newState.getBlock());
@@ -152,22 +155,33 @@ public class NeoForgeWorldNativeAccess implements WorldNativeAccess<LevelChunk, 
     }
 
     @Override
-    public void updateBlock(BlockPos pos, BlockState oldState, BlockState newState) {
+    public void updateBlock(BlockPos pos, net.minecraft.world.level.block.state.BlockState oldState, net.minecraft.world.level.block.state.BlockState newState) {
         ServerLevel world = getWorld();
         newState.onPlace(world, pos, oldState, false);
     }
 
+    private void fireNeighborChanged(BlockPos pos, ServerLevel world, Block block, BlockPos neighborPos) {
+        world.getBlockState(neighborPos).handleNeighborChanged(world, neighborPos, block, ExperimentalRedstoneUtils.initialOrientation(world, null, null), false);
+    }
+
     @Override
-    public void updateNeighbors(BlockPos pos, BlockState oldState, BlockState newState, int recursionLimit) {
+    public void updateNeighbors(BlockPos pos, net.minecraft.world.level.block.state.BlockState oldState, net.minecraft.world.level.block.state.BlockState newState, int recursionLimit) {
         ServerLevel world = getWorld();
         oldState.updateIndirectNeighbourShapes(world, pos, NOTIFY, recursionLimit);
+        if (sideEffectSet.shouldApply(SideEffect.EVENTS)) {
+            CraftWorld craftWorld = world.getWorld();
+            BlockPhysicsEvent event = new BlockPhysicsEvent(craftWorld.getBlockAt(pos.getX(), pos.getY(), pos.getZ()), CraftBlockData.fromData(newState));
+            world.getCraftServer().getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                return;
+            }
+        }
         newState.updateNeighbourShapes(world, pos, NOTIFY, recursionLimit);
         newState.updateIndirectNeighbourShapes(world, pos, NOTIFY, recursionLimit);
     }
 
     @Override
-    public void onBlockStateChange(BlockPos pos, BlockState oldState, BlockState newState) {
+    public void onBlockStateChange(BlockPos pos, net.minecraft.world.level.block.state.BlockState oldState, net.minecraft.world.level.block.state.BlockState newState) {
         getWorld().onBlockStateChange(pos, oldState, newState);
-        newState.onBlockStateChange(getWorld(), pos, oldState);
     }
 }

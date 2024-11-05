@@ -17,28 +17,39 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.neoforge;
+package com.sk89q.worldedit.bukkit.adapter.impl.v1_21_3;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ClientInformation;
+import net.minecraft.server.level.ParticleStatus;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stat;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.ChatVisiblity;
+import net.minecraft.world.level.block.entity.SignBlockEntity;
+import net.minecraft.world.phys.Vec3;
 
+import java.util.OptionalInt;
 import java.util.UUID;
 
-public class WorldEditFakePlayer extends ServerPlayer {
+class PaperweightFakePlayer extends ServerPlayer {
     private static final GameProfile FAKE_WORLDEDIT_PROFILE = new GameProfile(UUID.nameUUIDFromBytes("worldedit".getBytes()), "[WorldEdit]");
+    private static final Vec3 ORIGIN = new Vec3(0.0D, 0.0D, 0.0D);
     private static final ClientInformation FAKE_CLIENT_INFO = new ClientInformation(
-        "en_US", 16, ChatVisiblity.FULL, true, 0, HumanoidArm.LEFT, false, false
+        "en_US", 16, ChatVisiblity.FULL, true, 0, HumanoidArm.LEFT, false, false, ParticleStatus.MINIMAL
     );
 
-    public WorldEditFakePlayer(ServerLevel world) {
+    PaperweightFakePlayer(ServerLevel world) {
         super(world.getServer(), world, FAKE_WORLDEDIT_PROFILE, FAKE_CLIENT_INFO);
+    }
+
+    @Override
+    public Vec3 position() {
+        return ORIGIN;
     }
 
     @Override
@@ -46,7 +57,24 @@ public class WorldEditFakePlayer extends ServerPlayer {
     }
 
     @Override
-    public void awardStat(Stat<?> stat, int incrementer) {
+    public void die(DamageSource damagesource) {
+    }
+
+    @Override
+    public OptionalInt openMenu(MenuProvider factory) {
+        return OptionalInt.empty();
+    }
+
+    @Override
+    public void updateOptions(ClientInformation clientOptions) {
+    }
+
+    @Override
+    public void displayClientMessage(Component message, boolean actionBar) {
+    }
+
+    @Override
+    public void awardStat(Stat<?> stat, int amount) {
     }
 
     @Override
@@ -54,12 +82,6 @@ public class WorldEditFakePlayer extends ServerPlayer {
     }
 
     @Override
-    public void displayClientMessage(Component message, boolean actionBar) {
-        super.displayClientMessage(message, actionBar);
-    }
-
-    @Override
-    public boolean isInvulnerableTo(DamageSource damageSource) {
-        return true;
+    public void openTextEdit(SignBlockEntity sign, boolean front) {
     }
 }
