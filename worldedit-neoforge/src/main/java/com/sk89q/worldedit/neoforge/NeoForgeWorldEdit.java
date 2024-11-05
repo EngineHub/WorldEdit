@@ -57,7 +57,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.biome.Biome;
@@ -178,32 +177,32 @@ public class NeoForgeWorldEdit {
             }
         }
         // Biomes
-        for (ResourceLocation name : server.registryAccess().registryOrThrow(Registries.BIOME).keySet()) {
+        for (ResourceLocation name : server.registryAccess().lookupOrThrow(Registries.BIOME).keySet()) {
             String key = name.toString();
             if (BiomeType.REGISTRY.get(key) == null) {
                 BiomeType.REGISTRY.register(key, new BiomeType(key));
             }
         }
         // Tags
-        server.registryAccess().registryOrThrow(Registries.BLOCK).getTagNames().map(TagKey::location).forEach(name -> {
+        server.registryAccess().lookupOrThrow(Registries.BLOCK).getTags().map(t -> t.key().location()).forEach(name -> {
             String key = name.toString();
             if (BlockCategory.REGISTRY.get(key) == null) {
                 BlockCategory.REGISTRY.register(key, new BlockCategory(key));
             }
         });
-        server.registryAccess().registryOrThrow(Registries.ITEM).getTagNames().map(TagKey::location).forEach(name -> {
+        server.registryAccess().lookupOrThrow(Registries.ITEM).getTags().map(t -> t.key().location()).forEach(name -> {
             String key = name.toString();
             if (ItemCategory.REGISTRY.get(key) == null) {
                 ItemCategory.REGISTRY.register(key, new ItemCategory(key));
             }
         });
-        Registry<Biome> biomeRegistry = server.registryAccess().registryOrThrow(Registries.BIOME);
-        biomeRegistry.getTagNames().forEach(tagKey -> {
-            String key = tagKey.location().toString();
+        Registry<Biome> biomeRegistry = server.registryAccess().lookupOrThrow(Registries.BIOME);
+        biomeRegistry.getTags().forEach(tag -> {
+            String key = tag.key().location().toString();
             if (BiomeCategory.REGISTRY.get(key) == null) {
                 BiomeCategory.REGISTRY.register(key, new BiomeCategory(
                     key,
-                    () -> biomeRegistry.getTag(tagKey)
+                    () -> biomeRegistry.get(tag.key())
                         .stream()
                         .flatMap(HolderSet.Named::stream)
                         .map(Holder::value)
@@ -213,14 +212,14 @@ public class NeoForgeWorldEdit {
             }
         });
         // Features
-        for (ResourceLocation name : server.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).keySet()) {
+        for (ResourceLocation name : server.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).keySet()) {
             String key = name.toString();
             if (ConfiguredFeatureType.REGISTRY.get(key) == null) {
                 ConfiguredFeatureType.REGISTRY.register(key, new ConfiguredFeatureType(key));
             }
         }
         // Structures
-        for (ResourceLocation name : server.registryAccess().registryOrThrow(Registries.STRUCTURE).keySet()) {
+        for (ResourceLocation name : server.registryAccess().lookupOrThrow(Registries.STRUCTURE).keySet()) {
             String key = name.toString();
             if (StructureType.REGISTRY.get(key) == null) {
                 StructureType.REGISTRY.register(key, new StructureType(key));

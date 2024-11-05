@@ -57,8 +57,8 @@ runs {
             runtime(apiClasspath)
         }
     }
-    named("client").configure(runConfig)
-    named("server").configure(runConfig)
+    register("client").configure(runConfig)
+    register("server").configure(runConfig)
 }
 
 subsystems {

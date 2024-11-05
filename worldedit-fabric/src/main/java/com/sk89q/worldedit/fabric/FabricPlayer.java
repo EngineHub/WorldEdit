@@ -54,6 +54,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 import javax.annotation.Nullable;
 
@@ -103,7 +104,9 @@ public class FabricPlayer extends AbstractPlayerActor {
         this.player.teleportTo(
             level,
             location.getX(), location.getY(), location.getZ(),
-            location.getYaw(), location.getPitch()
+            Set.of(),
+            location.getYaw(), location.getPitch(),
+            true
         );
         // This check doesn't really ever get to be false in Fabric
         // Since Fabric API doesn't allow cancelling the teleport.
