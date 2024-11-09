@@ -1,3 +1,6 @@
+7.3.9 (beta)
+- Added support for 1.21.3.
+
 7.3.8
 - [Bukkit] Update 1.21.1 adapter for Spigot breakage
 
