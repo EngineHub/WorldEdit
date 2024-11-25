@@ -10,9 +10,9 @@ piston = "0.5.10"
 autoValue = "1.10.4"
 antlr = "4.13.1"
 
-fabric-api = "0.106.1+1.21.3"
+fabric-api = "0.109.0+1.21.3"
 
-neogradle = "7.0.165"
+neogradle = "7.0.171"
 neoforge-minecraft = "1.21.3"
 
 sponge-minecraft = "1.21.3"
@@ -22,7 +22,7 @@ sponge-api-major = "13"
 
 # https://parchmentmc.org/docs/getting-started; note that we use older MC versions some times which is OK
 parchment-minecraft = "1.21"
-parchment-mappings = "2024.07.28"
+parchment-mappings = "2024.11.10"
 
 # https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/vanillagradle/
 sponge-vanillagradle = "0.2.1-20241006.183638-89"
@@ -32,8 +32,8 @@ minimumAsm = "9.7"
 minimumJdependency = "2.10"
 minimumTinyRemapper = "0.8.11"
 
-lang-worldeditBase = "7.3.7"
-lang-version = "1589"
+lang-worldeditBase = "7.3.9"
+lang-version = "1642"
 
 [libraries]
 neogradle-neoform = { module = "net.neoforged.gradle:neoform", version.ref = "neogradle" }
@@ -48,7 +48,7 @@ jfrog-buildinfo = "org.jfrog.buildinfo:build-info-extractor-gradle:5.2.0"
 # https://maven.fabricmc.net/net/fabricmc/sponge-mixin/
 fabric-mixin = "net.fabricmc:sponge-mixin:0.15.3+mixin.0.8.7"
 
-paperweight = "io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:1.7.4"
+paperweight = "io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:1.7.5"
 
 linBus-bom = "org.enginehub.lin-bus:lin-bus-bom:0.2.0"
 linBus-common.module = "org.enginehub.lin-bus:lin-bus-common"
@@ -92,7 +92,7 @@ fabric-minecraft = "com.mojang:minecraft:1.21.3"
 fabric-loader = "net.fabricmc:fabric-loader:0.16.7"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.3.1"
 
-neoforge = "net.neoforged:neoforge:21.3.2-beta"
+neoforge = "net.neoforged:neoforge:21.3.40-beta"
 
 # Mojang-provided libraries, CHECK AGAINST MINECRAFT for versions
 guava = "com.google.guava:guava:32.1.3-jre!!"
