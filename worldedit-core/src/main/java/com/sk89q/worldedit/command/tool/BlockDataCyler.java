@@ -57,7 +57,7 @@ public class BlockDataCyler implements DoubleActionBlockTool {
     private boolean handleCycle(LocalConfiguration config, Player player, LocalSession session,
                                 Location clicked, boolean forward) {
 
-        World world = (World) clicked.getExtent();
+        World world = BlockTool.requireWorld(clicked);
 
         BlockVector3 blockPoint = clicked.toVector().toBlockPoint();
         BaseBlock block = world.getFullBlock(blockPoint);
@@ -87,7 +87,7 @@ public class BlockDataCyler implements DoubleActionBlockTool {
                 Property<Object> objProp = (Property<Object>) currentProperty;
                 BaseBlock newBlock = block.with(objProp, currentProperty.getValues().get(index));
 
-                try (EditSession editSession = session.createEditSession(player)) {
+                try (EditSession editSession = BlockTool.createEditSession(player, session, clicked)) {
                     editSession.disableBuffering();
 
                     try {
