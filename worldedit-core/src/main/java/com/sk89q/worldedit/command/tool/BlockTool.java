@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.command.tool;
 
+import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.entity.Player;
@@ -27,10 +28,40 @@ import com.sk89q.worldedit.internal.util.DeprecationUtil;
 import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
 
 public interface BlockTool extends Tool {
+
+    /**
+     * Helper method to require the world that should be used for a tool action.
+     *
+     * @param clicked the location that was clicked
+     * @return the world to use
+     */
+    static World requireWorld(Location clicked) {
+        if (!(clicked.getExtent() instanceof World world)) {
+            throw new IllegalArgumentException("Location is not in a world: " + clicked);
+        }
+        return world;
+    }
+
+    /**
+     * Helper method to create an {@link EditSession} for a tool action.
+     *
+     * @param player the player
+     * @param clicked the location that was clicked
+     */
+    static EditSession createEditSession(Player player, LocalSession session, Location clicked) {
+        World overrideToRestore = session.getWorldOverride();
+        session.setWorldOverride(BlockTool.requireWorld(clicked));
+        try {
+            return session.createEditSession(player);
+        } finally {
+            session.setWorldOverride(overrideToRestore);
+        }
+    }
 
     /**
      * Perform the primary action of this tool.

@@ -56,7 +56,7 @@ public class BlockReplacer implements DoubleActionBlockTool {
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked, @Nullable Direction face) {
         BlockBag bag = session.getBlockBag(player);
 
-        try (EditSession editSession = session.createEditSession(player)) {
+        try (EditSession editSession = BlockTool.createEditSession(player, session, clicked)) {
             try {
                 editSession.disableBuffering();
                 BlockVector3 position = clicked.toVector().toBlockPoint();
@@ -77,7 +77,7 @@ public class BlockReplacer implements DoubleActionBlockTool {
 
     @Override
     public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked, @Nullable Direction face) {
-        BaseBlock targetBlock = player.getWorld().getFullBlock(clicked.toVector().toBlockPoint());
+        BaseBlock targetBlock = clicked.getExtent().getFullBlock(clicked.toVector().toBlockPoint());
 
         if (targetBlock != null) {
             pattern = targetBlock;
