@@ -67,6 +67,7 @@ import com.sk89q.worldedit.world.weather.WeatherTypes;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.features.EndFeatures;
@@ -497,7 +498,8 @@ public class FabricWorld extends AbstractWorld {
     @Override
     public boolean generateStructure(StructureType type, EditSession editSession, BlockVector3 position) {
         ServerLevel world = (ServerLevel) getWorld();
-        Structure k = world.registryAccess().lookupOrThrow(Registries.STRUCTURE).getValue(ResourceLocation.tryParse(type.id()));
+        Registry<Structure> structureRegistry = world.registryAccess().lookupOrThrow(Registries.STRUCTURE);
+        Structure k = structureRegistry.getValue(ResourceLocation.tryParse(type.id()));
         if (k == null) {
             return false;
         }
@@ -505,7 +507,7 @@ public class FabricWorld extends AbstractWorld {
         ServerChunkCache chunkManager = world.getChunkSource();
         WorldGenLevel proxyLevel = FabricServerLevelDelegateProxy.newInstance(editSession, world);
         ChunkPos chunkPos = new ChunkPos(new BlockPos(position.x(), position.y(), position.z()));
-        StructureStart structureStart = k.generate(world.registryAccess(), chunkManager.getGenerator(), chunkManager.getGenerator().getBiomeSource(), chunkManager.randomState(), world.getStructureManager(), world.getSeed(), chunkPos, 0, proxyLevel, biome -> true);
+        StructureStart structureStart = k.generate(structureRegistry.wrapAsHolder(k), world.dimension(), world.registryAccess(), chunkManager.getGenerator(), chunkManager.getGenerator().getBiomeSource(), chunkManager.randomState(), world.getStructureManager(), world.getSeed(), chunkPos, 0, proxyLevel, biome -> true);
 
         if (!structureStart.isValid()) {
             return false;
