@@ -10,7 +10,7 @@ piston = "0.5.10"
 autoValue = "1.10.4"
 antlr = "4.13.1"
 
-fabric-api = "0.109.0+1.21.3"
+fabric-api = "0.110.5+1.21.4"
 
 neogradle = "7.0.171"
 neoforge-minecraft = "1.21.3"
@@ -88,19 +88,19 @@ rhino = "org.mozilla:rhino-runtime:1.7.13"
 jchronic = "com.sk89q:jchronic:0.2.4a"
 jlibnoise = "com.sk89q.lib:jlibnoise:1.0.0"
 
-fabric-minecraft = "com.mojang:minecraft:1.21.3"
-fabric-loader = "net.fabricmc:fabric-loader:0.16.7"
+fabric-minecraft = "com.mojang:minecraft:1.21.4"
+fabric-loader = "net.fabricmc:fabric-loader:0.16.9"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.3.1"
 
 neoforge = "net.neoforged:neoforge:21.3.40-beta"
 
 # Mojang-provided libraries, CHECK AGAINST MINECRAFT for versions
-guava = "com.google.guava:guava:32.1.3-jre!!"
-log4j-bom = "org.apache.logging.log4j:log4j-bom:2.22.1!!"
+guava = "com.google.guava:guava:33.3.1-jre!!"
+log4j-bom = "org.apache.logging.log4j:log4j-bom:2.24.1!!"
 log4j-api.module = "org.apache.logging.log4j:log4j-api"
 log4j-core.module = "org.apache.logging.log4j:log4j-core"
-gson = "com.google.code.gson:gson:2.10.1!!"
-fastutil = "it.unimi.dsi:fastutil:8.5.12!!"
+gson = "com.google.code.gson:gson:2.11.0!!"
+fastutil = "it.unimi.dsi:fastutil:8.5.15!!"
 
 # Bukkit-provided libraries, CHECK AGAINST SPIGOT for versions
 # Note that we need to balance support for older MC versus working at all on newer ones, so the exact versions here
