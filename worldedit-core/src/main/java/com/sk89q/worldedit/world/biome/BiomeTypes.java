@@ -91,6 +91,7 @@ public final class BiomeTypes {
     @Nullable public static final BiomeType OLD_GROWTH_BIRCH_FOREST = get("minecraft:old_growth_birch_forest");
     @Nullable public static final BiomeType OLD_GROWTH_PINE_TAIGA = get("minecraft:old_growth_pine_taiga");
     @Nullable public static final BiomeType OLD_GROWTH_SPRUCE_TAIGA = get("minecraft:old_growth_spruce_taiga");
+    @Nullable public static final BiomeType PALE_GARDEN = get("minecraft:pale_garden");
     @Nullable public static final BiomeType PLAINS = get("minecraft:plains");
     @Nullable public static final BiomeType RIVER = get("minecraft:river");
     @Nullable public static final BiomeType SAVANNA = get("minecraft:savanna");

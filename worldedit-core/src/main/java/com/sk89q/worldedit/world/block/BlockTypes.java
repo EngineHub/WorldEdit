@@ -218,6 +218,7 @@ public final class BlockTypes {
     @Nullable public static final BlockType CHISELED_POLISHED_BLACKSTONE = get("minecraft:chiseled_polished_blackstone");
     @Nullable public static final BlockType CHISELED_QUARTZ_BLOCK = get("minecraft:chiseled_quartz_block");
     @Nullable public static final BlockType CHISELED_RED_SANDSTONE = get("minecraft:chiseled_red_sandstone");
+    @Nullable public static final BlockType CHISELED_RESIN_BRICKS = get("minecraft:chiseled_resin_bricks");
     @Nullable public static final BlockType CHISELED_SANDSTONE = get("minecraft:chiseled_sandstone");
     @Nullable public static final BlockType CHISELED_STONE_BRICKS = get("minecraft:chiseled_stone_bricks");
     @Nullable public static final BlockType CHISELED_TUFF = get("minecraft:chiseled_tuff");
@@ -225,6 +226,7 @@ public final class BlockTypes {
     @Nullable public static final BlockType CHORUS_FLOWER = get("minecraft:chorus_flower");
     @Nullable public static final BlockType CHORUS_PLANT = get("minecraft:chorus_plant");
     @Nullable public static final BlockType CLAY = get("minecraft:clay");
+    @Nullable public static final BlockType CLOSED_EYEBLOSSOM = get("minecraft:closed_eyeblossom");
     @Nullable public static final BlockType COAL_BLOCK = get("minecraft:coal_block");
     @Nullable public static final BlockType COAL_ORE = get("minecraft:coal_ore");
     @Nullable public static final BlockType COARSE_DIRT = get("minecraft:coarse_dirt");
@@ -652,6 +654,7 @@ public final class BlockTypes {
     @Nullable public static final BlockType OBSERVER = get("minecraft:observer");
     @Nullable public static final BlockType OBSIDIAN = get("minecraft:obsidian");
     @Nullable public static final BlockType OCHRE_FROGLIGHT = get("minecraft:ochre_froglight");
+    @Nullable public static final BlockType OPEN_EYEBLOSSOM = get("minecraft:open_eyeblossom");
     @Nullable public static final BlockType ORANGE_BANNER = get("minecraft:orange_banner");
     @Nullable public static final BlockType ORANGE_BED = get("minecraft:orange_bed");
     @Nullable public static final BlockType ORANGE_CANDLE = get("minecraft:orange_candle");
@@ -768,6 +771,7 @@ public final class BlockTypes {
     @Nullable public static final BlockType POTTED_BROWN_MUSHROOM = get("minecraft:potted_brown_mushroom");
     @Nullable public static final BlockType POTTED_CACTUS = get("minecraft:potted_cactus");
     @Nullable public static final BlockType POTTED_CHERRY_SAPLING = get("minecraft:potted_cherry_sapling");
+    @Nullable public static final BlockType POTTED_CLOSED_EYEBLOSSOM = get("minecraft:potted_closed_eyeblossom");
     @Nullable public static final BlockType POTTED_CORNFLOWER = get("minecraft:potted_cornflower");
     @Nullable public static final BlockType POTTED_CRIMSON_FUNGUS = get("minecraft:potted_crimson_fungus");
     @Nullable public static final BlockType POTTED_CRIMSON_ROOTS = get("minecraft:potted_crimson_roots");
@@ -780,6 +784,7 @@ public final class BlockTypes {
     @Nullable public static final BlockType POTTED_LILY_OF_THE_VALLEY = get("minecraft:potted_lily_of_the_valley");
     @Nullable public static final BlockType POTTED_MANGROVE_PROPAGULE = get("minecraft:potted_mangrove_propagule");
     @Nullable public static final BlockType POTTED_OAK_SAPLING = get("minecraft:potted_oak_sapling");
+    @Nullable public static final BlockType POTTED_OPEN_EYEBLOSSOM = get("minecraft:potted_open_eyeblossom");
     @Nullable public static final BlockType POTTED_ORANGE_TULIP = get("minecraft:potted_orange_tulip");
     @Nullable public static final BlockType POTTED_OXEYE_DAISY = get("minecraft:potted_oxeye_daisy");
     @Nullable public static final BlockType POTTED_PALE_OAK_SAPLING = get("minecraft:potted_pale_oak_sapling");
@@ -867,6 +872,12 @@ public final class BlockTypes {
     @Nullable public static final BlockType REINFORCED_DEEPSLATE = get("minecraft:reinforced_deepslate");
     @Nullable public static final BlockType REPEATER = get("minecraft:repeater");
     @Nullable public static final BlockType REPEATING_COMMAND_BLOCK = get("minecraft:repeating_command_block");
+    @Nullable public static final BlockType RESIN_BLOCK = get("minecraft:resin_block");
+    @Nullable public static final BlockType RESIN_BRICK_SLAB = get("minecraft:resin_brick_slab");
+    @Nullable public static final BlockType RESIN_BRICK_STAIRS = get("minecraft:resin_brick_stairs");
+    @Nullable public static final BlockType RESIN_BRICK_WALL = get("minecraft:resin_brick_wall");
+    @Nullable public static final BlockType RESIN_BRICKS = get("minecraft:resin_bricks");
+    @Nullable public static final BlockType RESIN_CLUMP = get("minecraft:resin_clump");
     @Nullable public static final BlockType RESPAWN_ANCHOR = get("minecraft:respawn_anchor");
     @Nullable public static final BlockType ROOTED_DIRT = get("minecraft:rooted_dirt");
     @Nullable public static final BlockType ROSE_BUSH = get("minecraft:rose_bush");

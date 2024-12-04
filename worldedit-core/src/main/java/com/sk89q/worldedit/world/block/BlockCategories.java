@@ -46,6 +46,7 @@ public final class BlockCategories {
     public static final BlockCategory BATS_SPAWNABLE_ON = get("minecraft:bats_spawnable_on");
     public static final BlockCategory BEACON_BASE_BLOCKS = get("minecraft:beacon_base_blocks");
     public static final BlockCategory BEDS = get("minecraft:beds");
+    public static final BlockCategory BEE_ATTRACTIVE = get("minecraft:bee_attractive");
     public static final BlockCategory BEE_GROWABLES = get("minecraft:bee_growables");
     public static final BlockCategory BEEHIVES = get("minecraft:beehives");
     public static final BlockCategory BIG_DRIPLEAF_PLACEABLE = get("minecraft:big_dripleaf_placeable");
@@ -149,6 +150,7 @@ public final class BlockCategories {
     public static final BlockCategory OCCLUDES_VIBRATION_SIGNALS = get("minecraft:occludes_vibration_signals");
     public static final BlockCategory OVERWORLD_CARVER_REPLACEABLES = get("minecraft:overworld_carver_replaceables");
     public static final BlockCategory OVERWORLD_NATURAL_LOGS = get("minecraft:overworld_natural_logs");
+    public static final BlockCategory PALE_OAK_LOGS = get("minecraft:pale_oak_logs");
     public static final BlockCategory PARROTS_SPAWNABLE_ON = get("minecraft:parrots_spawnable_on");
     public static final BlockCategory PIGLIN_REPELLENTS = get("minecraft:piglin_repellents");
     public static final BlockCategory PLANKS = get("minecraft:planks");
@@ -189,7 +191,7 @@ public final class BlockCategories {
     public static final BlockCategory STONE_PRESSURE_PLATES = get("minecraft:stone_pressure_plates");
     public static final BlockCategory STRIDER_WARM_BLOCKS = get("minecraft:strider_warm_blocks");
     public static final BlockCategory SWORD_EFFICIENT = get("minecraft:sword_efficient");
-    public static final BlockCategory TALL_FLOWERS = get("minecraft:tall_flowers");
+    @Deprecated public static final BlockCategory TALL_FLOWERS = get("minecraft:tall_flowers");
     public static final BlockCategory TERRACOTTA = get("minecraft:terracotta");
     public static final BlockCategory TRAIL_RUINS_REPLACEABLE = get("minecraft:trail_ruins_replaceable");
     public static final BlockCategory TRAPDOORS = get("minecraft:trapdoors");
