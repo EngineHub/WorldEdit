@@ -505,10 +505,7 @@ public class BukkitWorld extends AbstractWorld {
     public BaseBlock getFullBlock(BlockVector3 position) {
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         if (adapter != null) {
-            final org.bukkit.Location location = BukkitAdapter.adapt(getWorld(), position);
-            return getRegion(location, () -> {
-                return adapter.getFullBlock(location);
-            });
+            return adapter.getFullBlock(BukkitAdapter.adapt(getWorld(), position));
         } else {
             return getBlock(position).toBaseBlock();
         }
@@ -557,22 +554,5 @@ public class BukkitWorld extends AbstractWorld {
             getWorld().setBiome(position.x(), position.y(), position.z(), BukkitAdapter.adapt(biome));
         }
         return true;
-    }
-
-    private <T> T getRegion(org.bukkit.Location location, java.util.concurrent.Callable<T> callable) {
-        java.util.concurrent.CompletableFuture<T> future = new java.util.concurrent.CompletableFuture<>();
-        org.bukkit.Bukkit.getRegionScheduler().execute(WorldEditPlugin.getInstance(), location, () -> {
-            try {
-                T result = callable.call();
-                future.complete(result);
-            } catch (Exception e) {
-                future.completeExceptionally(e);
-            }
-        });
-        try {
-            return future.get(); // This will block until the computation is done
-        } catch (InterruptedException | java.util.concurrent.ExecutionException e) {
-            throw new RuntimeException(e);
-        }
     }
 }
