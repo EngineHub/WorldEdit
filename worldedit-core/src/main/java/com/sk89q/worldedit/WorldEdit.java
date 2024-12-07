@@ -46,6 +46,7 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.SchematicsEventListener;
 import com.sk89q.worldedit.internal.expression.invoke.ReturnException;
+import com.sk89q.worldedit.internal.schematic.SchematicsManager;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.scripting.CraftScriptContext;
@@ -126,6 +127,7 @@ public final class WorldEdit {
             EvenMoreExecutors.newBoundedCachedThreadPool(0, 1, 20, "WorldEdit Task Executor - %s"));
     private final Supervisor supervisor = new SimpleSupervisor();
     private final AssetLoaders assetLoaders = new AssetLoaders(this);
+    private final SchematicsManager schematicsManager = new SchematicsManager(this);
 
     private final BlockFactory blockFactory = new BlockFactory(this);
     private final ItemFactory itemFactory = new ItemFactory(this);
@@ -262,6 +264,15 @@ public final class WorldEdit {
     }
 
     /**
+     * Return the Schematics Manager instance.
+     *
+     * @return the schematics manager instance
+     */
+    public SchematicsManager getSchematicsManager() {
+        return schematicsManager;
+    }
+
+    /**
      * Gets the path to a file. This method will check to see if the filename
      * has valid characters and has an extension. It also prevents directory
      * traversal exploits by checking the root directory and the file directory.
@@ -395,8 +406,10 @@ public final class WorldEdit {
         return new File(dir, filename);
     }
 
+    private static final java.util.regex.Pattern SAFE_FILENAME_REGEX = java.util.regex.Pattern.compile("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+\\.[A-Za-z0-9]+$");
+
     private boolean checkFilename(String filename) {
-        return filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+\\.[A-Za-z0-9]+$");
+        return SAFE_FILENAME_REGEX.matcher(filename).matches();
     }
 
     /**
