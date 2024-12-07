@@ -259,6 +259,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType CHISELED_POLISHED_BLACKSTONE = get("minecraft:chiseled_polished_blackstone");
     @Nullable public static final ItemType CHISELED_QUARTZ_BLOCK = get("minecraft:chiseled_quartz_block");
     @Nullable public static final ItemType CHISELED_RED_SANDSTONE = get("minecraft:chiseled_red_sandstone");
+    @Nullable public static final ItemType CHISELED_RESIN_BRICKS = get("minecraft:chiseled_resin_bricks");
     @Nullable public static final ItemType CHISELED_SANDSTONE = get("minecraft:chiseled_sandstone");
     @Nullable public static final ItemType CHISELED_STONE_BRICKS = get("minecraft:chiseled_stone_bricks");
     @Nullable public static final ItemType CHISELED_TUFF = get("minecraft:chiseled_tuff");
@@ -269,6 +270,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType CLAY = get("minecraft:clay");
     @Nullable public static final ItemType CLAY_BALL = get("minecraft:clay_ball");
     @Nullable public static final ItemType CLOCK = get("minecraft:clock");
+    @Nullable public static final ItemType CLOSED_EYEBLOSSOM = get("minecraft:closed_eyeblossom");
     @Nullable public static final ItemType COAL = get("minecraft:coal");
     @Nullable public static final ItemType COAL_BLOCK = get("minecraft:coal_block");
     @Nullable public static final ItemType COAL_ORE = get("minecraft:coal_ore");
@@ -873,6 +875,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType OCHRE_FROGLIGHT = get("minecraft:ochre_froglight");
     @Nullable public static final ItemType OMINOUS_BOTTLE = get("minecraft:ominous_bottle");
     @Nullable public static final ItemType OMINOUS_TRIAL_KEY = get("minecraft:ominous_trial_key");
+    @Nullable public static final ItemType OPEN_EYEBLOSSOM = get("minecraft:open_eyeblossom");
     @Nullable public static final ItemType ORANGE_BANNER = get("minecraft:orange_banner");
     @Nullable public static final ItemType ORANGE_BED = get("minecraft:orange_bed");
     @Nullable public static final ItemType ORANGE_BUNDLE = get("minecraft:orange_bundle");
@@ -1084,6 +1087,13 @@ public final class ItemTypes {
     @Nullable public static final ItemType REINFORCED_DEEPSLATE = get("minecraft:reinforced_deepslate");
     @Nullable public static final ItemType REPEATER = get("minecraft:repeater");
     @Nullable public static final ItemType REPEATING_COMMAND_BLOCK = get("minecraft:repeating_command_block");
+    @Nullable public static final ItemType RESIN_BLOCK = get("minecraft:resin_block");
+    @Nullable public static final ItemType RESIN_BRICK = get("minecraft:resin_brick");
+    @Nullable public static final ItemType RESIN_BRICK_SLAB = get("minecraft:resin_brick_slab");
+    @Nullable public static final ItemType RESIN_BRICK_STAIRS = get("minecraft:resin_brick_stairs");
+    @Nullable public static final ItemType RESIN_BRICK_WALL = get("minecraft:resin_brick_wall");
+    @Nullable public static final ItemType RESIN_BRICKS = get("minecraft:resin_bricks");
+    @Nullable public static final ItemType RESIN_CLUMP = get("minecraft:resin_clump");
     @Nullable public static final ItemType RESPAWN_ANCHOR = get("minecraft:respawn_anchor");
     @Nullable public static final ItemType RIB_ARMOR_TRIM_SMITHING_TEMPLATE = get("minecraft:rib_armor_trim_smithing_template");
     @Nullable public static final ItemType ROOTED_DIRT = get("minecraft:rooted_dirt");

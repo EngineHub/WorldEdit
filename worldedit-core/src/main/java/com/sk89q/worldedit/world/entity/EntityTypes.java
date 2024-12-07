@@ -60,7 +60,7 @@ public final class EntityTypes {
     @Nullable public static final EntityType COMMAND_BLOCK_MINECART = get("minecraft:command_block_minecart");
     @Nullable public static final EntityType COW = get("minecraft:cow");
     @Nullable public static final EntityType CREAKING = get("minecraft:creaking");
-    @Nullable public static final EntityType CREAKING_TRANSIENT = get("minecraft:creaking_transient");
+    @Deprecated @Nullable public static final EntityType CREAKING_TRANSIENT = get("minecraft:creaking_transient");
     @Nullable public static final EntityType CREEPER = get("minecraft:creeper");
     @Nullable public static final EntityType DARK_OAK_BOAT = get("minecraft:dark_oak_boat");
     @Nullable public static final EntityType DARK_OAK_CHEST_BOAT = get("minecraft:dark_oak_chest_boat");
