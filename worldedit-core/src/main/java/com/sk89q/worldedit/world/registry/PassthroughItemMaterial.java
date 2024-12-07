@@ -23,6 +23,8 @@ import javax.annotation.Nullable;
 
 import static com.sk89q.worldedit.util.GuavaUtil.firstNonNull;
 
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 public class PassthroughItemMaterial implements ItemMaterial {
 
     private static final ItemMaterial DEFAULT_MATERIAL = new SimpleItemMaterial(0, 0);
