@@ -28,6 +28,7 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.Streams;
 import com.google.common.util.concurrent.Futures;
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
@@ -88,7 +89,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -471,7 +471,7 @@ public class FabricWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean generateTree(TreeType type, EditSession editSession, BlockVector3 position) {
+    public boolean generateTree(TreeType type, EditSession editSession, BlockVector3 position) throws MaxChangedBlocksException {
         ServerLevel world = (ServerLevel) getWorld();
         ConfiguredFeature<?, ?> generator = Optional.ofNullable(createTreeFeatureGenerator(type))
             .map(k -> world.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).getValue(k))
@@ -480,43 +480,65 @@ public class FabricWorld extends AbstractWorld {
         if (type == TreeType.CHORUS_PLANT) {
             position = position.add(0, 1, 0);
         }
-        WorldGenLevel proxyLevel = FabricServerLevelDelegateProxy.newInstance(editSession, world);
-        return generator != null && generator.place(
-            proxyLevel, chunkManager.getGenerator(), random,
-            FabricAdapter.toBlockPos(position)
-        );
+        try (FabricServerLevelDelegateProxy.LevelAndProxy proxyLevel = FabricServerLevelDelegateProxy.newInstance(editSession, world)) {
+            return generator != null && generator.place(
+                proxyLevel.level(), chunkManager.getGenerator(), random,
+                FabricAdapter.toBlockPos(position)
+            );
+        }
     }
 
     public boolean generateFeature(ConfiguredFeatureType type, EditSession editSession, BlockVector3 position) {
         ServerLevel world = (ServerLevel) getWorld();
-        ConfiguredFeature<?, ?> k = world.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).getValue(ResourceLocation.tryParse(type.id()));
+        ConfiguredFeature<?, ?> feature = world.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).getValue(ResourceLocation.tryParse(type.id()));
         ServerChunkCache chunkManager = world.getChunkSource();
-        WorldGenLevel proxyLevel = FabricServerLevelDelegateProxy.newInstance(editSession, world);
-        return k != null && k.place(proxyLevel, chunkManager.getGenerator(), random, FabricAdapter.toBlockPos(position));
+        try (FabricServerLevelDelegateProxy.LevelAndProxy proxyLevel = FabricServerLevelDelegateProxy.newInstance(editSession, world)) {
+            return feature != null && feature.place(
+                proxyLevel.level(), chunkManager.getGenerator(), random,
+                FabricAdapter.toBlockPos(position)
+            );
+        } catch (MaxChangedBlocksException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public boolean generateStructure(StructureType type, EditSession editSession, BlockVector3 position) {
         ServerLevel world = (ServerLevel) getWorld();
         Registry<Structure> structureRegistry = world.registryAccess().lookupOrThrow(Registries.STRUCTURE);
-        Structure k = structureRegistry.getValue(ResourceLocation.tryParse(type.id()));
-        if (k == null) {
+        Structure structure = structureRegistry.getValue(ResourceLocation.tryParse(type.id()));
+        if (structure == null) {
             return false;
         }
 
         ServerChunkCache chunkManager = world.getChunkSource();
-        WorldGenLevel proxyLevel = FabricServerLevelDelegateProxy.newInstance(editSession, world);
-        ChunkPos chunkPos = new ChunkPos(new BlockPos(position.x(), position.y(), position.z()));
-        StructureStart structureStart = k.generate(structureRegistry.wrapAsHolder(k), world.dimension(), world.registryAccess(), chunkManager.getGenerator(), chunkManager.getGenerator().getBiomeSource(), chunkManager.randomState(), world.getStructureManager(), world.getSeed(), chunkPos, 0, proxyLevel, biome -> true);
+        try (FabricServerLevelDelegateProxy.LevelAndProxy proxyLevel = FabricServerLevelDelegateProxy.newInstance(editSession, world)) {
+            ChunkPos chunkPos = new ChunkPos(new BlockPos(position.x(), position.y(), position.z()));
+            StructureStart structureStart = structure.generate(
+                structureRegistry.wrapAsHolder(structure), world.dimension(), world.registryAccess(),
+                chunkManager.getGenerator(), chunkManager.getGenerator().getBiomeSource(), chunkManager.randomState(),
+                world.getStructureManager(), world.getSeed(), chunkPos, 0, proxyLevel.level(),
+                biome -> true
+            );
 
-        if (!structureStart.isValid()) {
-            return false;
-        } else {
-            BoundingBox boundingBox = structureStart.getBoundingBox();
-            ChunkPos min = new ChunkPos(SectionPos.blockToSectionCoord(boundingBox.minX()), SectionPos.blockToSectionCoord(boundingBox.minZ()));
-            ChunkPos max = new ChunkPos(SectionPos.blockToSectionCoord(boundingBox.maxX()), SectionPos.blockToSectionCoord(boundingBox.maxZ()));
-            ChunkPos.rangeClosed(min, max).forEach((chunkPosx) -> structureStart.placeInChunk(proxyLevel, world.structureManager(), chunkManager.getGenerator(), world.getRandom(), new BoundingBox(chunkPosx.getMinBlockX(), world.getMinY(), chunkPosx.getMinBlockZ(), chunkPosx.getMaxBlockX(), world.getMaxY(), chunkPosx.getMaxBlockZ()), chunkPosx));
-            return true;
+            if (!structureStart.isValid()) {
+                return false;
+            } else {
+                BoundingBox boundingBox = structureStart.getBoundingBox();
+                ChunkPos min = new ChunkPos(SectionPos.blockToSectionCoord(boundingBox.minX()), SectionPos.blockToSectionCoord(boundingBox.minZ()));
+                ChunkPos max = new ChunkPos(SectionPos.blockToSectionCoord(boundingBox.maxX()), SectionPos.blockToSectionCoord(boundingBox.maxZ()));
+                ChunkPos.rangeClosed(min, max).forEach((chunkPosx) ->
+                    structureStart.placeInChunk(
+                        proxyLevel.level(), world.structureManager(), chunkManager.getGenerator(), world.getRandom(),
+                        new BoundingBox(chunkPosx.getMinBlockX(), world.getMinY(), chunkPosx.getMinBlockZ(),
+                            chunkPosx.getMaxBlockX(), world.getMaxY(), chunkPosx.getMaxBlockZ()),
+                        chunkPosx
+                    )
+                );
+                return true;
+            }
+        } catch (MaxChangedBlocksException e) {
+            throw new RuntimeException(e);
         }
     }
 
