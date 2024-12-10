@@ -29,7 +29,7 @@ import com.sk89q.worldedit.registry.NamespacedRegistry;
  */
 public record FluidType(String id) implements Keyed {
 
-    public static final NamespacedRegistry<FluidType> REGISTRY = new NamespacedRegistry<>("fluid type");
+    public static final NamespacedRegistry<FluidType> REGISTRY = new NamespacedRegistry<>("fluid type", "fluid_type", "minecraft");
 
     @Override
     public String toString() {

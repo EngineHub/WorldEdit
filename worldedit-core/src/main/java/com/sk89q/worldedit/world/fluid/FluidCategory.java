@@ -31,7 +31,7 @@ import java.util.Set;
  */
 public class FluidCategory extends Category<FluidType> implements Keyed {
 
-    public static final NamespacedRegistry<FluidCategory> REGISTRY = new NamespacedRegistry<>("fluid tag");
+    public static final NamespacedRegistry<FluidCategory> REGISTRY = new NamespacedRegistry<>("fluid tag", "fluid_tag", "minecraft");
 
     public FluidCategory(final String id) {
         // TODO Make this work.
