@@ -90,7 +90,6 @@ public class CLIWorldEdit {
         inst = this;
     }
 
-    @SuppressWarnings("removal")
     private void setupPlatform() {
         WorldEdit.getInstance().getPlatformManager().register(platform);
 
