@@ -48,7 +48,6 @@ import com.sk89q.worldedit.world.block.FuzzyBlockState;
 import com.sk89q.worldedit.world.entity.EntityType;
 import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
-import com.sk89q.worldedit.world.registry.BundledBlockData;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
@@ -93,9 +92,6 @@ public class CLIWorldEdit {
 
     @SuppressWarnings("removal")
     private void setupPlatform() {
-        // TODO Move this registry into the CLI data format
-        BundledBlockData.getInstance(); // Load block registry
-
         WorldEdit.getInstance().getPlatformManager().register(platform);
 
         registerCommands();
