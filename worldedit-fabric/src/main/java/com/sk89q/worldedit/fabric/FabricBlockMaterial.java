@@ -141,8 +141,8 @@ public class FabricBlockMaterial implements BlockMaterial {
 
     @Override
     public boolean hasContainer() {
-        return block.getBlock() instanceof EntityBlock entityBlock &&
-            entityBlock.newBlockEntity(BlockPos.ZERO, block) instanceof Clearable;
+        return block.getBlock() instanceof EntityBlock entityBlock
+                && entityBlock.newBlockEntity(BlockPos.ZERO, block) instanceof Clearable;
     }
 
 }

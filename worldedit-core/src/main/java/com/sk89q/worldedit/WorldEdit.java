@@ -403,6 +403,7 @@ public final class WorldEdit {
     /**
      * Load the bundled mappings.
      */
+    @SuppressWarnings("removal")
     public void loadMappings() {
         BundledBlockData.getInstance(); // Load block registry
         LegacyMapper.getInstance(); // Load legacy mappings

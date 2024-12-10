@@ -47,6 +47,7 @@ import javax.annotation.Nullable;
  * reading fails (which occurs when this class is first instantiated), then
  * the methods will return {@code null}s for all blocks.</p>
  */
+@Deprecated(forRemoval = true)
 public final class BundledBlockData {
 
     private static final Logger LOGGER = LogManagerCompat.getLogger();

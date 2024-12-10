@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.OptionalInt;
 import javax.annotation.Nullable;
 
+@SuppressWarnings({ "removal", "deprecation" })
 public class BukkitBlockRegistry extends BundledBlockRegistry {
     private final Map<Material, BukkitBlockMaterial> materialMap = new HashMap<>();
 

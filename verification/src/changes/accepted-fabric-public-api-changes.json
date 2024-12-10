@@ -1,2 +1,11 @@
 {
+  "Removal of constructor in non-API class": [
+    {
+      "type": "com.sk89q.worldedit.fabric.FabricBlockMaterial",
+      "member": "Constructor com.sk89q.worldedit.fabric.FabricBlockMaterial(net.minecraft.class_2680,com.sk89q.worldedit.world.registry.BlockMaterial)",
+      "changes": [
+        "CONSTRUCTOR_REMOVED"
+      ]
+    }
+  ]
 }
