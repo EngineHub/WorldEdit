@@ -36,6 +36,8 @@ import javax.annotation.Nullable;
  * A block registry that uses {@link BundledBlockData} to serve information
  * about blocks.
  */
+@SuppressWarnings({ "deprecation", "removal" })
+@Deprecated(forRemoval = true)
 public class BundledBlockRegistry implements BlockRegistry {
 
     @Override

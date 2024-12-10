@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.sponge;
+package com.sk89q.worldedit.bukkit.adapter.impl.v1_20_R4;
 
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import net.minecraft.core.BlockPos;
@@ -30,18 +30,13 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-/**
- * Sponge block material that pulls as much info as possible from the Minecraft
- * Material, and passes the rest to another implementation, typically the
- * bundled block info.
- */
-public class SpongeBlockMaterial implements BlockMaterial {
+public class PaperweightBlockMaterial implements BlockMaterial {
 
     private static final AABB FULL_CUBE = AABB.unitCubeFromLowerCorner(Vec3.ZERO);
 
     private final BlockState block;
 
-    public SpongeBlockMaterial(BlockState block) {
+    public PaperweightBlockMaterial(BlockState block) {
         this.block = block;
     }
 
@@ -84,6 +79,7 @@ public class SpongeBlockMaterial implements BlockMaterial {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public float getResistance() {
         return block.getBlock().getExplosionResistance();
     }
@@ -94,6 +90,7 @@ public class SpongeBlockMaterial implements BlockMaterial {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public int getLightValue() {
         return block.getLightEmission();
     }

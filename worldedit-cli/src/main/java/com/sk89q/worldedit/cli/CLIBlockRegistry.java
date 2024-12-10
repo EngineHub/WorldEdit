@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 
+@SuppressWarnings("removal")
 public class CLIBlockRegistry extends BundledBlockRegistry {
 
     private Property<?> createProperty(String type, String key, List<String> values) {

@@ -21,10 +21,11 @@ package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
-import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
+import com.sk89q.worldedit.world.registry.BlockRegistry;
 import com.sk89q.worldedit.world.registry.PassthroughBlockMaterial;
 import org.bukkit.Material;
 
@@ -33,7 +34,7 @@ import java.util.Map;
 import java.util.OptionalInt;
 import javax.annotation.Nullable;
 
-public class BukkitBlockRegistry extends BundledBlockRegistry {
+public class BukkitBlockRegistry implements BlockRegistry {
     private final Map<Material, BukkitBlockMaterial> materialMap = new HashMap<>();
 
     @Override
@@ -41,7 +42,7 @@ public class BukkitBlockRegistry extends BundledBlockRegistry {
         if (WorldEditPlugin.getInstance().getBukkitImplAdapter() != null) {
             return WorldEditPlugin.getInstance().getBukkitImplAdapter().getRichBlockName(blockType);
         }
-        return super.getRichName(blockType);
+        return TextComponent.of(blockType.id());
     }
 
     @Nullable
@@ -51,7 +52,13 @@ public class BukkitBlockRegistry extends BundledBlockRegistry {
         if (mat == null) {
             return null;
         }
-        return materialMap.computeIfAbsent(mat, material -> new BukkitBlockMaterial(BukkitBlockRegistry.super.getMaterial(blockType), material));
+        return materialMap.computeIfAbsent(mat, material -> {
+            BlockMaterial platformMaterial = null;
+            if (WorldEditPlugin.getInstance().getBukkitImplAdapter() != null) {
+                platformMaterial = WorldEditPlugin.getInstance().getBukkitImplAdapter().getBlockMaterial(blockType);
+            }
+            return new BukkitBlockMaterial(platformMaterial, material);
+        });
     }
 
     @Nullable
@@ -60,7 +67,7 @@ public class BukkitBlockRegistry extends BundledBlockRegistry {
         if (WorldEditPlugin.getInstance().getBukkitImplAdapter() != null) {
             return WorldEditPlugin.getInstance().getBukkitImplAdapter().getProperties(blockType);
         }
-        return super.getProperties(blockType);
+        return null;
     }
 
     @Override
@@ -82,14 +89,7 @@ public class BukkitBlockRegistry extends BundledBlockRegistry {
 
         @Override
         public boolean isAir() {
-            switch (material) {
-                case AIR:
-                case CAVE_AIR:
-                case VOID_AIR:
-                    return true;
-                default:
-                    return false;
-            }
+            return material.isAir();
         }
 
         @Override
@@ -105,7 +105,7 @@ public class BukkitBlockRegistry extends BundledBlockRegistry {
         @SuppressWarnings("deprecation")
         @Override
         public boolean isTranslucent() {
-            return material.isTransparent();
+            return super.isTranslucent() || material.isTransparent();
         }
     }
 }

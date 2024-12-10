@@ -69,6 +69,7 @@ import com.sk89q.worldedit.world.entity.EntityTypes;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.generation.StructureType;
 import com.sk89q.worldedit.world.item.ItemType;
+import com.sk89q.worldedit.world.registry.BlockMaterial;
 import net.minecraft.SharedConstants;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -555,6 +556,12 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
                 ((CraftServer) Bukkit.getServer()).getServer().registryAccess()
             )
         );
+    }
+
+    @Override
+    public BlockMaterial getBlockMaterial(BlockType blockType) {
+        net.minecraft.world.level.block.state.BlockState mcBlockState = getBlockFromType(blockType).defaultBlockState();
+        return new PaperweightBlockMaterial(mcBlockState);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

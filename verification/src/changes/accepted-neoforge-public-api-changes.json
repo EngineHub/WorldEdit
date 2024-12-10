@@ -1,2 +1,11 @@
 {
+  "Removal of constructor in non-API class": [
+    {
+      "type": "com.sk89q.worldedit.neoforge.NeoForgeBlockMaterial",
+      "member": "Constructor com.sk89q.worldedit.neoforge.NeoForgeBlockMaterial(net.minecraft.world.level.block.state.BlockState,com.sk89q.worldedit.world.registry.BlockMaterial)",
+      "changes": [
+        "CONSTRUCTOR_REMOVED"
+      ]
+    }
+  ]
 }
