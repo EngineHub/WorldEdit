@@ -41,6 +41,7 @@ import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.generation.StructureType;
 import com.sk89q.worldedit.world.item.ItemType;
+import com.sk89q.worldedit.world.registry.BlockMaterial;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.data.BlockData;
@@ -148,6 +149,15 @@ public interface BukkitImplAdapter {
      * @return The name
      */
     Component getRichItemName(BaseItemStack itemStack);
+
+    /**
+     * Gets the block material for the given block type.
+     *
+     * @param blockType the block type
+     * @return the material
+     */
+    @Nullable
+    BlockMaterial getBlockMaterial(BlockType blockType);
 
     /**
      * Get a map of {@code string -> property}.
