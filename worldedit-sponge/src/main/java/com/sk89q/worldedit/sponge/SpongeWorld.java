@@ -329,7 +329,7 @@ public final class SpongeWorld extends AbstractWorld {
     public boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, BlockVector3 position) {
         ServerLevel world = (ServerLevel) getWorld();
         ConfiguredFeature<?, ?> generator = Optional.ofNullable(createTreeFeatureGenerator(type))
-            .map(k -> world.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).get(k))
+            .map(k -> world.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).getValue(k))
             .orElse(null);
         return generator != null && generator.place(
             world, world.getChunkSource().getGenerator(), random,
@@ -387,7 +387,7 @@ public final class SpongeWorld extends AbstractWorld {
         );
 
         itemEntity.item().set(
-            SpongeAdapter.adapt(item).createSnapshot()
+            SpongeAdapter.adapt(item).asImmutable()
         );
         getWorld().spawnEntity(itemEntity);
     }

@@ -21,9 +21,10 @@ package com.sk89q.worldedit.sponge;
 
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.BundledItemRegistry;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
@@ -40,8 +41,11 @@ public class SpongeItemRegistry extends BundledItemRegistry {
 
     @Override
     public Component getRichName(BaseItemStack itemStack) {
-        return TranslatableComponent.of(
-            ((ItemStack) (Object) SpongeAdapter.adapt(itemStack)).getDescriptionId()
+        return GsonComponentSerializer.INSTANCE.deserialize(
+            net.minecraft.network.chat.Component.Serializer.toJson(
+                ((ItemStack) (Object) SpongeAdapter.adapt(itemStack)).getItemName(),
+                ((MinecraftServer) Sponge.server()).registryAccess()
+            )
         );
     }
 

@@ -59,6 +59,7 @@ import com.sk89q.worldedit.util.concurrency.EvenMoreExecutors;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
 import com.sk89q.worldedit.util.io.file.FilenameException;
@@ -749,7 +750,12 @@ public final class WorldEdit {
         try {
             engine = new RhinoCraftScriptEngine();
         } catch (NoClassDefFoundError ignored) {
-            player.printError(TranslatableComponent.of("worldedit.script.no-script-engine"));
+            player.printError(TranslatableComponent.of("worldedit.script.missing-script-engine")
+                .append(TextComponent.newline())
+                .append(TranslatableComponent.of("worldedit.script.please-see",
+                    TextComponent.of("https://worldedit.enginehub.org/en/latest/usage/other/craftscripts/", TextColor.AQUA).clickEvent(ClickEvent.openUrl("https://worldedit.enginehub.org/en/latest/usage/other/craftscripts/")))
+                )
+            );
             return;
         }
 

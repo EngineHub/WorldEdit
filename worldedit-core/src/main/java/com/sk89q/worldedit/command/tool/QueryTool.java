@@ -51,7 +51,7 @@ public class QueryTool implements BlockTool {
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked, @Nullable Direction face) {
 
-        World world = (World) clicked.getExtent();
+        World world = BlockTool.requireWorld(clicked);
         BlockVector3 blockPoint = clicked.toVector().toBlockPoint();
         BaseBlock block = world.getFullBlock(blockPoint);
 

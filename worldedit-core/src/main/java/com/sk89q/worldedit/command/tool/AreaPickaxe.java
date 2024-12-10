@@ -54,10 +54,11 @@ public class AreaPickaxe implements BlockTool {
 
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked, @Nullable Direction face) {
+        World world = BlockTool.requireWorld(clicked);
         int ox = clicked.getBlockX();
         int oy = clicked.getBlockY();
         int oz = clicked.getBlockZ();
-        BlockType initialType = clicked.getExtent().getBlock(clicked.toVector().toBlockPoint()).getBlockType();
+        BlockType initialType = world.getBlock(clicked.toVector().toBlockPoint()).getBlockType();
 
         if (initialType.getMaterial().isAir()) {
             return false;
@@ -67,7 +68,7 @@ public class AreaPickaxe implements BlockTool {
             return false;
         }
 
-        try (EditSession editSession = session.createEditSession(player)) {
+        try (EditSession editSession = BlockTool.createEditSession(player, session, clicked)) {
             editSession.getSurvivalExtent().setToolUse(config.superPickaxeManyDrop);
 
             try {
@@ -81,8 +82,9 @@ public class AreaPickaxe implements BlockTool {
 
                             editSession.setBlock(pos, BlockTypes.AIR.getDefaultState());
 
-                            ((World) clicked.getExtent()).queueBlockBreakEffect(server, pos, initialType,
-                                    clicked.toVector().toBlockPoint().distanceSq(pos));
+                            world.queueBlockBreakEffect(
+                                server, pos, initialType, clicked.toVector().toBlockPoint().distanceSq(pos)
+                            );
                         }
                     }
                 }

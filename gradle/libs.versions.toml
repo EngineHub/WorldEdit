@@ -1,7 +1,6 @@
 [plugins]
 codecov = "org.enginehub.codecov:0.2.0"
-neogradle-userdev = "net.neoforged.gradle.userdev:7.0.142"
-fabric-loom = "fabric-loom:1.6.12"
+neogradle-userdev = { id = "net.neoforged.gradle.userdev", version.ref = "neogradle" }
 sponge-spongegradle = "org.spongepowered.gradle.plugin:2.2.0"
 sponge-vanillagradle = { id = "org.spongepowered.gradle.vanilla", version.ref = "sponge-vanillagradle" }
 
@@ -11,32 +10,33 @@ piston = "0.5.10"
 autoValue = "1.10.4"
 antlr = "4.13.1"
 
-fabric-api = "0.100.3+1.21"
+fabric-api = "0.109.0+1.21.3"
 
-neoforge-minecraft = "1.21"
+neogradle = "7.0.171"
+neoforge-minecraft = "1.21.3"
 
-sponge-minecraft = "1.21"
+sponge-minecraft = "1.21.3"
 # https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/spongeapi/
-sponge-api = "12.0.0-20240616.151530-3"
-sponge-api-major = "12"
+sponge-api = "13.0.0-20241025.155029-3"
+sponge-api-major = "13"
 
 # https://parchmentmc.org/docs/getting-started; note that we use older MC versions some times which is OK
-parchment-minecraft = "1.20.6"
-parchment-mappings = "2024.06.16"
+parchment-minecraft = "1.21"
+parchment-mappings = "2024.11.10"
 
 # https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/vanillagradle/
-sponge-vanillagradle = "0.2.1-20240617.053350-83"
+sponge-vanillagradle = "0.2.1-20241006.183638-89"
 
 # Minimum versions we apply to make dependencies support newer Java
 minimumAsm = "9.7"
 minimumJdependency = "2.10"
 minimumTinyRemapper = "0.8.11"
 
-lang-worldeditBase = "7.3.4"
-lang-version = "1450"
+lang-worldeditBase = "7.3.9"
+lang-version = "1642"
 
 [libraries]
-neogradle-neoform = "net.neoforged.gradle:neoform:7.0.142"
+neogradle-neoform = { module = "net.neoforged.gradle:neoform", version.ref = "neogradle" }
 sponge-vanillagradle = { module = "org.spongepowered:vanillagradle", version.ref = "sponge-vanillagradle" }
 
 licenser = "gradle.plugin.org.cadixdev.gradle:licenser:0.6.1"
@@ -45,9 +45,10 @@ japicmp = "me.champeau.gradle:japicmp-gradle-plugin:0.4.2"
 shadow = "com.github.johnrengelman:shadow:8.1.1"
 jfrog-buildinfo = "org.jfrog.buildinfo:build-info-extractor-gradle:5.2.0"
 
-fabric-mixin = "net.fabricmc:sponge-mixin:0.13.3+mixin.0.8.5"
+# https://maven.fabricmc.net/net/fabricmc/sponge-mixin/
+fabric-mixin = "net.fabricmc:sponge-mixin:0.15.3+mixin.0.8.7"
 
-paperweight = "io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:1.7.2"
+paperweight = "io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:1.7.5"
 
 linBus-bom = "org.enginehub.lin-bus:lin-bus-bom:0.2.0"
 linBus-common.module = "org.enginehub.lin-bus:lin-bus-common"
@@ -80,17 +81,18 @@ paperLib = "io.papermc:paperlib:1.0.8"
 
 dummypermscompat = "com.sk89q:dummypermscompat:1.10"
 bstats-bukkit = "org.bstats:bstats-bukkit:2.2.1"
+bstats-sponge = "org.bstats:bstats-sponge:3.0.0"
 
 trueZip = "de.schlichtherle:truezip:6.8.4"
 rhino = "org.mozilla:rhino-runtime:1.7.13"
 jchronic = "com.sk89q:jchronic:0.2.4a"
 jlibnoise = "com.sk89q.lib:jlibnoise:1.0.0"
 
-fabric-minecraft = "com.mojang:minecraft:1.21"
-fabric-loader = "net.fabricmc:fabric-loader:0.15.11"
+fabric-minecraft = "com.mojang:minecraft:1.21.3"
+fabric-loader = "net.fabricmc:fabric-loader:0.16.7"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.3.1"
 
-neoforge = "net.neoforged:neoforge:21.0.16-beta"
+neoforge = "net.neoforged:neoforge:21.3.40-beta"
 
 # Mojang-provided libraries, CHECK AGAINST MINECRAFT for versions
 guava = "com.google.guava:guava:32.1.3-jre!!"

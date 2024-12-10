@@ -34,8 +34,8 @@ import java.util.Set;
 public class NeoForgeItemCategoryRegistry implements ItemCategoryRegistry {
     @Override
     public Set<ItemType> getCategorisedByName(String category) {
-        return ServerLifecycleHooks.getCurrentServer().registryAccess().registryOrThrow(Registries.ITEM)
-            .getTag(TagKey.create(
+        return ServerLifecycleHooks.getCurrentServer().registryAccess().lookupOrThrow(Registries.ITEM)
+            .get(TagKey.create(
                 Registries.ITEM,
                 ResourceLocation.parse(category)
             ))

@@ -57,7 +57,7 @@ public class RecursivePickaxe implements BlockTool {
 
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked, @Nullable Direction face) {
-        World world = (World) clicked.getExtent();
+        World world = BlockTool.requireWorld(clicked);
 
         BlockVector3 origin = clicked.toVector().toBlockPoint();
         BlockType initialType = world.getBlock(origin).getBlockType();
@@ -70,7 +70,7 @@ public class RecursivePickaxe implements BlockTool {
             return false;
         }
 
-        try (EditSession editSession = session.createEditSession(player)) {
+        try (EditSession editSession = BlockTool.createEditSession(player, session, clicked)) {
             editSession.getSurvivalExtent().setToolUse(config.superPickaxeManyDrop);
 
             try {

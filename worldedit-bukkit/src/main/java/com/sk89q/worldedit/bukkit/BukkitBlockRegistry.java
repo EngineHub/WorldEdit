@@ -28,13 +28,13 @@ import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
 import com.sk89q.worldedit.world.registry.PassthroughBlockMaterial;
 import org.bukkit.Material;
 
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.OptionalInt;
 import javax.annotation.Nullable;
 
 public class BukkitBlockRegistry extends BundledBlockRegistry {
-    private final Map<Material, BukkitBlockMaterial> materialMap = new EnumMap<>(Material.class);
+    private final Map<Material, BukkitBlockMaterial> materialMap = new HashMap<>();
 
     @Override
     public Component getRichName(BlockType blockType) {
