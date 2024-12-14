@@ -20,21 +20,7 @@
 package com.sk89q.worldedit.extension.factory;
 
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.extension.factory.parser.mask.AirMaskParser;
-import com.sk89q.worldedit.extension.factory.parser.mask.BiomeMaskParser;
-import com.sk89q.worldedit.extension.factory.parser.mask.BlockCategoryMaskParser;
-import com.sk89q.worldedit.extension.factory.parser.mask.BlockStateMaskParser;
-import com.sk89q.worldedit.extension.factory.parser.mask.BlocksMaskParser;
-import com.sk89q.worldedit.extension.factory.parser.mask.ClipboardMaskParser;
-import com.sk89q.worldedit.extension.factory.parser.mask.ExistingMaskParser;
-import com.sk89q.worldedit.extension.factory.parser.mask.ExposedMaskParser;
-import com.sk89q.worldedit.extension.factory.parser.mask.ExpressionMaskParser;
-import com.sk89q.worldedit.extension.factory.parser.mask.LazyRegionMaskParser;
-import com.sk89q.worldedit.extension.factory.parser.mask.NegateMaskParser;
-import com.sk89q.worldedit.extension.factory.parser.mask.NoiseMaskParser;
-import com.sk89q.worldedit.extension.factory.parser.mask.OffsetMaskParser;
-import com.sk89q.worldedit.extension.factory.parser.mask.RegionMaskParser;
-import com.sk89q.worldedit.extension.factory.parser.mask.SolidMaskParser;
+import com.sk89q.worldedit.extension.factory.parser.mask.*;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.NoMatchException;
 import com.sk89q.worldedit.extension.input.ParserContext;
@@ -71,6 +57,7 @@ public final class MaskFactory extends AbstractFactory<Mask> {
         register(new AirMaskParser(worldEdit));
         register(new ExposedMaskParser(worldEdit));
         register(new SolidMaskParser(worldEdit));
+        register(new FullCubeMaskParser(worldEdit));
         register(new LazyRegionMaskParser(worldEdit));
         register(new RegionMaskParser(worldEdit));
         register(new OffsetMaskParser(worldEdit));
