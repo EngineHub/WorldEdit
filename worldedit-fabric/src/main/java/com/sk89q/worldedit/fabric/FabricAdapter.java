@@ -41,6 +41,7 @@ import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -195,13 +196,18 @@ public final class FabricAdapter {
         if (!blockEntity.hasLevel()) {
             throw new IllegalArgumentException("BlockEntity must have a level");
         }
+        RegistryAccess registries = blockEntity.getLevel().registryAccess();
+        return adapt(blockEntity, registries);
+    }
+
+    public static BaseBlock adapt(BlockEntity blockEntity, RegistryAccess registries) {
         int blockStateId = Block.getId(blockEntity.getBlockState());
         BlockState worldEdit = BlockStateIdAccess.getBlockStateById(blockStateId);
         if (worldEdit == null) {
             worldEdit = FabricTransmogrifier.transmogToWorldEdit(blockEntity.getBlockState());
         }
         // Save this outside the reference to ensure it doesn't mutate
-        CompoundTag savedNative = blockEntity.saveWithId(blockEntity.getLevel().registryAccess());
+        CompoundTag savedNative = blockEntity.saveWithId(registries);
         return worldEdit.toBaseBlock(LazyReference.from(() -> NBTConverter.fromNative(savedNative)));
     }
 

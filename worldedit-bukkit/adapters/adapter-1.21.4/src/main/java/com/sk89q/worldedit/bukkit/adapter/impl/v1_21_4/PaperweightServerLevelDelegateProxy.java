@@ -28,7 +28,6 @@ import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
-import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.entity.EntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -37,6 +36,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -50,12 +51,19 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.HashMap;
+import java.util.Map;
 
-public class PaperweightServerLevelDelegateProxy implements InvocationHandler {
+public class PaperweightServerLevelDelegateProxy implements InvocationHandler, AutoCloseable {
+
+    private static BlockVector3 adapt(BlockPos blockPos) {
+        return BlockVector3.at(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+    }
 
     private final EditSession editSession;
     private final ServerLevel serverLevel;
     private final PaperweightAdapter adapter;
+    private final Map<BlockVector3, BlockEntity> createdBlockEntities = new HashMap<>();
 
     private PaperweightServerLevelDelegateProxy(EditSession editSession, ServerLevel serverLevel, PaperweightAdapter adapter) {
         this.editSession = editSession;
@@ -63,46 +71,71 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler {
         this.adapter = adapter;
     }
 
-    public static WorldGenLevel newInstance(EditSession editSession, ServerLevel serverLevel, PaperweightAdapter adapter) {
-        return (WorldGenLevel) Proxy.newProxyInstance(
-            serverLevel.getClass().getClassLoader(),
-            serverLevel.getClass().getInterfaces(),
-            new PaperweightServerLevelDelegateProxy(editSession, serverLevel, adapter)
+    public record LevelAndProxy(WorldGenLevel level, PaperweightServerLevelDelegateProxy proxy) implements AutoCloseable {
+        @Override
+        public void close() throws MaxChangedBlocksException {
+            proxy.close();
+        }
+    }
+
+    public static LevelAndProxy newInstance(EditSession editSession, ServerLevel serverLevel, PaperweightAdapter adapter) {
+        PaperweightServerLevelDelegateProxy proxy = new PaperweightServerLevelDelegateProxy(editSession, serverLevel, adapter);
+        return new LevelAndProxy(
+            (WorldGenLevel) Proxy.newProxyInstance(
+                serverLevel.getClass().getClassLoader(),
+                serverLevel.getClass().getInterfaces(),
+                proxy
+            ),
+            proxy
         );
     }
 
     @Nullable
     private BlockEntity getBlockEntity(BlockPos blockPos) {
-        BlockEntity tileEntity = this.serverLevel.getChunkAt(blockPos).getBlockEntity(blockPos);
-        if (tileEntity == null) {
-            return null;
-        }
-        tileEntity.loadWithComponents(
-            (CompoundTag) adapter.fromNative(this.editSession.getFullBlock(BlockVector3.at(blockPos.getX(), blockPos.getY(), blockPos.getZ())).getNbtReference().getValue()),
-            this.serverLevel.registryAccess()
-        );
-
-        return tileEntity;
+        // This doesn't synthesize or load from world. I think editing existing block entities without setting the block
+        // (in the context of features) should not be supported in the first place.
+        BlockVector3 pos = adapt(blockPos);
+        return createdBlockEntities.get(pos);
     }
 
     private BlockState getBlockState(BlockPos blockPos) {
-        return adapter.adapt(this.editSession.getBlock(BlockVector3.at(blockPos.getX(), blockPos.getY(), blockPos.getZ())));
+        return adapter.adapt(this.editSession.getBlock(adapt(blockPos)));
     }
 
     private boolean setBlock(BlockPos blockPos, BlockState blockState) {
         try {
-            return editSession.setBlock(BlockVector3.at(blockPos.getX(), blockPos.getY(), blockPos.getZ()), adapter.adapt(blockState));
+            handleBlockEntity(blockPos, blockState);
+            return editSession.setBlock(adapt(blockPos), adapter.adapt(blockState));
         } catch (MaxChangedBlocksException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private boolean removeBlock(BlockPos blockPos) {
-        try {
-            return editSession.setBlock(BlockVector3.at(blockPos.getX(), blockPos.getY(), blockPos.getZ()), BlockTypes.AIR.getDefaultState());
-        } catch (MaxChangedBlocksException e) {
-            throw new RuntimeException(e);
+    // For BlockEntity#setBlockState, not sure why it's deprecated
+    @SuppressWarnings("deprecation")
+    private void handleBlockEntity(BlockPos blockPos, BlockState blockState) {
+        BlockVector3 pos = adapt(blockPos);
+        if (blockState.hasBlockEntity()) {
+            if (!(blockState.getBlock() instanceof EntityBlock entityBlock)) {
+                // This will probably never happen, as Mojang's own code assumes that
+                // hasBlockEntity implies instanceof EntityBlock, but just to be safe...
+                throw new AssertionError("BlockState has block entity but block is not an EntityBlock: " + blockState);
+            }
+            BlockEntity newEntity = entityBlock.newBlockEntity(blockPos, blockState);
+            if (newEntity != null) {
+                newEntity.setBlockState(blockState);
+                createdBlockEntities.put(pos, newEntity);
+                // Should we load existing NBT here? This is for feature / structure gen so it seems unnecessary.
+                // But it would align with the behavior of the real setBlock method.
+                return;
+            }
         }
+        // Discard any block entity that was previously created if new block is set without block entity
+        createdBlockEntities.remove(pos);
+    }
+
+    private boolean removeBlock(BlockPos blockPos, boolean bl) {
+        return setBlock(blockPos, Blocks.AIR.defaultBlockState());
     }
 
     private boolean addEntity(Entity entity) {
@@ -115,6 +148,20 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler {
         BaseEntity baseEntity = new BaseEntity(EntityTypes.get(id.toString()), LazyReference.from(() -> (LinCompoundTag) adapter.toNative(tag)));
 
         return editSession.createEntity(location, baseEntity) != null;
+    }
+
+    @Override
+    public void close() throws MaxChangedBlocksException {
+        for (Map.Entry<BlockVector3, BlockEntity> entry : createdBlockEntities.entrySet()) {
+            BlockVector3 blockPos = entry.getKey();
+            BlockEntity blockEntity = entry.getValue();
+            net.minecraft.nbt.CompoundTag tag = blockEntity.saveWithId(serverLevel.registryAccess());
+            editSession.setBlock(
+                blockPos,
+                adapter.adapt(blockEntity.getBlockState())
+                    .toBaseBlock(LazyReference.from(() -> (LinCompoundTag) adapter.toNative(tag)))
+            );
+        }
     }
 
     private static void addMethodHandleToTable(
