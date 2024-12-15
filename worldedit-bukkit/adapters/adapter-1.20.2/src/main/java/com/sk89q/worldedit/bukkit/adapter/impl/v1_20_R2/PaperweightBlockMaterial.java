@@ -23,16 +23,12 @@ import com.sk89q.worldedit.world.registry.BlockMaterial;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Clearable;
 import net.minecraft.world.level.EmptyBlockGetter;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.PushReaction;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class PaperweightBlockMaterial implements BlockMaterial {
-
-    private static final AABB FULL_CUBE = AABB.unitCubeFromLowerCorner(Vec3.ZERO);
 
     private final BlockState block;
 
@@ -47,8 +43,7 @@ public class PaperweightBlockMaterial implements BlockMaterial {
 
     @Override
     public boolean isFullCube() {
-        VoxelShape vs = block.getCollisionShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO);
-        return !vs.isEmpty() && vs.bounds().equals(FULL_CUBE);
+        return Block.isShapeFullBlock(block.getShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO));
     }
 
     @Override
