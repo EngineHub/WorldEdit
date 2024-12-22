@@ -1,3 +1,8 @@
+7.3.10
+- Added support for 1.21.4
+- Improved a few translation lines relating to URLs and newlines
+- Fixed issues relating to block entities in generated features and structures
+
 7.3.9
 - Added support for 1.21.3
 - Fixed tools not behaving correctly when mods embed worlds in worlds
