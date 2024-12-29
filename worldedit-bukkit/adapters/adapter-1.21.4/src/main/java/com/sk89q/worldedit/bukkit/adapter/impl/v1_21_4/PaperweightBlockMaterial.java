@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.sponge;
+package com.sk89q.worldedit.bukkit.adapter.impl.v1_21_4;
 
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import net.minecraft.core.BlockPos;
@@ -28,16 +28,11 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.PushReaction;
 
-/**
- * Sponge block material that pulls as much info as possible from the Minecraft
- * Material, and passes the rest to another implementation, typically the
- * bundled block info.
- */
-public class SpongeBlockMaterial implements BlockMaterial {
+public class PaperweightBlockMaterial implements BlockMaterial {
 
     private final BlockState block;
 
-    public SpongeBlockMaterial(BlockState block) {
+    public PaperweightBlockMaterial(BlockState block) {
         this.block = block;
     }
 
@@ -79,6 +74,7 @@ public class SpongeBlockMaterial implements BlockMaterial {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public float getResistance() {
         return block.getBlock().getExplosionResistance();
     }
@@ -89,6 +85,7 @@ public class SpongeBlockMaterial implements BlockMaterial {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public int getLightValue() {
         return block.getLightEmission();
     }
