@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.command.argument;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.reflect.TypeToken;
 import com.sk89q.worldedit.command.util.SuggestionHelper;
 import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.Registry;
@@ -48,7 +49,6 @@ import org.enginehub.piston.inject.Key;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 public final class RegistryConverter<V extends Keyed> implements ArgumentConverter<V> {
 
@@ -73,6 +73,9 @@ public final class RegistryConverter<V extends Keyed> implements ArgumentConvert
             .forEach(registryType ->
                 commandManager.registerConverter(Key.of(registryType), from(registryType))
             );
+
+        // This must be separate as it has a generic type
+        commandManager.registerConverter(Key.of(new TypeToken<>() {}), new RegistryConverter<>(Registry.REGISTRY));
     }
 
     @SuppressWarnings("unchecked")
@@ -112,6 +115,6 @@ public final class RegistryConverter<V extends Keyed> implements ArgumentConvert
 
     @Override
     public List<String> getSuggestions(String input, InjectedValueAccess context) {
-        return SuggestionHelper.getRegistrySuggestions(registry, input).collect(Collectors.toList());
+        return SuggestionHelper.getRegistrySuggestions(registry, input).toList();
     }
 }

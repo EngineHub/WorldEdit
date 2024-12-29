@@ -42,10 +42,12 @@ import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.entity.EntityType;
+import com.sk89q.worldedit.world.gamemode.GameModes;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.generation.StructureType;
 import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
+import com.sk89q.worldedit.world.weather.WeatherTypes;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -225,6 +227,11 @@ public class NeoForgeWorldEdit {
                 StructureType.REGISTRY.register(key, new StructureType(key));
             }
         }
+
+        // ... :|
+        GameModes.get("");
+        WeatherTypes.get("");
+        com.sk89q.worldedit.registry.Registries.get("");
     }
 
     @SubscribeEvent
