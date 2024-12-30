@@ -80,6 +80,7 @@ import org.spongepowered.math.vector.Vector3d;
 import org.spongepowered.plugin.PluginContainer;
 import org.spongepowered.plugin.builtin.jvm.Plugin;
 
+import java.lang.invoke.MethodHandles;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -142,7 +143,8 @@ public class SpongeWorldEdit {
 
         event.game().eventManager().registerListeners(
             container,
-            new CUIChannelHandler.RegistrationHandler()
+            new CUIChannelHandler.RegistrationHandler(),
+            MethodHandles.publicLookup()
         );
         logger.info("WorldEdit for Sponge (version " + getInternalVersion() + ") is loaded");
     }
