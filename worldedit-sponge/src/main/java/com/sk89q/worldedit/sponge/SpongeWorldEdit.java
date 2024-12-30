@@ -144,7 +144,7 @@ public class SpongeWorldEdit {
         event.game().eventManager().registerListeners(
             container,
             new CUIChannelHandler.RegistrationHandler(),
-            MethodHandles.publicLookup()
+            MethodHandles.lookup()
         );
         logger.info("WorldEdit for Sponge (version " + getInternalVersion() + ") is loaded");
     }
@@ -442,8 +442,8 @@ public class SpongeWorldEdit {
 
     public Actor wrapCommandCause(CommandCause cause) {
         Object rootCause = cause.root();
-        if (rootCause instanceof ServerPlayer) {
-            return SpongeAdapter.adapt((ServerPlayer) rootCause);
+        if (rootCause instanceof ServerPlayer serverPlayer) {
+            return SpongeAdapter.adapt(serverPlayer);
         }
         if (rootCause instanceof LocatableBlock locatableBlock) {
             Optional<? extends BlockEntity> optionalBlockEntity = locatableBlock.world().blockEntity(locatableBlock.blockPosition());
@@ -454,8 +454,8 @@ public class SpongeWorldEdit {
                 }
             }
         }
-        if (rootCause instanceof Audience) {
-            return new SpongeCommandSender((Audience) rootCause);
+        if (rootCause instanceof Audience audience) {
+            return new SpongeCommandSender(audience);
         }
 
         throw new UnsupportedOperationException("Cannot wrap " + rootCause.getClass());
