@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.extension.factory.parser.mask;
 
-import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
@@ -31,7 +30,7 @@ import java.util.List;
 
 public class FullCubeMaskParser extends SimpleInputParser<Mask> {
 
-    private final List<String> aliases = ImmutableList.of("#fullcube");
+    private static final List<String> aliases = List.of("#fullcube");
 
     public FullCubeMaskParser(WorldEdit worldEdit) {
         super(worldEdit);

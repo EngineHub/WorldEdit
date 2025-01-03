@@ -23,7 +23,7 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.block.BlockState;
 
-public class FullCubeMask extends AbstractExtentMask {
+public final class FullCubeMask extends AbstractExtentMask {
 
     public FullCubeMask(Extent extent) {
         super(extent);
