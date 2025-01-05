@@ -234,7 +234,7 @@ public class SpongePlayer extends AbstractPlayerActor {
         if (block == null) {
             player.resetBlockChange(pos.x(), pos.y(), pos.z());
         } else {
-            BlockState spongeBlock = SpongeAdapter.adapt(block.toImmutableState());
+            BlockState spongeBlock = SpongeAdapter.adapt(block.toImmutableState(), player.world());
             player.sendBlockChange(pos.x(), pos.y(), pos.z(), spongeBlock);
             if (block instanceof final BaseBlock baseBlock
                 && block.getBlockType().equals(com.sk89q.worldedit.world.block.BlockTypes.STRUCTURE_BLOCK)) {

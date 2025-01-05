@@ -32,7 +32,6 @@ import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.item.ItemTypes;
-import net.minecraft.world.level.block.Block;
 import org.enginehub.linbus.tree.LinCompoundTag;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
@@ -59,16 +58,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class SpongeAdapter {
 
-    public static org.spongepowered.api.block.BlockState adapt(BlockState blockState) {
+    public static org.spongepowered.api.block.BlockState adapt(BlockState blockState, ServerWorld world) {
         int blockStateId = BlockStateIdAccess.getBlockStateId(blockState);
         if (!BlockStateIdAccess.isValidInternalId(blockStateId)) {
             return SpongeTransmogrifier.transmogToMinecraft(blockState);
         }
-        return (org.spongepowered.api.block.BlockState) Block.stateById(blockStateId);
+        return world.blockPalette().get(blockStateId, world).orElseThrow();
     }
 
-    public static BlockState adapt(org.spongepowered.api.block.BlockState blockState) {
-        int blockStateId = Block.getId((net.minecraft.world.level.block.state.BlockState) blockState);
+    public static BlockState adapt(org.spongepowered.api.block.BlockState blockState, ServerWorld world) {
+        int blockStateId = world.blockPalette().get(blockState).orElseThrow();
         BlockState worldEdit = BlockStateIdAccess.getBlockStateById(blockStateId);
         if (worldEdit == null) {
             return SpongeTransmogrifier.transmogToWorldEdit(blockState);

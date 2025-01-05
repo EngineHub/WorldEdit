@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.sponge;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEditException;
@@ -27,6 +28,7 @@ import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
+import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -53,7 +55,10 @@ import net.minecraft.data.worldgen.features.EndFeatures;
 import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import org.apache.logging.log4j.Logger;
 import org.enginehub.linbus.tree.LinCompoundTag;
@@ -84,9 +89,7 @@ import org.spongepowered.math.vector.Vector3i;
 
 import java.lang.ref.WeakReference;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -152,7 +155,7 @@ public final class SpongeWorld extends AbstractWorld {
     public BlockState getBlock(BlockVector3 position) {
         return SpongeAdapter.adapt(getWorld().block(
             position.x(), position.y(), position.z()
-        ));
+        ), getWorld());
     }
 
     @Override
@@ -185,7 +188,7 @@ public final class SpongeWorld extends AbstractWorld {
 
         ServerWorld world = getWorld();
 
-        org.spongepowered.api.block.BlockState newState = SpongeAdapter.adapt(block.toImmutableState());
+        org.spongepowered.api.block.BlockState newState = SpongeAdapter.adapt(block.toImmutableState(), world);
 
         boolean didSet = world.setBlock(
             position.x(), position.y(), position.z(),
@@ -345,7 +348,6 @@ public final class SpongeWorld extends AbstractWorld {
         int groundLight = getWorld().light(LightTypes.BLOCK, position.x(), position.y(), position.z());
 
         return Math.max(skyLight, groundLight);
-
     }
 
     @Override
@@ -402,7 +404,7 @@ public final class SpongeWorld extends AbstractWorld {
 
     @Override
     public boolean canPlaceAt(BlockVector3 position, com.sk89q.worldedit.world.block.BlockState blockState) {
-        return ((net.minecraft.world.level.block.state.BlockState) SpongeAdapter.adapt(blockState))
+        return ((net.minecraft.world.level.block.state.BlockState) SpongeAdapter.adapt(blockState, getWorld()))
             .canSurvive(
                 ((LevelReader) getWorld()),
                 new BlockPos(position.x(), position.y(), position.z())
@@ -476,6 +478,15 @@ public final class SpongeWorld extends AbstractWorld {
             builder.entityData(NbtAdapter.adaptFromWorldEdit(nativeTag));
         }
         return builder.build().apply(SpongeAdapter.adapt(location)).map(SpongeEntity::new).orElse(null);
+    }
+
+    @Override
+    public void sendBiomeUpdates(Iterable<BlockVector2> chunks) {
+        List<ChunkAccess> nativeChunks = chunks instanceof Collection<BlockVector2> chunkCollection ? Lists.newArrayListWithCapacity(chunkCollection.size()) : Lists.newArrayList();
+        for (BlockVector2 chunk : chunks) {
+            nativeChunks.add(((Level) getWorld()).getChunk(chunk.x(), chunk.z(), ChunkStatus.BIOMES, false));
+        }
+        ((ServerLevel) getWorld()).getChunkSource().chunkMap.resendBiomesForChunks(nativeChunks);
     }
 
     @Override

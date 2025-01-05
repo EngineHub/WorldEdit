@@ -26,11 +26,12 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
-import net.minecraft.world.level.block.Block;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.registry.RegistryTypes;
 import org.spongepowered.api.state.StateProperty;
+import org.spongepowered.api.world.DefaultWorldKeys;
+import org.spongepowered.api.world.server.ServerWorld;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -56,14 +57,10 @@ public class SpongeBlockRegistry extends BundledBlockRegistry {
                 .value(ResourceKey.resolve(blockType.id()));
         return materialMap.computeIfAbsent(
             spongeBlockType.defaultState(),
-            m -> {
-                net.minecraft.world.level.block.state.BlockState blockState =
-                    (net.minecraft.world.level.block.state.BlockState) m;
-                return new SpongeBlockMaterial(
-                    blockState,
-                    super.getMaterial(blockType)
-                );
-            }
+            blockState -> new SpongeBlockMaterial(
+                blockState,
+                super.getMaterial(blockType)
+            )
         );
     }
 
@@ -83,9 +80,9 @@ public class SpongeBlockRegistry extends BundledBlockRegistry {
 
     @Override
     public OptionalInt getInternalBlockStateId(BlockState state) {
-        org.spongepowered.api.block.BlockState equivalent = SpongeAdapter.adapt(state);
-        return OptionalInt.of(Block.getId(
-            (net.minecraft.world.level.block.state.BlockState) equivalent
-        ));
+        ServerWorld world = Sponge.server().worldManager().world(DefaultWorldKeys.DEFAULT).orElseThrow();
+        org.spongepowered.api.block.BlockState equivalent = SpongeAdapter.adapt(state, world);
+
+        return world.blockPalette().get(equivalent);
     }
 }
