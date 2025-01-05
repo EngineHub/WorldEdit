@@ -80,6 +80,7 @@ import org.spongepowered.math.vector.Vector3d;
 import org.spongepowered.plugin.PluginContainer;
 import org.spongepowered.plugin.builtin.jvm.Plugin;
 
+import java.lang.invoke.MethodHandles;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -142,7 +143,8 @@ public class SpongeWorldEdit {
 
         event.game().eventManager().registerListeners(
             container,
-            new CUIChannelHandler.RegistrationHandler()
+            new CUIChannelHandler.RegistrationHandler(),
+            MethodHandles.lookup()
         );
         logger.info("WorldEdit for Sponge (version " + getInternalVersion() + ") is loaded");
     }
@@ -440,8 +442,8 @@ public class SpongeWorldEdit {
 
     public Actor wrapCommandCause(CommandCause cause) {
         Object rootCause = cause.root();
-        if (rootCause instanceof ServerPlayer) {
-            return SpongeAdapter.adapt((ServerPlayer) rootCause);
+        if (rootCause instanceof ServerPlayer serverPlayer) {
+            return SpongeAdapter.adapt(serverPlayer);
         }
         if (rootCause instanceof LocatableBlock locatableBlock) {
             Optional<? extends BlockEntity> optionalBlockEntity = locatableBlock.world().blockEntity(locatableBlock.blockPosition());
@@ -452,8 +454,8 @@ public class SpongeWorldEdit {
                 }
             }
         }
-        if (rootCause instanceof Audience) {
-            return new SpongeCommandSender((Audience) rootCause);
+        if (rootCause instanceof Audience audience) {
+            return new SpongeCommandSender(audience);
         }
 
         throw new UnsupportedOperationException("Cannot wrap " + rootCause.getClass());
