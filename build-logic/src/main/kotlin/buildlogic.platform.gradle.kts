@@ -53,7 +53,7 @@ afterEvaluate {
         if (includeClasspath) {
             attributes["Class-Path"] = listOf("truezip", "truevfs", "js")
                 .map { "$it.jar" }
-                .flatMap { listOf(it, "WorldEdit/$it") }
+                .flatMap { listOf(it, "WorldEdit/$it", "../$it", "../WorldEdit/$it") }
                 .joinToString(separator = " ")
         }
         attributes.putAll(extraAttributes)
