@@ -139,7 +139,8 @@ public class SpongeWorldEdit {
 
         event.game().eventManager().registerListeners(
             container,
-            new SpongeWorldEditListener(this)
+            new SpongeWorldEditListener(this),
+            MethodHandles.lookup()
         );
 
         logger.info("WorldEdit for Sponge (version " + getInternalVersion() + ") is loaded");
