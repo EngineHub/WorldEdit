@@ -37,6 +37,7 @@ import org.spongepowered.api.data.type.StringRepresentable;
 import org.spongepowered.api.registry.RegistryTypes;
 import org.spongepowered.api.state.BooleanStateProperty;
 import org.spongepowered.api.state.EnumStateProperty;
+import org.spongepowered.api.state.IntegerStateProperty;
 import org.spongepowered.api.state.StateProperty;
 
 import java.util.Comparator;
@@ -55,14 +56,14 @@ public class SpongeTransmogrifier {
             return switch (property) {
                 case BooleanStateProperty stateProperty ->
                         new BooleanProperty(property.name(), ImmutableList.copyOf(stateProperty.possibleValues()));
-                case IntegerProperty stateProperty -> new IntegerProperty(property.name(), stateProperty.getValues());
+                case IntegerStateProperty stateProperty -> new IntegerProperty(property.name(), ImmutableList.copyOf(stateProperty.possibleValues()));
                 case EnumStateProperty<?> stateProperty when stateProperty.valueClass() == org.spongepowered.api.util.Direction.class ->
                         new DirectionalProperty(property.name(), stateProperty.possibleValues().stream()
                                 .map(x -> adaptDirection((org.spongepowered.api.util.Direction) x))
                                 .toList());
                 case EnumStateProperty<?> stateProperty ->
-                        new EnumProperty(property.name(), stateProperty.possibleValues().stream()
-                                .map(org.spongepowered.api.data.type.StringRepresentable::serializationString)
+                        new EnumProperty(property.name(), ((net.minecraft.world.level.block.state.properties.EnumProperty<?>) (Object) stateProperty).getPossibleValues().stream()
+                                .map(net.minecraft.util.StringRepresentable::getSerializedName)
                                 .toList());
                 default -> throw new IllegalStateException("Unknown property type");
             };
@@ -80,7 +81,8 @@ public class SpongeTransmogrifier {
     ) {
         Map<Property<?>, Object> properties = new TreeMap<>(Comparator.comparing(Property::getName));
         for (StateProperty<?> stateProperty: blockState.stateProperties()) {
-            Object value = blockState.stateProperty(stateProperty).orElseThrow();
+            Object value = ((net.minecraft.world.level.block.state.BlockState) blockState)
+                    .getValue((net.minecraft.world.level.block.state.properties.Property<?>) stateProperty);
             if (stateProperty.valueClass() == org.spongepowered.api.util.Direction.class) {
                 org.spongepowered.api.util.Direction nativeDirectionValue = (org.spongepowered.api.util.Direction) value;
                 value = adaptDirection(nativeDirectionValue);

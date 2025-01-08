@@ -64,7 +64,7 @@ public class SpongeWorldNativeAccess implements WorldNativeAccess<LevelChunk, Bl
 
     @Override
     public BlockState toNative(com.sk89q.worldedit.world.block.BlockState state) {
-        return (BlockState) SpongeAdapter.adapt(state, (ServerWorld) world);
+        return (BlockState) SpongeAdapter.adapt(state, (ServerWorld) world.get());
     }
 
     @Override
