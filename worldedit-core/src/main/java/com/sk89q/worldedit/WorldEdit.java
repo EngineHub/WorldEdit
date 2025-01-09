@@ -71,7 +71,6 @@ import com.sk89q.worldedit.util.translation.TranslationManager;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.registry.BundledBlockData;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 import org.apache.logging.log4j.Logger;
 
@@ -404,7 +403,6 @@ public final class WorldEdit {
      * Load the bundled mappings.
      */
     public void loadMappings() {
-        BundledBlockData.getInstance(); // Load block registry
         LegacyMapper.getInstance(); // Load legacy mappings
     }
 

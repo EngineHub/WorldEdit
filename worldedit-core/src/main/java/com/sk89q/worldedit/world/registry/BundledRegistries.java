@@ -66,6 +66,7 @@ public class BundledRegistries implements Registries {
         return url;
     }
 
+    @SuppressWarnings("removal")
     private final BundledBlockRegistry blockRegistry = new BundledBlockRegistry();
     @SuppressWarnings("removal")
     private final BundledItemRegistry itemRegistry = new BundledItemRegistry();

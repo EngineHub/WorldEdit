@@ -20,29 +20,35 @@
 package com.sk89q.worldedit.neoforge;
 
 import com.sk89q.worldedit.world.registry.BlockMaterial;
-import com.sk89q.worldedit.world.registry.PassthroughBlockMaterial;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.Clearable;
+import net.minecraft.world.level.EmptyBlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.PushReaction;
-
-import javax.annotation.Nullable;
 
 /**
  * Forge block material that pulls as much info as possible from the Minecraft
  * Material, and passes the rest to another implementation, typically the
  * bundled block info.
  */
-public class NeoForgeBlockMaterial extends PassthroughBlockMaterial {
+public class NeoForgeBlockMaterial implements BlockMaterial {
 
     private final BlockState block;
 
-    public NeoForgeBlockMaterial(BlockState block, @Nullable BlockMaterial secondary) {
-        super(secondary);
+    public NeoForgeBlockMaterial(BlockState block) {
         this.block = block;
     }
 
     @Override
     public boolean isAir() {
-        return block.isAir() || super.isAir();
+        return block.isAir();
+    }
+
+    @Override
+    public boolean isFullCube() {
+        return Block.isShapeFullBlock(block.getShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO));
     }
 
     @Override
@@ -50,16 +56,43 @@ public class NeoForgeBlockMaterial extends PassthroughBlockMaterial {
         return block.canOcclude();
     }
 
-    @SuppressWarnings("deprecation")
     @Override
+    public boolean isPowerSource() {
+        return block.isSignalSource();
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
     public boolean isLiquid() {
         return block.liquid();
     }
 
-    @SuppressWarnings("deprecation")
     @Override
+    @SuppressWarnings("deprecation")
     public boolean isSolid() {
         return block.isSolid();
+    }
+
+    @Override
+    public float getHardness() {
+        return block.getDestroySpeed(EmptyBlockGetter.INSTANCE, BlockPos.ZERO);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public float getResistance() {
+        return block.getBlock().getExplosionResistance();
+    }
+
+    @Override
+    public float getSlipperiness() {
+        return block.getBlock().getFriction();
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public int getLightValue() {
+        return block.getLightEmission();
     }
 
     @Override
@@ -72,8 +105,13 @@ public class NeoForgeBlockMaterial extends PassthroughBlockMaterial {
         return block.getPistonPushReaction() == PushReaction.BLOCK;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
+    public boolean isTicksRandomly() {
+        return block.isRandomlyTicking();
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
     public boolean isMovementBlocker() {
         return block.blocksMotion();
     }
@@ -85,12 +123,23 @@ public class NeoForgeBlockMaterial extends PassthroughBlockMaterial {
 
     @Override
     public boolean isToolRequired() {
-        return !block.requiresCorrectToolForDrops();
+        return block.requiresCorrectToolForDrops();
     }
 
     @Override
     public boolean isReplacedDuringPlacement() {
         return block.canBeReplaced();
+    }
+
+    @Override
+    public boolean isTranslucent() {
+        return !block.canOcclude();
+    }
+
+    @Override
+    public boolean hasContainer() {
+        return block.getBlock() instanceof EntityBlock entityBlock
+                && entityBlock.newBlockEntity(BlockPos.ZERO, block) instanceof Clearable;
     }
 
 }

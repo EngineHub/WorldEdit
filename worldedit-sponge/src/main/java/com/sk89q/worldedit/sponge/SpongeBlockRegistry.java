@@ -25,7 +25,7 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
-import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
+import com.sk89q.worldedit.world.registry.BlockRegistry;
 import net.minecraft.world.level.block.Block;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.OptionalInt;
 import java.util.TreeMap;
 
-public class SpongeBlockRegistry extends BundledBlockRegistry {
+public class SpongeBlockRegistry implements BlockRegistry {
 
     private final Map<org.spongepowered.api.block.BlockState, SpongeBlockMaterial> materialMap =
         new HashMap<>();
@@ -60,8 +60,7 @@ public class SpongeBlockRegistry extends BundledBlockRegistry {
                 net.minecraft.world.level.block.state.BlockState blockState =
                     (net.minecraft.world.level.block.state.BlockState) m;
                 return new SpongeBlockMaterial(
-                    blockState,
-                    super.getMaterial(blockType)
+                    blockState
                 );
             }
         );
