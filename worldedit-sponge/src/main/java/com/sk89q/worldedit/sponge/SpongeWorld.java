@@ -207,6 +207,7 @@ public final class SpongeWorld extends AbstractWorld {
                 .withBlocksMoving(false)
                 .withForcedReRender(false)
                 .withIgnoreRender(false)
+                .withPerformBlockDestruction(false)
         );
         if (!didSet) {
             // still update NBT if the block is the same

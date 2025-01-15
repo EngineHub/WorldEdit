@@ -124,7 +124,7 @@ public class SpongeWorldEditListener {
     }
 
     @Listener
-    public void onPlayerInteractBlockSecondary(InteractBlockEvent.Secondary event, @Root ServerPlayer spongePlayer) {
+    public void onPlayerInteractBlockSecondary(InteractBlockEvent.Secondary.Pre event, @Root ServerPlayer spongePlayer) {
         if (skipInteractionEvent(event)) {
             return;
         }
