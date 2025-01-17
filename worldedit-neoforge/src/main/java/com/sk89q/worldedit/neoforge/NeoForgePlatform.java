@@ -197,7 +197,7 @@ class NeoForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public String getPlatformName() {
-        return "Forge-Official";
+        return "NeoForge-Official";
     }
 
     @Override
@@ -207,7 +207,7 @@ class NeoForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public String id() {
-        return "enginehub:forge";
+        return "enginehub:neoforge";
     }
 
     @Override
