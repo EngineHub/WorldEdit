@@ -21,6 +21,7 @@ package com.sk89q.worldedit.sponge;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.event.platform.SessionIdleEvent;
+import com.sk89q.worldedit.internal.event.InteractionDebouncer;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
@@ -39,9 +40,11 @@ import java.util.Optional;
 public class SpongeWorldEditListener {
 
     private final SpongeWorldEdit plugin;
+    private final InteractionDebouncer debouncer;
 
     public SpongeWorldEditListener(SpongeWorldEdit plugin) {
         this.plugin = plugin;
+        debouncer = new InteractionDebouncer(plugin.getPlatform());
     }
 
     public boolean skipEvents() {
@@ -61,13 +64,13 @@ public class SpongeWorldEditListener {
         WorldEdit we = WorldEdit.getInstance();
         SpongePlayer player = SpongeAdapter.adapt(spongePlayer);
 
-        Optional<Boolean> previousResult = plugin.getDebouncer().getDuplicateInteractionResult(player);
+        Optional<Boolean> previousResult = debouncer.getDuplicateInteractionResult(player);
         if (previousResult.isPresent()) {
             return;
         }
 
         boolean result = we.handleArmSwing(player);
-        plugin.getDebouncer().setLastInteraction(player, result);
+        debouncer.setLastInteraction(player, result);
     }
 
     @Listener
@@ -79,7 +82,7 @@ public class SpongeWorldEditListener {
         WorldEdit we = WorldEdit.getInstance();
         SpongePlayer player = SpongeAdapter.adapt(spongePlayer);
 
-        Optional<Boolean> previousResult = plugin.getDebouncer().getDuplicateInteractionResult(player);
+        Optional<Boolean> previousResult = debouncer.getDuplicateInteractionResult(player);
         if (previousResult.isPresent()) {
             if (previousResult.get()) {
                 event.setCancelled(true);
@@ -88,7 +91,7 @@ public class SpongeWorldEditListener {
         }
 
         boolean result = we.handleRightClick(player);
-        plugin.getDebouncer().setLastInteraction(player, result);
+        debouncer.setLastInteraction(player, result);
 
         if (result) {
             event.setCancelled(true);
@@ -116,7 +119,7 @@ public class SpongeWorldEditListener {
         }
 
         result = we.handleArmSwing(player) || result;
-        plugin.getDebouncer().setLastInteraction(player, result);
+        debouncer.setLastInteraction(player, result);
 
         if (result) {
             event.setCancelled(true);
@@ -144,7 +147,7 @@ public class SpongeWorldEditListener {
         }
 
         result = we.handleRightClick(player) || result;
-        plugin.getDebouncer().setLastInteraction(player, result);
+        debouncer.setLastInteraction(player, result);
 
         if (result) {
             event.setCancelled(true);
@@ -154,7 +157,7 @@ public class SpongeWorldEditListener {
     @Listener
     public void onPlayerQuit(ServerSideConnectionEvent.Disconnect event) {
         event.profile().ifPresent(profile -> {
-            plugin.getDebouncer().clearInteraction(profile::uniqueId);
+            debouncer.clearInteraction(profile::uniqueId);
 
             WorldEdit.getInstance().getEventBus()
                     .post(new SessionIdleEvent(new SpongePlayer.SessionKeyImpl(profile.uniqueId(), profile.name().orElseThrow())));

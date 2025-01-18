@@ -158,7 +158,7 @@ public final class SpongeWorld extends AbstractWorld {
     public BlockState getBlock(BlockVector3 position) {
         return SpongeAdapter.adapt(getWorld().block(
             position.x(), position.y(), position.z()
-        ), getWorld());
+        ));
     }
 
     @Override
@@ -191,7 +191,7 @@ public final class SpongeWorld extends AbstractWorld {
 
         ServerWorld world = getWorld();
 
-        org.spongepowered.api.block.BlockState newState = SpongeAdapter.adapt(block.toImmutableState(), world);
+        org.spongepowered.api.block.BlockState newState = SpongeAdapter.adapt(block.toImmutableState());
 
         boolean didSet = world.setBlock(
             position.x(), position.y(), position.z(),
@@ -408,7 +408,7 @@ public final class SpongeWorld extends AbstractWorld {
 
     @Override
     public boolean canPlaceAt(BlockVector3 position, com.sk89q.worldedit.world.block.BlockState blockState) {
-        return ((net.minecraft.world.level.block.state.BlockState) SpongeAdapter.adapt(blockState, getWorld()))
+        return ((net.minecraft.world.level.block.state.BlockState) SpongeAdapter.adapt(blockState))
             .canSurvive(
                 ((LevelReader) getWorld()),
                 new BlockPos(position.x(), position.y(), position.z())

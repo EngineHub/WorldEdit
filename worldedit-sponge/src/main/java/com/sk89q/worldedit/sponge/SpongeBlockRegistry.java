@@ -81,7 +81,7 @@ public class SpongeBlockRegistry extends BundledBlockRegistry {
     @Override
     public OptionalInt getInternalBlockStateId(BlockState state) {
         ServerWorld world = Sponge.server().worldManager().world(DefaultWorldKeys.DEFAULT).orElseThrow();
-        org.spongepowered.api.block.BlockState equivalent = SpongeAdapter.adapt(state, world);
+        org.spongepowered.api.block.BlockState equivalent = SpongeAdapter.adapt(state);
 
         return world.blockPalette().get(equivalent);
     }

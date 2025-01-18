@@ -34,7 +34,6 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.internal.command.CommandUtil;
-import com.sk89q.worldedit.internal.event.InteractionDebouncer;
 import com.sk89q.worldedit.sponge.config.SpongeConfiguration;
 import com.sk89q.worldedit.world.biome.BiomeCategory;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -64,7 +63,6 @@ import org.spongepowered.api.event.lifecycle.StartingEngineEvent;
 import org.spongepowered.api.event.lifecycle.StoppingEngineEvent;
 import org.spongepowered.api.registry.RegistryTypes;
 import org.spongepowered.api.scheduler.Task;
-import org.spongepowered.api.world.DefaultWorldKeys;
 import org.spongepowered.api.world.LocatableBlock;
 import org.spongepowered.api.world.server.ServerWorld;
 import org.spongepowered.plugin.PluginContainer;
@@ -103,7 +101,6 @@ public class SpongeWorldEdit {
     private final SpongeConfiguration config;
     private final Path workingDir;
 
-    private InteractionDebouncer debouncer;
     private SpongePermissionsProvider provider;
     private SpongePlatform platform;
 
@@ -125,7 +122,6 @@ public class SpongeWorldEdit {
     @Listener
     public void onPluginConstruction(ConstructPluginEvent event) {
         this.platform = new SpongePlatform(this);
-        debouncer = new InteractionDebouncer(platform);
 
         WorldEdit.getInstance().getPlatformManager().register(platform);
 
@@ -171,7 +167,7 @@ public class SpongeWorldEdit {
                         BlockType spongeBlockType = Sponge.game().registry(RegistryTypes.BLOCK_TYPE).value(
                             ResourceKey.resolve(input.getBlockType().id())
                         );
-                        return SpongeAdapter.adapt(spongeBlockType.defaultState(), Sponge.server().worldManager().world(DefaultWorldKeys.DEFAULT).orElseThrow());
+                        return SpongeAdapter.adapt(spongeBlockType.defaultState());
                     }
                 ));
             }
@@ -379,9 +375,5 @@ public class SpongeWorldEdit {
 
     public SpongePermissionsProvider getPermissionsProvider() {
         return provider;
-    }
-
-    public InteractionDebouncer getDebouncer() {
-        return debouncer;
     }
 }

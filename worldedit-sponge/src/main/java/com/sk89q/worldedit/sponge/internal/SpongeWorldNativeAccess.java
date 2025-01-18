@@ -31,7 +31,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import org.enginehub.linbus.tree.LinCompoundTag;
-import org.spongepowered.api.world.server.ServerWorld;
 
 import java.lang.ref.WeakReference;
 import java.util.Objects;
@@ -64,7 +63,7 @@ public class SpongeWorldNativeAccess implements WorldNativeAccess<LevelChunk, Bl
 
     @Override
     public BlockState toNative(com.sk89q.worldedit.world.block.BlockState state) {
-        return (BlockState) SpongeAdapter.adapt(state, (ServerWorld) world.get());
+        return (BlockState) SpongeAdapter.adapt(state);
     }
 
     @Override
