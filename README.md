@@ -8,7 +8,7 @@
 * Use it in creative, survival in single player or on your server.
 * Use it on your Minecraft server to fix griefing and mistakes.
 
-Java Edition required. WorldEdit is compatible with Forge, Fabric, Bukkit, Spigot, Paper, and Sponge.
+Java Edition required. WorldEdit is compatible with NeoForge, Fabric, Bukkit, Spigot, Paper, and Sponge.
 
 ## Download WorldEdit
 
