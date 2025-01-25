@@ -219,7 +219,7 @@ public class FabricWorldEdit implements ModInitializer {
             return new FabricPermissionsProvider.LuckoFabricPermissionsProvider(platform);
         } catch (ClassNotFoundException ignored) {
             // fallback to vanilla
-        } catch (Throwable e) {
+        } catch (Exception e) {
             // catch any exception to prevent crashing the server, but still print a warning
             LOGGER.warn("Failed to load Fabric permissions provider. Falling back to Minecraft", e);
         }
