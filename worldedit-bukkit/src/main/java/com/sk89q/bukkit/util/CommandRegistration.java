@@ -30,6 +30,7 @@ import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.Plugin;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -101,9 +102,8 @@ public class CommandRegistration {
             try {
                 // For Spigot compat we use Reflection here to initialise a command map
                 fallbackCommands = commandMap = SimpleCommandMap.class.getConstructor(Server.class).newInstance(Bukkit.getServer());
-            } catch (Throwable e) {
-                // If that fails, we use the version supplied by Paper. If this then fails, we're out of options.
-                fallbackCommands = commandMap = new SimpleCommandMap(Bukkit.getServer(), Map.of());
+            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException("Failed to create fallback CommandMap", e);
             }
             Bukkit.getServer().getPluginManager().registerEvents(new FallbackRegistrationListener(fallbackCommands), plugin);
         } else {
