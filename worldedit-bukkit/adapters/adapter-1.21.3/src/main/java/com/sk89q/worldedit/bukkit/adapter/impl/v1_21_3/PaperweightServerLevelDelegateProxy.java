@@ -28,7 +28,6 @@ import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
-import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.entity.EntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -37,6 +36,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -50,6 +50,7 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.function.Predicate;
 
 public class PaperweightServerLevelDelegateProxy implements InvocationHandler {
 
@@ -86,7 +87,11 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler {
     }
 
     private BlockState getBlockState(BlockPos blockPos) {
-        return adapter.adapt(this.editSession.getBlock(BlockVector3.at(blockPos.getX(), blockPos.getY(), blockPos.getZ())));
+        return adapter.adapt(this.editSession.getBlockWithBuffer(BlockVector3.at(blockPos.getX(), blockPos.getY(), blockPos.getZ())));
+    }
+
+    private boolean isStateAtPosition(BlockPos blockPos, Predicate<BlockState> predicate) {
+        return predicate.test(getBlockState(blockPos));
     }
 
     private boolean setBlock(BlockPos blockPos, BlockState blockState) {
@@ -98,11 +103,7 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler {
     }
 
     private boolean removeBlock(BlockPos blockPos) {
-        try {
-            return editSession.setBlock(BlockVector3.at(blockPos.getX(), blockPos.getY(), blockPos.getZ()), BlockTypes.AIR.getDefaultState());
-        } catch (MaxChangedBlocksException e) {
-            throw new RuntimeException(e);
-        }
+        return setBlock(blockPos, Blocks.AIR.defaultBlockState());
     }
 
     private boolean addEntity(Entity entity) {
@@ -142,6 +143,12 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler {
                 builder,
                 StaticRefraction.GET_BLOCK_STATE,
                 lookup.unreflect(PaperweightServerLevelDelegateProxy.class.getDeclaredMethod("getBlockState", BlockPos.class))
+            );
+
+            addMethodHandleToTable(
+                    builder,
+                    StaticRefraction.IS_STATE_AT_POSITION,
+                    lookup.unreflect(PaperweightServerLevelDelegateProxy.class.getDeclaredMethod("isStateAtPosition", BlockPos.class, Predicate.class))
             );
 
             MethodHandle addEntity = lookup.unreflect(PaperweightServerLevelDelegateProxy.class.getDeclaredMethod("addEntity", Entity.class));

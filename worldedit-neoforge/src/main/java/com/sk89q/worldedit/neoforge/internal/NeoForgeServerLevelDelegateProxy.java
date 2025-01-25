@@ -42,6 +42,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 public class NeoForgeServerLevelDelegateProxy implements InvocationHandler, AutoCloseable {
 
@@ -82,7 +83,7 @@ public class NeoForgeServerLevelDelegateProxy implements InvocationHandler, Auto
     }
 
     private BlockState getBlockState(BlockPos blockPos) {
-        return NeoForgeAdapter.adapt(this.editSession.getBlock(NeoForgeAdapter.adapt(blockPos)));
+        return NeoForgeAdapter.adapt(this.editSession.getBlockWithBuffer(NeoForgeAdapter.adapt(blockPos)));
     }
 
     private boolean setBlock(BlockPos blockPos, BlockState blockState) {
@@ -148,6 +149,13 @@ public class NeoForgeServerLevelDelegateProxy implements InvocationHandler, Auto
             case "getBlockState", "m_8055_" -> {
                 if (args.length == 1 && args[0] instanceof BlockPos blockPos) {
                     return getBlockState(blockPos);
+                }
+            }
+            case "isStateAtPosition", "m_7433_" -> {
+                if (args.length == 2 && args[0] instanceof BlockPos blockPos && args[1] instanceof Predicate) {
+                    @SuppressWarnings("unchecked")
+                    Predicate<BlockState> predicate = (Predicate<BlockState>) args[1];
+                    return predicate.test(getBlockState(blockPos));
                 }
             }
             case "getBlockEntity", "m_7702_" -> {

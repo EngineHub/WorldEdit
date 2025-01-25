@@ -41,6 +41,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 public class FabricServerLevelDelegateProxy implements InvocationHandler, AutoCloseable {
 
@@ -81,7 +82,7 @@ public class FabricServerLevelDelegateProxy implements InvocationHandler, AutoCl
     }
 
     private BlockState getBlockState(BlockPos blockPos) {
-        return FabricAdapter.adapt(this.editSession.getBlock(FabricAdapter.adapt(blockPos)));
+        return FabricAdapter.adapt(this.editSession.getBlockWithBuffer(FabricAdapter.adapt(blockPos)));
     }
 
     private boolean setBlock(BlockPos blockPos, BlockState blockState) {
@@ -145,6 +146,13 @@ public class FabricServerLevelDelegateProxy implements InvocationHandler, AutoCl
             case "getBlockState", "method_8320" -> {
                 if (args.length == 1 && args[0] instanceof BlockPos blockPos) {
                     return getBlockState(blockPos);
+                }
+            }
+            case "isStateAtPosition", "method_16358" -> {
+                if (args.length == 2 && args[0] instanceof BlockPos blockPos && args[1] instanceof Predicate) {
+                    @SuppressWarnings("unchecked")
+                    Predicate<BlockState> predicate = (Predicate<BlockState>) args[1];
+                    return predicate.test(getBlockState(blockPos));
                 }
             }
             case "getBlockEntity", "method_8321" -> {
