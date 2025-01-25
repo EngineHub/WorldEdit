@@ -39,6 +39,9 @@ dependencies {
     "api"(project(":worldedit-core"))
     "api"(project(":worldedit-libs:bukkit"))
 
+    "localImplementation"(libs.paperApi) {
+        exclude("junit", "junit")
+    }
     "localImplementation"(platform(libs.log4j.bom)) {
         because("Spigot provides Log4J (sort of, not in API, implicitly part of server)")
     }
@@ -49,12 +52,6 @@ dependencies {
     }
     "testCompileOnly"(libs.jetbrains.annotations) {
         because("Resolving Spigot annotations")
-    }
-    "compileOnly"(libs.paperApi) {
-        exclude("junit", "junit")
-    }
-    "testImplementation"(libs.paperApi) {
-        exclude("junit", "junit")
     }
     "implementation"(libs.paperLib)
     "compileOnly"(libs.dummypermscompat)

@@ -99,8 +99,10 @@ public class CommandRegistration {
             Bukkit.getServer().getLogger().severe(plugin.getDescription().getName()
                 + ": Could not retrieve server CommandMap, using fallback instead!");
             try {
+                // For Spigot compat we use Reflection here to initialise a command map
                 fallbackCommands = commandMap = SimpleCommandMap.class.getConstructor(Server.class).newInstance(Bukkit.getServer());
             } catch (Throwable e) {
+                // If that fails, we use the version supplied by Paper. If this then fails, we're out of options.
                 fallbackCommands = commandMap = new SimpleCommandMap(Bukkit.getServer(), Map.of());
             }
             Bukkit.getServer().getPluginManager().registerEvents(new FallbackRegistrationListener(fallbackCommands), plugin);
