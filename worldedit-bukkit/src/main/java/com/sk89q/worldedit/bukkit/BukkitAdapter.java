@@ -373,6 +373,7 @@ public class BukkitAdapter {
         return biomeBiomeTypeCache.computeIfAbsent(biome, b -> BiomeTypes.get(b.getKey().toString()));
     }
 
+    @SuppressWarnings("deprecation")
     public static Biome adapt(BiomeType biomeType) {
         NamespacedKey biomeKey = NamespacedKey.fromString(biomeType.id());
         if (biomeKey == null) {
