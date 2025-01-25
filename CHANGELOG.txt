@@ -2,6 +2,10 @@
 - Added support for 1.21.4
 - Improved a few translation lines relating to URLs and newlines
 - Fixed issues relating to block entities in generated features and structures
+- Added support for pale oak tree variants in the tree commands
+- [Paper] Fixed loading extra jars from the WorldEdit folder with Paper's remapping
+- [NeoForge] Fixed NeoForge's platform name listing "Forge" instead of "NeoForge"
+- [Fabric] Worked around an error caused by other mods bundling old versions of the Fabric Permissions API that are incompatible with MC 1.21.4
 
 7.3.9
 - Added support for 1.21.3
