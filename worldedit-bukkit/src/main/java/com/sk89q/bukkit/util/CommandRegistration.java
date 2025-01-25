@@ -22,6 +22,7 @@ package com.sk89q.bukkit.util;
 import com.sk89q.util.ReflectionUtil;
 import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
+import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandMap;
@@ -97,7 +98,11 @@ public class CommandRegistration {
         if (commandMap == null) {
             Bukkit.getServer().getLogger().severe(plugin.getDescription().getName()
                 + ": Could not retrieve server CommandMap, using fallback instead!");
-            fallbackCommands = commandMap = new SimpleCommandMap(Bukkit.getServer());
+            try {
+                fallbackCommands = commandMap = SimpleCommandMap.class.getConstructor(Server.class).newInstance(Bukkit.getServer());
+            } catch (Throwable e) {
+                fallbackCommands = commandMap = new SimpleCommandMap(Bukkit.getServer(), Map.of());
+            }
             Bukkit.getServer().getPluginManager().registerEvents(new FallbackRegistrationListener(fallbackCommands), plugin);
         } else {
             serverCommandMap = commandMap;

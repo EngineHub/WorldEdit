@@ -75,7 +75,6 @@ mockito-junit-jupiter.module = "org.mockito:mockito-junit-jupiter"
 
 commonsCli = "commons-cli:commons-cli:1.4"
 
-spigot = "org.spigotmc:spigot-api:1.21.4-R0.1-20250120.102046-27"
 paperApi = "io.papermc.paper:paper-api:1.21.4-R0.1-20250118.134032-116"
 paperLib = "io.papermc:paperlib:1.0.8"
 

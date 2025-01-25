@@ -38,11 +38,6 @@ val adapters = configurations.create("adapters") {
 dependencies {
     "api"(project(":worldedit-core"))
     "api"(project(":worldedit-libs:bukkit"))
-    // Technically this is api, but everyone should already have some form of the bukkit API
-    // Avoid pulling in another one, especially one so outdated.
-    "localImplementation"(libs.spigot) {
-        exclude("junit", "junit")
-    }
 
     "localImplementation"(platform(libs.log4j.bom)) {
         because("Spigot provides Log4J (sort of, not in API, implicitly part of server)")
@@ -56,6 +51,9 @@ dependencies {
         because("Resolving Spigot annotations")
     }
     "compileOnly"(libs.paperApi) {
+        exclude("junit", "junit")
+    }
+    "testImplementation"(libs.paperApi) {
         exclude("junit", "junit")
     }
     "implementation"(libs.paperLib)
