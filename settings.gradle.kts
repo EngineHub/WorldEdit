@@ -71,7 +71,7 @@ includeBuild("build-logic")
 
 include("worldedit-libs")
 
-listOf("1.20.2", "1.20.4", "1.20.6", "1.21", "1.21.3", "1.21.4").forEach {
+listOf("1.21.3", "1.21.4").forEach {
     include("worldedit-bukkit:adapters:adapter-$it")
 }
 
