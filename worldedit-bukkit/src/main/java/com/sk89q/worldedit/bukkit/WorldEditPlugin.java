@@ -205,10 +205,11 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent(platform));
     }
 
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({ "unchecked", "deprecation", "removal" })
     private void initializeRegistries() {
         // Biome
         Registry.BIOME.forEach(biome -> {
+            // TODO Fix this check for 1.22 / when we drop < 1.21 support
             if (!biome.name().equals("CUSTOM")) {
                 String key = biome.getKey().toString();
                 BiomeType.REGISTRY.register(key, new BiomeType(key));

@@ -44,6 +44,7 @@ class BukkitBiomeRegistry implements BiomeRegistry {
         );
     }
 
+    @SuppressWarnings({ "removal" })
     @Deprecated
     @Nullable
     @Override
