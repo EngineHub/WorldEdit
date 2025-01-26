@@ -21,7 +21,7 @@ body:
   attributes:
     label: Platform Version
     description: |
-      The version of the platform you are on, i.e. Spigot, Paper, Fabric, or Forge.
+      The version of the platform you are on, i.e. Spigot, Paper, Fabric, or NeoForge.
       Please ensure you are running up-to-date software before making a bug report.
       Old versions or hybrids will receive little to no support.
     placeholder: e.g. git-Spigot-21fe707-e1ebe52, git-Paper-463, Fabric 0.7.1, Forge 35.1.37

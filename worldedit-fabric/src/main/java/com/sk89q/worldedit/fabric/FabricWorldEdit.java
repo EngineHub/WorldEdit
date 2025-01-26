@@ -56,6 +56,9 @@ import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.fabricmc.loader.api.Version;
+import net.fabricmc.loader.api.metadata.ModMetadata;
+import net.fabricmc.loader.api.metadata.version.VersionPredicate;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -205,10 +208,22 @@ public class FabricWorldEdit implements ModInitializer {
     private FabricPermissionsProvider getInitialPermissionsProvider() {
         try {
             Class.forName("me.lucko.fabric.api.permissions.v0.Permissions", false, getClass().getClassLoader());
+            Optional<Version> version = FabricLoader.getInstance().getModContainer("fabric-permissions-api-v0")
+                    .map(ModContainer::getMetadata)
+                    .map(ModMetadata::getVersion);
+
+            if (version.isPresent() && !VersionPredicate.parse(">=0.3.3").test(version.get())) {
+                throw new RuntimeException("Fabric permissions version " + version.get() + " is not supported. Please update Fabric Permissions API");
+            }
+
             return new FabricPermissionsProvider.LuckoFabricPermissionsProvider(platform);
         } catch (ClassNotFoundException ignored) {
             // fallback to vanilla
+        } catch (Exception e) {
+            // catch any exception to prevent crashing the server, but still print a warning
+            LOGGER.warn("Failed to load Fabric permissions provider. Falling back to Minecraft", e);
         }
+
         return new FabricPermissionsProvider.VanillaPermissionsProvider(platform);
     }
 

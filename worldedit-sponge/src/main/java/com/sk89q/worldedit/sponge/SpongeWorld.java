@@ -319,6 +319,8 @@ public final class SpongeWorld extends AbstractWorld {
             case MANGROVE -> TreeFeatures.MANGROVE;
             case TALL_MANGROVE -> TreeFeatures.TALL_MANGROVE;
             case CHERRY -> TreeFeatures.CHERRY;
+            case PALE_OAK -> TreeFeatures.PALE_OAK;
+            case PALE_OAK_CREAKING -> TreeFeatures.PALE_OAK_CREAKING;
             case RANDOM ->
                 createTreeFeatureGenerator(TreeGenerator.TreeType.values()[ThreadLocalRandom.current().nextInt(TreeGenerator.TreeType.values().length)]);
             default -> null;

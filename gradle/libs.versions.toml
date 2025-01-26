@@ -15,10 +15,10 @@ fabric-api = "0.110.5+1.21.4"
 neogradle = "7.0.171"
 neoforge-minecraft = "1.21.4"
 
-sponge-minecraft = "1.21.3"
+sponge-minecraft = "1.21.4"
 # https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/spongeapi/
-sponge-api = "13.0.0-20241025.155029-3"
-sponge-api-major = "13"
+sponge-api = "14.0.0-20241229.134205-2"
+sponge-api-major = "14"
 
 # https://parchmentmc.org/docs/getting-started; note that we use older MC versions some times which is OK
 parchment-minecraft = "1.21"
@@ -32,8 +32,8 @@ minimumAsm = "9.7"
 minimumJdependency = "2.10"
 minimumTinyRemapper = "0.8.11"
 
-lang-worldeditBase = "7.3.9"
-lang-version = "1642"
+lang-worldeditBase = "7.3.10"
+lang-version = "1707"
 
 [libraries]
 neogradle-neoform = { module = "net.neoforged.gradle:neoform", version.ref = "neogradle" }
@@ -75,8 +75,7 @@ mockito-junit-jupiter.module = "org.mockito:mockito-junit-jupiter"
 
 commonsCli = "commons-cli:commons-cli:1.4"
 
-spigot = "org.spigotmc:spigot-api:1.20.2-R0.1-20231205.164257-71"
-paperApi = "io.papermc.paper:paper-api:1.20.2-R0.1-20231203.034718-122"
+paperApi = "io.papermc.paper:paper-api:1.21.4-R0.1-20250118.134032-116"
 paperLib = "io.papermc:paperlib:1.0.8"
 
 dummypermscompat = "com.sk89q:dummypermscompat:1.10"

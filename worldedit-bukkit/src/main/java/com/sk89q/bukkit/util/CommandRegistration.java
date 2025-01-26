@@ -22,6 +22,7 @@ package com.sk89q.bukkit.util;
 import com.sk89q.util.ReflectionUtil;
 import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
+import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandMap;
@@ -29,6 +30,7 @@ import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.Plugin;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -97,7 +99,12 @@ public class CommandRegistration {
         if (commandMap == null) {
             Bukkit.getServer().getLogger().severe(plugin.getDescription().getName()
                 + ": Could not retrieve server CommandMap, using fallback instead!");
-            fallbackCommands = commandMap = new SimpleCommandMap(Bukkit.getServer());
+            try {
+                // For Spigot compat we use Reflection here to initialise a command map
+                fallbackCommands = commandMap = SimpleCommandMap.class.getConstructor(Server.class).newInstance(Bukkit.getServer());
+            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException("Failed to create fallback CommandMap", e);
+            }
             Bukkit.getServer().getPluginManager().registerEvents(new FallbackRegistrationListener(fallbackCommands), plugin);
         } else {
             serverCommandMap = commandMap;
