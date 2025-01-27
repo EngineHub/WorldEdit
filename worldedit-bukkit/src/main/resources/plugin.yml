@@ -2,7 +2,7 @@ name: WorldEdit
 main: com.sk89q.worldedit.bukkit.WorldEditPlugin
 version: "${internalVersion}-Folia"
 load: STARTUP
-api-version: 1.20
+api-version: 1.21.3
 softdepend: [Vault]
 author: EngineHub
 website: https://enginehub.org/worldedit
