@@ -22,6 +22,7 @@ package com.sk89q.worldedit.extent;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -69,4 +70,8 @@ public class MaskingExtent extends AbstractDelegateExtent {
         return mask.test(location) && super.setBlock(location, block);
     }
 
+    @Override
+    public boolean setBiome(BlockVector3 location, BiomeType biome) {
+        return mask.test(location) && super.setBiome(location, biome);
+    }
 }
