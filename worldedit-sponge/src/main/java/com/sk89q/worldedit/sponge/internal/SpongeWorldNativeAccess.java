@@ -21,6 +21,7 @@ package com.sk89q.worldedit.sponge.internal;
 
 import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
 import com.sk89q.worldedit.sponge.SpongeAdapter;
+import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -74,6 +75,11 @@ public class SpongeWorldNativeAccess implements WorldNativeAccess<LevelChunk, Bl
     @Nullable
     @Override
     public BlockState setBlockState(LevelChunk chunk, BlockPos position, BlockState state) {
+        if (chunk instanceof ExtendedChunk) {
+            return ((ExtendedChunk) chunk).setBlockState(
+                position, state, false, sideEffectSet.shouldApply(SideEffect.UPDATE)
+            );
+        }
         return chunk.setBlockState(position, state, false);
     }
 

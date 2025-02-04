@@ -21,11 +21,8 @@ package com.sk89q.worldedit.sponge;
 
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.PassthroughBlockMaterial;
-import org.spongepowered.api.block.BlockState;
-import org.spongepowered.api.data.Keys;
-import org.spongepowered.api.data.type.MatterTypes;
-import org.spongepowered.api.data.type.PushReactions;
-import org.spongepowered.api.tag.BlockTypeTags;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.PushReaction;
 
 import javax.annotation.Nullable;
 
@@ -45,52 +42,55 @@ public class SpongeBlockMaterial extends PassthroughBlockMaterial {
 
     @Override
     public boolean isAir() {
-        return block.type().is(BlockTypeTags.AIR) || super.isAir();
+        return block.isAir() || super.isAir();
     }
 
     @Override
     public boolean isOpaque() {
-        return ((net.minecraft.world.level.block.state.BlockState) block).canOcclude();
+        return block.canOcclude();
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean isLiquid() {
-        return block.require(Keys.MATTER_TYPE) == MatterTypes.LIQUID.get();
+        return block.liquid();
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean isSolid() {
-        return block.require(Keys.IS_SOLID);
+        return block.isSolid();
     }
 
     @Override
     public boolean isFragileWhenPushed() {
-        return block.require(Keys.PUSH_REACTION) == PushReactions.DESTROY.get();
+        return block.getPistonPushReaction() == PushReaction.DESTROY;
     }
 
     @Override
     public boolean isUnpushable() {
-        return block.require(Keys.PUSH_REACTION) == PushReactions.BLOCK.get();
+        return block.getPistonPushReaction() == PushReaction.BLOCK;
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean isMovementBlocker() {
-        return !block.require(Keys.IS_PASSABLE);
+        return block.blocksMotion();
     }
 
     @Override
     public boolean isBurnable() {
-        return block.require(Keys.BURNABLE);
+        return block.ignitedByLava();
     }
 
     @Override
     public boolean isToolRequired() {
-        return ((net.minecraft.world.level.block.state.BlockState) block).requiresCorrectToolForDrops();
+        return block.requiresCorrectToolForDrops();
     }
 
     @Override
     public boolean isReplacedDuringPlacement() {
-        return block.require(Keys.IS_REPLACEABLE);
+        return block.canBeReplaced();
     }
 
 }
