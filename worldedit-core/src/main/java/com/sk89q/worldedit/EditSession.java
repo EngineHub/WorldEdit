@@ -708,6 +708,30 @@ public class EditSession implements Extent, AutoCloseable {
     }
 
     /**
+     * As with {@link #getBlock(BlockVector3)}, gets the block at the given position.
+     * However, this may return blocks not yet set to the world (i.e., buffered) by
+     * the current EditSession.
+     *
+     * @param position position of the block
+     * @return the block
+     */
+    public BlockState getBlockWithBuffer(BlockVector3 position) {
+        return this.bypassNone.getBlock(position);
+    }
+
+    /**
+     * As with {@link #getFullBlock(BlockVector3)}, gets the block at the given position,
+     * but as with {@link #getBlockWithBuffer(BlockVector3)}, this may return a block in
+     * the current EditSession's buffer rather than from the world.
+     *
+     * @param position position of the block
+     * @return the block
+     */
+    public BaseBlock getFullBlockWithBuffer(BlockVector3 position) {
+        return this.bypassNone.getFullBlock(position);
+    }
+
+    /**
      * Returns the highest solid 'terrain' block.
      *
      * @param x the X coordinate

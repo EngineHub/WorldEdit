@@ -53,6 +53,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 public class PaperweightServerLevelDelegateProxy implements InvocationHandler, AutoCloseable {
 
@@ -99,7 +100,11 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler, A
     }
 
     private BlockState getBlockState(BlockPos blockPos) {
-        return adapter.adapt(this.editSession.getBlock(adapt(blockPos)));
+        return adapter.adapt(this.editSession.getBlockWithBuffer(adapt(blockPos)));
+    }
+
+    private boolean isStateAtPosition(BlockPos blockPos, Predicate<BlockState> predicate) {
+        return predicate.test(getBlockState(blockPos));
     }
 
     private boolean setBlock(BlockPos blockPos, BlockState blockState) {
@@ -134,7 +139,7 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler, A
         createdBlockEntities.remove(pos);
     }
 
-    private boolean removeBlock(BlockPos blockPos, boolean bl) {
+    private boolean removeBlock(BlockPos blockPos) {
         return setBlock(blockPos, Blocks.AIR.defaultBlockState());
     }
 
@@ -189,6 +194,12 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler, A
                 builder,
                 StaticRefraction.GET_BLOCK_STATE,
                 lookup.unreflect(PaperweightServerLevelDelegateProxy.class.getDeclaredMethod("getBlockState", BlockPos.class))
+            );
+
+            addMethodHandleToTable(
+                builder,
+                StaticRefraction.IS_STATE_AT_POSITION,
+                lookup.unreflect(PaperweightServerLevelDelegateProxy.class.getDeclaredMethod("isStateAtPosition", BlockPos.class, Predicate.class))
             );
 
             MethodHandle addEntity = lookup.unreflect(PaperweightServerLevelDelegateProxy.class.getDeclaredMethod("addEntity", Entity.class));
