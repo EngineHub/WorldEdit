@@ -135,7 +135,7 @@ public class ConfigurateConfiguration extends LocalConfiguration {
         serverSideCUI = node.node("server-side-cui").getBoolean(true);
 
         String snapshotsDir = node.node("snapshots", "directory").getString("");
-        boolean experimentalSnapshots = node.node("snapshots", "experimental").getBoolean(false);
+        boolean experimentalSnapshots = node.node("snapshots", "experimental").getBoolean(true);
         initializeSnapshotConfiguration(snapshotsDir, experimentalSnapshots);
 
         String type = node.node("shell-save-type").getString("").trim();
