@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.command;
 
 import com.google.common.collect.ImmutableList;
+import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
@@ -74,6 +75,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -525,6 +527,8 @@ public class GeneralCommands {
         }
     }
 
+    private static final Pattern ALLOWED_KEY_CHARACTERS = Pattern.compile("[a-z0-9_:?*/]+");
+
     @Command(
         name = "/registry",
         desc = "Search through the given registry"
@@ -535,33 +539,45 @@ public class GeneralCommands {
                             Registry<?> registry,
                          @ArgFlag(name = 'p', desc = "Page of results to return", def = "1")
                             int page,
-                         @Arg(desc = "Search query", variable = true, def = "")
-                            List<String> query) {
-        String search = String.join(" ", query);
+                         @Arg(desc = "Search query", variable = true, def = "*")
+                            List<String> queryBits) {
+        String query = String.join("_", queryBits);
 
-        WorldEditAsyncCommandBuilder.createAndSendMessage(actor, new RegistrySearcher(registry, search, page),
-            TranslatableComponent.of("worldedit.registry.searching"));
+        if (!ALLOWED_KEY_CHARACTERS.matcher(query).matches()) {
+            actor.printError(TranslatableComponent.of("worldedit.registry.error.invalid-key"));
+        }
+
+        WorldEditAsyncCommandBuilder.createAndSendMessage(actor, new RegistrySearcher(registry, query, page),
+            TranslatableComponent.of("worldedit.registry.searching", TextComponent.of(query)));
     }
 
     private static class RegistrySearcher implements Callable<Component> {
         private final Registry<?> registry;
         private final String search;
         private final int page;
+        private final Pattern matcher;
 
         RegistrySearcher(Registry<?> registry, String search, int page) {
             this.registry = registry;
             this.search = search;
             this.page = page;
+
+            String matcherQuery = search;
+            if (!matcherQuery.contains("*") && !matcherQuery.contains("?")) {
+                // If there are no wildcards, add them around the query
+                matcherQuery = "*" + matcherQuery + "*";
+            }
+
+            this.matcher = StringUtil.convertGlobToRegex(matcherQuery);
         }
 
         @Override
         public Component call() throws Exception {
             String command = "//registry " + registry.id() + " -p %page% " + search;
             Map<String, Component> results = new TreeMap<>();
-            String idMatch = search.replace(' ', '_');
             for (Keyed searchType : registry) {
                 final String id = searchType.id();
-                if (id.contains(idMatch)) {
+                if (matcher.matcher(id).matches()) {
                     var builder = TextComponent.builder()
                         .append(searchType.id())
                         .clickEvent(ClickEvent.copyToClipboard(searchType.id()));
@@ -576,7 +592,8 @@ public class GeneralCommands {
                 }
             }
             List<Component> list = new ArrayList<>(results.values());
-            String title = search.isBlank() ? "Registry contents" : "Search results for '" + search + "'";
+            boolean isBlank = search.isBlank() || search.equals("*");
+            String title = isBlank ? "Registry contents" : "Search results for '" + search + "'";
             return PaginationBox.fromComponents(title, command, list)
                 .create(page);
         }
