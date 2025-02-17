@@ -24,7 +24,7 @@ import com.sk89q.worldedit.registry.Registry;
 
 public record GameMode(String id) implements Keyed {
 
-    public static final Registry<GameMode> REGISTRY = new Registry<>("game mode");
+    public static final Registry<GameMode> REGISTRY = new Registry<>("game mode", "game_mode");
 
     /**
      * Gets the name of this game mode, or the ID if the name cannot be found.

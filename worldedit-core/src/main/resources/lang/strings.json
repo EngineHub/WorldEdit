@@ -295,6 +295,9 @@
     "worldedit.asset.load.still-loading": "(Please wait... still loading asset.)",
     "worldedit.asset.load.failed": "Failed to load asset",
 
+    "worldedit.registry.error.invalid-key": "Invalid registry key: {0}",
+    "worldedit.registry.searching": "(Please wait... searching registry...)",
+
     "worldedit.tool.max-block-changes": "Max blocks change limit reached.",
     "worldedit.tool.no-block": "No block in sight!",
     "worldedit.tool.repl.equip": "Block replacer tool bound to {0}.",

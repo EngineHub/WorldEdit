@@ -44,6 +44,7 @@ import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
+import com.sk89q.worldedit.registry.Registries;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.lifecycle.Lifecycled;
 import com.sk89q.worldedit.util.lifecycle.SimpleLifecycled;
@@ -251,14 +252,16 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             EntityType.REGISTRY.register(key, new EntityType(key));
         });
 
-        // ... :|
-        GameModes.get("");
-        WeatherTypes.get("");
-
+        // Registries only available via NMS
         BukkitImplAdapter adapter = getBukkitImplAdapter();
         if (adapter != null) {
             adapter.initializeRegistries();
         }
+
+        // ... :|
+        GameModes.get("");
+        WeatherTypes.get("");
+        Registries.get("");
     }
 
     private void setupTags() {
