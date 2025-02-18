@@ -23,7 +23,7 @@ import com.sk89q.worldedit.event.Event;
 
 /**
  * Fired when configuration has been loaded and the platform is in the
- * intialization stage.
+ * initialization stage.
  *
  * <p>This event is fired once.</p>
  */
