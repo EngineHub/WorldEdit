@@ -60,7 +60,9 @@ import com.sk89q.worldedit.util.io.ForwardSeekableInputStream;
 import com.sk89q.worldedit.world.DataException;
 
 import java.io.ByteArrayInputStream;
+import java.io.Closeable;
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
@@ -70,7 +72,7 @@ import java.util.zip.InflaterInputStream;
  * Reader for a MCRegion file. This reader works on input streams, meaning
  * that it can be used to read files from non-file based sources.
  */
-public class McRegionReader {
+public class McRegionReader implements Closeable {
 
     protected static final int VERSION_GZIP = 1;
     protected static final int VERSION_DEFLATE = 2;
@@ -129,10 +131,10 @@ public class McRegionReader {
             throw new DataException("The chunk at " + position + " is not generated");
         }
 
-        int sectorNumber = offset >> 8;
+        long sectorNumber = offset >> 8;
         int numSectors = offset & 0xFF;
 
-        stream.seek((long) sectorNumber * SECTOR_BYTES);
+        stream.seek(sectorNumber * SECTOR_BYTES);
         int length = dataStream.readInt();
 
         if (length > SECTOR_BYTES * numSectors) {
@@ -142,19 +144,17 @@ public class McRegionReader {
 
         byte version = dataStream.readByte();
 
+        byte[] data = new byte[length - 1];
+        try {
+            dataStream.readFully(data);
+        } catch (EOFException e) {
+            throw new DataException("MCRegion file does not contain "
+                + x + "," + z + " in full");
+        }
+
         if (version == VERSION_GZIP) {
-            byte[] data = new byte[length - 1];
-            if (dataStream.read(data) < length - 1) {
-                throw new DataException("MCRegion file does not contain "
-                        + x + "," + z + " in full");
-            }
             return new GZIPInputStream(new ByteArrayInputStream(data));
         } else if (version == VERSION_DEFLATE) {
-            byte[] data = new byte[length - 1];
-            if (dataStream.read(data) < length - 1) {
-                throw new DataException("MCRegion file does not contain "
-                        + x + "," + z + " in full");
-            }
             return new InflaterInputStream(new ByteArrayInputStream(data));
         } else {
             throw new DataException("MCRegion chunk at "
@@ -187,6 +187,7 @@ public class McRegionReader {
     /**
      * Close the stream.
      */
+    @Override
     public void close() throws IOException {
         stream.close();
     }
