@@ -46,6 +46,8 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
+ * A class for making HTTP requests.
+ *
  * @deprecated Use the native JDK HttpClient API instead.
  */
 @Deprecated(forRemoval = true)
