@@ -52,13 +52,18 @@ public class NeoForgeEntity implements Entity {
     @Override
     public BaseEntity getState() {
         net.minecraft.world.entity.Entity entity = entityRef.get();
-        if (entity == null || entity.isPassenger()) {
+        if (entity == null) {
+            return null;
+        }
+        CompoundTag tag = new CompoundTag();
+        if (!entity.save(tag)) {
             return null;
         }
         ResourceLocation id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
-        CompoundTag tag = new CompoundTag();
-        entity.saveWithoutId(tag);
-        return new BaseEntity(EntityTypes.get(id.toString()), LazyReference.from(() -> NBTConverter.fromNative(tag)));
+        return new BaseEntity(
+            EntityTypes.get(id.toString()),
+            LazyReference.from(() -> NBTConverter.fromNative(tag))
+        );
     }
 
     @Override
