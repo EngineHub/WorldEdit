@@ -85,8 +85,8 @@ public class NeoForgeTransmogrifier {
                 } else {
                     value = ((StringRepresentable) value).getSerializedName();
                 }
-                props.put(block.getProperty(prop.getKey().getName()), value);
             }
+            props.put(block.getProperty(prop.getKey().getName()), value);
         }
         return props;
     }
