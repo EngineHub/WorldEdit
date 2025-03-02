@@ -957,8 +957,10 @@ public class LocalSession {
     public void dispatchCUISelection(Actor actor) {
         checkNotNull(actor);
 
-        if (!hasCUISupport && useServerCUI) {
-            updateServerCUI(actor);
+        if (!hasCUISupport) {
+            if (useServerCUI) {
+                updateServerCUI(actor);
+            }
             return;
         }
 
