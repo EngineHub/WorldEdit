@@ -28,5 +28,42 @@
                 "CONSTRUCTOR_REMOVED"
             ]
         }
+    ],
+    "No one should be using these fields outside the class anyways": [
+        {
+            "type": "com.sk89q.worldedit.world.storage.FileMcRegionChunkStore",
+            "member": "Class com.sk89q.worldedit.world.storage.FileMcRegionChunkStore",
+            "changes": [
+                "FIELD_REMOVED_IN_SUPERCLASS"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.storage.McRegionChunkStore",
+            "member": "Field cachedReader",
+            "changes": [
+                "FIELD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.storage.McRegionChunkStore",
+            "member": "Field curFilename",
+            "changes": [
+                "FIELD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.storage.TrueZipMcRegionChunkStore",
+            "member": "Class com.sk89q.worldedit.world.storage.TrueZipMcRegionChunkStore",
+            "changes": [
+                "FIELD_REMOVED_IN_SUPERCLASS"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.storage.ZippedMcRegionChunkStore",
+            "member": "Class com.sk89q.worldedit.world.storage.ZippedMcRegionChunkStore",
+            "changes": [
+                "FIELD_REMOVED_IN_SUPERCLASS"
+            ]
+        }
     ]
 }

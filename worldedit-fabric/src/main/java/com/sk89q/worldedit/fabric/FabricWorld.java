@@ -634,7 +634,7 @@ public class FabricWorld extends AbstractWorld {
 
     @Override
     public int getMaxY() {
-        return getWorld().getMaxY() - 1;
+        return getWorld().getMaxY();
     }
 
     @Override

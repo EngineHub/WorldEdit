@@ -1825,9 +1825,10 @@ public class EditSession implements Extent, AutoCloseable {
         final double radiusXPow = Math.pow(radiusX, 2);
         final double radiusZPow = Math.pow(radiusZ, 2);
         final double heightPow = Math.pow(height, 2);
+        final int layers = Math.abs(height);
 
-        for (int y = 0; y < height; ++y) {
-            double ySquaredMinusHeightOverHeightSquared = Math.pow(y - height, 2) / heightPow;
+        for (int y = 0; y < layers; ++y) {
+            double ySquaredMinusHeightOverHeightSquared = Math.pow(y - layers, 2) / heightPow;
 
             forX:
             for (int x = 0; x <= ceilRadiusX; ++x) {
@@ -1849,25 +1850,26 @@ public class EditSession implements Extent, AutoCloseable {
                         double xNext = Math.pow(x + thickness, 2) / radiusXPow
                             + zSquaredOverRadiusZ - ySquaredMinusHeightOverHeightSquared;
                         double yNext = xSquaredOverRadiusX + zSquaredOverRadiusZ
-                            - Math.pow(y + thickness - height, 2) / heightPow;
+                            - Math.pow(y + thickness - layers, 2) / heightPow;
                         double zNext = xSquaredOverRadiusX + Math.pow(z + thickness, 2)
                             / radiusZPow - ySquaredMinusHeightOverHeightSquared;
-                        if (xNext <= 0 && zNext <= 0 && (yNext <= 0 && y + thickness != height)) {
+                        if (xNext <= 0 && zNext <= 0 && (yNext <= 0 && y + thickness != layers)) {
                             continue;
                         }
                     }
 
                     if (distanceFromOriginMinusHeightSquared <= 0) {
-                        if (setBlock(pos.add(x, y, z), block)) {
+                        int yOffset = height < 0 ? -y : y;
+                        if (setBlock(pos.add(x, yOffset, z), block)) {
                             ++affected;
                         }
-                        if (setBlock(pos.add(-x, y, z), block)) {
+                        if (setBlock(pos.add(-x, yOffset, z), block)) {
                             ++affected;
                         }
-                        if (setBlock(pos.add(x, y, -z), block)) {
+                        if (setBlock(pos.add(x, yOffset, -z), block)) {
                             ++affected;
                         }
-                        if (setBlock(pos.add(-x, y, -z), block)) {
+                        if (setBlock(pos.add(-x, yOffset, -z), block)) {
                             ++affected;
                         }
                     }

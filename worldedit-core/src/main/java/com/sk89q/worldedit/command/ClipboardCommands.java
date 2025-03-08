@@ -242,6 +242,7 @@ public class ClipboardCommands {
 
     @Command(
         name = "/flip",
+        aliases = { "/mirror" },
         desc = "Flip the contents of the clipboard across the origin"
     )
     @CommandPermissions("worldedit.clipboard.flip")

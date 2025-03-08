@@ -29,6 +29,8 @@ import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.chunk.Chunk;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 import com.sk89q.worldedit.world.storage.MissingChunkException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,6 +42,8 @@ import java.util.Map;
  * A snapshot restore operation.
  */
 public class SnapshotRestore {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private final Map<BlockVector2, ArrayList<BlockVector3>> neededChunks = new LinkedHashMap<>();
     private final ChunkStore chunkStore;
@@ -154,6 +158,7 @@ public class SnapshotRestore {
             } catch (MissingChunkException me) {
                 missingChunks.add(chunkPos);
             } catch (IOException | DataException me) {
+                LOGGER.info(() -> "Failed to load chunk at " + chunkPos, me);
                 errorChunks.add(chunkPos);
                 lastErrorMessage = me.getMessage();
             }

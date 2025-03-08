@@ -32,9 +32,6 @@ import java.io.InputStream;
 
 public abstract class McRegionChunkStore extends ChunkStore {
 
-    protected String curFilename = null;
-    protected McRegionReader cachedReader = null;
-
     /**
      * Get the filename of a region file.
      *
@@ -50,26 +47,14 @@ public abstract class McRegionChunkStore extends ChunkStore {
 
     protected McRegionReader getReader(BlockVector2 pos, String worldname) throws DataException, IOException {
         String filename = getFilename(pos);
-        if (curFilename != null) {
-            if (curFilename.equals(filename)) {
-                return cachedReader;
-            } else {
-                try {
-                    cachedReader.close();
-                } catch (IOException ignored) {
-                }
-            }
-        }
         InputStream stream = getInputStream(filename, worldname);
-        cachedReader = new McRegionReader(stream);
-        //curFilename = filename;
-        return cachedReader;
+        return new McRegionReader(stream);
     }
 
     @Override
     public LinCompoundTag getChunkData(BlockVector2 position, World world) throws DataException, IOException {
-        McRegionReader reader = getReader(position, world.getName());
-        try (var chunkStream = new DataInputStream(reader.getChunkInputStream(position))) {
+        try (McRegionReader reader = getReader(position, world.getName());
+             var chunkStream = new DataInputStream(reader.getChunkInputStream(position))) {
             return LinBinaryIO.readUsing(chunkStream, LinRootEntry::readFrom).value();
         }
     }
@@ -83,12 +68,5 @@ public abstract class McRegionChunkStore extends ChunkStore {
      * @throws IOException if there is an error getting the chunk data
      */
     protected abstract InputStream getInputStream(String name, String worldName) throws IOException, DataException;
-
-    @Override
-    public void close() throws IOException {
-        if (cachedReader != null) {
-            cachedReader.close();
-        }
-    }
 
 }
