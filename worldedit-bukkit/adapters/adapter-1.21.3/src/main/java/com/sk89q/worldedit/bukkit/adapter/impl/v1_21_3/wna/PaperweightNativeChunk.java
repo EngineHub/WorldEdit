@@ -54,7 +54,7 @@ import java.util.EnumSet;
 import java.util.Set;
 import javax.annotation.Nullable;
 
-public record PaperweightNativeChunk(NativeWorld owner, LevelChunk delegate) implements NativeChunk {
+public final class PaperweightNativeChunk implements NativeChunk {
     private static final MethodHandle GET_VISIBLE_CHUNK_IF_PRESENT;
     private static final MethodHandle GET_CHANGED_BLOCKS_PER_SECTION;
     private static final MethodHandle SET_HAS_CHANGED_SECTIONS;
@@ -93,6 +93,14 @@ public record PaperweightNativeChunk(NativeWorld owner, LevelChunk delegate) imp
         Heightmap.Types.MOTION_BLOCKING_NO_LEAVES
     );
 
+    private final NativeWorld owner;
+    private final LevelChunk delegate;
+
+    public PaperweightNativeChunk(NativeWorld owner, LevelChunk delegate) {
+        this.owner = owner;
+        this.delegate = delegate;
+    }
+
     @Override
     public NativeWorld getWorld() {
         return owner;
@@ -116,12 +124,16 @@ public record PaperweightNativeChunk(NativeWorld owner, LevelChunk delegate) imp
 
     @Override
     public @Nullable NativeBlockState setBlockState(NativePosition blockPos, NativeBlockState newState, boolean update) {
-        return new PaperweightNativeBlockState(delegate.setBlockState(
+        BlockState blockState = delegate.setBlockState(
             PaperweightAdapter.adaptPos(blockPos),
-            ((PaperweightNativeBlockState) newState).delegate(),
+            ((PaperweightNativeBlockState) newState).delegate,
             false,
             update
-        ));
+        );
+        if (blockState == null) {
+            return null;
+        }
+        return new PaperweightNativeBlockState(blockState);
     }
 
     @Override
@@ -184,7 +196,7 @@ public record PaperweightNativeChunk(NativeWorld owner, LevelChunk delegate) imp
     public void initializeBlockEntity(int chunkX, int chunkY, int chunkZ, NativeBlockState newState) {
         BlockPos pos = delegate.getPos().getBlockAt(chunkX, chunkY, chunkZ);
         BlockEntity blockEntity = delegate.getBlockEntity(pos, LevelChunk.EntityCreationType.CHECK);
-        BlockState nativeState = ((PaperweightNativeBlockState) newState).delegate();
+        BlockState nativeState = ((PaperweightNativeBlockState) newState).delegate;
         if (blockEntity == null) {
             blockEntity = ((EntityBlock) nativeState.getBlock()).newBlockEntity(pos, nativeState);
             if (blockEntity != null) {
@@ -211,7 +223,7 @@ public record PaperweightNativeChunk(NativeWorld owner, LevelChunk delegate) imp
         Preconditions.checkPositionIndex(index, delegate.getSectionsCount());
         LevelChunkSection[] chunkSections = delegate.getSections();
         var oldSection = new PaperweightNativeChunkSection(chunkSections[index]);
-        chunkSections[index] = ((PaperweightNativeChunkSection) section).delegate();
+        chunkSections[index] = ((PaperweightNativeChunkSection) section).delegate;
         WNASharedImpl.postChunkSectionReplacement(this, index, oldSection, section, modifiedBlocks);
         delegate.markUnsaved();
         return oldSection;

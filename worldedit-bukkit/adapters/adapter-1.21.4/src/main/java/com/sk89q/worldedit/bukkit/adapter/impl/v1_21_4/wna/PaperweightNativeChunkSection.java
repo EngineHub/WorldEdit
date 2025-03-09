@@ -24,7 +24,13 @@ import com.sk89q.worldedit.internal.wna.NativeChunkSection;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 
-public record PaperweightNativeChunkSection(LevelChunkSection delegate) implements NativeChunkSection {
+public final class PaperweightNativeChunkSection implements NativeChunkSection {
+    final LevelChunkSection delegate;
+
+    public PaperweightNativeChunkSection(LevelChunkSection delegate) {
+        this.delegate = delegate;
+    }
+
     @Override
     public boolean isOnlyAir() {
         return delegate.hasOnlyAir();
@@ -32,7 +38,7 @@ public record PaperweightNativeChunkSection(LevelChunkSection delegate) implemen
 
     @Override
     public NativeBlockState getThenSetBlock(int i, int j, int k, NativeBlockState blockState) {
-        BlockState nativeState = ((PaperweightNativeBlockState) blockState).delegate();
+        BlockState nativeState = ((PaperweightNativeBlockState) blockState).delegate;
         if (isOnlyAir() && nativeState.isAir()) {
             return blockState;
         }

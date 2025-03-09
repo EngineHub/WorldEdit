@@ -217,7 +217,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
         @Override
         public BlockState fromNative(NativeBlockState state) {
-            return adapt(((PaperweightNativeBlockState) state).delegate());
+            return adapt(((PaperweightNativeBlockState) state).delegate);
         }
 
         @Override public NativePosition newBlockPos(BlockVector3 pos) {
@@ -280,10 +280,6 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             SpigotConfig.config.set("world-settings.worldeditregentempworld.verbose", false);
         } catch (ClassNotFoundException ignored) {
         }
-    }
-
-    public NativeAdapter asNativeAdapter() {
-        return nativeAdapter;
     }
 
     @Override
@@ -445,7 +441,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
     @Override
     public NativeWorld createNativeInterface(World world) {
-        return new PaperweightNativeWorld(this, ((CraftWorld) world).getHandle());
+        return new PaperweightNativeWorld(this, nativeAdapter, ((CraftWorld) world).getHandle());
     }
 
     private static net.minecraft.core.Direction adapt(Direction face) {

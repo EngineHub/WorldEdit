@@ -39,10 +39,21 @@ import org.bukkit.craftbukkit.block.data.CraftBlockData;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
-public record PaperweightNativeWorld(PaperweightAdapter adapter, ServerLevel delegate) implements NativeWorld {
+public final class PaperweightNativeWorld implements NativeWorld {
+
+    private final PaperweightAdapter adapter;
+    private final NativeAdapter nativeAdapter;
+    final ServerLevel delegate;
+
+    public PaperweightNativeWorld(PaperweightAdapter adapter, NativeAdapter nativeAdapter, ServerLevel delegate) {
+        this.adapter = adapter;
+        this.nativeAdapter = nativeAdapter;
+        this.delegate = delegate;
+    }
+
     @Override
     public NativeAdapter getAdapter() {
-        return adapter.asNativeAdapter();
+        return nativeAdapter;
     }
 
     @Override
@@ -64,8 +75,8 @@ public record PaperweightNativeWorld(PaperweightAdapter adapter, ServerLevel del
     public void notifyBlockUpdate(NativePosition pos, NativeBlockState oldState, NativeBlockState newState) {
         delegate.sendBlockUpdated(
             PaperweightAdapter.adaptPos(pos),
-            ((PaperweightNativeBlockState) oldState).delegate(),
-            ((PaperweightNativeBlockState) newState).delegate(),
+            ((PaperweightNativeBlockState) oldState).delegate,
+            ((PaperweightNativeBlockState) newState).delegate,
             Block.UPDATE_NEIGHBORS | Block.UPDATE_CLIENTS
         );
     }
@@ -104,10 +115,10 @@ public record PaperweightNativeWorld(PaperweightAdapter adapter, ServerLevel del
     ) {
         BlockPos nativePos = PaperweightAdapter.adaptPos(pos);
         if (events) {
-            delegate.updateNeighborsAt(nativePos, ((PaperweightNativeBlockState) oldState).delegate().getBlock());
+            delegate.updateNeighborsAt(nativePos, ((PaperweightNativeBlockState) oldState).delegate.getBlock());
         } else {
             // When we don't want events, manually run the physics without them.
-            Block block = ((PaperweightNativeBlockState) oldState).delegate().getBlock();
+            Block block = ((PaperweightNativeBlockState) oldState).delegate.getBlock();
             fireNeighborChanged(nativePos, delegate, block, nativePos.west());
             fireNeighborChanged(nativePos, delegate, block, nativePos.east());
             fireNeighborChanged(nativePos, delegate, block, nativePos.below());
@@ -115,7 +126,7 @@ public record PaperweightNativeWorld(PaperweightAdapter adapter, ServerLevel del
             fireNeighborChanged(nativePos, delegate, block, nativePos.north());
             fireNeighborChanged(nativePos, delegate, block, nativePos.south());
         }
-        BlockState nativeNewState = ((PaperweightNativeBlockState) newState).delegate();
+        BlockState nativeNewState = ((PaperweightNativeBlockState) newState).delegate;
         if (nativeNewState.hasAnalogOutputSignal()) {
             delegate.updateNeighbourForOutputSignal(nativePos, nativeNewState.getBlock());
         }
@@ -128,8 +139,8 @@ public record PaperweightNativeWorld(PaperweightAdapter adapter, ServerLevel del
     @Override
     public void updateBlock(NativePosition pos, NativeBlockState oldState, NativeBlockState newState) {
         BlockPos nativePos = PaperweightAdapter.adaptPos(pos);
-        BlockState nativeOldState = ((PaperweightNativeBlockState) oldState).delegate();
-        BlockState nativeNewState = ((PaperweightNativeBlockState) newState).delegate();
+        BlockState nativeOldState = ((PaperweightNativeBlockState) oldState).delegate;
+        BlockState nativeNewState = ((PaperweightNativeBlockState) newState).delegate;
         nativeOldState.onRemove(delegate, nativePos, nativeNewState, false);
         nativeNewState.onPlace(delegate, nativePos, nativeOldState, false);
     }
@@ -139,8 +150,8 @@ public record PaperweightNativeWorld(PaperweightAdapter adapter, ServerLevel del
         NativePosition pos, NativeBlockState oldState, NativeBlockState newState, int recursionLimit, boolean events
     ) {
         BlockPos nativePos = PaperweightAdapter.adaptPos(pos);
-        BlockState nativeOldState = ((PaperweightNativeBlockState) oldState).delegate();
-        BlockState nativeNewState = ((PaperweightNativeBlockState) newState).delegate();
+        BlockState nativeOldState = ((PaperweightNativeBlockState) oldState).delegate;
+        BlockState nativeNewState = ((PaperweightNativeBlockState) newState).delegate;
         nativeOldState.updateIndirectNeighbourShapes(delegate, nativePos, Block.UPDATE_CLIENTS, recursionLimit);
         if (events) {
             BlockPhysicsEvent event = new BlockPhysicsEvent(
@@ -160,8 +171,8 @@ public record PaperweightNativeWorld(PaperweightAdapter adapter, ServerLevel del
     public void onBlockStateChange(NativePosition pos, NativeBlockState oldState, NativeBlockState newState) {
         delegate.onBlockStateChange(
             PaperweightAdapter.adaptPos(pos),
-            ((PaperweightNativeBlockState) oldState).delegate(),
-            ((PaperweightNativeBlockState) newState).delegate()
+            ((PaperweightNativeBlockState) oldState).delegate,
+            ((PaperweightNativeBlockState) newState).delegate
         );
     }
 }

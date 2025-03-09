@@ -24,8 +24,8 @@ import com.sk89q.worldedit.internal.wna.NativeBlockState;
 import com.sk89q.worldedit.internal.wna.NativeChunk;
 import com.sk89q.worldedit.internal.wna.NativePosition;
 import com.sk89q.worldedit.internal.wna.NativeWorld;
-import com.sk89q.worldedit.neoforge.NeoForgeAdapter;
 import com.sk89q.worldedit.neoforge.internal.NBTConverter;
+import com.sk89q.worldedit.neoforge.internal.NeoForgeNativeAdapter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
@@ -55,7 +55,7 @@ public abstract class MixinNativeWorld extends Level {
     }
 
     public NativeAdapter nw$getAdapter() {
-        return NeoForgeAdapter.asNativeAdapter();
+        return NeoForgeNativeAdapter.INSTANCE;
     }
 
     public int nw$getSectionIndex(int y) {

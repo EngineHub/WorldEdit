@@ -26,7 +26,13 @@ import com.sk89q.worldedit.internal.wna.NativeWorld;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
-public record PaperweightNativeBlockState(BlockState delegate) implements NativeBlockState {
+public final class PaperweightNativeBlockState implements NativeBlockState {
+    public final BlockState delegate;
+
+    public PaperweightNativeBlockState(BlockState delegate) {
+        this.delegate = delegate;
+    }
+
     @Override
     public boolean isSame(NativeBlockState other) {
         return this.delegate == ((PaperweightNativeBlockState) other).delegate;
@@ -45,7 +51,7 @@ public record PaperweightNativeBlockState(BlockState delegate) implements Native
     @Override
     public NativeBlockState updateFromNeighbourShapes(NativeWorld world, NativePosition position) {
         return new PaperweightNativeBlockState(Block.updateFromNeighbourShapes(
-            delegate, ((PaperweightNativeWorld) world).delegate(), PaperweightAdapter.adaptPos(position)
+            delegate, ((PaperweightNativeWorld) world).delegate, PaperweightAdapter.adaptPos(position)
         ));
     }
 }

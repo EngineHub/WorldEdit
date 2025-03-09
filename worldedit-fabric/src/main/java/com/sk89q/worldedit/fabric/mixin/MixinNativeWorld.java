@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.fabric.mixin;
 
-import com.sk89q.worldedit.fabric.FabricAdapter;
+import com.sk89q.worldedit.fabric.internal.FabricNativeAdapter;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
 import com.sk89q.worldedit.internal.wna.NativeAdapter;
 import com.sk89q.worldedit.internal.wna.NativeBlockState;
@@ -55,7 +55,7 @@ public abstract class MixinNativeWorld extends Level {
     }
 
     public NativeAdapter nw$getAdapter() {
-        return FabricAdapter.asNativeAdapter();
+        return FabricNativeAdapter.INSTANCE;
     }
 
     public int nw$getSectionIndex(int y) {
