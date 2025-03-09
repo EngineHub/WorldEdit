@@ -26,12 +26,17 @@ import it.unimi.dsi.fastutil.shorts.ShortIterator;
 import java.util.BitSet;
 
 /**
- * A mask for a chunk section.
+ * A set of positions in a chunk section.
+ *
+ * <p>
+ * This has a defined order based on the order of the bits in the internal encoding. It is not guaranteed to be stable
+ * between Minecraft versions, but it is stable within a single one.
+ * </p>
  */
-public class ChunkSectionMask {
-    public static int index(int x, int y, int z) {
+public final class ChunkSectionPosSet {
+    private static int index(int x, int y, int z) {
         // Each value is 0-15, so 4 bits
-        // NOTE: This order specifically matches the order used by SectionPos in Minecraft, do not change unless they do
+        // NOTE: This encoding specifically matches the encoding used by SectionPos in Minecraft, do not change unless they do
         return (x << 8) | (z << 4) | y;
     }
 
@@ -42,24 +47,8 @@ public class ChunkSectionMask {
 
     private final BitSet mask = new BitSet(4096);
 
-    public boolean isSet(int x, int y, int z) {
-        return mask.get(index(x, y, z));
-    }
-
     public void set(int x, int y, int z) {
         mask.set(index(x, y, z));
-    }
-
-    public void clear(int x, int y, int z) {
-        mask.clear(index(x, y, z));
-    }
-
-    public void clear() {
-        mask.clear();
-    }
-
-    public void setAll() {
-        mask.set(0, 4096);
     }
 
     public void forEach(PosConsumer consumer) {
@@ -68,31 +57,29 @@ public class ChunkSectionMask {
         }
     }
 
-    public int cardinality() {
-        return mask.cardinality();
-    }
-
     /**
-     * {@return a view of this mask as a short collection} Used for updating MC internals.
+     * {@return a view of this set as a short collection} These shorts match those used by {@code SectionPos}.
      */
-    public ShortCollection asShortCollection() {
+    public ShortCollection asSectionPosEncodedShorts() {
         return new AbstractShortCollection() {
             @Override
             public ShortIterator iterator() {
                 return new ShortIterator() {
                     private int next = mask.nextSetBit(0);
 
-                    @Override public short nextShort() {
+                    @Override
+                    public short nextShort() {
                         if (!hasNext()) {
                             throw new IllegalStateException();
                         }
-                        // Uses the fact that we share the order with SectionPos to efficiently map
+                        // Uses the fact that we share the encoding with SectionPos to efficiently map
                         short value = (short) next;
                         next = mask.nextSetBit(next + 1);
                         return value;
                     }
 
-                    @Override public boolean hasNext() {
+                    @Override
+                    public boolean hasNext() {
                         return next >= 0;
                     }
                 };

@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.internal.wna;
 
-import com.sk89q.worldedit.internal.util.collection.ChunkSectionMask;
+import com.sk89q.worldedit.internal.util.collection.ChunkSectionPosSet;
 
 import javax.annotation.Nullable;
 
@@ -38,7 +38,7 @@ public interface NativeChunk {
     @Nullable
     NativeBlockState setBlockState(NativePosition blockPos, NativeBlockState newState, boolean update);
 
-    void markSectionChanged(int index, ChunkSectionMask changed);
+    void markSectionChanged(int index, ChunkSectionPosSet changed);
 
     void updateHeightmaps();
 
@@ -60,12 +60,12 @@ public interface NativeChunk {
      * Replaces a chunk section in the given chunk. This method is also responsible for updating heightmaps
      * and creating block entities, to keep consistency with {@link #setBlockState(NativePosition, NativeBlockState, boolean)}
      * (the method we used to use). This is usually easily done by calling
-     * {@link WNASharedImpl#postChunkSectionReplacement(NativeChunk, int, NativeChunkSection, NativeChunkSection, ChunkSectionMask)}.
+     * {@link WNASharedImpl#postChunkSectionReplacement(NativeChunk, int, NativeChunkSection, NativeChunkSection, ChunkSectionPosSet)}.
      *
      * @param index the index, from 0 to the max height divided by 16
      * @param section the new chunk section
-     * @param modifiedBlocks the mask of modified blocks
+     * @param modifiedBlocks the set of modified blocks
      * @return the old chunk section
      */
-    NativeChunkSection setChunkSection(int index, NativeChunkSection section, ChunkSectionMask modifiedBlocks);
+    NativeChunkSection setChunkSection(int index, NativeChunkSection section, ChunkSectionPosSet modifiedBlocks);
 }

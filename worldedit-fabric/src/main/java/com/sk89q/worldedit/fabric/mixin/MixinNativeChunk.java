@@ -21,7 +21,7 @@ package com.sk89q.worldedit.fabric.mixin;
 
 import com.google.common.base.Preconditions;
 import com.sk89q.worldedit.fabric.internal.ExtendedChunk;
-import com.sk89q.worldedit.internal.util.collection.ChunkSectionMask;
+import com.sk89q.worldedit.internal.util.collection.ChunkSectionPosSet;
 import com.sk89q.worldedit.internal.wna.NativeBlockState;
 import com.sk89q.worldedit.internal.wna.NativeChunk;
 import com.sk89q.worldedit.internal.wna.NativeChunkSection;
@@ -121,15 +121,15 @@ public abstract class MixinNativeChunk extends ChunkAccess {
         );
     }
 
-    public void nc$markSectionChanged(int index, ChunkSectionMask changed) {
+    public void nc$markSectionChanged(int index, ChunkSectionPosSet changed) {
         ServerChunkCache serverChunkCache = (ServerChunkCache) getLevel().getChunkSource();
         ChunkHolder holder = serverChunkCache.getVisibleChunkIfPresent(getPos().toLong());
         if (holder != null) {
             if (holder.changedBlocksPerSection[index] == null) {
                 holder.hasChangedSections = true;
-                holder.changedBlocksPerSection[index] = new ShortOpenHashSet(changed.asShortCollection());
+                holder.changedBlocksPerSection[index] = new ShortOpenHashSet(changed.asSectionPosEncodedShorts());
             } else {
-                holder.changedBlocksPerSection[index].addAll(changed.asShortCollection());
+                holder.changedBlocksPerSection[index].addAll(changed.asSectionPosEncodedShorts());
             }
             // Trick to get the holder into the broadcast set
             ((ServerChunkCache) getLevel().getChunkSource()).onChunkReadyToSend(holder);
@@ -171,7 +171,7 @@ public abstract class MixinNativeChunk extends ChunkAccess {
         return (NativeChunkSection) getSection(index);
     }
 
-    public NativeChunkSection nc$setChunkSection(int index, NativeChunkSection section, ChunkSectionMask modifiedBlocks) {
+    public NativeChunkSection nc$setChunkSection(int index, NativeChunkSection section, ChunkSectionPosSet modifiedBlocks) {
         Preconditions.checkPositionIndex(index, getSectionsCount());
         LevelChunkSection[] chunkSections = getSections();
         var oldSection = (NativeChunkSection) chunkSections[index];

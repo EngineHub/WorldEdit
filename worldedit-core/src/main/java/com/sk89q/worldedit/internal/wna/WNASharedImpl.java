@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.internal.wna;
 
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.internal.util.collection.ChunkSectionMask;
+import com.sk89q.worldedit.internal.util.collection.ChunkSectionPosSet;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
@@ -167,11 +167,11 @@ public class WNASharedImpl {
      * @param index the replaced section index
      * @param oldSection the old section
      * @param newSection the new section
-     * @param modifiedBlocks the mask of modified blocks
+     * @param modifiedBlocks the set of modified blocks
      */
     public static void postChunkSectionReplacement(
         NativeChunk chunk, int index, NativeChunkSection oldSection, NativeChunkSection newSection,
-        ChunkSectionMask modifiedBlocks
+        ChunkSectionPosSet modifiedBlocks
     ) {
         modifiedBlocks.forEach((secX, secY, secZ) -> {
             NativeBlockState oldState = oldSection.getBlock(secX, secY, secZ);

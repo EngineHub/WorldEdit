@@ -23,7 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.sk89q.worldedit.bukkit.adapter.impl.v1_21_4.PaperweightAdapter;
 import com.sk89q.worldedit.bukkit.adapter.impl.v1_21_4.StaticRefraction;
-import com.sk89q.worldedit.internal.util.collection.ChunkSectionMask;
+import com.sk89q.worldedit.internal.util.collection.ChunkSectionPosSet;
 import com.sk89q.worldedit.internal.wna.NativeBlockState;
 import com.sk89q.worldedit.internal.wna.NativeChunk;
 import com.sk89q.worldedit.internal.wna.NativeChunkSection;
@@ -125,7 +125,7 @@ public record PaperweightNativeChunk(NativeWorld owner, LevelChunk delegate) imp
     }
 
     @Override
-    public void markSectionChanged(int index, ChunkSectionMask changed) {
+    public void markSectionChanged(int index, ChunkSectionPosSet changed) {
         ServerChunkCache serverChunkCache = (ServerChunkCache) delegate.getLevel().getChunkSource();
         ChunkHolder holder;
         try {
@@ -152,9 +152,9 @@ public record PaperweightNativeChunk(NativeWorld owner, LevelChunk delegate) imp
                     Throwables.throwIfUnchecked(e);
                     throw new RuntimeException(e);
                 }
-                changedBlocksPerSection[index] = new ShortOpenHashSet(changed.asShortCollection());
+                changedBlocksPerSection[index] = new ShortOpenHashSet(changed.asSectionPosEncodedShorts());
             } else {
-                changedBlocksPerSection[index].addAll(changed.asShortCollection());
+                changedBlocksPerSection[index].addAll(changed.asSectionPosEncodedShorts());
             }
             // Trick to get the holder into the broadcast set
             serverChunkCache.onChunkReadyToSend(holder);
@@ -207,7 +207,7 @@ public record PaperweightNativeChunk(NativeWorld owner, LevelChunk delegate) imp
     }
 
     @Override
-    public NativeChunkSection setChunkSection(int index, NativeChunkSection section, ChunkSectionMask modifiedBlocks) {
+    public NativeChunkSection setChunkSection(int index, NativeChunkSection section, ChunkSectionPosSet modifiedBlocks) {
         Preconditions.checkPositionIndex(index, delegate.getSectionsCount());
         LevelChunkSection[] chunkSections = delegate.getSections();
         var oldSection = new PaperweightNativeChunkSection(chunkSections[index]);

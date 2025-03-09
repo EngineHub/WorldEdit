@@ -27,7 +27,7 @@ import com.sk89q.worldedit.extent.AbstractBufferingExtent;
 import com.sk89q.worldedit.extent.world.SideEffectExtent;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
-import com.sk89q.worldedit.internal.util.collection.ChunkSectionMask;
+import com.sk89q.worldedit.internal.util.collection.ChunkSectionPosSet;
 import com.sk89q.worldedit.internal.wna.NativeBlockState;
 import com.sk89q.worldedit.internal.wna.NativeChunk;
 import com.sk89q.worldedit.internal.wna.NativeChunkSection;
@@ -60,7 +60,7 @@ public class SectionBufferingExtent extends AbstractBufferingExtent {
 
     private record SectionData(
         NativeChunkSection section,
-        ChunkSectionMask modified
+        ChunkSectionPosSet modified
     ) {
     }
 
@@ -139,7 +139,7 @@ public class SectionBufferingExtent extends AbstractBufferingExtent {
             }
             data = new SectionData(
                 nativeWorld.getChunk(sectionPos.x(), sectionPos.z()).getChunkSection(sectionPos.y()).copy(),
-                new ChunkSectionMask()
+                new ChunkSectionPosSet()
             );
             sectionTable.computeIfAbsent(getTopSectionKey(sectionPos), k -> new Int2ObjectArrayMap<>())
                 .put(sectionPos.y(), data);
@@ -196,7 +196,7 @@ public class SectionBufferingExtent extends AbstractBufferingExtent {
         record SectionDataWithOld(
             NativeChunkSection section,
             NativeChunkSection oldSection,
-            ChunkSectionMask modified
+            ChunkSectionPosSet modified
         ) {
         }
 
