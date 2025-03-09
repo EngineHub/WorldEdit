@@ -19,113 +19,142 @@
 
 package com.sk89q.worldedit.internal.command;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import com.sk89q.worldedit.internal.util.Substring;
+import com.google.common.collect.AbstractIterator;
+import com.google.common.collect.Streams;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CommandArgParser {
+/**
+ * Parser for command arguments.
+ *
+ * <p>Rules:
+ * <ul>
+ *     <li>Arguments are separated by whitespace.</li>
+ *     <li>Starting an argument with a quote character will start quote mode and include all characters until the next
+ *     unescaped quote character. Backslash is the escape character, and only works for quotes and backslashes when
+ *     in quote mode. Quote mode ends where the argument does. There must be whitespace following the unescaped quote
+ *     character or an error will be thrown, and should be reported to the user.</li>
+ *     <li>If {@code forCompletions}, quotes and escapes may be partial and end at the end of the string.
+ *     This is required to do completions while in quotes. Partial escapes will just be ignored.</li>
+ * </ul>
+ */
+public class CommandArgParser extends AbstractIterator<ExtractedArg> {
 
-    public static CommandArgParser forArgString(String argString) {
-        return new CommandArgParser(spaceSplit(argString));
+    public static Stream<ExtractedArg> parse(String argString, boolean forCompletions) {
+        return Streams.stream(new CommandArgParser(argString, forCompletions));
     }
 
-    public static ImmutableList<Substring> spaceSplit(String string) {
-        ImmutableList.Builder<Substring> result = ImmutableList.builder();
-        int index = 0;
-        for (String part : Splitter.on(' ').split(string)) {
-            result.add(Substring.from(string, index, index + part.length()));
-            index += part.length() + 1;
-        }
-        return result.build();
-    }
+    private final String input;
+    private final boolean forCompletions;
+    private int index;
 
-    private enum State {
-        NORMAL,
-        QUOTE
-    }
-
-    private final Stream.Builder<Substring> args = Stream.builder();
-    private final List<Substring> input;
-    private final List<Substring> currentArg = new ArrayList<>();
-    private int index = 0;
-    private State state = State.NORMAL;
-
-    public CommandArgParser(List<Substring> input) {
+    private CommandArgParser(String input, boolean forCompletions) {
         this.input = input;
+        this.forCompletions = forCompletions;
     }
 
-    public Stream<Substring> parseArgs() {
-        for (; index < input.size(); index++) {
-            Substring nextPart = input.get(index);
-            switch (state) {
-                case NORMAL:
-                    handleNormal(nextPart);
+    @Override
+    protected @Nullable ExtractedArg computeNext() {
+        if (index > input.length()) {
+            return endOfData();
+        }
+        if (index == input.length()) {
+            // May need to special case this to handle trailing whitespace or empty strings. Index is bumped
+            // to signal end.
+            index++;
+            if (input.isEmpty()) {
+                return new ExtractedArg("", 0, 0);
+            }
+            if (Character.isWhitespace(input.charAt(input.length() - 1))) {
+                return new ExtractedArg("", input.length(), input.length());
+            }
+            return endOfData();
+        }
+        char startChar = input.charAt(index);
+        return switch (startChar) {
+            case '\'', '"' -> finishQuoted();
+            case '\\' -> {
+                // Check if escaping quote, if so we need to feed the unquoted reader some extra info.
+                if (index + 1 >= input.length()) {
+                    if (forCompletions) {
+                        index++;
+                        yield new ExtractedArg("", index, index);
+                    }
+                    throw new CommandArgParseException("Invalid escape at end of string");
+                }
+                char escaped = input.charAt(index + 1);
+                if (escaped == '\'' || escaped == '"') {
+                    int startIndex = index;
+                    index++;
+                    yield finishUnquoted(startIndex);
+                }
+                // Otherwise, this is an error.
+                throw new CommandArgParseException("Invalid escaped character: " + escaped);
+            }
+            default -> finishUnquoted(index);
+        };
+    }
+
+    private char takeChar() {
+        char c = input.charAt(index);
+        index++;
+        return c;
+    }
+
+    private ExtractedArg finishQuoted() {
+        int start = index;
+        char quoteChar = takeChar();
+        StringBuilder builder = new StringBuilder();
+        while (index < input.length()) {
+            char c = takeChar();
+            if (c == '\\') {
+                if (index >= input.length()) {
+                    // Error out.
                     break;
-                case QUOTE:
-                    handleQuote(nextPart);
-                    break;
-                default:
-                    break;
+                }
+                char next = takeChar();
+                if (next == quoteChar || next == '\\') {
+                    builder.append(next);
+                } else {
+                    throw new CommandArgParseException("Invalid escaped character: " + next);
+                }
+                continue;
+            }
+            if (c == quoteChar) {
+                int end = index;
+                if (index < input.length() && !Character.isWhitespace(takeChar())) {
+                    throw new CommandArgParseException("Expected whitespace after quote");
+                }
+                return new ExtractedArg(builder.toString(), start, end);
+            }
+            builder.append(c);
+        }
+        if (forCompletions) {
+            // Add an extra offset to the index to signal that we are done completely.
+            int end = index;
+            index++;
+            return new ExtractedArg(builder.toString(), start, end);
+        }
+        throw new CommandArgParseException("Unterminated quote");
+    }
+
+    /**
+     * Finish reading an unquoted argument.
+     *
+     * @param startIndex the index at which the argument started, which may be behind the current index that the string
+     *     should be copied from
+     * @return the extracted argument
+     */
+    private ExtractedArg finishUnquoted(int startIndex) {
+        int start = index;
+        while (index < input.length()) {
+            char c = takeChar();
+            if (Character.isWhitespace(c)) {
+                int end = index - 1;
+                return new ExtractedArg(input.substring(start, end), startIndex, end);
             }
         }
-        if (currentArg.size() > 0) {
-            finishArg(); // force finish "hanging" args
-        }
-        return args.build();
+        return new ExtractedArg(input.substring(start), startIndex, index);
     }
-
-    private void handleNormal(Substring part) {
-        final String strPart = part.getSubstring();
-        if (strPart.startsWith("\"")) {
-            if (strPart.endsWith("\"") && strPart.length() > 1) {
-                currentArg.add(Substring.wrap(
-                        strPart.substring(1, strPart.length() - 1),
-                        part.getStart() + 1, part.getEnd() - 1
-                ));
-                finishArg();
-            } else {
-                state = State.QUOTE;
-                currentArg.add(Substring.wrap(
-                        strPart.substring(1),
-                        part.getStart() + 1, part.getEnd()
-                ));
-            }
-        } else {
-            currentArg.add(part);
-            finishArg();
-        }
-    }
-
-    private void handleQuote(Substring part) {
-        if (part.getSubstring().endsWith("\"")) {
-            state = State.NORMAL;
-            currentArg.add(Substring.wrap(
-                part.getSubstring().substring(0, part.getSubstring().length() - 1),
-                part.getStart(), part.getEnd() - 1
-            ));
-            finishArg();
-        } else {
-            currentArg.add(part);
-        }
-    }
-
-    private void finishArg() {
-        // Merge the arguments into a single, space-joined, string
-        // Keep the original start + end points.
-        int start = currentArg.get(0).getStart();
-        int end = Iterables.getLast(currentArg).getEnd();
-        args.add(Substring.wrap(currentArg.stream()
-                .map(Substring::getSubstring)
-                .collect(Collectors.joining(" ")),
-            start, end
-        ));
-        currentArg.clear();
-    }
-
 }
