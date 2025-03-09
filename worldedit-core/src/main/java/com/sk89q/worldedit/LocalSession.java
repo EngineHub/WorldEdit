@@ -69,6 +69,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -449,6 +450,15 @@ public class LocalSession {
             throw new EmptyClipboardException();
         }
         return clipboard;
+    }
+
+    /**
+     * Gets the clipboard.
+     *
+     * @return clipboard
+     */
+    public Optional<ClipboardHolder> getClipboardOptional() {
+        return Optional.ofNullable(clipboard);
     }
 
     /**
