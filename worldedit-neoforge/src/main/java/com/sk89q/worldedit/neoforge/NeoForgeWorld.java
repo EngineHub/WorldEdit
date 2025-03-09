@@ -38,13 +38,14 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.AbstractExtentMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.Constants;
+import com.sk89q.worldedit.internal.wna.NativeWorld;
+import com.sk89q.worldedit.internal.wna.WNASharedImpl;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.neoforge.internal.NBTConverter;
 import com.sk89q.worldedit.neoforge.internal.NeoForgeEntity;
 import com.sk89q.worldedit.neoforge.internal.NeoForgeServerLevelDelegateProxy;
-import com.sk89q.worldedit.neoforge.internal.NeoForgeWorldNativeAccess;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
@@ -145,7 +146,6 @@ public class NeoForgeWorld extends AbstractWorld {
     }
 
     private final WeakReference<ServerLevel> worldRef;
-    private final NeoForgeWorldNativeAccess nativeAccess;
 
     /**
      * Construct a new world.
@@ -155,7 +155,11 @@ public class NeoForgeWorld extends AbstractWorld {
     NeoForgeWorld(ServerLevel world) {
         checkNotNull(world);
         this.worldRef = new WeakReference<>(world);
-        this.nativeAccess = new NeoForgeWorldNativeAccess(worldRef);
+    }
+
+    @Override
+    public NativeWorld getNativeInterface() {
+        return (NativeWorld) getWorld();
     }
 
     /**
@@ -192,12 +196,12 @@ public class NeoForgeWorld extends AbstractWorld {
     @Override
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectSet sideEffects) throws WorldEditException {
         clearContainerBlockContents(position);
-        return nativeAccess.setBlock(position, block, sideEffects);
+        return WNASharedImpl.setBlock(getNativeInterface(), position, block, sideEffects);
     }
 
     @Override
     public Set<SideEffect> applySideEffects(BlockVector3 position, BlockState previousType, SideEffectSet sideEffectSet) {
-        nativeAccess.applySideEffects(position, previousType, sideEffectSet);
+        WNASharedImpl.applySideEffects(getNativeInterface(), sideEffectSet, position, previousType);
         return Sets.intersection(NeoForgeWorldEdit.inst.getPlatform().getSupportedSideEffects(), sideEffectSet.getSideEffectsToApply());
     }
 

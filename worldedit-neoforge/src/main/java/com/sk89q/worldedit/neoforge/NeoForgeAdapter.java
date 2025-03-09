@@ -67,7 +67,6 @@ import javax.annotation.Nullable;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class NeoForgeAdapter {
-
     private NeoForgeAdapter() {
     }
 
@@ -272,4 +271,5 @@ public final class NeoForgeAdapter {
 
         return new NeoForgeCommandSender(commandSourceStack);
     }
+
 }

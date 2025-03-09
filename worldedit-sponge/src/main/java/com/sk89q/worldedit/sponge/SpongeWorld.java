@@ -32,7 +32,6 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.sponge.internal.NbtAdapter;
-import com.sk89q.worldedit.sponge.internal.SpongeWorldNativeAccess;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
@@ -103,7 +102,6 @@ public final class SpongeWorld extends AbstractWorld {
     private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     private final WeakReference<ServerWorld> worldRef;
-    private final SpongeWorldNativeAccess worldNativeAccess;
 
     /**
      * Construct a new world.
@@ -113,7 +111,6 @@ public final class SpongeWorld extends AbstractWorld {
     SpongeWorld(ServerWorld world) {
         checkNotNull(world);
         this.worldRef = new WeakReference<>(world);
-        this.worldNativeAccess = new SpongeWorldNativeAccess(new WeakReference<>((ServerLevel) world));
     }
 
     /**
@@ -231,8 +228,6 @@ public final class SpongeWorld extends AbstractWorld {
     @Override
     public Set<SideEffect> applySideEffects(BlockVector3 position, com.sk89q.worldedit.world.block.BlockState previousType, SideEffectSet sideEffectSet) throws WorldEditException {
         checkNotNull(position);
-
-        worldNativeAccess.applySideEffects(position, previousType, sideEffectSet);
 
         return Sets.intersection(
             SpongeWorldEdit.inst().getInternalPlatform().getSupportedSideEffects(),

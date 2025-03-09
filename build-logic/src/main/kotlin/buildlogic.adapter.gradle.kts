@@ -1,3 +1,4 @@
+import buildlogic.getLibrary
 import buildlogic.stringyLibs
 import buildlogic.getVersion
 

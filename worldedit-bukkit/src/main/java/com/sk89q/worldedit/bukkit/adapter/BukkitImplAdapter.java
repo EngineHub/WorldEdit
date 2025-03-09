@@ -24,7 +24,7 @@ import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
+import com.sk89q.worldedit.internal.wna.NativeWorld;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
@@ -100,12 +100,12 @@ public interface BukkitImplAdapter {
     BaseBlock getFullBlock(Location location);
 
     /**
-     * Create a {@link WorldNativeAccess} for the given world reference.
+     * Create a {@link NativeWorld} for the given world reference.
      *
      * @param world the world reference
      * @return the native access object
      */
-    WorldNativeAccess<?, ?, ?> createWorldNativeAccess(World world);
+    NativeWorld createNativeInterface(World world);
 
     /**
      * Get the state for the given entity.

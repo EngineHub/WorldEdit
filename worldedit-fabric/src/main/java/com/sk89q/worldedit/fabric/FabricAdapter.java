@@ -285,4 +285,5 @@ public final class FabricAdapter {
 
         return new FabricCommandSender(commandSourceStack);
     }
+
 }

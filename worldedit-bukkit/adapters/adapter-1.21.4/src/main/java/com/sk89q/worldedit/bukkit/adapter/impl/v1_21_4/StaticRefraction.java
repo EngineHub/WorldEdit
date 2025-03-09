@@ -88,4 +88,37 @@ public final class StaticRefraction {
     public static final String DESTROY_BLOCK_BREAKING_ENTITY_MAX_UPDATE = Refraction.pickName(
         "destroyBlock", "a"
     );
+    public static final String GET_VISIBLE_CHUNK_IF_PRESENT = Refraction.pickName(
+        "getVisibleChunkIfPresent", "b"
+    );
+    public static final String CHANGED_BLOCKS_PER_SECTION = Refraction.pickName(
+        "changedBlocksPerSection", "n"
+    );
+    public static final String HAS_CHANGED_SECTIONS = Refraction.pickName(
+        "hasChangedSections", "m"
+    );
+    /**
+     * {@code updateBlockEntityTicker(BlockEntity blockEntity)}.
+     */
+    public static final String UPDATE_BLOCK_ENTITY_TICKER = Refraction.pickName(
+        "updateBlockEntityTicker", "c"
+    );
+    public static final String PALETTED_CONTAINER_DATA = Refraction.pickName(
+        "data", "d"
+    );
+    public static final String PALETTED_CONTAINER_DATA_CLASS = Refraction.pickName(
+        "net.minecraft.world.level.chunk.PalettedContainer$Data", "net.minecraft.world.level.chunk.DataPaletteBlock$c"
+    );
+    public static final String PALETTED_CONTAINER_DATA_STORAGE = Refraction.pickName(
+        "storage", "b"
+    );
+    public static final String PALETTED_CONTAINER_DATA_PALETTE = Refraction.pickName(
+        "palette", "c"
+    );
+    public static final String CREATE_OR_REUSE_DATA = Refraction.pickName(
+        "createOrReuseData", "a"
+    );
+    public static final String COPY_FROM = Refraction.pickName(
+        "copyFrom", "a"
+    );
 }
