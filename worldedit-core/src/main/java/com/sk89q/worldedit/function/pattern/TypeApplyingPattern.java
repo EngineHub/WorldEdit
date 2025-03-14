@@ -62,13 +62,13 @@ public class TypeApplyingPattern extends AbstractExtentPattern {
 
     @Override
     public BaseBlock applyBlock(BlockVector3 position) {
-        BlockState oldBlock = getExtent().getBlock(position);
+        BaseBlock oldBlock = getExtent().getFullBlock(position);
         BlockState newBlock = pattern.applyBlock(position).toImmutableState();
         for (Entry<Property<?>, Object> entry : oldBlock.getStates().entrySet()) {
             @SuppressWarnings("unchecked")
             Property<Object> prop = (Property<Object>) entry.getKey();
             newBlock = newBlock.with(prop, entry.getValue());
         }
-        return newBlock.toBaseBlock();
+        return newBlock.toBaseBlock(oldBlock.getNbtReference());
     }
 }

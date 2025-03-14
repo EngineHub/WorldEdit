@@ -25,7 +25,7 @@ import com.sk89q.worldedit.extension.factory.parser.pattern.ClipboardPatternPars
 import com.sk89q.worldedit.extension.factory.parser.pattern.RandomPatternParser;
 import com.sk89q.worldedit.extension.factory.parser.pattern.RandomStatePatternParser;
 import com.sk89q.worldedit.extension.factory.parser.pattern.SingleBlockPatternParser;
-import com.sk89q.worldedit.extension.factory.parser.pattern.TypeOrStateApplyingPatternParser;
+import com.sk89q.worldedit.extension.factory.parser.pattern.PartiallyApplyingPatternParser;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.registry.AbstractFactory;
 
@@ -51,7 +51,7 @@ public final class PatternFactory extends AbstractFactory<Pattern> {
 
         // individual patterns
         register(new ClipboardPatternParser(worldEdit));
-        register(new TypeOrStateApplyingPatternParser(worldEdit));
+        register(new PartiallyApplyingPatternParser(worldEdit));
         register(new RandomStatePatternParser(worldEdit));
         register(new BlockCategoryPatternParser(worldEdit));
     }
