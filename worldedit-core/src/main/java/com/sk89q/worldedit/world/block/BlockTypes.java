@@ -176,7 +176,9 @@ public final class BlockTypes {
     @Nullable public static final BlockType BUBBLE_CORAL_FAN = get("minecraft:bubble_coral_fan");
     @Nullable public static final BlockType BUBBLE_CORAL_WALL_FAN = get("minecraft:bubble_coral_wall_fan");
     @Nullable public static final BlockType BUDDING_AMETHYST = get("minecraft:budding_amethyst");
+    @Nullable public static final BlockType BUSH = get("minecraft:bush");
     @Nullable public static final BlockType CACTUS = get("minecraft:cactus");
+    @Nullable public static final BlockType CACTUS_FLOWER = get("minecraft:cactus_flower");
     @Nullable public static final BlockType CAKE = get("minecraft:cake");
     @Nullable public static final BlockType CALCITE = get("minecraft:calcite");
     @Nullable public static final BlockType CALIBRATED_SCULK_SENSOR = get("minecraft:calibrated_sculk_sensor");
@@ -408,6 +410,7 @@ public final class BlockTypes {
     @Nullable public static final BlockType FIRE_CORAL_BLOCK = get("minecraft:fire_coral_block");
     @Nullable public static final BlockType FIRE_CORAL_FAN = get("minecraft:fire_coral_fan");
     @Nullable public static final BlockType FIRE_CORAL_WALL_FAN = get("minecraft:fire_coral_wall_fan");
+    @Nullable public static final BlockType FIREFLY_BUSH = get("minecraft:firefly_bush");
     @Nullable public static final BlockType FLETCHING_TABLE = get("minecraft:fletching_table");
     @Nullable public static final BlockType FLOWER_POT = get("minecraft:flower_pot");
     @Nullable public static final BlockType FLOWERING_AZALEA = get("minecraft:flowering_azalea");
@@ -513,6 +516,7 @@ public final class BlockTypes {
     @Nullable public static final BlockType LARGE_FERN = get("minecraft:large_fern");
     @Nullable public static final BlockType LAVA = get("minecraft:lava");
     @Nullable public static final BlockType LAVA_CAULDRON = get("minecraft:lava_cauldron");
+    @Nullable public static final BlockType LEAF_LITTER = get("minecraft:leaf_litter");
     @Nullable public static final BlockType LECTERN = get("minecraft:lectern");
     @Nullable public static final BlockType LEVER = get("minecraft:lever");
     @Nullable public static final BlockType LIGHT = get("minecraft:light");
@@ -895,6 +899,7 @@ public final class BlockTypes {
     @Nullable public static final BlockType SEA_LANTERN = get("minecraft:sea_lantern");
     @Nullable public static final BlockType SEA_PICKLE = get("minecraft:sea_pickle");
     @Nullable public static final BlockType SEAGRASS = get("minecraft:seagrass");
+    @Nullable public static final BlockType SHORT_DRY_GRASS = get("minecraft:short_dry_grass");
     @Nullable public static final BlockType SHORT_GRASS = get("minecraft:short_grass");
     @Nullable public static final BlockType SHROOMLIGHT = get("minecraft:shroomlight");
     @Nullable public static final BlockType SHULKER_BOX = get("minecraft:shulker_box");
@@ -989,10 +994,13 @@ public final class BlockTypes {
     @Nullable public static final BlockType SUSPICIOUS_GRAVEL = get("minecraft:suspicious_gravel");
     @Nullable public static final BlockType SUSPICIOUS_SAND = get("minecraft:suspicious_sand");
     @Nullable public static final BlockType SWEET_BERRY_BUSH = get("minecraft:sweet_berry_bush");
+    @Nullable public static final BlockType TALL_DRY_GRASS = get("minecraft:tall_dry_grass");
     @Nullable public static final BlockType TALL_GRASS = get("minecraft:tall_grass");
     @Nullable public static final BlockType TALL_SEAGRASS = get("minecraft:tall_seagrass");
     @Nullable public static final BlockType TARGET = get("minecraft:target");
     @Nullable public static final BlockType TERRACOTTA = get("minecraft:terracotta");
+    @Nullable public static final BlockType TEST_BLOCK = get("minecraft:test_block");
+    @Nullable public static final BlockType TEST_INSTANCE_BLOCK = get("minecraft:test_instance_block");
     @Nullable public static final BlockType TINTED_GLASS = get("minecraft:tinted_glass");
     @Nullable public static final BlockType TNT = get("minecraft:tnt");
     @Nullable public static final BlockType TORCH = get("minecraft:torch");
@@ -1108,6 +1116,7 @@ public final class BlockTypes {
     @Nullable public static final BlockType WHITE_TULIP = get("minecraft:white_tulip");
     @Nullable public static final BlockType WHITE_WALL_BANNER = get("minecraft:white_wall_banner");
     @Nullable public static final BlockType WHITE_WOOL = get("minecraft:white_wool");
+    @Nullable public static final BlockType WILDFLOWERS = get("minecraft:wildflowers");
     @Nullable public static final BlockType WITHER_ROSE = get("minecraft:wither_rose");
     @Nullable public static final BlockType WITHER_SKELETON_SKULL = get("minecraft:wither_skeleton_skull");
     @Nullable public static final BlockType WITHER_SKELETON_WALL_SKULL = get("minecraft:wither_skeleton_wall_skull");
