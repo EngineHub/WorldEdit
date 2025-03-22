@@ -85,7 +85,7 @@ public class FabricWorldNativeAccess implements WorldNativeAccess<LevelChunk, Bl
                 position, state, false, sideEffectSet.shouldApply(SideEffect.UPDATE)
             );
         }
-        return chunk.setBlockState(position, state, false);
+        return chunk.setBlockState(position, state, 0);
     }
 
     @Override
