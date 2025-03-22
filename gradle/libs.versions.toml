@@ -10,7 +10,7 @@ piston = "0.5.10"
 autoValue = "1.10.4"
 antlr = "4.13.1"
 
-fabric-api = "0.110.5+1.21.4"
+fabric-api = "0.119.5+1.21.5"
 
 neogradle = "7.0.171"
 neoforge-minecraft = "1.21.4"
@@ -46,7 +46,7 @@ shadow = "com.github.johnrengelman:shadow:8.1.1"
 jfrog-buildinfo = "org.jfrog.buildinfo:build-info-extractor-gradle:5.2.0"
 
 # https://maven.fabricmc.net/net/fabricmc/sponge-mixin/
-fabric-mixin = "net.fabricmc:sponge-mixin:0.15.3+mixin.0.8.7"
+fabric-mixin = "net.fabricmc:sponge-mixin:0.15.5+mixin.0.8.7"
 
 paperweight = "io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:2.0.0-beta.16"
 
@@ -88,8 +88,8 @@ rhino = "org.mozilla:rhino-runtime:1.7.13"
 jchronic = "com.sk89q:jchronic:0.2.4a"
 jlibnoise = "com.sk89q.lib:jlibnoise:1.0.0"
 
-fabric-minecraft = "com.mojang:minecraft:1.21.4"
-fabric-loader = "net.fabricmc:fabric-loader:0.16.9"
+fabric-minecraft = "com.mojang:minecraft:1.21.5"
+fabric-loader = "net.fabricmc:fabric-loader:0.16.10"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.3.3"
 
 neoforge = "net.neoforged:neoforge:21.4.8-beta"
