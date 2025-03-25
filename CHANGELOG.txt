@@ -1,3 +1,14 @@
+7.3.11
+- Added //mirror as an alias for //flip
+- Fixed an issue where tree generation can get incorrect world state, impacting generation
+- Fixed masks for biome operations only applying to //setbiome
+- Fixed some bugs in the snapshot system
+- Fixed CUI packets being sent to clients unnecessarily
+- Fixed cone generation with negative heights
+- Fixed world height off-by-one discrepancy since change in Minecraft 1.21.3
+- Fixed cases where the task executor would not be shut down correctly
+- [NeoForge] Fixed legacy blocks failing to load in some instances
+
 7.3.10
 - Added support for 1.21.4
 - Improved a few translation lines relating to URLs and newlines
