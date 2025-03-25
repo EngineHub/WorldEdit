@@ -40,7 +40,7 @@ import java.util.Arrays;
 import java.util.Set;
 
 /**
- * Converts between JNBT and Minecraft NBT classes.
+ * Converts between LinBus and Minecraft NBT classes.
  */
 public final class NBTConverter {
 
@@ -183,7 +183,7 @@ public final class NBTConverter {
 
     public static LinListTag<?> fromNative(net.minecraft.nbt.ListTag other) {
         LinListTag.Builder<LinTag<?>> list = LinListTag.builder(LinTagType.fromId(
-            LinTagId.fromId(other.getElementType())
+            LinTagId.fromId(other.getId())
         ));
         for (net.minecraft.nbt.Tag tag : other) {
             list.add(fromNative(tag));
@@ -196,7 +196,7 @@ public final class NBTConverter {
     }
 
     public static LinLongTag fromNative(net.minecraft.nbt.LongTag other) {
-        return LinLongTag.of(other.getAsLong());
+        return LinLongTag.of(other.value());
     }
 
     public static LinLongArrayTag fromNative(net.minecraft.nbt.LongArrayTag other) {
@@ -204,15 +204,15 @@ public final class NBTConverter {
     }
 
     public static LinStringTag fromNative(net.minecraft.nbt.StringTag other) {
-        return LinStringTag.of(other.getAsString());
+        return LinStringTag.of(other.value());
     }
 
     public static LinIntTag fromNative(net.minecraft.nbt.IntTag other) {
-        return LinIntTag.of(other.getAsInt());
+        return LinIntTag.of(other.value());
     }
 
     public static LinByteTag fromNative(net.minecraft.nbt.ByteTag other) {
-        return LinByteTag.of(other.getAsByte());
+        return LinByteTag.of(other.value());
     }
 
     public static LinByteArrayTag fromNative(net.minecraft.nbt.ByteArrayTag other) {
@@ -220,7 +220,7 @@ public final class NBTConverter {
     }
 
     public static LinCompoundTag fromNative(net.minecraft.nbt.CompoundTag other) {
-        Set<String> tags = other.getAllKeys();
+        Set<String> tags = other.keySet();
         LinCompoundTag.Builder builder = LinCompoundTag.builder();
         for (String tagName : tags) {
             builder.put(tagName, fromNative(other.get(tagName)));
@@ -229,15 +229,15 @@ public final class NBTConverter {
     }
 
     public static LinFloatTag fromNative(net.minecraft.nbt.FloatTag other) {
-        return LinFloatTag.of(other.getAsFloat());
+        return LinFloatTag.of(other.value());
     }
 
     public static LinShortTag fromNative(net.minecraft.nbt.ShortTag other) {
-        return LinShortTag.of(other.getAsShort());
+        return LinShortTag.of(other.value());
     }
 
     public static LinDoubleTag fromNative(net.minecraft.nbt.DoubleTag other) {
-        return LinDoubleTag.of(other.getAsDouble());
+        return LinDoubleTag.of(other.value());
     }
 
 }
