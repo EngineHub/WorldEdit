@@ -67,9 +67,6 @@ subsystems {
         mappingsVersion = libs.versions.parchment.mappings.get()
         addRepository = false
     }
-    decompiler {
-        maxMemory("3G")
-    }
 }
 
 configure<BasePluginExtension> {

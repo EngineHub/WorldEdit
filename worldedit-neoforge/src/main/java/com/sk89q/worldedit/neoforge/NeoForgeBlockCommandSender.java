@@ -33,8 +33,6 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.BaseCommandBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.fml.LogicalSide;
-import net.neoforged.neoforge.common.util.LogicalSidedProvider;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
@@ -162,7 +160,7 @@ public class NeoForgeBlockCommandSender extends AbstractCommandBlockActor {
 
             @Override
             public boolean isActive() {
-                LogicalSidedProvider.WORKQUEUE.get(LogicalSide.SERVER).submitAsync(this::updateActive);
+                sender.getLevel().getServer().submitAsync(this::updateActive);
                 return active;
             }
 
