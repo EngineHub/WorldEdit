@@ -82,10 +82,10 @@ public class NeoForgeWorldNativeAccess implements WorldNativeAccess<LevelChunk, 
     public BlockState setBlockState(LevelChunk chunk, BlockPos position, BlockState state) {
         if (chunk instanceof ExtendedChunk) {
             return ((ExtendedChunk) chunk).setBlockState(
-                position, state, false, sideEffectSet.shouldApply(SideEffect.UPDATE)
+                position, state, 0, sideEffectSet.shouldApply(SideEffect.UPDATE)
             );
         }
-        return chunk.setBlockState(position, state, false);
+        return chunk.setBlockState(position, state, 0);
     }
 
     @Override
@@ -167,7 +167,7 @@ public class NeoForgeWorldNativeAccess implements WorldNativeAccess<LevelChunk, 
 
     @Override
     public void onBlockStateChange(BlockPos pos, BlockState oldState, BlockState newState) {
-        getWorld().onBlockStateChange(pos, oldState, newState);
+        getWorld().updatePOIOnBlockStateChange(pos, oldState, newState);
         newState.onBlockStateChange(getWorld(), pos, oldState);
     }
 }
