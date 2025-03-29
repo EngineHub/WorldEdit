@@ -102,7 +102,7 @@ public class BukkitBlockRegistry extends BundledBlockRegistry {
             return material.isBurnable();
         }
 
-        @SuppressWarnings("deprecation")
+        @SuppressWarnings({ "deprecation", "removal" })
         @Override
         public boolean isTranslucent() {
             return material.isTransparent();
