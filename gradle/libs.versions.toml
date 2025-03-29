@@ -48,7 +48,7 @@ jfrog-buildinfo = "org.jfrog.buildinfo:build-info-extractor-gradle:5.2.0"
 # https://maven.fabricmc.net/net/fabricmc/sponge-mixin/
 fabric-mixin = "net.fabricmc:sponge-mixin:0.15.3+mixin.0.8.7"
 
-paperweight = "io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:1.7.5"
+paperweight = "io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:2.0.0-beta.16"
 
 linBus-bom = "org.enginehub.lin-bus:lin-bus-bom:0.2.0"
 linBus-common.module = "org.enginehub.lin-bus:lin-bus-common"
@@ -75,7 +75,8 @@ mockito-junit-jupiter.module = "org.mockito:mockito-junit-jupiter"
 
 commonsCli = "commons-cli:commons-cli:1.4"
 
-paperApi = "io.papermc.paper:paper-api:1.21.4-R0.1-20250118.134032-116"
+# https://repo.papermc.io/service/rest/repository/browse/maven-public/io/papermc/paper/paper-api/
+paperApi = "io.papermc.paper:paper-api:1.21.4-R0.1-20250327.133756-218"
 paperLib = "io.papermc:paperlib:1.0.8"
 
 dummypermscompat = "com.sk89q:dummypermscompat:1.10"
