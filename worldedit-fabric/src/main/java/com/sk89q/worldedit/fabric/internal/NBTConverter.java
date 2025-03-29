@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.fabric.internal;
 
+import net.minecraft.nbt.Tag;
 import org.enginehub.linbus.common.LinTagId;
 import org.enginehub.linbus.tree.LinByteArrayTag;
 import org.enginehub.linbus.tree.LinByteTag;
@@ -181,12 +182,41 @@ public final class NBTConverter {
         return LinIntArrayTag.of(Arrays.copyOf(value, value.length));
     }
 
+    private static byte identifyRawElementType(net.minecraft.nbt.ListTag list) {
+        byte b = 0;
+
+        for (Tag tag : list) {
+            byte c = tag.getId();
+            if (b == 0) {
+                b = c;
+            } else if (b != c) {
+                return 10;
+            }
+        }
+
+        return b;
+    }
+
+    private static net.minecraft.nbt.CompoundTag wrapTag(net.minecraft.nbt.Tag tag) {
+        if (tag instanceof net.minecraft.nbt.CompoundTag compoundTag) {
+            return compoundTag;
+        }
+        var compoundTag = new net.minecraft.nbt.CompoundTag();
+        compoundTag.put("", tag);
+        return compoundTag;
+    }
+
     public static LinListTag<?> fromNative(net.minecraft.nbt.ListTag other) {
+        byte rawType = identifyRawElementType(other);
         LinListTag.Builder<LinTag<?>> list = LinListTag.builder(LinTagType.fromId(
-            LinTagId.fromId(other.getId())
+                LinTagId.fromId(rawType)
         ));
         for (net.minecraft.nbt.Tag tag : other) {
-            list.add(fromNative(tag));
+            if (rawType == LinTagId.COMPOUND.id() && !(tag instanceof net.minecraft.nbt.CompoundTag)) {
+                list.add(fromNative(wrapTag(tag)));
+            } else {
+                list.add(fromNative(tag));
+            }
         }
         return list.build();
     }

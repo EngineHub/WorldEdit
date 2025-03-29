@@ -1055,6 +1055,30 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         }
     }
 
+    private static byte identifyRawElementType(net.minecraft.nbt.ListTag list) {
+        byte b = 0;
+
+        for (Tag tag : list) {
+            byte c = tag.getId();
+            if (b == 0) {
+                b = c;
+            } else if (b != c) {
+                return 10;
+            }
+        }
+
+        return b;
+    }
+
+    private static net.minecraft.nbt.CompoundTag wrapTag(net.minecraft.nbt.Tag tag) {
+        if (tag instanceof net.minecraft.nbt.CompoundTag compoundTag) {
+            return compoundTag;
+        }
+        var compoundTag = new net.minecraft.nbt.CompoundTag();
+        compoundTag.put("", tag);
+        return compoundTag;
+    }
+
     /**
      * Convert a foreign NBT list tag into a native WorldEdit one.
      *
@@ -1064,14 +1088,17 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
      * @throws IllegalArgumentException on error
      */
     private LinListTag<?> toNativeList(net.minecraft.nbt.ListTag foreign) throws SecurityException, IllegalArgumentException {
-        LinListTag.Builder<LinTag<?>> builder = LinListTag.builder(
-            LinTagType.fromId(LinTagId.fromId(foreign.getId()))
-        );
-
+        byte rawType = identifyRawElementType(foreign);
+        LinListTag.Builder<LinTag<?>> builder = LinListTag.builder(LinTagType.fromId(
+                LinTagId.fromId(rawType)
+        ));
         for (net.minecraft.nbt.Tag tag : foreign) {
-            builder.add(toNative(tag));
+            if (rawType == LinTagId.COMPOUND.id() && !(tag instanceof net.minecraft.nbt.CompoundTag)) {
+                builder.add(toNative(wrapTag(tag)));
+            } else {
+                builder.add(toNative(tag));
+            }
         }
-
         return builder.build();
     }
 
