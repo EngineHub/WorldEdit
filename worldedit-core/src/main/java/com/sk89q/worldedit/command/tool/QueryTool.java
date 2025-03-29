@@ -59,8 +59,7 @@ public class QueryTool implements BlockTool {
         TextComponent.Builder builder = TextComponent.builder();
         builder.append(TextComponent.of("@" + clicked.toVector().toBlockPoint() + ": ", TextColor.BLUE));
         builder.append(block.getBlockType().getRichName().color(TextColor.YELLOW));
-        
-        // Add a clickable component to copy the block state
+
         String blockStateString = block.toString();
         TextComponent blockStateComponent = TextComponent.of(" (" + blockStateString + ") ", TextColor.GRAY)
             .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TranslatableComponent.of("worldedit.tool.info.blockstate.hover")))
