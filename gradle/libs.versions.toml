@@ -75,7 +75,7 @@ mockito-junit-jupiter.module = "org.mockito:mockito-junit-jupiter"
 
 commonsCli = "commons-cli:commons-cli:1.4"
 
-paperApi = "io.papermc.paper:paper-api:1.21.4-R0.1-20250118.134032-116"
+paperApi = "io.papermc.paper:paper-api:1.21.4-R0.1-20250327.133756-218"
 paperLib = "io.papermc:paperlib:1.0.8"
 
 dummypermscompat = "com.sk89q:dummypermscompat:1.10"
