@@ -40,15 +40,25 @@ import javax.annotation.Nullable;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Stores block data as a multi-dimensional array of {@link BaseBlock}s and
+ * Stores block data as an array of {@link BaseBlock}s and
  * other data as lists or maps.
  */
 public class BlockArrayClipboard implements Clipboard {
 
     private final Region region;
     private BlockVector3 origin;
-    private final BaseBlock[][][] blocks;
-    private BiomeType[][][] biomes = null;
+    /**
+     * Stride for y-index, for faster access to blocks/biomes array.
+     */
+    private final int yStride;
+    /**
+     * Stride for z-index, for faster access to blocks/biomes array.
+     */
+    private final int zStride;
+    // Laid out in x-y-z order, as that's how we currently loop over positions.
+    private final BaseBlock[] blocks;
+    // Laid out in x-y-z order, as that's how we currently loop over positions.
+    private BiomeType[] biomes = null;
     private final List<ClipboardEntity> entities = new ArrayList<>();
 
     /**
@@ -64,7 +74,13 @@ public class BlockArrayClipboard implements Clipboard {
         this.origin = region.getMinimumPoint();
 
         BlockVector3 dimensions = getDimensions();
-        blocks = new BaseBlock[dimensions.x()][dimensions.y()][dimensions.z()];
+        blocks = new BaseBlock[dimensions.x() * dimensions.y() * dimensions.z()];
+        yStride = dimensions.x();
+        zStride = yStride * dimensions.y();
+    }
+
+    private int indexBlockVecBasedArray(BlockVector3 v) {
+        return v.x() + (v.y() * yStride) + (v.z() * zStride);
     }
 
     @Override
@@ -125,7 +141,7 @@ public class BlockArrayClipboard implements Clipboard {
     public BlockState getBlock(BlockVector3 position) {
         if (region.contains(position)) {
             BlockVector3 v = position.subtract(region.getMinimumPoint());
-            BaseBlock block = blocks[v.x()][v.y()][v.z()];
+            BaseBlock block = blocks[indexBlockVecBasedArray(v)];
             if (block != null) {
                 return block.toImmutableState();
             }
@@ -138,7 +154,7 @@ public class BlockArrayClipboard implements Clipboard {
     public BaseBlock getFullBlock(BlockVector3 position) {
         if (region.contains(position)) {
             BlockVector3 v = position.subtract(region.getMinimumPoint());
-            BaseBlock block = blocks[v.x()][v.y()][v.z()];
+            BaseBlock block = blocks[indexBlockVecBasedArray(v)];
             if (block != null) {
                 return block;
             }
@@ -151,7 +167,7 @@ public class BlockArrayClipboard implements Clipboard {
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block) {
         if (region.contains(position)) {
             BlockVector3 v = position.subtract(region.getMinimumPoint());
-            blocks[v.x()][v.y()][v.z()] = block.toBaseBlock();
+            blocks[indexBlockVecBasedArray(v)] = block.toBaseBlock();
             return true;
         } else {
             return false;
@@ -168,7 +184,7 @@ public class BlockArrayClipboard implements Clipboard {
         if (biomes != null
                 && position.containedWithin(getMinimumPoint(), getMaximumPoint())) {
             BlockVector3 v = position.subtract(region.getMinimumPoint());
-            BiomeType biomeType = biomes[v.x()][v.y()][v.z()];
+            BiomeType biomeType = biomes[indexBlockVecBasedArray(v)];
             if (biomeType != null) {
                 return biomeType;
             }
@@ -182,9 +198,10 @@ public class BlockArrayClipboard implements Clipboard {
         if (position.containedWithin(getMinimumPoint(), getMaximumPoint())) {
             BlockVector3 v = position.subtract(region.getMinimumPoint());
             if (biomes == null) {
-                biomes = new BiomeType[region.getWidth()][region.getHeight()][region.getLength()];
+                BlockVector3 dimensions = getDimensions();
+                biomes = new BiomeType[dimensions.x() * dimensions.y() * dimensions.z()];
             }
-            biomes[v.x()][v.y()][v.z()] = biome;
+            biomes[indexBlockVecBasedArray(v)] = biome;
             return true;
         }
         return false;
