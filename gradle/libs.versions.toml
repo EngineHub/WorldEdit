@@ -17,7 +17,7 @@ neoforge-minecraft = "1.21.4"
 
 sponge-minecraft = "1.21.4"
 # https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/spongeapi/
-sponge-api = "14.0.0-20241229.134205-2"
+sponge-api = "14.0.0-20250114.224746-4"
 sponge-api-major = "14"
 
 # https://parchmentmc.org/docs/getting-started; note that we use older MC versions some times which is OK
