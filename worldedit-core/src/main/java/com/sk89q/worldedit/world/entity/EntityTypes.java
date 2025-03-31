@@ -107,6 +107,7 @@ public final class EntityTypes {
     @Nullable public static final EntityType JUNGLE_CHEST_BOAT = get("minecraft:jungle_chest_boat");
     @Nullable public static final EntityType LEASH_KNOT = get("minecraft:leash_knot");
     @Nullable public static final EntityType LIGHTNING_BOLT = get("minecraft:lightning_bolt");
+    @Nullable public static final EntityType LINGERING_POTION = get("minecraft:lingering_potion");
     @Nullable public static final EntityType LLAMA = get("minecraft:llama");
     @Nullable public static final EntityType LLAMA_SPIT = get("minecraft:llama_spit");
     @Nullable public static final EntityType MAGMA_CUBE = get("minecraft:magma_cube");
@@ -132,7 +133,7 @@ public final class EntityTypes {
     @Nullable public static final EntityType PILLAGER = get("minecraft:pillager");
     @Nullable public static final EntityType PLAYER = get("minecraft:player");
     @Nullable public static final EntityType POLAR_BEAR = get("minecraft:polar_bear");
-    @Nullable public static final EntityType POTION = get("minecraft:potion");
+    @Deprecated @Nullable public static final EntityType POTION = get("minecraft:potion");
     @Nullable public static final EntityType PUFFERFISH = get("minecraft:pufferfish");
     @Nullable public static final EntityType RABBIT = get("minecraft:rabbit");
     @Nullable public static final EntityType RAVAGER = get("minecraft:ravager");
@@ -151,6 +152,7 @@ public final class EntityTypes {
     @Nullable public static final EntityType SPAWNER_MINECART = get("minecraft:spawner_minecart");
     @Nullable public static final EntityType SPECTRAL_ARROW = get("minecraft:spectral_arrow");
     @Nullable public static final EntityType SPIDER = get("minecraft:spider");
+    @Nullable public static final EntityType SPLASH_POTION = get("minecraft:splash_potion");
     @Nullable public static final EntityType SPRUCE_BOAT = get("minecraft:spruce_boat");
     @Nullable public static final EntityType SPRUCE_CHEST_BOAT = get("minecraft:spruce_chest_boat");
     @Nullable public static final EntityType SQUID = get("minecraft:squid");

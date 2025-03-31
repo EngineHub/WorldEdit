@@ -107,7 +107,6 @@ import net.minecraft.world.level.storage.PrimaryLevelData;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
-import org.enginehub.linbus.common.LinTagId;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.lang.ref.WeakReference;
@@ -263,7 +262,7 @@ public class NeoForgeWorld extends AbstractWorld {
             return false;
         }
         fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, stack);
-        fakePlayer.absMoveTo(position.x(), position.y(), position.z(),
+        fakePlayer.absSnapTo(position.x(), position.y(), position.z(),
                 (float) face.toVector().toYaw(), (float) face.toVector().toPitch());
         final BlockPos blockPos = NeoForgeAdapter.toBlockPos(position);
         final BlockHitResult rayTraceResult = new BlockHitResult(NeoForgeAdapter.toVec3(position),
@@ -714,7 +713,7 @@ public class NeoForgeWorld extends AbstractWorld {
         tag.putString("id", entityId);
 
         net.minecraft.world.entity.Entity createdEntity = EntityType.loadEntityRecursive(tag, world, EntitySpawnReason.COMMAND, (loadedEntity) -> {
-            loadedEntity.absMoveTo(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+            loadedEntity.absSnapTo(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
             return loadedEntity;
         });
         if (createdEntity != null) {
@@ -730,13 +729,11 @@ public class NeoForgeWorld extends AbstractWorld {
         }
 
         // Adapted from net.minecraft.world.entity.EntityType#loadEntityRecursive
-        if (tag.contains("Passengers", LinTagId.LIST.id())) {
-            net.minecraft.nbt.ListTag nbttaglist = tag.getList("Passengers", LinTagId.COMPOUND.id());
-
+        tag.getList("Passengers").ifPresent(nbttaglist -> {
             for (int i = 0; i < nbttaglist.size(); ++i) {
-                removeUnwantedEntityTagsRecursively(nbttaglist.getCompound(i));
+                removeUnwantedEntityTagsRecursively(nbttaglist.getCompoundOrEmpty(i));
             }
-        }
+        });
     }
 
     @Override
