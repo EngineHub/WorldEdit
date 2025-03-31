@@ -53,7 +53,11 @@ class SpongeEntity implements Entity {
         if (entity == null || entity.vehicle().isPresent()) {
             return null;
         }
-        EntityType entityType = EntityType.REGISTRY.get(entity.type().key(RegistryTypes.ENTITY_TYPE).asString());
+        org.spongepowered.api.entity.EntityType<?> spongeEntityType = entity.type();
+        if (spongeEntityType.isTransient()) {
+            return null;
+        }
+        EntityType entityType = EntityType.REGISTRY.get(spongeEntityType.key(RegistryTypes.ENTITY_TYPE).asString());
         if (entityType == null) {
             return null;
         }
