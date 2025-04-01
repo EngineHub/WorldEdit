@@ -16,7 +16,7 @@ This place contains the Java code for WorldEdit, but if you want to just use Wor
 
 https://modrinth.com/plugin/worldedit/versions
 
-Edit the Code
+Edit the Code: This is where you make changes to the code
 ---------
 
 Want to add new features to WorldEdit or fix bugs yourself? You can get the game running, with WorldEdit, from the code here, without any additional outside steps, by doing the following *four* things:
