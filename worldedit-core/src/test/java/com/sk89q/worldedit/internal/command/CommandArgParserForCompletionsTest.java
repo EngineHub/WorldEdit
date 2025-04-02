@@ -27,17 +27,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
-class CommandArgParserTest {
+class CommandArgParserForCompletionsTest {
 
     private static List<ExtractedArg> argParse(String s) {
-        return CommandArgParser.parse(s, false).toList();
-    }
-
-    private static void assertThrowsUnterminatedQuote(Runnable runnable) {
-        var ex = assertThrowsExactly(CommandArgParseException.class, runnable::run);
-        assertEquals("Unterminated quote", ex.getMessage());
+        return CommandArgParser.parse(s, true).toList();
     }
 
     @Test
@@ -101,11 +95,23 @@ class CommandArgParserTest {
     @ParameterizedTest
     @ValueSource(chars = {'"', '\''})
     void testPartialQuotes(char quote) {
-        assertThrowsUnterminatedQuote(() -> argParse(quote + ""));
-        assertThrowsUnterminatedQuote(() -> argParse(quote + "a"));
-        assertThrowsUnterminatedQuote(() -> argParse(quote + "a "));
-        assertThrowsUnterminatedQuote(() -> argParse(quote + "a b"));
-        assertThrowsUnterminatedQuote(() -> argParse("a " + quote));
+        // In 'for completions' mode, we should always return a result.
+        assertEquals(ImmutableList.of(
+            new ExtractedArg("", 0, 1)
+        ), argParse(quote + ""));
+        assertEquals(ImmutableList.of(
+            new ExtractedArg("a", 0, 2)
+        ), argParse(quote + "a"));
+        assertEquals(ImmutableList.of(
+            new ExtractedArg("a ", 0, 3)
+        ), argParse(quote + "a "));
+        assertEquals(ImmutableList.of(
+            new ExtractedArg("a b", 0, 4)
+        ), argParse(quote + "a b"));
+        assertEquals(ImmutableList.of(
+            new ExtractedArg("a", 0, 1),
+            new ExtractedArg("", 2, 3)
+        ), argParse("a " + quote));
         // Mid quotes are fine.
         assertEquals(ImmutableList.of(
             new ExtractedArg("a", 0, 1),
