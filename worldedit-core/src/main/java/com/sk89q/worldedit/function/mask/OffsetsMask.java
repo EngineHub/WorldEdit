@@ -54,6 +54,16 @@ public class OffsetsMask extends AbstractMask {
     }
 
     /**
+     * Create an offsets mask for any adjacent offset.
+     *
+     * @param mask the mask to use
+     * @return the new offsets mask
+     */
+    public static OffsetsMask adjacent(Mask mask) {
+        return builder(mask).minMatches(1).offsets(OFFSET_LIST).build();
+    }
+
+    /**
      * Create a new builder, using the given mask.
      * @param mask the mask to use
      * @return the builder
@@ -157,7 +167,7 @@ public class OffsetsMask extends AbstractMask {
         checkArgument(minMatches <= maxMatches, "minMatches must be less than or equal to maxMatches");
         checkArgument(minMatches >= 0, "minMatches must be greater than or equal to 0");
         checkArgument(minMatches <= offsets.size(), "minMatches must be less than or equal to the number of offsets");
-        checkArgument(offsets.size() > 0, "offsets must have at least one element");
+        checkArgument(!offsets.isEmpty(), "offsets must have at least one element");
 
         this.mask = mask;
         this.excludeSelf = excludeSelf;
