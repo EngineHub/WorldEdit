@@ -102,7 +102,7 @@ public class BukkitBlockRegistry implements BlockRegistry {
             return material.isBurnable();
         }
 
-        @SuppressWarnings("deprecation")
+        @SuppressWarnings("removal")
         @Override
         public boolean isTranslucent() {
             return super.isTranslucent() || material.isTransparent();

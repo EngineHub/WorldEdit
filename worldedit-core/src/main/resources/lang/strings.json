@@ -313,7 +313,7 @@
     "worldedit.tool.tree.equip": "Tree tool bound to {0}.",
     "worldedit.tool.tree.obstructed": "A tree can't go there.",
     "worldedit.tool.info.equip": "Info tool bound to {0}.",
-    "worldedit.tool.info.blockstate.hover": "Block state",
+    "worldedit.tool.info.blockstate.hover": "Block state (click to copy)",
     "worldedit.tool.info.internalid.hover": "Internal ID",
     "worldedit.tool.info.legacy.hover": "Legacy id:data",
     "worldedit.tool.info.light.hover": "Block Light/Light Above",
