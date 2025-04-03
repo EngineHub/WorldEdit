@@ -39,10 +39,10 @@ public class OffsetMaskParser extends InputParser<Mask> {
     @Override
     public Stream<String> getSuggestions(String input, ParserContext context) {
         if (input.isEmpty()) {
-            return Stream.of(">", "<");
+            return Stream.of(">", "<", "~");
         }
         final char firstChar = input.charAt(0);
-        if (firstChar != '>' && firstChar != '<') {
+        if (firstChar != '>' && firstChar != '<' && firstChar != '~') {
             return Stream.empty();
         }
         return worldEdit.getMaskFactory().getSuggestions(input.substring(1), context).stream().map(s -> firstChar + s);
@@ -51,7 +51,7 @@ public class OffsetMaskParser extends InputParser<Mask> {
     @Override
     public Mask parseFromInput(String input, ParserContext context) throws InputParseException {
         final char firstChar = input.charAt(0);
-        if (firstChar != '>' && firstChar != '<') {
+        if (firstChar != '>' && firstChar != '<' && firstChar != '~') {
             return null;
         }
 
@@ -61,6 +61,10 @@ public class OffsetMaskParser extends InputParser<Mask> {
         } else {
             submask = new ExistingBlockMask(context.requireExtent());
         }
-        return OffsetsMask.single(submask, BlockVector3.at(0, firstChar == '>' ? -1 : 1, 0));
+        if (firstChar == '~') {
+            return OffsetsMask.adjacent(submask);
+        } else {
+            return OffsetsMask.single(submask, BlockVector3.at(0, firstChar == '>' ? -1 : 1, 0));
+        }
     }
 }
