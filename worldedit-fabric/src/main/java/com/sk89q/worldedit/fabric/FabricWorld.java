@@ -38,11 +38,12 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.fabric.internal.ExtendedMinecraftServer;
 import com.sk89q.worldedit.fabric.internal.FabricEntity;
 import com.sk89q.worldedit.fabric.internal.FabricServerLevelDelegateProxy;
-import com.sk89q.worldedit.fabric.internal.FabricWorldNativeAccess;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
 import com.sk89q.worldedit.function.mask.AbstractExtentMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.Constants;
+import com.sk89q.worldedit.internal.wna.NativeWorld;
+import com.sk89q.worldedit.internal.wna.WNASharedImpl;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -149,7 +150,6 @@ public class FabricWorld extends AbstractWorld {
     }
 
     private final WeakReference<Level> worldRef;
-    private final FabricWorldNativeAccess worldNativeAccess;
 
     /**
      * Construct a new world.
@@ -159,7 +159,11 @@ public class FabricWorld extends AbstractWorld {
     FabricWorld(Level world) {
         checkNotNull(world);
         this.worldRef = new WeakReference<>(world);
-        this.worldNativeAccess = new FabricWorldNativeAccess(worldRef);
+    }
+
+    @Override
+    public NativeWorld getNativeInterface() {
+        return (NativeWorld) getWorld();
     }
 
     /**
@@ -199,12 +203,12 @@ public class FabricWorld extends AbstractWorld {
     @Override
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectSet sideEffects) throws WorldEditException {
         clearContainerBlockContents(position);
-        return worldNativeAccess.setBlock(position, block, sideEffects);
+        return WNASharedImpl.setBlock(getNativeInterface(), position, block, sideEffects);
     }
 
     @Override
     public Set<SideEffect> applySideEffects(BlockVector3 position, BlockState previousType, SideEffectSet sideEffectSet) {
-        worldNativeAccess.applySideEffects(position, previousType, sideEffectSet);
+        WNASharedImpl.applySideEffects(getNativeInterface(), sideEffectSet, position, previousType);
         return Sets.intersection(FabricWorldEdit.inst.getPlatform().getSupportedSideEffects(), sideEffectSet.getSideEffectsToApply());
     }
 

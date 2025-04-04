@@ -21,12 +21,11 @@ package com.sk89q.worldedit.world.block;
 
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.blocks.TileEntityBlock;
+import com.sk89q.worldedit.internal.wna.WNASharedImpl;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
 import org.enginehub.linbus.format.snbt.LinStringIO;
 import org.enginehub.linbus.tree.LinCompoundTag;
-import org.enginehub.linbus.tree.LinStringTag;
-import org.enginehub.linbus.tree.LinTagType;
 
 import java.util.Map;
 import java.util.Objects;
@@ -120,8 +119,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
         if (nbtData == null) {
             return "";
         }
-        LinStringTag idTag = nbtData.getValue().findTag("id", LinTagType.stringTag());
-        return idTag != null ? idTag.value() : "";
+        return WNASharedImpl.extractNbtId(nbtData.getValue());
     }
 
     @Nullable

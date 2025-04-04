@@ -134,6 +134,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         extendedYLimit = getBool("extended-y-limit", extendedYLimit);
         setDefaultLocaleName(getString("default-locale", defaultLocaleName));
         commandBlockSupport = getBool("command-block-support", commandBlockSupport);
+        chunkSectionEditing = getBool("chunk-section-editing", chunkSectionEditing);
 
         LocalSession.MAX_HISTORY_SIZE = Math.max(15, getInt("history-size", 15));
 

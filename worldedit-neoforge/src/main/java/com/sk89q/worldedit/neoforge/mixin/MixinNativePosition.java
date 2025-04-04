@@ -17,12 +17,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * "WNA", or WorldEdit Native Access.
- *
- * <p>
- * Contains internal helper functions for sharing code between platforms. "Native*" interfaces are wrapped around or
- * mixed in to the native structures.
- * </p>
- */
-package com.sk89q.worldedit.internal.wna;
+package com.sk89q.worldedit.neoforge.mixin;
+
+import com.sk89q.worldedit.internal.wna.NativePosition;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
+import org.spongepowered.asm.mixin.Implements;
+import org.spongepowered.asm.mixin.Interface;
+import org.spongepowered.asm.mixin.Mixin;
+
+@Mixin(BlockPos.class)
+@Implements(@Interface(iface = NativePosition.class, prefix = "nc$"))
+public abstract class MixinNativePosition extends Vec3i {
+    public MixinNativePosition(int x, int y, int z) {
+        super(x, y, z);
+    }
+
+    public int nc$x() {
+        return getX();
+    }
+
+    public int nc$y() {
+        return getY();
+    }
+
+    public int nc$z() {
+        return getZ();
+    }
+}

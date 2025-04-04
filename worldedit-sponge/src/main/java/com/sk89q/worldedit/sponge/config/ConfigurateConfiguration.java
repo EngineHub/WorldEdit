@@ -145,5 +145,7 @@ public class ConfigurateConfiguration extends LocalConfiguration {
         setDefaultLocaleName(node.node("default-locale").getString(defaultLocaleName));
 
         commandBlockSupport = node.node("command-block-support").getBoolean(false);
+
+        chunkSectionEditing = node.node("chunk-section-editing").getBoolean(chunkSectionEditing);
     }
 }

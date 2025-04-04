@@ -94,6 +94,7 @@ public abstract class LocalConfiguration {
     public boolean commandBlockSupport = false;
     public String defaultLocaleName = "default";
     public Locale defaultLocale = Locale.getDefault();
+    public boolean chunkSectionEditing = true;
 
     @SuppressWarnings("deprecation")
     protected String[] getDefaultDisallowedBlocks() {

@@ -44,6 +44,7 @@ import com.sk89q.worldedit.extent.world.ChunkLoadingExtent;
 import com.sk89q.worldedit.extent.world.SideEffectExtent;
 import com.sk89q.worldedit.extent.world.SurvivalModeExtent;
 import com.sk89q.worldedit.extent.world.WatchdogTickingExtent;
+import com.sk89q.worldedit.extent.world.internal.SectionBufferingExtent;
 import com.sk89q.worldedit.function.GroundFunction;
 import com.sk89q.worldedit.function.RegionMaskingFilter;
 import com.sk89q.worldedit.function.biome.BiomeReplace;
@@ -86,6 +87,7 @@ import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.internal.expression.ExpressionTimeoutException;
 import com.sk89q.worldedit.internal.expression.LocalSlot.Variable;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
+import com.sk89q.worldedit.internal.wna.NativeWorld;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.MathUtils;
 import com.sk89q.worldedit.math.Vector2;
@@ -115,6 +117,7 @@ import com.sk89q.worldedit.util.collection.DoubleArrayList;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -254,7 +257,16 @@ public class EditSession implements Extent, AutoCloseable {
             Extent extent;
 
             // These extents are ALWAYS used
-            extent = traceIfNeeded(sideEffectExtent = new SideEffectExtent(world));
+            sideEffectExtent = new SideEffectExtent(world);
+            NativeWorld nativeInterface = null;
+            boolean usingNativeInterface = WorldEdit.getInstance().getConfiguration().chunkSectionEditing
+                && world instanceof AbstractWorld internalWorld
+                && (nativeInterface = internalWorld.getNativeInterface()) != null;
+            if (usingNativeInterface) {
+                extent = traceIfNeeded(new SectionBufferingExtent(nativeInterface, sideEffectExtent));
+            } else {
+                extent = traceIfNeeded(sideEffectExtent);
+            }
             if (watchdog != null) {
                 // Reset watchdog before world placement
                 WatchdogTickingExtent watchdogExtent = new WatchdogTickingExtent(extent, watchdog);
@@ -269,7 +281,11 @@ public class EditSession implements Extent, AutoCloseable {
             this.bypassReorderHistory = traceIfNeeded(new DataValidatorExtent(extent, world));
 
             // This extent can be skipped by calling rawSetBlock()
-            extent = traceIfNeeded(batchingExtent = new BatchingExtent(extent));
+            if (!usingNativeInterface) {
+                // We need to ensure that blocks are not immediately committed to the world for masks
+                // This is done by the SectionBufferingExtent normally, but if we can't use it we need a fallback
+                extent = traceIfNeeded(batchingExtent = new BatchingExtent(extent));
+            }
             @SuppressWarnings("deprecation")
             MultiStageReorder reorder = new MultiStageReorder(extent, false);
             extent = traceIfNeeded(reorderExtent = reorder);
@@ -619,12 +635,13 @@ public class EditSession implements Extent, AutoCloseable {
             }
             return;
         }
-        assert batchingExtent != null : "same nullness as chunkBatchingExtent";
         if (!batchingChunks && isBatchingChunks()) {
             internalFlushSession();
         }
         chunkBatchingExtent.setEnabled(batchingChunks);
-        batchingExtent.setEnabled(!batchingChunks);
+        if (batchingExtent != null) {
+            batchingExtent.setEnabled(!batchingChunks);
+        }
     }
 
     /**
@@ -653,8 +670,9 @@ public class EditSession implements Extent, AutoCloseable {
         setReorderMode(ReorderMode.NONE);
         if (chunkBatchingExtent != null) {
             chunkBatchingExtent.setEnabled(false);
-            assert batchingExtent != null : "same nullness as chunkBatchingExtent";
-            batchingExtent.setEnabled(true);
+            if (batchingExtent != null) {
+                batchingExtent.setEnabled(true);
+            }
         }
     }
 
