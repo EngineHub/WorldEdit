@@ -53,11 +53,11 @@ public abstract class MixinLevelChunkSetBlockHook extends ChunkAccess implements
     @Unique
     @Nullable
     @Override
-    public BlockState setBlockState(BlockPos pos, BlockState state, boolean moved, boolean update) {
+    public BlockState setBlockState(BlockPos pos, BlockState state, int flag, boolean update) {
         // save the state for the hook
         shouldUpdate = update;
         try {
-            return setBlockState(pos, state, moved);
+            return setBlockState(pos, state, flag);
         } finally {
             // restore natural mode
             shouldUpdate = true;
