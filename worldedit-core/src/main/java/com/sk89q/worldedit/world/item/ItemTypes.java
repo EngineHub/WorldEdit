@@ -153,6 +153,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType BLUE_CONCRETE = get("minecraft:blue_concrete");
     @Nullable public static final ItemType BLUE_CONCRETE_POWDER = get("minecraft:blue_concrete_powder");
     @Nullable public static final ItemType BLUE_DYE = get("minecraft:blue_dye");
+    @Nullable public static final ItemType BLUE_EGG = get("minecraft:blue_egg");
     @Nullable public static final ItemType BLUE_GLAZED_TERRACOTTA = get("minecraft:blue_glazed_terracotta");
     @Nullable public static final ItemType BLUE_ICE = get("minecraft:blue_ice");
     @Nullable public static final ItemType BLUE_ORCHID = get("minecraft:blue_orchid");
@@ -192,6 +193,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType BROWN_CONCRETE = get("minecraft:brown_concrete");
     @Nullable public static final ItemType BROWN_CONCRETE_POWDER = get("minecraft:brown_concrete_powder");
     @Nullable public static final ItemType BROWN_DYE = get("minecraft:brown_dye");
+    @Nullable public static final ItemType BROWN_EGG = get("minecraft:brown_egg");
     @Nullable public static final ItemType BROWN_GLAZED_TERRACOTTA = get("minecraft:brown_glazed_terracotta");
     @Nullable public static final ItemType BROWN_MUSHROOM = get("minecraft:brown_mushroom");
     @Nullable public static final ItemType BROWN_MUSHROOM_BLOCK = get("minecraft:brown_mushroom_block");
@@ -208,7 +210,9 @@ public final class ItemTypes {
     @Nullable public static final ItemType BUDDING_AMETHYST = get("minecraft:budding_amethyst");
     @Nullable public static final ItemType BUNDLE = get("minecraft:bundle");
     @Nullable public static final ItemType BURN_POTTERY_SHERD = get("minecraft:burn_pottery_sherd");
+    @Nullable public static final ItemType BUSH = get("minecraft:bush");
     @Nullable public static final ItemType CACTUS = get("minecraft:cactus");
+    @Nullable public static final ItemType CACTUS_FLOWER = get("minecraft:cactus_flower");
     @Deprecated @Nullable public static final ItemType CACTUS_GREEN = get("minecraft:cactus_green");
     @Nullable public static final ItemType CAKE = get("minecraft:cake");
     @Nullable public static final ItemType CALCITE = get("minecraft:calcite");
@@ -503,6 +507,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType FIRE_CORAL = get("minecraft:fire_coral");
     @Nullable public static final ItemType FIRE_CORAL_BLOCK = get("minecraft:fire_coral_block");
     @Nullable public static final ItemType FIRE_CORAL_FAN = get("minecraft:fire_coral_fan");
+    @Nullable public static final ItemType FIREFLY_BUSH = get("minecraft:firefly_bush");
     @Nullable public static final ItemType FIREWORK_ROCKET = get("minecraft:firework_rocket");
     @Nullable public static final ItemType FIREWORK_STAR = get("minecraft:firework_star");
     @Nullable public static final ItemType FISHING_ROD = get("minecraft:fishing_rod");
@@ -676,6 +681,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType LARGE_FERN = get("minecraft:large_fern");
     @Nullable public static final ItemType LAVA_BUCKET = get("minecraft:lava_bucket");
     @Nullable public static final ItemType LEAD = get("minecraft:lead");
+    @Nullable public static final ItemType LEAF_LITTER = get("minecraft:leaf_litter");
     @Nullable public static final ItemType LEATHER = get("minecraft:leather");
     @Nullable public static final ItemType LEATHER_BOOTS = get("minecraft:leather_boots");
     @Nullable public static final ItemType LEATHER_CHESTPLATE = get("minecraft:leather_chestplate");
@@ -1127,6 +1133,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType SHEEP_SPAWN_EGG = get("minecraft:sheep_spawn_egg");
     @Nullable public static final ItemType SHELTER_POTTERY_SHERD = get("minecraft:shelter_pottery_sherd");
     @Nullable public static final ItemType SHIELD = get("minecraft:shield");
+    @Nullable public static final ItemType SHORT_DRY_GRASS = get("minecraft:short_dry_grass");
     @Nullable public static final ItemType SHORT_GRASS = get("minecraft:short_grass");
     @Nullable public static final ItemType SHROOMLIGHT = get("minecraft:shroomlight");
     @Nullable public static final ItemType SHULKER_BOX = get("minecraft:shulker_box");
@@ -1253,9 +1260,12 @@ public final class ItemTypes {
     @Nullable public static final ItemType SWEET_BERRIES = get("minecraft:sweet_berries");
     @Nullable public static final ItemType TADPOLE_BUCKET = get("minecraft:tadpole_bucket");
     @Nullable public static final ItemType TADPOLE_SPAWN_EGG = get("minecraft:tadpole_spawn_egg");
+    @Nullable public static final ItemType TALL_DRY_GRASS = get("minecraft:tall_dry_grass");
     @Nullable public static final ItemType TALL_GRASS = get("minecraft:tall_grass");
     @Nullable public static final ItemType TARGET = get("minecraft:target");
     @Nullable public static final ItemType TERRACOTTA = get("minecraft:terracotta");
+    @Nullable public static final ItemType TEST_BLOCK = get("minecraft:test_block");
+    @Nullable public static final ItemType TEST_INSTANCE_BLOCK = get("minecraft:test_instance_block");
     @Nullable public static final ItemType TIDE_ARMOR_TRIM_SMITHING_TEMPLATE = get("minecraft:tide_armor_trim_smithing_template");
     @Nullable public static final ItemType TINTED_GLASS = get("minecraft:tinted_glass");
     @Nullable public static final ItemType TIPPED_ARROW = get("minecraft:tipped_arrow");
@@ -1385,6 +1395,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType WHITE_TULIP = get("minecraft:white_tulip");
     @Nullable public static final ItemType WHITE_WOOL = get("minecraft:white_wool");
     @Nullable public static final ItemType WILD_ARMOR_TRIM_SMITHING_TEMPLATE = get("minecraft:wild_armor_trim_smithing_template");
+    @Nullable public static final ItemType WILDFLOWERS = get("minecraft:wildflowers");
     @Nullable public static final ItemType WIND_CHARGE = get("minecraft:wind_charge");
     @Nullable public static final ItemType WITCH_SPAWN_EGG = get("minecraft:witch_spawn_egg");
     @Nullable public static final ItemType WITHER_ROSE = get("minecraft:wither_rose");

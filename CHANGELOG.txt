@@ -1,3 +1,9 @@
+7.3.12 Beta 1
+- Added support for 1.21.5
+- Added ability to copy the block state string from the info tool output
+- Minor optimisation to memory usage of clipboards
+- [Fabric, NeoForge] Fixed issue affecting accuracy of legacy schematic loading in certain circumstances
+
 7.3.11
 - Added //mirror as an alias for //flip
 - Fixed an issue where tree generation can get incorrect world state, impacting generation

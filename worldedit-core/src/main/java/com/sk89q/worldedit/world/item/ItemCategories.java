@@ -40,6 +40,7 @@ public final class ItemCategories {
     public static final ItemCategory BEE_FOOD = get("minecraft:bee_food");
     public static final ItemCategory BIRCH_LOGS = get("minecraft:birch_logs");
     public static final ItemCategory BOATS = get("minecraft:boats");
+    public static final ItemCategory BOOK_CLONING_TARGET = get("minecraft:book_cloning_target");
     public static final ItemCategory BOOKSHELF_BOOKS = get("minecraft:bookshelf_books");
     public static final ItemCategory BREAKS_DECORATED_POTS = get("minecraft:breaks_decorated_pots");
     public static final ItemCategory BREWING_FUEL = get("minecraft:brewing_fuel");
@@ -74,6 +75,7 @@ public final class ItemCategories {
     public static final ItemCategory DROWNED_PREFERRED_WEAPONS = get("minecraft:drowned_preferred_weapons");
     public static final ItemCategory DUPLICATES_ALLAYS = get("minecraft:duplicates_allays");
     public static final ItemCategory DYEABLE = get("minecraft:dyeable");
+    public static final ItemCategory EGGS = get("minecraft:eggs");
     public static final ItemCategory EMERALD_ORES = get("minecraft:emerald_ores");
     public static final ItemCategory ENCHANTABLE_ARMOR = get("minecraft:enchantable/armor");
     public static final ItemCategory ENCHANTABLE_BOW = get("minecraft:enchantable/bow");
