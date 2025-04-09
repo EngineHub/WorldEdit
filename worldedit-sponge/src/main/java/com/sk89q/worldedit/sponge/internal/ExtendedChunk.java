@@ -28,16 +28,16 @@ import javax.annotation.Nullable;
 
 public interface ExtendedChunk {
     /**
-     * {@link LevelChunk#setBlockState(BlockPos, BlockState, boolean)} with the extra
+     * {@link LevelChunk#setBlockState(BlockPos, BlockState, int)} with the extra
      * {@link SideEffect#UPDATE} flag.
      *
      * @param pos the position to set
      * @param state the state to set
-     * @param moved I honestly have no idea and can't be bothered to investigate, we pass {@code
+     * @param flag I honestly have no idea and can't be bothered to investigate, we pass {@code
      *     false}
      * @param update the update flag, see side-effect for details
      * @return the old block state, or {@code null} if unchanged
      */
     @Nullable
-    BlockState setBlockState(BlockPos pos, BlockState state, boolean moved, boolean update);
+    BlockState setBlockState(BlockPos pos, BlockState state, int flag, boolean update);
 }

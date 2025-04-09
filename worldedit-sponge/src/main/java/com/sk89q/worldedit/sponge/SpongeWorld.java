@@ -80,9 +80,12 @@ import org.spongepowered.api.util.Ticks;
 import org.spongepowered.api.world.BlockChangeFlags;
 import org.spongepowered.api.world.LightTypes;
 import org.spongepowered.api.world.SerializationBehavior;
+import org.spongepowered.api.world.generation.config.WorldGenerationConfig;
 import org.spongepowered.api.world.server.ServerLocation;
 import org.spongepowered.api.world.server.ServerWorld;
-import org.spongepowered.api.world.server.WorldTemplate;
+import org.spongepowered.api.world.server.WorldArchetype;
+import org.spongepowered.api.world.server.WorldArchetypeType;
+import org.spongepowered.api.world.server.storage.ServerWorldProperties;
 import org.spongepowered.api.world.volume.stream.StreamOptions;
 import org.spongepowered.math.vector.Vector3d;
 import org.spongepowered.math.vector.Vector3i;
@@ -258,17 +261,35 @@ public final class SpongeWorld extends AbstractWorld {
         Server server = Sponge.server();
 
         final String id = "worldedittemp_" + getWorld().key().value();
+        final ResourceKey key = ResourceKey.of("worldedit", id);
 
-        WorldTemplate tempWorldProperties = WorldTemplate.builder().from(getWorld())
-            .key(ResourceKey.of("worldedit", id))
-            .add(Keys.IS_LOAD_ON_STARTUP, false)
-            .add(Keys.SERIALIZATION_BEHAVIOR, SerializationBehavior.NONE)
-            .add(Keys.SEED, options.getSeed().orElse(getWorld().properties().worldGenerationConfig().seed()))
+        WorldGenerationConfig worldGenConfig = WorldGenerationConfig.builder()
+            .from(getWorld().properties().worldGenerationConfig())
+            .seed(options.getSeed().orElse(getWorld().properties().worldGenerationConfig().seed()))
             .build();
+
+        WorldArchetypeType worldArchetypeType = WorldArchetypeType.builder()
+            .chunkGenerator(getWorld().generator())
+            .worldType(getWorld().worldType())
+            .build();
+
+        WorldArchetype worldArchetype = WorldArchetype.builder()
+            .generationConfig(worldGenConfig)
+            .type(worldArchetypeType)
+            .build();
+
+        ServerWorldProperties.LoadOptions loadOptions = ServerWorldProperties.LoadOptions.create(
+            worldArchetype,
+            (properties) -> {
+                properties.copyFrom(getWorld().properties());
+                properties.offer(Keys.SERIALIZATION_BEHAVIOR, SerializationBehavior.NONE);
+                properties.offer(Keys.IS_LOAD_ON_STARTUP, false);
+            }
+        );
 
         ServerWorld tempWorld;
         try {
-            tempWorld = server.worldManager().loadWorld(tempWorldProperties).get();
+            tempWorld = server.worldManager().loadWorld(key, loadOptions).get().get();
         } catch (InterruptedException | ExecutionException e) {
             LOGGER.error("Failed to load temp world", e);
             return false;
@@ -293,7 +314,7 @@ public final class SpongeWorld extends AbstractWorld {
             throw new RuntimeException(e);
         } finally {
             // Remove temp world
-            server.worldManager().unloadWorld(tempWorldProperties.key()).thenRun(() -> server.worldManager().deleteWorld(tempWorldProperties.key()));
+            server.worldManager().unloadWorld(key).thenRun(() -> server.worldManager().deleteWorld(key));
         }
 
         return true;
