@@ -22,9 +22,12 @@ package com.sk89q.worldedit.function.block;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.RegionFunction;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.world.block.BlockState;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,18 +38,28 @@ import java.util.Map;
 public class BlockDistributionCounter implements RegionFunction {
 
     private final Extent extent;
+    private final Mask mask;
     private final boolean separateStates;
 
     private final List<Countable<BlockState>> distribution = new ArrayList<>();
     private final Map<BlockState, Countable<BlockState>> map = new HashMap<>();
 
     public BlockDistributionCounter(Extent extent, boolean separateStates) {
+        this(extent, null, separateStates);
+    }
+
+    public BlockDistributionCounter(Extent extent, @Nullable Mask mask, boolean separateStates) {
         this.extent = extent;
+        this.mask = mask == null ? Masks.alwaysTrue() : mask;
         this.separateStates = separateStates;
     }
 
     @Override
     public boolean apply(BlockVector3 position) throws WorldEditException {
+        if (!mask.test(position)) {
+            return true;
+        }
+
         BlockState blk = extent.getBlock(position);
         if (!separateStates) {
             blk = blk.getBlockType().getDefaultState();
