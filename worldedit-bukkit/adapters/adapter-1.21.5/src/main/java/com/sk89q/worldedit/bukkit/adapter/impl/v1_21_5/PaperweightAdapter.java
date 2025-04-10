@@ -1047,7 +1047,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         } else if (foreign instanceof net.minecraft.nbt.ShortTag shortTag) {
             return LinShortTag.of(shortTag.shortValue());
         } else if (foreign instanceof net.minecraft.nbt.StringTag stringTag) {
-            return LinStringTag.of(stringTag.toString());
+            return LinStringTag.of(stringTag.value());
         } else if (foreign instanceof net.minecraft.nbt.EndTag) {
             return LinEndTag.instance();
         } else {
