@@ -506,7 +506,9 @@ public class BrushCommands {
                        @Switch(name = 'r', desc = "Use the game's coordinate origin")
                            boolean useRawCoords,
                        @Switch(name = 'o', desc = "Use the placement position as the origin")
-                           boolean usePlacement) throws WorldEditException {
+                           boolean usePlacement,
+                       @Switch(name = 'l', desc = "Fetch from the clipboard instead of the world")
+                           boolean useClipboard) throws WorldEditException {
         Deform deform = new Deform(expression);
         if (useRawCoords) {
             deform.setMode(Deform.Mode.RAW_COORD);
@@ -514,6 +516,7 @@ public class BrushCommands {
             deform.setMode(Deform.Mode.OFFSET);
             deform.setOffset(localSession.getPlacementPosition(player).toVector3());
         }
+        deform.setUseClipboard(useClipboard);
         setOperationBasedBrush(player, localSession, radius,
             deform, shape, "worldedit.brush.deform");
     }
