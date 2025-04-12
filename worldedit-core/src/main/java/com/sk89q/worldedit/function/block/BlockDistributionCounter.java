@@ -57,7 +57,7 @@ public class BlockDistributionCounter implements RegionFunction {
     @Override
     public boolean apply(BlockVector3 position) throws WorldEditException {
         if (!mask.test(position)) {
-            return true;
+            return false;
         }
 
         BlockState blk = extent.getBlock(position);
