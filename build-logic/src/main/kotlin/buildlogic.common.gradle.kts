@@ -49,6 +49,7 @@ license {
     header(rootProject.file("HEADER.txt"))
     include("**/*.java")
     include("**/*.kt")
+    exclude("**/com/sk89q/worldedit/util/formatting/text/serializer/gson/StyleSerializer.java")
 }
 
 plugins.withId("idea") {
