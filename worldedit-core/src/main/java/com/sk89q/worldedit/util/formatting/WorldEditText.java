@@ -25,7 +25,6 @@ import com.sk89q.worldedit.util.adventure.text.serializer.plain.PlainTextCompone
 import org.enginehub.piston.config.ConfigHolder;
 import org.enginehub.piston.config.ConfigRenderer;
 import org.enginehub.piston.config.TextConfig;
-import org.enginehub.piston.util.TextHelper;
 
 import java.util.Locale;
 

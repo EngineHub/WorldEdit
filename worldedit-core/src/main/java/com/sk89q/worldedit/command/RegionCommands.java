@@ -363,7 +363,7 @@ public class RegionCommands {
                 session.getRegionSelector(world).learnChanges();
                 session.getRegionSelector(world).explainRegionAdjust(actor, session);
             } catch (RegionOperationException e) {
-                actor.printError(e.getRichMessage());
+                actor.printError(e.getTextMessage());
             }
         }
 
@@ -427,7 +427,7 @@ public class RegionCommands {
                 session.getRegionSelector(world).learnChanges();
                 session.getRegionSelector(world).explainRegionAdjust(actor, session);
             } catch (RegionOperationException e) {
-                actor.printError(e.getRichMessage());
+                actor.printError(e.getTextMessage());
             }
         }
 
@@ -610,6 +610,6 @@ public class RegionCommands {
         RegionVisitor visitor = new RegionVisitor(session.getSelection(injectedWorld), apply);
         Operations.complete(visitor);
 
-        actor.printInfo(TranslatableComponent.of("worldedit.update"));
+        actor.printInfo(Component.translatable("worldedit.update"));
     }
 }

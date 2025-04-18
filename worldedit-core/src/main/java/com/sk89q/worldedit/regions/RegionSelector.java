@@ -192,6 +192,7 @@ public interface RegionSelector {
      * @return a list of lines describing the region.
      * @deprecated
      */
+    @Deprecated
     default List<com.sk89q.worldedit.util.formatting.text.Component> getSelectionInfoLines() {
         return getSelectionInformationLines().stream().map(LegacyTextHelper::adapt).toList();
     }

@@ -25,6 +25,9 @@ configurations {
 group = "${rootProject.group}.worldedit-libs"
 
 val relocations = mapOf(
+    "net.kyori.adventure" to "com.sk89q.worldedit.util.adventure",
+    "net.kyori.examination" to "com.sk89q.worldedit.util.examination",
+    "net.kyori.option" to "com.sk89q.worldedit.util.option",
     "net.kyori.text" to "com.sk89q.worldedit.util.formatting.text",
     "net.kyori.minecraft" to "com.sk89q.worldedit.util.kyori",
 )

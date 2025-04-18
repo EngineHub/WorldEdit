@@ -75,7 +75,7 @@ listOf("1.21.3", "1.21.4", "1.21.5").forEach {
     include("worldedit-bukkit:adapters:adapter-$it")
 }
 
-listOf("bukkit", "core", "fabric", "neoforge", "sponge", "cli").forEach {
+listOf("bukkit", "core", "fabric", "neoforge", "sponge").forEach {
     include("worldedit-libs:$it")
     include("worldedit-$it")
 }

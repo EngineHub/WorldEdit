@@ -38,6 +38,7 @@ import com.sk89q.worldedit.extent.clipboard.io.SchematicLoadException;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.serializer.gson.GsonComponentSerializer;
 import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
 import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
 import com.sk89q.worldedit.util.io.file.InvalidFilenameException;
@@ -68,6 +69,11 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
 
     private CommandException newCommandException(Component message, Throwable cause) {
         return new CommandException(message, cause, ImmutableList.of());
+    }
+
+    private CommandException newCommandException(com.sk89q.worldedit.util.formatting.text.Component message, Throwable cause) {
+        var compat = GsonComponentSerializer.gson().deserialize(com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer.INSTANCE.serialize(message));
+        return new CommandException(compat, cause, ImmutableList.of());
     }
 
     @ExceptionMatch
@@ -184,7 +190,7 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
 
     @ExceptionMatch
     public void convert(SchematicLoadException e) throws CommandException {
-        throw newCommandException(e.getRichMessage(), e);
+        throw newCommandException(e.richMessage(), e);
     }
 
     @ExceptionMatch

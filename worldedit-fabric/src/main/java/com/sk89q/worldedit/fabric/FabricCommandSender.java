@@ -70,7 +70,7 @@ public class FabricCommandSender extends AbstractNonPlayerActor {
 
     @Override
     public void print(Component component) {
-        sendMessage(net.minecraft.network.chat.Component.Serializer.fromJson(
+        sender.sendSystemMessage(net.minecraft.network.chat.Component.Serializer.fromJson(
             GsonComponentSerializer.gson().serialize(WorldEditText.format(component, getLocale())),
             this.sender.registryAccess()
         ));

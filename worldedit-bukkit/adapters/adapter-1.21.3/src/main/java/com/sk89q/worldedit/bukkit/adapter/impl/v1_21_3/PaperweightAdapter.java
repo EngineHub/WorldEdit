@@ -51,6 +51,7 @@ import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.serializer.gson.GsonComponentSerializer;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.io.file.SafeFiles;
 import com.sk89q.worldedit.world.DataFixer;
@@ -544,7 +545,12 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
     @Override
     public Component getRichItemName(BaseItemStack itemStack) {
-        return Component.translatable(CraftItemStack.asNMSCopy(BukkitAdapter.adapt(itemStack)).getDescriptionId());
+        return GsonComponentSerializer.gson().deserialize(
+                net.minecraft.network.chat.Component.Serializer.toJson(
+                        CraftItemStack.asNMSCopy(BukkitAdapter.adapt(itemStack)).getItemName(),
+                        ((CraftServer) Bukkit.getServer()).getServer().registryAccess()
+                )
+        );
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

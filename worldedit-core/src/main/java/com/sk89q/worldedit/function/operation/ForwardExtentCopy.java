@@ -41,6 +41,7 @@ import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.formatting.LegacyTextHelper;
 
 import java.util.List;
 
@@ -339,6 +340,19 @@ public class ForwardExtentCopy implements Operation {
                     Component.text(affectedBiomeCols)).color(NamedTextColor.LIGHT_PURPLE),
             Component.translatable("worldedit.operation.affected.entity",
                     Component.text(affectedEntities)).color(NamedTextColor.LIGHT_PURPLE)
+        );
+    }
+
+    @Override
+    @Deprecated
+    public Iterable<com.sk89q.worldedit.util.formatting.text.Component> getStatusMessages() {
+        return ImmutableList.of(
+                LegacyTextHelper.adapt(Component.translatable("worldedit.operation.affected.block",
+                        Component.text(affectedBlocks)).color(NamedTextColor.LIGHT_PURPLE)),
+                LegacyTextHelper.adapt(Component.translatable("worldedit.operation.affected.biome",
+                        Component.text(affectedBiomeCols)).color(NamedTextColor.LIGHT_PURPLE)),
+                LegacyTextHelper.adapt(Component.translatable("worldedit.operation.affected.entity",
+                        Component.text(affectedEntities)).color(NamedTextColor.LIGHT_PURPLE))
         );
     }
 

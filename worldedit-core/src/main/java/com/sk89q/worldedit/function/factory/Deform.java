@@ -37,6 +37,7 @@ import com.sk89q.worldedit.regions.NullRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.adventure.text.Component;
 import com.sk89q.worldedit.util.adventure.text.format.NamedTextColor;
+import com.sk89q.worldedit.util.formatting.LegacyTextHelper;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.util.GuavaUtil.firstNonNull;
@@ -177,11 +178,20 @@ public class Deform implements Contextual<Operation> {
         public void cancel() {
         }
 
+        private Component getMessage() {
+            return Component.translatable("worldedit.operation.deform.expression",
+                    Component.text(expression.getSource()).color(NamedTextColor.LIGHT_PURPLE));
+        }
 
         @Override
         public Iterable<Component> getMessages() {
-            return ImmutableList.of(Component.translatable("worldedit.operation.deform.expression",
-                    Component.text(expression.getSource()).color(NamedTextColor.LIGHT_PURPLE)));
+            return ImmutableList.of(getMessage());
+        }
+
+        @Override
+        @Deprecated
+        public Iterable<com.sk89q.worldedit.util.formatting.text.Component> getStatusMessages() {
+            return ImmutableList.of(LegacyTextHelper.adapt(getMessage()));
         }
 
     }

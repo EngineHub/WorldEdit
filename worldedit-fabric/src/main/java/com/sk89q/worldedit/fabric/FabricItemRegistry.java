@@ -21,6 +21,7 @@ package com.sk89q.worldedit.fabric;
 
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.adventure.text.serializer.gson.GsonComponentSerializer;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.BundledItemRegistry;
 
@@ -35,8 +36,11 @@ public class FabricItemRegistry extends BundledItemRegistry {
 
     @Override
     public Component getDisplayName(BaseItemStack itemStack) {
-        return Component.translatable(
-            FabricAdapter.adapt(itemStack).getDescriptionId()
+        return GsonComponentSerializer.gson().deserialize(
+                net.minecraft.network.chat.Component.Serializer.toJson(
+                        FabricAdapter.adapt(itemStack).getItemName(),
+                        FabricWorldEdit.LIFECYCLED_SERVER.valueOrThrow().registryAccess()
+                )
         );
     }
 

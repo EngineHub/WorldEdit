@@ -19,7 +19,8 @@
 
 package com.sk89q.worldedit.extent.clipboard.io;
 
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.adventure.text.Component;
+import com.sk89q.worldedit.util.formatting.LegacyTextHelper;
 
 /**
  * Raised when a known exception occurs during schematic load.
@@ -32,12 +33,22 @@ public final class SchematicLoadException extends RuntimeException {
         this.message = message;
     }
 
+    @Deprecated
+    public SchematicLoadException(com.sk89q.worldedit.util.formatting.text.Component message) {
+        this.message = LegacyTextHelper.adapt(message);
+    }
+
     /**
      * Get the message of this exception as a rich text component.
      *
      * @return The rich message
      */
-    public Component getRichMessage() {
+    @Deprecated
+    public com.sk89q.worldedit.util.formatting.text.Component getRichMessage() {
+        return LegacyTextHelper.adapt(this.message);
+    }
+
+    public Component richMessage() {
         return this.message;
     }
 }

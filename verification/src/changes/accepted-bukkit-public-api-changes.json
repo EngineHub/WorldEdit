@@ -21,5 +21,98 @@
                 "METHOD_REMOVED"
             ]
         }
+    ],
+    "Moved to super class": [
+        {
+            "type": "com.sk89q.worldedit.bukkit.BukkitBlockCommandSender",
+            "member": "Method com.sk89q.worldedit.bukkit.BukkitBlockCommandSender.print(java.lang.String)",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.bukkit.BukkitBlockCommandSender",
+            "member": "Method com.sk89q.worldedit.bukkit.BukkitBlockCommandSender.print(com.sk89q.worldedit.util.formatting.text.Component)",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.bukkit.BukkitBlockCommandSender",
+            "member": "Method com.sk89q.worldedit.bukkit.BukkitBlockCommandSender.printDebug(java.lang.String)",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.bukkit.BukkitBlockCommandSender",
+            "member": "Method com.sk89q.worldedit.bukkit.BukkitBlockCommandSender.printError(java.lang.String)",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.bukkit.BukkitBlockRegistry",
+            "member": "Method com.sk89q.worldedit.bukkit.BukkitBlockRegistry.getRichName(com.sk89q.worldedit.world.block.BlockType)",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.bukkit.BukkitCommandSender",
+            "member": "Method com.sk89q.worldedit.bukkit.BukkitCommandSender.print(java.lang.String)",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.bukkit.BukkitCommandSender",
+            "member": "Method com.sk89q.worldedit.bukkit.BukkitCommandSender.print(com.sk89q.worldedit.util.formatting.text.Component)",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.bukkit.BukkitCommandSender",
+            "member": "Method com.sk89q.worldedit.bukkit.BukkitCommandSender.printDebug(java.lang.String)",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.bukkit.BukkitCommandSender",
+            "member": "Method com.sk89q.worldedit.bukkit.BukkitCommandSender.printError(java.lang.String)",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.bukkit.BukkitPlayer",
+            "member": "Method com.sk89q.worldedit.bukkit.BukkitPlayer.print(java.lang.String)",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.bukkit.BukkitPlayer",
+            "member": "Method com.sk89q.worldedit.bukkit.BukkitPlayer.print(com.sk89q.worldedit.util.formatting.text.Component)",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.bukkit.BukkitPlayer",
+            "member": "Method com.sk89q.worldedit.bukkit.BukkitPlayer.printDebug(java.lang.String)",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.bukkit.BukkitPlayer",
+            "member": "Method com.sk89q.worldedit.bukkit.BukkitPlayer.printError(java.lang.String)",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        }
     ]
 }

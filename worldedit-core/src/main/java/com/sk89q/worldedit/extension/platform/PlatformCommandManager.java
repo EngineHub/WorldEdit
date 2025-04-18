@@ -518,11 +518,11 @@ public final class PlatformCommandManager {
                             double timeS = (time / 1000.0);
                             int changed = editSession.getBlockChangeCount();
                             double throughput = timeS == 0 ? changed : changed / timeS;
-                            actor.printDebug(TranslatableComponent.of(
+                            actor.printDebug(Component.translatable(
                                 "worldedit.command.time-elapsed",
-                                TextComponent.of(timeS),
-                                TextComponent.of(changed),
-                                TextComponent.of(Math.round(throughput))
+                                Component.text(timeS),
+                                Component.text(changed),
+                                Component.text(Math.round(throughput))
                             ));
                         }
 

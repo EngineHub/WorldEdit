@@ -64,4 +64,10 @@ public class DelegateOperation implements Operation {
         return Iterables.concat(original.getMessages(), delegate.getMessages());
     }
 
+    @Override
+    @Deprecated
+    public Iterable<com.sk89q.worldedit.util.formatting.text.Component> getStatusMessages() {
+        return Iterables.concat(original.getStatusMessages(), delegate.getStatusMessages());
+    }
+
 }

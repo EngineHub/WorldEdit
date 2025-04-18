@@ -53,6 +53,7 @@ import com.sk89q.worldedit.scripting.RhinoCraftScriptEngine;
 import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.adventure.text.event.ClickEvent;
 import com.sk89q.worldedit.util.asset.AssetLoaders;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.util.adventure.text.Component;
@@ -751,9 +752,9 @@ public final class WorldEdit {
             engine = new RhinoCraftScriptEngine();
         } catch (NoClassDefFoundError ignored) {
             player.printError(Component.translatable("worldedit.script.missing-script-engine")
-                .append(TextComponent.newline())
-                .append(TranslatableComponent.of("worldedit.script.please-see",
-                    TextComponent.of("https://worldedit.enginehub.org/en/latest/usage/other/craftscripts/", TextColor.AQUA).clickEvent(ClickEvent.openUrl("https://worldedit.enginehub.org/en/latest/usage/other/craftscripts/")))
+                .append(Component.newline())
+                .append(Component.translatable("worldedit.script.please-see",
+                    Component.text("https://worldedit.enginehub.org/en/latest/usage/other/craftscripts/", NamedTextColor.AQUA).clickEvent(ClickEvent.openUrl("https://worldedit.enginehub.org/en/latest/usage/other/craftscripts/")))
                 )
             );
             return;

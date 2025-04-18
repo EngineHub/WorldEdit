@@ -86,14 +86,16 @@ public interface Operation {
     default Iterable<com.sk89q.worldedit.util.formatting.text.Component> getStatusMessages() {
         return Collections.emptyList();
     }
+
     /**
      * Gets an iterable of messages that describe the current status of the
      * operation.
      *
      * @return The status messages
      */
+    @SuppressWarnings("deprecation")
     default Iterable<Component> getMessages() {
-        // TODO Remove legacy code for text3 Components with WorldEdit 8.0.0
+        // TODO Remove legacy code WorldEdit 8.0.0
         Iterable<com.sk89q.worldedit.util.formatting.text.Component> legacyComponents = getStatusMessages();
         if (legacyComponents.iterator().hasNext()) {
             List<Component> components = new ArrayList<>();
@@ -103,10 +105,9 @@ public interface Operation {
             return components;
         }
 
-        // TODO Remove legacy code WorldEdit 8.0.0
         List<String> oldMessages = new ArrayList<>();
         addStatusMessages(oldMessages);
-        if (oldMessages.size() > 0) {
+        if (!oldMessages.isEmpty()) {
             String className = getClass().getName();
             if (!warnedDeprecatedClasses.contains(className)) {
                 WorldEdit.logger.warn("An operation is using the old status message API. This will be removed in WorldEdit 8. Class: " + className);

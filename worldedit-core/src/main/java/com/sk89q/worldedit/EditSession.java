@@ -982,8 +982,7 @@ public class EditSession implements Extent, AutoCloseable {
         stackToPosition.forEach((stack, position) -> {
             // stack can never be empty, something has to have touched the position
             TracingExtent failure = stack.get(0);
-            actor.printDebug(Component.translatable("worldedit.trace.action-failed")
-                .args(
+            actor.printDebug(Component.translatable("worldedit.trace.action-failed",
                     Component.text(failure.getFailedActions().get(position).toString()),
                     Component.text(position.toString()),
                     Component.text(failure.getExtent().getClass().getName())

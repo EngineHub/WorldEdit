@@ -5,8 +5,11 @@ sponge-spongegradle = "org.spongepowered.gradle.plugin:2.2.0"
 sponge-vanillagradle = { id = "org.spongepowered.gradle.vanilla", version.ref = "sponge-vanillagradle" }
 
 [versions]
+adventureText = "4.21.0-SNAPSHOT"
+adventureBukkit = "4.3.5-SNAPSHOT"
 kyoriText = "3.0.4"
-piston = "0.5.10"
+piston = "0.6.0-SNAPSHOT"
+#piston = "0.5.10"
 autoValue = "1.10.4"
 antlr = "4.13.1"
 
@@ -106,6 +109,30 @@ fastutil = "it.unimi.dsi:fastutil:8.5.15!!"
 # Note that we need to balance support for older MC versus working at all on newer ones, so the exact versions here
 # may not be the same as the ones in the latest Bukkit API.
 snakeyaml = "org.yaml:snakeyaml:2.0"
+
+[libraries.adventureText-api]
+module = "net.kyori:adventure-api"
+version.ref = "adventureText"
+
+[libraries.adventureText-serializer-gson]
+module = "net.kyori:adventure-text-serializer-gson"
+version.ref = "adventureText"
+
+[libraries.adventureText-serializer-legacy]
+module = "net.kyori:adventure-text-serializer-legacy"
+version.ref = "adventureText"
+
+[libraries.adventureText-serializer-plain]
+module = "net.kyori:adventure-text-serializer-plain"
+version.ref = "adventureText"
+
+[libraries.adventureText-serializer-ansi]
+module = "net.kyori:adventure-text-serializer-ansi"
+version.ref = "adventureText"
+
+[libraries.adventureText-adapter-bukkit]
+module = "net.kyori:adventure-platform-bukkit"
+version.ref = "adventureBukkit"
 
 [libraries.kyoriText-api]
 module = "net.kyori:text-api"
