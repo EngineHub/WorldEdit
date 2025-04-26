@@ -90,3 +90,9 @@ tasks.named<ShadowJar>("shadowJar") {
 tasks.named("assemble").configure {
     dependsOn("shadowJar")
 }
+
+configure<PublishingExtension> {
+    publications.named<MavenPublication>("maven") {
+        from(components["java"])
+    }
+}
