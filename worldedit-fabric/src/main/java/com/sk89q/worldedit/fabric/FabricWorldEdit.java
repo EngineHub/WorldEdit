@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.fabric;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.util.PermissionCondition;
@@ -173,13 +172,7 @@ public class FabricWorldEdit implements ModInitializer {
         CUIPacketHandler.instance().registerServerboundHandler((payload, context) -> {
             LocalSession session = FabricWorldEdit.inst.getSession((ServerPlayer) context.player());
             FabricPlayer actor = FabricAdapter.adaptPlayer((ServerPlayer) context.player());
-
-            String text = payload.eventType();
-            if (payload.args() != null && !payload.args().isEmpty()) {
-                text = text + "|" + StringUtil.joinString(payload.args().toArray(new String[0]), "|");
-            }
-
-            session.handleCUIInitializationMessage(text, actor);
+            session.handleCUIInitializationMessage(payload.eventType(), payload.args(), actor);
         });
 
         ServerTickEvents.END_SERVER_TICK.register(ThreadSafeCache.getInstance());

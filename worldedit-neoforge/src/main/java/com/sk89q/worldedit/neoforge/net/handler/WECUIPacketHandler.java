@@ -48,6 +48,7 @@ public final class WECUIPacketHandler {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @SubscribeEvent
     public static void register(RegisterPayloadHandlersEvent event) {
         event.registrar(PROTOCOL_VERSION)
