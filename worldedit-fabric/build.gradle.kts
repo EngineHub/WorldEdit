@@ -1,3 +1,5 @@
+import buildlogic.getLibrary
+import buildlogic.stringyLibs
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.RunGameTask
@@ -38,7 +40,8 @@ dependencies {
         parchment("org.parchmentmc.data:parchment-${libs.versions.parchment.minecraft.get()}:${libs.versions.parchment.mappings.get()}@zip")
     })
     "modImplementation"(libs.fabric.loader)
-
+    "include"(stringyLibs.getLibrary("worldeditCuiProtocolfabric"))
+    "modImplementation"(stringyLibs.getLibrary("worldeditCuiProtocolfabric"))
 
     // [1] Load the API dependencies from the fabric mod json...
     @Suppress("UNCHECKED_CAST")

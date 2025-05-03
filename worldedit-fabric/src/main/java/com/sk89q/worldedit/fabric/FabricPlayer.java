@@ -19,13 +19,11 @@
 
 package com.sk89q.worldedit.fabric;
 
-import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
-import com.sk89q.worldedit.fabric.net.handler.WECUIPacketHandler;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -52,6 +50,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.worldeditcui.protocol.CUIPacket;
 
 import java.util.Locale;
 import java.util.Set;
@@ -126,14 +125,9 @@ public class FabricPlayer extends AbstractPlayerActor {
 
     @Override
     public void dispatchCUIEvent(CUIEvent event) {
-        String[] params = event.getParameters();
-        String send = event.getTypeId();
-        if (params.length > 0) {
-            send = send + "|" + StringUtil.joinString(params, "|");
-        }
         ServerPlayNetworking.send(
             this.player,
-            new WECUIPacketHandler.CuiPacket(send)
+            new CUIPacket(event.getTypeId(), event.getParameters())
         );
     }
 

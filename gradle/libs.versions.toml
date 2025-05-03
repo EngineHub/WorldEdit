@@ -45,6 +45,8 @@ japicmp = "me.champeau.gradle:japicmp-gradle-plugin:0.4.2"
 shadow = "com.github.johnrengelman:shadow:8.1.1"
 jfrog-buildinfo = "org.jfrog.buildinfo:build-info-extractor-gradle:5.2.0"
 
+worldeditCuiProtocolfabric = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-fabric-mc1.21.5:4.0.0"
+
 # https://maven.fabricmc.net/net/fabricmc/sponge-mixin/
 fabric-mixin = "net.fabricmc:sponge-mixin:0.15.5+mixin.0.8.7"
 

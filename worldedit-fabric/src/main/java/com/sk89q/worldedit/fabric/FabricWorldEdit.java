@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.fabric;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.util.PermissionCondition;
@@ -30,7 +31,6 @@ import com.sk89q.worldedit.event.platform.SessionIdleEvent;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
-import com.sk89q.worldedit.fabric.net.handler.WECUIPacketHandler;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.internal.event.InteractionDebouncer;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
@@ -82,6 +82,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.phys.BlockHitResult;
 import org.apache.logging.log4j.Logger;
 import org.enginehub.piston.Command;
+import org.enginehub.worldeditcui.protocol.CUIPacketHandler;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -169,7 +170,17 @@ public class FabricWorldEdit implements ModInitializer {
         config = new FabricConfiguration(this);
         this.provider = getInitialPermissionsProvider();
 
-        WECUIPacketHandler.init();
+        CUIPacketHandler.instance().registerServerboundHandler((payload, context) -> {
+            LocalSession session = FabricWorldEdit.inst.getSession((ServerPlayer) context.player());
+            FabricPlayer actor = FabricAdapter.adaptPlayer((ServerPlayer) context.player());
+
+            String text = payload.eventType();
+            if (payload.args() != null && !payload.args().isEmpty()) {
+                text = text + "|" + StringUtil.joinString(payload.args().toArray(new String[0]), "|");
+            }
+
+            session.handleCUIInitializationMessage(text, actor);
+        });
 
         ServerTickEvents.END_SERVER_TICK.register(ThreadSafeCache.getInstance());
         CommandRegistrationCallback.EVENT.register(this::registerCommands);
