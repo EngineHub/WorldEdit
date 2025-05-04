@@ -1000,6 +1000,13 @@ public class LocalSession {
         }
     }
 
+    /**
+     * Handle a CUI initialization message.
+     *
+     * @param eventType the CUI event type
+     * @param args the CUI packet arguments
+     * @param actor the actor representing the sender
+     */
     public void handleCUIInitializationMessage(String eventType, List<String> args, Actor actor) {
         checkNotNull(eventType);
         checkNotNull(args);

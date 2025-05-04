@@ -81,6 +81,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.phys.BlockHitResult;
 import org.apache.logging.log4j.Logger;
 import org.enginehub.piston.Command;
+import org.enginehub.worldeditcui.protocol.CUIPacket;
 import org.enginehub.worldeditcui.protocol.CUIPacketHandler;
 
 import java.io.IOException;
@@ -104,7 +105,6 @@ public class FabricWorldEdit implements ModInitializer {
 
     private static final Logger LOGGER = LogManagerCompat.getLogger();
     public static final String MOD_ID = "worldedit";
-    public static final String CUI_PLUGIN_CHANNEL = "cui";
 
     public static final Lifecycled<MinecraftServer> LIFECYCLED_SERVER;
 
@@ -169,11 +169,7 @@ public class FabricWorldEdit implements ModInitializer {
         config = new FabricConfiguration(this);
         this.provider = getInitialPermissionsProvider();
 
-        CUIPacketHandler.instance().registerServerboundHandler((payload, context) -> {
-            LocalSession session = FabricWorldEdit.inst.getSession((ServerPlayer) context.player());
-            FabricPlayer actor = FabricAdapter.adaptPlayer((ServerPlayer) context.player());
-            session.handleCUIInitializationMessage(payload.eventType(), payload.args(), actor);
-        });
+        CUIPacketHandler.instance().registerServerboundHandler(this::onCuiPacket);
 
         ServerTickEvents.END_SERVER_TICK.register(ThreadSafeCache.getInstance());
         CommandRegistrationCallback.EVENT.register(this::registerCommands);
@@ -416,6 +412,17 @@ public class FabricWorldEdit implements ModInitializer {
 
         WorldEdit.getInstance().getEventBus()
             .post(new SessionIdleEvent(new FabricPlayer.SessionKeyImpl(handler.player)));
+    }
+
+    private void onCuiPacket(CUIPacket payload, CUIPacketHandler.PacketContext context) {
+        if (!(context.player() instanceof ServerPlayer player)) {
+            // Ignore - this is not a server-bound packet
+            return;
+        }
+
+        LocalSession session = FabricWorldEdit.inst.getSession(player);
+        FabricPlayer actor = FabricAdapter.adaptPlayer(player);
+        session.handleCUIInitializationMessage(payload.eventType(), payload.args(), actor);
     }
 
     /**
