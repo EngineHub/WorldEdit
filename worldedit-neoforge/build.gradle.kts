@@ -21,6 +21,8 @@ val apiClasspath = configurations.create("apiClasspath") {
     extendsFrom(configurations.api.get())
 }
 
+jarJar.disableDefaultSources()
+
 repositories {
     maven {
         name = "EngineHub"
@@ -37,6 +39,8 @@ dependencies {
     "api"(project(":worldedit-core"))
 
     "implementation"(libs.neoforge)
+    "implementation"(libs.cuiProtocol.neoforge)
+    jarJar(libs.cuiProtocol.neoforge)
 }
 
 minecraft {
@@ -101,6 +105,7 @@ tasks.named<Copy>("processResources") {
 }
 
 tasks.named<ShadowJar>("shadowJar") {
+    archiveClassifier = "dist-slim"
     dependencies {
         relocate("org.antlr.v4", "com.sk89q.worldedit.antlr4")
         relocate("net.royawesome.jlibnoise", "com.sk89q.worldedit.jlibnoise")
@@ -112,4 +117,14 @@ tasks.named<ShadowJar>("shadowJar") {
     minimize {
         exclude(dependency("org.mozilla:rhino-runtime"))
     }
+}
+
+tasks.jarJar {
+    archiveClassifier = "dist"
+    val shadowJar = tasks.shadowJar.get()
+    dependsOn(shadowJar)
+    manifest.inheritFrom(shadowJar.manifest)
+    from(project.zipTree(shadowJar.archiveFile).matching {
+        exclude("META-INF/MANIFEST.MF")
+    })
 }

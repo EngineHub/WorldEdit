@@ -34,7 +34,6 @@ import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.internal.event.InteractionDebouncer;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
-import com.sk89q.worldedit.neoforge.net.handler.WECUIPacketHandler;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.biome.BiomeCategory;
@@ -77,6 +76,8 @@ import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import org.apache.logging.log4j.Logger;
 import org.enginehub.piston.Command;
+import org.enginehub.worldeditcui.protocol.CUIPacket;
+import org.enginehub.worldeditcui.protocol.CUIPacketHandler;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -101,7 +102,6 @@ public class NeoForgeWorldEdit {
 
     private static final Logger LOGGER = LogManagerCompat.getLogger();
     public static final String MOD_ID = "worldedit";
-    public static final String CUI_PLUGIN_CHANNEL = "cui";
 
     private NeoForgePermissionsProvider provider;
 
@@ -118,7 +118,6 @@ public class NeoForgeWorldEdit {
         inst = this;
 
         modBus.addListener(this::init);
-        modBus.register(WECUIPacketHandler.class);
 
         NeoForge.EVENT_BUS.register(ThreadSafeCache.getInstance());
         NeoForge.EVENT_BUS.register(this);
@@ -136,6 +135,8 @@ public class NeoForgeWorldEdit {
                 throw new UncheckedIOException(e);
             }
         }
+
+        CUIPacketHandler.instance().registerServerboundHandler(this::onCuiPacket);
 
         setupPlatform();
 
@@ -395,6 +396,16 @@ public class NeoForgeWorldEdit {
             WorldEdit.getInstance().getEventBus()
                 .post(new SessionIdleEvent(new NeoForgePlayer.SessionKeyImpl(player)));
         }
+    }
+
+    private void onCuiPacket(CUIPacket payload, CUIPacketHandler.PacketContext context) {
+        if (!(context.player() instanceof ServerPlayer player)) {
+            // Ignore - this is not a server-bound packet
+            return;
+        }
+        LocalSession session = NeoForgeWorldEdit.inst.getSession(player);
+        NeoForgePlayer actor = NeoForgeAdapter.adaptPlayer(player);
+        session.handleCUIInitializationMessage(payload.eventType(), payload.args(), actor);
     }
 
     /**

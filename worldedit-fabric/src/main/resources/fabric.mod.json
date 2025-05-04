@@ -12,6 +12,13 @@
         "homepage": "https://enginehub.org/worldedit/",
         "sources": "https://github.com/EngineHub/WorldEdit"
     },
+    "custom": {
+      "modmenu": {
+        "links": {
+          "modmenu.discord": "https://discord.gg/enginehub"
+        }
+      }
+    },
 
     "license": "GPL3",
     "icon": "assets/worldedit/icon.png",
@@ -24,6 +31,7 @@
     },
 
     "depends": {
+        "worldeditcui_protocol": "*",
         "fabricloader": ">=0.4.0",
         "fabric-api-base": "*",
         "fabric-command-api-v2": "*",
