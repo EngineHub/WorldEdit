@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.sponge;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEditException;
@@ -27,6 +28,7 @@ import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
+import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -53,7 +55,10 @@ import net.minecraft.data.worldgen.features.EndFeatures;
 import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import org.apache.logging.log4j.Logger;
 import org.enginehub.linbus.tree.LinCompoundTag;
@@ -75,15 +80,19 @@ import org.spongepowered.api.util.Ticks;
 import org.spongepowered.api.world.BlockChangeFlags;
 import org.spongepowered.api.world.LightTypes;
 import org.spongepowered.api.world.SerializationBehavior;
+import org.spongepowered.api.world.generation.config.WorldGenerationConfig;
 import org.spongepowered.api.world.server.ServerLocation;
 import org.spongepowered.api.world.server.ServerWorld;
-import org.spongepowered.api.world.server.WorldTemplate;
+import org.spongepowered.api.world.server.WorldArchetype;
+import org.spongepowered.api.world.server.WorldArchetypeType;
+import org.spongepowered.api.world.server.storage.ServerWorldProperties;
 import org.spongepowered.api.world.volume.stream.StreamOptions;
 import org.spongepowered.math.vector.Vector3d;
 import org.spongepowered.math.vector.Vector3i;
 
 import java.lang.ref.WeakReference;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -201,6 +210,7 @@ public final class SpongeWorld extends AbstractWorld {
                 .withBlocksMoving(false)
                 .withForcedReRender(false)
                 .withIgnoreRender(false)
+                .withPerformBlockDestruction(false)
         );
         if (!didSet) {
             // still update NBT if the block is the same
@@ -251,17 +261,35 @@ public final class SpongeWorld extends AbstractWorld {
         Server server = Sponge.server();
 
         final String id = "worldedittemp_" + getWorld().key().value();
+        final ResourceKey key = ResourceKey.of("worldedit", id);
 
-        WorldTemplate tempWorldProperties = WorldTemplate.builder().from(getWorld())
-            .key(ResourceKey.of("worldedit", id))
-            .add(Keys.IS_LOAD_ON_STARTUP, false)
-            .add(Keys.SERIALIZATION_BEHAVIOR, SerializationBehavior.NONE)
-            .add(Keys.SEED, options.getSeed().orElse(getWorld().properties().worldGenerationConfig().seed()))
+        WorldGenerationConfig worldGenConfig = WorldGenerationConfig.builder()
+            .from(getWorld().properties().worldGenerationConfig())
+            .seed(options.getSeed().orElse(getWorld().properties().worldGenerationConfig().seed()))
             .build();
+
+        WorldArchetypeType worldArchetypeType = WorldArchetypeType.builder()
+            .chunkGenerator(getWorld().generator())
+            .worldType(getWorld().worldType())
+            .build();
+
+        WorldArchetype worldArchetype = WorldArchetype.builder()
+            .generationConfig(worldGenConfig)
+            .type(worldArchetypeType)
+            .build();
+
+        ServerWorldProperties.LoadOptions loadOptions = ServerWorldProperties.LoadOptions.create(
+            worldArchetype,
+            (properties) -> {
+                properties.copyFrom(getWorld().properties());
+                properties.offer(Keys.SERIALIZATION_BEHAVIOR, SerializationBehavior.NONE);
+                properties.offer(Keys.IS_LOAD_ON_STARTUP, false);
+            }
+        );
 
         ServerWorld tempWorld;
         try {
-            tempWorld = server.worldManager().loadWorld(tempWorldProperties).get();
+            tempWorld = server.worldManager().loadWorld(key, loadOptions).get().get();
         } catch (InterruptedException | ExecutionException e) {
             LOGGER.error("Failed to load temp world", e);
             return false;
@@ -286,7 +314,7 @@ public final class SpongeWorld extends AbstractWorld {
             throw new RuntimeException(e);
         } finally {
             // Remove temp world
-            server.worldManager().unloadWorld(tempWorldProperties.key()).thenRun(() -> server.worldManager().deleteWorld(tempWorldProperties.key()));
+            server.worldManager().unloadWorld(key).thenRun(() -> server.worldManager().deleteWorld(key));
         }
 
         return true;
@@ -347,7 +375,6 @@ public final class SpongeWorld extends AbstractWorld {
         int groundLight = getWorld().light(LightTypes.BLOCK, position.x(), position.y(), position.z());
 
         return Math.max(skyLight, groundLight);
-
     }
 
     @Override
@@ -478,6 +505,15 @@ public final class SpongeWorld extends AbstractWorld {
             builder.entityData(NbtAdapter.adaptFromWorldEdit(nativeTag));
         }
         return builder.build().apply(SpongeAdapter.adapt(location)).map(SpongeEntity::new).orElse(null);
+    }
+
+    @Override
+    public void sendBiomeUpdates(Iterable<BlockVector2> chunks) {
+        List<ChunkAccess> nativeChunks = chunks instanceof Collection<BlockVector2> chunkCollection ? Lists.newArrayListWithCapacity(chunkCollection.size()) : Lists.newArrayList();
+        for (BlockVector2 chunk : chunks) {
+            nativeChunks.add(((Level) getWorld()).getChunk(chunk.x(), chunk.z(), ChunkStatus.BIOMES, false));
+        }
+        ((ServerLevel) getWorld()).getChunkSource().chunkMap.resendBiomesForChunks(nativeChunks);
     }
 
     @Override

@@ -291,8 +291,8 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
      * @param entity the entity
      * @param tag the tag
      */
-    private static void readEntityIntoTag(Entity entity, net.minecraft.nbt.CompoundTag tag) {
-        entity.save(tag);
+    private static boolean readEntityIntoTag(Entity entity, net.minecraft.nbt.CompoundTag tag) {
+        return entity.save(tag);
     }
 
     private static Block getBlockFromType(BlockType blockType) {
@@ -472,15 +472,12 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         CraftEntity craftEntity = ((CraftEntity) entity);
         Entity mcEntity = craftEntity.getHandle();
 
-        // Do not allow creating of passenger entity snapshots, passengers are included in the vehicle entity
-        if (mcEntity.isPassenger()) {
-            return null;
-        }
-
         String id = getEntityId(mcEntity);
 
         net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
-        readEntityIntoTag(mcEntity, tag);
+        if (!readEntityIntoTag(mcEntity, tag)) {
+            return null;
+        }
         return new BaseEntity(
             EntityTypes.get(id),
             LazyReference.from(() -> (LinCompoundTag) toNative(tag))
@@ -1054,7 +1051,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         } else if (foreign instanceof net.minecraft.nbt.ShortTag shortTag) {
             return LinShortTag.of(shortTag.shortValue());
         } else if (foreign instanceof net.minecraft.nbt.StringTag stringTag) {
-            return LinStringTag.of(stringTag.toString());
+            return LinStringTag.of(stringTag.value());
         } else if (foreign instanceof net.minecraft.nbt.EndTag) {
             return LinEndTag.instance();
         } else {
