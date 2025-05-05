@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Set;
 
 /**
@@ -68,9 +69,21 @@ public interface ClipboardFormat {
      *
      * @param file the file
      * @return true if the given file is of this format
+     * @deprecated Use {@link #isFormat(Path)} instead
      */
+    @Deprecated
     default boolean isFormat(File file) {
-        try (InputStream stream = Files.newInputStream(file.toPath())) {
+        return isFormat(file.toPath());
+    }
+
+    /**
+     * Return whether the given path is of this format.
+     *
+     * @param path the path
+     * @return true if the given path is of this format
+     */
+    default boolean isFormat(Path path) {
+        try (InputStream stream = Files.newInputStream(path)) {
             return isFormat(stream);
         } catch (IOException e) {
             return false;

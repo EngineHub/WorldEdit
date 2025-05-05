@@ -322,7 +322,7 @@ public class CLIWorldEdit {
             if (file.getName().endsWith("level.dat")) {
                 throw new IllegalArgumentException("level.dat file support is unfinished.");
             } else {
-                ClipboardFormat format = ClipboardFormats.findByFile(file);
+                ClipboardFormat format = ClipboardFormats.findByPath(file.toPath());
                 if (format != null) {
                     int dataVersion;
                     if (format != BuiltInClipboardFormat.MCEDIT_SCHEMATIC) {
