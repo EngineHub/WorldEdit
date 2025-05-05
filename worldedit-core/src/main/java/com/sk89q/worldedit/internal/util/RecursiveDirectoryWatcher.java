@@ -119,10 +119,10 @@ public class RecursiveDirectoryWatcher implements Closeable {
         eventConsumer.accept(new DirectoryCreatedEvent(root));
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(root)) {
             for (Path path : directoryStream) {
-                path = WorldEdit.getInstance().getSafeOpenFile(null, schematicRoot.toFile(), schematicRoot.relativize(path).toString(), null).toPath();
                 if (Files.isDirectory(path)) {
                     triggerInitialEvents(path);
                 } else {
+                    path = WorldEdit.getInstance().getSafeOpenFile(null, schematicRoot.toFile(), schematicRoot.relativize(path).toString(), null).toPath();
                     eventConsumer.accept(new FileCreatedEvent(path));
                 }
             }
