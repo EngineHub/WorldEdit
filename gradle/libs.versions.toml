@@ -10,7 +10,7 @@ piston = "0.5.10"
 autoValue = "1.10.4"
 antlr = "4.13.1"
 
-fabric-api = "0.119.5+1.21.5"
+fabric-api = "0.122.0+1.21.5"
 
 neogradle = "7.0.184"
 neoforge-minecraft = "1.21.5"
@@ -21,8 +21,8 @@ sponge-api = "15.0.0-20250404.074835-1"
 sponge-api-major = "15"
 
 # https://parchmentmc.org/docs/getting-started; note that we use older MC versions some times which is OK
-parchment-minecraft = "1.21"
-parchment-mappings = "2024.11.10"
+parchment-minecraft = "1.21.5"
+parchment-mappings = "2025.04.19"
 
 # https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/vanillagradle/
 sponge-vanillagradle = "0.2.1-20250105.203323-92"
@@ -32,8 +32,8 @@ minimumAsm = "9.7"
 minimumJdependency = "2.10"
 minimumTinyRemapper = "0.8.11"
 
-lang-worldeditBase = "7.3.10"
-lang-version = "1707"
+lang-worldeditBase = "7.3.12"
+lang-version = "1796"
 
 [libraries]
 neogradle-neoform = { module = "net.neoforged.gradle:neoform", version.ref = "neogradle" }
@@ -76,12 +76,12 @@ mockito-junit-jupiter.module = "org.mockito:mockito-junit-jupiter"
 commonsCli = "commons-cli:commons-cli:1.4"
 
 # https://repo.papermc.io/service/rest/repository/browse/maven-public/io/papermc/paper/paper-api/
-paperApi = "io.papermc.paper:paper-api:1.21.5-R0.1-20250416.183508-24"
+paperApi = "io.papermc.paper:paper-api:1.21.5-R0.1-20250503.204036-71"
 paperLib = "io.papermc:paperlib:1.0.8"
 
 dummypermscompat = "com.sk89q:dummypermscompat:1.10"
-bstats-bukkit = "org.bstats:bstats-bukkit:2.2.1"
-bstats-sponge = "org.bstats:bstats-sponge:3.0.0"
+bstats-bukkit = "org.bstats:bstats-bukkit:3.1.0"
+bstats-sponge = "org.bstats:bstats-sponge:3.1.0"
 
 trueZip = "de.schlichtherle:truezip:6.8.4"
 rhino = "org.mozilla:rhino-runtime:1.7.13"
@@ -89,10 +89,10 @@ jchronic = "com.sk89q:jchronic:0.2.4a"
 jlibnoise = "com.sk89q.lib:jlibnoise:1.0.0"
 
 fabric-minecraft = "com.mojang:minecraft:1.21.5"
-fabric-loader = "net.fabricmc:fabric-loader:0.16.10"
+fabric-loader = "net.fabricmc:fabric-loader:0.16.14"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.3.3"
 
-neoforge = "net.neoforged:neoforge:21.5.6-beta"
+neoforge = "net.neoforged:neoforge:21.5.63-beta"
 
 # Mojang-provided libraries, CHECK AGAINST MINECRAFT for versions
 guava = "com.google.guava:guava:33.3.1-jre!!"
