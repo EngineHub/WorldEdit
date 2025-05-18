@@ -2281,7 +2281,18 @@ public class EditSession implements Extent, AutoCloseable {
      * @return the results
      */
     public List<Countable<BlockState>> getBlockDistribution(Region region, boolean separateStates) {
-        BlockDistributionCounter count = new BlockDistributionCounter(this, separateStates);
+        return getBlockDistribution(region, Masks.alwaysTrue(), separateStates);
+    }
+
+    /**
+     * Get the block distribution inside a region.
+     *
+     * @param region a region
+     * @param mask a mask to filter the blocks to count
+     * @return the results
+     */
+    public List<Countable<BlockState>> getBlockDistribution(Region region, @Nullable Mask mask, boolean separateStates) {
+        BlockDistributionCounter count = new BlockDistributionCounter(this, mask, separateStates);
         RegionVisitor visitor = new RegionVisitor(region, count);
         Operations.completeBlindly(visitor);
         return count.getDistribution();
