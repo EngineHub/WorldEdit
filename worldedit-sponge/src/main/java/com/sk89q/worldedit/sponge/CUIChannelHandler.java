@@ -50,6 +50,7 @@ public class CUIChannelHandler implements RawPlayDataHandler<ServerConnectionSta
         return CHANNEL.valueOrThrow();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void handlePayload(ChannelBuf data, ServerConnectionState.Game connection) {
         ServerPlayer player = connection.player();

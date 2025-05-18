@@ -36,6 +36,7 @@ public class CUIChannelListener implements PluginMessageListener {
         this.plugin = plugin;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
         LocalSession session = plugin.getSession(player);

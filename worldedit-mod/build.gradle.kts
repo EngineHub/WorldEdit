@@ -63,13 +63,13 @@ val fabricZipTree = zipTree(
     project(":worldedit-fabric").tasks.named<RemapJarTask>("remapShadowJar").flatMap { it.archiveFile }
 )
 val forgeZipTree = zipTree(
-    project(":worldedit-neoforge").tasks.named("shadowJar").map { it.outputs.files.singleFile }
+    project(":worldedit-neoforge").tasks.named("jarJar").map { it.outputs.files.singleFile }
 )
 
 val mergeManifests = tasks.register<MergeManifests>("mergeManifests") {
     dependsOn(
         project(":worldedit-fabric").tasks.named<RemapJarTask>("remapShadowJar"),
-        project(":worldedit-neoforge").tasks.named("shadowJar")
+        project(":worldedit-neoforge").tasks.named("jarJar")
     )
     inputManifests.from(
         fabricZipTree.matching { include("META-INF/MANIFEST.MF") },
@@ -81,7 +81,7 @@ val mergeManifests = tasks.register<MergeManifests>("mergeManifests") {
 tasks.register<Jar>("jar") {
     dependsOn(
         project(":worldedit-fabric").tasks.named<RemapJarTask>("remapShadowJar"),
-        project(":worldedit-neoforge").tasks.named("shadowJar"),
+        project(":worldedit-neoforge").tasks.named("jarJar"),
         mergeManifests
     )
     from(fabricZipTree) {
