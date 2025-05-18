@@ -403,8 +403,8 @@ public class NeoForgeWorldEdit {
             // Ignore - this is not a server-bound packet
             return;
         }
-        LocalSession session = NeoForgeWorldEdit.inst.getSession(player);
         NeoForgePlayer actor = NeoForgeAdapter.adaptPlayer(player);
+        LocalSession session = WorldEdit.getInstance().getSessionManager().get(actor);
         session.handleCUIInitializationMessage(payload.eventType(), payload.args(), actor);
     }
 

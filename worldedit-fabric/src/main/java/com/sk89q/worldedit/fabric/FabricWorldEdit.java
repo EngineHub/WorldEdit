@@ -420,8 +420,8 @@ public class FabricWorldEdit implements ModInitializer {
             return;
         }
 
-        LocalSession session = FabricWorldEdit.inst.getSession(player);
         FabricPlayer actor = FabricAdapter.adaptPlayer(player);
+        LocalSession session = WorldEdit.getInstance().getSessionManager().get(actor);
         session.handleCUIInitializationMessage(payload.eventType(), payload.args(), actor);
     }
 
