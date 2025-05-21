@@ -9,6 +9,7 @@ kyoriText = "3.0.4"
 piston = "0.5.10"
 autoValue = "1.10.4"
 antlr = "4.13.1"
+cuiProtocol = "4.0.0"
 
 fabric-api = "0.122.0+1.21.5"
 
@@ -161,3 +162,11 @@ version.ref = "antlr"
 
 [libraries.antlr4-runtime]
 module = "org.antlr:antlr4-runtime"
+
+[libraries.cuiProtocol-fabric]
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-fabric-mc1.21.5"
+version.ref = "cuiProtocol"
+
+[libraries.cuiProtocol-neoforge]
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-neoforge-mc1.21.5"
+version.ref = "cuiProtocol"

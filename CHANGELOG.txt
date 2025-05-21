@@ -1,14 +1,12 @@
-7.3.12 Beta 2
-- Update underlying text library to improve 1.21.5 compatibility
-- Fixed non-persistent entities pasting in an invalid state
-- [Sponge] Added support for 1.21.5
-- [Bukkit] Workaround NBT data being wrapped by quotes in some cases
-
-7.3.12 Beta 1
+7.3.12
 - Added support for 1.21.5
 - Added ability to copy the block state string from the info tool output
 - Minor optimisation to memory usage of clipboards
+- Update underlying text library to improve 1.21.5 compatibility
+- Fixed non-persistent entities pasting in an invalid state
+- Add support for the new block_pos NBT properties on block-aligned entities
 - [Fabric, NeoForge] Fixed issue affecting accuracy of legacy schematic loading in certain circumstances
+- [Fabric, NeoForge] Split out the WorldEdit CUI protocol into a separate module to work around a Fabric/NeoForge API issue
 
 7.3.11
 - Added //mirror as an alias for //flip
