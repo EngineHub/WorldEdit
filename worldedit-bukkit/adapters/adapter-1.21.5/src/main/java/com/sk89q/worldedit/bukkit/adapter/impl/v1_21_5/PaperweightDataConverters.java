@@ -597,7 +597,7 @@ class PaperweightDataConverters implements com.sk89q.worldedit.world.DataFixer {
     private static void convertItems(net.minecraft.nbt.CompoundTag nbttagcompound, String key, int sourceVer, int targetVer) {
         nbttagcompound.getList(key).ifPresent(nbttaglist -> {
             for (int j = 0; j < nbttaglist.size(); ++j) {
-                nbttaglist.add(j, convert(LegacyType.ITEM_INSTANCE, nbttaglist.getCompoundOrEmpty(j), sourceVer, targetVer));
+                nbttaglist.set(j, convert(LegacyType.ITEM_INSTANCE, nbttaglist.getCompoundOrEmpty(j), sourceVer, targetVer));
             }
         });
     }
