@@ -124,3 +124,8 @@ tasks.named<JapicmpTask>("checkFabricApiCompatibility") {
     // Need to check against the reobf JAR
     newClasspath.setFrom(project(":worldedit-fabric").tasks.named("remapJar"))
 }
+
+// TODO: Remove this once japicmp issues relating to NeoForge are resolved
+tasks.named<JapicmpTask>("checkNeoforgeApiCompatibility") {
+    isEnabled = false
+}
