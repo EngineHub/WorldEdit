@@ -28,7 +28,8 @@ tasks.check {
 // Generic setup for all tasks
 // Pull the version before our current version.
 val baseVersion = "(,${rootProject.version.toString().substringBefore("-SNAPSHOT")}["
-for (projectFragment in listOf("bukkit", "cli", "core", "fabric", "neoforge", "sponge")) {
+// TODO Re-add neoforge when it's fixed
+for (projectFragment in listOf("bukkit", "cli", "core", "fabric", "sponge")) {
     val capitalizedFragment =
         projectFragment.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
     val proj = project(":worldedit-$projectFragment")
@@ -123,9 +124,4 @@ tasks.named<JapicmpTask>("checkBukkitApiCompatibility") {
 tasks.named<JapicmpTask>("checkFabricApiCompatibility") {
     // Need to check against the reobf JAR
     newClasspath.setFrom(project(":worldedit-fabric").tasks.named("remapJar"))
-}
-
-// TODO: Remove this once japicmp issues relating to NeoForge are resolved
-tasks.named<JapicmpTask>("checkNeoforgeApiCompatibility") {
-    isEnabled = false
 }
