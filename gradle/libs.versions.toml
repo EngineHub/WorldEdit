@@ -9,7 +9,7 @@ kyoriText = "3.0.4"
 piston = "0.5.10"
 autoValue = "1.10.4"
 antlr = "4.13.1"
-cuiProtocol = "4.0.0"
+cuiProtocol = "4.0.1"
 
 fabric-api = "0.122.0+1.21.5"
 
