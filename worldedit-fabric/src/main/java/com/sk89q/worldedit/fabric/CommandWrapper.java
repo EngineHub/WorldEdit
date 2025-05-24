@@ -26,14 +26,13 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.StringRange;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.internal.util.Substring;
+import com.sk89q.worldedit.internal.command.FullStringSuggestion;
 import net.minecraft.commands.CommandSourceStack;
 import org.enginehub.piston.inject.InjectedValueStore;
 import org.enginehub.piston.inject.Key;
@@ -88,29 +87,20 @@ public final class CommandWrapper {
     }
 
     private static CompletableFuture<Suggestions> suggest(CommandContext<CommandSourceStack> context,
-            SuggestionsBuilder builder) throws CommandSyntaxException {
+            SuggestionsBuilder builder) {
         CommandSuggestionEvent event = new CommandSuggestionEvent(
                 FabricAdapter.adaptCommandSource(context.getSource()),
                 builder.getInput()
         );
         WorldEdit.getInstance().getEventBus().post(event);
-        List<Substring> suggestions = event.getSuggestions();
+        List<FullStringSuggestion> suggestions = event.getSuggestions();
 
-        ImmutableList.Builder<Suggestion> result = ImmutableList.builder();
+        ImmutableList.Builder<Suggestion> result = ImmutableList.builderWithExpectedSize(suggestions.size());
 
-        for (Substring suggestion : suggestions) {
-            String suggestionText = suggestion.getSubstring();
-            // If at end, we are actually suggesting the next argument
-            // Ensure there is a space!
-            if (suggestion.getStart() == suggestion.getEnd()
-                    && suggestion.getEnd() == builder.getInput().length()
-                    && !builder.getInput().endsWith(" ")
-                    && !builder.getInput().endsWith("\"")) {
-                suggestionText = " " + suggestionText;
-            }
+        for (FullStringSuggestion suggestion : suggestions) {
             result.add(new Suggestion(
-                    StringRange.between(suggestion.getStart(), suggestion.getEnd()),
-                    suggestionText
+                StringRange.between(suggestion.replaceStart(), suggestion.replaceEnd()),
+                suggestion.escapedText()
             ));
         }
 
