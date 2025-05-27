@@ -127,7 +127,7 @@ public class SchematicCommands {
             return;
         }
 
-        ClipboardFormat inferredFormat = ClipboardFormats.findByFile(f);
+        ClipboardFormat inferredFormat = ClipboardFormats.findByPath(f.toPath());
         if (inferredFormat != null) {
             format = inferredFormat;
         }
