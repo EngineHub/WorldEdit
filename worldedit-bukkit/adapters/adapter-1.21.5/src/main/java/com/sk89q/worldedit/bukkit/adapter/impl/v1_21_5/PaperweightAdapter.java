@@ -1132,7 +1132,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         } else if (foreign instanceof LinListTag<?> listTag) {
             net.minecraft.nbt.ListTag tag = new ListTag();
             for (var t : listTag.value()) {
-                tag.add(fromNative(t));
+                tag.addAndUnwrap(fromNative(t));
             }
             return tag;
         } else if (foreign instanceof LinLongTag longTag) {
