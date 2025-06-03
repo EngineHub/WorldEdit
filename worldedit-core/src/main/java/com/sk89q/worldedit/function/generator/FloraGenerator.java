@@ -119,7 +119,7 @@ public class FloraGenerator implements RegionFunction {
         if (block.getBlockType() == BlockTypes.GRASS_BLOCK) {
             editSession.setBlock(position.add(0, 1, 0), temperatePattern.applyBlock(position));
             return true;
-        } else if (block.getBlockType() == BlockTypes.SAND) {
+        } else if (block.getBlockType() == BlockTypes.SAND || BlockCategories.BADLANDS_TERRACOTTA.contains(block.getBlockType())) {
             editSession.setBlock(position.add(0, 1, 0), desertPattern.applyBlock(position));
             return true;
         }
