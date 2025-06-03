@@ -84,6 +84,8 @@ public class FloraGenerator implements RegionFunction {
     public static Pattern getDesertPattern() {
         RandomPattern pattern = new RandomPattern();
         pattern.add(BlockTypes.DEAD_BUSH.getDefaultState(), 30);
+        pattern.add(BlockTypes.SHORT_DRY_GRASS.getDefaultState(), 30);
+        pattern.add(BlockTypes.TALL_DRY_GRASS.getDefaultState(), 20);
         pattern.add(BlockTypes.CACTUS.getDefaultState(), 20);
         pattern.add(BlockTypes.AIR.getDefaultState(), 300);
         return pattern;
@@ -104,6 +106,7 @@ public class FloraGenerator implements RegionFunction {
             grass = deprecatedGrass;
         }
         pattern.add(grass.getDefaultState(), 300);
+        pattern.add(BlockTypes.BUSH.getDefaultState(), 100);
         pattern.add(BlockTypes.POPPY.getDefaultState(), 5);
         pattern.add(BlockTypes.DANDELION.getDefaultState(), 5);
         return pattern;
