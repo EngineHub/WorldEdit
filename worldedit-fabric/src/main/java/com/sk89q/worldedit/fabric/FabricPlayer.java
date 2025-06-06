@@ -23,6 +23,7 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.fabric.internal.ComponentConverter;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -91,7 +92,7 @@ public class FabricPlayer extends AbstractPlayerActor {
     public Location getLocation() {
         Vector3 position = Vector3.at(this.player.getX(), this.player.getY(), this.player.getZ());
         return new Location(
-            FabricWorldEdit.inst.getWorld(this.player.serverLevel()),
+            FabricWorldEdit.inst.getWorld(this.player.level()),
             position,
             this.player.getYRot(),
             this.player.getXRot());
@@ -110,12 +111,12 @@ public class FabricPlayer extends AbstractPlayerActor {
         // This check doesn't really ever get to be false in Fabric
         // Since Fabric API doesn't allow cancelling the teleport.
         // However, other mods could theoretically mix this in, so allow the detection.
-        return this.player.serverLevel() == level;
+        return this.player.level() == level;
     }
 
     @Override
     public World getWorld() {
-        return FabricWorldEdit.inst.getWorld(this.player.serverLevel());
+        return FabricWorldEdit.inst.getWorld(this.player.level());
     }
 
     @Override
@@ -166,7 +167,7 @@ public class FabricPlayer extends AbstractPlayerActor {
 
     @Override
     public void print(Component component) {
-        this.player.sendSystemMessage(net.minecraft.network.chat.Component.Serializer.fromJson(
+        this.player.sendSystemMessage(ComponentConverter.Serializer.fromJson(
             GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale())),
             player.level().registryAccess()
         ));
