@@ -48,6 +48,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -55,6 +56,7 @@ import net.minecraft.world.level.BaseCommandBlock;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.phys.Vec3;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
@@ -207,7 +209,10 @@ public final class FabricAdapter {
             worldEdit = FabricTransmogrifier.transmogToWorldEdit(blockEntity.getBlockState());
         }
         // Save this outside the reference to ensure it doesn't mutate
-        CompoundTag savedNative = blockEntity.saveWithId(registries);
+        var tagValueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, registries);
+        blockEntity.saveWithId(tagValueOutput);
+        net.minecraft.nbt.CompoundTag savedNative = tagValueOutput.buildResult();
+
         return worldEdit.toBaseBlock(LazyReference.from(() -> NBTConverter.fromNative(savedNative)));
     }
 
