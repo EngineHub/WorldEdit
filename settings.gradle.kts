@@ -71,6 +71,7 @@ includeBuild("build-logic")
 
 include("worldedit-libs")
 
+// TODO Add 1.21.6 once Paper fixes the 1.21.6 dev bundles for reobf
 listOf("1.21.3", "1.21.4", "1.21.5").forEach {
     include("worldedit-bukkit:adapters:adapter-$it")
 }
