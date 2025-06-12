@@ -90,7 +90,7 @@ rhino = "org.mozilla:rhino-runtime:1.7.13"
 jchronic = "com.sk89q:jchronic:0.2.4a"
 jlibnoise = "com.sk89q.lib:jlibnoise:1.0.0"
 
-fabric-minecraft = "com.mojang:minecraft:1.21.6-pre3"
+fabric-minecraft = "com.mojang:minecraft:1.21.6-pre4"
 fabric-loader = "net.fabricmc:fabric-loader:0.16.14"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.3.3"
 
