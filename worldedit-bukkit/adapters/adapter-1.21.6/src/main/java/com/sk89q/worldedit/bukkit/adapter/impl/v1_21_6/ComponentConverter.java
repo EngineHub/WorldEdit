@@ -32,8 +32,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.MutableComponent;
 
-import javax.annotation.Nullable;
 import java.io.StringReader;
+import javax.annotation.Nullable;
 
 public class ComponentConverter {
 

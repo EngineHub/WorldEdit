@@ -10,6 +10,7 @@ plugins {
 
 paperweight {
     injectPaperRepository = false
+    reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
 }
 
 repositories {
@@ -32,6 +33,10 @@ dependencies {
     }
 }
 
-tasks.named("assemble") {
-    dependsOn("reobfJar")
+//tasks.named("assemble") {
+//    dependsOn("reobfJar")
+//}
+
+tasks.named("reobfJar") {
+    enabled = false
 }
