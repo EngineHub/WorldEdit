@@ -93,6 +93,7 @@ public final class EntityTypes {
     @Nullable public static final EntityType GLOW_SQUID = get("minecraft:glow_squid");
     @Nullable public static final EntityType GOAT = get("minecraft:goat");
     @Nullable public static final EntityType GUARDIAN = get("minecraft:guardian");
+    @Nullable public static final EntityType HAPPY_GHAST = get("minecraft:happy_ghast");
     @Nullable public static final EntityType HOGLIN = get("minecraft:hoglin");
     @Nullable public static final EntityType HOPPER_MINECART = get("minecraft:hopper_minecart");
     @Nullable public static final EntityType HORSE = get("minecraft:horse");

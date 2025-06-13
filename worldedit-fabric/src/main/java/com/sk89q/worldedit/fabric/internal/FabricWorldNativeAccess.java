@@ -28,11 +28,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.FullChunkStatus;
 import net.minecraft.server.level.ServerChunkCache;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.storage.TagValueInput;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.lang.ref.WeakReference;
@@ -111,7 +113,8 @@ public class FabricWorldNativeAccess implements WorldNativeAccess<LevelChunk, Bl
         if (tileEntity == null) {
             return false;
         }
-        tileEntity.loadWithComponents(nativeTag, level.registryAccess());
+        var tagValueInput = TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(), nativeTag);
+        tileEntity.loadWithComponents(tagValueInput);
         tileEntity.setChanged();
         return true;
     }
