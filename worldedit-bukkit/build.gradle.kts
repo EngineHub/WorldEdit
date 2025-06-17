@@ -24,15 +24,15 @@ val adapters = configurations.create("adapters") {
     isCanBeConsumed = false
     isCanBeResolved = true
     shouldResolveConsistentlyWith(configurations["runtimeClasspath"])
-    attributes {
-        attribute(Obfuscation.OBFUSCATION_ATTRIBUTE,
-            if ((project.findProperty("enginehub.obf.none") as String?).toBoolean()) {
-                objects.named(Obfuscation.NONE)
-            } else {
-                objects.named(Obfuscation.OBFUSCATED)
-            }
-        )
-    }
+//    attributes {
+//        attribute(Obfuscation.OBFUSCATION_ATTRIBUTE,
+//            if ((project.findProperty("enginehub.obf.none") as String?).toBoolean()) {
+//                objects.named(Obfuscation.NONE)
+//            } else {
+//                objects.named(Obfuscation.OBFUSCATED)
+//            }
+//        )
+//    }
 }
 
 dependencies {
