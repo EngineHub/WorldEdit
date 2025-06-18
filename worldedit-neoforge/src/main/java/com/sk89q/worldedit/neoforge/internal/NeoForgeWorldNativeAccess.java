@@ -27,12 +27,14 @@ import com.sk89q.worldedit.util.SideEffectSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.FullChunkStatus;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.redstone.ExperimentalRedstoneUtils;
+import net.minecraft.world.level.storage.TagValueInput;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.lang.ref.WeakReference;
@@ -111,7 +113,8 @@ public class NeoForgeWorldNativeAccess implements WorldNativeAccess<LevelChunk, 
         if (tileEntity == null) {
             return false;
         }
-        tileEntity.loadWithComponents(nativeTag, level.registryAccess());
+        var tagValueInput = TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(), nativeTag);
+        tileEntity.loadWithComponents(tagValueInput);
         tileEntity.setChanged();
         return true;
     }

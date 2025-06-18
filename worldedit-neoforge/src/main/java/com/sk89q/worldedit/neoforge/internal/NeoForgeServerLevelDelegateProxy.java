@@ -29,12 +29,14 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.TagValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationHandler;
@@ -134,7 +136,11 @@ public class NeoForgeServerLevelDelegateProxy implements InvocationHandler, Auto
         for (Map.Entry<BlockVector3, BlockEntity> entry : createdBlockEntities.entrySet()) {
             BlockVector3 blockPos = entry.getKey();
             BlockEntity blockEntity = entry.getValue();
-            net.minecraft.nbt.CompoundTag tag = blockEntity.saveWithId(serverLevel.registryAccess());
+
+            var tagValueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, serverLevel.registryAccess());
+            blockEntity.saveWithId(tagValueOutput);
+
+            net.minecraft.nbt.CompoundTag tag = tagValueOutput.buildResult();
             editSession.setBlock(
                 blockPos,
                 NeoForgeAdapter.adapt(blockEntity.getBlockState())

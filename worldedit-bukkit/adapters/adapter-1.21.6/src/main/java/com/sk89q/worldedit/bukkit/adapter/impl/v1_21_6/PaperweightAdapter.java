@@ -221,8 +221,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         CraftServer.class.cast(Bukkit.getServer());
 
         int dataVersion = SharedConstants.getCurrentVersion().dataVersion().version();
-        // TODO Narrow this down once MC 1.21.6 actually releases
-        if (dataVersion < Constants.DATA_VERSION_MC_1_21_6 - 1 || dataVersion > Constants.DATA_VERSION_MC_1_21_6) {
+        if (dataVersion != Constants.DATA_VERSION_MC_1_21_6) {
             throw new UnsupportedClassVersionError("Not 1.21.6!");
         }
 

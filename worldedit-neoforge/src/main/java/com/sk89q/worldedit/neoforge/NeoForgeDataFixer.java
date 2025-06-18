@@ -33,6 +33,7 @@ import com.mojang.datafixers.DSL.TypeReference;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.serialization.Dynamic;
+import com.sk89q.worldedit.neoforge.internal.ComponentConverter;
 import com.sk89q.worldedit.neoforge.internal.NBTConverter;
 import net.minecraft.core.Direction;
 import net.minecraft.core.UUIDUtil;
@@ -1835,7 +1836,7 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
                                 object = Component.literal(s);
                             } else {
                                 try {
-                                    object = GsonHelper.fromJson(DataConverterSignText.a, s, Component.class, true);
+                                    object = GsonHelper.fromJson(DataConverterSignText.a, s, Component.class);
                                     if (object == null) {
                                         object = Component.literal("");
                                     }
@@ -1845,7 +1846,7 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
 
                                 if (object == null) {
                                     try {
-                                        object = Component.Serializer.fromJson(s, ServerLifecycleHooks.getCurrentServer().registryAccess());
+                                        object = ComponentConverter.Serializer.fromJson(s, ServerLifecycleHooks.getCurrentServer().registryAccess());
                                     } catch (JsonParseException jsonparseexception1) {
                                         ;
                                     }
@@ -1853,7 +1854,7 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
 
                                 if (object == null) {
                                     try {
-                                        object = Component.Serializer.fromJsonLenient(s, ServerLifecycleHooks.getCurrentServer().registryAccess());
+                                        object = ComponentConverter.Serializer.fromJsonLenient(s, ServerLifecycleHooks.getCurrentServer().registryAccess());
                                     } catch (JsonParseException jsonparseexception2) {
                                         ;
                                     }
@@ -1867,7 +1868,7 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
                             object = Component.literal("");
                         }
 
-                        nbttaglist.set(i, StringTag.valueOf(Component.Serializer.toJson((Component) object, ServerLifecycleHooks.getCurrentServer().registryAccess())));
+                        nbttaglist.set(i, StringTag.valueOf(ComponentConverter.Serializer.toJson((Component) object, ServerLifecycleHooks.getCurrentServer().registryAccess())));
                     }
 
                     nbttagcompound1.put("pages", nbttaglist);
@@ -2498,7 +2499,7 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
                     object = Component.literal(s1);
                 } else {
                     try {
-                        object = GsonHelper.fromJson(DataConverterSignText.a, s1, Component.class, true);
+                        object = GsonHelper.fromJson(DataConverterSignText.a, s1, Component.class);
                         if (object == null) {
                             object = Component.literal("");
                         }
@@ -2508,7 +2509,7 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
 
                     if (object == null) {
                         try {
-                            object = Component.Serializer.fromJson(s1, ServerLifecycleHooks.getCurrentServer().registryAccess());
+                            object = ComponentConverter.Serializer.fromJson(s1, ServerLifecycleHooks.getCurrentServer().registryAccess());
                         } catch (JsonParseException jsonparseexception1) {
                             ;
                         }
@@ -2516,7 +2517,7 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
 
                     if (object == null) {
                         try {
-                            object = Component.Serializer.fromJsonLenient(s1, ServerLifecycleHooks.getCurrentServer().registryAccess());
+                            object = ComponentConverter.Serializer.fromJsonLenient(s1, ServerLifecycleHooks.getCurrentServer().registryAccess());
                         } catch (JsonParseException jsonparseexception2) {
                             ;
                         }
@@ -2530,7 +2531,7 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
                 object = Component.literal("");
             }
 
-            nbttagcompound.putString(s, Component.Serializer.toJson((Component) object, ServerLifecycleHooks.getCurrentServer().registryAccess()));
+            nbttagcompound.putString(s, ComponentConverter.Serializer.toJson((Component) object, ServerLifecycleHooks.getCurrentServer().registryAccess()));
         }
     }
 

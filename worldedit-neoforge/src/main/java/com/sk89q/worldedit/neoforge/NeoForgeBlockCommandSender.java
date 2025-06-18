@@ -21,6 +21,7 @@ package com.sk89q.worldedit.neoforge;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.AbstractCommandBlockActor;
+import com.sk89q.worldedit.neoforge.internal.ComponentConverter;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
@@ -84,7 +85,7 @@ public class NeoForgeBlockCommandSender extends AbstractCommandBlockActor {
 
     @Override
     public void print(Component component) {
-        sendMessage(net.minecraft.network.chat.Component.Serializer.fromJson(
+        sendMessage(ComponentConverter.Serializer.fromJson(
             GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale())),
             sender.getLevel().registryAccess()
         ));
