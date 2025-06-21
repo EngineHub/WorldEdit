@@ -34,8 +34,8 @@ minimumJdependency = "2.10"
 minimumTinyRemapper = "0.8.11"
 
 # https://repo.enginehub.org/language-files/com/sk89q/worldedit/worldedit-lang/
-lang-worldeditBase = "7.3.12"
-lang-version = "1796"
+lang-worldeditBase = "7.3.15"
+lang-version = "1845"
 
 [libraries]
 neogradle-neoform = { module = "net.neoforged.gradle:neoform", version.ref = "neogradle" }
@@ -94,7 +94,7 @@ fabric-minecraft = "com.mojang:minecraft:1.21.6"
 fabric-loader = "net.fabricmc:fabric-loader:0.16.14"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.4.0"
 
-neoforge = "net.neoforged:neoforge:21.6.5-beta"
+neoforge = "net.neoforged:neoforge:21.6.11-beta"
 
 # Mojang-provided libraries, CHECK AGAINST MINECRAFT for versions
 guava = "com.google.guava:guava:33.3.1-jre!!"
