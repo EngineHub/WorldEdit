@@ -76,6 +76,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.Clearable;
@@ -105,6 +106,7 @@ import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.PrimaryLevelData;
 import net.minecraft.world.level.storage.ServerLevelData;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import org.enginehub.linbus.tree.LinCompoundTag;
@@ -396,7 +398,9 @@ public class NeoForgeWorld extends AbstractWorld {
             BlockStateHolder<?> state = NeoForgeAdapter.adapt(chunk.getBlockState(pos));
             BlockEntity blockEntity = chunk.getBlockEntity(pos);
             if (blockEntity != null) {
-                net.minecraft.nbt.CompoundTag tag = blockEntity.saveWithId(serverWorld.registryAccess());
+                var tagValueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, getWorld().registryAccess());
+                blockEntity.saveWithId(tagValueOutput);
+                net.minecraft.nbt.CompoundTag tag = tagValueOutput.buildResult();
                 state = state.toBaseBlock(LazyReference.from(() -> NBTConverter.fromNative(tag)));
             }
             extent.setBlock(vec, state.toBaseBlock());
@@ -641,7 +645,9 @@ public class NeoForgeWorld extends AbstractWorld {
         BlockEntity tile = getWorld().getChunk(pos).getBlockEntity(pos);
 
         if (tile != null) {
-            net.minecraft.nbt.CompoundTag tag = tile.saveWithId(getWorld().registryAccess());
+            var tagValueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, getWorld().registryAccess());
+            tile.saveWithId(tagValueOutput);
+            net.minecraft.nbt.CompoundTag tag = tagValueOutput.buildResult();
             return getBlock(position).toBaseBlock(
                 LazyReference.from(() -> NBTConverter.fromNative(tag))
             );

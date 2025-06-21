@@ -41,7 +41,9 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.block.entity.StructureBlockEntity;
+import net.minecraft.world.level.storage.TagValueInput;
 import org.enginehub.linbus.tree.LinCompoundTag;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
@@ -61,8 +63,6 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 public class SpongePlayer extends AbstractPlayerActor {
-    private static final int STRUCTURE_BLOCK_PACKET_ID = 7;
-
     private final ServerPlayer player;
 
     protected SpongePlayer(ServerPlayer player) {
@@ -248,7 +248,7 @@ public class SpongePlayer extends AbstractPlayerActor {
 
                     StructureBlockEntity structureBlockEntity =
                         new StructureBlockEntity(new BlockPos(pos.x(), pos.y(), pos.z()), nativeBlock);
-                    structureBlockEntity.loadWithComponents(nativeNbtData, nativePlayer.level().registryAccess());
+                    structureBlockEntity.loadWithComponents(TagValueInput.create(ProblemReporter.DISCARDING, nativePlayer.level().registryAccess(), nativeNbtData));
                     nativePlayer.connection.send(
                         ClientboundBlockEntityDataPacket.create(structureBlockEntity, (be, ra) -> nativeNbtData));
                 }
