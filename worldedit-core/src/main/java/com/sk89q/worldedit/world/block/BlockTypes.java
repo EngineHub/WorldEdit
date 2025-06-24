@@ -378,6 +378,7 @@ public final class BlockTypes {
     @Nullable public static final BlockType DRAGON_EGG = get("minecraft:dragon_egg");
     @Nullable public static final BlockType DRAGON_HEAD = get("minecraft:dragon_head");
     @Nullable public static final BlockType DRAGON_WALL_HEAD = get("minecraft:dragon_wall_head");
+    @Nullable public static final BlockType DRIED_GHAST = get("minecraft:dried_ghast");
     @Nullable public static final BlockType DRIED_KELP_BLOCK = get("minecraft:dried_kelp_block");
     @Nullable public static final BlockType DRIPSTONE_BLOCK = get("minecraft:dripstone_block");
     @Nullable public static final BlockType DROPPER = get("minecraft:dropper");

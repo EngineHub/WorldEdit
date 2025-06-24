@@ -111,6 +111,9 @@ public final class ItemCategories {
     public static final ItemCategory GOLD_ORES = get("minecraft:gold_ores");
     public static final ItemCategory GOLD_TOOL_MATERIALS = get("minecraft:gold_tool_materials");
     public static final ItemCategory HANGING_SIGNS = get("minecraft:hanging_signs");
+    public static final ItemCategory HAPPY_GHAST_FOOD = get("minecraft:happy_ghast_food");
+    public static final ItemCategory HAPPY_GHAST_TEMPT_ITEMS = get("minecraft:happy_ghast_tempt_items");
+    public static final ItemCategory HARNESSES = get("minecraft:harnesses");
     public static final ItemCategory HEAD_ARMOR = get("minecraft:head_armor");
     public static final ItemCategory HOES = get("minecraft:hoes");
     public static final ItemCategory HOGLIN_FOOD = get("minecraft:hoglin_food");
