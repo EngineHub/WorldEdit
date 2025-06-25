@@ -1,3 +1,6 @@
+7.3.15
+- Added support for 1.21.6
+
 7.3.14
 - Fixed an issue where mixed NBT lists could cause errors when set to the world
 

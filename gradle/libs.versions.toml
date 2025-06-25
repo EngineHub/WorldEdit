@@ -94,7 +94,7 @@ fabric-minecraft = "com.mojang:minecraft:1.21.6"
 fabric-loader = "net.fabricmc:fabric-loader:0.16.14"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.4.0"
 
-neoforge = "net.neoforged:neoforge:21.6.11-beta"
+neoforge = "net.neoforged:neoforge:21.6.16-beta"
 
 # Mojang-provided libraries, CHECK AGAINST MINECRAFT for versions
 guava = "com.google.guava:guava:33.3.1-jre!!"
