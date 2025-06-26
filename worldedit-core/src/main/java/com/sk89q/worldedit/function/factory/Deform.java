@@ -33,6 +33,9 @@ import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.math.Vector3;
+import com.sk89q.worldedit.math.transform.Identity;
+import com.sk89q.worldedit.math.transform.ScaleAndTranslateTransform;
+import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.regions.NullRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.formatting.text.Component;
@@ -118,18 +121,16 @@ public class Deform implements Contextual<Operation> {
 
     @Override
     public Operation createFromContext(final EditContext context) {
-        final Vector3 zero;
-        Vector3 unit;
 
         Region region = firstNonNull(context.getRegion(), this.region);
 
+        final Transform transform;
         switch (mode) {
             case UNIT_CUBE:
                 final Vector3 min = region.getMinimumPoint().toVector3();
                 final Vector3 max = region.getMaximumPoint().toVector3();
-
-                zero = max.add(min).multiply(0.5);
-                unit = max.subtract(zero);
+                final Vector3 zero = max.add(min).multiply(0.5);
+                Vector3 unit = max.subtract(zero);
 
                 if (unit.x() == 0) {
                     unit = unit.withX(1.0);
@@ -140,27 +141,28 @@ public class Deform implements Contextual<Operation> {
                 if (unit.z() == 0) {
                     unit = unit.withZ(1.0);
                 }
+
+                transform = new ScaleAndTranslateTransform(zero, unit);
                 break;
+
             case RAW_COORD:
-                zero = Vector3.ZERO;
-                unit = Vector3.ONE;
+                transform = new Identity();
                 break;
+
             case OFFSET:
             default:
-                zero = offset;
-                unit = Vector3.ONE;
+                transform = new ScaleAndTranslateTransform(offset, Vector3.ONE);
+                break;
         }
-
         LocalSession session = context.getSession();
-        return new DeformOperation(context.getDestination(), region, zero, unit, expression,
+        return new DeformOperation(context.getDestination(), region, transform, expression,
                 session == null ? WorldEdit.getInstance().getConfiguration().calculationTimeout : session.getTimeout());
     }
 
     private record DeformOperation(
         Extent destination,
         Region region,
-        Vector3 zero,
-        Vector3 unit,
+        Transform transform,
         Expression expression,
         int timeout
     ) implements Operation {
@@ -168,7 +170,8 @@ public class Deform implements Contextual<Operation> {
         public Operation resume(RunContext run) throws WorldEditException {
             try {
                 // TODO: Move deformation code
-                ((EditSession) destination).deformRegion(region, zero, unit, expression, timeout);
+                final EditSession editSession = (EditSession) destination;
+                editSession.deformRegion(region, transform, expression, timeout, editSession.getWorld(), transform);
                 return null;
             } catch (ExpressionException e) {
                 throw new RuntimeException("Failed to execute expression", e); // TODO: Better exception to throw here?
