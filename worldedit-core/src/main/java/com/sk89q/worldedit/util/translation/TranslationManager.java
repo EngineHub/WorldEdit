@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.util.translation;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 import com.google.common.collect.Tables;
@@ -45,6 +46,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -53,6 +55,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -94,6 +97,7 @@ public class TranslationManager {
     private final Map<Locale, Future<Void>> loadFutures = new HashMap<>();
     private final Set<Locale> loadedLocales = Sets.newConcurrentHashSet();
     private final Lock loadLock = new ReentrantLock();
+    private final List<Consumer<Locale>> localeChangeListeners = Lists.newArrayList();
     private Locale defaultLocale = Locale.ENGLISH;
 
     private final ArchiveUnpacker archiveUnpacker;
@@ -137,6 +141,27 @@ public class TranslationManager {
             throw new UncheckedIOException(e);
         } finally {
             loadLock.unlock();
+        }
+    }
+
+    /**
+     * Adds a listener that will be notified when the locale changes.
+     *
+     * <p>
+     * Note: this can be called multiple times with the same locale, for example if the translation manager is reloaded.
+     * </p>
+     *
+     * @param listener a consumer that will be called with the updated locale
+     * @param includePreviouslyLoaded if true, the listener will be called with all previously loaded locales immediately
+     */
+    public void addLocaleChangeListener(Consumer<Locale> listener, boolean includePreviouslyLoaded) {
+        localeChangeListeners.add(listener);
+
+        if (includePreviouslyLoaded) {
+            // Notify the listener of all loaded locales
+            for (Locale locale : loadedLocales) {
+                listener.accept(locale);
+            }
         }
     }
 
@@ -241,6 +266,9 @@ public class TranslationManager {
                 locale, entry.getKey(), format
             );
         }
+
+        // Notify listeners of locale change
+        localeChangeListeners.forEach(listener -> listener.accept(locale));
     }
 
     private String getLocalePath(Locale locale) {
