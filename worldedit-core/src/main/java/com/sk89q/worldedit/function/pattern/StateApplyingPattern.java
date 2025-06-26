@@ -24,7 +24,6 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.block.BaseBlock;
-import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 
 import java.util.Map;
@@ -44,11 +43,11 @@ public class StateApplyingPattern extends AbstractExtentPattern {
 
     @Override
     public BaseBlock applyBlock(BlockVector3 position) {
-        BlockState block = getExtent().getBlock(position);
+        BaseBlock block = getExtent().getFullBlock(position);
         for (Entry<Property<Object>, Object> entry : cache
                 .computeIfAbsent(block.getBlockType(), (b -> resolveProperties(states, b))).entrySet()) {
             block = block.with(entry.getKey(), entry.getValue());
         }
-        return block.toBaseBlock();
+        return block;
     }
 }
