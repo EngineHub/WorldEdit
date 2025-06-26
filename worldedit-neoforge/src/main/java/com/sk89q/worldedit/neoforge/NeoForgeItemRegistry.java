@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.neoforge;
 
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.neoforge.internal.ComponentConverter;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
@@ -40,7 +41,7 @@ public class NeoForgeItemRegistry extends BundledItemRegistry {
     @Override
     public Component getRichName(BaseItemStack itemStack) {
         return GsonComponentSerializer.INSTANCE.deserialize(
-            net.minecraft.network.chat.Component.Serializer.toJson(
+            ComponentConverter.Serializer.toJson(
                 NeoForgeAdapter.adapt(itemStack).getItemName(),
                 ServerLifecycleHooks.getCurrentServer().registryAccess()
             )

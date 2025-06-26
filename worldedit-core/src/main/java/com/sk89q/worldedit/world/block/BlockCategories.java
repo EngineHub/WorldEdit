@@ -108,6 +108,7 @@ public final class BlockCategories {
     public static final BlockCategory GOATS_SPAWNABLE_ON = get("minecraft:goats_spawnable_on");
     public static final BlockCategory GOLD_ORES = get("minecraft:gold_ores");
     public static final BlockCategory GUARDED_BY_PIGLINS = get("minecraft:guarded_by_piglins");
+    public static final BlockCategory HAPPY_GHAST_AVOIDS = get("minecraft:happy_ghast_avoids");
     public static final BlockCategory HOGLIN_REPELLENTS = get("minecraft:hoglin_repellents");
     public static final BlockCategory ICE = get("minecraft:ice");
     public static final BlockCategory IMPERMEABLE = get("minecraft:impermeable");
@@ -157,7 +158,7 @@ public final class BlockCategories {
     public static final BlockCategory PARROTS_SPAWNABLE_ON = get("minecraft:parrots_spawnable_on");
     public static final BlockCategory PIGLIN_REPELLENTS = get("minecraft:piglin_repellents");
     public static final BlockCategory PLANKS = get("minecraft:planks");
-    public static final BlockCategory PLAYS_AMBIENT_DESERT_BLOCK_SOUNDS = get("minecraft:plays_ambient_desert_block_sounds");
+    @Deprecated public static final BlockCategory PLAYS_AMBIENT_DESERT_BLOCK_SOUNDS = get("minecraft:plays_ambient_desert_block_sounds");
     public static final BlockCategory POLAR_BEARS_SPAWNABLE_ON_ALTERNATE = get("minecraft:polar_bears_spawnable_on_alternate");
     public static final BlockCategory PORTALS = get("minecraft:portals");
     public static final BlockCategory PRESSURE_PLATES = get("minecraft:pressure_plates");
@@ -201,6 +202,9 @@ public final class BlockCategories {
     public static final BlockCategory TERRACOTTA = get("minecraft:terracotta");
     public static final BlockCategory TRAIL_RUINS_REPLACEABLE = get("minecraft:trail_ruins_replaceable");
     public static final BlockCategory TRAPDOORS = get("minecraft:trapdoors");
+    public static final BlockCategory TRIGGERS_AMBIENT_DESERT_DRY_VEGETATION_BLOCK_SOUNDS = get("minecraft:triggers_ambient_desert_dry_vegetation_block_sounds");
+    public static final BlockCategory TRIGGERS_AMBIENT_DESERT_SAND_BLOCK_SOUNDS = get("minecraft:triggers_ambient_desert_sand_block_sounds");
+    public static final BlockCategory TRIGGERS_AMBIENT_DRIED_GHAST_BLOCK_SOUNDS = get("minecraft:triggers_ambient_dried_ghast_block_sounds");
     public static final BlockCategory UNDERWATER_BONEMEALS = get("minecraft:underwater_bonemeals");
     public static final BlockCategory UNSTABLE_BOTTOM_CENTER = get("minecraft:unstable_bottom_center");
     public static final BlockCategory VALID_SPAWN = get("minecraft:valid_spawn");

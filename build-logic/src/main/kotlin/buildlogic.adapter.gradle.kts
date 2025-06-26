@@ -10,6 +10,7 @@ plugins {
 
 paperweight {
     injectPaperRepository = false
+    reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.REOBF_PRODUCTION
 }
 
 repositories {

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.bukkit.adapter.impl.v1_21_5;
+package com.sk89q.worldedit.bukkit.adapter.impl.v1_21_6;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -105,6 +105,7 @@ import net.minecraft.server.level.ChunkResult;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.progress.ChunkProgressListener;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.util.thread.BlockableEventLoop;
@@ -136,6 +137,8 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.PrimaryLevelData;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.Bukkit;
@@ -218,9 +221,9 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         // A simple test
         CraftServer.class.cast(Bukkit.getServer());
 
-        int dataVersion = SharedConstants.getCurrentVersion().getDataVersion().getVersion();
-        if (dataVersion != Constants.DATA_VERSION_MC_1_21_5) {
-            throw new UnsupportedClassVersionError("Not 1.21.5!");
+        int dataVersion = SharedConstants.getCurrentVersion().dataVersion().version();
+        if (dataVersion != Constants.DATA_VERSION_MC_1_21_6) {
+            throw new UnsupportedClassVersionError("Not 1.21.6!");
         }
 
         serverWorldsField = CraftServer.class.getDeclaredField("worlds");
@@ -271,7 +274,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
      * @param tag the tag
      */
     static void readTagIntoTileEntity(net.minecraft.nbt.CompoundTag tag, BlockEntity tileEntity) {
-        tileEntity.loadWithComponents(tag, MinecraftServer.getServer().registryAccess());
+        tileEntity.loadWithComponents(TagValueInput.create(ProblemReporter.DISCARDING, MinecraftServer.getServer().registryAccess(), tag));
         tileEntity.setChanged();
     }
 
@@ -292,7 +295,8 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
      * @param tag the tag
      */
     private static boolean readEntityIntoTag(Entity entity, net.minecraft.nbt.CompoundTag tag) {
-        return entity.save(tag);
+        var tagValueOutput = TagValueOutput.createWrappingWithContext(ProblemReporter.DISCARDING, DedicatedServer.getServer().registryAccess(), tag);
+        return entity.save(tagValueOutput);
     }
 
     private static Block getBlockFromType(BlockType blockType) {
@@ -375,7 +379,9 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         // Read the NBT data
         BlockEntity te = chunk.getBlockEntity(blockPos);
         if (te != null) {
-            net.minecraft.nbt.CompoundTag tag = te.saveWithId(MinecraftServer.getServer().registryAccess());
+            var tagValueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, MinecraftServer.getServer().registryAccess());
+            te.saveWithId(tagValueOutput);
+            net.minecraft.nbt.CompoundTag tag = tagValueOutput.buildResult();
             return state.toBaseBlock(LazyReference.from(() -> (LinCompoundTag) toNative(tag)));
         }
 
@@ -546,7 +552,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     @Override
     public Component getRichItemName(BaseItemStack itemStack) {
         return GsonComponentSerializer.INSTANCE.deserialize(
-            net.minecraft.network.chat.Component.Serializer.toJson(
+            ComponentConverter.Serializer.toJson(
                 CraftItemStack.asNMSCopy(BukkitAdapter.adapt(itemStack)).getItemName(),
                 ((CraftServer) Bukkit.getServer()).getServer().registryAccess()
             )
@@ -829,7 +835,9 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             Objects.requireNonNull(state);
             BlockEntity blockEntity = chunk.getBlockEntity(pos);
             if (blockEntity != null) {
-                net.minecraft.nbt.CompoundTag tag = blockEntity.saveWithId(serverWorld.registryAccess());
+                var tagValueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, serverWorld.registryAccess());
+                blockEntity.saveWithId(tagValueOutput);
+                net.minecraft.nbt.CompoundTag tag = tagValueOutput.buildResult();
                 state = state.toBaseBlock(LazyReference.from(() -> (LinCompoundTag) toNative(tag)));
             }
             extent.setBlock(vec, state.toBaseBlock());

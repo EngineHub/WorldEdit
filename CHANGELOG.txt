@@ -1,3 +1,9 @@
+7.3.15
+- Added support for 1.21.6
+
+7.3.14
+- Fixed an issue where mixed NBT lists could cause errors when set to the world
+
 7.3.13
 - [Bukkit] Fixed issue affecting accuracy of legacy schematic loading in certain circumstances
 - [Fabric] Fixed an issue where in some configurations WorldEdit could not load in a server environment

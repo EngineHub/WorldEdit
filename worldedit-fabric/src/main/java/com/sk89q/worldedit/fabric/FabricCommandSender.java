@@ -21,6 +21,7 @@ package com.sk89q.worldedit.fabric;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.AbstractNonPlayerActor;
+import com.sk89q.worldedit.fabric.internal.ComponentConverter;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
@@ -89,7 +90,7 @@ public class FabricCommandSender extends AbstractNonPlayerActor {
 
     @Override
     public void print(Component component) {
-        sendMessage(net.minecraft.network.chat.Component.Serializer.fromJson(
+        sendMessage(ComponentConverter.Serializer.fromJson(
             GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale())),
             this.sender.registryAccess()
         ));

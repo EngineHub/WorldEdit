@@ -27,10 +27,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.FullChunkStatus;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.storage.TagValueInput;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.lang.ref.WeakReference;
@@ -106,7 +108,7 @@ public class SpongeWorldNativeAccess implements WorldNativeAccess<LevelChunk, Bl
             return false;
         }
         tileEntity.setLevel(getWorld());
-        tileEntity.loadWithComponents(nativeTag, getWorld().registryAccess());
+        tileEntity.loadWithComponents(TagValueInput.create(ProblemReporter.DISCARDING, getWorld().registryAccess(), nativeTag));
         return true;
     }
 

@@ -299,7 +299,7 @@ public class NeoForgeWorldEdit {
         ServerPlayer playerEntity = (ServerPlayer) event.getEntity();
         WorldEdit we = WorldEdit.getInstance();
         NeoForgePlayer player = adaptPlayer(playerEntity);
-        NeoForgeWorld world = getWorld((ServerLevel) playerEntity.level());
+        NeoForgeWorld world = getWorld(playerEntity.level());
         Direction direction = NeoForgeAdapter.adaptEnumFacing(event.getFace());
 
         BlockPos blockPos = event.getPos();
@@ -322,7 +322,7 @@ public class NeoForgeWorldEdit {
         ServerPlayer playerEntity = (ServerPlayer) event.getEntity();
         WorldEdit we = WorldEdit.getInstance();
         NeoForgePlayer player = adaptPlayer(playerEntity);
-        NeoForgeWorld world = getWorld((ServerLevel) playerEntity.level());
+        NeoForgeWorld world = getWorld(playerEntity.level());
         Direction direction = NeoForgeAdapter.adaptEnumFacing(event.getFace());
 
         BlockPos blockPos = event.getPos();

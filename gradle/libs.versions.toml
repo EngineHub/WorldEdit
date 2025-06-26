@@ -11,19 +11,19 @@ autoValue = "1.10.4"
 antlr = "4.13.1"
 cuiProtocol = "4.0.1"
 
-fabric-api = "0.122.0+1.21.5"
+fabric-api = "0.127.0+1.21.6"
 
-neogradle = "7.0.184"
-neoforge-minecraft = "1.21.5"
+neogradle = "7.0.185"
+neoforge-minecraft = "1.21.6"
 
-sponge-minecraft = "1.21.5"
+sponge-minecraft = "1.21.6"
 # https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/spongeapi/
-sponge-api = "15.0.0-20250404.074835-1"
-sponge-api-major = "15"
+sponge-api = "16.0.0-20250619.043229-1"
+sponge-api-major = "16"
 
 # https://parchmentmc.org/docs/getting-started; note that we use older MC versions some times which is OK
 parchment-minecraft = "1.21.5"
-parchment-mappings = "2025.04.19"
+parchment-mappings = "2025.06.01"
 
 # https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/vanillagradle/
 sponge-vanillagradle = "0.2.1-20250105.203323-92"
@@ -33,8 +33,9 @@ minimumAsm = "9.7"
 minimumJdependency = "2.10"
 minimumTinyRemapper = "0.8.11"
 
-lang-worldeditBase = "7.3.12"
-lang-version = "1796"
+# https://repo.enginehub.org/language-files/com/sk89q/worldedit/worldedit-lang/
+lang-worldeditBase = "7.3.15"
+lang-version = "1845"
 
 [libraries]
 neogradle-neoform = { module = "net.neoforged.gradle:neoform", version.ref = "neogradle" }
@@ -89,11 +90,11 @@ rhino = "org.mozilla:rhino-runtime:1.7.13"
 jchronic = "com.sk89q:jchronic:0.2.4a"
 jlibnoise = "com.sk89q.lib:jlibnoise:1.0.0"
 
-fabric-minecraft = "com.mojang:minecraft:1.21.5"
+fabric-minecraft = "com.mojang:minecraft:1.21.6"
 fabric-loader = "net.fabricmc:fabric-loader:0.16.14"
-fabric-permissions-api = "me.lucko:fabric-permissions-api:0.3.3"
+fabric-permissions-api = "me.lucko:fabric-permissions-api:0.4.0"
 
-neoforge = "net.neoforged:neoforge:21.5.63-beta"
+neoforge = "net.neoforged:neoforge:21.6.16-beta"
 
 # Mojang-provided libraries, CHECK AGAINST MINECRAFT for versions
 guava = "com.google.guava:guava:33.3.1-jre!!"
@@ -164,9 +165,9 @@ version.ref = "antlr"
 module = "org.antlr:antlr4-runtime"
 
 [libraries.cuiProtocol-fabric]
-module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-fabric-mc1.21.5"
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-fabric-mc1.21.6"
 version.ref = "cuiProtocol"
 
 [libraries.cuiProtocol-neoforge]
-module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-neoforge-mc1.21.5"
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-neoforge-mc1.21.6"
 version.ref = "cuiProtocol"

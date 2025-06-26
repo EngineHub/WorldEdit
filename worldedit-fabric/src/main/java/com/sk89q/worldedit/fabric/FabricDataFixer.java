@@ -33,6 +33,7 @@ import com.mojang.datafixers.DSL.TypeReference;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.serialization.Dynamic;
+import com.sk89q.worldedit.fabric.internal.ComponentConverter;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
 import net.minecraft.core.Direction;
 import net.minecraft.core.UUIDUtil;
@@ -1834,7 +1835,7 @@ class FabricDataFixer implements com.sk89q.worldedit.world.DataFixer {
                                 object = Component.literal(s);
                             } else {
                                 try {
-                                    object = GsonHelper.fromJson(DataConverterSignText.a, s, Component.class, true);
+                                    object = GsonHelper.fromJson(DataConverterSignText.a, s, Component.class);
                                     if (object == null) {
                                         object = Component.literal("");
                                     }
@@ -1844,7 +1845,7 @@ class FabricDataFixer implements com.sk89q.worldedit.world.DataFixer {
 
                                 if (object == null) {
                                     try {
-                                        object = Component.Serializer.fromJson(s, FabricWorldEdit.registryAccess());
+                                        object = ComponentConverter.Serializer.fromJson(s, FabricWorldEdit.registryAccess());
                                     } catch (JsonParseException jsonparseexception1) {
                                         ;
                                     }
@@ -1852,7 +1853,7 @@ class FabricDataFixer implements com.sk89q.worldedit.world.DataFixer {
 
                                 if (object == null) {
                                     try {
-                                        object = Component.Serializer.fromJsonLenient(s, FabricWorldEdit.registryAccess());
+                                        object = ComponentConverter.Serializer.fromJsonLenient(s, FabricWorldEdit.registryAccess());
                                     } catch (JsonParseException jsonparseexception2) {
                                         ;
                                     }
@@ -1866,7 +1867,7 @@ class FabricDataFixer implements com.sk89q.worldedit.world.DataFixer {
                             object = Component.literal("");
                         }
 
-                        nbttaglist.set(i, StringTag.valueOf(Component.Serializer.toJson((Component) object, FabricWorldEdit.registryAccess())));
+                        nbttaglist.set(i, StringTag.valueOf(ComponentConverter.Serializer.toJson((Component) object, FabricWorldEdit.registryAccess())));
                     }
 
                     nbttagcompound1.put("pages", nbttaglist);
@@ -2497,7 +2498,7 @@ class FabricDataFixer implements com.sk89q.worldedit.world.DataFixer {
                     object = Component.literal(s1);
                 } else {
                     try {
-                        object = GsonHelper.fromJson(DataConverterSignText.a, s1, Component.class, true);
+                        object = GsonHelper.fromJson(DataConverterSignText.a, s1, Component.class);
                         if (object == null) {
                             object = Component.literal("");
                         }
@@ -2507,7 +2508,7 @@ class FabricDataFixer implements com.sk89q.worldedit.world.DataFixer {
 
                     if (object == null) {
                         try {
-                            object = Component.Serializer.fromJson(s1, FabricWorldEdit.registryAccess());
+                            object = ComponentConverter.Serializer.fromJson(s1, FabricWorldEdit.registryAccess());
                         } catch (JsonParseException jsonparseexception1) {
                             ;
                         }
@@ -2515,7 +2516,7 @@ class FabricDataFixer implements com.sk89q.worldedit.world.DataFixer {
 
                     if (object == null) {
                         try {
-                            object = Component.Serializer.fromJsonLenient(s1, FabricWorldEdit.registryAccess());
+                            object = ComponentConverter.Serializer.fromJsonLenient(s1, FabricWorldEdit.registryAccess());
                         } catch (JsonParseException jsonparseexception2) {
                             ;
                         }
@@ -2529,7 +2530,7 @@ class FabricDataFixer implements com.sk89q.worldedit.world.DataFixer {
                 object = Component.literal("");
             }
 
-            nbttagcompound.putString(s, Component.Serializer.toJson((Component) object, FabricWorldEdit.registryAccess()));
+            nbttagcompound.putString(s, ComponentConverter.Serializer.toJson((Component) object, FabricWorldEdit.registryAccess()));
         }
     }
 
