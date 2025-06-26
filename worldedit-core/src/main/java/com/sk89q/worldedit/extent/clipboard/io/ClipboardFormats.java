@@ -27,6 +27,7 @@ import com.sk89q.worldedit.WorldEdit;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -72,8 +73,7 @@ public class ClipboardFormats {
     /**
      * Find the clipboard format named by the given alias.
      *
-     * @param alias
-     *            the alias
+     * @param alias the alias
      * @return the format, otherwise null if none is matched
      */
     @Nullable
@@ -85,16 +85,30 @@ public class ClipboardFormats {
     /**
      * Detect the format of a given file.
      *
-     * @param file
-     *            the file
+     * @param file the file
      * @return the format, otherwise null if one cannot be detected
+     * @deprecated Use {@link #findByPath(Path)} instead.
      */
+    @Deprecated
     @Nullable
     public static ClipboardFormat findByFile(File file) {
         checkNotNull(file);
 
+        return findByPath(file.toPath());
+    }
+
+    /**
+     * Detect the format of a given path.
+     *
+     * @param path the path
+     * @return the format, otherwise null if one cannot be detected
+     */
+    @Nullable
+    public static ClipboardFormat findByPath(Path path) {
+        checkNotNull(path);
+
         for (ClipboardFormat format : registeredFormats) {
-            if (format.isFormat(file)) {
+            if (format.isFormat(path)) {
                 return format;
             }
         }
