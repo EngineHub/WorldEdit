@@ -829,6 +829,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType MUSIC_DISC_CREATOR = get("minecraft:music_disc_creator");
     @Nullable public static final ItemType MUSIC_DISC_CREATOR_MUSIC_BOX = get("minecraft:music_disc_creator_music_box");
     @Nullable public static final ItemType MUSIC_DISC_FAR = get("minecraft:music_disc_far");
+    @Nullable public static final ItemType MUSIC_DISC_LAVA_CHICKEN = get("minecraft:music_disc_lava_chicken");
     @Nullable public static final ItemType MUSIC_DISC_MALL = get("minecraft:music_disc_mall");
     @Nullable public static final ItemType MUSIC_DISC_MELLOHI = get("minecraft:music_disc_mellohi");
     @Nullable public static final ItemType MUSIC_DISC_OTHERSIDE = get("minecraft:music_disc_otherside");
