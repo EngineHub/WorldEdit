@@ -43,7 +43,7 @@ sponge-vanillagradle = { module = "org.spongepowered:vanillagradle", version.ref
 
 licenser = "gradle.plugin.org.cadixdev.gradle:licenser:0.6.1"
 grgit = "org.ajoberstar.grgit:grgit-gradle:5.2.2"
-japicmp = "me.champeau.gradle:japicmp-gradle-plugin:0.4.2"
+japicmp = "me.champeau.gradle:japicmp-gradle-plugin:0.4.6"
 shadow = "com.github.johnrengelman:shadow:8.1.1"
 jfrog-buildinfo = "org.jfrog.buildinfo:build-info-extractor-gradle:5.2.0"
 

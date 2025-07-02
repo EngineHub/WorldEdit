@@ -2,6 +2,7 @@ import japicmp.accept.AcceptingSetupRule
 import japicmp.accept.BinaryCompatRule
 import me.champeau.gradle.japicmp.JapicmpTask
 import org.gradle.internal.resolve.ModuleVersionNotFoundException
+import java.net.URI
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.util.*
@@ -52,19 +53,44 @@ for (projectFragment in listOf("bukkit", "cli", "core", "fabric", "sponge")) {
         dependsOn(resetChangeFileTask)
     }
 
-    val conf = configurations.create("${projectFragment}OldJar") {
-        isCanBeResolved = true
+    val baseConf = configurations.dependencyScope("${projectFragment}OldJar") {
+    }
+    val apiConf = configurations.resolvable("${projectFragment}OldJarApi") {
+        extendsFrom(baseConf.get())
+        attributes {
+            attribute(
+                TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
+                objects.named(TargetJvmEnvironment.STANDARD_JVM)
+            )
+            attribute(
+                Usage.USAGE_ATTRIBUTE,
+                objects.named(Usage.JAVA_API)
+            )
+        }
+    }
+    val runtimeConf = configurations.resolvable("${projectFragment}OldJarRuntime") {
+        extendsFrom(baseConf.get())
+        attributes {
+            attribute(
+                TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
+                objects.named(TargetJvmEnvironment.STANDARD_JVM)
+            )
+            attribute(
+                Usage.USAGE_ATTRIBUTE,
+                objects.named(Usage.JAVA_RUNTIME)
+            )
+        }
     }
     val projPublication = proj.the<PublishingExtension>().publications.getByName<MavenPublication>("maven")
-    conf.dependencies.add(
-        dependencies.create("${projPublication.groupId}:${projPublication.artifactId}:$baseVersion").apply {
-            (this as? ModuleDependency)?.isTransitive = false
-        }
-    )
+    baseConf.configure {
+        dependencies.add(
+            project.dependencies.create("${projPublication.groupId}:${projPublication.artifactId}:$baseVersion")
+        )
+    }
     val resolvedOldJar = files({
         try {
-            conf.resolvedConfiguration.rethrowFailure()
-            conf
+            apiConf.get().resolvedConfiguration.rethrowFailure()
+            apiConf
         } catch (e: ResolveException) {
             if (e.cause is ModuleVersionNotFoundException) {
                 logger.warn("Skipping check for $projectFragment API compatibility because there is no jar to compare against")
@@ -93,11 +119,22 @@ for (projectFragment in listOf("bukkit", "cli", "core", "fabric", "sponge")) {
             !resolvedOldJar.isEmpty
         }
 
-        oldClasspath.from(resolvedOldJar)
-        newClasspath.from(proj.tasks.named("jar"))
+        oldClasspath.from(apiConf, runtimeConf)
+        newClasspath.from(
+            proj.configurations.named("compileClasspath").get().incoming.artifactView {
+                attributes {
+                    attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.JAR))
+                }
+            }.files,
+            proj.tasks.named(
+                when (projectFragment) {
+                    "fabric" -> "remapJar"
+                    else -> "jar"
+                }
+            )
+        )
         onlyModified.set(false)
         failOnModification.set(false) // report does the failing (so we can accept)
-        ignoreMissingClasses.set(true)
 
         // Internals are not API
         packageExcludes.add("com.sk89q.worldedit*.internal*")
@@ -105,6 +142,8 @@ for (projectFragment in listOf("bukkit", "cli", "core", "fabric", "sponge")) {
         packageExcludes.add("com.sk89q.worldedit*.mixin*")
         // Experimental is not API
         packageExcludes.add("com.sk89q.worldedit*.experimental*")
+
+        maxWorkerHeap = "2G"
     }
 
     checkApiCompatibility {
@@ -117,11 +156,15 @@ tasks.named<JapicmpTask>("checkCoreApiCompatibility") {
     // Commands are not API
     packageExcludes.add("com.sk89q.worldedit.command*")
 }
+
+dependencies {
+    "bukkitOldJar"("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
+}
 tasks.named<JapicmpTask>("checkBukkitApiCompatibility") {
     // Internal Adapters are not API
     packageExcludes.add("com.sk89q.worldedit.bukkit.adapter*")
 }
-tasks.named<JapicmpTask>("checkFabricApiCompatibility") {
-    // Need to check against the reobf JAR
-    newClasspath.setFrom(project(":worldedit-fabric").tasks.named("remapJar"))
+tasks.named<JapicmpTask>("checkSpongeApiCompatibility") {
+    // POM is broken
+    ignoreMissingClasses.set(true)
 }
