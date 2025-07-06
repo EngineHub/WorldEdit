@@ -33,6 +33,9 @@ public class WorldEditExpressionEnvironment implements ExpressionEnvironment {
     private Vector3 current = Vector3.ZERO;
     private final Extent extent;
 
+    /**
+     * @deprecated Use {@link EditSession#makeBiomeShape(Region, Transform, BiomeType, String, boolean, int)} and pass a {@link ScaleAndTranslateTransform}.
+     */
     @Deprecated
     public WorldEditExpressionEnvironment(Extent extent, Vector3 unit, Vector3 zero) {
         this(extent, new ScaleAndTranslateTransform(zero, unit));

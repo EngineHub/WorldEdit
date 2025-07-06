@@ -2313,6 +2313,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @return number of blocks changed
      * @throws ExpressionException if there is a problem with the expression
      * @throws MaxChangedBlocksException if the maximum block change limit is exceeded
+     * @deprecated Use {@link EditSession#makeShape(Region, Transform, Pattern, String, boolean, int)} and pass a {@link ScaleAndTranslateTransform}.
      */
     @Deprecated
     public int makeShape(final Region region, final Vector3 zero, final Vector3 unit,
@@ -2334,6 +2335,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @return number of blocks changed
      * @throws ExpressionException if there is a problem with the expression
      * @throws MaxChangedBlocksException if the maximum block change limit is exceeded
+     * @deprecated Use {@link EditSession#makeShape(Region, Transform, Pattern, String, boolean, int)} and pass a {@link ScaleAndTranslateTransform}.
      */
     @Deprecated
     public int makeShape(final Region region, final Vector3 zero, final Vector3 unit,
@@ -2452,6 +2454,7 @@ public class EditSession implements Extent, AutoCloseable {
      *
      * @throws ExpressionException thrown on invalid expression input
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     * @deprecated Use {@link EditSession#deformRegion(Region, Transform, String, int, InputExtent, Transform)} and pass a {@link ScaleAndTranslateTransform}.
      */
     @Deprecated
     public int deformRegion(final Region region, final Vector3 zero, final Vector3 unit, final String expressionString)
@@ -2474,6 +2477,7 @@ public class EditSession implements Extent, AutoCloseable {
      *
      * @throws ExpressionException thrown on invalid expression input
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     * @deprecated Use {@link EditSession#deformRegion(Region, Transform, String, int, InputExtent, Transform)} and pass a {@link ScaleAndTranslateTransform}.
      */
     @Deprecated
     public int deformRegion(final Region region, final Vector3 zero, final Vector3 unit, final String expressionString,
@@ -2516,6 +2520,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @return number of blocks changed
      * @throws ExpressionException       thrown on invalid expression input
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     * @deprecated Use {@link EditSession#deformRegion(Region, Transform, String, int, InputExtent, Transform)}.
      */
     @Deprecated
     public int deformRegion(final Region region, final Transform transform, final String expressionString,
@@ -2865,12 +2870,18 @@ public class EditSession implements Extent, AutoCloseable {
         }
     }
 
+    /**
+     * @deprecated Use {@link EditSession#makeBiomeShape(Region, Transform, BiomeType, String, boolean, int)} and pass a {@link ScaleAndTranslateTransform}.
+     */
     @Deprecated
     public int makeBiomeShape(final Region region, final Vector3 zero, final Vector3 unit, final BiomeType biomeType,
                               final String expressionString, final boolean hollow) throws ExpressionException {
         return makeBiomeShape(region, zero, unit, biomeType, expressionString, hollow, WorldEdit.getInstance().getConfiguration().calculationTimeout);
     }
 
+    /**
+     * @deprecated Use {@link EditSession#makeBiomeShape(Region, Transform, BiomeType, String, boolean, int)} and pass a {@link ScaleAndTranslateTransform}.
+     */
     @Deprecated
     public int makeBiomeShape(final Region region, final Vector3 zero, final Vector3 unit, final BiomeType biomeType,
                               final String expressionString, final boolean hollow, final int timeout) throws ExpressionException {
