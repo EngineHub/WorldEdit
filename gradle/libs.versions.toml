@@ -11,9 +11,9 @@ autoValue = "1.10.4"
 antlr = "4.13.1"
 cuiProtocol = "4.0.2"
 
-fabric-api = "0.128.1+1.21.7"
+fabric-api = "0.128.2+1.21.7"
 
-neogradle = "7.0.189"
+neogradle = "7.0.190"
 neoforge-minecraft = "1.21.7"
 
 sponge-minecraft = "1.21.6"
@@ -35,7 +35,7 @@ minimumTinyRemapper = "0.8.11"
 
 # https://repo.enginehub.org/language-files/com/sk89q/worldedit/worldedit-lang/
 lang-worldeditBase = "7.3.15"
-lang-version = "1845"
+lang-version = "1865"
 
 [libraries]
 neogradle-neoform = { module = "net.neoforged.gradle:neoform", version.ref = "neogradle" }
@@ -43,14 +43,14 @@ sponge-vanillagradle = { module = "org.spongepowered:vanillagradle", version.ref
 
 licenser = "gradle.plugin.org.cadixdev.gradle:licenser:0.6.1"
 grgit = "org.ajoberstar.grgit:grgit-gradle:5.2.2"
-japicmp = "me.champeau.gradle:japicmp-gradle-plugin:0.4.2"
-shadow = "com.github.johnrengelman:shadow:8.1.1"
-jfrog-buildinfo = "org.jfrog.buildinfo:build-info-extractor-gradle:5.2.0"
+japicmp = "me.champeau.gradle:japicmp-gradle-plugin:0.4.6"
+shadow = "com.gradleup.shadow:com.gradleup.shadow.gradle.plugin:8.3.8"
+jfrog-buildinfo = "org.jfrog.buildinfo:build-info-extractor-gradle:5.2.5"
 
 # https://maven.fabricmc.net/net/fabricmc/sponge-mixin/
-fabric-mixin = "net.fabricmc:sponge-mixin:0.15.5+mixin.0.8.7"
+fabric-mixin = "net.fabricmc:sponge-mixin:0.16.1+mixin.0.8.7"
 
-paperweight = "io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:2.0.0-beta.17"
+paperweight = "io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:2.0.0-beta.18"
 
 linBus-bom = "org.enginehub.lin-bus:lin-bus-bom:0.2.0"
 linBus-common.module = "org.enginehub.lin-bus:lin-bus-common"
@@ -94,7 +94,7 @@ fabric-minecraft = "com.mojang:minecraft:1.21.7"
 fabric-loader = "net.fabricmc:fabric-loader:0.16.14"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.4.0"
 
-neoforge = "net.neoforged:neoforge:21.7.1-beta"
+neoforge = "net.neoforged:neoforge:21.7.4-beta"
 
 # Mojang-provided libraries, CHECK AGAINST MINECRAFT for versions
 guava = "com.google.guava:guava:33.3.1-jre!!"
