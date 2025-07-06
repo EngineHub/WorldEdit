@@ -2370,20 +2370,6 @@ public class EditSession implements Extent, AutoCloseable {
      * The Expression class is subject to change. Expressions should be provided via the string overload.
      * </p>
      */
-    @Deprecated
-    public int makeShape(final Region region, final Vector3 zero, final Vector3 unit,
-                         final Pattern pattern, final Expression expression, final boolean hollow, final int timeout)
-            throws ExpressionException, MaxChangedBlocksException {
-        return makeShape(region, new ScaleAndTranslateTransform(zero, unit), pattern, expression, hollow, timeout);
-    }
-
-    /**
-     * Internal version of {@link EditSession#makeShape(Region, Vector3, Vector3, Pattern, String, boolean, int)}.
-     *
-     * <p>
-     * The Expression class is subject to change. Expressions should be provided via the string overload.
-     * </p>
-     */
     public int makeShape(final Region region, Transform transform,
                          final Pattern pattern, final Expression expression, final boolean hollow, final int timeout)
             throws ExpressionException, MaxChangedBlocksException {
@@ -2535,20 +2521,6 @@ public class EditSession implements Extent, AutoCloseable {
     public int deformRegion(final Region region, final Transform transform, final String expressionString,
                             final int timeout) throws ExpressionException, MaxChangedBlocksException {
         return deformRegion(region, transform, expressionString, timeout, world, transform);
-    }
-
-    /**
-     * Internal version of {@link EditSession#deformRegion(Region, Vector3, Vector3, String, int)}.
-     *
-     * <p>
-     * The Expression class is subject to change. Expressions should be provided via the string overload.
-     * </p>
-     */
-    @Deprecated
-    public int deformRegion(final Region region, final Vector3 zero, final Vector3 unit, final Expression expression,
-                            final int timeout) throws ExpressionException, MaxChangedBlocksException {
-        final Transform transform = new ScaleAndTranslateTransform(zero, unit);
-        return deformRegion(region, transform, expression, timeout, world, transform);
     }
 
     /**
