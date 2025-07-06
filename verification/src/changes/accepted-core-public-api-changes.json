@@ -64,6 +64,13 @@
             "changes": [
                 "FIELD_REMOVED_IN_SUPERCLASS"
             ]
+        },
+        {
+            "type": "com.sk89q.util.yaml.YAMLProcessor",
+            "member": "Field file",
+            "changes": [
+                "FIELD_REMOVED"
+            ]
         }
     ],
     "Acceptable addition of default method in interface": [
