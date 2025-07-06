@@ -2888,6 +2888,18 @@ public class EditSession implements Extent, AutoCloseable {
         return makeBiomeShape(region, new ScaleAndTranslateTransform(zero, unit), biomeType, expressionString, hollow, timeout);
     }
 
+    /**
+     * Generate a biome shape for the given expression.
+     *
+     * @param region the region to generate the shape in
+     * @param transform the transformation for x/y/z variables
+     * @param biomeType the biome to make the shape from
+     * @param expressionString the expression defining the shape
+     * @param hollow whether the shape should be hollow
+     * @param timeout
+     * @return number of blocks changed
+     * @throws ExpressionException if there is a problem with the expression
+     */
     public int makeBiomeShape(final Region region, Transform transform, final BiomeType biomeType,
                               final String expressionString, final boolean hollow, final int timeout) throws ExpressionException {
 
