@@ -56,7 +56,7 @@ public final class TransformUtil {
     }
 
     /**
-     * Creates a {@link Transform} for the //deform command with clipboard support.
+     * Creates a {@link Transform} for various expression commands from raw min/max/placement values.
      *
      * @param useRawCoords    Use the game's coordinate origin
      * @param offsetPlacement Use the placement's coordinate origin
