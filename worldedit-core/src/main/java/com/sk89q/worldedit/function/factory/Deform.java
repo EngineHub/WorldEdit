@@ -25,20 +25,27 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extent.InputExtent;
 import com.sk89q.worldedit.extent.NullExtent;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.EditContext;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
+import com.sk89q.worldedit.internal.util.TransformUtil;
 import com.sk89q.worldedit.math.Vector3;
+import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.regions.NullRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.util.GuavaUtil.firstNonNull;
@@ -50,6 +57,7 @@ public class Deform implements Contextual<Operation> {
     private final Expression expression;
     private Mode mode;
     private Vector3 offset = Vector3.ZERO;
+    private boolean useClipboard;
 
     public Deform(String expression) {
         this(new NullExtent(), new NullRegion(), expression);
@@ -111,6 +119,14 @@ public class Deform implements Contextual<Operation> {
         this.offset = offset;
     }
 
+    public boolean useClipboard() {
+        return useClipboard;
+    }
+
+    public void setUseClipboard(boolean useClipboard) {
+        this.useClipboard = useClipboard;
+    }
+
     @Override
     public String toString() {
         return "deformation of " + expression.getSource();
@@ -118,57 +134,51 @@ public class Deform implements Contextual<Operation> {
 
     @Override
     public Operation createFromContext(final EditContext context) {
-        final Vector3 zero;
-        Vector3 unit;
 
         Region region = firstNonNull(context.getRegion(), this.region);
-
-        switch (mode) {
-            case UNIT_CUBE:
-                final Vector3 min = region.getMinimumPoint().toVector3();
-                final Vector3 max = region.getMaximumPoint().toVector3();
-
-                zero = max.add(min).multiply(0.5);
-                unit = max.subtract(zero);
-
-                if (unit.x() == 0) {
-                    unit = unit.withX(1.0);
-                }
-                if (unit.y() == 0) {
-                    unit = unit.withY(1.0);
-                }
-                if (unit.z() == 0) {
-                    unit = unit.withZ(1.0);
-                }
-                break;
-            case RAW_COORD:
-                zero = Vector3.ZERO;
-                unit = Vector3.ONE;
-                break;
-            case OFFSET:
-            default:
-                zero = offset;
-                unit = Vector3.ONE;
-        }
+        final Vector3 min = region.getMinimumPoint().toVector3();
+        final Vector3 max = region.getMaximumPoint().toVector3();
 
         LocalSession session = context.getSession();
-        return new DeformOperation(context.getDestination(), region, zero, unit, expression,
-                session == null ? WorldEdit.getInstance().getConfiguration().calculationTimeout : session.getTimeout());
+        EditSession editSession = (EditSession) context.getDestination();
+        final Optional<Clipboard> clipboardOptional = Optional.ofNullable(session)
+                .flatMap(LocalSession::getClipboardOptional)
+                .map(ClipboardHolder::getClipboard);
+
+        final Transform targetTransform = TransformUtil.createTransformForExpressionCommand(mode, min, max, offset);
+        final InputExtent sourceExtent;
+        final Transform sourceTransform;
+        if (useClipboard && clipboardOptional.isPresent()) {
+            final Clipboard clipboard = clipboardOptional.get();
+            final Vector3 clipboardMin = clipboard.getMinimumPoint().toVector3();
+            final Vector3 clipboardMax = clipboard.getMaximumPoint().toVector3();
+
+            sourceExtent = clipboard;
+            sourceTransform = TransformUtil.createTransformForExpressionCommand(mode, clipboardMin, clipboardMax, offset);
+        } else {
+            sourceExtent = editSession.getWorld();
+            sourceTransform = targetTransform;
+        }
+
+        return new DeformOperation(context.getDestination(), region, targetTransform, expression,
+                session == null ? WorldEdit.getInstance().getConfiguration().calculationTimeout : session.getTimeout(), sourceExtent, sourceTransform);
     }
 
     private record DeformOperation(
         Extent destination,
         Region region,
-        Vector3 zero,
-        Vector3 unit,
+        Transform targetTransform,
         Expression expression,
-        int timeout
+        int timeout,
+        InputExtent sourceExtent,
+        Transform sourceTransform
     ) implements Operation {
         @Override
         public Operation resume(RunContext run) throws WorldEditException {
             try {
                 // TODO: Move deformation code
-                ((EditSession) destination).deformRegion(region, zero, unit, expression, timeout);
+                final EditSession editSession = (EditSession) destination;
+                editSession.deformRegion(region, targetTransform, expression, timeout, sourceExtent, sourceTransform);
                 return null;
             } catch (ExpressionException e) {
                 throw new RuntimeException("Failed to execute expression", e); // TODO: Better exception to throw here?
