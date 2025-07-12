@@ -37,7 +37,6 @@ public class SpongeBlockCategoryRegistry implements BlockCategoryRegistry {
             Sponge.game().registry(RegistryTypes.BLOCK_TYPE);
 
         return blockTypeRegistry.taggedValues(Tag.of(RegistryTypes.BLOCK_TYPE, ResourceKey.resolve(category)))
-            .stream()
             .map(blockType -> BlockType.REGISTRY.get(blockTypeRegistry.valueKey(blockType).formatted()))
             .collect(Collectors.toSet());
     }
