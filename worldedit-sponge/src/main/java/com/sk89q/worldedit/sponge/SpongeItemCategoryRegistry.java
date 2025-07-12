@@ -37,7 +37,6 @@ public class SpongeItemCategoryRegistry implements ItemCategoryRegistry {
             Sponge.game().registry(RegistryTypes.ITEM_TYPE);
 
         return itemTypeRegistry.taggedValues(Tag.of(RegistryTypes.ITEM_TYPE, ResourceKey.resolve(category)))
-            .stream()
             .map(itemType -> ItemType.REGISTRY.get(itemTypeRegistry.valueKey(itemType).formatted()))
             .collect(Collectors.toSet());
     }
