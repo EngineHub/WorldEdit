@@ -229,7 +229,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         CraftServer.class.cast(Bukkit.getServer());
 
         int dataVersion = SharedConstants.getCurrentVersion().dataVersion().version();
-        if (dataVersion != Constants.DATA_VERSION_MC_1_21_6 && dataVersion != Constants.DATA_VERSION_MC_1_21_7) {
+        if (dataVersion < Constants.DATA_VERSION_MC_1_21_6 || dataVersion > Constants.DATA_VERSION_MC_1_21_8) {
             logger.warning(WRONG_VERSION);
         }
 
