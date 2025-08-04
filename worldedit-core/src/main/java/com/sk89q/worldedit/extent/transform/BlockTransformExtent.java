@@ -211,6 +211,45 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                             result = result.with(enumProp, newValue);
                         }
                     }
+
+                    // rails
+                    if (affineTransform.isVerticalFlip()) {
+                        String value = (String) result.getState(property);
+                        String newValue = switch (value) {
+                            case "ascending_east" -> "ascending_west";
+                            case "ascending_west" -> "ascending_east";
+                            case "ascending_north" -> "ascending_south";
+                            case "ascending_south" -> "ascending_north";
+                            default -> null;
+                        };
+                        if (newValue != null && enumProp.getValues().contains(newValue)) {
+                            result = result.with(enumProp, newValue);
+                        }
+                    }
+
+                    String value = (String) result.getState(property);
+
+                    String[] parts = value.split("_");
+                    String newStartString = parts[0];
+                    if (!newStartString.equals("ascending")) {
+                        Direction start = Direction.valueOf(parts[0].toUpperCase(Locale.ROOT));
+                        Vector3 newStartVec = transform.apply(start.toVector());
+                        Direction newStart = Direction.findClosest(newStartVec, Direction.Flag.CARDINAL);
+                        newStartString = newStart.toString().toLowerCase(Locale.ROOT);
+                    }
+
+                    Direction end = Direction.valueOf(parts[1].toUpperCase(Locale.ROOT));
+                    Vector3 newEndVec = transform.apply(end.toVector());
+                    Direction newEnd = Direction.findClosest(newEndVec, Direction.Flag.CARDINAL);
+                    String newEndString = newEnd.toString().toLowerCase(Locale.ROOT);
+
+                    String newShape = newStartString + "_" + newEndString;
+                    String newShapeSwapped = newEndString + "_" + newStartString;
+                    if (enumProp.getValues().contains(newShape)) {
+                        result = result.with(enumProp, newShape);
+                    } else if (enumProp.getValues().contains(newShapeSwapped)) {
+                        result = result.with(enumProp, newShapeSwapped);
+                    }
                 } else if (property.getName().equals("orientation") && transform instanceof AffineTransform affineTransform) {
                     // crafters
                     if (affineTransform.isHorizontalFlip()) {
