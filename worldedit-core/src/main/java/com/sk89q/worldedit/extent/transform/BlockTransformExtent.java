@@ -211,38 +211,69 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                             result = result.with(enumProp, newValue);
                         }
                     }
-                } else if (property.getName().equals("orientation") && transform instanceof AffineTransform affineTransform) {
-                    // crafters
-                    if (affineTransform.isHorizontalFlip()) {
-                        String value = (String) result.getState(property);
-                        String newValue = switch (value) {
-                            case "north_up" -> "south_up";
-                            case "south_up" -> "north_up";
-                            case "east_up" -> "west_up";
-                            case "west_up" -> "east_up";
-                            default -> null;
-                        };
-                        if (newValue != null && enumProp.getValues().contains(newValue)) {
-                            result = result.with(enumProp, newValue);
-                        }
-                    }
+
+                    // rails
                     if (affineTransform.isVerticalFlip()) {
                         String value = (String) result.getState(property);
                         String newValue = switch (value) {
-                            case "down_east" -> "up_east";
-                            case "down_north" -> "up_north";
-                            case "down_south" -> "up_south";
-                            case "down_west" -> "up_west";
-                            case "up_east" -> "down_east";
-                            case "up_north" -> "down_north";
-                            case "up_south" -> "down_south";
-                            case "up_west" -> "down_west";
+                            case "ascending_east" -> "ascending_west";
+                            case "ascending_west" -> "ascending_east";
+                            case "ascending_north" -> "ascending_south";
+                            case "ascending_south" -> "ascending_north";
                             default -> null;
                         };
                         if (newValue != null && enumProp.getValues().contains(newValue)) {
                             result = result.with(enumProp, newValue);
                         }
                     }
+
+                    String value = (String) result.getState(property);
+
+                    String[] parts = value.split("_");
+                    String newStartString = parts[0];
+                    if (!newStartString.equals("ascending")) {
+                        Direction start = Direction.valueOf(parts[0].toUpperCase(Locale.ROOT));
+                        Vector3 newStartVec = transform.apply(start.toVector());
+                        Direction newStart = Direction.findClosest(newStartVec, Direction.Flag.CARDINAL);
+                        newStartString = newStart.toString().toLowerCase(Locale.ROOT);
+                    }
+
+                    Direction end = Direction.valueOf(parts[1].toUpperCase(Locale.ROOT));
+                    Vector3 newEndVec = transform.apply(end.toVector());
+                    Direction newEnd = Direction.findClosest(newEndVec, Direction.Flag.CARDINAL);
+                    String newEndString = newEnd.toString().toLowerCase(Locale.ROOT);
+
+                    String newShape = newStartString + "_" + newEndString;
+                    String newShapeSwapped = newEndString + "_" + newStartString;
+                    if (enumProp.getValues().contains(newShape)) {
+                        result = result.with(enumProp, newShape);
+                    } else if (enumProp.getValues().contains(newShapeSwapped)) {
+                        result = result.with(enumProp, newShapeSwapped);
+                    }
+                } else if (property.getName().equals("orientation") && transform instanceof AffineTransform affineTransform) {
+                    // crafters
+                    String current = (String) result.getState(property);
+
+                    String[] parts = current.split("_");
+                    Direction facing = Direction.valueOf(parts[0].toUpperCase(Locale.ROOT));
+                    Direction top = Direction.valueOf(parts[1].toUpperCase(Locale.ROOT));
+
+                    Vector3 newFacingVec = transform.apply(facing.toVector());
+                    Vector3 newTopVec = transform.apply(top.toVector());
+
+                    Direction newFacing = Direction.findClosest(newFacingVec, Direction.Flag.CARDINAL | Direction.Flag.UPRIGHT);
+                    Direction newTop = Direction.findClosest(newTopVec, Direction.Flag.CARDINAL | Direction.Flag.UPRIGHT);
+                    if (newTop.toString().equals(Direction.DOWN.toString())) {
+                        newTop = Direction.UP;
+                    }
+
+                    String newOrientation = newFacing.toString().toLowerCase(Locale.ROOT)
+                            + "_" + newTop.toString().toLowerCase(Locale.ROOT);
+
+                    if (enumProp.getValues().contains(newOrientation)) {
+                        result = result.with(enumProp, newOrientation);
+                    }
+
                 }
             } else if (property instanceof IntegerProperty intProp) {
                 if (property.getName().equals("rotation")) {
