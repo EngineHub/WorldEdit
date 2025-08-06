@@ -46,3 +46,30 @@ jobs:
       with:
         name: WorldEdit-Folia-Snapshot
         path: worldedit-bukkit/build/libs/*
+
+    - name: Create Release
+      if: github.event_name != 'pull_request'
+      uses: ncipollo/release-action@v1
+      with:
+        tag: ${{ env.tag }}
+        name: ${{ env.project_id_b }} - ${{ github.run_number }}
+        body: |
+          This release is automatically compiled by GitHub Actions
+          Please note this is a minimalist version and does not support everything!
+          ### Commit Message
+          ${{ env.commit_msg }}
+        artifacts: worldedit-bukkit/build/libs/*.jar
+        generateReleaseNotes: true
+        prerelease: ${{ env.pre }}
+        makeLatest: ${{ env.make_latest }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        replacesArtifacts: false
+
+permissions: write-all
+env:
+  tag: build-${{ github.ref_name }}-${{ github.run_number }}
+  project_id_b: WorldEdit-Folia
+  commit_id: ${{ github.sha }}
+  commit_msg: ${{ github.event.head_commit.message }}
+  pre: false
+  make_latest: true
