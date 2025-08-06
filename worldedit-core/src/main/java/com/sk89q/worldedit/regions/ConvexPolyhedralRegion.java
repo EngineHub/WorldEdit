@@ -128,7 +128,7 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
         }
 
         Vector3 vertexD = vertex.toVector3();
-
+        Iterator<BlockVector3> verticesIt = vertices.iterator();
         if (vertices.size() == 3) {
             if (vertexBacklog.contains(vertex)) {
                 return false;
@@ -137,6 +137,8 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
             if (containsRaw(vertexD)) {
                 return vertexBacklog.add(vertex);
             }
+        } else if (vertices.size() == 2 && areCollinear(verticesIt.next(), verticesIt.next(), vertex)) {
+            return vertexBacklog.add(vertex);
         }
 
         vertices.add(vertex);
@@ -215,6 +217,22 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
         }
 
         return true;
+    }
+
+    private boolean areCollinear(BlockVector3 a, BlockVector3 b, BlockVector3 c) {
+        int abx = b.x() - a.x();
+        int aby = b.y() - a.y();
+        int abz = b.z() - a.z();
+
+        int acx = c.x() - a.x();
+        int acy = c.y() - a.y();
+        int acz = c.z() - a.z();
+
+        int crossX = aby * acz - abz * acy;
+        int crossY = abz * acx - abx * acz;
+        int crossZ = abx * acy - aby * acx;
+
+        return crossX == 0 && crossY == 0 && crossZ == 0;
     }
 
     public boolean isDefined() {
