@@ -36,6 +36,7 @@ import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
 import java.util.HashMap;
 import java.util.List;
@@ -227,28 +228,29 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                         }
                     }
 
-                    String value = (String) result.getState(property);
+                    if (isRailShape(enumProp)) {
+                        String value = (String) result.getState(property);
+                        String[] parts = value.split("_");
+                        String newStartString = parts[0];
+                        if (!newStartString.equals("ascending")) {
+                            Direction start = Direction.valueOf(parts[0].toUpperCase(Locale.ROOT));
+                            Vector3 newStartVec = transform.apply(start.toVector());
+                            Direction newStart = Direction.findClosest(newStartVec, Direction.Flag.CARDINAL);
+                            newStartString = newStart.toString().toLowerCase(Locale.ROOT);
+                        }
 
-                    String[] parts = value.split("_");
-                    String newStartString = parts[0];
-                    if (!newStartString.equals("ascending")) {
-                        Direction start = Direction.valueOf(parts[0].toUpperCase(Locale.ROOT));
-                        Vector3 newStartVec = transform.apply(start.toVector());
-                        Direction newStart = Direction.findClosest(newStartVec, Direction.Flag.CARDINAL);
-                        newStartString = newStart.toString().toLowerCase(Locale.ROOT);
-                    }
+                        Direction end = Direction.valueOf(parts[1].toUpperCase(Locale.ROOT));
+                        Vector3 newEndVec = transform.apply(end.toVector());
+                        Direction newEnd = Direction.findClosest(newEndVec, Direction.Flag.CARDINAL);
+                        String newEndString = newEnd.toString().toLowerCase(Locale.ROOT);
 
-                    Direction end = Direction.valueOf(parts[1].toUpperCase(Locale.ROOT));
-                    Vector3 newEndVec = transform.apply(end.toVector());
-                    Direction newEnd = Direction.findClosest(newEndVec, Direction.Flag.CARDINAL);
-                    String newEndString = newEnd.toString().toLowerCase(Locale.ROOT);
-
-                    String newShape = newStartString + "_" + newEndString;
-                    String newShapeSwapped = newEndString + "_" + newStartString;
-                    if (enumProp.getValues().contains(newShape)) {
-                        result = result.with(enumProp, newShape);
-                    } else if (enumProp.getValues().contains(newShapeSwapped)) {
-                        result = result.with(enumProp, newShapeSwapped);
+                        String newShape = newStartString + "_" + newEndString;
+                        String newShapeSwapped = newEndString + "_" + newStartString;
+                        if (enumProp.getValues().contains(newShape)) {
+                            result = result.with(enumProp, newShape);
+                        } else if (enumProp.getValues().contains(newShapeSwapped)) {
+                            result = result.with(enumProp, newShapeSwapped);
+                        }
                     }
                 } else if (property.getName().equals("orientation") && transform instanceof AffineTransform affineTransform) {
                     // crafters
@@ -360,6 +362,22 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
         } else {
             return null;
         }
+    }
+
+    private static boolean isRailShape(EnumProperty property) {
+        List<String> propertyValues = property.getValues();
+        List<Object> railShapeValues = BlockTypes.RAIL.getProperty("shape").getValues();
+        if (railShapeValues.size() != propertyValues.size()) {
+            return false;
+        }
+
+        for (String propertyValue : propertyValues) {
+            if (!railShapeValues.contains(propertyValue)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }
