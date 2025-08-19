@@ -36,9 +36,11 @@ import com.sk89q.worldedit.util.Direction.Flag;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.world.entity.EntityTypes;
+import org.enginehub.linbus.tree.LinByteTag;
 import org.enginehub.linbus.tree.LinCompoundTag;
 import org.enginehub.linbus.tree.LinIntArrayTag;
 import org.enginehub.linbus.tree.LinNumberTag;
+import org.enginehub.linbus.tree.LinStringTag;
 import org.enginehub.linbus.tree.LinTagType;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -218,23 +220,42 @@ public class ExtentEntityCopy implements EntityFunction {
                 }
 
                 if (tryGetFacingData(tag) instanceof FacingTagData(String facingKey, LinNumberTag<?> tagFacing)) {
-                    boolean isPainting = state.getType() == EntityTypes.PAINTING; // Paintings have different facing values
-                    Direction direction = isPainting
-                        ? MCDirections.fromHorizontalHanging(tagFacing.value().intValue())
-                        : MCDirections.fromHanging(tagFacing.value().intValue());
-
-                    if (direction != null) {
+                    if (state.getType() == EntityTypes.PAINTING) { // Paintings have different facing values
+                        Direction direction = MCDirections.fromHorizontalHanging(tagFacing.value().intValue());
                         Vector3 vector = transform.apply(direction.toVector()).subtract(transform.apply(Vector3.ZERO)).normalize();
                         Direction newDirection = Direction.findClosest(vector, Flag.CARDINAL);
+                        byte facingValue = (byte) MCDirections.toHorizontalHanging(newDirection);
+                        builder.putByte(facingKey, facingValue);
+                    } else {
+                        Direction facingDirection = MCDirections.fromHanging(tagFacing.value().intValue());
+                        Vector3 facingVector = transform.apply(facingDirection.toVector()).subtract(transform.apply(Vector3.ZERO)).normalize();
+                        Direction newFacingDirection = Direction.findClosest(facingVector, Flag.CARDINAL | Flag.UPRIGHT);
+                        byte facingValue = (byte) MCDirections.toHanging(newFacingDirection);
+                        builder.putByte(facingKey, facingValue);
 
-                        if (newDirection != null) {
-                            byte facingValue = (byte) (
-                                isPainting
-                                    ? MCDirections.toHorizontalHanging(newDirection)
-                                    : MCDirections.toHanging(newDirection)
+                        String itemRotationKey = "ItemRotation";
+                        if (!transform.isIdentity() && tag.value().get(itemRotationKey) instanceof LinByteTag tagItemRotation) {
+                            String itemId = getItemInItemFrame(tag);
+                            int availableRotations = itemId != null && itemId.equals("minecraft:filled_map") ? 4 : 8;
+                            Direction rotationBaseDirection =
+                                    facingDirection == Direction.UP || facingDirection == Direction.DOWN
+                                            ? Direction.NORTH
+                                            : Direction.UP;
+                            int itemRotation = tagItemRotation.value().intValue();
+                            Vector3 rotationVector = getItemRotationVector(
+                                    rotationBaseDirection, facingDirection.toVector(), itemRotation, availableRotations
                             );
-                            builder.putByte(facingKey, facingValue);
+                            Vector3 newRotationVector = transform.apply(rotationVector);
+                            Direction newRotationBaseDirection =
+                                    newFacingDirection == Direction.UP || newFacingDirection == Direction.DOWN
+                                            ? Direction.NORTH
+                                            : Direction.UP;
+                            byte newItemRotation = (byte) getItemRotationSteps(
+                                    newRotationBaseDirection, newFacingDirection, newRotationVector, availableRotations
+                            );
+                            builder.putByte(itemRotationKey, newItemRotation);
                         }
+
                     }
                 }
 
@@ -243,6 +264,50 @@ public class ExtentEntityCopy implements EntityFunction {
         }
 
         return state;
+    }
+
+    private Vector3 getItemRotationVector(Direction baseDirection, Vector3 facingVector, int itemRotation, int rotations) {
+        Vector3 baseVec = baseDirection.toVector().normalize();
+        double angle = Math.toRadians(itemRotation * (360f / rotations));
+        Vector3 rotated = rotateAroundAxis(baseVec, facingVector, -angle);
+        return rotated.normalize();
+    }
+
+    private Vector3 rotateAroundAxis(Vector3 vec, Vector3 axis, double angle) {
+        axis = axis.normalize();
+        double cos = Math.cos(angle);
+        double sin = Math.sin(angle);
+        return vec.multiply(cos).add(axis.cross(vec).multiply(sin)).add(axis.multiply(axis.dot(vec) * (1 - cos)));
+    }
+
+    private int getItemRotationSteps(Direction baseDirection, Direction facingDirection, Vector3 targetVector, int rotations) {
+        Vector3 baseVec = baseDirection.toVector();
+
+        double det = facingDirection.toVector().dot(baseVec.cross(targetVector));
+        double dot = baseVec.dot(targetVector);
+        double signedAngle = Math.atan2(det, dot);
+
+        double stepsDouble = -signedAngle / (Math.PI / (rotations / 2f));
+        int steps = (int) Math.round(stepsDouble) % rotations;
+        if (steps < 0) {
+            steps += rotations;
+        }
+
+        if (facingDirection == Direction.DOWN) {
+            steps = (steps + (rotations / 2)) % rotations;
+        }
+
+        return steps;
+    }
+
+    private String getItemInItemFrame(LinCompoundTag tag) {
+        if (tag.value().get("Item") instanceof LinCompoundTag tagItem) {
+            if (tagItem.value().get("id") instanceof LinStringTag tagId) {
+                return tagId.value();
+            }
+        }
+
+        return null;
     }
 
     private record FacingTagData(String facingKey, LinNumberTag<?> tagFacing) {
