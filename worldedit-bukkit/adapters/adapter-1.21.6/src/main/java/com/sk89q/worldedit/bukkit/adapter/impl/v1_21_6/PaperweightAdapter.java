@@ -301,9 +301,8 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
      * @param entity the entity
      * @param tag the tag
      */
-    private static boolean readEntityIntoTag(Entity entity, net.minecraft.nbt.CompoundTag tag) {
-        var tagValueOutput = TagValueOutput.createWrappingWithContext(ProblemReporter.DISCARDING, DedicatedServer.getServer().registryAccess(), tag);
-        return entity.save(tagValueOutput);
+    private static boolean readEntityIntoTag(Entity entity, TagValueOutput tag) {
+        return entity.save(tag);
     }
 
     private static Block getBlockFromType(BlockType blockType) {
@@ -487,13 +486,13 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
         String id = getEntityId(mcEntity);
 
-        net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
-        if (!readEntityIntoTag(mcEntity, tag)) {
+        var tagValueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, mcEntity.registryAccess());
+        if (!readEntityIntoTag(mcEntity, tagValueOutput)) {
             return null;
         }
         return new BaseEntity(
             EntityTypes.get(id),
-            LazyReference.from(() -> (LinCompoundTag) toNative(tag))
+            LazyReference.from(() -> (LinCompoundTag) toNative(tagValueOutput.buildResult()))
         );
     }
 
