@@ -138,7 +138,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
         createDefaultConfiguration("config.yml"); // Create the default configuration file
 
-        config = new BukkitConfiguration(new YAMLProcessor(new File(getDataFolder(), "config.yml"), true), this);
+        config = new BukkitConfiguration(new YAMLProcessor(new File(getDataFolder(), "config.yml").toPath(), true), this);
 
         Path delChunks = Paths.get(getDataFolder().getPath(), DELCHUNKS_FILE_NAME);
         if (Files.exists(delChunks)) {
