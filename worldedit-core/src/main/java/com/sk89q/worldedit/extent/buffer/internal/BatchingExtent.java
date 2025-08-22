@@ -95,9 +95,12 @@ public class BatchingExtent extends AbstractBufferingExtent {
                         }
                     });
                 } catch (RuntimeException e) {
-                    Throwables.throwIfInstanceOf(e.getCause(), WorldEditException.class);
+                    if (e.getCause() != null) {
+                        Throwables.throwIfInstanceOf(e.getCause(), WorldEditException.class);
+                    }
                     throw e;
                 }
+
                 blockMap.clear();
                 return null;
             }
