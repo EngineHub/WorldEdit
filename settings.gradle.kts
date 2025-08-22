@@ -9,7 +9,7 @@ pluginManagement {
 }
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
-    id("fabric-loom") version "1.10.1"
+    id("fabric-loom") version "1.11.4"
 }
 dependencyResolutionManagement {
     repositories {

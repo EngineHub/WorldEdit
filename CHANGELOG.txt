@@ -1,3 +1,6 @@
+7.3.16
+- Added support for 1.21.8
+
 7.3.15
 - Added support for 1.21.6 & 1.21.7
 
