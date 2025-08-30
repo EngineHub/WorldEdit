@@ -81,6 +81,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.levelgen.feature.CoralTreeFeature;
 import net.minecraft.world.level.levelgen.feature.FallenTreeFeature;
 import net.minecraft.world.level.levelgen.feature.TreeFeature;
 import net.minecraft.world.phys.BlockHitResult;
@@ -309,7 +310,7 @@ public class FabricWorldEdit implements ModInitializer {
         for (ResourceLocation name : placedFeatureRegistry.keySet()) {
             // Do some hackery to make sure this is a tree
             var underlyingFeature = placedFeatureRegistry.get(name).get().value().feature().value().feature();
-            if (underlyingFeature instanceof TreeFeature || underlyingFeature instanceof FallenTreeFeature) {
+            if (underlyingFeature instanceof TreeFeature || underlyingFeature instanceof FallenTreeFeature || underlyingFeature instanceof CoralTreeFeature) {
                 String key = name.toString();
                 if (TreeType.REGISTRY.get(key) == null) {
                     TreeType.REGISTRY.register(key, new TreeType(key));

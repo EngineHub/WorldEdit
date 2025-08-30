@@ -133,6 +133,7 @@ import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.CoralTreeFeature;
 import net.minecraft.world.level.levelgen.feature.FallenTreeFeature;
 import net.minecraft.world.level.levelgen.feature.TreeFeature;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
@@ -945,7 +946,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         for (ResourceLocation name : placedFeatureRegistry.keySet()) {
             // Do some hackery to make sure this is a tree
             var underlyingFeature = placedFeatureRegistry.get(name).get().value().feature().value().feature();
-            if (underlyingFeature instanceof TreeFeature || underlyingFeature instanceof FallenTreeFeature) {
+            if (underlyingFeature instanceof TreeFeature || underlyingFeature instanceof FallenTreeFeature || underlyingFeature instanceof CoralTreeFeature) {
                 String key = name.toString();
                 if (TreeType.REGISTRY.get(key) == null) {
                     TreeType.REGISTRY.register(key, new TreeType(key));
