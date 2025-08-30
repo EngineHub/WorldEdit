@@ -46,6 +46,7 @@ import javax.annotation.Nullable;
  */
 public abstract class AbstractWorld implements World {
 
+    @Deprecated
     private final PriorityQueue<QueuedEffect> effectQueue = new PriorityQueue<>();
     private int taskId = -1;
 
@@ -102,11 +103,13 @@ public abstract class AbstractWorld implements World {
     public void fixLighting(Iterable<BlockVector2> chunks) {
     }
 
+    @Deprecated
     @Override
     public boolean playEffect(Vector3 position, int type, int data) {
         return false;
     }
 
+    @Deprecated
     @Override
     public boolean queueBlockBreakEffect(Platform server, BlockVector3 position, BlockType blockType, double priority) {
         if (taskId == -1) {
@@ -169,6 +172,7 @@ public abstract class AbstractWorld implements World {
         return true;
     }
 
+    @Deprecated
     private class QueuedEffect implements Comparable<QueuedEffect> {
         private final Vector3 position;
         private final BlockType blockType;
@@ -180,7 +184,7 @@ public abstract class AbstractWorld implements World {
             this.priority = priority;
         }
 
-        @SuppressWarnings("deprecation")
+        @Deprecated
         public void play() {
             playEffect(position, 2001, blockType.getLegacyId());
         }
