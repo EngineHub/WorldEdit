@@ -47,13 +47,13 @@ import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.util.HandSide;
-import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.generation.TreeType;
 import com.sk89q.worldedit.world.item.ItemType;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.CommandManagerService;
@@ -217,7 +217,7 @@ public class ToolCommands {
     @CommandPermissions("worldedit.tool.tree")
     public void tree(Player player, LocalSession session,
                      @Arg(desc = "Type of tree to generate", def = "tree")
-                     TreeGenerator.TreeType type) throws WorldEditException {
+                     TreeType type) throws WorldEditException {
         setTool(player, session, new TreePlanter(type), "worldedit.tool.tree.equip");
     }
 
