@@ -102,7 +102,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
         this.server = plugin.getServer();
         (new ServerListener()).register(plugin); // Register the events
 
-        loadConfig(new File("wepif.yml").toPath());
+        loadConfig(Path.of("wepif.yml"));
         findResolver();
     }
 
