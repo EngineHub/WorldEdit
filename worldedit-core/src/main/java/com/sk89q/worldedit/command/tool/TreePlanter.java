@@ -29,8 +29,8 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.world.generation.TreeType;
 
 import javax.annotation.Nullable;
 
@@ -39,9 +39,9 @@ import javax.annotation.Nullable;
  */
 public class TreePlanter implements BlockTool {
 
-    private final TreeGenerator.TreeType treeType;
+    private final TreeType treeType;
 
-    public TreePlanter(TreeGenerator.TreeType treeType) {
+    public TreePlanter(TreeType treeType) {
         this.treeType = treeType;
     }
 
@@ -59,7 +59,7 @@ public class TreePlanter implements BlockTool {
 
                 final BlockVector3 pos = clicked.toVector().add(0, 1, 0).toBlockPoint();
                 for (int i = 0; i < 10; i++) {
-                    if (treeType.generate(editSession, pos)) {
+                    if (player.getWorld().generateTree(treeType, editSession, pos)) {
                         successful = true;
                         break;
                     }

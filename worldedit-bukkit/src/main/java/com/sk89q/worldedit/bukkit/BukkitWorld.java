@@ -23,14 +23,12 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.bukkit.adapter.UnsupportedVersionEditException;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
 import com.sk89q.worldedit.math.BlockVector2;
@@ -53,7 +51,6 @@ import com.sk89q.worldedit.world.weather.WeatherTypes;
 import io.papermc.lib.PaperLib;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Effect;
-import org.bukkit.TreeType;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -65,13 +62,11 @@ import org.bukkit.inventory.InventoryHolder;
 import java.lang.ref.WeakReference;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -234,64 +229,20 @@ public class BukkitWorld extends AbstractWorld {
         return true;
     }
 
-    /**
-     * An EnumMap that stores which WorldEdit TreeTypes apply to which Bukkit TreeTypes.
-     */
-    private static final EnumMap<TreeGenerator.TreeType, TreeType> treeTypeMapping =
-            new EnumMap<>(TreeGenerator.TreeType.class);
-
-    static {
-        for (TreeGenerator.TreeType type : TreeGenerator.TreeType.values()) {
-            try {
-                TreeType bukkitType = TreeType.valueOf(type.name());
-                treeTypeMapping.put(type, bukkitType);
-            } catch (IllegalArgumentException e) {
-                // Unhandled TreeType
-            }
-        }
-        // Other mappings for WE-specific values
-        treeTypeMapping.put(TreeGenerator.TreeType.SHORT_JUNGLE, TreeType.SMALL_JUNGLE);
-        treeTypeMapping.put(TreeGenerator.TreeType.RANDOM, TreeType.BROWN_MUSHROOM);
-        treeTypeMapping.put(TreeGenerator.TreeType.RANDOM_REDWOOD, TreeType.REDWOOD);
-        treeTypeMapping.put(TreeGenerator.TreeType.PINE, TreeType.REDWOOD);
-        treeTypeMapping.put(TreeGenerator.TreeType.RANDOM_BIRCH, TreeType.BIRCH);
-        treeTypeMapping.put(TreeGenerator.TreeType.RANDOM_JUNGLE, TreeType.JUNGLE);
-        treeTypeMapping.put(TreeGenerator.TreeType.RANDOM_MUSHROOM, TreeType.BROWN_MUSHROOM);
-        for (TreeGenerator.TreeType type : TreeGenerator.TreeType.values()) {
-            if (treeTypeMapping.get(type) == null) {
-                WorldEdit.logger.error("No TreeType mapping for TreeGenerator.TreeType." + type);
-            }
-        }
-    }
-
-    public static TreeType toBukkitTreeType(TreeGenerator.TreeType type) {
-        return treeTypeMapping.get(type);
+    @SuppressWarnings("deprecation")
+    @Override
+    public boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, BlockVector3 pt) {
+        return false;
     }
 
     @Override
-    public boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, BlockVector3 pt) {
-        World world = getWorld();
-        TreeType bukkitType = toBukkitTreeType(type);
-        if (bukkitType == TreeType.CHORUS_PLANT) {
-            pt = pt.add(0, 1, 0); // bukkit skips the feature gen which does this offset normally, so we have to add it back
+    public boolean generateTree(com.sk89q.worldedit.world.generation.TreeType type, EditSession editSession, BlockVector3 position) throws MaxChangedBlocksException {
+        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+        if (adapter != null) {
+            return adapter.generateTree(type, getWorld(), editSession, position);
         }
-        return type != null && world.generateTree(
-            BukkitAdapter.adapt(world, pt),
-            ThreadLocalRandom.current(),
-            bukkitType,
-            block -> {
-                Mask mask = editSession.getMask();
-                var blockVector = BukkitAdapter.asBlockVector(block.getLocation());
-                if (mask != null && !mask.test(blockVector)) {
-                    return false;
-                }
-                try {
-                    editSession.setBlock(blockVector, BukkitAdapter.adapt(block.getBlockData()));
-                } catch (MaxChangedBlocksException ignored) {
-                }
-                return false;
-            }
-        );
+        // No adapter, we can't generate this.
+        return false;
     }
 
     @Override
