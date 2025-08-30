@@ -120,7 +120,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelSettings;
-import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -133,6 +132,7 @@ import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.TreeFeature;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.Structure;
@@ -923,6 +923,19 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         for (ResourceLocation name : server.registryAccess().lookupOrThrow(Registries.STRUCTURE).keySet()) {
             if (StructureType.REGISTRY.get(name.toString()) == null) {
                 StructureType.REGISTRY.register(name.toString(), new StructureType(name.toString()));
+            }
+        }
+
+        // Trees
+        var placedFeatureRegistry = server.registryAccess().lookupOrThrow(Registries.PLACED_FEATURE);
+        for (ResourceLocation name : placedFeatureRegistry.keySet()) {
+            // Do some hackery to make sure this is a tree
+            var underlyingFeature = placedFeatureRegistry.get(name).get().value().feature().value().feature();
+            if (underlyingFeature instanceof TreeFeature) {
+                String key = name.toString();
+                if (TreeType.REGISTRY.get(key) == null) {
+                    TreeType.REGISTRY.register(key, new TreeType(key));
+                }
             }
         }
 
