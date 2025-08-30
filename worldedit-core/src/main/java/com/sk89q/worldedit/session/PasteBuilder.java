@@ -31,6 +31,7 @@ import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.transform.Transform;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -51,6 +52,7 @@ public class PasteBuilder {
     private boolean ignoreStructureVoidBlocks; // TODO Make true in WE8
     private boolean copyEntities = true; // default because it used to be this way
     private boolean copyBiomes;
+    private Region copyRegion;
 
     /**
      * Create a new instance.
@@ -64,6 +66,7 @@ public class PasteBuilder {
         this.clipboard = holder.getClipboard();
         this.transform = holder.getTransform();
         this.targetExtent = targetExtent;
+        this.copyRegion = this.clipboard.getRegion();
     }
 
     /**
@@ -145,13 +148,24 @@ public class PasteBuilder {
     }
 
     /**
+     * Set the region to copy from the clipboard. By default, this uses the region stored in the clipboard.
+     *
+     * @param copyRegion the region to copy from the clipboard
+     * @return this builder instance
+     */
+    public PasteBuilder copyRegion(Region copyRegion) {
+        this.copyRegion = copyRegion;
+        return this;
+    }
+
+    /**
      * Build the operation.
      *
      * @return the operation
      */
     public Operation build() {
         BlockTransformExtent extent = new BlockTransformExtent(clipboard, transform);
-        ForwardExtentCopy copy = new ForwardExtentCopy(extent, clipboard.getRegion(), clipboard.getOrigin(), targetExtent, to);
+        ForwardExtentCopy copy = new ForwardExtentCopy(extent, copyRegion, clipboard.getOrigin(), targetExtent, to);
         copy.setTransform(transform);
 
         Mask combinedMask = sourceMask;
