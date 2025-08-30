@@ -20,6 +20,8 @@
 package com.sk89q.util.yaml;
 
 import com.sk89q.util.StringUtil;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
+import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -72,6 +74,7 @@ import java.util.Map.Entry;
  */
 public class YAMLProcessor extends YAMLNode {
 
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
     public static final String LINE_BREAK = DumperOptions.LineBreak.getPlatformLineBreak().getString();
     public static final char COMMENT_CHAR = '#';
     protected final Yaml yaml;
