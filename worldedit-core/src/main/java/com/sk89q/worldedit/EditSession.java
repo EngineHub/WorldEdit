@@ -123,6 +123,7 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.generation.TreeType;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 import org.apache.logging.log4j.Logger;
 
@@ -2251,7 +2252,9 @@ public class EditSession implements Extent, AutoCloseable {
      * @param treeType the tree type
      * @return number of trees created
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     * @deprecated Use {@link #makeForest(Region, double, TreeType)}.
      */
+    @Deprecated
     public int makeForest(BlockVector3 basePosition, int size, double density, TreeGenerator.TreeType treeType) throws MaxChangedBlocksException {
         return makeForest(CuboidRegion.fromCenter(basePosition, size), density, treeType);
     }
@@ -2264,9 +2267,43 @@ public class EditSession implements Extent, AutoCloseable {
      * @param treeType the tree type
      * @return number of trees created
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     * @deprecated Use {@link #makeForest(Region, double, TreeType)}.
      */
+    @Deprecated
     public int makeForest(Region region, double density, TreeGenerator.TreeType treeType) throws MaxChangedBlocksException {
         ForestGenerator generator = new ForestGenerator(this, treeType);
+        GroundFunction ground = new GroundFunction(new ExistingBlockMask(this), generator);
+        LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
+        visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));
+        Operations.completeLegacy(visitor);
+        return ground.getAffected();
+    }
+
+    /**
+     * Makes a forest.
+     *
+     * @param basePosition a position
+     * @param size a size
+     * @param density between 0 and 1, inclusive
+     * @param treeType the tree type
+     * @return number of trees created
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    public int makeForest(BlockVector3 basePosition, int size, double density, TreeType treeType) throws MaxChangedBlocksException {
+        return makeForest(CuboidRegion.fromCenter(basePosition, size), density, treeType);
+    }
+
+    /**
+     * Makes a forest.
+     *
+     * @param region the region to generate trees in
+     * @param density between 0 and 1, inclusive
+     * @param treeType the tree type
+     * @return number of trees created
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    public int makeForest(Region region, double density, TreeType treeType) throws MaxChangedBlocksException {
+        com.sk89q.worldedit.function.generator.TreeGenerator generator = new com.sk89q.worldedit.function.generator.TreeGenerator(this, treeType);
         GroundFunction ground = new GroundFunction(new ExistingBlockMask(this), generator);
         LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
         visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));
