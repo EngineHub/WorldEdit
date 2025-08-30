@@ -23,24 +23,31 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.expression.ExpressionEnvironment;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
+import com.sk89q.worldedit.math.transform.ScaleAndTranslateTransform;
+import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 
 public class WorldEditExpressionEnvironment implements ExpressionEnvironment {
 
-    private final Vector3 unit;
-    private final Vector3 zero2;
+    private final Transform transform;
     private Vector3 current = Vector3.ZERO;
     private final Extent extent;
 
+    /**
+     * @deprecated Use {@link EditSession#makeBiomeShape(Region, Transform, BiomeType, String, boolean, int)} and pass a {@link ScaleAndTranslateTransform}.
+     */
+    @Deprecated
     public WorldEditExpressionEnvironment(Extent extent, Vector3 unit, Vector3 zero) {
+        this(extent, new ScaleAndTranslateTransform(zero, unit));
+    }
+
+    public WorldEditExpressionEnvironment(Extent extent, Transform transform) {
         this.extent = extent;
-        this.unit = unit;
-        this.zero2 = zero.add(0.5, 0.5, 0.5);
+        this.transform = transform;
     }
 
     public BlockVector3 toWorld(double x, double y, double z) {
-        // unscale, unoffset, round-nearest
-        return Vector3.at(x, y, z).multiply(unit).add(zero2).toBlockPoint();
+        return transform.apply(Vector3.at(x, y, z)).add(0.5, 0.5, 0.5).toBlockPoint();
     }
 
     public Vector3 toWorldRel(double x, double y, double z) {
