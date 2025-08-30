@@ -31,17 +31,39 @@ import java.util.Map.Entry;
  * Applies a block type while retaining all possible states.
  */
 public class TypeApplyingPattern extends AbstractExtentPattern {
-    private final BlockState blockState;
+    private final Pattern pattern;
 
+    // TODO Remove in WorldEdit 8
+    /**
+     * Create a new TypeApplyingPattern that applies the block type from the given block state.
+     *
+     * <p>
+     * As the {@link TypeApplyingPattern#TypeApplyingPattern(Extent, Pattern)} constructor is more flexible,
+     * this constructor will be removed in WorldEdit 8.0.
+     * </p>
+     *
+     * @param extent The extent to work in
+     * @param blockState The block state to get block types from
+     */
     public TypeApplyingPattern(Extent extent, BlockState blockState) {
+        this(extent, (Pattern) blockState);
+    }
+
+    /**
+     * Create a new TypeApplyingPattern that applies the block type from the given pattern.
+     *
+     * @param extent The extent to work in
+     * @param pattern The pattern to get block types from
+     */
+    public TypeApplyingPattern(Extent extent, Pattern pattern) {
         super(extent);
-        this.blockState = blockState;
+        this.pattern = pattern;
     }
 
     @Override
     public BaseBlock applyBlock(BlockVector3 position) {
         BlockState oldBlock = getExtent().getBlock(position);
-        BlockState newBlock = blockState;
+        BlockState newBlock = pattern.applyBlock(position).toImmutableState();
         for (Entry<Property<?>, Object> entry : oldBlock.getStates().entrySet()) {
             @SuppressWarnings("unchecked")
             Property<Object> prop = (Property<Object>) entry.getKey();
