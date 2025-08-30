@@ -201,7 +201,8 @@ public class YAMLProcessor extends YAMLNode {
         if (parent != null) {
             try {
                 Files.createDirectories(parent);
-            } catch (IOException ignored) {
+            } catch (IOException e) {
+                LOGGER.warn("Exception while saving yaml file to " + path, e);
             }
         }
         try (OutputStream stream = getOutputStream()) {
