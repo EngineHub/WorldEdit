@@ -217,7 +217,7 @@ public class SpongeWorldEdit {
         event.game().registry(RegistryTypes.PLACED_FEATURE).streamEntries().forEach(feature -> {
             String id = feature.key().asString();
             var underlyingFeatureType = feature.value().feature().type();
-            if (underlyingFeatureType.equals(FeatureTypes.TREE) || underlyingFeatureType.equals(FeatureTypes.FALLEN_TREE)) {
+            if (underlyingFeatureType.equals(FeatureTypes.TREE) || underlyingFeatureType.equals(FeatureTypes.FALLEN_TREE) || underlyingFeatureType.equals(FeatureTypes.CORAL_TREE)) {
                 if (!TreeType.REGISTRY.keySet().contains(id)) {
                     TreeType.REGISTRY.register(id, new TreeType(id));
                 }
