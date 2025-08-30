@@ -35,7 +35,7 @@ public class TypeApplyingPattern extends AbstractExtentPattern {
 
     // TODO Remove in WorldEdit 8
     /**
-     * Create a new TypeApplyingPattern that applies the given block type.
+     * Create a new TypeApplyingPattern that applies the block type from the given block state.
      *
      * <p>
      * As the {@link TypeApplyingPattern#TypeApplyingPattern(Extent, Pattern)} constructor is more flexible,
@@ -50,7 +50,7 @@ public class TypeApplyingPattern extends AbstractExtentPattern {
     }
 
     /**
-     * Create a new TypeApplyingPattern that applies the given pattern.
+     * Create a new TypeApplyingPattern that applies the block type from the given pattern.
      *
      * @param extent The extent to work in
      * @param pattern The pattern to get block types from
