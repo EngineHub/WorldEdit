@@ -30,9 +30,10 @@ import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -100,7 +101,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
         this.server = plugin.getServer();
         (new ServerListener()).register(plugin); // Register the events
 
-        loadConfig(new File("wepif.yml"));
+        loadConfig(Path.of("wepif.yml"));
         findResolver();
     }
 
@@ -185,16 +186,16 @@ public class PermissionsResolverManager implements PermissionsResolver {
         return "Using WEPIF for permissions";
     }
 
-    private boolean loadConfig(File file) {
+    private boolean loadConfig(Path path) {
         boolean isUpdated = false;
-        if (!file.exists()) {
+        if (!Files.exists(path)) {
             try {
-                file.createNewFile();
+                Files.createFile(path);
             } catch (IOException e) {
                 LOGGER.warn("Failed to create new configuration file", e);
             }
         }
-        config = new YAMLProcessor(file, false, YAMLFormat.EXTENDED);
+        config = new YAMLProcessor(path, false, YAMLFormat.EXTENDED);
         try {
             config.load();
         } catch (IOException e) {
