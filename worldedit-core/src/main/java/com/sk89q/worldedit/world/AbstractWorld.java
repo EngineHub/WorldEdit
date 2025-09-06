@@ -164,6 +164,11 @@ public abstract class AbstractWorld implements World {
     public void setWeather(WeatherType weatherType, long duration) {
     }
 
+    @Override
+    public boolean isValid() {
+        return true;
+    }
+
     private class QueuedEffect implements Comparable<QueuedEffect> {
         private final Vector3 position;
         private final BlockType blockType;
