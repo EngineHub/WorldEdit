@@ -386,6 +386,18 @@ public interface World extends Extent, Keyed {
      */
     BlockVector3 getSpawnPosition();
 
+    /**
+     * Gets whether this world  is valid (i.e. not unloaded, and accessible by the platform).
+     *
+     * <p>
+     * If the platform has no concept of "validity" in worlds, this should return true. It should assume a valid world
+     * unless it knows for sure that the world is invalid.
+     * </p>
+     *
+     * @return Whether the world is valid
+     */
+    boolean isValid();
+
     @Override
     boolean equals(Object other);
 

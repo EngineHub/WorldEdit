@@ -298,11 +298,15 @@ public class LocalSession {
     }
 
     public boolean hasWorldOverride() {
-        return this.worldOverride != null;
+        return this.worldOverride != null && this.worldOverride.isValid();
     }
 
     @Nullable
     public World getWorldOverride() {
+        if (this.worldOverride != null && !this.worldOverride.isValid()) {
+            // Don't mutate the data in the getter, but do not return an invalid world.
+            return null;
+        }
         return this.worldOverride;
     }
 
