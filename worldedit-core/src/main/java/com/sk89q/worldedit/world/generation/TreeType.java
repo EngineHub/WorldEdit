@@ -17,20 +17,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.bukkit;
+package com.sk89q.worldedit.world.generation;
 
-import com.sk89q.worldedit.util.TreeGenerator;
-import org.junit.jupiter.api.Test;
+import com.sk89q.worldedit.registry.Keyed;
+import com.sk89q.worldedit.registry.NamespacedRegistry;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+public record TreeType(String id) implements Keyed {
 
-public class BukkitWorldTest {
+    public static final NamespacedRegistry<TreeType> REGISTRY = new NamespacedRegistry<>("tree type", "tree_type", "minecraft");
 
-    @Test
-    public void testTreeTypeMapping() {
-        for (TreeGenerator.TreeType type : TreeGenerator.TreeType.values()) {
-            assertNotNull(BukkitWorld.toBukkitTreeType(type), "No mapping for: " + type);
-        }
+    @Override
+    public String toString() {
+        return this.id;
     }
-
 }

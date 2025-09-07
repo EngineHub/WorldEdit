@@ -31,7 +31,10 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 /**
  * Generates forests by searching for the ground starting from the given upper Y
  * coordinate for every column given.
+ *
+ * @deprecated Use {@link com.sk89q.worldedit.function.generator.TreeGenerator} instead.
  */
+@Deprecated
 public class ForestGenerator implements RegionFunction {
 
     private final TreeGenerator.TreeType treeType;

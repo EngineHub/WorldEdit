@@ -20,6 +20,13 @@
             "changes": [
                 "METHOD_REMOVED"
             ]
+        },
+        {
+            "type": "com.sk89q.worldedit.bukkit.BukkitWorld",
+            "member": "Method com.sk89q.worldedit.bukkit.BukkitWorld.toBukkitTreeType(com.sk89q.worldedit.util.TreeGenerator$TreeType)",
+            "changes": [
+              "METHOD_REMOVED"
+            ]
         }
     ]
 }
