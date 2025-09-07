@@ -34,7 +34,7 @@ public class WorldEditExpressionEnvironment implements ExpressionEnvironment {
     private final Extent extent;
 
     /**
-     * @deprecated Use {@link EditSession#makeBiomeShape(Region, Transform, BiomeType, String, boolean, int)} and pass a {@link ScaleAndTranslateTransform}.
+     * @deprecated Use {@link #WorldEditExpressionEnvironment(Extent, Transform)} and pass a {@link ScaleAndTranslateTransform}.
      */
     @Deprecated
     public WorldEditExpressionEnvironment(Extent extent, Vector3 unit, Vector3 zero) {
