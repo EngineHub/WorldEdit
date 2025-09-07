@@ -2347,6 +2347,28 @@ public class EditSession implements Extent, AutoCloseable {
     /**
      * Generate a shape for the given expression.
      *
+     * @param region the region to generate the shape in
+     * @param zero the coordinate origin for x/y/z variables
+     * @param unit the scale of the x/y/z/ variables
+     * @param pattern the default material to make the shape from
+     * @param expression the expression defining the shape
+     * @param hollow whether the shape should be hollow
+     * @param timeout the time, in milliseconds, to wait for each expression evaluation before halting it. -1 to disable
+     * @return number of blocks changed
+     * @throws ExpressionException if there is a problem with the expression
+     * @throws MaxChangedBlocksException if the maximum block change limit is exceeded
+     * @deprecated Use {@link EditSession#makeShape(Region, Transform, Pattern, String, boolean, int)} and pass a {@link ScaleAndTranslateTransform}.
+     */
+    @Deprecated
+    public int makeShape(final Region region, final Vector3 zero, final Vector3 unit,
+                         final Pattern pattern, final Expression expression, final boolean hollow, final int timeout)
+            throws ExpressionException, MaxChangedBlocksException {
+        return makeShape(region, new ScaleAndTranslateTransform(zero, unit), pattern, expression, hollow, timeout);
+    }
+
+    /**
+     * Generate a shape for the given expression.
+     *
      * @param region           the region to generate the shape in
      * @param transform        the transformation for x/y/z variables
      * @param pattern          the default material to make the shape from
@@ -2459,7 +2481,7 @@ public class EditSession implements Extent, AutoCloseable {
     @Deprecated
     public int deformRegion(final Region region, final Vector3 zero, final Vector3 unit, final String expressionString)
             throws ExpressionException, MaxChangedBlocksException {
-        return deformRegion(region, new ScaleAndTranslateTransform(zero, unit), expressionString, WorldEdit.getInstance().getConfiguration().calculationTimeout);
+        return deformRegion(region, zero, unit, expressionString, WorldEdit.getInstance().getConfiguration().calculationTimeout);
     }
 
     /**
@@ -2482,8 +2504,9 @@ public class EditSession implements Extent, AutoCloseable {
     @Deprecated
     public int deformRegion(final Region region, final Vector3 zero, final Vector3 unit, final String expressionString,
                             final int timeout) throws ExpressionException, MaxChangedBlocksException {
-        final Transform transform = new ScaleAndTranslateTransform(zero, unit);
-        return deformRegion(region, transform, expressionString, timeout);
+        final Expression expression = Expression.compile(expressionString, "x", "y", "z");
+        expression.optimize();
+        return deformRegion(region, zero, unit, expression, timeout);
     }
 
     /**
@@ -2514,8 +2537,9 @@ public class EditSession implements Extent, AutoCloseable {
      * have changed.
      *
      * @param region           the region to deform
-     * @param transform        the coordinate system
-     * @param expressionString the expression to evaluate for each block
+     * @param zero the coordinate origin for x/y/z variables
+     * @param unit the scale of the x/y/z/ variables
+     * @param expression the expression to evaluate for each block
      * @param timeout          maximum time for the expression to evaluate for each block. -1 for unlimited.
      * @return number of blocks changed
      * @throws ExpressionException       thrown on invalid expression input
@@ -2523,9 +2547,10 @@ public class EditSession implements Extent, AutoCloseable {
      * @deprecated Use {@link EditSession#deformRegion(Region, Transform, String, int, InputExtent, Transform)}.
      */
     @Deprecated
-    public int deformRegion(final Region region, final Transform transform, final String expressionString,
+    public int deformRegion(final Region region, final Vector3 zero, final Vector3 unit, final Expression expression,
                             final int timeout) throws ExpressionException, MaxChangedBlocksException {
-        return deformRegion(region, transform, expressionString, timeout, world, transform);
+        var transform = new ScaleAndTranslateTransform(zero, unit);
+        return deformRegion(region, transform, expression, timeout, world, transform);
     }
 
     /**
@@ -2871,6 +2896,8 @@ public class EditSession implements Extent, AutoCloseable {
     }
 
     /**
+     * Generate a biome shape for the given expression.
+     *
      * @deprecated Use {@link EditSession#makeBiomeShape(Region, Transform, BiomeType, String, boolean, int)} and pass a {@link ScaleAndTranslateTransform}.
      */
     @Deprecated
@@ -2880,6 +2907,8 @@ public class EditSession implements Extent, AutoCloseable {
     }
 
     /**
+     * Generate a biome shape for the given expression.
+     *
      * @deprecated Use {@link EditSession#makeBiomeShape(Region, Transform, BiomeType, String, boolean, int)} and pass a {@link ScaleAndTranslateTransform}.
      */
     @Deprecated
@@ -2896,7 +2925,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @param biomeType the biome to make the shape from
      * @param expressionString the expression defining the shape
      * @param hollow whether the shape should be hollow
-     * @param timeout
+     * @param timeout maximum time for the expression to evaluate for each block. -1 for unlimited.
      * @return number of blocks changed
      * @throws ExpressionException if there is a problem with the expression
      */

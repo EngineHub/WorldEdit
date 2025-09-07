@@ -34,6 +34,8 @@ public class WorldEditExpressionEnvironment implements ExpressionEnvironment {
     private final Extent extent;
 
     /**
+     * Creates a new WorldEditExpressionEnvironment.
+     *
      * @deprecated Use {@link #WorldEditExpressionEnvironment(Extent, Transform)} and pass a {@link ScaleAndTranslateTransform}.
      */
     @Deprecated
