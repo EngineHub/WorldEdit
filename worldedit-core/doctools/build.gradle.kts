@@ -15,4 +15,5 @@ dependencies {
     "implementation"(kotlin("stdlib-jdk8"))
     "implementation"(kotlin("reflect"))
     "implementation"(libs.guava)
+    "implementation"(libs.log4j.core)
 }
