@@ -31,7 +31,9 @@ import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extent.InputExtent;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.GroundFunction;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.RegionMaskingFilter;
@@ -49,6 +51,7 @@ import com.sk89q.worldedit.function.visitor.RegionVisitor;
 import com.sk89q.worldedit.internal.annotation.Offset;
 import com.sk89q.worldedit.internal.annotation.Selection;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
+import com.sk89q.worldedit.internal.util.TransformUtil;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.math.convolution.GaussianKernel;
@@ -56,6 +59,7 @@ import com.sk89q.worldedit.math.convolution.HeightMap;
 import com.sk89q.worldedit.math.convolution.HeightMapFilter;
 import com.sk89q.worldedit.math.convolution.SnowHeightMap;
 import com.sk89q.worldedit.math.noise.RandomNoise;
+import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.regions.ConvexPolyhedralRegion;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
@@ -498,44 +502,30 @@ public class RegionCommands {
                       @Switch(name = 'r', desc = "Use the game's coordinate origin")
                           boolean useRawCoords,
                       @Switch(name = 'o', desc = "Use the placement's coordinate origin")
-                          boolean offset,
+                          boolean offsetPlacement,
                       @Switch(name = 'c', desc = "Use the selection's center as origin")
-                          boolean offsetCenter) throws WorldEditException {
-        final Vector3 zero;
-        Vector3 unit;
+                          boolean offsetCenter,
+                      @Switch(name = 'l', desc = "Fetch from the clipboard instead of the world")
+                          boolean useClipboard) throws WorldEditException {
+        final Transform targetTransform = TransformUtil.createTransformForExpressionCommand(actor, session, region, useRawCoords, offsetPlacement, offsetCenter);
 
-        if (useRawCoords) {
-            zero = Vector3.ZERO;
-            unit = Vector3.ONE;
-        } else if (offset) {
-            zero = session.getPlacementPosition(actor).toVector3();
-            unit = Vector3.ONE;
-        } else if (offsetCenter) {
-            final Vector3 min = region.getMinimumPoint().toVector3();
-            final Vector3 max = region.getMaximumPoint().toVector3();
+        final InputExtent sourceExtent;
+        final Transform sourceTransform;
+        if (useClipboard) {
+            final Clipboard clipboard = session.getClipboard().getClipboard();
+            sourceExtent = clipboard;
 
-            zero = max.add(min).multiply(0.5);
-            unit = Vector3.ONE;
+            final Vector3 clipboardMin = clipboard.getMinimumPoint().toVector3();
+            final Vector3 clipboardMax = clipboard.getMaximumPoint().toVector3();
+
+            sourceTransform = TransformUtil.createTransformForExpressionCommand(useRawCoords, offsetPlacement, offsetCenter, clipboardMin, clipboardMax, clipboardMin);
         } else {
-            final Vector3 min = region.getMinimumPoint().toVector3();
-            final Vector3 max = region.getMaximumPoint().toVector3();
-
-            zero = max.add(min).divide(2);
-            unit = max.subtract(zero);
-
-            if (unit.x() == 0) {
-                unit = unit.withX(1.0);
-            }
-            if (unit.y() == 0) {
-                unit = unit.withY(1.0);
-            }
-            if (unit.z() == 0) {
-                unit = unit.withZ(1.0);
-            }
+            sourceExtent = editSession.getWorld();
+            sourceTransform = targetTransform;
         }
 
         try {
-            final int affected = editSession.deformRegion(region, zero, unit, String.join(" ", expression), session.getTimeout());
+            final int affected = editSession.deformRegion(region, targetTransform, String.join(" ", expression), session.getTimeout(), sourceExtent, sourceTransform);
             if (actor instanceof Player) {
                 ((Player) actor).findFreePosition();
             }
