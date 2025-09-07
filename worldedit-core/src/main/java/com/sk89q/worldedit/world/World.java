@@ -336,7 +336,9 @@ public interface World extends Extent, Keyed {
      * @param type the effect type
      * @param data the effect data
      * @return true if the effect was played
+     * @deprecated This is deprecated without replacement.
      */
+    @Deprecated
     boolean playEffect(Vector3 position, int type, int data);
 
     /**
@@ -347,7 +349,9 @@ public interface World extends Extent, Keyed {
      * @param blockType the block type
      * @param priority the priority
      * @return true if the effect was played
+     * @deprecated This is deprecated without replacement.
      */
+    @Deprecated
     boolean queueBlockBreakEffect(Platform server, BlockVector3 position, BlockType blockType, double priority);
 
     /**

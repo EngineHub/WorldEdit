@@ -7,5 +7,14 @@
         "CONSTRUCTOR_REMOVED"
       ]
     }
+  ],
+  "Removal of override": [
+    {
+      "type": "com.sk89q.worldedit.fabric.FabricWorld",
+      "member": "Method com.sk89q.worldedit.fabric.FabricWorld.playEffect(com.sk89q.worldedit.math.Vector3,int,int)",
+      "changes": [
+        "METHOD_REMOVED"
+      ]
+    }
   ]
 }

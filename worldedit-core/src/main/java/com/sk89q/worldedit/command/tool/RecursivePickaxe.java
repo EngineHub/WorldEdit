@@ -86,6 +86,7 @@ public class RecursivePickaxe implements BlockTool {
         return true;
     }
 
+    @SuppressWarnings("deprecation")
     private static void recurse(Platform server, EditSession editSession, World world, BlockVector3 pos,
             BlockVector3 origin, double size, BlockType initialType, Set<BlockVector3> visited) throws MaxChangedBlocksException {
 
