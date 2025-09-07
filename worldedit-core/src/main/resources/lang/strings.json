@@ -90,6 +90,10 @@
     "worldedit.watchdog.inactive": "Watchdog hook now inactive.",
     "worldedit.world.remove": "Removed world override.",
     "worldedit.world.set": "Set the world override to {0}. (Use //world to go back to default)",
+    "worldedit.ignoreybounds.enabled": "Selections can now extend outside the world's Y boundaries.",
+    "worldedit.ignoreybounds.disabled": "Selections are now restricted to the world's Y boundaries.",
+    "worldedit.ignoreybounds.enabled.already": "Selections are already allowed outside the world's Y boundaries.",
+    "worldedit.ignoreybounds.disabled.already": "Selections are already restricted to the world's Y boundaries.",
 
     "worldedit.undo.undone": "Undid {0} available edits.",
     "worldedit.undo.none": "Nothing left to undo.",

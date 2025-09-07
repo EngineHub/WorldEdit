@@ -84,6 +84,7 @@ import org.enginehub.piston.annotation.param.ArgFlag;
 import org.enginehub.piston.annotation.param.Switch;
 import org.enginehub.piston.exception.StopExecutionException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -142,6 +143,15 @@ public class SelectionCommands {
             pos2 = List.of(newPos2);
         }
 
+        if (!session.isIgnoringYBounds()) {
+            pos1 = pos1.clampY(world.getMinY(), world.getMaxY());
+            List<BlockVector3> clampedPos2 = new ArrayList<>();
+            for (BlockVector3 coordinates : pos2) {
+                clampedPos2.add(coordinates.clampY(world.getMinY(), world.getMaxY()));
+            }
+            pos2 = clampedPos2;
+        }
+
         RegionSelector regionSelector = session.getRegionSelector(world);
 
         if (selectorChoice != null) {
@@ -181,6 +191,10 @@ public class SelectionCommands {
             }
         }
 
+        if (!session.isIgnoringYBounds()) {
+            coordinates = coordinates.clampY(world.getMinY(), world.getMaxY());
+        }
+
         if (!session.getRegionSelector(world).selectPrimary(coordinates, ActorSelectorLimits.forActor(actor))) {
             actor.printError(TranslatableComponent.of("worldedit.pos.already-set"));
             return;
@@ -203,6 +217,10 @@ public class SelectionCommands {
             if (coordinates == null) {
                 return;
             }
+        }
+
+        if (!session.isIgnoringYBounds()) {
+            coordinates = coordinates.clampY(world.getMinY(), world.getMaxY());
         }
 
         if (!session.getRegionSelector(world).selectSecondary(coordinates, ActorSelectorLimits.forActor(actor))) {

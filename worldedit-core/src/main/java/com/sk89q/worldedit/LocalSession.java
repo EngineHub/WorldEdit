@@ -120,6 +120,7 @@ public class LocalSession {
     private transient boolean tickingWatchdog = true;
     private transient boolean hasBeenToldVersion;
     private transient boolean tracingActions;
+    private transient boolean ignoreYBounds;
 
     // Saved properties
     private String lastScript;
@@ -328,6 +329,25 @@ public class LocalSession {
 
     public void setTracingActions(boolean tracingActions) {
         this.tracingActions = tracingActions;
+    }
+
+    /**
+     * Returns whether this session allows selections that extend outside the world's vertical (Y-axis) boundaries.
+     *
+     * @return {@code true} if Y boundaries are ignored when making selections, {@code false} otherwise.
+     */
+    public boolean isIgnoringYBounds() {
+        return ignoreYBounds;
+    }
+
+    /**
+     * Sets whether this session should allow selections to extend outside the world's vertical (Y-axis) boundaries.
+     *
+     * @param ignoreYBounds {@code true} to ignore Y boundaries and allow selections beyond the world height,
+     *                      {@code false} to restrict selections to within the world's vertical limits.
+     */
+    public void setIgnoreYBounds(boolean ignoreYBounds) {
+        this.ignoreYBounds = ignoreYBounds;
     }
 
     /**

@@ -449,6 +449,31 @@ public class GeneralCommands {
     }
 
     @Command(
+        name = "/ignoreybounds",
+        aliases = {"/iyb"},
+        desc = "Toggles or sets whether selections can extend outside the world's Y boundaries"
+    )
+    @CommandPermissions("worldedit.ignoreybounds")
+    public void ignoreYBounds(Actor actor, LocalSession session,
+                                     @Arg(desc = "If specified, sets the new state. If omitted, the state will be toggled.", def = "")
+                                     Boolean state) {
+        boolean isUnchanged = false;
+
+        if (state != null) {
+            isUnchanged = session.isIgnoringYBounds() == state;
+        } else {
+            state = !session.isIgnoringYBounds();
+        }
+
+        session.setIgnoreYBounds(state);
+
+        String baseKey = "worldedit.ignoreybounds";
+        String stateKey = state ? ".enabled" : ".disabled";
+        String alreadyKey = isUnchanged ? ".already" : "";
+        actor.printInfo(TranslatableComponent.of(baseKey + stateKey + alreadyKey));
+    }
+
+    @Command(
         name = "searchitem",
         aliases = {"/searchitem", "/l", "/search"},
         desc = "Search for an item"
