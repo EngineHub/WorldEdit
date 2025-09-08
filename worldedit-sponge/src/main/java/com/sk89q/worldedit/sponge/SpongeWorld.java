@@ -552,4 +552,8 @@ public final class SpongeWorld extends AbstractWorld {
         return SpongeAdapter.adaptVector3i(getWorld().properties().spawnPosition());
     }
 
+    @Override
+    public boolean isValid() {
+        return worldRef.get() != null;
+    }
 }
