@@ -46,6 +46,7 @@ import com.sk89q.worldedit.function.mask.MaskIntersection;
 import com.sk89q.worldedit.function.mask.NoiseFilter2D;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.function.util.ChangeLimitingFilter;
 import com.sk89q.worldedit.function.visitor.LayerVisitor;
 import com.sk89q.worldedit.function.visitor.RegionVisitor;
 import com.sk89q.worldedit.internal.annotation.Offset;
@@ -612,6 +613,7 @@ public class RegionCommands {
         if (session.getMask() != null) {
             apply = new RegionMaskingFilter(session.getMask(), apply);
         }
+        apply = new ChangeLimitingFilter(session.getBlockChangeLimit(), apply);
 
         RegionVisitor visitor = new RegionVisitor(session.getSelection(injectedWorld), apply);
         Operations.complete(visitor);
