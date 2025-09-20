@@ -41,7 +41,7 @@ public interface FabricPermissionsProvider {
         public boolean hasPermission(ServerPlayer player, String permission) {
             FabricConfiguration configuration = platform.getConfiguration();
             return configuration.cheatMode
-                || player.getServer().getPlayerList().isOp(player.getGameProfile())
+                || player.level().getServer().getPlayerList().isOp(player.nameAndId())
                 || (configuration.creativeEnable && player.gameMode.getGameModeForPlayer() == GameType.CREATIVE);
         }
 
