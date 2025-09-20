@@ -326,7 +326,7 @@ public class FabricWorldEdit implements ModInitializer {
     }
 
     private boolean skipInteractionEvent(Player player, InteractionHand hand) {
-        return skipEvents() || hand != InteractionHand.MAIN_HAND || player.level().isClientSide || !(player instanceof ServerPlayer);
+        return skipEvents() || hand != InteractionHand.MAIN_HAND || player.level().isClientSide() || !(player instanceof ServerPlayer);
     }
 
     private InteractionResult onLeftClickBlock(Player playerEntity, Level world, InteractionHand hand, BlockPos blockPos, Direction direction) {
