@@ -768,6 +768,7 @@ public class SelectionCommands {
             box.appendCommand("cuboid", TranslatableComponent.of("worldedit.select.cuboid.description"), "//sel cuboid");
             box.appendCommand("extend", TranslatableComponent.of("worldedit.select.extend.description"), "//sel extend");
             box.appendCommand("poly", TranslatableComponent.of("worldedit.select.poly.description"), "//sel poly");
+            box.appendCommand("polyextend", TranslatableComponent.of("worldedit.select.polyextend.description"), "//sel polyextend");
             box.appendCommand("ellipsoid", TranslatableComponent.of("worldedit.select.ellipsoid.description"), "//sel ellipsoid");
             box.appendCommand("sphere", TranslatableComponent.of("worldedit.select.sphere.description"), "//sel sphere");
             box.appendCommand("cyl", TranslatableComponent.of("worldedit.select.cyl.description"), "//sel cyl");
