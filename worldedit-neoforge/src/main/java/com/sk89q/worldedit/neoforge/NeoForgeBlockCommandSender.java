@@ -100,7 +100,7 @@ public class NeoForgeBlockCommandSender extends AbstractCommandBlockActor {
     }
 
     private void sendMessage(net.minecraft.network.chat.Component textComponent) {
-        this.sender.sendSystemMessage(textComponent);
+        this.sender.setLastOutput(textComponent);
     }
 
     @Override

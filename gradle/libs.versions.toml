@@ -14,12 +14,12 @@ cuiProtocol = "4.0.2"
 fabric-api = "0.133.14+1.21.9"
 
 neogradle = "7.0.192"
-neoforge-minecraft = "1.21.8"
+neoforge-minecraft = "1.21.9"
 
-sponge-minecraft = "1.21.8"
+sponge-minecraft = "1.21.9"
 # https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/spongeapi/
-sponge-api = "16.0.0-20250904.225459-3"
-sponge-api-major = "16"
+sponge-api = "17.0.0-20251001.030412-2"
+sponge-api-major = "17"
 
 # https://parchmentmc.org/docs/getting-started; note that we use older MC versions some times which is OK
 parchment-minecraft = "1.21.8"
@@ -94,7 +94,7 @@ fabric-minecraft = "com.mojang:minecraft:1.21.9"
 fabric-loader = "net.fabricmc:fabric-loader:0.17.2"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.4.0"
 
-neoforge = "net.neoforged:neoforge:21.8.46"
+neoforge = "net.neoforged:neoforge:21.9.2-beta"
 
 # Mojang-provided libraries, CHECK AGAINST MINECRAFT for versions
 guava = "com.google.guava:guava:33.3.1-jre!!"
