@@ -165,9 +165,9 @@ version.ref = "antlr"
 module = "org.antlr:antlr4-runtime"
 
 [libraries.cuiProtocol-fabric]
-module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-fabric-mc1.21.8"
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-fabric-mc1.21.9"
 version.ref = "cuiProtocol"
 
 [libraries.cuiProtocol-neoforge]
-module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-neoforge-mc1.21.8"
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-neoforge-mc1.21.9"
 version.ref = "cuiProtocol"
