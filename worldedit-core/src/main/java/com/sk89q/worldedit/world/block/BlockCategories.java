@@ -41,6 +41,7 @@ public final class BlockCategories {
     public static final BlockCategory BAMBOO_BLOCKS = get("minecraft:bamboo_blocks");
     public static final BlockCategory BAMBOO_PLANTABLE_ON = get("minecraft:bamboo_plantable_on");
     public static final BlockCategory BANNERS = get("minecraft:banners");
+    public static final BlockCategory BARS = get("minecraft:bars");
     public static final BlockCategory BASE_STONE_NETHER = get("minecraft:base_stone_nether");
     public static final BlockCategory BASE_STONE_OVERWORLD = get("minecraft:base_stone_overworld");
     public static final BlockCategory BATS_SPAWNABLE_ON = get("minecraft:bats_spawnable_on");
@@ -62,6 +63,7 @@ public final class BlockCategories {
     public static final BlockCategory CAULDRONS = get("minecraft:cauldrons");
     public static final BlockCategory CAVE_VINES = get("minecraft:cave_vines");
     public static final BlockCategory CEILING_HANGING_SIGNS = get("minecraft:ceiling_hanging_signs");
+    public static final BlockCategory CHAINS = get("minecraft:chains");
     public static final BlockCategory CHERRY_LOGS = get("minecraft:cherry_logs");
     public static final BlockCategory CLIMBABLE = get("minecraft:climbable");
     public static final BlockCategory COAL_ORES = get("minecraft:coal_ores");
@@ -69,6 +71,9 @@ public final class BlockCategories {
     public static final BlockCategory COMPLETES_FIND_TREE_TUTORIAL = get("minecraft:completes_find_tree_tutorial");
     public static final BlockCategory CONCRETE_POWDER = get("minecraft:concrete_powder");
     public static final BlockCategory CONVERTABLE_TO_MUD = get("minecraft:convertable_to_mud");
+    public static final BlockCategory COPPER = get("minecraft:copper");
+    public static final BlockCategory COPPER_CHESTS = get("minecraft:copper_chests");
+    public static final BlockCategory COPPER_GOLEM_STATUES = get("minecraft:copper_golem_statues");
     public static final BlockCategory COPPER_ORES = get("minecraft:copper_ores");
     public static final BlockCategory CORAL_BLOCKS = get("minecraft:coral_blocks");
     public static final BlockCategory CORAL_PLANTS = get("minecraft:coral_plants");
@@ -112,6 +117,7 @@ public final class BlockCategories {
     public static final BlockCategory HOGLIN_REPELLENTS = get("minecraft:hoglin_repellents");
     public static final BlockCategory ICE = get("minecraft:ice");
     public static final BlockCategory IMPERMEABLE = get("minecraft:impermeable");
+    public static final BlockCategory INCORRECT_FOR_COPPER_TOOL = get("minecraft:incorrect_for_copper_tool");
     public static final BlockCategory INCORRECT_FOR_DIAMOND_TOOL = get("minecraft:incorrect_for_diamond_tool");
     public static final BlockCategory INCORRECT_FOR_GOLD_TOOL = get("minecraft:incorrect_for_gold_tool");
     public static final BlockCategory INCORRECT_FOR_IRON_TOOL = get("minecraft:incorrect_for_iron_tool");
@@ -125,10 +131,12 @@ public final class BlockCategories {
     public static final BlockCategory INVALID_SPAWN_INSIDE = get("minecraft:invalid_spawn_inside");
     public static final BlockCategory IRON_ORES = get("minecraft:iron_ores");
     public static final BlockCategory JUNGLE_LOGS = get("minecraft:jungle_logs");
+    public static final BlockCategory LANTERNS = get("minecraft:lanterns");
     public static final BlockCategory LAPIS_ORES = get("minecraft:lapis_ores");
     public static final BlockCategory LAVA_POOL_STONE_CANNOT_REPLACE = get("minecraft:lava_pool_stone_cannot_replace");
     @Deprecated public static final BlockCategory LAVA_POOL_STONE_REPLACEABLES = get("minecraft:lava_pool_stone_replaceables");
     public static final BlockCategory LEAVES = get("minecraft:leaves");
+    public static final BlockCategory LIGHTNING_RODS = get("minecraft:lightning_rods");
     public static final BlockCategory LOGS = get("minecraft:logs");
     public static final BlockCategory LOGS_THAT_BURN = get("minecraft:logs_that_burn");
     public static final BlockCategory LUSH_GROUND_REPLACEABLE = get("minecraft:lush_ground_replaceable");
@@ -223,6 +231,7 @@ public final class BlockCategories {
     public static final BlockCategory WOODEN_DOORS = get("minecraft:wooden_doors");
     public static final BlockCategory WOODEN_FENCES = get("minecraft:wooden_fences");
     public static final BlockCategory WOODEN_PRESSURE_PLATES = get("minecraft:wooden_pressure_plates");
+    public static final BlockCategory WOODEN_SHELVES = get("minecraft:wooden_shelves");
     public static final BlockCategory WOODEN_SLABS = get("minecraft:wooden_slabs");
     public static final BlockCategory WOODEN_STAIRS = get("minecraft:wooden_stairs");
     public static final BlockCategory WOODEN_TRAPDOORS = get("minecraft:wooden_trapdoors");
