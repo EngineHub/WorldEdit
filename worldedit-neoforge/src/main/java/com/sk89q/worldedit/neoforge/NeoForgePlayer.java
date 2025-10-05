@@ -63,9 +63,12 @@ public class NeoForgePlayer extends AbstractPlayerActor {
 
     protected NeoForgePlayer(ServerPlayer player) {
         this.player = player;
-        if (getUniqueId() != null) {
-            ThreadSafeCache.getInstance().getOnlineIds().add(getUniqueId());
+
+        if (getUniqueId() == null) {
+            throw new AssertionError("Player UUID cannot be null");
         }
+
+        ThreadSafeCache.getInstance().getOnlineIds().add(getUniqueId());
     }
 
     @Override
