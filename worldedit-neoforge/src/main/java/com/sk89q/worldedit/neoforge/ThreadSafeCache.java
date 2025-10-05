@@ -19,13 +19,13 @@
 
 package com.sk89q.worldedit.neoforge;
 
+import com.google.common.collect.Sets;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -38,7 +38,7 @@ public class ThreadSafeCache {
 
     private static final long REFRESH_DELAY = 1000 * 30;
     private static final ThreadSafeCache INSTANCE = new ThreadSafeCache();
-    private Set<UUID> onlineIds = Collections.emptySet();
+    private Set<UUID> onlineIds = Sets.newHashSet();
     private long lastRefresh = 0;
 
     /**
