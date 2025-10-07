@@ -67,7 +67,7 @@ public final class CommandWrapper {
     }
 
     public static final Command<CommandSourceStack> FAKE_COMMAND = ctx -> {
-        if (ctx.getSource().getLevel().isClientSide) {
+        if (ctx.getSource().getLevel().isClientSide()) {
             return 0;
         }
         return 1;
