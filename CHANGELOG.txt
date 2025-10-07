@@ -1,3 +1,12 @@
+7.3.17
+- Added support for 1.21.9
+- Improved rotation of crafter blocks
+- Improved rotation of rail blocks
+- Improved rotation of item frames
+- Fixed convex shapes behaving incorrectly when three points in a straight line are selected
+- Fixed a case where other mods/plugins can make errors less useful
+- Fixed errors caused by unloaded worlds being used as //world overrides
+
 7.3.16
 - Added support for 1.21.8
 
