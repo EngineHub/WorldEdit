@@ -280,7 +280,7 @@ public class NeoForgeWorldEdit {
     }
 
     private boolean skipInteractionEvent(Player player, InteractionHand hand) {
-        return skipEvents() || hand != InteractionHand.MAIN_HAND || player.level().isClientSide || !(player instanceof ServerPlayer);
+        return skipEvents() || hand != InteractionHand.MAIN_HAND || player.level().isClientSide() || !(player instanceof ServerPlayer);
     }
 
     @SubscribeEvent
@@ -375,7 +375,7 @@ public class NeoForgeWorldEdit {
     @SubscribeEvent
     public void onCommandEvent(CommandEvent event) throws CommandSyntaxException {
         ParseResults<CommandSourceStack> parseResults = event.getParseResults();
-        if (parseResults.getContext().getSource().getEntity() instanceof ServerPlayer player && player.level().isClientSide) {
+        if (parseResults.getContext().getSource().getEntity() instanceof ServerPlayer player && player.level().isClientSide()) {
             return;
         }
         if (parseResults.getContext().getCommand() != CommandWrapper.FAKE_COMMAND) {

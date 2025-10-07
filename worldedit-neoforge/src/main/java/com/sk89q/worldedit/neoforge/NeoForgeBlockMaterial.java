@@ -78,6 +78,7 @@ public class NeoForgeBlockMaterial extends PassthroughBlockMaterial {
         return block.blocksMotion();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean isBurnable() {
         return block.ignitedByLava();

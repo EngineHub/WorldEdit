@@ -212,7 +212,7 @@ public class FabricWorldEdit implements ModInitializer {
                     .map(ModContainer::getMetadata)
                     .map(ModMetadata::getVersion);
 
-            if (version.isPresent() && !VersionPredicate.parse(">=0.4.0").test(version.get())) {
+            if (version.isPresent() && !VersionPredicate.parse(">=0.5.0").test(version.get())) {
                 throw new RuntimeException("Fabric permissions version " + version.get() + " is not supported. Please update Fabric Permissions API");
             }
 
@@ -326,7 +326,7 @@ public class FabricWorldEdit implements ModInitializer {
     }
 
     private boolean skipInteractionEvent(Player player, InteractionHand hand) {
-        return skipEvents() || hand != InteractionHand.MAIN_HAND || player.level().isClientSide || !(player instanceof ServerPlayer);
+        return skipEvents() || hand != InteractionHand.MAIN_HAND || player.level().isClientSide() || !(player instanceof ServerPlayer);
     }
 
     private InteractionResult onLeftClickBlock(Player playerEntity, Level world, InteractionHand hand, BlockPos blockPos, Direction direction) {
