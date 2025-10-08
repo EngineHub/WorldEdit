@@ -35,7 +35,7 @@ public final class StaticRefraction {
     public static final String MAIN_THREAD_PROCESSOR = Refraction.pickName(
         "mainThreadProcessor", "g"
     );
-    public static final String NEXT_TICK_TIME = Refraction.pickName("nextTickTime", "e");
+    public static final String NEXT_TICK_TIME = Refraction.pickName("nextTickTimeNanos", "am");
     public static final String GET_BLOCK_STATE = Refraction.pickName("getBlockState", "a_");
     public static final String IS_STATE_AT_POSITION = Refraction.pickName("isStateAtPosition", "a");
     /**
