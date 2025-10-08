@@ -1,5 +1,5 @@
 7.3.17
-- Added support for 1.21.9
+- Added support for 1.21.9 & 1.21.10
 - Improved rotation of crafter blocks
 - Improved rotation of rail blocks
 - Improved rotation of item frames
