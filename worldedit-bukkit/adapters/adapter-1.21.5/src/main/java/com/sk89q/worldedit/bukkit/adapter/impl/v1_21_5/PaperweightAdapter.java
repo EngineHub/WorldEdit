@@ -367,15 +367,30 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         int y = location.getBlockY();
         int z = location.getBlockZ();
 
-        final ServerLevel handle = craftWorld.getHandle();
-        LevelChunk chunk = handle.getChunk(x >> 4, z >> 4);
-        final BlockPos blockPos = new BlockPos(x, y, z);
+        try {
+            final ServerLevel handle = craftWorld.getHandle();
+            if (handle == null) {
+                return state.toBaseBlock();
+            }
 
-        // Read the NBT data
-        BlockEntity te = chunk.getBlockEntity(blockPos);
-        if (te != null) {
-            net.minecraft.nbt.CompoundTag tag = te.saveWithId(MinecraftServer.getServer().registryAccess());
-            return state.toBaseBlock(LazyReference.from(() -> (LinCompoundTag) toNative(tag)));
+            if (!handle.hasChunk(x >> 4, z >> 4)) {
+                return state.toBaseBlock();
+            }
+
+            LevelChunk chunk = handle.getChunk(x >> 4, z >> 4);
+            if (chunk == null) {
+                return state.toBaseBlock();
+            }
+
+            final BlockPos blockPos = new BlockPos(x, y, z);
+
+            BlockEntity te = chunk.getBlockEntity(blockPos);
+            if (te != null) {
+                net.minecraft.nbt.CompoundTag tag = te.saveWithId(MinecraftServer.getServer().registryAccess());
+                return state.toBaseBlock(LazyReference.from(() -> (LinCompoundTag) toNative(tag)));
+            }
+        } catch (Exception e) {
+            return state.toBaseBlock();
         }
 
         return state.toBaseBlock();
