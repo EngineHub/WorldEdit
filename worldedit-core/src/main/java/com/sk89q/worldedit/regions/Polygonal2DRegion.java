@@ -26,8 +26,6 @@ import com.sk89q.worldedit.regions.iterator.FlatRegionIterator;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -209,22 +207,146 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
 
     @Override
     public long getVolume() {
-        long area = 0;
-        int i;
-        int j = points.size() - 1;
+        if (points.size() <= 2) {
+            return 0;
+        }
 
-        for (i = 0; i < points.size(); ++i) {
-            long x = points.get(j).x() + points.get(i).x();
-            long z = points.get(j).z() - points.get(i).z();
-            area += x * z;
+        List<BlockVector2> reverseOrderPoints = new ArrayList<>(points);
+        Collections.reverse(reverseOrderPoints);
+        long area = Math.max(getAreaClockwise(points), getAreaClockwise(reverseOrderPoints));
+
+        return area * (maxY - minY + 1);
+    }
+
+    private long getAreaClockwise(List<BlockVector2> points) {
+        int n = points.size();
+
+        int[] previousDirections = new int[n];
+        int[] followingDirections = new int[n];
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < n; j++) {
+                previousDirections[j] = getDirection(points, j);
+                if (previousDirections[j] == 0) {
+                    previousDirections[j] = previousDirections[(j - 1 + n) % n];
+                }
+
+                followingDirections[n - 1 - j] = getDirection(points, n - 1 - j);
+                if (followingDirections[n - 1 - j] == 0) {
+                    followingDirections[n - 1 - j] = followingDirections[(n - j) % n];
+                }
+            }
+        }
+
+        long area = 0;
+
+        int minX = points.stream().mapToInt(BlockVector2::x).min().orElse(0);
+        int j = n - 1;
+        int prevIsNewDirection = isNewDirection(points, j - 1, previousDirections, followingDirections);
+        for (int i = 0; i < n; i++) {
+            int x1 = points.get(j).x() - minX;
+            int z1 = points.get(j).z();
+            int x2 = points.get(i).x() - minX;
+            int z2 = points.get(i).z();
+            int isNewDirectionValue = isNewDirection(points, j, previousDirections, followingDirections);
+            area += areaInPoints(x1, z1, x2, z2, isNewDirectionValue, prevIsNewDirection);
+
+            prevIsNewDirection = isNewDirectionValue;
             j = i;
         }
 
-        return BigDecimal.valueOf(area)
-                .multiply(BigDecimal.valueOf(0.5))
-                .abs()
-                .setScale(0, RoundingMode.FLOOR)
-                .longValue() * (maxY - minY + 1);
+        return area;
+    }
+
+    private int getDirection(List<BlockVector2> points, int i) {
+        int z1 = points.get(i).z();
+        int z2 = points.get((i + 1) % points.size()).z();
+        return z1 > z2 ? 1 : z1 == z2 ? 0 : -1;
+    }
+
+    private int isNewDirection(List<BlockVector2> points, int i, int[] previousDirections, int[] followingDirections) {
+        int n = points.size();
+
+        int x = points.get(i % n).x();
+        int z = points.get(i % n).z();
+        int x1 = points.get((i + 1) % n).x();
+        int x2 = points.get((i - 1 + n) % n).x();
+        int z1 = points.get((i + 1) % n).z();
+        int z2 = points.get((i - 1 + n) % n).z();
+        int previousEdgeOrientation = crossProduct(x1, z1, x, z, x2, z2);
+
+        x = points.get((i + 1) % n).x();
+        z = points.get((i + 1) % n).z();
+        x1 = points.get(i % n).x();
+        x2 = points.get((i + 2) % n).x();
+        z1 = points.get(i % n).z();
+        z2 = points.get((i + 2) % n).z();
+        int nextEdgeOrientation = crossProduct(x1, z1, x, z, x2, z2);
+
+        int direction = getDirection(points, i);
+        if (direction == -1) {
+            return direction != followingDirections[(i + 1) % n] && nextEdgeOrientation > 0 ? 1 : 0;
+        }
+
+        if (direction == 1) {
+            return direction != previousDirections[(i - 1 + n) % n] && previousEdgeOrientation < 0 ? 1 : 0;
+        }
+
+        boolean prevCondition = previousDirections[(i - 1 + n) % n] == 1 && previousEdgeOrientation >= 0;
+        boolean follCondition = followingDirections[(i + 1) % n] == -1 && nextEdgeOrientation <= 0;
+
+        return prevCondition && follCondition ? 2 : prevCondition || follCondition ? 1 : 0;
+    }
+
+    private int crossProduct(int x1, int y1, int x, int y, int x2, int y2) {
+        return (x1 - x) * (y2 - y) - (x2 - x) * (y1 - y);
+    }
+
+    public long areaInPoints(int x1, int z1, int x2, int z2, int isNewDirectionValue, int prevIsNewDirectionValue) {
+        if (z1 == z2) {
+            if (isNewDirectionValue == 2 && isNewDirectionValue != prevIsNewDirectionValue) {
+                return Math.abs(x1 - x2) - 1;
+            }
+
+            return isNewDirectionValue != 0 ? Math.abs(x1 - x2) : 0;
+        }
+
+        boolean isNewDirection = isNewDirectionValue == 1;
+        boolean isIncreasing = z1 > z2;
+        long area = 0;
+
+        int side = Math.min(x1, x2) + (isIncreasing ? 1 : 0);
+        int height = isNewDirection ? next(z1 - z2) : z1 - z2;
+        area += (long) side * height;
+
+        if ((isIncreasing && (x1 < x2 || isNewDirection)) || (!isIncreasing && (x1 < x2 && !isNewDirection))) {
+            area += Math.abs(x1 - x2);
+        }
+
+        int z = Math.abs(z1 - z2);
+        int x = Math.abs(x1 - x2);
+        int squaresInLine = x + z - gcd(x, z);
+        if (!isIncreasing) {
+            area -= (x * z - squaresInLine) / 2;
+            area -= squaresInLine;
+        } else {
+            area += (x * z - squaresInLine) / 2;
+        }
+
+        return area;
+    }
+
+    private int next(int value) {
+        return value < 0 ? value - 1 : value + 1;
+    }
+
+    private int gcd(int n1, int n2) {
+        while (n2 != 0) {
+            int temp = n2;
+            n2 = n1 % n2;
+            n1 = temp;
+        }
+
+        return n1;
     }
 
     @Override
