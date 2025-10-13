@@ -8,22 +8,22 @@ sponge-vanillagradle = { id = "org.spongepowered.gradle.vanilla", version.ref = 
 kyoriText = "3.0.4"
 piston = "0.5.10"
 autoValue = "1.10.4"
-antlr = "4.13.1"
+antlr = "4.13.2"
 cuiProtocol = "4.0.2"
 
-fabric-api = "0.129.0+1.21.8"
+fabric-api = "0.135.0+1.21.10"
 
-neogradle = "7.0.190"
-neoforge-minecraft = "1.21.8"
+neogradle = "7.0.192"
+neoforge-minecraft = "1.21.10"
 
-sponge-minecraft = "1.21.7"
+sponge-minecraft = "1.21.9"
 # https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/spongeapi/
-sponge-api = "16.0.0-20250709.144533-2"
-sponge-api-major = "16"
+sponge-api = "17.0.0-20251001.030412-2"
+sponge-api-major = "17"
 
 # https://parchmentmc.org/docs/getting-started; note that we use older MC versions some times which is OK
-parchment-minecraft = "1.21.5"
-parchment-mappings = "2025.06.15"
+parchment-minecraft = "1.21.9"
+parchment-mappings = "2025.10.05"
 
 # https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/vanillagradle/
 sponge-vanillagradle = "0.2.1-20250105.203323-92"
@@ -42,13 +42,13 @@ neogradle-neoform = { module = "net.neoforged.gradle:neoform", version.ref = "ne
 sponge-vanillagradle = { module = "org.spongepowered:vanillagradle", version.ref = "sponge-vanillagradle" }
 
 licenser = "gradle.plugin.org.cadixdev.gradle:licenser:0.6.1"
-grgit = "org.ajoberstar.grgit:grgit-gradle:5.2.2"
+grgit = "org.ajoberstar.grgit:grgit-gradle:5.3.3"
 japicmp = "me.champeau.gradle:japicmp-gradle-plugin:0.4.6"
-shadow = "com.gradleup.shadow:com.gradleup.shadow.gradle.plugin:8.3.8"
-jfrog-buildinfo = "org.jfrog.buildinfo:build-info-extractor-gradle:5.2.5"
+shadow = "com.gradleup.shadow:com.gradleup.shadow.gradle.plugin:8.3.9"
+jfrog-buildinfo = "org.jfrog.buildinfo:build-info-extractor-gradle:6.0.1"
 
 # https://maven.fabricmc.net/net/fabricmc/sponge-mixin/
-fabric-mixin = "net.fabricmc:sponge-mixin:0.16.1+mixin.0.8.7"
+fabric-mixin = "net.fabricmc:sponge-mixin:0.16.4+mixin.0.8.7"
 
 paperweight = "io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:2.0.0-beta.18"
 
@@ -90,11 +90,11 @@ rhino = "org.mozilla:rhino-runtime:1.7.13"
 jchronic = "com.sk89q:jchronic:0.2.4a"
 jlibnoise = "com.sk89q.lib:jlibnoise:1.0.0"
 
-fabric-minecraft = "com.mojang:minecraft:1.21.7"
-fabric-loader = "net.fabricmc:fabric-loader:0.16.14"
-fabric-permissions-api = "me.lucko:fabric-permissions-api:0.4.0"
+fabric-minecraft = "com.mojang:minecraft:1.21.10"
+fabric-loader = "net.fabricmc:fabric-loader:0.17.2"
+fabric-permissions-api = "me.lucko:fabric-permissions-api:0.5.0"
 
-neoforge = "net.neoforged:neoforge:21.8.1-beta"
+neoforge = "net.neoforged:neoforge:21.10.1-beta"
 
 # Mojang-provided libraries, CHECK AGAINST MINECRAFT for versions
 guava = "com.google.guava:guava:33.3.1-jre!!"
@@ -165,9 +165,9 @@ version.ref = "antlr"
 module = "org.antlr:antlr4-runtime"
 
 [libraries.cuiProtocol-fabric]
-module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-fabric-mc1.21.8"
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-fabric-mc1.21.9"
 version.ref = "cuiProtocol"
 
 [libraries.cuiProtocol-neoforge]
-module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-neoforge-mc1.21.8"
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-neoforge-mc1.21.9"
 version.ref = "cuiProtocol"

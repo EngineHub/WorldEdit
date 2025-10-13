@@ -58,6 +58,7 @@ public final class EntityTypes {
     @Nullable public static final EntityType CHICKEN = get("minecraft:chicken");
     @Nullable public static final EntityType COD = get("minecraft:cod");
     @Nullable public static final EntityType COMMAND_BLOCK_MINECART = get("minecraft:command_block_minecart");
+    @Nullable public static final EntityType COPPER_GOLEM = get("minecraft:copper_golem");
     @Nullable public static final EntityType COW = get("minecraft:cow");
     @Nullable public static final EntityType CREAKING = get("minecraft:creaking");
     @Deprecated @Nullable public static final EntityType CREAKING_TRANSIENT = get("minecraft:creaking_transient");
@@ -114,6 +115,7 @@ public final class EntityTypes {
     @Nullable public static final EntityType MAGMA_CUBE = get("minecraft:magma_cube");
     @Nullable public static final EntityType MANGROVE_BOAT = get("minecraft:mangrove_boat");
     @Nullable public static final EntityType MANGROVE_CHEST_BOAT = get("minecraft:mangrove_chest_boat");
+    @Nullable public static final EntityType MANNEQUIN = get("minecraft:mannequin");
     @Nullable public static final EntityType MARKER = get("minecraft:marker");
     @Nullable public static final EntityType MINECART = get("minecraft:minecart");
     @Nullable public static final EntityType MOOSHROOM = get("minecraft:mooshroom");

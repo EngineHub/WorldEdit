@@ -116,6 +116,7 @@ public class NeoForgeBlockMaterial implements BlockMaterial {
         return block.blocksMotion();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean isBurnable() {
         return block.ignitedByLava();

@@ -41,7 +41,7 @@ public interface NeoForgePermissionsProvider {
         public boolean hasPermission(ServerPlayer player, String permission) {
             NeoForgeConfiguration configuration = platform.getConfiguration();
             return configuration.cheatMode
-                || ServerLifecycleHooks.getCurrentServer().getPlayerList().isOp(player.getGameProfile())
+                || ServerLifecycleHooks.getCurrentServer().getPlayerList().isOp(player.nameAndId())
                 || (configuration.creativeEnable && player.gameMode.getGameModeForPlayer() == GameType.CREATIVE);
         }
 
