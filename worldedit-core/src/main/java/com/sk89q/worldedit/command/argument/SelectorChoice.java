@@ -27,6 +27,7 @@ import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
 import com.sk89q.worldedit.regions.selector.CylinderRegionSelector;
 import com.sk89q.worldedit.regions.selector.EllipsoidRegionSelector;
 import com.sk89q.worldedit.regions.selector.ExtendingCuboidRegionSelector;
+import com.sk89q.worldedit.regions.selector.ExtendingPolygonal2DRegionSelector;
 import com.sk89q.worldedit.regions.selector.Polygonal2DRegionSelector;
 import com.sk89q.worldedit.regions.selector.SphereRegionSelector;
 import com.sk89q.worldedit.util.formatting.text.Component;
@@ -47,6 +48,16 @@ public enum SelectorChoice implements SelectorChoiceOrList {
             Optional<Integer> limit = ActorSelectorLimits.forActor(actor).getPolygonVertexLimit();
             limit.ifPresent(integer -> actor.printInfo(TranslatableComponent.of(
                 "worldedit.select.poly.limit-message", TextComponent.of(integer)
+            )));
+        }
+    },
+    POLYEXTEND(ExtendingPolygonal2DRegionSelector::new, ExtendingPolygonal2DRegionSelector::new, "worldedit.select.polyextend.message") {
+        @Override
+        public void explainNewSelector(Actor actor) {
+            super.explainNewSelector(actor);
+            Optional<Integer> limit = ActorSelectorLimits.forActor(actor).getPolygonVertexLimit();
+            limit.ifPresent(integer -> actor.printInfo(TranslatableComponent.of(
+                    "worldedit.select.poly.limit-message", TextComponent.of(integer)
             )));
         }
     },

@@ -50,7 +50,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
 
     private transient BlockVector3 pos1;
-    private transient Polygonal2DRegion region;
+    protected transient Polygonal2DRegion region;
 
     /**
      * Create a new selector with a {@code null} world.
