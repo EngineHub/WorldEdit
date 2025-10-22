@@ -44,19 +44,17 @@ public final class ChangeLimitingFilter implements RegionFunction {
      */
     public ChangeLimitingFilter(int limit, RegionFunction function) {
         checkNotNull(function);
-        checkArgument(limit >= -1, "limit >= -1 required");
+        checkArgument(limit >= 0, "limit >= 0 required");
         this.limit = limit;
         this.function = function;
     }
 
     @Override
     public boolean apply(BlockVector3 position) throws WorldEditException {
-        if (limit >= 0) {
-            if (count >= limit) {
-                throw new MaxChangedBlocksException(limit);
-            }
-            count++;
+        if (count >= limit) {
+            throw new MaxChangedBlocksException(limit);
         }
+        count++;
         return function.apply(position);
     }
 
