@@ -25,7 +25,7 @@ import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.generation.TreeType;
 
-public class TreeGenerator implements RegionFunction {
+public final class TreeGenerator implements RegionFunction {
 
     private final TreeType treeType;
     private final EditSession editSession;
