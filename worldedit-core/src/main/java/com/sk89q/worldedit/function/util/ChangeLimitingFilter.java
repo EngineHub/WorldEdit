@@ -30,7 +30,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * A filter that limits the number of changes that can be made.
  */
-public class ChangeLimitingFilter implements RegionFunction {
+public final class ChangeLimitingFilter implements RegionFunction {
 
     private final RegionFunction function;
     private final int limit;

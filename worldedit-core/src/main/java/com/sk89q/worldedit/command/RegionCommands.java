@@ -613,7 +613,10 @@ public class RegionCommands {
         if (session.getMask() != null) {
             apply = new RegionMaskingFilter(session.getMask(), apply);
         }
-        apply = new ChangeLimitingFilter(session.getBlockChangeLimit(), apply);
+        if (session.getBlockChangeLimit() >= 0) {
+            // Only apply limits if one is set.
+            apply = new ChangeLimitingFilter(session.getBlockChangeLimit(), apply);
+        }
 
         RegionVisitor visitor = new RegionVisitor(session.getSelection(injectedWorld), apply);
         Operations.complete(visitor);
