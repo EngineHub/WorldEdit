@@ -561,13 +561,6 @@ public class NeoForgeWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean playEffect(Vector3 position, int type, int data) {
-        // TODO update sound API
-        // getWorld().play(type, NeoForgeAdapter.toBlockPos(position.toBlockPoint()), data);
-        return true;
-    }
-
-    @Override
     public WeatherType getWeather() {
         LevelData info = getWorld().getLevelData();
         if (info.isThundering()) {
