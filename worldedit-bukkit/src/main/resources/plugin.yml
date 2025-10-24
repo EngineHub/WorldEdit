@@ -6,3 +6,5 @@ api-version: 1.21.3
 softdepend: [Vault]
 author: EngineHub
 website: https://enginehub.org/worldedit
+
+folia-supported: true

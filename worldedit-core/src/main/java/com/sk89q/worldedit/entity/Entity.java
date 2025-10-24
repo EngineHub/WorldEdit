@@ -54,4 +54,25 @@ public interface Entity extends Faceted, Locatable {
      */
     boolean remove();
 
+    /**
+     * Schedules a task.
+     *
+     * @see com.sk89q.worldedit.extension.platform.scheduler.SchedulerAdapter
+     * @param runnable The task to execute.
+     */
+    default void executeAtEntity(Runnable runnable) {
+        throw new UnsupportedOperationException("Not implemented in this platform");
+    }
+
+    /**
+     * Schedules a task with the given delay.
+     *
+     * @see com.sk89q.worldedit.extension.platform.scheduler.SchedulerAdapter
+     * @param runnable The task to execute.
+     * @param delay    The time delay to pass before the task should be executed, in ticks.
+     */
+    default void runAtEntityDelayed(Runnable runnable, long delay) {
+        throw new UnsupportedOperationException("Not implemented in this platform");
+    }
+
 }
