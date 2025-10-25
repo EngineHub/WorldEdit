@@ -237,10 +237,16 @@ public class BukkitWorld extends AbstractWorld {
     /**
      * An EnumMap that stores which WorldEdit TreeTypes apply to which Bukkit TreeTypes.
      */
+    @Deprecated
     private static final EnumMap<TreeGenerator.TreeType, TreeType> treeTypeMapping =
             new EnumMap<>(TreeGenerator.TreeType.class);
 
     static {
+        generateTreeMap();
+    }
+
+    @SuppressWarnings("deprecation")
+    private static void generateTreeMap() {
         for (TreeGenerator.TreeType type : TreeGenerator.TreeType.values()) {
             try {
                 TreeType bukkitType = TreeType.valueOf(type.name());
@@ -264,10 +270,13 @@ public class BukkitWorld extends AbstractWorld {
         }
     }
 
+    @Deprecated
     public static TreeType toBukkitTreeType(TreeGenerator.TreeType type) {
         return treeTypeMapping.get(type);
     }
 
+    @SuppressWarnings("deprecation")
+    @Deprecated
     @Override
     public boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, BlockVector3 pt) {
         World world = getWorld();
@@ -276,22 +285,32 @@ public class BukkitWorld extends AbstractWorld {
             pt = pt.add(0, 1, 0); // bukkit skips the feature gen which does this offset normally, so we have to add it back
         }
         return type != null && world.generateTree(
-            BukkitAdapter.adapt(world, pt),
-            ThreadLocalRandom.current(),
-            bukkitType,
-            block -> {
-                Mask mask = editSession.getMask();
-                var blockVector = BukkitAdapter.asBlockVector(block.getLocation());
-                if (mask != null && !mask.test(blockVector)) {
+                BukkitAdapter.adapt(world, pt),
+                ThreadLocalRandom.current(),
+                bukkitType,
+                block -> {
+                    Mask mask = editSession.getMask();
+                    var blockVector = BukkitAdapter.asBlockVector(block.getLocation());
+                    if (mask != null && !mask.test(blockVector)) {
+                        return false;
+                    }
+                    try {
+                        editSession.setBlock(blockVector, BukkitAdapter.adapt(block.getBlockData()));
+                    } catch (MaxChangedBlocksException ignored) {
+                    }
                     return false;
                 }
-                try {
-                    editSession.setBlock(blockVector, BukkitAdapter.adapt(block.getBlockData()));
-                } catch (MaxChangedBlocksException ignored) {
-                }
-                return false;
-            }
         );
+    }
+
+    @Override
+    public boolean generateTree(com.sk89q.worldedit.world.generation.TreeType type, EditSession editSession, BlockVector3 position) throws MaxChangedBlocksException {
+        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+        if (adapter != null) {
+            return adapter.generateTree(type, getWorld(), editSession, position);
+        }
+        // No adapter, we can't generate this.
+        return false;
     }
 
     @Override
