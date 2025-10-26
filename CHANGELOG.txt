@@ -1,3 +1,21 @@
+7.4.0
+- Added a -c option to //regen to output to clipboard
+- Added #clipboard mask, to mask against blocks that match the clipboard
+- Added a #fullcube mask that matches all blocks that fill an entire cube
+- Enables the new experimental snapshot mode by default for new setups
+- Added command completions for available schematic files to schematic commands
+- Added a //registry command to search available registries
+- Added an adjacency mask (~) to mask blocks that are adjacent to other blocks
+- Added an -m flag to the //distr command to mask included blocks
+- Added an API to override the copy region in PasteBuilder, to make it easier to paste a subset of a clipboard
+- Added the ability to use any other pattern in the type applying pattern
+- Added the ability to source from the clipboard via //deform
+- Added an extend selection mode for polygon selections
+- Reworked tree and forest generation commands to use a new tree-specific registry to improve reliability and mod support
+- Fixed block limits not applying to the //update command
+- Deprecate bundled item data, bundled block data, World#playEffect, legacy tree systems, and more for removal in WE 8
+- Reworked the way WorldEdit CLI pulls in versioned data, allowing dynamic data loading
+
 7.3.17
 - Added support for 1.21.9 & 1.21.10
 - Improved rotation of crafter blocks
