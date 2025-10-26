@@ -1,7 +1,7 @@
 [plugins]
 codecov = "org.enginehub.codecov:0.2.0"
 neogradle-userdev = { id = "net.neoforged.gradle.userdev", version.ref = "neogradle" }
-sponge-spongegradle = "org.spongepowered.gradle.plugin:2.2.0"
+sponge-spongegradle = "org.spongepowered.gradle.plugin:2.3.0"
 sponge-vanillagradle = { id = "org.spongepowered.gradle.vanilla", version.ref = "sponge-vanillagradle" }
 
 [versions]
@@ -11,19 +11,19 @@ autoValue = "1.10.4"
 antlr = "4.13.2"
 cuiProtocol = "4.0.2"
 
-fabric-api = "0.135.0+1.21.10"
+fabric-api = "0.136.0+1.21.10"
 
-neogradle = "7.0.192"
+neogradle = "7.1.1"
 neoforge-minecraft = "1.21.10"
 
-sponge-minecraft = "1.21.9"
+sponge-minecraft = "1.21.10"
 # https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/spongeapi/
 sponge-api = "17.0.0-20251001.030412-2"
 sponge-api-major = "17"
 
 # https://parchmentmc.org/docs/getting-started; note that we use older MC versions some times which is OK
-parchment-minecraft = "1.21.9"
-parchment-mappings = "2025.10.05"
+parchment-minecraft = "1.21.10"
+parchment-mappings = "2025.10.12"
 
 # https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/vanillagradle/
 sponge-vanillagradle = "0.2.1-20250105.203323-92"
@@ -91,10 +91,10 @@ jchronic = "com.sk89q:jchronic:0.2.4a"
 jlibnoise = "com.sk89q.lib:jlibnoise:1.0.0"
 
 fabric-minecraft = "com.mojang:minecraft:1.21.10"
-fabric-loader = "net.fabricmc:fabric-loader:0.17.2"
+fabric-loader = "net.fabricmc:fabric-loader:0.17.3"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.5.0"
 
-neoforge = "net.neoforged:neoforge:21.10.1-beta"
+neoforge = "net.neoforged:neoforge:21.10.34-beta"
 
 # Mojang-provided libraries, CHECK AGAINST MINECRAFT for versions
 guava = "com.google.guava:guava:33.3.1-jre!!"
