@@ -31,12 +31,14 @@ import org.yaml.snakeyaml.reader.UnicodeReader;
 import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
@@ -255,11 +257,19 @@ public class YAMLProcessor extends YAMLNode {
     }
 
     public InputStream getInputStream() throws IOException {
-        return Files.newInputStream(path);
+        try {
+            return Files.newInputStream(path);
+        } catch (NoSuchFileException e) {
+            throw new FileNotFoundException(e.getMessage());
+        }
     }
 
     public OutputStream getOutputStream() throws IOException {
-        return Files.newOutputStream(path);
+        try {
+            return Files.newOutputStream(path);
+        } catch (NoSuchFileException e) {
+            throw new FileNotFoundException(e.getMessage());
+        }
     }
 
     /**
