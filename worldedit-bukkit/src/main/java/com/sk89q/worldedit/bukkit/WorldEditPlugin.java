@@ -30,6 +30,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.adapter.AdapterLoadException;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplLoader;
+import com.sk89q.worldedit.bukkit.folia.FoliaScheduler;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
@@ -327,7 +328,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         if (config != null) {
             config.unload();
         }
-        this.getServer().getScheduler().cancelTasks(this);
+        cancelTasks();
     }
 
     /**
@@ -506,7 +507,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
      * @return an instance of the plugin
      * @throws NullPointerException if the plugin hasn't been enabled
      */
-    static WorldEditPlugin getInstance() {
+    public static WorldEditPlugin getInstance() {
         return checkNotNull(INSTANCE);
     }
 
@@ -573,6 +574,15 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
             event.setCompletions(CommandUtil.fixSuggestions(buffer, suggestEvent.getSuggestions()));
             event.setHandled(true);
+        }
+    }
+
+    private void cancelTasks() {
+        if (FoliaScheduler.isFolia()) {
+            FoliaScheduler.getAsyncScheduler().cancel(this);
+            FoliaScheduler.getGlobalRegionScheduler().cancel(this);
+        } else {
+            this.getServer().getScheduler().cancelTasks(this);
         }
     }
 }
