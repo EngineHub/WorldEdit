@@ -6,6 +6,7 @@ package com.sk89q.worldedit.regions;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.selector.ConvexPolyhedralRegionSelector;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
+import com.sk89q.worldedit.world.World;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -16,7 +17,7 @@ class ConvexPolyhedralRegionSpecTest {
 
     @Test
     void allCollinearPoints_areUndefined() {
-        ConvexPolyhedralRegion region = new ConvexPolyhedralRegion((com.sk89q.worldedit.world.World) null);
+        ConvexPolyhedralRegion region = new ConvexPolyhedralRegion((World) null);
         assertTrue(region.addVertex(BlockVector3.at(0, 0, 0)));
         assertTrue(region.addVertex(BlockVector3.at(10, 0, 0)));
         // Third collinear point should be backlogged; no triangles should exist
@@ -27,7 +28,7 @@ class ConvexPolyhedralRegionSpecTest {
 
     @Test
     void coplanarPoints_form2DDefinedRegion() {
-        ConvexPolyhedralRegion region = new ConvexPolyhedralRegion((com.sk89q.worldedit.world.World) null);
+        ConvexPolyhedralRegion region = new ConvexPolyhedralRegion((World) null);
         // Three non-collinear, coplanar points define a 2D region (two triangles)
         assertTrue(region.addVertex(BlockVector3.at(0, 0, 0)));
         assertTrue(region.addVertex(BlockVector3.at(10, 0, 0)));
@@ -67,7 +68,7 @@ class ConvexPolyhedralRegionSpecTest {
 
     @Test
     void duplicateVertex_isRejected() {
-        ConvexPolyhedralRegion region = new ConvexPolyhedralRegion((com.sk89q.worldedit.world.World) null);
+        ConvexPolyhedralRegion region = new ConvexPolyhedralRegion((World) null);
         BlockVector3 a = BlockVector3.at(1, 2, 3);
         assertTrue(region.addVertex(a));
         assertFalse(region.addVertex(a));
@@ -75,7 +76,7 @@ class ConvexPolyhedralRegionSpecTest {
 
     @Test
     void hullBecomes3D_withFourNonCoplanarPoints() {
-        ConvexPolyhedralRegion region = new ConvexPolyhedralRegion((com.sk89q.worldedit.world.World) null);
+        ConvexPolyhedralRegion region = new ConvexPolyhedralRegion((World) null);
         assertTrue(region.addVertex(BlockVector3.at(0, 0, 0)));
         assertTrue(region.addVertex(BlockVector3.at(10, 0, 0)));
         assertTrue(region.addVertex(BlockVector3.at(0, 0, 10)));
@@ -87,7 +88,7 @@ class ConvexPolyhedralRegionSpecTest {
 
     @Test
     void backlogProcessingOrder_isMaintained() {
-        ConvexPolyhedralRegion region = new ConvexPolyhedralRegion((com.sk89q.worldedit.world.World) null);
+        ConvexPolyhedralRegion region = new ConvexPolyhedralRegion((World) null);
         BlockVector3 a = BlockVector3.at(0, 0, 0);
         BlockVector3 b = BlockVector3.at(10, 0, 0);
         BlockVector3 c = BlockVector3.at(5, 0, 0); // collinear -> backlog

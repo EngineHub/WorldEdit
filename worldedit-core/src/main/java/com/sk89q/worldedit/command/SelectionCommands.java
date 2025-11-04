@@ -54,6 +54,8 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.regions.ConvexPolyhedralRegion;
+import com.sk89q.worldedit.regions.selector.ConvexPolyhedralRegionSelector;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
 import com.sk89q.worldedit.regions.selector.ExtendingCuboidRegionSelector;
 import com.sk89q.worldedit.regions.selector.RegionSelectorType;
@@ -155,8 +157,8 @@ public class SelectionCommands {
 
         for (BlockVector3 vector : pos2) {
             boolean changed = regionSelector.selectSecondary(vector, ActorSelectorLimits.forActor(actor));
-            if (!changed && regionSelector instanceof com.sk89q.worldedit.regions.selector.ConvexPolyhedralRegionSelector) {
-                com.sk89q.worldedit.regions.ConvexPolyhedralRegion convex = (com.sk89q.worldedit.regions.ConvexPolyhedralRegion) regionSelector.getIncompleteRegion();
+            if (!changed && regionSelector instanceof ConvexPolyhedralRegionSelector) {
+                ConvexPolyhedralRegion convex = (ConvexPolyhedralRegion) regionSelector.getIncompleteRegion();
                 if (convex.getVertices().contains(vector)) {
                     actor.printInfo(TranslatableComponent.of(
                         "worldedit.selection.convex.error.duplicate",
@@ -227,8 +229,8 @@ public class SelectionCommands {
 
         RegionSelector selector = session.getRegionSelector(world);
         if (!selector.selectSecondary(coordinates, ActorSelectorLimits.forActor(actor))) {
-            if (selector instanceof com.sk89q.worldedit.regions.selector.ConvexPolyhedralRegionSelector) {
-                com.sk89q.worldedit.regions.ConvexPolyhedralRegion convex = (com.sk89q.worldedit.regions.ConvexPolyhedralRegion) selector.getIncompleteRegion();
+            if (selector instanceof ConvexPolyhedralRegionSelector) {
+                ConvexPolyhedralRegion convex = (ConvexPolyhedralRegion) selector.getIncompleteRegion();
                 if (convex.getVertices().contains(coordinates)) {
                     actor.printInfo(TranslatableComponent.of(
                         "worldedit.selection.convex.error.duplicate",
@@ -290,8 +292,8 @@ public class SelectionCommands {
             RegionSelector selector = session.getRegionSelector(player.getWorld());
             BlockVector3 bp = pos.toVector().toBlockPoint();
             if (!selector.selectSecondary(bp, ActorSelectorLimits.forActor(player))) {
-                if (selector instanceof com.sk89q.worldedit.regions.selector.ConvexPolyhedralRegionSelector) {
-                    com.sk89q.worldedit.regions.ConvexPolyhedralRegion convex = (com.sk89q.worldedit.regions.ConvexPolyhedralRegion) selector.getIncompleteRegion();
+                if (selector instanceof ConvexPolyhedralRegionSelector) {
+                    ConvexPolyhedralRegion convex = (ConvexPolyhedralRegion) selector.getIncompleteRegion();
                     if (convex.getVertices().contains(bp)) {
                         player.printInfo(TranslatableComponent.of(
                             "worldedit.selection.convex.error.duplicate",
