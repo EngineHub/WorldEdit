@@ -338,6 +338,14 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
         return ret;
     }
 
+    public boolean isBacklogVertex(BlockVector3 vertex) {
+        return vertexBacklog.contains(vertex);
+    }
+
+    public Collection<BlockVector3> getBacklogVertices() {
+        return new ArrayList<>(vertexBacklog);
+    }
+
     public Collection<Triangle> getTriangles() {
         return triangles;
     }

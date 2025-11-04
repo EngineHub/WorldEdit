@@ -65,6 +65,27 @@ public class DistanceWand extends BrushTool implements DoubleActionTraceTool {
         BlockVector3 blockPoint = target.toVector().toBlockPoint();
         if (selector.selectSecondary(blockPoint, ActorSelectorLimits.forActor(player))) {
             selector.explainSecondarySelection(player, session, blockPoint);
+        } else if (selector instanceof com.sk89q.worldedit.regions.selector.ConvexPolyhedralRegionSelector) {
+            com.sk89q.worldedit.regions.ConvexPolyhedralRegion convex = (com.sk89q.worldedit.regions.ConvexPolyhedralRegion) selector.getIncompleteRegion();
+
+            if (convex.getVertices().contains(blockPoint)) {
+                player.printInfo(com.sk89q.worldedit.util.formatting.text.TranslatableComponent.of(
+                    "worldedit.selection.convex.error.duplicate",
+                    com.sk89q.worldedit.util.formatting.text.TextComponent.of(blockPoint.toString())
+                ));
+                return true;
+            }
+
+            ActorSelectorLimits limits = ActorSelectorLimits.forActor(player);
+            limits.getPolyhedronVertexLimit().ifPresent(limit -> {
+                int total = convex.getVertices().size();
+                if (total >= limit) {
+                    player.printInfo(com.sk89q.worldedit.util.formatting.text.TranslatableComponent.of(
+                        "worldedit.select.convex.limit-message",
+                        com.sk89q.worldedit.util.formatting.text.TextComponent.of(limit)
+                    ));
+                }
+            });
         }
         return true;
     }

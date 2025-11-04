@@ -154,7 +154,27 @@ public class SelectionCommands {
         regionSelector.selectPrimary(pos1, ActorSelectorLimits.forActor(actor));
 
         for (BlockVector3 vector : pos2) {
-            regionSelector.selectSecondary(vector, ActorSelectorLimits.forActor(actor));
+            boolean changed = regionSelector.selectSecondary(vector, ActorSelectorLimits.forActor(actor));
+            if (!changed && regionSelector instanceof com.sk89q.worldedit.regions.selector.ConvexPolyhedralRegionSelector) {
+                com.sk89q.worldedit.regions.ConvexPolyhedralRegion convex = (com.sk89q.worldedit.regions.ConvexPolyhedralRegion) regionSelector.getIncompleteRegion();
+                if (convex.getVertices().contains(vector)) {
+                    actor.printInfo(TranslatableComponent.of(
+                        "worldedit.selection.convex.error.duplicate",
+                        TextComponent.of(vector.toString())
+                    ));
+                } else {
+                    ActorSelectorLimits limits = ActorSelectorLimits.forActor(actor);
+                    limits.getPolyhedronVertexLimit().ifPresent(limit -> {
+                        int total = convex.getVertices().size();
+                        if (total >= limit) {
+                            actor.printInfo(TranslatableComponent.of(
+                                "worldedit.select.convex.limit-message",
+                                TextComponent.of(limit)
+                            ));
+                        }
+                    });
+                }
+            }
         }
 
         session.dispatchCUISelection(actor);
@@ -205,8 +225,30 @@ public class SelectionCommands {
             }
         }
 
-        if (!session.getRegionSelector(world).selectSecondary(coordinates, ActorSelectorLimits.forActor(actor))) {
-            actor.printError(TranslatableComponent.of("worldedit.pos.already-set"));
+        RegionSelector selector = session.getRegionSelector(world);
+        if (!selector.selectSecondary(coordinates, ActorSelectorLimits.forActor(actor))) {
+            if (selector instanceof com.sk89q.worldedit.regions.selector.ConvexPolyhedralRegionSelector) {
+                com.sk89q.worldedit.regions.ConvexPolyhedralRegion convex = (com.sk89q.worldedit.regions.ConvexPolyhedralRegion) selector.getIncompleteRegion();
+                if (convex.getVertices().contains(coordinates)) {
+                    actor.printInfo(TranslatableComponent.of(
+                        "worldedit.selection.convex.error.duplicate",
+                        TextComponent.of(coordinates.toString())
+                    ));
+                } else {
+                    ActorSelectorLimits limits = ActorSelectorLimits.forActor(actor);
+                    limits.getPolyhedronVertexLimit().ifPresent(limit -> {
+                        int total = convex.getVertices().size();
+                        if (total >= limit) {
+                            actor.printInfo(TranslatableComponent.of(
+                                "worldedit.select.convex.limit-message",
+                                TextComponent.of(limit)
+                            ));
+                        }
+                    });
+                }
+            } else {
+                actor.printError(TranslatableComponent.of("worldedit.pos.already-set"));
+            }
             return;
         }
 
@@ -245,8 +287,31 @@ public class SelectionCommands {
         Location pos = player.getBlockTrace(300);
 
         if (pos != null) {
-            if (!session.getRegionSelector(player.getWorld()).selectSecondary(pos.toVector().toBlockPoint(), ActorSelectorLimits.forActor(player))) {
-                player.printError(TranslatableComponent.of("worldedit.hpos.already-set"));
+            RegionSelector selector = session.getRegionSelector(player.getWorld());
+            BlockVector3 bp = pos.toVector().toBlockPoint();
+            if (!selector.selectSecondary(bp, ActorSelectorLimits.forActor(player))) {
+                if (selector instanceof com.sk89q.worldedit.regions.selector.ConvexPolyhedralRegionSelector) {
+                    com.sk89q.worldedit.regions.ConvexPolyhedralRegion convex = (com.sk89q.worldedit.regions.ConvexPolyhedralRegion) selector.getIncompleteRegion();
+                    if (convex.getVertices().contains(bp)) {
+                        player.printInfo(TranslatableComponent.of(
+                            "worldedit.selection.convex.error.duplicate",
+                            TextComponent.of(bp.toString())
+                        ));
+                    } else {
+                        ActorSelectorLimits limits = ActorSelectorLimits.forActor(player);
+                        limits.getPolyhedronVertexLimit().ifPresent(limit -> {
+                            int total = convex.getVertices().size();
+                            if (total >= limit) {
+                                player.printInfo(TranslatableComponent.of(
+                                    "worldedit.select.convex.limit-message",
+                                    TextComponent.of(limit)
+                                ));
+                            }
+                        });
+                    }
+                } else {
+                    player.printError(TranslatableComponent.of("worldedit.hpos.already-set"));
+                }
                 return;
             }
 
