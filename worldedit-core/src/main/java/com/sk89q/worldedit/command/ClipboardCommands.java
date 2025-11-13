@@ -60,6 +60,7 @@ import java.util.List;
 
 import static com.sk89q.worldedit.command.util.Logging.LogMode.PLACEMENT;
 import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
+import static com.sk89q.worldedit.internal.command.CommandUtil.checkCommandArgument;
 
 /**
  * Clipboard commands.
@@ -264,5 +265,59 @@ public class ClipboardCommands {
     public void clearClipboard(Actor actor, LocalSession session) {
         session.setClipboard(null);
         actor.printInfo(TranslatableComponent.of("worldedit.clearclipboard.cleared"));
+    }
+
+
+    @Command(
+        name = "/revolve",
+        desc = "Revolve the selection around a vertical axis"
+    )
+    @CommandPermissions("worldedit.revolve")
+    void revolve(Actor actor, LocalSession session, EditSession editSession, @Selection Region region,
+                 @Arg(desc = "The amount of revolutions")
+                    int revolutions,
+                 @ArgFlag(name = 'm', desc = "Set the source mask, non-matching blocks are not revolved")
+                    Mask mask,
+                 @Switch(name = 'r', desc = "Perform revolutions in reverse (counter-clockwise)")
+                    boolean reverse,
+                 @Switch(name = 'e', desc = "Copy entities")
+                    boolean copyEntities,
+                 @Switch(name = 'b', desc = "Copy biomes")
+                    boolean copyBiomes) throws WorldEditException {
+        checkRegionBounds(region, session);
+        checkCommandArgument(revolutions >= 2, TranslatableComponent.of("worldedit.revolve.too-few-revolutions"));
+
+        // Copy the selection into a clipboard
+        BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
+        clipboard.setOrigin(session.getPlacementPosition(actor));
+        ForwardExtentCopy copy = new ForwardExtentCopy(editSession, region, clipboard, region.getMinimumPoint());
+        copy.setCopyingEntities(copyEntities);
+        copy.setCopyingBiomes(copyBiomes);
+
+        if (mask != null) {
+            copy.setSourceMask(mask);
+        }
+        Operations.complete(copy);
+
+        double perRevolutionAngle = 360.0 / revolutions;
+
+        // Now paste it multiple times, rotating each time
+        for (int i = 1; i < revolutions; i++) {
+            ClipboardHolder holder = new ClipboardHolder(clipboard);
+            AffineTransform transform = new AffineTransform();
+            transform = transform.rotateY((reverse ? 1 : -1) * perRevolutionAngle * i);
+            holder.setTransform(holder.getTransform().combine(transform));
+
+            Operation operation = holder
+                    .createPaste(editSession)
+                    .ignoreAirBlocks(true)
+                    .copyEntities(copyEntities)
+                    .copyBiomes(copyBiomes)
+                    .to(session.getPlacementPosition(actor))
+                    .build();
+            Operations.complete(operation);
+        }
+
+        actor.printInfo(TranslatableComponent.of("worldedit.revolve.revolved", TextComponent.of(revolutions)));
     }
 }
