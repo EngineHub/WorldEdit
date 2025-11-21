@@ -81,7 +81,7 @@ tasks.named<Copy>("processResources") {
     // this will ensure that this task is redone when the versions change.
     inputs.property("version", internalVersion)
     filesMatching("fabric.mod.json") {
-        this.expand("version" to internalVersion)
+        this.expand(mapOf("version" to internalVersion))
     }
 }
 
