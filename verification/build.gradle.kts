@@ -32,9 +32,6 @@ val baseVersion = "(,${rootProject.version.toString().substringBefore("-SNAPSHOT
 for (projectFragment in listOf("bukkit", "cli", "core", "fabric", "sponge")) {
     val capitalizedFragment =
         projectFragment.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
-    val proj = project(":worldedit-$projectFragment")
-    evaluationDependsOn(proj.path)
-
     val changeFile = project.file("src/changes/accepted-$projectFragment-public-api-changes.json").toPath()
 
     val resetChangeFileTask = tasks.register("reset${capitalizedFragment}AcceptedApiChangesFile") {
@@ -52,23 +49,32 @@ for (projectFragment in listOf("bukkit", "cli", "core", "fabric", "sponge")) {
         dependsOn(resetChangeFileTask)
     }
 
-    val conf = configurations.create("${projectFragment}OldJar") {
-        isCanBeResolved = true
+    val oldJarScope = configurations.dependencyScope("${projectFragment}OldJarScope")
+    val oldJarConf = configurations.resolvable("${projectFragment}OldJar") {
+        extendsFrom(oldJarScope.get())
     }
-    val projPublication = proj.the<PublishingExtension>().publications.getByName<MavenPublication>("maven")
-    conf.dependencies.add(
-        dependencies.create("${projPublication.groupId}:${projPublication.artifactId}:$baseVersion").apply {
-            (this as? ModuleDependency)?.isTransitive = false
+    val newJarScope = configurations.dependencyScope("${projectFragment}NewJarScope")
+    val newJarConf = configurations.resolvable("${projectFragment}NewJar") {
+        extendsFrom(newJarScope.get())
+    }
+    dependencies {
+        (oldJarScope.name)("com.sk89q.worldedit:worldedit-$projectFragment:$baseVersion") {
+            isTransitive = false
         }
-    )
+        (newJarScope.name)(dependencies.project(":worldedit-$projectFragment")) {
+            isTransitive = false
+        }
+    }
     val resolvedOldJar = files({
         try {
-            conf.resolvedConfiguration.rethrowFailure()
-            conf
+            val confRealized = oldJarConf.get()
+            confRealized.resolvedConfiguration.rethrowFailure()
+            confRealized
         } catch (e: ResolveException) {
             if (e.cause is ModuleVersionNotFoundException) {
                 logger.warn("Skipping check for $projectFragment API compatibility because there is no jar to compare against")
-                setOf<File>()
+                logger.info("API compatibility exception details: ", e)
+                setOf()
             } else {
                 throw e
             }
@@ -94,7 +100,7 @@ for (projectFragment in listOf("bukkit", "cli", "core", "fabric", "sponge")) {
         }
 
         oldClasspath.from(resolvedOldJar)
-        newClasspath.from(proj.tasks.named("jar"))
+        newClasspath.from(newJarConf)
         onlyModified.set(false)
         failOnModification.set(false) // report does the failing (so we can accept)
         ignoreMissingClasses.set(true)
@@ -120,8 +126,4 @@ tasks.named<JapicmpTask>("checkCoreApiCompatibility") {
 tasks.named<JapicmpTask>("checkBukkitApiCompatibility") {
     // Internal Adapters are not API
     packageExcludes.add("com.sk89q.worldedit.bukkit.adapter*")
-}
-tasks.named<JapicmpTask>("checkFabricApiCompatibility") {
-    // Need to check against the reobf JAR
-    newClasspath.setFrom(project(":worldedit-fabric").tasks.named("remapJar"))
 }

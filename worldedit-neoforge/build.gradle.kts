@@ -17,8 +17,7 @@ val nextMajorMinecraftVersion: String = minecraftVersion.split('.').let { (usele
     "$useless.${major.toInt() + 1}"
 }
 
-val apiClasspath = configurations.create("apiClasspath") {
-    isCanBeResolved = true
+val apiClasspath = configurations.resolvable("apiClasspath") {
     extendsFrom(configurations.api.get())
 }
 
@@ -36,12 +35,26 @@ repositories {
     }
 }
 
-dependencies {
-    "api"(project(":worldedit-core"))
+configurations {
+    val coreResourcesScope = dependencyScope("coreResourcesScope")
+    resolvable("coreResourcesResolvable") {
+        extendsFrom(coreResourcesScope.get())
+        attributes {
+            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category::class, Category.VERIFICATION))
+            attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling::class, Bundling.EXTERNAL))
+            attribute(VerificationType.VERIFICATION_TYPE_ATTRIBUTE, objects.named(VerificationType::class, "resources"))
+        }
+    }
+}
 
-    "implementation"(libs.neoforge)
-    "implementation"(libs.cuiProtocol.neoforge)
+dependencies {
+    api(project(":worldedit-core"))
+
+    implementation(libs.neoforge)
+    implementation(libs.cuiProtocol.neoforge)
     jarJar(libs.cuiProtocol.neoforge)
+
+    "coreResourcesScope"(project(":worldedit-core"))
 }
 
 minecraft {
@@ -59,7 +72,7 @@ runs {
         workingDirectory(project.file("run").canonicalPath)
         modSources(sourceSets["main"])
         dependencies {
-            runtime(apiClasspath)
+            runtime(apiClasspath.get())
         }
     }
     register("client").configure(runConfig)
@@ -107,7 +120,7 @@ tasks.named<Copy>("processResources") {
     }
 
     // copy from -core resources as well
-    from(project(":worldedit-core").tasks.named("processResources"))
+    from(configurations.named("coreResourcesResolvable"))
 }
 
 tasks.named<ShadowJar>("shadowJar") {
