@@ -1,5 +1,4 @@
 [plugins]
-codecov = "org.enginehub.codecov:0.2.0"
 neogradle-userdev = { id = "net.neoforged.gradle.userdev", version.ref = "neogradle" }
 sponge-spongegradle = "org.spongepowered.gradle.plugin:2.3.0"
 sponge-vanillagradle = { id = "org.spongepowered.gradle.vanilla", version.ref = "sponge-vanillagradle" }
@@ -13,7 +12,7 @@ cuiProtocol = "4.0.2"
 
 fabric-api = "0.136.0+1.21.10"
 
-neogradle = "7.1.1"
+neogradle = "7.1.4"
 neoforge-minecraft = "1.21.10"
 
 sponge-minecraft = "1.21.10"
@@ -41,7 +40,7 @@ lang-version = "1865"
 neogradle-neoform = { module = "net.neoforged.gradle:neoform", version.ref = "neogradle" }
 sponge-vanillagradle = { module = "org.spongepowered:vanillagradle", version.ref = "sponge-vanillagradle" }
 
-licenser = "gradle.plugin.org.cadixdev.gradle:licenser:0.6.1"
+levelHeadered = "net.octyl.level-headered:plugin:0.1.1"
 grgit = "org.ajoberstar.grgit:grgit-gradle:5.3.3"
 japicmp = "me.champeau.gradle:japicmp-gradle-plugin:0.4.6"
 shadow = "com.gradleup.shadow:com.gradleup.shadow.gradle.plugin:8.3.9"
@@ -64,10 +63,11 @@ jsr305 = "com.google.code.findbugs:jsr305:3.0.2"
 jetbrains-annotations = "org.jetbrains:annotations:24.1.0"
 errorprone-annotations = "com.google.errorprone:error_prone_annotations:2.11.0"
 
-junit-bom = "org.junit:junit-bom:5.10.2"
+junit-bom = "org.junit:junit-bom:6.0.1"
 junit-jupiter-api.module = "org.junit.jupiter:junit-jupiter-api"
 junit-jupiter-params.module = "org.junit.jupiter:junit-jupiter-params"
 junit-jupiter-engine.module = "org.junit.jupiter:junit-jupiter-engine"
+junit-platform-launcher.module = "org.junit.platform:junit-platform-launcher"
 
 jqwik = "net.jqwik:jqwik:1.9.0"
 

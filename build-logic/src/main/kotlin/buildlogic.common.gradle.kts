@@ -3,7 +3,7 @@ import buildlogic.stringyLibs
 import org.gradle.plugins.ide.idea.model.IdeaModel
 
 plugins {
-    id("org.cadixdev.licenser")
+    id("net.octyl.level-headered")
 }
 
 group = rootProject.group
@@ -45,11 +45,13 @@ dependencies {
     }
 }
 
-license {
-    header(rootProject.file("HEADER.txt"))
-    include("**/*.java")
-    include("**/*.kt")
-    exclude("**/com/sk89q/worldedit/util/formatting/text/**/*.java")
+levelHeadered {
+    headerTemplate(rootProject.file("HEADER.txt"))
+
+    sourceMatchPatterns {
+        // Exclude overrides for text formatting
+        exclude("com/sk89q/worldedit/util/formatting/text/")
+    }
 }
 
 plugins.withId("idea") {

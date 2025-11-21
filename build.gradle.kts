@@ -1,7 +1,6 @@
 import org.ajoberstar.grgit.Grgit
 
 plugins {
-    alias(libs.plugins.codecov)
     jacoco
     id("buildlogic.common")
     id("buildlogic.artifactory-root")
@@ -44,8 +43,4 @@ afterEvaluate {
             }
         })
     }
-}
-
-codecov {
-    reportTask.set(totalReport)
 }

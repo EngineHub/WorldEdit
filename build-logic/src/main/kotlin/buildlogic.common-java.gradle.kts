@@ -45,6 +45,7 @@ dependencies {
     "testImplementation"(stringyLibs.getLibrary("mockito-core"))
     "testImplementation"(stringyLibs.getLibrary("mockito-junit-jupiter"))
     "testRuntimeOnly"(stringyLibs.getLibrary("junit-jupiter-engine"))
+    "testRuntimeOnly"(stringyLibs.getLibrary("junit-platform-launcher"))
 }
 
 // Java 8 turns on doclint which we fail

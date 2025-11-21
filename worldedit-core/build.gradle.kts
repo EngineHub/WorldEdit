@@ -1,4 +1,3 @@
-import org.cadixdev.gradle.licenser.LicenseExtension
 import org.gradle.plugins.ide.idea.model.IdeaModel
 
 plugins {
@@ -80,17 +79,14 @@ tasks.generateGrammarSource {
     )
 }
 
-tasks.named("sourcesJar") {
-    mustRunAfter("generateGrammarSource")
+tasks.withType<Checkstyle>().configureEach {
+    exclude("com/sk89q/worldedit/antlr/")
 }
 
-configure<LicenseExtension> {
-    exclude {
-        it.file.startsWith(project.layout.buildDirectory.get().asFile)
+levelHeadered {
+    sourceMatchPatterns {
+        exclude("com/sk89q/worldedit/antlr/")
     }
-}
-tasks.withType<Checkstyle>().configureEach {
-    exclude("com/sk89q/worldedit/antlr/**/*.java")
 }
 
 // Give intellij info about where ANTLR code comes from
