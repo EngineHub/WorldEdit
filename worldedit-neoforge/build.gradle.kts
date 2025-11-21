@@ -1,3 +1,4 @@
+import buildlogic.internalVersion
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.neoforged.gradle.dsl.common.runs.run.Run
 
@@ -87,7 +88,7 @@ configure<PublishingExtension> {
 tasks.named<Copy>("processResources") {
     // this will ensure that this task is redone when the versions change.
     val properties = mapOf(
-        "version" to project.ext["internalVersion"],
+        "version" to internalVersion,
         "neoVersion" to libs.neoforge.get().version,
         "minecraftVersion" to minecraftVersion,
         "nextMajorMinecraftVersion" to nextMajorMinecraftVersion
@@ -97,7 +98,12 @@ tasks.named<Copy>("processResources") {
     }
 
     filesMatching("META-INF/neoforge.mods.toml") {
-        expand(properties)
+        expand(properties.mapValues {
+            when (val v = it.value) {
+                is Provider<*> -> v.get()
+                else -> v
+            }
+        })
     }
 
     // copy from -core resources as well
