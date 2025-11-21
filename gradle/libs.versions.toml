@@ -1,5 +1,4 @@
 [plugins]
-codecov = "org.enginehub.codecov:0.2.0"
 neogradle-userdev = { id = "net.neoforged.gradle.userdev", version.ref = "neogradle" }
 sponge-spongegradle = "org.spongepowered.gradle.plugin:2.3.0"
 sponge-vanillagradle = { id = "org.spongepowered.gradle.vanilla", version.ref = "sponge-vanillagradle" }
