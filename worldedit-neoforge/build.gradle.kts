@@ -1,3 +1,4 @@
+import buildlogic.internalVersion
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.neoforged.gradle.dsl.common.runs.run.Run
 
@@ -16,8 +17,7 @@ val nextMajorMinecraftVersion: String = minecraftVersion.split('.').let { (usele
     "$useless.${major.toInt() + 1}"
 }
 
-val apiClasspath = configurations.create("apiClasspath") {
-    isCanBeResolved = true
+val apiClasspath = configurations.resolvable("apiClasspath") {
     extendsFrom(configurations.api.get())
 }
 
@@ -35,12 +35,26 @@ repositories {
     }
 }
 
-dependencies {
-    "api"(project(":worldedit-core"))
+configurations {
+    val coreResourcesScope = dependencyScope("coreResourcesScope")
+    resolvable("coreResourcesResolvable") {
+        extendsFrom(coreResourcesScope.get())
+        attributes {
+            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category::class, Category.VERIFICATION))
+            attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling::class, Bundling.EXTERNAL))
+            attribute(VerificationType.VERIFICATION_TYPE_ATTRIBUTE, objects.named(VerificationType::class, "resources"))
+        }
+    }
+}
 
-    "implementation"(libs.neoforge)
-    "implementation"(libs.cuiProtocol.neoforge)
+dependencies {
+    api(project(":worldedit-core"))
+
+    implementation(libs.neoforge)
+    implementation(libs.cuiProtocol.neoforge)
     jarJar(libs.cuiProtocol.neoforge)
+
+    "coreResourcesScope"(project(":worldedit-core"))
 }
 
 minecraft {
@@ -58,7 +72,7 @@ runs {
         workingDirectory(project.file("run").canonicalPath)
         modSources(sourceSets["main"])
         dependencies {
-            runtime(apiClasspath)
+            runtime(apiClasspath.get())
         }
     }
     register("client").configure(runConfig)
@@ -87,7 +101,7 @@ configure<PublishingExtension> {
 tasks.named<Copy>("processResources") {
     // this will ensure that this task is redone when the versions change.
     val properties = mapOf(
-        "version" to project.ext["internalVersion"],
+        "version" to internalVersion,
         "neoVersion" to libs.neoforge.get().version,
         "minecraftVersion" to minecraftVersion,
         "nextMajorMinecraftVersion" to nextMajorMinecraftVersion
@@ -97,11 +111,16 @@ tasks.named<Copy>("processResources") {
     }
 
     filesMatching("META-INF/neoforge.mods.toml") {
-        expand(properties)
+        expand(properties.mapValues {
+            when (val v = it.value) {
+                is Provider<*> -> v.get()
+                else -> v
+            }
+        })
     }
 
     // copy from -core resources as well
-    from(project(":worldedit-core").tasks.named("processResources"))
+    from(configurations.named("coreResourcesResolvable"))
 }
 
 tasks.named<ShadowJar>("shadowJar") {

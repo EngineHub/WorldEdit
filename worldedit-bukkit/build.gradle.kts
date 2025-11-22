@@ -1,3 +1,4 @@
+import buildlogic.internalVersion
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import io.papermc.paperweight.userdev.attribute.Obfuscation
 
@@ -64,10 +65,11 @@ dependencies {
 }
 
 tasks.named<Copy>("processResources") {
-    val internalVersion = project.ext["internalVersion"]
+    // Avoid carrying project reference into task execution
+    val internalVersion = project.internalVersion
     inputs.property("internalVersion", internalVersion)
     filesMatching("plugin.yml") {
-        expand("internalVersion" to internalVersion)
+        expand(mapOf("internalVersion" to internalVersion.get()))
     }
 }
 
