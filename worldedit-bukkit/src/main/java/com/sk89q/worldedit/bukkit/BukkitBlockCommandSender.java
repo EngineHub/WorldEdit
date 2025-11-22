@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.bukkit.folia.FoliaScheduler;
 import com.sk89q.worldedit.extension.platform.AbstractCommandBlockActor;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
@@ -155,12 +156,9 @@ public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
                     // we can update eagerly
                     updateActive();
                 } else {
-                    // we should update it eventually
-                    Bukkit.getScheduler().callSyncMethod(plugin,
-                        () -> {
-                            updateActive();
-                            return null;
-                        });
+                    // we should update it eventually or on the owning region thread
+                    FoliaScheduler.getRegionScheduler().execute(plugin, sender.getBlock().getLocation(),
+                        this::updateActive);
                 }
                 return active;
             }

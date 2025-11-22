@@ -23,6 +23,7 @@ import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
+import com.sk89q.worldedit.bukkit.folia.FoliaScheduler;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
@@ -45,6 +46,7 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.gamemode.GameMode;
 import com.sk89q.worldedit.world.gamemode.GameModes;
+import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -146,6 +148,11 @@ public class BukkitPlayer extends AbstractPlayerActor {
 
     @Override
     public boolean trySetPosition(Vector3 pos, float pitch, float yaw) {
+        if (PaperLib.isPaper()) {
+            FoliaScheduler.getEntityScheduler().run(player, WorldEditPlugin.getInstance(),
+                o -> player.teleportAsync(new Location(player.getWorld(), pos.x(), pos.y(), pos.z(), yaw, pitch)), null);
+            return true;
+        }
         return player.teleport(new Location(player.getWorld(), pos.x(), pos.y(),
             pos.z(), yaw, pitch));
     }
@@ -224,6 +231,11 @@ public class BukkitPlayer extends AbstractPlayerActor {
 
     @Override
     public boolean setLocation(com.sk89q.worldedit.util.Location location) {
+        if (PaperLib.isPaper()) {
+            FoliaScheduler.getEntityScheduler().run(player, WorldEditPlugin.getInstance(),
+                o -> player.teleportAsync(BukkitAdapter.adapt(location)), null);
+            return true;
+        }
         return player.teleport(BukkitAdapter.adapt(location));
     }
 
