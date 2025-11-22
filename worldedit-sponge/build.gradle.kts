@@ -1,3 +1,4 @@
+import buildlogic.internalVersion
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.spongepowered.gradle.plugin.config.PluginLoaders
 import org.spongepowered.plugin.metadata.model.PluginDependency
@@ -41,7 +42,7 @@ sponge {
             version("1.0")
         }
         displayName("WorldEdit")
-        version(project.ext["internalVersion"].toString())
+        version = internalVersion
         entrypoint("com.sk89q.worldedit.sponge.SpongeWorldEdit")
         description("WorldEdit is an easy-to-use in-game world editor for Minecraft, supporting both single- and multi-player.")
         links {

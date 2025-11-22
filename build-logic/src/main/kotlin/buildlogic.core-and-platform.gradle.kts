@@ -5,8 +5,6 @@ plugins {
     id("buildlogic.artifactory-sub")
 }
 
-ext["internalVersion"] = "$version+${rootProject.ext["gitCommitHash"]}"
-
 publishing {
     publications {
         register<MavenPublication>("maven") {
