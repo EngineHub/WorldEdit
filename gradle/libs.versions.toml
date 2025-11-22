@@ -41,7 +41,6 @@ neogradle-neoform = { module = "net.neoforged.gradle:neoform", version.ref = "ne
 sponge-vanillagradle = { module = "org.spongepowered:vanillagradle", version.ref = "sponge-vanillagradle" }
 
 levelHeadered = "net.octyl.level-headered:plugin:0.1.1"
-grgit = "org.ajoberstar.grgit:grgit-gradle:5.3.3"
 japicmp = "me.champeau.gradle:japicmp-gradle-plugin:0.4.6"
 shadow = "com.gradleup.shadow:com.gradleup.shadow.gradle.plugin:8.3.9"
 jfrog-buildinfo = "org.jfrog.buildinfo:build-info-extractor-gradle:6.0.1"

@@ -13,7 +13,6 @@ repositories {
 dependencies {
     implementation(gradleApi())
     implementation(libs.levelHeadered)
-    implementation(libs.grgit)
     implementation(libs.japicmp)
     implementation(libs.shadow)
     implementation(libs.jfrog.buildinfo)

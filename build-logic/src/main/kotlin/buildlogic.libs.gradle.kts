@@ -170,8 +170,3 @@ configure<PublishingExtension> {
         }
     }
 }
-
-if (project != project(":worldedit-libs:core")) {
-    evaluationDependsOn(":worldedit-libs:core")
-    configurations["shade"].shouldResolveConsistentlyWith(project(":worldedit-libs:core").configurations["shade"])
-}

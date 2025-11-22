@@ -42,7 +42,7 @@ afterEvaluate {
         val includeClasspath = platform.includeClasspath.get()
         val extraAttributes = platform.extraAttributes.get()
 
-        val version = project(":worldedit-core").version
+        val version = providers.gradleProperty("version").get()
         inputs.property("version", version)
         val attributes = mutableMapOf(
             "Implementation-Version" to version,

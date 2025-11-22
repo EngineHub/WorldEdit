@@ -1,5 +1,4 @@
-import buildlogic.getLibrary
-import buildlogic.stringyLibs
+import buildlogic.internalVersion
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.RunGameTask
@@ -77,11 +76,12 @@ configure<PublishingExtension> {
 }
 
 tasks.named<Copy>("processResources") {
-    val internalVersion = project.ext["internalVersion"]
+    // Avoid carrying project reference into task execution
+    val internalVersion = project.internalVersion
     // this will ensure that this task is redone when the versions change.
     inputs.property("version", internalVersion)
     filesMatching("fabric.mod.json") {
-        this.expand(mapOf("version" to internalVersion))
+        this.expand(mapOf("version" to internalVersion.get()))
     }
 }
 
