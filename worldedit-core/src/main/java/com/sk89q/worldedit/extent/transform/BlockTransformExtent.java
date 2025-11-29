@@ -368,7 +368,11 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
     private static boolean isRailShape(EnumProperty property) {
         List<String> propertyValues = property.getValues();
         List<Object> straightRailShapeValues = BlockTypes.DETECTOR_RAIL.getProperty("shape").getValues();
-
+        
+        if (propertyValues.size() < straightRailShapeValues.size()) {
+            return false;
+        }
+        
         for (Object propertyValue : straightRailShapeValues) {
             if (!propertyValues.contains(propertyValue)) {
                 return false;
