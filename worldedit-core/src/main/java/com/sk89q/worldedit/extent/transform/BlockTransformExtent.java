@@ -372,7 +372,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
         if (propertyValues.size() < straightRailShapeValues.size()) {
             return false;
         }
-        
+
         for (Object propertyValue : straightRailShapeValues) {
             if (!propertyValues.contains(propertyValue)) {
                 return false;
