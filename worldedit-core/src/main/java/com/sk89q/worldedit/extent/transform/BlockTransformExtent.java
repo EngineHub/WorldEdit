@@ -213,22 +213,23 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                         }
                     }
 
-                    // rails
-                    if (affineTransform.isVerticalFlip()) {
-                        String value = (String) result.getState(property);
-                        String newValue = switch (value) {
-                            case "ascending_east" -> "ascending_west";
-                            case "ascending_west" -> "ascending_east";
-                            case "ascending_north" -> "ascending_south";
-                            case "ascending_south" -> "ascending_north";
-                            default -> null;
-                        };
-                        if (newValue != null && enumProp.getValues().contains(newValue)) {
-                            result = result.with(enumProp, newValue);
-                        }
-                    }
 
                     if (isRailShape(enumProp)) {
+                        // rails
+                        if (affineTransform.isVerticalFlip()) {
+                            String value = (String) result.getState(property);
+                            String newValue = switch (value) {
+                                case "ascending_east" -> "ascending_west";
+                                case "ascending_west" -> "ascending_east";
+                                case "ascending_north" -> "ascending_south";
+                                case "ascending_south" -> "ascending_north";
+                                default -> null;
+                            };
+                            if (newValue != null && enumProp.getValues().contains(newValue)) {
+                                result = result.with(enumProp, newValue);
+                            }
+                        }
+                        
                         String value = (String) result.getState(property);
                         String[] parts = value.split("_");
                         String newStartString = parts[0];
@@ -366,13 +367,10 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
 
     private static boolean isRailShape(EnumProperty property) {
         List<String> propertyValues = property.getValues();
-        List<Object> railShapeValues = BlockTypes.RAIL.getProperty("shape").getValues();
-        if (railShapeValues.size() != propertyValues.size()) {
-            return false;
-        }
+        List<Object> straightRailShapeValues = BlockTypes.DETECTOR_RAIL.getProperty("shape").getValues();
 
-        for (String propertyValue : propertyValues) {
-            if (!railShapeValues.contains(propertyValue)) {
+        for (Object propertyValue : straightRailShapeValues) {
+            if (!propertyValues.contains(propertyValue)) {
                 return false;
             }
         }
