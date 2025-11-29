@@ -215,7 +215,7 @@
     "worldedit.flip.flipped": "The clipboard copy has been flipped.",
     "worldedit.clearclipboard.cleared": "Clipboard cleared.",
     "worldedit.revolve.revolved": "The selection has been pasted {0} times.",
-    "worldedit.revolve.too-few-pasteCount": "Paste count must be at least 2.",
+    "worldedit.revolve.too-few-pastes": "Paste count must be at least 2.",
 
     "worldedit.set.done": "Operation completed.",
     "worldedit.set.done.verbose": "Operation completed ({0}).",
