@@ -229,7 +229,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                                 result = result.with(enumProp, newValue);
                             }
                         }
-                        
+
                         String value = (String) result.getState(property);
                         String[] parts = value.split("_");
                         String newStartString = parts[0];
@@ -368,7 +368,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
     private static boolean isRailShape(EnumProperty property) {
         List<String> propertyValues = property.getValues();
         List<Object> straightRailShapeValues = BlockTypes.DETECTOR_RAIL.getProperty("shape").getValues();
-        
+
         if (propertyValues.size() < straightRailShapeValues.size()) {
             return false;
         }
