@@ -10,7 +10,8 @@ plugins {
 
 paperweight {
     injectPaperRepository = false
-    reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.REOBF_PRODUCTION
+    // TODO - switch back to reobf when properly supported for 1.21.11
+    reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
 }
 
 repositories {
@@ -33,6 +34,7 @@ dependencies {
     }
 }
 
-tasks.named("assemble") {
-    dependsOn("reobfJar")
-}
+// TODO - switch back to reobf when properly supported for 1.21.11
+//tasks.named("assemble") {
+//    dependsOn("reobfJar")
+//}

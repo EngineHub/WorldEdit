@@ -27,7 +27,8 @@ val adapters = configurations.create("adapters") {
     shouldResolveConsistentlyWith(configurations["runtimeClasspath"])
     attributes {
         attribute(Obfuscation.OBFUSCATION_ATTRIBUTE,
-            if ((project.findProperty("enginehub.obf.none") as String?).toBoolean()) {
+            // TODO - switch back to reobf when properly supported for 1.21.11
+            if (true || (project.findProperty("enginehub.obf.none") as String?).toBoolean()) {
                 objects.named(Obfuscation.NONE)
             } else {
                 objects.named(Obfuscation.OBFUSCATED)
