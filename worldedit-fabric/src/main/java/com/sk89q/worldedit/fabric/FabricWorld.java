@@ -65,7 +65,6 @@ import com.sk89q.worldedit.world.generation.StructureType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -73,13 +72,14 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.features.EndFeatures;
 import net.minecraft.data.worldgen.features.TreeFeatures;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.Util;
 import net.minecraft.world.Clearable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -142,7 +142,7 @@ public class FabricWorld extends AbstractWorld {
 
     private static final RandomSource random = RandomSource.create();
 
-    private static ResourceLocation getDimensionRegistryKey(Level world) {
+    private static Identifier getDimensionRegistryKey(Level world) {
         return Objects.requireNonNull(world.getServer(), "server cannot be null")
             .registryAccess()
             .lookupOrThrow(Registries.DIMENSION_TYPE)
@@ -252,7 +252,7 @@ public class FabricWorld extends AbstractWorld {
             position.x() & 3, position.y() & 3, position.z() & 3,
             getWorld().registryAccess().lookup(Registries.BIOME)
                 .orElseThrow()
-                .getOrThrow(ResourceKey.create(Registries.BIOME, ResourceLocation.parse(biome.id())))
+                .getOrThrow(ResourceKey.create(Registries.BIOME, Identifier.parse(biome.id())))
         );
         chunk.markUnsaved();
         return true;
@@ -494,7 +494,7 @@ public class FabricWorld extends AbstractWorld {
 
     public boolean generateFeature(ConfiguredFeatureType type, EditSession editSession, BlockVector3 position) {
         ServerLevel world = (ServerLevel) getWorld();
-        ConfiguredFeature<?, ?> feature = world.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).getValue(ResourceLocation.tryParse(type.id()));
+        ConfiguredFeature<?, ?> feature = world.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).getValue(Identifier.tryParse(type.id()));
         ServerChunkCache chunkManager = world.getChunkSource();
         try (FabricServerLevelDelegateProxy.LevelAndProxy proxyLevel = FabricServerLevelDelegateProxy.newInstance(editSession, world)) {
             return feature != null && feature.place(
@@ -510,7 +510,7 @@ public class FabricWorld extends AbstractWorld {
     public boolean generateStructure(StructureType type, EditSession editSession, BlockVector3 position) {
         ServerLevel world = (ServerLevel) getWorld();
         Registry<Structure> structureRegistry = world.registryAccess().lookupOrThrow(Registries.STRUCTURE);
-        Structure structure = structureRegistry.getValue(ResourceLocation.tryParse(type.id()));
+        Structure structure = structureRegistry.getValue(Identifier.tryParse(type.id()));
         if (structure == null) {
             return false;
         }

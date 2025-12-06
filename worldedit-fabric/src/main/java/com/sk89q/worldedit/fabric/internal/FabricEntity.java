@@ -32,7 +32,7 @@ import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.entity.EntityTypes;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.storage.TagValueOutput;
 
@@ -65,7 +65,7 @@ public class FabricEntity implements Entity {
 
         net.minecraft.nbt.CompoundTag tag = tagValueOutput.buildResult();
 
-        ResourceLocation id = FabricWorldEdit.getRegistry(Registries.ENTITY_TYPE).getKey(entity.getType());
+        Identifier id = FabricWorldEdit.getRegistry(Registries.ENTITY_TYPE).getKey(entity.getType());
         return new BaseEntity(
             EntityTypes.get(id.toString()),
             LazyReference.from(() -> NBTConverter.fromNative(tag))

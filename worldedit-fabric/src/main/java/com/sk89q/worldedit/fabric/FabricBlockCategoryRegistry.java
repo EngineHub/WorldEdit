@@ -24,7 +24,7 @@ import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 
 import java.util.Set;
@@ -34,7 +34,7 @@ public class FabricBlockCategoryRegistry implements BlockCategoryRegistry {
     @Override
     public Set<BlockType> getCategorisedByName(String category) {
         return FabricWorldEdit.getRegistry(Registries.BLOCK)
-            .get(TagKey.create(Registries.BLOCK, ResourceLocation.parse(category)))
+            .get(TagKey.create(Registries.BLOCK, Identifier.parse(category)))
             .stream()
             .flatMap(HolderSet.Named::stream)
             .map(Holder::value)
