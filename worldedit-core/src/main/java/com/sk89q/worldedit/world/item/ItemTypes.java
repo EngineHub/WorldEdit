@@ -223,6 +223,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType CAKE = get("minecraft:cake");
     @Nullable public static final ItemType CALCITE = get("minecraft:calcite");
     @Nullable public static final ItemType CALIBRATED_SCULK_SENSOR = get("minecraft:calibrated_sculk_sensor");
+    @Nullable public static final ItemType CAMEL_HUSK_SPAWN_EGG = get("minecraft:camel_husk_spawn_egg");
     @Nullable public static final ItemType CAMEL_SPAWN_EGG = get("minecraft:camel_spawn_egg");
     @Nullable public static final ItemType CAMPFIRE = get("minecraft:campfire");
     @Nullable public static final ItemType CANDLE = get("minecraft:candle");
@@ -332,10 +333,12 @@ public final class ItemTypes {
     @Nullable public static final ItemType COPPER_INGOT = get("minecraft:copper_ingot");
     @Nullable public static final ItemType COPPER_LANTERN = get("minecraft:copper_lantern");
     @Nullable public static final ItemType COPPER_LEGGINGS = get("minecraft:copper_leggings");
+    @Nullable public static final ItemType COPPER_NAUTILUS_ARMOR = get("minecraft:copper_nautilus_armor");
     @Nullable public static final ItemType COPPER_NUGGET = get("minecraft:copper_nugget");
     @Nullable public static final ItemType COPPER_ORE = get("minecraft:copper_ore");
     @Nullable public static final ItemType COPPER_PICKAXE = get("minecraft:copper_pickaxe");
     @Nullable public static final ItemType COPPER_SHOVEL = get("minecraft:copper_shovel");
+    @Nullable public static final ItemType COPPER_SPEAR = get("minecraft:copper_spear");
     @Nullable public static final ItemType COPPER_SWORD = get("minecraft:copper_sword");
     @Nullable public static final ItemType COPPER_TORCH = get("minecraft:copper_torch");
     @Nullable public static final ItemType COPPER_TRAPDOOR = get("minecraft:copper_trapdoor");
@@ -465,9 +468,11 @@ public final class ItemTypes {
     @Nullable public static final ItemType DIAMOND_HOE = get("minecraft:diamond_hoe");
     @Nullable public static final ItemType DIAMOND_HORSE_ARMOR = get("minecraft:diamond_horse_armor");
     @Nullable public static final ItemType DIAMOND_LEGGINGS = get("minecraft:diamond_leggings");
+    @Nullable public static final ItemType DIAMOND_NAUTILUS_ARMOR = get("minecraft:diamond_nautilus_armor");
     @Nullable public static final ItemType DIAMOND_ORE = get("minecraft:diamond_ore");
     @Nullable public static final ItemType DIAMOND_PICKAXE = get("minecraft:diamond_pickaxe");
     @Nullable public static final ItemType DIAMOND_SHOVEL = get("minecraft:diamond_shovel");
+    @Nullable public static final ItemType DIAMOND_SPEAR = get("minecraft:diamond_spear");
     @Nullable public static final ItemType DIAMOND_SWORD = get("minecraft:diamond_sword");
     @Nullable public static final ItemType DIORITE = get("minecraft:diorite");
     @Nullable public static final ItemType DIORITE_SLAB = get("minecraft:diorite_slab");
@@ -592,8 +597,10 @@ public final class ItemTypes {
     @Nullable public static final ItemType GOLDEN_HOE = get("minecraft:golden_hoe");
     @Nullable public static final ItemType GOLDEN_HORSE_ARMOR = get("minecraft:golden_horse_armor");
     @Nullable public static final ItemType GOLDEN_LEGGINGS = get("minecraft:golden_leggings");
+    @Nullable public static final ItemType GOLDEN_NAUTILUS_ARMOR = get("minecraft:golden_nautilus_armor");
     @Nullable public static final ItemType GOLDEN_PICKAXE = get("minecraft:golden_pickaxe");
     @Nullable public static final ItemType GOLDEN_SHOVEL = get("minecraft:golden_shovel");
+    @Nullable public static final ItemType GOLDEN_SPEAR = get("minecraft:golden_spear");
     @Nullable public static final ItemType GOLDEN_SWORD = get("minecraft:golden_sword");
     @Nullable public static final ItemType GRANITE = get("minecraft:granite");
     @Nullable public static final ItemType GRANITE_SLAB = get("minecraft:granite_slab");
@@ -682,10 +689,12 @@ public final class ItemTypes {
     @Nullable public static final ItemType IRON_HORSE_ARMOR = get("minecraft:iron_horse_armor");
     @Nullable public static final ItemType IRON_INGOT = get("minecraft:iron_ingot");
     @Nullable public static final ItemType IRON_LEGGINGS = get("minecraft:iron_leggings");
+    @Nullable public static final ItemType IRON_NAUTILUS_ARMOR = get("minecraft:iron_nautilus_armor");
     @Nullable public static final ItemType IRON_NUGGET = get("minecraft:iron_nugget");
     @Nullable public static final ItemType IRON_ORE = get("minecraft:iron_ore");
     @Nullable public static final ItemType IRON_PICKAXE = get("minecraft:iron_pickaxe");
     @Nullable public static final ItemType IRON_SHOVEL = get("minecraft:iron_shovel");
+    @Nullable public static final ItemType IRON_SPEAR = get("minecraft:iron_spear");
     @Nullable public static final ItemType IRON_SWORD = get("minecraft:iron_sword");
     @Nullable public static final ItemType IRON_TRAPDOOR = get("minecraft:iron_trapdoor");
     @Nullable public static final ItemType ITEM_FRAME = get("minecraft:item_frame");
@@ -878,6 +887,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType MYCELIUM = get("minecraft:mycelium");
     @Nullable public static final ItemType NAME_TAG = get("minecraft:name_tag");
     @Nullable public static final ItemType NAUTILUS_SHELL = get("minecraft:nautilus_shell");
+    @Nullable public static final ItemType NAUTILUS_SPAWN_EGG = get("minecraft:nautilus_spawn_egg");
     @Nullable public static final ItemType NETHER_BRICK = get("minecraft:nether_brick");
     @Nullable public static final ItemType NETHER_BRICK_FENCE = get("minecraft:nether_brick_fence");
     @Nullable public static final ItemType NETHER_BRICK_SLAB = get("minecraft:nether_brick_slab");
@@ -896,11 +906,14 @@ public final class ItemTypes {
     @Nullable public static final ItemType NETHERITE_CHESTPLATE = get("minecraft:netherite_chestplate");
     @Nullable public static final ItemType NETHERITE_HELMET = get("minecraft:netherite_helmet");
     @Nullable public static final ItemType NETHERITE_HOE = get("minecraft:netherite_hoe");
+    @Nullable public static final ItemType NETHERITE_HORSE_ARMOR = get("minecraft:netherite_horse_armor");
     @Nullable public static final ItemType NETHERITE_INGOT = get("minecraft:netherite_ingot");
     @Nullable public static final ItemType NETHERITE_LEGGINGS = get("minecraft:netherite_leggings");
+    @Nullable public static final ItemType NETHERITE_NAUTILUS_ARMOR = get("minecraft:netherite_nautilus_armor");
     @Nullable public static final ItemType NETHERITE_PICKAXE = get("minecraft:netherite_pickaxe");
     @Nullable public static final ItemType NETHERITE_SCRAP = get("minecraft:netherite_scrap");
     @Nullable public static final ItemType NETHERITE_SHOVEL = get("minecraft:netherite_shovel");
+    @Nullable public static final ItemType NETHERITE_SPEAR = get("minecraft:netherite_spear");
     @Nullable public static final ItemType NETHERITE_SWORD = get("minecraft:netherite_sword");
     @Nullable public static final ItemType NETHERITE_UPGRADE_SMITHING_TEMPLATE = get("minecraft:netherite_upgrade_smithing_template");
     @Nullable public static final ItemType NETHERRACK = get("minecraft:netherrack");
@@ -988,6 +1001,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType PALE_OAK_WOOD = get("minecraft:pale_oak_wood");
     @Nullable public static final ItemType PANDA_SPAWN_EGG = get("minecraft:panda_spawn_egg");
     @Nullable public static final ItemType PAPER = get("minecraft:paper");
+    @Nullable public static final ItemType PARCHED_SPAWN_EGG = get("minecraft:parched_spawn_egg");
     @Nullable public static final ItemType PARROT_SPAWN_EGG = get("minecraft:parrot_spawn_egg");
     @Nullable public static final ItemType PEARLESCENT_FROGLIGHT = get("minecraft:pearlescent_froglight");
     @Nullable public static final ItemType PEONY = get("minecraft:peony");
@@ -1280,6 +1294,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType STONE_PRESSURE_PLATE = get("minecraft:stone_pressure_plate");
     @Nullable public static final ItemType STONE_SHOVEL = get("minecraft:stone_shovel");
     @Nullable public static final ItemType STONE_SLAB = get("minecraft:stone_slab");
+    @Nullable public static final ItemType STONE_SPEAR = get("minecraft:stone_spear");
     @Nullable public static final ItemType STONE_STAIRS = get("minecraft:stone_stairs");
     @Nullable public static final ItemType STONE_SWORD = get("minecraft:stone_sword");
     @Nullable public static final ItemType STONECUTTER = get("minecraft:stonecutter");
@@ -1500,6 +1515,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType WOODEN_HOE = get("minecraft:wooden_hoe");
     @Nullable public static final ItemType WOODEN_PICKAXE = get("minecraft:wooden_pickaxe");
     @Nullable public static final ItemType WOODEN_SHOVEL = get("minecraft:wooden_shovel");
+    @Nullable public static final ItemType WOODEN_SPEAR = get("minecraft:wooden_spear");
     @Nullable public static final ItemType WOODEN_SWORD = get("minecraft:wooden_sword");
     @Nullable public static final ItemType WRITABLE_BOOK = get("minecraft:writable_book");
     @Nullable public static final ItemType WRITTEN_BOOK = get("minecraft:written_book");
@@ -1521,6 +1537,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType ZOGLIN_SPAWN_EGG = get("minecraft:zoglin_spawn_egg");
     @Nullable public static final ItemType ZOMBIE_HEAD = get("minecraft:zombie_head");
     @Nullable public static final ItemType ZOMBIE_HORSE_SPAWN_EGG = get("minecraft:zombie_horse_spawn_egg");
+    @Nullable public static final ItemType ZOMBIE_NAUTILUS_SPAWN_EGG = get("minecraft:zombie_nautilus_spawn_egg");
     @Deprecated @Nullable public static final ItemType ZOMBIE_PIGMAN_SPAWN_EGG = get("minecraft:zombie_pigman_spawn_egg");
     @Nullable public static final ItemType ZOMBIE_SPAWN_EGG = get("minecraft:zombie_spawn_egg");
     @Nullable public static final ItemType ZOMBIE_VILLAGER_SPAWN_EGG = get("minecraft:zombie_villager_spawn_egg");

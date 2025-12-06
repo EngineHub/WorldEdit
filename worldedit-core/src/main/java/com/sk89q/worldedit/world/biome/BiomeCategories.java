@@ -28,7 +28,7 @@ package com.sk89q.worldedit.world.biome;
 public final class BiomeCategories {
     public static final BiomeCategory ALLOWS_SURFACE_SLIME_SPAWNS = get("minecraft:allows_surface_slime_spawns");
     public static final BiomeCategory ALLOWS_TROPICAL_FISH_SPAWNS_AT_ANY_HEIGHT = get("minecraft:allows_tropical_fish_spawns_at_any_height");
-    public static final BiomeCategory HAS_CLOSER_WATER_FOG = get("minecraft:has_closer_water_fog");
+    @Deprecated public static final BiomeCategory HAS_CLOSER_WATER_FOG = get("minecraft:has_closer_water_fog");
     public static final BiomeCategory HAS_STRUCTURE_ANCIENT_CITY = get("minecraft:has_structure/ancient_city");
     public static final BiomeCategory HAS_STRUCTURE_BASTION_REMNANT = get("minecraft:has_structure/bastion_remnant");
     public static final BiomeCategory HAS_STRUCTURE_BURIED_TREASURE = get("minecraft:has_structure/buried_treasure");
@@ -63,7 +63,7 @@ public final class BiomeCategories {
     public static final BiomeCategory HAS_STRUCTURE_VILLAGE_SNOWY = get("minecraft:has_structure/village_snowy");
     public static final BiomeCategory HAS_STRUCTURE_VILLAGE_TAIGA = get("minecraft:has_structure/village_taiga");
     public static final BiomeCategory HAS_STRUCTURE_WOODLAND_MANSION = get("minecraft:has_structure/woodland_mansion");
-    public static final BiomeCategory INCREASED_FIRE_BURNOUT = get("minecraft:increased_fire_burnout");
+    @Deprecated public static final BiomeCategory INCREASED_FIRE_BURNOUT = get("minecraft:increased_fire_burnout");
     public static final BiomeCategory IS_BADLANDS = get("minecraft:is_badlands");
     public static final BiomeCategory IS_BEACH = get("minecraft:is_beach");
     public static final BiomeCategory IS_DEEP_OCEAN = get("minecraft:is_deep_ocean");
@@ -80,14 +80,15 @@ public final class BiomeCategories {
     public static final BiomeCategory IS_TAIGA = get("minecraft:is_taiga");
     public static final BiomeCategory MINESHAFT_BLOCKING = get("minecraft:mineshaft_blocking");
     public static final BiomeCategory MORE_FREQUENT_DROWNED_SPAWNS = get("minecraft:more_frequent_drowned_spawns");
-    public static final BiomeCategory PLAYS_UNDERWATER_MUSIC = get("minecraft:plays_underwater_music");
+    @Deprecated public static final BiomeCategory PLAYS_UNDERWATER_MUSIC = get("minecraft:plays_underwater_music");
     public static final BiomeCategory POLAR_BEARS_SPAWN_ON_ALTERNATE_BLOCKS = get("minecraft:polar_bears_spawn_on_alternate_blocks");
     public static final BiomeCategory PRODUCES_CORALS_FROM_BONEMEAL = get("minecraft:produces_corals_from_bonemeal");
     public static final BiomeCategory REDUCE_WATER_AMBIENT_SPAWNS = get("minecraft:reduce_water_ambient_spawns");
     public static final BiomeCategory REQUIRED_OCEAN_MONUMENT_SURROUNDING = get("minecraft:required_ocean_monument_surrounding");
-    public static final BiomeCategory SNOW_GOLEM_MELTS = get("minecraft:snow_golem_melts");
+    @Deprecated public static final BiomeCategory SNOW_GOLEM_MELTS = get("minecraft:snow_golem_melts");
     public static final BiomeCategory SPAWNS_COLD_VARIANT_FARM_ANIMALS = get("minecraft:spawns_cold_variant_farm_animals");
     public static final BiomeCategory SPAWNS_COLD_VARIANT_FROGS = get("minecraft:spawns_cold_variant_frogs");
+    public static final BiomeCategory SPAWNS_CORAL_VARIANT_ZOMBIE_NAUTILUS = get("minecraft:spawns_coral_variant_zombie_nautilus");
     public static final BiomeCategory SPAWNS_GOLD_RABBITS = get("minecraft:spawns_gold_rabbits");
     public static final BiomeCategory SPAWNS_SNOW_FOXES = get("minecraft:spawns_snow_foxes");
     public static final BiomeCategory SPAWNS_WARM_VARIANT_FARM_ANIMALS = get("minecraft:spawns_warm_variant_farm_animals");
@@ -95,7 +96,7 @@ public final class BiomeCategories {
     public static final BiomeCategory SPAWNS_WHITE_RABBITS = get("minecraft:spawns_white_rabbits");
     public static final BiomeCategory STRONGHOLD_BIASED_TO = get("minecraft:stronghold_biased_to");
     public static final BiomeCategory WATER_ON_MAP_OUTLINES = get("minecraft:water_on_map_outlines");
-    public static final BiomeCategory WITHOUT_PATROL_SPAWNS = get("minecraft:without_patrol_spawns");
+    @Deprecated public static final BiomeCategory WITHOUT_PATROL_SPAWNS = get("minecraft:without_patrol_spawns");
     public static final BiomeCategory WITHOUT_WANDERING_TRADER_SPAWNS = get("minecraft:without_wandering_trader_spawns");
     public static final BiomeCategory WITHOUT_ZOMBIE_SIEGES = get("minecraft:without_zombie_sieges");
 

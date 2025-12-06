@@ -57,6 +57,7 @@ public final class BlockCategories {
     public static final BlockCategory CAMEL_SAND_STEP_SOUND_BLOCKS = get("minecraft:camel_sand_step_sound_blocks");
     public static final BlockCategory CAMELS_SPAWNABLE_ON = get("minecraft:camels_spawnable_on");
     public static final BlockCategory CAMPFIRES = get("minecraft:campfires");
+    public static final BlockCategory CAN_GLIDE_THROUGH = get("minecraft:can_glide_through");
     public static final BlockCategory CANDLE_CAKES = get("minecraft:candle_cakes");
     public static final BlockCategory CANDLES = get("minecraft:candles");
     @Deprecated public static final BlockCategory CARPETS = get("minecraft:carpets");
