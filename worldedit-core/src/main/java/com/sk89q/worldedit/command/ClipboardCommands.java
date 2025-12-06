@@ -287,9 +287,11 @@ public class ClipboardCommands {
         checkRegionBounds(region, session);
         checkCommandArgument(pasteCount >= 2, TranslatableComponent.of("worldedit.revolve.too-few-pastes"));
 
+        BlockVector3 pasteOrigin = session.getPlacementPosition(actor);
+
         // Copy the selection into a clipboard
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
-        clipboard.setOrigin(session.getPlacementPosition(actor));
+        clipboard.setOrigin(pasteOrigin);
         ForwardExtentCopy copy = new ForwardExtentCopy(editSession, region, clipboard, region.getMinimumPoint());
         copy.setCopyingEntities(copyEntities);
         copy.setCopyingBiomes(copyBiomes);
@@ -299,21 +301,18 @@ public class ClipboardCommands {
         }
         Operations.complete(copy);
 
-        double perPasteDegrees = 360.0 / pasteCount;
         ClipboardHolder holder = new ClipboardHolder(clipboard);
 
         // Now paste it multiple times, rotating each time
         for (int i = 1; i < pasteCount; i++) {
-            AffineTransform transform = new AffineTransform();
-            transform = transform.rotateY((reverse ? 1 : -1) * perPasteDegrees * i);
-            holder.setTransform(transform);
+            holder.setTransform(new AffineTransform().rotateY((reverse ? 1 : -1) * (360 * i) / (double) pasteCount));
 
             Operation operation = holder
                     .createPaste(editSession)
                     .ignoreAirBlocks(true)
                     .copyEntities(copyEntities)
                     .copyBiomes(copyBiomes)
-                    .to(session.getPlacementPosition(actor))
+                    .to(pasteOrigin)
                     .build();
             Operations.complete(operation);
         }
