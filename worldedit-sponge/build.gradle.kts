@@ -1,5 +1,4 @@
 import buildlogic.internalVersion
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.spongepowered.gradle.plugin.config.PluginLoaders
 import org.spongepowered.plugin.metadata.model.PluginDependency
 
@@ -77,7 +76,7 @@ configure<BasePluginExtension> {
     archivesName.set("${project.name}-api${libs.versions.sponge.api.major.get()}")
 }
 
-tasks.named<ShadowJar>("shadowJar") {
+tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
     dependencies {
         include(dependency("org.bstats:"))
         include(dependency("org.antlr:antlr4-runtime"))
