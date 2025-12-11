@@ -25,7 +25,7 @@ import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
@@ -37,7 +37,7 @@ public class NeoForgeBlockCategoryRegistry implements BlockCategoryRegistry {
         return ServerLifecycleHooks.getCurrentServer().registryAccess().lookupOrThrow(Registries.BLOCK)
             .get(TagKey.create(
                 Registries.BLOCK,
-                ResourceLocation.parse(category)
+                Identifier.parse(category)
             ))
             .stream()
             .flatMap(HolderSet.Named::stream)

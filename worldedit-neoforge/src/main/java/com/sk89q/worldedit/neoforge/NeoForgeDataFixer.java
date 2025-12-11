@@ -45,7 +45,7 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.datafix.DataFixers;
 import net.minecraft.util.datafix.fixes.References;
@@ -460,122 +460,122 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
         registerEntityItemList(type, "ArmorItems", "HandItems");
     }
 
-    private static final Map<String, ResourceLocation> OLD_ID_TO_KEY_MAP = new HashMap<>();
+    private static final Map<String, Identifier> OLD_ID_TO_KEY_MAP = new HashMap<>();
 
     static {
-        final Map<String, ResourceLocation> map = OLD_ID_TO_KEY_MAP;
-        map.put("EntityItem", ResourceLocation.parse("item"));
-        map.put("EntityExperienceOrb", ResourceLocation.parse("xp_orb"));
-        map.put("EntityAreaEffectCloud", ResourceLocation.parse("area_effect_cloud"));
-        map.put("EntityGuardianElder", ResourceLocation.parse("elder_guardian"));
-        map.put("EntitySkeletonWither", ResourceLocation.parse("wither_skeleton"));
-        map.put("EntitySkeletonStray", ResourceLocation.parse("stray"));
-        map.put("EntityEgg", ResourceLocation.parse("egg"));
-        map.put("EntityLeash", ResourceLocation.parse("leash_knot"));
-        map.put("EntityPainting", ResourceLocation.parse("painting"));
-        map.put("EntityTippedArrow", ResourceLocation.parse("arrow"));
-        map.put("EntitySnowball", ResourceLocation.parse("snowball"));
-        map.put("EntityLargeFireball", ResourceLocation.parse("fireball"));
-        map.put("EntitySmallFireball", ResourceLocation.parse("small_fireball"));
-        map.put("EntityEnderPearl", ResourceLocation.parse("ender_pearl"));
-        map.put("EntityEnderSignal", ResourceLocation.parse("eye_of_ender_signal"));
-        map.put("EntityPotion", ResourceLocation.parse("potion"));
-        map.put("EntityThrownExpBottle", ResourceLocation.parse("xp_bottle"));
-        map.put("EntityItemFrame", ResourceLocation.parse("item_frame"));
-        map.put("EntityWitherSkull", ResourceLocation.parse("wither_skull"));
-        map.put("EntityTNTPrimed", ResourceLocation.parse("tnt"));
-        map.put("EntityFallingBlock", ResourceLocation.parse("falling_block"));
-        map.put("EntityFireworks", ResourceLocation.parse("fireworks_rocket"));
-        map.put("EntityZombieHusk", ResourceLocation.parse("husk"));
-        map.put("EntitySpectralArrow", ResourceLocation.parse("spectral_arrow"));
-        map.put("EntityShulkerBullet", ResourceLocation.parse("shulker_bullet"));
-        map.put("EntityDragonFireball", ResourceLocation.parse("dragon_fireball"));
-        map.put("EntityZombieVillager", ResourceLocation.parse("zombie_villager"));
-        map.put("EntityHorseSkeleton", ResourceLocation.parse("skeleton_horse"));
-        map.put("EntityHorseZombie", ResourceLocation.parse("zombie_horse"));
-        map.put("EntityArmorStand", ResourceLocation.parse("armor_stand"));
-        map.put("EntityHorseDonkey", ResourceLocation.parse("donkey"));
-        map.put("EntityHorseMule", ResourceLocation.parse("mule"));
-        map.put("EntityEvokerFangs", ResourceLocation.parse("evocation_fangs"));
-        map.put("EntityEvoker", ResourceLocation.parse("evocation_illager"));
-        map.put("EntityVex", ResourceLocation.parse("vex"));
-        map.put("EntityVindicator", ResourceLocation.parse("vindication_illager"));
-        map.put("EntityIllagerIllusioner", ResourceLocation.parse("illusion_illager"));
-        map.put("EntityMinecartCommandBlock", ResourceLocation.parse("commandblock_minecart"));
-        map.put("EntityBoat", ResourceLocation.parse("boat"));
-        map.put("EntityMinecartRideable", ResourceLocation.parse("minecart"));
-        map.put("EntityMinecartChest", ResourceLocation.parse("chest_minecart"));
-        map.put("EntityMinecartFurnace", ResourceLocation.parse("furnace_minecart"));
-        map.put("EntityMinecartTNT", ResourceLocation.parse("tnt_minecart"));
-        map.put("EntityMinecartHopper", ResourceLocation.parse("hopper_minecart"));
-        map.put("EntityMinecartMobSpawner", ResourceLocation.parse("spawner_minecart"));
-        map.put("EntityCreeper", ResourceLocation.parse("creeper"));
-        map.put("EntitySkeleton", ResourceLocation.parse("skeleton"));
-        map.put("EntitySpider", ResourceLocation.parse("spider"));
-        map.put("EntityGiantZombie", ResourceLocation.parse("giant"));
-        map.put("EntityZombie", ResourceLocation.parse("zombie"));
-        map.put("EntitySlime", ResourceLocation.parse("slime"));
-        map.put("EntityGhast", ResourceLocation.parse("ghast"));
-        map.put("EntityPigZombie", ResourceLocation.parse("zombie_pigman"));
-        map.put("EntityEnderman", ResourceLocation.parse("enderman"));
-        map.put("EntityCaveSpider", ResourceLocation.parse("cave_spider"));
-        map.put("EntitySilverfish", ResourceLocation.parse("silverfish"));
-        map.put("EntityBlaze", ResourceLocation.parse("blaze"));
-        map.put("EntityMagmaCube", ResourceLocation.parse("magma_cube"));
-        map.put("EntityEnderDragon", ResourceLocation.parse("ender_dragon"));
-        map.put("EntityWither", ResourceLocation.parse("wither"));
-        map.put("EntityBat", ResourceLocation.parse("bat"));
-        map.put("EntityWitch", ResourceLocation.parse("witch"));
-        map.put("EntityEndermite", ResourceLocation.parse("endermite"));
-        map.put("EntityGuardian", ResourceLocation.parse("guardian"));
-        map.put("EntityShulker", ResourceLocation.parse("shulker"));
-        map.put("EntityPig", ResourceLocation.parse("pig"));
-        map.put("EntitySheep", ResourceLocation.parse("sheep"));
-        map.put("EntityCow", ResourceLocation.parse("cow"));
-        map.put("EntityChicken", ResourceLocation.parse("chicken"));
-        map.put("EntitySquid", ResourceLocation.parse("squid"));
-        map.put("EntityWolf", ResourceLocation.parse("wolf"));
-        map.put("EntityMushroomCow", ResourceLocation.parse("mooshroom"));
-        map.put("EntitySnowman", ResourceLocation.parse("snowman"));
-        map.put("EntityOcelot", ResourceLocation.parse("ocelot"));
-        map.put("EntityIronGolem", ResourceLocation.parse("villager_golem"));
-        map.put("EntityHorse", ResourceLocation.parse("horse"));
-        map.put("EntityRabbit", ResourceLocation.parse("rabbit"));
-        map.put("EntityPolarBear", ResourceLocation.parse("polar_bear"));
-        map.put("EntityLlama", ResourceLocation.parse("llama"));
-        map.put("EntityLlamaSpit", ResourceLocation.parse("llama_spit"));
-        map.put("EntityParrot", ResourceLocation.parse("parrot"));
-        map.put("EntityVillager", ResourceLocation.parse("villager"));
-        map.put("EntityEnderCrystal", ResourceLocation.parse("ender_crystal"));
-        map.put("TileEntityFurnace", ResourceLocation.parse("furnace"));
-        map.put("TileEntityChest", ResourceLocation.parse("chest"));
-        map.put("TileEntityEnderChest", ResourceLocation.parse("ender_chest"));
-        map.put("TileEntityRecordPlayer", ResourceLocation.parse("jukebox"));
-        map.put("TileEntityDispenser", ResourceLocation.parse("dispenser"));
-        map.put("TileEntityDropper", ResourceLocation.parse("dropper"));
-        map.put("TileEntitySign", ResourceLocation.parse("sign"));
-        map.put("TileEntityMobSpawner", ResourceLocation.parse("mob_spawner"));
-        map.put("TileEntityNote", ResourceLocation.parse("noteblock"));
-        map.put("TileEntityPiston", ResourceLocation.parse("piston"));
-        map.put("TileEntityBrewingStand", ResourceLocation.parse("brewing_stand"));
-        map.put("TileEntityEnchantTable", ResourceLocation.parse("enchanting_table"));
-        map.put("TileEntityEnderPortal", ResourceLocation.parse("end_portal"));
-        map.put("TileEntityBeacon", ResourceLocation.parse("beacon"));
-        map.put("TileEntitySkull", ResourceLocation.parse("skull"));
-        map.put("TileEntityLightDetector", ResourceLocation.parse("daylight_detector"));
-        map.put("TileEntityHopper", ResourceLocation.parse("hopper"));
-        map.put("TileEntityComparator", ResourceLocation.parse("comparator"));
-        map.put("TileEntityFlowerPot", ResourceLocation.parse("flower_pot"));
-        map.put("TileEntityBanner", ResourceLocation.parse("banner"));
-        map.put("TileEntityStructure", ResourceLocation.parse("structure_block"));
-        map.put("TileEntityEndGateway", ResourceLocation.parse("end_gateway"));
-        map.put("TileEntityCommand", ResourceLocation.parse("command_block"));
-        map.put("TileEntityShulkerBox", ResourceLocation.parse("shulker_box"));
-        map.put("TileEntityBed", ResourceLocation.parse("bed"));
+        final Map<String, Identifier> map = OLD_ID_TO_KEY_MAP;
+        map.put("EntityItem", Identifier.parse("item"));
+        map.put("EntityExperienceOrb", Identifier.parse("xp_orb"));
+        map.put("EntityAreaEffectCloud", Identifier.parse("area_effect_cloud"));
+        map.put("EntityGuardianElder", Identifier.parse("elder_guardian"));
+        map.put("EntitySkeletonWither", Identifier.parse("wither_skeleton"));
+        map.put("EntitySkeletonStray", Identifier.parse("stray"));
+        map.put("EntityEgg", Identifier.parse("egg"));
+        map.put("EntityLeash", Identifier.parse("leash_knot"));
+        map.put("EntityPainting", Identifier.parse("painting"));
+        map.put("EntityTippedArrow", Identifier.parse("arrow"));
+        map.put("EntitySnowball", Identifier.parse("snowball"));
+        map.put("EntityLargeFireball", Identifier.parse("fireball"));
+        map.put("EntitySmallFireball", Identifier.parse("small_fireball"));
+        map.put("EntityEnderPearl", Identifier.parse("ender_pearl"));
+        map.put("EntityEnderSignal", Identifier.parse("eye_of_ender_signal"));
+        map.put("EntityPotion", Identifier.parse("potion"));
+        map.put("EntityThrownExpBottle", Identifier.parse("xp_bottle"));
+        map.put("EntityItemFrame", Identifier.parse("item_frame"));
+        map.put("EntityWitherSkull", Identifier.parse("wither_skull"));
+        map.put("EntityTNTPrimed", Identifier.parse("tnt"));
+        map.put("EntityFallingBlock", Identifier.parse("falling_block"));
+        map.put("EntityFireworks", Identifier.parse("fireworks_rocket"));
+        map.put("EntityZombieHusk", Identifier.parse("husk"));
+        map.put("EntitySpectralArrow", Identifier.parse("spectral_arrow"));
+        map.put("EntityShulkerBullet", Identifier.parse("shulker_bullet"));
+        map.put("EntityDragonFireball", Identifier.parse("dragon_fireball"));
+        map.put("EntityZombieVillager", Identifier.parse("zombie_villager"));
+        map.put("EntityHorseSkeleton", Identifier.parse("skeleton_horse"));
+        map.put("EntityHorseZombie", Identifier.parse("zombie_horse"));
+        map.put("EntityArmorStand", Identifier.parse("armor_stand"));
+        map.put("EntityHorseDonkey", Identifier.parse("donkey"));
+        map.put("EntityHorseMule", Identifier.parse("mule"));
+        map.put("EntityEvokerFangs", Identifier.parse("evocation_fangs"));
+        map.put("EntityEvoker", Identifier.parse("evocation_illager"));
+        map.put("EntityVex", Identifier.parse("vex"));
+        map.put("EntityVindicator", Identifier.parse("vindication_illager"));
+        map.put("EntityIllagerIllusioner", Identifier.parse("illusion_illager"));
+        map.put("EntityMinecartCommandBlock", Identifier.parse("commandblock_minecart"));
+        map.put("EntityBoat", Identifier.parse("boat"));
+        map.put("EntityMinecartRideable", Identifier.parse("minecart"));
+        map.put("EntityMinecartChest", Identifier.parse("chest_minecart"));
+        map.put("EntityMinecartFurnace", Identifier.parse("furnace_minecart"));
+        map.put("EntityMinecartTNT", Identifier.parse("tnt_minecart"));
+        map.put("EntityMinecartHopper", Identifier.parse("hopper_minecart"));
+        map.put("EntityMinecartMobSpawner", Identifier.parse("spawner_minecart"));
+        map.put("EntityCreeper", Identifier.parse("creeper"));
+        map.put("EntitySkeleton", Identifier.parse("skeleton"));
+        map.put("EntitySpider", Identifier.parse("spider"));
+        map.put("EntityGiantZombie", Identifier.parse("giant"));
+        map.put("EntityZombie", Identifier.parse("zombie"));
+        map.put("EntitySlime", Identifier.parse("slime"));
+        map.put("EntityGhast", Identifier.parse("ghast"));
+        map.put("EntityPigZombie", Identifier.parse("zombie_pigman"));
+        map.put("EntityEnderman", Identifier.parse("enderman"));
+        map.put("EntityCaveSpider", Identifier.parse("cave_spider"));
+        map.put("EntitySilverfish", Identifier.parse("silverfish"));
+        map.put("EntityBlaze", Identifier.parse("blaze"));
+        map.put("EntityMagmaCube", Identifier.parse("magma_cube"));
+        map.put("EntityEnderDragon", Identifier.parse("ender_dragon"));
+        map.put("EntityWither", Identifier.parse("wither"));
+        map.put("EntityBat", Identifier.parse("bat"));
+        map.put("EntityWitch", Identifier.parse("witch"));
+        map.put("EntityEndermite", Identifier.parse("endermite"));
+        map.put("EntityGuardian", Identifier.parse("guardian"));
+        map.put("EntityShulker", Identifier.parse("shulker"));
+        map.put("EntityPig", Identifier.parse("pig"));
+        map.put("EntitySheep", Identifier.parse("sheep"));
+        map.put("EntityCow", Identifier.parse("cow"));
+        map.put("EntityChicken", Identifier.parse("chicken"));
+        map.put("EntitySquid", Identifier.parse("squid"));
+        map.put("EntityWolf", Identifier.parse("wolf"));
+        map.put("EntityMushroomCow", Identifier.parse("mooshroom"));
+        map.put("EntitySnowman", Identifier.parse("snowman"));
+        map.put("EntityOcelot", Identifier.parse("ocelot"));
+        map.put("EntityIronGolem", Identifier.parse("villager_golem"));
+        map.put("EntityHorse", Identifier.parse("horse"));
+        map.put("EntityRabbit", Identifier.parse("rabbit"));
+        map.put("EntityPolarBear", Identifier.parse("polar_bear"));
+        map.put("EntityLlama", Identifier.parse("llama"));
+        map.put("EntityLlamaSpit", Identifier.parse("llama_spit"));
+        map.put("EntityParrot", Identifier.parse("parrot"));
+        map.put("EntityVillager", Identifier.parse("villager"));
+        map.put("EntityEnderCrystal", Identifier.parse("ender_crystal"));
+        map.put("TileEntityFurnace", Identifier.parse("furnace"));
+        map.put("TileEntityChest", Identifier.parse("chest"));
+        map.put("TileEntityEnderChest", Identifier.parse("ender_chest"));
+        map.put("TileEntityRecordPlayer", Identifier.parse("jukebox"));
+        map.put("TileEntityDispenser", Identifier.parse("dispenser"));
+        map.put("TileEntityDropper", Identifier.parse("dropper"));
+        map.put("TileEntitySign", Identifier.parse("sign"));
+        map.put("TileEntityMobSpawner", Identifier.parse("mob_spawner"));
+        map.put("TileEntityNote", Identifier.parse("noteblock"));
+        map.put("TileEntityPiston", Identifier.parse("piston"));
+        map.put("TileEntityBrewingStand", Identifier.parse("brewing_stand"));
+        map.put("TileEntityEnchantTable", Identifier.parse("enchanting_table"));
+        map.put("TileEntityEnderPortal", Identifier.parse("end_portal"));
+        map.put("TileEntityBeacon", Identifier.parse("beacon"));
+        map.put("TileEntitySkull", Identifier.parse("skull"));
+        map.put("TileEntityLightDetector", Identifier.parse("daylight_detector"));
+        map.put("TileEntityHopper", Identifier.parse("hopper"));
+        map.put("TileEntityComparator", Identifier.parse("comparator"));
+        map.put("TileEntityFlowerPot", Identifier.parse("flower_pot"));
+        map.put("TileEntityBanner", Identifier.parse("banner"));
+        map.put("TileEntityStructure", Identifier.parse("structure_block"));
+        map.put("TileEntityEndGateway", Identifier.parse("end_gateway"));
+        map.put("TileEntityCommand", Identifier.parse("command_block"));
+        map.put("TileEntityShulkerBox", Identifier.parse("shulker_box"));
+        map.put("TileEntityBed", Identifier.parse("bed"));
     }
 
-    private static ResourceLocation getKey(String type) {
-        final ResourceLocation key = OLD_ID_TO_KEY_MAP.get(type);
+    private static Identifier getKey(String type) {
+        final Identifier key = OLD_ID_TO_KEY_MAP.get(type);
         if (key == null) {
             throw new IllegalArgumentException("Unknown mapping for " + type);
         }
@@ -667,7 +667,7 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
 
         @Nullable
         private static String convertEntityId(int i, String s) {
-            String key = ResourceLocation.parse(s).toString();
+            String key = Identifier.parse(s).toString();
             if (i < 515 && DataInspectorBlockEntity.b.containsKey(key)) {
                 return DataInspectorBlockEntity.b.get(key);
             } else {
@@ -845,14 +845,14 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
 
     private abstract static class DataInspectorTagged implements DataInspector {
 
-        private final ResourceLocation key;
+        private final Identifier key;
 
         DataInspectorTagged(String type) {
             this.key = getKey(type);
         }
 
         public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
-            if (cmp.getString("id").isPresent() && this.key.equals(ResourceLocation.parse(cmp.getString("id").get()))) {
+            if (cmp.getString("id").isPresent() && this.key.equals(Identifier.parse(cmp.getString("id").get()))) {
                 cmp = this.inspectChecked(cmp, sourceVer, targetVer);
             }
 
@@ -1881,7 +1881,7 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
 
     private static class DataConverterCookedFish implements DataConverter {
 
-        private static final ResourceLocation a = ResourceLocation.parse("cooked_fished");
+        private static final Identifier a = Identifier.parse("cooked_fished");
 
         DataConverterCookedFish() {
         }
@@ -1891,7 +1891,7 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
         }
 
         public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
-            if (cmp.getString("id").isPresent() && DataConverterCookedFish.a.equals(ResourceLocation.parse(cmp.getString("id").get()))) {
+            if (cmp.getString("id").isPresent() && DataConverterCookedFish.a.equals(Identifier.parse(cmp.getString("id").get()))) {
                 cmp.putString("id", "minecraft:cooked_fish");
             }
 
@@ -2636,11 +2636,11 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
     }
 
     private static class DataInspectorVillagers implements DataInspector {
-        ResourceLocation entityVillager = getKey("EntityVillager");
+        Identifier entityVillager = getKey("EntityVillager");
 
         @Override
         public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
-            if (cmp.getString("id").isPresent() && entityVillager.equals(ResourceLocation.parse(cmp.getString("id").get()))) {
+            if (cmp.getString("id").isPresent() && entityVillager.equals(Identifier.parse(cmp.getString("id").get()))) {
                 cmp.getCompound("Offers").flatMap(nbttagcompound1 -> nbttagcompound1.getList("Recipes")).ifPresent(nbttaglist -> {
                     for (int j = 0; j < nbttaglist.size(); ++j) {
                         CompoundTag nbttagcompound2 = nbttaglist.getCompoundOrEmpty(j);
@@ -2658,13 +2658,13 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
     }
 
     private static class DataInspectorMobSpawnerMinecart implements DataInspector {
-        ResourceLocation entityMinecartMobSpawner = getKey("EntityMinecartMobSpawner");
-        ResourceLocation tileEntityMobSpawner = getKey("TileEntityMobSpawner");
+        Identifier entityMinecartMobSpawner = getKey("EntityMinecartMobSpawner");
+        Identifier tileEntityMobSpawner = getKey("TileEntityMobSpawner");
 
         @Override
         public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
             String s = cmp.getString("id").get();
-            if (entityMinecartMobSpawner.equals(ResourceLocation.parse(s))) {
+            if (entityMinecartMobSpawner.equals(Identifier.parse(s))) {
                 cmp.putString("id", tileEntityMobSpawner.toString());
                 convert(LegacyType.BLOCK_ENTITY, cmp, sourceVer, targetVer);
                 cmp.putString("id", s);
@@ -2675,11 +2675,11 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
     }
 
     private static class DataInspectorMobSpawnerMobs implements DataInspector {
-        ResourceLocation tileEntityMobSpawner = getKey("TileEntityMobSpawner");
+        Identifier tileEntityMobSpawner = getKey("TileEntityMobSpawner");
 
         @Override
         public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
-            if (cmp.getString("id").isPresent() && tileEntityMobSpawner.equals(ResourceLocation.parse(cmp.getString("id").get()))) {
+            if (cmp.getString("id").isPresent() && tileEntityMobSpawner.equals(Identifier.parse(cmp.getString("id").get()))) {
                 cmp.getList("SpawnPotentials").ifPresent(nbttaglist -> {
                     for (int j = 0; j < nbttaglist.size(); ++j) {
                         net.minecraft.nbt.CompoundTag nbttagcompound1 = nbttaglist.getCompoundOrEmpty(j);
@@ -2696,11 +2696,11 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
     }
 
     private static class DataInspectorCommandBlock implements DataInspector {
-        ResourceLocation tileEntityCommand = getKey("TileEntityCommand");
+        Identifier tileEntityCommand = getKey("TileEntityCommand");
 
         @Override
         public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
-            if (cmp.getString("id").isPresent() && tileEntityCommand.equals(ResourceLocation.parse(cmp.getString("id").get()))) {
+            if (cmp.getString("id").isPresent() && tileEntityCommand.equals(Identifier.parse(cmp.getString("id").get()))) {
                 cmp.putString("id", "Control");
                 convert(LegacyType.BLOCK_ENTITY, cmp, sourceVer, targetVer);
                 cmp.putString("id", "MinecartCommandBlock");

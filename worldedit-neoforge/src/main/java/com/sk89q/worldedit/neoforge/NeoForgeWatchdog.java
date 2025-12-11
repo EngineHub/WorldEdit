@@ -20,8 +20,8 @@
 package com.sk89q.worldedit.neoforge;
 
 import com.sk89q.worldedit.extension.platform.Watchdog;
-import net.minecraft.Util;
 import net.minecraft.server.dedicated.DedicatedServer;
+import net.minecraft.util.Util;
 
 class NeoForgeWatchdog implements Watchdog {
 
