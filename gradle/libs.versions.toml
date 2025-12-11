@@ -13,7 +13,7 @@ cuiProtocol = "4.0.2"
 fabric-api = "0.139.4+1.21.11"
 
 neogradle = "7.1.11"
-neoforge-minecraft = "1.21.10"
+neoforge-minecraft = "1.21.11"
 
 sponge-minecraft = "1.21.11"
 # https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/spongeapi/
@@ -93,7 +93,7 @@ fabric-minecraft = "com.mojang:minecraft:1.21.11"
 fabric-loader = "net.fabricmc:fabric-loader:0.18.2"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.5.0"
 
-neoforge = "net.neoforged:neoforge:21.10.34-beta"
+neoforge = "net.neoforged:neoforge:21.11.3-beta"
 
 # Mojang-provided libraries, CHECK AGAINST MINECRAFT for versions
 guava = "com.google.guava:guava:33.5.0-jre!!"
@@ -164,9 +164,9 @@ version.ref = "antlr"
 module = "org.antlr:antlr4-runtime"
 
 [libraries.cuiProtocol-fabric]
-module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-fabric-mc1.21.9"
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-fabric-mc1.21.11"
 version.ref = "cuiProtocol"
 
 [libraries.cuiProtocol-neoforge]
-module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-neoforge-mc1.21.9"
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-neoforge-mc1.21.11"
 version.ref = "cuiProtocol"
