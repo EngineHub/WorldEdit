@@ -55,7 +55,7 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -163,7 +163,7 @@ public class NeoForgeWorldEdit {
 
     private void setupRegistries(MinecraftServer server) {
         // Blocks
-        for (ResourceLocation name : BuiltInRegistries.BLOCK.keySet()) {
+        for (Identifier name : BuiltInRegistries.BLOCK.keySet()) {
             String key = name.toString();
             if (BlockType.REGISTRY.get(key) == null) {
                 BlockType.REGISTRY.register(key, new BlockType(key,
@@ -171,21 +171,21 @@ public class NeoForgeWorldEdit {
             }
         }
         // Items
-        for (ResourceLocation name : BuiltInRegistries.ITEM.keySet()) {
+        for (Identifier name : BuiltInRegistries.ITEM.keySet()) {
             String key = name.toString();
             if (ItemType.REGISTRY.get(key) == null) {
                 ItemType.REGISTRY.register(key, new ItemType(key));
             }
         }
         // Entities
-        for (ResourceLocation name : BuiltInRegistries.ENTITY_TYPE.keySet()) {
+        for (Identifier name : BuiltInRegistries.ENTITY_TYPE.keySet()) {
             String key = name.toString();
             if (EntityType.REGISTRY.get(key) == null) {
                 EntityType.REGISTRY.register(key, new EntityType(key));
             }
         }
         // Biomes
-        for (ResourceLocation name : server.registryAccess().lookupOrThrow(Registries.BIOME).keySet()) {
+        for (Identifier name : server.registryAccess().lookupOrThrow(Registries.BIOME).keySet()) {
             String key = name.toString();
             if (BiomeType.REGISTRY.get(key) == null) {
                 BiomeType.REGISTRY.register(key, new BiomeType(key));
@@ -220,14 +220,14 @@ public class NeoForgeWorldEdit {
             }
         });
         // Features
-        for (ResourceLocation name : server.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).keySet()) {
+        for (Identifier name : server.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).keySet()) {
             String key = name.toString();
             if (ConfiguredFeatureType.REGISTRY.get(key) == null) {
                 ConfiguredFeatureType.REGISTRY.register(key, new ConfiguredFeatureType(key));
             }
         }
         // Structures
-        for (ResourceLocation name : server.registryAccess().lookupOrThrow(Registries.STRUCTURE).keySet()) {
+        for (Identifier name : server.registryAccess().lookupOrThrow(Registries.STRUCTURE).keySet()) {
             String key = name.toString();
             if (StructureType.REGISTRY.get(key) == null) {
                 StructureType.REGISTRY.register(key, new StructureType(key));
@@ -235,7 +235,7 @@ public class NeoForgeWorldEdit {
         }
         // Trees
         Registry<PlacedFeature> placedFeatureRegistry = server.registryAccess().lookupOrThrow(Registries.PLACED_FEATURE);
-        for (ResourceLocation name : placedFeatureRegistry.keySet()) {
+        for (Identifier name : placedFeatureRegistry.keySet()) {
             // Do some hackery to make sure this is a tree
             var underlyingFeature = placedFeatureRegistry.get(name).get().value().feature().value().feature();
             if (underlyingFeature instanceof TreeFeature || underlyingFeature instanceof FallenTreeFeature || underlyingFeature instanceof CoralTreeFeature) {

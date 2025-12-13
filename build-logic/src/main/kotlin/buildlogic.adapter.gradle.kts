@@ -10,7 +10,6 @@ plugins {
 
 paperweight {
     injectPaperRepository = false
-    reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.REOBF_PRODUCTION
 }
 
 repositories {
@@ -31,8 +30,4 @@ dependencies {
             because("Need remapper to support Java 21")
         }
     }
-}
-
-tasks.named("assemble") {
-    dependsOn("reobfJar")
 }

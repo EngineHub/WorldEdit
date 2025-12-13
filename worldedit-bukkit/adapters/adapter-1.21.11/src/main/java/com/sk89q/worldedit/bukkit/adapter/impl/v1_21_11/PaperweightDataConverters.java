@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.neoforge;
+package com.sk89q.worldedit.bukkit.adapter.impl.v1_21_11;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
@@ -33,8 +33,6 @@ import com.mojang.datafixers.DSL.TypeReference;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.serialization.Dynamic;
-import com.sk89q.worldedit.neoforge.internal.ComponentConverter;
-import com.sk89q.worldedit.neoforge.internal.NBTConverter;
 import net.minecraft.core.Direction;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
@@ -46,11 +44,11 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.datafix.DataFixers;
 import net.minecraft.util.datafix.fixes.References;
 import net.minecraft.world.item.DyeColor;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.enginehub.linbus.tree.LinCompoundTag;
@@ -84,11 +82,11 @@ import javax.annotation.Nullable;
  *
  * <p>
  * This class also provides util methods for converting compounds to wrap the update call to
- * receive the source version in the compound.
+ * receive the source version in the compound
  * </p>
  */
-@SuppressWarnings({ "UnnecessarilyQualifiedStaticUsage", "unchecked", "rawtypes" })
-class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
+@SuppressWarnings({ "rawtypes", "unchecked" })
+class PaperweightDataConverters implements com.sk89q.worldedit.world.DataFixer {
 
     @SuppressWarnings("unchecked")
     @Override
@@ -110,27 +108,27 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
     }
 
     private LinCompoundTag fixChunk(LinCompoundTag originalChunk, int srcVer) {
-        net.minecraft.nbt.CompoundTag tag = NBTConverter.toNative(originalChunk);
-        net.minecraft.nbt.CompoundTag fixed = convert(LegacyType.CHUNK, tag, srcVer);
-        return NBTConverter.fromNative(fixed);
+        CompoundTag tag = (CompoundTag) adapter.fromNative(originalChunk);
+        CompoundTag fixed = convert(LegacyType.CHUNK, tag, srcVer);
+        return (LinCompoundTag) adapter.toNative(fixed);
     }
 
     private LinCompoundTag fixBlockEntity(LinCompoundTag origTileEnt, int srcVer) {
-        net.minecraft.nbt.CompoundTag tag = NBTConverter.toNative(origTileEnt);
-        net.minecraft.nbt.CompoundTag fixed = convert(LegacyType.BLOCK_ENTITY, tag, srcVer);
-        return NBTConverter.fromNative(fixed);
+        CompoundTag tag = (CompoundTag) adapter.fromNative(origTileEnt);
+        CompoundTag fixed = convert(LegacyType.BLOCK_ENTITY, tag, srcVer);
+        return (LinCompoundTag) adapter.toNative(fixed);
     }
 
     private LinCompoundTag fixEntity(LinCompoundTag origEnt, int srcVer) {
-        net.minecraft.nbt.CompoundTag tag = NBTConverter.toNative(origEnt);
-        net.minecraft.nbt.CompoundTag fixed = convert(LegacyType.ENTITY, tag, srcVer);
-        return NBTConverter.fromNative(fixed);
+        CompoundTag tag = (CompoundTag) adapter.fromNative(origEnt);
+        CompoundTag fixed = convert(LegacyType.ENTITY, tag, srcVer);
+        return (LinCompoundTag) adapter.toNative(fixed);
     }
 
     private String fixBlockState(String blockState, int srcVer) {
-        net.minecraft.nbt.CompoundTag stateNBT = stateToNBT(blockState);
+        CompoundTag stateNBT = stateToNBT(blockState);
         Dynamic<Tag> dynamic = new Dynamic<>(OPS_NBT, stateNBT);
-        net.minecraft.nbt.CompoundTag fixed = (net.minecraft.nbt.CompoundTag) INSTANCE.fixer.update(References.BLOCK_STATE, dynamic, srcVer, DATA_VERSION).getValue();
+        CompoundTag fixed = (CompoundTag) INSTANCE.fixer.update(References.BLOCK_STATE, dynamic, srcVer, DATA_VERSION).getValue();
         return nbtToState(fixed);
     }
 
@@ -145,14 +143,14 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
         return sb.toString();
     }
 
-    private static net.minecraft.nbt.CompoundTag stateToNBT(String blockState) {
+    private static CompoundTag stateToNBT(String blockState) {
         int propIdx = blockState.indexOf('[');
-        net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
+        CompoundTag tag = new CompoundTag();
         if (propIdx < 0) {
             tag.putString("Name", blockState);
         } else {
             tag.putString("Name", blockState.substring(0, propIdx));
-            net.minecraft.nbt.CompoundTag propTag = new net.minecraft.nbt.CompoundTag();
+            CompoundTag propTag = new CompoundTag();
             String props = blockState.substring(propIdx + 1, blockState.length() - 1);
             String[] propArr = props.split(",");
             for (String pair : propArr) {
@@ -174,19 +172,21 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
 
     private static String fixName(String key, int srcVer, TypeReference type) {
         return INSTANCE.fixer.update(type, new Dynamic<>(OPS_NBT, StringTag.valueOf(key)), srcVer, DATA_VERSION)
-            .asString().result().orElse(key);
+                .asString().result().orElse(key);
     }
+
+    private final PaperweightAdapter adapter;
 
     private static final NbtOps OPS_NBT = NbtOps.INSTANCE;
     private static final int LEGACY_VERSION = 1343;
     private static int DATA_VERSION;
-    private static NeoForgeDataFixer INSTANCE;
+    static PaperweightDataConverters INSTANCE;
 
     private final Map<LegacyType, List<DataConverter>> converters = new EnumMap<>(LegacyType.class);
     private final Map<LegacyType, List<DataInspector>> inspectors = new EnumMap<>(LegacyType.class);
 
     // Set on build
-    private final DataFixer fixer;
+    private DataFixer fixer;
     private static final Map<String, LegacyType> DFU_TO_LEGACY = new HashMap<>();
 
     public enum LegacyType {
@@ -211,14 +211,16 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
         }
     }
 
-    NeoForgeDataFixer(int dataVersion) {
+    PaperweightDataConverters(int dataVersion, PaperweightAdapter adapter) {
         DATA_VERSION = dataVersion;
         INSTANCE = this;
+        this.adapter = adapter;
         registerConverters();
         registerInspectors();
         this.fixer = new WrappedDataFixer(DataFixers.getDataFixer());
     }
 
+    @SuppressWarnings("unchecked")
     private class WrappedDataFixer implements DataFixer {
         private final DataFixer realFixer;
 
@@ -230,7 +232,7 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
         public <T> Dynamic<T> update(TypeReference type, Dynamic<T> dynamic, int sourceVer, int targetVer) {
             LegacyType legacyType = DFU_TO_LEGACY.get(type.typeName());
             if (sourceVer < LEGACY_VERSION && legacyType != null) {
-                net.minecraft.nbt.CompoundTag cmp = (net.minecraft.nbt.CompoundTag) dynamic.getValue();
+                CompoundTag cmp = (CompoundTag) dynamic.getValue();
                 int desiredVersion = Math.min(targetVer, LEGACY_VERSION);
 
                 cmp = convert(legacyType, cmp, sourceVer, desiredVersion);
@@ -240,8 +242,8 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
             return realFixer.update(type, dynamic, sourceVer, targetVer);
         }
 
-        private net.minecraft.nbt.CompoundTag convert(LegacyType type, net.minecraft.nbt.CompoundTag cmp, int sourceVer, int desiredVersion) {
-            List<DataConverter> converters = NeoForgeDataFixer.this.converters.get(type);
+        private CompoundTag convert(LegacyType type, CompoundTag cmp, int sourceVer, int desiredVersion) {
+            List<DataConverter> converters = PaperweightDataConverters.this.converters.get(type);
             if (converters != null && !converters.isEmpty()) {
                 for (DataConverter converter : converters) {
                     int dataVersion = converter.getDataVersion();
@@ -251,7 +253,7 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
                 }
             }
 
-            List<DataInspector> inspectors = NeoForgeDataFixer.this.inspectors.get(type);
+            List<DataInspector> inspectors = PaperweightDataConverters.this.inspectors.get(type);
             if (inspectors != null && !inspectors.isEmpty()) {
                 for (DataInspector inspector : inspectors) {
                     cmp = inspector.inspect(cmp, sourceVer, desiredVersion);
@@ -267,44 +269,44 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
         }
     }
 
-    public static net.minecraft.nbt.CompoundTag convert(LegacyType type, net.minecraft.nbt.CompoundTag cmp) {
+    public static CompoundTag convert(LegacyType type, CompoundTag cmp) {
         return convert(type.getDFUType(), cmp);
     }
 
-    public static net.minecraft.nbt.CompoundTag convert(LegacyType type, net.minecraft.nbt.CompoundTag cmp, int sourceVer) {
+    public static CompoundTag convert(LegacyType type, CompoundTag cmp, int sourceVer) {
         return convert(type.getDFUType(), cmp, sourceVer);
     }
 
-    public static net.minecraft.nbt.CompoundTag convert(LegacyType type, net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
+    public static CompoundTag convert(LegacyType type, CompoundTag cmp, int sourceVer, int targetVer) {
         return convert(type.getDFUType(), cmp, sourceVer, targetVer);
     }
 
-    public static net.minecraft.nbt.CompoundTag convert(TypeReference type, net.minecraft.nbt.CompoundTag cmp) {
+    public static CompoundTag convert(TypeReference type, CompoundTag cmp) {
         int i = cmp.getIntOr("DataVersion", -1);
         return convert(type, cmp, i);
     }
 
-    public static net.minecraft.nbt.CompoundTag convert(TypeReference type, net.minecraft.nbt.CompoundTag cmp, int sourceVer) {
+    public static CompoundTag convert(TypeReference type, CompoundTag cmp, int sourceVer) {
         return convert(type, cmp, sourceVer, DATA_VERSION);
     }
 
-    public static net.minecraft.nbt.CompoundTag convert(TypeReference type, net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
+    public static CompoundTag convert(TypeReference type, CompoundTag cmp, int sourceVer, int targetVer) {
         if (sourceVer >= targetVer) {
             return cmp;
         }
-        return (net.minecraft.nbt.CompoundTag) INSTANCE.fixer.update(type, new Dynamic<>(OPS_NBT, cmp), sourceVer, targetVer).getValue();
+        return (CompoundTag) INSTANCE.fixer.update(type, new Dynamic<>(OPS_NBT, cmp), sourceVer, targetVer).getValue();
     }
 
 
     public interface DataInspector {
-        net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer);
+        CompoundTag inspect(CompoundTag cmp, int sourceVer, int targetVer);
     }
 
     public interface DataConverter {
 
         int getDataVersion();
 
-        net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp);
+        CompoundTag convert(CompoundTag cmp);
     }
 
 
@@ -316,7 +318,7 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
         int version = converter.getDataVersion();
 
         List<DataConverter> list = this.converters.computeIfAbsent(type, k -> new ArrayList<>());
-        if (!list.isEmpty() && list.getLast().getDataVersion() > version) {
+        if (!list.isEmpty() && list.get(list.size() - 1).getDataVersion() > version) {
             for (int j = 0; j < list.size(); ++j) {
                 if (list.get(j).getDataVersion() > version) {
                     list.add(j, converter);
@@ -801,7 +803,7 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
 
     private static class DataInspectorEntity implements DataInspector {
 
-        private static final Logger a = LogManager.getLogger(NeoForgeDataFixer.class);
+        private static final Logger a = LogManager.getLogger(PaperweightDataConverters.class);
 
         DataInspectorEntity() {
         }
@@ -873,7 +875,7 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
 
         net.minecraft.nbt.CompoundTag inspectChecked(net.minecraft.nbt.CompoundTag nbttagcompound, int sourceVer, int targetVer) {
             for (String s : this.keys) {
-                NeoForgeDataFixer.convertItems(nbttagcompound, s, sourceVer, targetVer);
+                PaperweightDataConverters.convertItems(nbttagcompound, s, sourceVer, targetVer);
             }
 
             return nbttagcompound;
@@ -891,7 +893,7 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
 
         net.minecraft.nbt.CompoundTag inspectChecked(net.minecraft.nbt.CompoundTag nbttagcompound, int sourceVer, int targetVer) {
             for (String key : this.keys) {
-                NeoForgeDataFixer.convertItem(nbttagcompound, key, sourceVer, targetVer);
+                PaperweightDataConverters.convertItem(nbttagcompound, key, sourceVer, targetVer);
             }
 
             return nbttagcompound;
@@ -1235,6 +1237,46 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
             materials[2265] = "minecraft:record_ward";
             materials[2266] = "minecraft:record_11";
             materials[2267] = "minecraft:record_wait";
+            // Paper start
+            materials[409] = "minecraft:prismarine_shard";
+            materials[410] = "minecraft:prismarine_crystals";
+            materials[411] = "minecraft:rabbit";
+            materials[412] = "minecraft:cooked_rabbit";
+            materials[413] = "minecraft:rabbit_stew";
+            materials[414] = "minecraft:rabbit_foot";
+            materials[415] = "minecraft:rabbit_hide";
+            materials[416] = "minecraft:armor_stand";
+            materials[423] = "minecraft:mutton";
+            materials[424] = "minecraft:cooked_mutton";
+            materials[425] = "minecraft:banner";
+            materials[426] = "minecraft:end_crystal";
+            materials[427] = "minecraft:spruce_door";
+            materials[428] = "minecraft:birch_door";
+            materials[429] = "minecraft:jungle_door";
+            materials[430] = "minecraft:acacia_door";
+            materials[431] = "minecraft:dark_oak_door";
+            materials[432] = "minecraft:chorus_fruit";
+            materials[433] = "minecraft:chorus_fruit_popped";
+            materials[434] = "minecraft:beetroot";
+            materials[435] = "minecraft:beetroot_seeds";
+            materials[436] = "minecraft:beetroot_soup";
+            materials[437] = "minecraft:dragon_breath";
+            materials[438] = "minecraft:splash_potion";
+            materials[439] = "minecraft:spectral_arrow";
+            materials[440] = "minecraft:tipped_arrow";
+            materials[441] = "minecraft:lingering_potion";
+            materials[442] = "minecraft:shield";
+            materials[443] = "minecraft:elytra";
+            materials[444] = "minecraft:spruce_boat";
+            materials[445] = "minecraft:birch_boat";
+            materials[446] = "minecraft:jungle_boat";
+            materials[447] = "minecraft:acacia_boat";
+            materials[448] = "minecraft:dark_oak_boat";
+            materials[449] = "minecraft:totem_of_undying";
+            materials[450] = "minecraft:shulker_shell";
+            materials[452] = "minecraft:iron_nugget";
+            materials[453] = "minecraft:knowledge_book";
+            // Paper end
         }
     }
 
@@ -1846,7 +1888,7 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
 
                                 if (object == null) {
                                     try {
-                                        object = ComponentConverter.Serializer.fromJson(s, ServerLifecycleHooks.getCurrentServer().registryAccess());
+                                        object = ComponentConverter.Serializer.fromJson(s, MinecraftServer.getServer().registryAccess());
                                     } catch (JsonParseException jsonparseexception1) {
                                         ;
                                     }
@@ -1854,7 +1896,7 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
 
                                 if (object == null) {
                                     try {
-                                        object = ComponentConverter.Serializer.fromJsonLenient(s, ServerLifecycleHooks.getCurrentServer().registryAccess());
+                                        object = ComponentConverter.Serializer.fromJsonLenient(s, MinecraftServer.getServer().registryAccess());
                                     } catch (JsonParseException jsonparseexception2) {
                                         ;
                                     }
@@ -1868,7 +1910,7 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
                             object = Component.literal("");
                         }
 
-                        nbttaglist.set(i, StringTag.valueOf(ComponentConverter.Serializer.toJson((Component) object, ServerLifecycleHooks.getCurrentServer().registryAccess())));
+                        nbttaglist.set(i, StringTag.valueOf(ComponentConverter.Serializer.toJson((Component) object, MinecraftServer.getServer().registryAccess())));
                     }
 
                     nbttagcompound1.put("pages", nbttaglist);
@@ -2374,7 +2416,7 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
 
     private static class DataConverterBedBlock implements DataConverter {
 
-        private static final Logger a = LogManager.getLogger(NeoForgeDataFixer.class);
+        private static final Logger a = LogManager.getLogger(PaperweightDataConverters.class);
 
         DataConverterBedBlock() {
         }
@@ -2509,7 +2551,7 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
 
                     if (object == null) {
                         try {
-                            object = ComponentConverter.Serializer.fromJson(s1, ServerLifecycleHooks.getCurrentServer().registryAccess());
+                            object = ComponentConverter.Serializer.fromJson(s1, MinecraftServer.getServer().registryAccess());
                         } catch (JsonParseException jsonparseexception1) {
                             ;
                         }
@@ -2517,7 +2559,7 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
 
                     if (object == null) {
                         try {
-                            object = ComponentConverter.Serializer.fromJsonLenient(s1, ServerLifecycleHooks.getCurrentServer().registryAccess());
+                            object = ComponentConverter.Serializer.fromJsonLenient(s1, MinecraftServer.getServer().registryAccess());
                         } catch (JsonParseException jsonparseexception2) {
                             ;
                         }
@@ -2531,7 +2573,7 @@ class NeoForgeDataFixer implements com.sk89q.worldedit.world.DataFixer {
                 object = Component.literal("");
             }
 
-            nbttagcompound.putString(s, ComponentConverter.Serializer.toJson((Component) object, ServerLifecycleHooks.getCurrentServer().registryAccess()));
+            nbttagcompound.putString(s, ComponentConverter.Serializer.toJson((Component) object, MinecraftServer.getServer().registryAccess()));
         }
     }
 

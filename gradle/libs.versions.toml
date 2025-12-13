@@ -10,15 +10,15 @@ autoValue = "1.10.4"
 antlr = "4.13.2"
 cuiProtocol = "4.0.2"
 
-fabric-api = "0.136.0+1.21.10"
+fabric-api = "0.139.4+1.21.11"
 
-neogradle = "7.1.4"
-neoforge-minecraft = "1.21.10"
+neogradle = "7.1.11"
+neoforge-minecraft = "1.21.11"
 
-sponge-minecraft = "1.21.10"
+sponge-minecraft = "1.21.11"
 # https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/spongeapi/
-sponge-api = "17.0.0-20251120.101908-3"
-sponge-api-major = "17"
+sponge-api = "18.0.0-20251210.214305-1"
+sponge-api-major = "18"
 
 # https://parchmentmc.org/docs/getting-started; note that we use older MC versions some times which is OK
 parchment-minecraft = "1.21.10"
@@ -89,19 +89,19 @@ rhino = "org.mozilla:rhino-runtime:1.7.13"
 jchronic = "com.sk89q:jchronic:0.2.4a"
 jlibnoise = "com.sk89q.lib:jlibnoise:1.0.0"
 
-fabric-minecraft = "com.mojang:minecraft:1.21.10"
-fabric-loader = "net.fabricmc:fabric-loader:0.17.3"
+fabric-minecraft = "com.mojang:minecraft:1.21.11"
+fabric-loader = "net.fabricmc:fabric-loader:0.18.2"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.5.0"
 
-neoforge = "net.neoforged:neoforge:21.10.34-beta"
+neoforge = "net.neoforged:neoforge:21.11.3-beta"
 
 # Mojang-provided libraries, CHECK AGAINST MINECRAFT for versions
-guava = "com.google.guava:guava:33.3.1-jre!!"
+guava = "com.google.guava:guava:33.5.0-jre!!"
 log4j-bom = "org.apache.logging.log4j:log4j-bom:2.24.1!!"
 log4j-api.module = "org.apache.logging.log4j:log4j-api"
 log4j-core.module = "org.apache.logging.log4j:log4j-core"
-gson = "com.google.code.gson:gson:2.11.0!!"
-fastutil = "it.unimi.dsi:fastutil:8.5.15!!"
+gson = "com.google.code.gson:gson:2.13.2!!"
+fastutil = "it.unimi.dsi:fastutil:8.5.18!!"
 
 # Bukkit-provided libraries, CHECK AGAINST SPIGOT for versions
 # Note that we need to balance support for older MC versus working at all on newer ones, so the exact versions here
@@ -164,9 +164,9 @@ version.ref = "antlr"
 module = "org.antlr:antlr4-runtime"
 
 [libraries.cuiProtocol-fabric]
-module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-fabric-mc1.21.9"
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-fabric-mc1.21.11"
 version.ref = "cuiProtocol"
 
 [libraries.cuiProtocol-neoforge]
-module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-neoforge-mc1.21.9"
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-neoforge-mc1.21.11"
 version.ref = "cuiProtocol"
