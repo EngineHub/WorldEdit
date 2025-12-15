@@ -26,8 +26,11 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.permission.ActorSelectorLimits;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.regions.ConvexPolyhedralRegion;
 import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.regions.selector.ConvexPolyhedralRegionSelector;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 
 /**
@@ -65,6 +68,27 @@ public class DistanceWand extends BrushTool implements DoubleActionTraceTool {
         BlockVector3 blockPoint = target.toVector().toBlockPoint();
         if (selector.selectSecondary(blockPoint, ActorSelectorLimits.forActor(player))) {
             selector.explainSecondarySelection(player, session, blockPoint);
+        } else if (selector instanceof ConvexPolyhedralRegionSelector) {
+            ConvexPolyhedralRegion convex = (ConvexPolyhedralRegion) selector.getIncompleteRegion();
+
+            if (convex.getVertices().contains(blockPoint)) {
+                player.printInfo(TranslatableComponent.of(
+                    "worldedit.selection.convex.error.duplicate",
+                    TextComponent.of(blockPoint.toString())
+                ));
+                return true;
+            }
+
+            ActorSelectorLimits limits = ActorSelectorLimits.forActor(player);
+            limits.getPolyhedronVertexLimit().ifPresent(limit -> {
+                int total = convex.getVertices().size();
+                if (total >= limit) {
+                    player.printInfo(TranslatableComponent.of(
+                        "worldedit.select.convex.limit-message",
+                        TextComponent.of(limit)
+                    ));
+                }
+            });
         }
         return true;
     }
