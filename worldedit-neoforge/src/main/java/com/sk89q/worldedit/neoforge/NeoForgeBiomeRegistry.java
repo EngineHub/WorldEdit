@@ -24,8 +24,8 @@ import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.biome.BiomeData;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
-import net.minecraft.Util;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 
 /**
  * Provides access to biome data in Forge.
@@ -34,7 +34,7 @@ class NeoForgeBiomeRegistry implements BiomeRegistry {
 
     @Override
     public Component getRichName(BiomeType biomeType) {
-        return TranslatableComponent.of(Util.makeDescriptionId("biome", ResourceLocation.parse(biomeType.id())));
+        return TranslatableComponent.of(Util.makeDescriptionId("biome", Identifier.parse(biomeType.id())));
     }
 
     @Deprecated

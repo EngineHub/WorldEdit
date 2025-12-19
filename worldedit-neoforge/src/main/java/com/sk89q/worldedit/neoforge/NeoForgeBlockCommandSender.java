@@ -31,9 +31,11 @@ import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSer
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.BaseCommandBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
@@ -44,9 +46,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class NeoForgeBlockCommandSender extends AbstractCommandBlockActor {
     private final BaseCommandBlock sender;
     private final UUID uuid;
+    private final ServerLevel level;
+    private final Vec3 pos;
 
-    public NeoForgeBlockCommandSender(BaseCommandBlock sender) {
-        super(new Location(NeoForgeAdapter.adapt(checkNotNull(sender).getLevel()), NeoForgeAdapter.adapt(sender.getPosition())));
+    public NeoForgeBlockCommandSender(BaseCommandBlock sender, ServerLevel level, Vec3 pos) {
+        super(new Location(NeoForgeAdapter.adapt(checkNotNull(level)), NeoForgeAdapter.adapt(pos)));
+        this.level = level;
+        this.pos = pos;
 
         this.sender = sender;
         this.uuid = UUID.nameUUIDFromBytes((UUID_PREFIX + sender.getName()).getBytes(StandardCharsets.UTF_8));
@@ -87,7 +93,7 @@ public class NeoForgeBlockCommandSender extends AbstractCommandBlockActor {
     public void print(Component component) {
         sendMessage(ComponentConverter.Serializer.fromJson(
             GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale())),
-            sender.getLevel().registryAccess()
+            this.level.registryAccess()
         ));
     }
 
@@ -141,14 +147,14 @@ public class NeoForgeBlockCommandSender extends AbstractCommandBlockActor {
             private volatile boolean active = true;
 
             private void updateActive() {
-                BlockPos pos = new BlockPos((int) sender.getPosition().x, (int) sender.getPosition().y, (int) sender.getPosition().z);
-                int chunkX = SectionPos.blockToSectionCoord(pos.getX());
-                int chunkZ = SectionPos.blockToSectionCoord(pos.getZ());
-                if (!sender.getLevel().getChunkSource().hasChunk(chunkX, chunkZ)) {
+                BlockPos blockPos = new BlockPos((int) pos.x, (int) pos.y, (int) pos.z);
+                int chunkX = SectionPos.blockToSectionCoord(blockPos.getX());
+                int chunkZ = SectionPos.blockToSectionCoord(blockPos.getZ());
+                if (!level.getChunkSource().hasChunk(chunkX, chunkZ)) {
                     active = false;
                     return;
                 }
-                Block type = sender.getLevel().getBlockState(pos).getBlock();
+                Block type = level.getBlockState(blockPos).getBlock();
                 active = type == Blocks.COMMAND_BLOCK
                     || type == Blocks.CHAIN_COMMAND_BLOCK
                     || type == Blocks.REPEATING_COMMAND_BLOCK;
@@ -161,7 +167,7 @@ public class NeoForgeBlockCommandSender extends AbstractCommandBlockActor {
 
             @Override
             public boolean isActive() {
-                sender.getLevel().getServer().submitAsync(this::updateActive);
+                level.getServer().submitAsync(this::updateActive);
                 return active;
             }
 

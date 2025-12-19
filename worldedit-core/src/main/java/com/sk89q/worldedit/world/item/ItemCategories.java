@@ -48,6 +48,7 @@ public final class ItemCategories {
     public static final ItemCategory BUNDLES = get("minecraft:bundles");
     public static final ItemCategory BUTTONS = get("minecraft:buttons");
     public static final ItemCategory CAMEL_FOOD = get("minecraft:camel_food");
+    public static final ItemCategory CAMEL_HUSK_FOOD = get("minecraft:camel_husk_food");
     public static final ItemCategory CANDLES = get("minecraft:candles");
     @Deprecated public static final ItemCategory CARPETS = get("minecraft:carpets");
     public static final ItemCategory CAT_FOOD = get("minecraft:cat_food");
@@ -94,11 +95,14 @@ public final class ItemCategories {
     public static final ItemCategory ENCHANTABLE_FOOT_ARMOR = get("minecraft:enchantable/foot_armor");
     public static final ItemCategory ENCHANTABLE_HEAD_ARMOR = get("minecraft:enchantable/head_armor");
     public static final ItemCategory ENCHANTABLE_LEG_ARMOR = get("minecraft:enchantable/leg_armor");
+    public static final ItemCategory ENCHANTABLE_LUNGE = get("minecraft:enchantable/lunge");
     public static final ItemCategory ENCHANTABLE_MACE = get("minecraft:enchantable/mace");
+    public static final ItemCategory ENCHANTABLE_MELEE_WEAPON = get("minecraft:enchantable/melee_weapon");
     public static final ItemCategory ENCHANTABLE_MINING = get("minecraft:enchantable/mining");
     public static final ItemCategory ENCHANTABLE_MINING_LOOT = get("minecraft:enchantable/mining_loot");
     public static final ItemCategory ENCHANTABLE_SHARP_WEAPON = get("minecraft:enchantable/sharp_weapon");
-    public static final ItemCategory ENCHANTABLE_SWORD = get("minecraft:enchantable/sword");
+    public static final ItemCategory ENCHANTABLE_SWEEPING = get("minecraft:enchantable/sweeping");
+    @Deprecated public static final ItemCategory ENCHANTABLE_SWORD = get("minecraft:enchantable/sword");
     public static final ItemCategory ENCHANTABLE_TRIDENT = get("minecraft:enchantable/trident");
     public static final ItemCategory ENCHANTABLE_VANISHING = get("minecraft:enchantable/vanishing");
     public static final ItemCategory ENCHANTABLE_WEAPON = get("minecraft:enchantable/weapon");
@@ -143,6 +147,9 @@ public final class ItemCategories {
     public static final ItemCategory MAP_INVISIBILITY_EQUIPMENT = get("minecraft:map_invisibility_equipment");
     public static final ItemCategory MEAT = get("minecraft:meat");
     @Deprecated public static final ItemCategory MUSIC_DISCS = get("minecraft:music_discs");
+    public static final ItemCategory NAUTILUS_BUCKET_FOOD = get("minecraft:nautilus_bucket_food");
+    public static final ItemCategory NAUTILUS_FOOD = get("minecraft:nautilus_food");
+    public static final ItemCategory NAUTILUS_TAMING_ITEMS = get("minecraft:nautilus_taming_items");
     public static final ItemCategory NETHERITE_TOOL_MATERIALS = get("minecraft:netherite_tool_materials");
     public static final ItemCategory NON_FLAMMABLE_WOOD = get("minecraft:non_flammable_wood");
     public static final ItemCategory NOTEBLOCK_TOP_INSTRUMENTS = get("minecraft:noteblock_top_instruments");
@@ -190,6 +197,7 @@ public final class ItemCategories {
     public static final ItemCategory SMELTS_TO_GLASS = get("minecraft:smelts_to_glass");
     public static final ItemCategory SNIFFER_FOOD = get("minecraft:sniffer_food");
     public static final ItemCategory SOUL_FIRE_BASE_BLOCKS = get("minecraft:soul_fire_base_blocks");
+    public static final ItemCategory SPEARS = get("minecraft:spears");
     public static final ItemCategory SPRUCE_LOGS = get("minecraft:spruce_logs");
     public static final ItemCategory STAIRS = get("minecraft:stairs");
     public static final ItemCategory STONE_BRICKS = get("minecraft:stone_bricks");
@@ -225,6 +233,7 @@ public final class ItemCategories {
     public static final ItemCategory WOODEN_TRAPDOORS = get("minecraft:wooden_trapdoors");
     public static final ItemCategory WOOL = get("minecraft:wool");
     public static final ItemCategory WOOL_CARPETS = get("minecraft:wool_carpets");
+    public static final ItemCategory ZOMBIE_HORSE_FOOD = get("minecraft:zombie_horse_food");
 
     private ItemCategories() {
     }
