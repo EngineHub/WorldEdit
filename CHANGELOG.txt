@@ -16,6 +16,10 @@
 - Deprecate bundled item data, bundled block data, World#playEffect, legacy tree systems, and more for removal in WE 8
 - Reworked the way WorldEdit CLI pulls in versioned data, allowing dynamic data loading
 
+7.3.18
+- Added support for 1.21.11
+- Improved rotation of special rail blocks (activator, detector, powered, etc)
+
 7.3.17
 - Added support for 1.21.9 & 1.21.10
 - Improved rotation of crafter blocks
