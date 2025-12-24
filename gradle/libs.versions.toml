@@ -34,7 +34,7 @@ minimumTinyRemapper = "0.8.11"
 
 # https://repo.enginehub.org/language-files/com/sk89q/worldedit/worldedit-lang/
 lang-worldeditBase = "7.3.18"
-lang-version = "2031"
+lang-version = "2036"
 
 [libraries]
 neogradle-neoform = { module = "net.neoforged.gradle:neoform", version.ref = "neogradle" }
@@ -46,7 +46,7 @@ shadow = "com.gradleup.shadow:com.gradleup.shadow.gradle.plugin:8.3.9"
 jfrog-buildinfo = "org.jfrog.buildinfo:build-info-extractor-gradle:6.0.4"
 
 # https://maven.fabricmc.net/net/fabricmc/sponge-mixin/
-fabric-mixin = "net.fabricmc:sponge-mixin:0.16.5+mixin.0.8.7"
+fabric-mixin = "net.fabricmc:sponge-mixin:0.17.0+mixin.0.8.7"
 
 paperweight = "io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:2.0.0-beta.19"
 
