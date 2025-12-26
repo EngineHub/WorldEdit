@@ -21,7 +21,7 @@ package com.sk89q.worldedit.event.platform;
 
 import com.sk89q.worldedit.event.Event;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.internal.util.Substring;
+import com.sk89q.worldedit.internal.command.FullStringSuggestion;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,7 +35,7 @@ public class CommandSuggestionEvent extends Event {
 
     private final Actor actor;
     private final String arguments;
-    private List<Substring> suggestions = Collections.emptyList();
+    private List<FullStringSuggestion> suggestions = Collections.emptyList();
 
     /**
      * Create a new instance.
@@ -72,14 +72,9 @@ public class CommandSuggestionEvent extends Event {
     /**
      * Get the list of suggestions that are to be presented.
      *
-     * <p>
-     *     Each Substring holds the replacement as the substring,
-     *     and the replacement range as the original substring range.
-     * </p>
-     *
      * @return the list of suggestions
      */
-    public List<Substring> getSuggestions() {
+    public List<FullStringSuggestion> getSuggestions() {
         return suggestions;
     }
 
@@ -88,7 +83,7 @@ public class CommandSuggestionEvent extends Event {
      *
      * @param suggestions the list of suggestions
      */
-    public void setSuggestions(List<Substring> suggestions) {
+    public void setSuggestions(List<FullStringSuggestion> suggestions) {
         checkNotNull(suggestions);
         this.suggestions = suggestions;
     }
