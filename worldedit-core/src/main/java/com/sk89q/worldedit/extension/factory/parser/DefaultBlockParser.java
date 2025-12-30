@@ -206,10 +206,19 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
     public Stream<String> getSuggestions(String input, ParserContext context) {
         final int idx = input.lastIndexOf('[');
         if (idx < 0) {
-            return Stream.concat(
-                Stream.of("hand", "offhand", "pos1"),
+             var suggestions = Stream.concat(
+                Stream.of( "pos1"),
                 SuggestionHelper.getNamespacedRegistrySuggestions(BlockType.REGISTRY, input)
-            );
+             );
+
+             if (context.getActor() != null && context.getActor().isPlayer()){
+                 return Stream.concat(
+                         Stream.of("hand", "offhand"),
+                         suggestions
+                 );
+             }
+
+             return suggestions;
         }
         String blockType = input.substring(0, idx);
         BlockType type = BlockTypes.get(blockType.toLowerCase(Locale.ROOT));
