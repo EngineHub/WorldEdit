@@ -211,9 +211,9 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
             }
 
             if (context.getActor() != null && context.getActor().isPlayer()) {
-                for (String handside : List.of("hand", "offhand")) {
-                    if (handside.startsWith(input)) {
-                        suggestions.add(handside);
+                for (String handSide : List.of("hand", "offhand")) {
+                    if (handSide.startsWith(input)) {
+                        suggestions.add(handSide);
                     }
                 }
             }
