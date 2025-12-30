@@ -57,7 +57,6 @@ import org.enginehub.linbus.format.snbt.LinStringIO;
 import org.enginehub.linbus.stream.exception.NbtParseException;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -207,34 +206,8 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
     public Stream<String> getSuggestions(String input, ParserContext context) {
         final int idx = input.lastIndexOf('[');
         if (idx < 0) {
-            ArrayList<String> playerSpecificBlocks = new ArrayList<>();
-
-            var actor = context.getActor();
-            if (actor instanceof Player player) {
-                try {
-                    player.getBlockInHand(HandSide.MAIN_HAND);
-                    playerSpecificBlocks.add("hand");
-                } catch (WorldEditException ignored) {
-                }
-
-                try {
-                    player.getBlockInHand(HandSide.OFF_HAND);
-                    playerSpecificBlocks.add("offhand");
-                } catch (WorldEditException ignored) {
-                }
-
-                World world = context.getWorld();
-                LocalSession session = context.getSession();
-                if (world != null && session != null) {
-                    try {
-                        session.getRegionSelector(world).getPrimaryPosition();
-                        playerSpecificBlocks.add("pos1");
-                    } catch (IncompleteRegionException ignored) {
-                    }
-                }
-            }
             return Stream.concat(
-                playerSpecificBlocks.stream(),
+                Stream.of("hand", "offhand", "pos1"),
                 SuggestionHelper.getNamespacedRegistrySuggestions(BlockType.REGISTRY, input)
             );
         }
