@@ -57,9 +57,7 @@ import org.enginehub.linbus.format.snbt.LinStringIO;
 import org.enginehub.linbus.stream.exception.NbtParseException;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -206,19 +204,23 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
     public Stream<String> getSuggestions(String input, ParserContext context) {
         final int idx = input.lastIndexOf('[');
         if (idx < 0) {
-             var suggestions = Stream.concat(
-                Stream.of( "pos1"),
-                SuggestionHelper.getNamespacedRegistrySuggestions(BlockType.REGISTRY, input)
-             );
+            List<String> suggestions = new ArrayList<>();
 
-             if (context.getActor() != null && context.getActor().isPlayer()){
-                 return Stream.concat(
-                         Stream.of("hand", "offhand"),
-                         suggestions
-                 );
-             }
+            if ("pos1".startsWith(input)) {
+                suggestions.add("pos1");
+            }
 
-             return suggestions;
+            if (context.getActor() != null && context.getActor().isPlayer()) {
+                for (String handside : List.of("hand", "offhand")) {
+                    if (handside.startsWith(input)) {
+                        suggestions.add(handside);
+                    }
+                }
+            }
+
+            return Stream.concat(
+                    suggestions.stream(),
+                    SuggestionHelper.getNamespacedRegistrySuggestions(BlockType.REGISTRY, input));
         }
         String blockType = input.substring(0, idx);
         BlockType type = BlockTypes.get(blockType.toLowerCase(Locale.ROOT));
