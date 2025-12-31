@@ -57,8 +57,12 @@ import org.enginehub.linbus.format.snbt.LinStringIO;
 import org.enginehub.linbus.stream.exception.NbtParseException;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
+import java.util.Locale;
 
 /**
  * Parses block input strings.
