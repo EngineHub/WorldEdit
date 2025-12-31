@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.world.block;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
@@ -33,7 +32,9 @@ import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -54,8 +55,16 @@ public class BlockType implements Keyed {
         = LazyReference.from(() -> new FuzzyBlockState(this));
     @SuppressWarnings("this-escape")
     private final LazyReference<Map<String, ? extends Property<?>>> properties
-        = LazyReference.from(() -> ImmutableMap.copyOf(WorldEdit.getInstance().getPlatformManager()
-        .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getProperties(this)));
+        = LazyReference.from(() -> {
+            var propertiesMap = WorldEdit.getInstance().getPlatformManager()
+                    .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getProperties(this);
+            List<String> sortedPropertyNames = propertiesMap.keySet().stream().sorted().toList();
+            Map<String, Property<?>> sortedPropertiesMap = new Object2ObjectArrayMap<>(propertiesMap.size());
+            for (String propertyName : sortedPropertyNames) {
+                sortedPropertiesMap.put(propertyName, propertiesMap.get(propertyName));
+            }
+            return Collections.unmodifiableMap(sortedPropertiesMap);
+        });
     @SuppressWarnings("this-escape")
     private final LazyReference<BlockMaterial> blockMaterial
         = LazyReference.from(() -> WorldEdit.getInstance().getPlatformManager()
