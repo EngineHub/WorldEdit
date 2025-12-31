@@ -32,7 +32,7 @@ import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 
 import java.util.Collections;
 import java.util.List;
@@ -59,7 +59,7 @@ public class BlockType implements Keyed {
             var propertiesMap = WorldEdit.getInstance().getPlatformManager()
                     .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getProperties(this);
             List<String> sortedPropertyNames = propertiesMap.keySet().stream().sorted().toList();
-            Map<String, Property<?>> sortedPropertiesMap = new Object2ObjectArrayMap<>(propertiesMap.size());
+            Map<String, Property<?>> sortedPropertiesMap = new Reference2ObjectArrayMap<>(propertiesMap.size());
             for (String propertyName : sortedPropertyNames) {
                 sortedPropertiesMap.put(propertyName, propertiesMap.get(propertyName));
             }

@@ -30,7 +30,7 @@ import com.sk89q.worldedit.extension.platform.Watchdog;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.util.Collections;
@@ -106,7 +106,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
             stateMapBuilder = ImmutableMap.builderWithExpectedSize(valueLists.size());
             for (List<Object> valueList : valueLists) {
                 int valueCount = valueList.size();
-                Map<Property<?>, Object> valueMap = new Object2ObjectArrayMap<>(valueCount);
+                Map<Property<?>, Object> valueMap = new Reference2ObjectArrayMap<>(valueCount);
                 for (int i = 0; i < valueCount; i++) {
                     Property<?> property = properties.get(i);
                     Object value = valueList.get(i);
@@ -174,7 +174,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
     }
 
     private <V> Map<Property<?>, Object> withValue(final Property<V> property, final V value) {
-        final Map<Property<?>, Object> values = new Object2ObjectArrayMap<>(this.values.size());
+        final Map<Property<?>, Object> values = new Reference2ObjectArrayMap<>(this.values.size());
         for (Map.Entry<Property<?>, Object> entry : this.values.entrySet()) {
             if (entry.getKey().equals(property)) {
                 values.put(entry.getKey(), value);
