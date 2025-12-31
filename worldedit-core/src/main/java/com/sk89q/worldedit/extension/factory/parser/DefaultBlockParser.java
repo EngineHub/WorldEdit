@@ -184,7 +184,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                     throw new NoMatchException(TranslatableComponent.of(
                             "worldedit.error.parser.unknown-value",
                             TextComponent.of(parts[1]),
-                            TextComponent.of(propertyKey.getName())
+                            TextComponent.of(propertyKey.name())
                     ));
                 }
 
@@ -245,7 +245,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
 
         String props = input.substring(idx + 1);
         if (props.isEmpty()) {
-            return type.getProperties().stream().map(p -> input + p.getName() + "=");
+            return type.getProperties().stream().map(p -> input + p.name() + "=");
         }
 
         return SuggestionHelper.getBlockPropertySuggestions(blockType, type, props);

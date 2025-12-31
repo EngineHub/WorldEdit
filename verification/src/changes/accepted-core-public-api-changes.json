@@ -81,5 +81,70 @@
               "METHOD_NEW_DEFAULT"
             ]
         }
-  ]
+    ],
+    "Record conversion of Properties, no one should be extending this": [
+        {
+            "type": "com.sk89q.worldedit.registry.state.AbstractProperty",
+            "member": "Class com.sk89q.worldedit.registry.state.AbstractProperty",
+            "changes": [
+                "CLASS_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.registry.state.AbstractProperty",
+            "member": "Method com.sk89q.worldedit.registry.state.AbstractProperty.equals(java.lang.Object)",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.registry.state.AbstractProperty",
+            "member": "Method com.sk89q.worldedit.registry.state.AbstractProperty.hashCode()",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.registry.state.AbstractProperty",
+            "member": "Method com.sk89q.worldedit.registry.state.AbstractProperty.toString()",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.registry.state.AbstractProperty",
+            "member": "Constructor com.sk89q.worldedit.registry.state.AbstractProperty(java.lang.String,java.util.List)",
+            "changes": [
+                "CONSTRUCTOR_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.registry.state.BooleanProperty",
+            "member": "Class com.sk89q.worldedit.registry.state.BooleanProperty",
+            "changes": [
+                "CLASS_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.registry.state.DirectionalProperty",
+            "member": "Class com.sk89q.worldedit.registry.state.DirectionalProperty",
+            "changes": [
+                "CLASS_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.registry.state.EnumProperty",
+            "member": "Class com.sk89q.worldedit.registry.state.EnumProperty",
+            "changes": [
+                "CLASS_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.registry.state.IntegerProperty",
+            "member": "Class com.sk89q.worldedit.registry.state.IntegerProperty",
+            "changes": [
+                "CLASS_NOW_FINAL"
+            ]
+        }
+    ]
 }

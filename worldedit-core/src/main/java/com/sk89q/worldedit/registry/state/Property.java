@@ -33,16 +33,38 @@ public interface Property<T> {
     /**
      * Returns the name of this state.
      *
-     * @return The state name
+     * @return the state name
      */
-    String getName();
+    String name();
+
+    /**
+     * Returns the name of this state.
+     *
+     * @return The state name
+     * @deprecated Use {@link #name()} instead.
+     */
+    @Deprecated
+    default String getName() {
+        return name();
+    }
+
+    /**
+     * Returns a list of available values for this state.
+     *
+     * @return the list of state values
+     */
+    List<T> values();
 
     /**
      * Return a list of available values for this state.
      *
      * @return the list of state values
+     * @deprecated Use {@link #values()} instead.
      */
-    List<T> getValues();
+    @Deprecated
+    default List<T> getValues() {
+        return values();
+    }
 
     /**
      * Gets the value for the given string, or null.

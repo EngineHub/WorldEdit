@@ -76,7 +76,7 @@ public class FabricTransmogrifier {
     }
 
     private static Map<Property<?>, Object> transmogToWorldEditProperties(BlockType block, Map<net.minecraft.world.level.block.state.properties.Property<?>, Comparable<?>> mcProps) {
-        Map<Property<?>, Object> props = new TreeMap<>(Comparator.comparing(Property::getName));
+        Map<Property<?>, Object> props = new TreeMap<>(Comparator.comparing(Property::name));
         for (Map.Entry<net.minecraft.world.level.block.state.properties.Property<?>, Comparable<?>> prop : mcProps.entrySet()) {
             Object value = prop.getValue();
             if (prop.getKey() instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
@@ -98,7 +98,7 @@ public class FabricTransmogrifier {
         Map<Property<?>, Object> states
     ) {
         for (Map.Entry<Property<?>, Object> state : states.entrySet()) {
-            net.minecraft.world.level.block.state.properties.Property property = stateContainer.getProperty(state.getKey().getName());
+            net.minecraft.world.level.block.state.properties.Property property = stateContainer.getProperty(state.getKey().name());
             Comparable value = (Comparable) state.getValue();
             // we may need to adapt this value, depending on the source prop
             if (property instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {

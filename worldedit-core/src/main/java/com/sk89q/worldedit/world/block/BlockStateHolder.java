@@ -143,7 +143,7 @@ public interface BlockStateHolder<B extends BlockStateHolder<B>> extends Pattern
             return this.getBlockType().id();
         } else {
             String properties = getStates().entrySet().stream()
-                .map(entry -> entry.getKey().getName()
+                .map(entry -> entry.getKey().name()
                     + "="
                     + entry.getValue().toString().toLowerCase(Locale.ROOT))
                 .collect(Collectors.joining(","));

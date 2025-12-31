@@ -20,20 +20,14 @@
 package com.sk89q.worldedit.registry.state;
 
 import java.util.List;
-import javax.annotation.Nullable;
 
-public class BooleanProperty extends AbstractProperty<Boolean> {
+public record BooleanProperty(String name, List<Boolean> values) implements Property<Boolean> {
 
-    public BooleanProperty(final String name, final List<Boolean> values) {
-        super(name, values);
-    }
-
-    @Nullable
     @Override
     public Boolean getValueFor(String string) {
         boolean val = Boolean.parseBoolean(string);
-        if (!getValues().contains(val)) {
-            throw new IllegalArgumentException("Invalid boolean value: " + string + ". Must be in " + getValues().toString());
+        if (!values().contains(val)) {
+            throw new IllegalArgumentException("Invalid boolean value: " + string + ". Must be in " + values());
         }
         return val;
     }

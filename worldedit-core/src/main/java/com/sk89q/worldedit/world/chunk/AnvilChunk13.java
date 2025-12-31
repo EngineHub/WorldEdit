@@ -113,13 +113,13 @@ public class AnvilChunk13 implements Chunk {
                 var propertiesTag = paletteEntry.findTag("Properties", LinTagType.compoundTag());
                 if (propertiesTag != null) {
                     for (Property<?> property : blockState.getStates().keySet()) {
-                        var propertyName = propertiesTag.findTag(property.getName(), LinTagType.stringTag());
+                        var propertyName = propertiesTag.findTag(property.name(), LinTagType.stringTag());
                         if (propertyName != null) {
                             String value = propertyName.value();
                             try {
                                 blockState = getBlockStateWith(blockState, property, value);
                             } catch (IllegalArgumentException e) {
-                                throw new InvalidFormatException("Invalid block state for " + blockState.getBlockType().id() + ", " + property.getName() + ": " + value);
+                                throw new InvalidFormatException("Invalid block state for " + blockState.getBlockType().id() + ", " + property.name() + ": " + value);
                             }
                         }
                     }

@@ -445,7 +445,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     ) {
         for (Map.Entry<Property<?>, Object> state : states.entrySet()) {
             net.minecraft.world.level.block.state.properties.Property<?> property =
-                stateContainer.getProperty(state.getKey().getName());
+                stateContainer.getProperty(state.getKey().name());
             Comparable<?> value = (Comparable) state.getValue();
             // we may need to adapt this value, depending on the source prop
             if (property instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
@@ -598,7 +598,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             block.getStateDefinition();
         for (net.minecraft.world.level.block.state.properties.Property state : blockStateList.getProperties()) {
             Property<?> property = PROPERTY_CACHE.getUnchecked(state);
-            properties.put(property.getName(), property);
+            properties.put(property.name(), property);
         }
         return properties;
     }
