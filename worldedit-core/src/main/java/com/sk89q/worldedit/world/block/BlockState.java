@@ -21,9 +21,9 @@ package com.sk89q.worldedit.world.block;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
+import com.google.common.collect.Tables;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Watchdog;
@@ -152,7 +152,10 @@ public class BlockState implements BlockStateHolder<BlockState> {
      * @param stateMap The state map to generate the table from
      */
     private void populate(Map<Map<Property<?>, Object>, BlockState> stateMap) {
-        final ImmutableTable.Builder<Property<?>, Object, BlockState> states = ImmutableTable.builder();
+        Table<Property<?>, Object, BlockState> table = Tables.newCustomTable(
+                new Reference2ObjectArrayMap<>(this.values.size()),
+                Reference2ObjectArrayMap::new
+        );
 
         for (final Map.Entry<Property<?>, Object> entry : this.values.entrySet()) {
             final Property<Object> property = (Property<Object>) entry.getKey();
@@ -161,7 +164,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
                 if (value != entry.getValue()) {
                     BlockState modifiedState = stateMap.get(this.withValue(property, value));
                     if (modifiedState != null) {
-                        states.put(property, value, modifiedState);
+                        table.put(property, value, modifiedState);
                     } else {
                         WorldEdit.logger.warn(stateMap);
                         WorldEdit.logger.warn("Found a null state at " + this.withValue(property, value));
@@ -170,7 +173,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
             }
         }
 
-        this.states = states.build();
+        this.states = Tables.unmodifiableTable(table);
     }
 
     private <V> Map<Property<?>, Object> withValue(final Property<V> property, final V value) {
