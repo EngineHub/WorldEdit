@@ -40,24 +40,27 @@ import java.util.List;
 
 public class PermissionsResolverManager implements PermissionsResolver {
 
-    private static final String CONFIG_HEADER = "#\r\n"
-        + "# WEPIF Configuration File\r\n"
-        + "#\r\n"
-        + "# This file handles permissions configuration for every plugin using WEPIF\r\n"
-        + "#\r\n"
-        + "# About editing this file:\r\n"
-        + "# - DO NOT USE TABS. You MUST use spaces or Bukkit will complain. If\r\n"
-        + "#   you use an editor like Notepad++ (recommended for Windows users), you\r\n"
-        + "#   must configure it to \"replace tabs with spaces.\" In Notepad++, this can\r\n"
-        + "#   be changed in Settings > Preferences > Language Menu.\r\n"
-        + "# - Don't get rid of the indents. They are indented so some entries are\r\n"
-        + "#   in categories (like \"enforce-single-session\" is in the \"protection\"\r\n"
-        + "#   category.\r\n"
-        + "# - If you want to check the format of this file before putting it\r\n"
-        + "#   into WEPIF, paste it into https://yaml-online-parser.appspot.com/\r\n"
-        + "#   and see if it gives \"ERROR:\".\r\n"
-        + "# - Lines starting with # are comments and so they are ignored.\r\n"
-        + "\r\n";
+    private static final String CONFIG_HEADER =
+            """
+            #\r
+            # WEPIF Configuration File\r
+            #\r
+            # This file handles permissions configuration for every plugin using WEPIF\r
+            #\r
+            # About editing this file:\r
+            # - DO NOT USE TABS. You MUST use spaces or Bukkit will complain. If\r
+            #   you use an editor like Notepad++ (recommended for Windows users), you\r
+            #   must configure it to "replace tabs with spaces." In Notepad++, this can\r
+            #   be changed in Settings > Preferences > Language Menu.\r
+            # - Don't get rid of the indents. They are indented so some entries are\r
+            #   in categories (like "enforce-single-session" is in the "protection"\r
+            #   category.\r
+            # - If you want to check the format of this file before putting it\r
+            #   into WEPIF, paste it into https://yaml-online-parser.appspot.com/\r
+            #   and see if it gives "ERROR:".\r
+            # - Lines starting with # are comments and so they are ignored.\r
+            \r
+            """;
     private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     private static PermissionsResolverManager instance;
