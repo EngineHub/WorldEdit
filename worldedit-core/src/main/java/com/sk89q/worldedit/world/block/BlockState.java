@@ -97,13 +97,13 @@ public class BlockState implements BlockStateHolder<BlockState> {
             // Create a list of lists of values, with a copy of the underlying lists
             List<List<Object>> separatedValues = Lists.newArrayListWithCapacity(properties.size());
             for (Property<?> prop : properties) {
-                separatedValues.add(ImmutableList.copyOf(prop.getValues()));
+                separatedValues.add(ImmutableList.copyOf(prop.values()));
             }
 
             List<List<Object>> valueLists = Lists.cartesianProduct(separatedValues);
             stateMapBuilder = ImmutableMap.builderWithExpectedSize(valueLists.size());
             for (List<Object> valueList : valueLists) {
-                Map<Property<?>, Object> valueMap = Maps.newTreeMap(Comparator.comparing(Property::getName));
+                Map<Property<?>, Object> valueMap = Maps.newTreeMap(Comparator.comparing(Property::name));
                 BlockState stateMaker = new BlockState(blockType);
                 int valueCount = valueList.size();
                 for (int i = 0; i < valueCount; i++) {
@@ -156,7 +156,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
         for (final Map.Entry<Property<?>, Object> entry : this.values.entrySet()) {
             final Property<Object> property = (Property<Object>) entry.getKey();
 
-            for (Object value : property.getValues()) {
+            for (Object value : property.values()) {
                 if (value != entry.getValue()) {
                     BlockState modifiedState = stateMap.get(this.withValue(property, value));
                     if (modifiedState != null) {

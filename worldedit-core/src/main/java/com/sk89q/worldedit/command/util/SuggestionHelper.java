@@ -91,32 +91,33 @@ public final class SuggestionHelper {
                         case 0 -> propertyMap.keySet().stream()
                             .filter(p -> !matchedProperties.contains(p))
                             .map(prop -> lastValidInput + prop + "=");
-                        case 1 -> matchingProps.get(0).getValues().stream()
-                            .map(val ->
-                                lastValidInput + matchingProps.get(0).getName() + "="
-                                    + val.toString().toLowerCase(Locale.ROOT)
+                        case 1 -> {
+                            Property<?> firstMatch = matchingProps.getFirst();
+                            yield firstMatch.values().stream().map(
+                                    val -> lastValidInput + firstMatch.name() + "=" + val.toString().toLowerCase(Locale.ROOT)
                             );
-                        default -> matchingProps.stream().map(p -> lastValidInput + p.getName() + "=");
+                        }
+                        default -> matchingProps.stream().map(p -> lastValidInput + p.name() + "=");
                     };
                 } else {
                     Property<?> prop = propertyMap.get(matchProp);
                     if (prop == null) {
                         return propertyMap.keySet().stream().map(p -> lastValidInput + p);
                     }
-                    final List<String> values = prop.getValues().stream().map(v -> v.toString().toLowerCase(Locale.ROOT)).toList();
+                    final List<String> values = prop.values().stream().map(v -> v.toString().toLowerCase(Locale.ROOT)).toList();
                     String matchVal = propVal[1].toLowerCase(Locale.ROOT);
                     List<String> matchingVals = values.stream().filter(val -> val.startsWith(matchVal)).toList();
                     if (matchingVals.isEmpty()) {
-                        return values.stream().map(val -> lastValidInput + prop.getName() + "=" + val);
+                        return values.stream().map(val -> lastValidInput + prop.name() + "=" + val);
                     } else {
-                        if (matchingVals.size() == 1 && matchingVals.get(0).equals(matchVal)) {
-                            String currProp = lastValidInput + prop.getName() + "=" + matchVal;
+                        if (matchingVals.size() == 1 && matchingVals.getFirst().equals(matchVal)) {
+                            String currProp = lastValidInput + prop.name() + "=" + matchVal;
                             if (matchingVals.size() < values.size()) {
                                 return Stream.of(currProp + "] ", currProp + ",");
                             }
                             return Stream.of(currProp + "] ");
                         }
-                        return matchingVals.stream().map(val -> lastValidInput + prop.getName() + "=" + val);
+                        return matchingVals.stream().map(val -> lastValidInput + prop.name() + "=" + val);
                     }
                 }
             } else {
@@ -130,7 +131,7 @@ public final class SuggestionHelper {
                 }
                 try {
                     prop.getValueFor(propVal[1]);
-                    matchedProperties.add(prop.getName());
+                    matchedProperties.add(prop.name());
                 } catch (IllegalArgumentException ignored) {
                     return Stream.empty();
                 }

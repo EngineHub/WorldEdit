@@ -21,6 +21,12 @@ package com.sk89q.worldedit.registry.state;
 
 import java.util.List;
 
+/**
+ * An abstract implementation of a property.
+ * @param <T> the value type
+ * @deprecated Use the {@link Property} interface or a concrete implementation instead.
+ */
+@Deprecated(forRemoval = true)
 public abstract class AbstractProperty<T> implements Property<T> {
 
     private final String name;
@@ -32,12 +38,12 @@ public abstract class AbstractProperty<T> implements Property<T> {
     }
 
     @Override
-    public List<T> getValues() {
+    public List<T> values() {
         return this.values;
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return this.name;
     }
 

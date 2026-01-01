@@ -81,5 +81,35 @@
               "METHOD_NEW_DEFAULT"
             ]
         }
-  ]
+    ],
+    "Record conversion of Properties, no one should be extending this": [
+        {
+            "type": "com.sk89q.worldedit.registry.state.BooleanProperty",
+            "member": "Class com.sk89q.worldedit.registry.state.BooleanProperty",
+            "changes": [
+                "CLASS_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.registry.state.DirectionalProperty",
+            "member": "Class com.sk89q.worldedit.registry.state.DirectionalProperty",
+            "changes": [
+                "CLASS_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.registry.state.EnumProperty",
+            "member": "Class com.sk89q.worldedit.registry.state.EnumProperty",
+            "changes": [
+                "CLASS_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.registry.state.IntegerProperty",
+            "member": "Class com.sk89q.worldedit.registry.state.IntegerProperty",
+            "changes": [
+                "CLASS_NOW_FINAL"
+            ]
+        }
+    ]
 }

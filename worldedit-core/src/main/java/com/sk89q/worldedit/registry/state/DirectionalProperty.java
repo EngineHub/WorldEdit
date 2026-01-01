@@ -23,20 +23,14 @@ import com.sk89q.worldedit.util.Direction;
 
 import java.util.List;
 import java.util.Locale;
-import javax.annotation.Nullable;
 
-public class DirectionalProperty extends AbstractProperty<Direction> {
+public record DirectionalProperty(String name, List<Direction> values) implements Property<Direction> {
 
-    public DirectionalProperty(final String name, final List<Direction> values) {
-        super(name, values);
-    }
-
-    @Nullable
     @Override
     public Direction getValueFor(final String string) {
         Direction direction = Direction.valueOf(string.toUpperCase(Locale.ROOT));
-        if (!getValues().contains(direction)) {
-            throw new IllegalArgumentException("Invalid direction value: " + string + ". Must be in " + getValues().toString());
+        if (!values().contains(direction)) {
+            throw new IllegalArgumentException("Invalid direction value: " + string + ". Must be in " + values().toString());
         }
         return direction;
     }

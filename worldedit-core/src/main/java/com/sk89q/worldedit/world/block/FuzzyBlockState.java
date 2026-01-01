@@ -119,7 +119,7 @@ public class FuzzyBlockState extends BlockState {
             checkNotNull(property);
             checkNotNull(value);
             checkNotNull(type, "The type must be set before the properties!");
-            type.getProperty(property.getName()); // Verify the property is valid for this type
+            type.getProperty(property.name()); // Verify the property is valid for this type
             values.put(property, value);
             return this;
         }
