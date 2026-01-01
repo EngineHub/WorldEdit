@@ -84,7 +84,7 @@ public class LevenshteinDistance implements Function<String, Integer> {
     }
 
     /**
-     * <p>Find the Levenshtein distance between two Strings.</p>
+     * Find the Levenshtein distance between two Strings.
      *
      * <p>This is the number of changes needed to change one String into
      * another, where each change is a single character modification (deletion,

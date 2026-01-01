@@ -37,7 +37,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
- * The chunk format for Minecraft 1.18 and newer
+ * The chunk format for Minecraft 1.18 and newer.
  */
 public class AnvilChunk18 implements Chunk {
 

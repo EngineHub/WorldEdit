@@ -26,7 +26,7 @@ tasks
 
 configure<CheckstyleExtension> {
     configFile = rootProject.file("config/checkstyle/checkstyle.xml")
-    toolVersion = "10.16.0"
+    toolVersion = "12.3.1"
 }
 
 tasks.withType<Test>().configureEach {

@@ -26,7 +26,7 @@ import com.sk89q.worldedit.world.storage.InvalidFormatException;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
 /**
- * The chunk format for Minecraft 1.16 and 1.17
+ * The chunk format for Minecraft 1.16 and 1.17.
  */
 public class AnvilChunk16 extends AnvilChunk13 {
 

@@ -581,6 +581,7 @@ public class LocalSession {
 
     /**
      * Sets the current placement used for many operations, like <code>//sphere</code>.
+     *
      * <p>
      * Example usage: <code>session.setPlacement(new Placement(PlacementType.WORLD, BlockVector3.at(123, 456, 789)</code>
      * </p>
