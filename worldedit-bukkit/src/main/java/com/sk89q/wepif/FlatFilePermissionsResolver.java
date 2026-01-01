@@ -213,7 +213,7 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
             return new String[0];
         }
 
-        return groups.toArray(new String[groups.size()]);
+        return groups.toArray(new String[0]);
     }
 
     @Override

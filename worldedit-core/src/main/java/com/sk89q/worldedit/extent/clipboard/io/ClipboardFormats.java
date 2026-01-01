@@ -141,7 +141,7 @@ public class ClipboardFormats {
      * It is not in SchematicCommands because it may rely on internal register calls.
      */
     public static String[] getFileExtensionArray() {
-        return fileExtensionMap.keySet().toArray(new String[fileExtensionMap.keySet().size()]);
+        return fileExtensionMap.keySet().toArray(new String[0]);
     }
 
     private ClipboardFormats() {
