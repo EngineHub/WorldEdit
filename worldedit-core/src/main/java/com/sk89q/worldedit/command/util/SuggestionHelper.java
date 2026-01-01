@@ -91,11 +91,12 @@ public final class SuggestionHelper {
                         case 0 -> propertyMap.keySet().stream()
                             .filter(p -> !matchedProperties.contains(p))
                             .map(prop -> lastValidInput + prop + "=");
-                        case 1 -> matchingProps.getFirst().values().stream()
-                            .map(val ->
-                                lastValidInput + matchingProps.getFirst().name() + "="
-                                    + val.toString().toLowerCase(Locale.ROOT)
+                        case 1 -> {
+                            Property<?> firstMatch = matchingProps.getFirst();
+                            yield firstMatch.values().stream().map(
+                                    val -> lastValidInput + firstMatch.name() + "=" + val.toString().toLowerCase(Locale.ROOT)
                             );
+                        }
                         default -> matchingProps.stream().map(p -> lastValidInput + p.name() + "=");
                     };
                 } else {
