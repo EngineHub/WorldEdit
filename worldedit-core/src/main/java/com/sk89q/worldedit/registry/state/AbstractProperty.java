@@ -26,7 +26,7 @@ import java.util.List;
  * @param <T> the value type
  * @deprecated Use the {@link Property} interface or a concrete implementation instead.
  */
-@Deprecated
+@Deprecated(forRemoval = true)
 public abstract class AbstractProperty<T> implements Property<T> {
 
     private final String name;
