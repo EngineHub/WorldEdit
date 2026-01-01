@@ -84,41 +84,6 @@
     ],
     "Record conversion of Properties, no one should be extending this": [
         {
-            "type": "com.sk89q.worldedit.registry.state.AbstractProperty",
-            "member": "Class com.sk89q.worldedit.registry.state.AbstractProperty",
-            "changes": [
-                "CLASS_REMOVED"
-            ]
-        },
-        {
-            "type": "com.sk89q.worldedit.registry.state.AbstractProperty",
-            "member": "Method com.sk89q.worldedit.registry.state.AbstractProperty.equals(java.lang.Object)",
-            "changes": [
-                "METHOD_REMOVED"
-            ]
-        },
-        {
-            "type": "com.sk89q.worldedit.registry.state.AbstractProperty",
-            "member": "Method com.sk89q.worldedit.registry.state.AbstractProperty.hashCode()",
-            "changes": [
-                "METHOD_REMOVED"
-            ]
-        },
-        {
-            "type": "com.sk89q.worldedit.registry.state.AbstractProperty",
-            "member": "Method com.sk89q.worldedit.registry.state.AbstractProperty.toString()",
-            "changes": [
-                "METHOD_REMOVED"
-            ]
-        },
-        {
-            "type": "com.sk89q.worldedit.registry.state.AbstractProperty",
-            "member": "Constructor com.sk89q.worldedit.registry.state.AbstractProperty(java.lang.String,java.util.List)",
-            "changes": [
-                "CONSTRUCTOR_REMOVED"
-            ]
-        },
-        {
             "type": "com.sk89q.worldedit.registry.state.BooleanProperty",
             "member": "Class com.sk89q.worldedit.registry.state.BooleanProperty",
             "changes": [
