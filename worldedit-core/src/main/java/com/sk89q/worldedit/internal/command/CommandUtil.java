@@ -20,10 +20,8 @@
 package com.sk89q.worldedit.internal.command;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.PlatformCommandManager;
-import com.sk89q.worldedit.internal.util.Substring;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
@@ -45,7 +43,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static com.google.common.base.Preconditions.checkState;
 import static java.util.stream.Collectors.toList;
 
 public class CommandUtil {
@@ -206,58 +203,51 @@ public class CommandUtil {
     }
 
     /**
-     * Fix {@code suggestions} to replace the last space-separated word in {@code arguments}.
+     * Fix suggestions to only replace the last space-separated argument from {@code arguments}.
+     *
+     * @param arguments the full command string, e.g. {@code "/command arg1 arg2"}
+     * @param suggestions the suggestions
+     * @return a list of fixed suggestions
      */
-    public static List<String> fixSuggestions(String arguments, List<Substring> suggestions) {
-        Substring lastArg = Iterables.getLast(
-            CommandArgParser.spaceSplit(arguments)
-        );
+    public static List<String> fixSuggestions(String arguments, List<FullStringSuggestion> suggestions) {
+        int minIndex = arguments.lastIndexOf(' ') + 1;
+        if (minIndex == 0) {
+            // No space, so no suggestions
+            return List.of();
+        }
         return suggestions.stream()
-            // Re-map suggestions to only operate on the last non-quoted word
-            .map(suggestion -> onlyOnLastQuotedWord(lastArg, suggestion))
-            .map(suggestion -> suggestLast(lastArg, suggestion))
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .collect(toList());
-    }
-
-    private static Substring onlyOnLastQuotedWord(Substring lastArg, Substring suggestion) {
-        if (suggestion.getSubstring().startsWith(lastArg.getSubstring())) {
-            // This is already fine.
-            return suggestion;
-        }
-        String substr = suggestion.getSubstring();
-        // Check if there is a space inside the substring, and suggest starting from there instead.
-        int sp = substr.trim().lastIndexOf(' ');
-        if (sp < 0) {
-            return suggestion;
-        }
-        return Substring.wrap(substr.substring(sp + 1), suggestion.getStart() + sp + 1, suggestion.getEnd());
-    }
-
-    /**
-     * Given the last word of a command, mutate the suggestion to replace the last word, if
-     * possible.
-     */
-    private static Optional<String> suggestLast(Substring last, Substring suggestion) {
-        if (suggestion.getStart() == last.getEnd() && !last.getSubstring().equals("\"")) {
-            // this suggestion is for the next argument.
-            if (last.getSubstring().isEmpty()) {
-                return Optional.of(suggestion.getSubstring());
-            }
-            return Optional.of(last.getSubstring() + " " + suggestion.getSubstring());
-        }
-        StringBuilder builder = new StringBuilder(last.getSubstring());
-        int start = suggestion.getStart() - last.getStart();
-        int end = suggestion.getEnd() - last.getStart();
-        if (start < 0) {
-            // Quoted suggestion, can't complete it here.
-            return Optional.empty();
-        }
-        checkState(end <= builder.length(),
-            "Suggestion ends too late, last=%s, suggestion=", last, suggestion);
-        builder.replace(start, end, suggestion.getSubstring());
-        return Optional.of(builder.toString());
+            .<String>mapMulti((fullStringSuggestion, downstream) -> {
+                if (fullStringSuggestion.replaceStart() < minIndex) {
+                    if (fullStringSuggestion.replaceEnd() <= minIndex) {
+                        // This suggestion is entirely before the last argument, so ignore it
+                        return;
+                    }
+                    // We might still take this suggestion if the text matches up to minIndex
+                    int fromIndex = fullStringSuggestion.replaceStart();
+                    int len = minIndex - fromIndex;
+                    if (!arguments.regionMatches(
+                        fromIndex, fullStringSuggestion.escapedText(), 0, len
+                    )) {
+                        // This suggestion changes the text before the last argument, so ignore it
+                        return;
+                    }
+                    // Adjust the suggestion so it's only for after minIndex
+                    fullStringSuggestion = new FullStringSuggestion(
+                        fullStringSuggestion.escapedText().substring(len),
+                        fullStringSuggestion.replaceStart() + len,
+                        fullStringSuggestion.replaceEnd()
+                    );
+                }
+                // Tweak the suggestion so it replaces the last argument entirely.
+                StringBuilder adjusted = new StringBuilder(arguments);
+                adjusted.replace(
+                    fullStringSuggestion.replaceStart(),
+                    fullStringSuggestion.replaceEnd(),
+                    fullStringSuggestion.escapedText()
+                );
+                downstream.accept(adjusted.substring(minIndex));
+            })
+            .toList();
     }
 
     /**
