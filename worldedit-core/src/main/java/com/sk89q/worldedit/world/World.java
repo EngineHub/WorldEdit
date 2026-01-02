@@ -324,7 +324,11 @@ public interface World extends Extent, Keyed {
      * errors and may trigger block change notifications.</p>
      *
      * @param chunks a list of chunk coordinates to fix
+     * @deprecated This method refers to the old fast mode system, which was replaced by fine-grained side effects.
+     *     Any post-edit tasks should be handled within the side effect system. To manually apply side effects,
+     *     use {@link #applySideEffects(BlockVector3, BlockState, SideEffectSet)}.
      */
+    @Deprecated
     void fixAfterFastMode(Iterable<BlockVector2> chunks);
 
     /**
@@ -342,7 +346,11 @@ public interface World extends Extent, Keyed {
      * Relight the given chunks if possible.
      *
      * @param chunks a list of chunk coordinates to fix
+     * @deprecated This was part of the old fast mode system, which was replaced by fine-grained side effects. Use
+     *     {@link #applySideEffects(BlockVector3, BlockState, SideEffectSet)} with the {@link SideEffect#LIGHTING} side
+     *     effect to manually relight blocks.
      */
+    @Deprecated
     void fixLighting(Iterable<BlockVector2> chunks);
 
     /**

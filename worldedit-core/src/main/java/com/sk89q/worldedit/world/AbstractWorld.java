@@ -91,6 +91,7 @@ public abstract class AbstractWorld implements World {
     public void checkLoadedChunk(BlockVector3 pt) {
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void fixAfterFastMode(Iterable<BlockVector2> chunks) {
     }
@@ -99,6 +100,7 @@ public abstract class AbstractWorld implements World {
     public void sendBiomeUpdates(Iterable<BlockVector2> chunks) {
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void fixLighting(Iterable<BlockVector2> chunks) {
     }
