@@ -125,4 +125,20 @@ class BukkitEntity implements Entity {
             return null;
         }
     }
+
+    @Override
+    public void executeAtEntity(Runnable runnable) {
+        org.bukkit.entity.Entity entity = entityRef.get();
+        if (entity != null) {
+            entity.getScheduler().run(WorldEditPlugin.getInstance(), task -> runnable.run(), null);
+        }
+    }
+
+    @Override
+    public void runAtEntityDelayed(Runnable runnable, long delay) {
+        org.bukkit.entity.Entity entity = entityRef.get();
+        if (entity != null) {
+            entity.getScheduler().runDelayed(WorldEditPlugin.getInstance(), task -> runnable.run(), null, delay);
+        }
+    }
 }

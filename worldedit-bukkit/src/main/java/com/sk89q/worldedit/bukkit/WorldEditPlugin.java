@@ -30,6 +30,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.adapter.AdapterLoadException;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplLoader;
+import com.sk89q.worldedit.bukkit.scheduler.BukkitSchedulerAdapters;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
@@ -40,6 +41,7 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.extension.platform.scheduler.SchedulerAdapter;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.internal.command.CommandUtil;
@@ -120,6 +122,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
     private final SimpleLifecycled<BukkitImplAdapter> adapter =
         SimpleLifecycled.invalid();
+    private final SchedulerAdapter scheduler = BukkitSchedulerAdapters.create(this);
     private BukkitServerInterface platform;
     private BukkitConfiguration config;
 
@@ -330,7 +333,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         if (config != null) {
             config.unload();
         }
-        this.getServer().getScheduler().cancelTasks(this);
+        scheduler.cancelTasks();
     }
 
     /**
@@ -524,6 +527,10 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
     BukkitImplAdapter getBukkitImplAdapter() {
         return adapter.value().orElse(null);
+    }
+
+    SchedulerAdapter getScheduler() {
+        return scheduler;
     }
 
     private class WorldInitListener implements Listener {
