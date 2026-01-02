@@ -43,6 +43,16 @@ public final class TreeGenerator implements RegionFunction {
 
     @Override
     public boolean apply(BlockVector3 position) throws WorldEditException {
-        return editSession.getWorld().generateTree(treeType, editSession, position);
+        boolean successful = false;
+
+        final BlockVector3 pos = position.add(0, 1, 0);
+        for (int i = 0; i < 10; i++) {
+            if (editSession.getWorld().generateTree(treeType, editSession, pos)) {
+                successful = true;
+                break;
+            }
+        }
+
+        return successful;
     }
 }
