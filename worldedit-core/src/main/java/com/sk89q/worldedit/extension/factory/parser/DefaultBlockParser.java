@@ -62,6 +62,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static org.enginehub.piston.converter.SuggestionHelper.byPrefix;
+
 /**
  * Parses block input strings.
  */
@@ -206,7 +208,14 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
     public Stream<String> getSuggestions(String input, ParserContext context) {
         final int idx = input.lastIndexOf('[');
         if (idx < 0) {
-            return SuggestionHelper.getNamespacedRegistrySuggestions(BlockType.REGISTRY, input);
+            Stream<String> additionalSuggestions = context.getActor() != null && context.getActor().isPlayer()
+                    ? Stream.of("pos1", "hand", "offhand")
+                    : Stream.of("pos1");
+
+            return Stream.concat(
+                    additionalSuggestions.filter(byPrefix(input)),
+                    SuggestionHelper.getNamespacedRegistrySuggestions(BlockType.REGISTRY, input)
+            );
         }
         String blockType = input.substring(0, idx);
         BlockType type = BlockTypes.get(blockType.toLowerCase(Locale.ROOT));
