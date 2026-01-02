@@ -62,7 +62,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static org.enginehub.piston.converter.SuggestionHelper.limitByPrefix;
+import static org.enginehub.piston.converter.SuggestionHelper.byPrefix;
 
 /**
  * Parses block input strings.
@@ -213,7 +213,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                     : Stream.of("pos1");
 
             return Stream.concat(
-                    limitByPrefix(additionalSuggestions, input).stream(),
+                    additionalSuggestions.filter(byPrefix(input)),
                     SuggestionHelper.getNamespacedRegistrySuggestions(BlockType.REGISTRY, input)
             );
         }
