@@ -23,7 +23,6 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.argument.HeightConverter;
@@ -35,14 +34,13 @@ import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.command.util.PrintCommandHelp;
 import com.sk89q.worldedit.command.util.WorldEditAsyncCommandBuilder;
 import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.entity.metadata.EntitySchedulerFacet;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.function.EntityFunction;
 import com.sk89q.worldedit.function.mask.BlockTypeMask;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
-import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
-import com.sk89q.worldedit.function.visitor.EntityVisitor;
 import com.sk89q.worldedit.internal.annotation.VertHeight;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
@@ -66,9 +64,10 @@ import org.enginehub.piston.annotation.param.Switch;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.IntConsumer;
 import java.util.function.Supplier;
 
 import static com.sk89q.worldedit.command.util.Logging.LogMode.PLACEMENT;
@@ -451,15 +450,12 @@ public class UtilityCommands {
         flags.or(CreatureButcher.Flags.ARMOR_STAND, killArmorStands, "worldedit.butcher.armorstands");
         flags.or(CreatureButcher.Flags.WATER, killWater, "worldedit.butcher.water");
 
-        int killed = killMatchingEntities(radius, actor, flags::createFunction);
+        Integer finalRadius = radius;
 
-        actor.printInfo(TranslatableComponent.of(
-                "worldedit.butcher.killed",
-                TextComponent.of(killed),
-                TextComponent.of(radius)
-        ));
+        killMatchingEntities(radius, actor, flags::createFunction, total ->
+                actor.printInfo(TranslatableComponent.of("worldedit.butcher.killed", TextComponent.of(total), TextComponent.of(finalRadius))));
 
-        return killed;
+        return 0;
     }
 
     @Command(
@@ -479,36 +475,58 @@ public class UtilityCommands {
             return 0;
         }
 
-        int removed = killMatchingEntities(radius, actor, remover::createFunction);
-        actor.printInfo(TranslatableComponent.of("worldedit.remove.removed", TextComponent.of(removed)));
-        return removed;
+        killMatchingEntities(radius, actor, remover::createFunction, total ->
+                actor.printInfo(TranslatableComponent.of("worldedit.remove.removed", TextComponent.of(total))));
+        return 0;
     }
 
-    private int killMatchingEntities(Integer radius, Actor actor, Supplier<EntityFunction> func) throws IncompleteRegionException,
-            MaxChangedBlocksException {
-        List<EntityVisitor> visitors = new ArrayList<>();
-
+    private int killMatchingEntities(Integer radius, Actor actor, Supplier<EntityFunction> function, IntConsumer onDone) throws IncompleteRegionException {
         LocalSession session = we.getSessionManager().get(actor);
         BlockVector3 center = session.getPlacementPosition(actor);
         EditSession editSession = session.createEditSession(actor);
-        List<? extends Entity> entities;
+        final List<? extends Entity> entities;
         if (radius >= 0) {
             CylinderRegion region = CylinderRegion.createRadius(editSession, center, radius);
             entities = editSession.getEntities(region);
         } else {
             entities = editSession.getEntities();
         }
-        visitors.add(new EntityVisitor(entities.iterator(), func.get()));
 
-        int killed = 0;
-        for (EntityVisitor visitor : visitors) {
-            Operations.completeLegacy(visitor);
-            killed += visitor.getAffected();
+        final EntityFunction predicate = function.get();
+
+        final AtomicInteger remaining = new AtomicInteger(entities.size());
+        final AtomicInteger killed = new AtomicInteger(0);
+
+        for (Entity entity : entities) {
+            final EntitySchedulerFacet facet = entity.getFacet(EntitySchedulerFacet.class);
+
+            Runnable work = () -> {
+                boolean affected = false;
+                try {
+                    affected = predicate.apply(entity);
+                } catch (Throwable ignored) {
+                    // This instance is not relevant
+                }
+
+                if (affected) {
+                    killed.incrementAndGet();
+                }
+
+                if (remaining.decrementAndGet() == 0) {
+                    onDone.accept(killed.get());
+                }
+            };
+
+            if (facet != null) {
+                facet.runOnEntityThread(work);
+            } else {
+                work.run();
+            }
         }
 
         session.remember(editSession);
         editSession.close();
-        return killed;
+        return 0;
     }
 
     private DecimalFormat formatForLocale(Locale locale) {
