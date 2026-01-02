@@ -130,7 +130,7 @@ public class DinnerPermsResolver implements PermissionsResolver {
             }
             groupNames.add(perm.substring(GROUP_PREFIX.length()));
         }
-        return groupNames.toArray(new String[groupNames.size()]);
+        return groupNames.toArray(new String[0]);
     }
 
     public Permissible getPermissible(OfflinePlayer offline) {
