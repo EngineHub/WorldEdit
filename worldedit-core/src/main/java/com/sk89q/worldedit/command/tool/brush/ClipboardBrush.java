@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.command.tool.brush;
 
+import com.google.errorprone.annotations.InlineMe;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
@@ -41,9 +42,10 @@ public class ClipboardBrush implements Brush {
     private final Mask sourceMask;
 
     public ClipboardBrush(ClipboardHolder holder, boolean ignoreAirBlocks, boolean usingOrigin) {
-        this(holder, ignoreAirBlocks, usingOrigin, false, false, null);
+        this(holder, ignoreAirBlocks, false, usingOrigin, false, false, null);
     }
 
+    @InlineMe(replacement = "this(holder, ignoreAirBlocks, false, usingOrigin, pasteEntities, pasteBiomes, sourceMask)")
     @Deprecated
     public ClipboardBrush(ClipboardHolder holder, boolean ignoreAirBlocks, boolean usingOrigin, boolean pasteEntities,
                           boolean pasteBiomes, Mask sourceMask) {

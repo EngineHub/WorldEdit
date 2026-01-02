@@ -49,14 +49,12 @@ public @interface Command {
     String usage() default "";
 
     /**
-     * @return A short description for the command.
+     * {@return A short description for the command}
      */
     String desc();
 
     /**
-     * The minimum number of arguments. This should be 0 or above.
-     *
-     * @return the minimum number of arguments
+     * {@return the minimum number of arguments} This should be 0 or above.
      */
     int min() default 0;
 
@@ -80,7 +78,7 @@ public @interface Command {
     String flags() default "";
 
     /**
-     * @return A long description for the command.
+     * {@return A long description for the command}
      */
     String help() default "";
 

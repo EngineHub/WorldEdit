@@ -176,6 +176,8 @@ public abstract class LocalConfiguration {
      * @return a working directory
      * @deprecated Use {@link LocalConfiguration#getWorkingDirectoryPath()}
      */
+    // Suppress InlineMeSuggester: This method cannot be made final due to backwards compatibility
+    @SuppressWarnings("InlineMeSuggester")
     @Deprecated
     public File getWorkingDirectory() {
         return getWorkingDirectoryPath().toFile();
@@ -217,7 +219,7 @@ public abstract class LocalConfiguration {
         String item = legacy;
         try {
             String[] splitter = item.split(":", 2);
-            int id = 0;
+            int id;
             byte data = 0;
             if (splitter.length == 1) {
                 id = Integer.parseInt(item);
@@ -227,6 +229,7 @@ public abstract class LocalConfiguration {
             }
             item = LegacyMapper.getInstance().getItemFromLegacy(id, data).id();
         } catch (Throwable ignored) {
+            // If we can't parse it, just return it as-is
         }
 
         return item;

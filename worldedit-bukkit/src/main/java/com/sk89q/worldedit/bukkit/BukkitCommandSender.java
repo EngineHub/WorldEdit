@@ -43,14 +43,12 @@ public class BukkitCommandSender extends AbstractNonPlayerActor {
     private static final UUID DEFAULT_ID = UUID.fromString("a233eb4b-4cab-42cd-9fd9-7e7b9a3f74be");
 
     private final CommandSender sender;
-    private final WorldEditPlugin plugin;
 
     public BukkitCommandSender(WorldEditPlugin plugin, CommandSender sender) {
         checkNotNull(plugin);
         checkNotNull(sender);
         checkArgument(!(sender instanceof Player), "Cannot wrap a player");
 
-        this.plugin = plugin;
         this.sender = sender;
     }
 
@@ -67,7 +65,7 @@ public class BukkitCommandSender extends AbstractNonPlayerActor {
     @Override
     @Deprecated
     public void printRaw(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             sender.sendMessage(part);
         }
     }
@@ -75,7 +73,7 @@ public class BukkitCommandSender extends AbstractNonPlayerActor {
     @Override
     @Deprecated
     public void print(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             sender.sendMessage("§d" + part);
         }
     }
@@ -83,7 +81,7 @@ public class BukkitCommandSender extends AbstractNonPlayerActor {
     @Override
     @Deprecated
     public void printDebug(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             sender.sendMessage("§7" + part);
         }
     }
@@ -91,7 +89,7 @@ public class BukkitCommandSender extends AbstractNonPlayerActor {
     @Override
     @Deprecated
     public void printError(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             sender.sendMessage("§c" + part);
         }
     }

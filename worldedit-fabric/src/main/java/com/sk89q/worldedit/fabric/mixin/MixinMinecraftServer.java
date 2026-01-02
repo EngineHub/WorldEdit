@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.fabric.mixin;
 
+import com.google.errorprone.annotations.Keep;
 import com.sk89q.worldedit.extension.platform.Watchdog;
 import com.sk89q.worldedit.fabric.internal.ExtendedMinecraftServer;
 import net.minecraft.server.MinecraftServer;
@@ -35,6 +36,7 @@ import java.nio.file.Path;
 @Mixin(MinecraftServer.class)
 public abstract class MixinMinecraftServer implements Watchdog, ExtendedMinecraftServer {
 
+    @Keep
     @Shadow
     private long nextTickTimeNanos;
     @Final

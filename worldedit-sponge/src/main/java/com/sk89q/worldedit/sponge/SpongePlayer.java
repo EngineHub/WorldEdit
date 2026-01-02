@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.sponge;
 
 import com.sk89q.util.StringUtil;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
@@ -133,13 +134,16 @@ public class SpongePlayer extends AbstractPlayerActor {
         CUIChannelHandler.channel().play().sendTo(
             player,
             buffer -> buffer.writeBytes(finalData.getBytes(StandardCharsets.UTF_8))
-        );
+        ).exceptionally(t -> {
+            WorldEdit.logger.warn("Failed to send CUI packet to player", t);
+            return null;
+        });
     }
 
     @Override
     @Deprecated
     public void printRaw(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             this.player.sendMessage(LegacyComponentSerializer.legacySection().deserialize(part));
         }
     }
@@ -168,7 +172,7 @@ public class SpongePlayer extends AbstractPlayerActor {
     }
 
     private void sendColorized(String msg, TextColor formatting) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             this.player.sendMessage(
                 LegacyComponentSerializer.legacySection().deserialize(part).color(formatting)
             );

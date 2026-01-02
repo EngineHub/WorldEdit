@@ -32,11 +32,11 @@ public class SpongePermissionsProvider {
     }
 
     public void registerPermission(String permission) {
-        Sponge.game().serviceProvider().registration(PermissionService.class).ifPresent((permissionService -> {
+        Sponge.game().serviceProvider().registration(PermissionService.class).ifPresent(permissionService -> {
             PermissionDescription.Builder permissionBuilder = permissionService.service()
                 .newDescriptionBuilder(SpongeWorldEdit.inst().getPluginContainer());
             permissionBuilder.id(permission).register();
-        }));
+        });
     }
 
     public String[] getGroups(ServerPlayer player) {

@@ -58,7 +58,8 @@ public class ReparametrisingInterpolation implements Interpolation {
         baseInterpolation.setNodes(nodes);
         cache.clear();
         cache.put(0.0, 0.0);
-        cache.put(totalArcLength = baseInterpolation.arcLength(0.0, 1.0), 1.0);
+        totalArcLength = baseInterpolation.arcLength(0.0, 1.0);
+        cache.put(totalArcLength, 1.0);
     }
 
     public Interpolation getBaseInterpolation() {

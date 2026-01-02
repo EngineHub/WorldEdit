@@ -21,6 +21,7 @@ package com.sk89q.worldedit.command.util;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.errorprone.annotations.InlineMe;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
@@ -38,6 +39,10 @@ public class FutureProgressListener implements Runnable {
 
     private final MessageTimerTask task;
 
+    @InlineMe(
+        replacement = "this(sender, TextComponent.of(message))",
+        imports = "com.sk89q.worldedit.util.formatting.text.TextComponent"
+    )
     @Deprecated
     public FutureProgressListener(Actor sender, String message) {
         this(sender, TextComponent.of(message));
@@ -60,6 +65,13 @@ public class FutureProgressListener implements Runnable {
         task.cancel();
     }
 
+    @InlineMe(
+        replacement = "FutureProgressListener.addProgressListener(future, sender, TextComponent.of(message))",
+        imports = {
+            "com.sk89q.worldedit.command.util.FutureProgressListener",
+            "com.sk89q.worldedit.util.formatting.text.TextComponent"
+        }
+    )
     @Deprecated
     public static void addProgressListener(ListenableFuture<?> future, Actor sender, String message) {
         addProgressListener(future, sender, TextComponent.of(message));

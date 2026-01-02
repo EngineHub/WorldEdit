@@ -20,6 +20,7 @@
 package com.sk89q.util.yaml;
 
 import com.sk89q.util.StringUtil;
+import com.sk89q.worldedit.WorldEdit;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -209,7 +210,8 @@ public class YAMLProcessor extends YAMLNode {
                 }
             }
             return true;
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            WorldEdit.logger.warn("Could not save YAML configuration to " + file.getAbsolutePath(), e);
         }
 
         return false;

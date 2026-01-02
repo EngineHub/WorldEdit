@@ -26,6 +26,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.SetMultimap;
 import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.errorprone.annotations.InlineMe;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.BlockInteractEvent;
@@ -438,8 +439,9 @@ public final class WorldEdit {
      * @return a working directory
      * @deprecated Use {@link WorldEdit#getWorkingDirectoryPath(String)} instead
      */
+    @InlineMe(replacement = "this.getWorkingDirectoryPath(path).toFile()")
     @Deprecated
-    public File getWorkingDirectoryFile(String path) {
+    public final File getWorkingDirectoryFile(String path) {
         return getWorkingDirectoryPath(path).toFile();
     }
 
@@ -544,33 +546,20 @@ public final class WorldEdit {
         if (byName != null) {
             return byName;
         }
-        switch (dirStr) {
-            case "m":
-            case "me":
-            case "f":
-            case "forward":
-                return getDirectionRelative(player, 0);
-
-            case "b":
-            case "back":
+        return switch (dirStr) {
+            case "m", "me", "f", "forward" -> getDirectionRelative(player, 0);
+            case "b", "back" -> {
                 Direction dir = getDirectionRelative(player, 180);
                 if (dir.isUpright()) {
                     // If this is an upright direction, flip it.
                     dir = dir == Direction.UP ? Direction.DOWN : Direction.UP;
                 }
-                return dir;
-
-            case "l":
-            case "left":
-                return getDirectionRelative(player, -90);
-
-            case "r":
-            case "right":
-                return getDirectionRelative(player, 90);
-
-            default:
-                throw new UnknownDirectionException(dirStr);
-        }
+                yield dir;
+            }
+            case "l", "left" -> getDirectionRelative(player, -90);
+            case "r", "right" -> getDirectionRelative(player, 90);
+            default -> throw new UnknownDirectionException(dirStr);
+        };
     }
 
     private Direction getDirectionRelative(Player player, int yawOffset) throws UnknownDirectionException {
@@ -602,7 +591,7 @@ public final class WorldEdit {
             int i = 0;
 
             for (Map.Entry<BlockType, Integer> blockTypeIntegerEntry : missingBlocks.entrySet()) {
-                str.append((blockTypeIntegerEntry.getKey()).getRichName());
+                str.append(blockTypeIntegerEntry.getKey().getRichName());
 
                 str.append(" [Amt: ")
                     .append(String.valueOf(blockTypeIntegerEntry.getValue()))
@@ -650,6 +639,7 @@ public final class WorldEdit {
      * @param clicked the clicked block
      * @return false if you want the action to go through
      */
+    @InlineMe(replacement = "this.handleBlockRightClick(player, clicked, null)")
     @Deprecated
     public boolean handleBlockRightClick(Player player, Location clicked) {
         return handleBlockRightClick(player, clicked, null);
@@ -676,6 +666,7 @@ public final class WorldEdit {
      * @param clicked the clicked block
      * @return false if you want the action to go through
      */
+    @InlineMe(replacement = "this.handleBlockLeftClick(player, clicked, null)")
     @Deprecated
     public boolean handleBlockLeftClick(Player player, Location clicked) {
         return handleBlockLeftClick(player, clicked, null);
@@ -843,8 +834,9 @@ public final class WorldEdit {
         }
 
         WorldEditManifest manifest = WorldEditManifest.load();
+        version = manifest.getWorldEditVersion();
 
-        return version = manifest.getWorldEditVersion();
+        return version;
     }
 
 }

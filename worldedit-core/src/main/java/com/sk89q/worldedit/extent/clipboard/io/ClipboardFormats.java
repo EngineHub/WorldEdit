@@ -117,7 +117,9 @@ public class ClipboardFormats {
                 if (format.isFormat(stream)) {
                     return format;
                 }
-            } catch (IOException ignored) { }
+            } catch (IOException ignored) {
+                // It's not the right format if we can't read it
+            }
         }
 
         return null;

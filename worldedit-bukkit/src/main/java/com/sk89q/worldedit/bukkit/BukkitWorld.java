@@ -213,6 +213,7 @@ public class BukkitWorld extends AbstractWorld {
             try {
                 return adapter.clearContainerBlockContents(getWorld(), pt);
             } catch (Exception ignored) {
+                // It's fine if we can't, we'll try the generic way below.
             }
         }
 
@@ -227,8 +228,8 @@ public class BukkitWorld extends AbstractWorld {
         }
 
         Inventory inven = inventoryHolder.getInventory();
-        if (inventoryHolder instanceof Chest) {
-            inven = ((Chest) inventoryHolder).getBlockInventory();
+        if (inventoryHolder instanceof Chest chest) {
+            inven = chest.getBlockInventory();
         }
         inven.clear();
         return true;
@@ -288,6 +289,7 @@ public class BukkitWorld extends AbstractWorld {
                 try {
                     editSession.setBlock(blockVector, BukkitAdapter.adapt(block.getBlockData()));
                 } catch (MaxChangedBlocksException ignored) {
+                    // It's fine, we just stop generating.
                 }
                 return false;
             }
@@ -312,16 +314,15 @@ public class BukkitWorld extends AbstractWorld {
         final World ref = worldRef.get();
         if (ref == null) {
             return false;
-        } else if (other == null) {
-            return false;
-        } else if ((other instanceof BukkitWorld)) {
-            World otherWorld = ((BukkitWorld) other).worldRef.get();
-            return ref.equals(otherWorld);
-        } else if (other instanceof com.sk89q.worldedit.world.World) {
-            return ((com.sk89q.worldedit.world.World) other).getName().equals(ref.getName());
-        } else {
-            return false;
         }
+        return switch (other) {
+            case BukkitWorld bukkitWorld -> {
+                World otherWorld = bukkitWorld.worldRef.get();
+                yield ref.equals(otherWorld);
+            }
+            case com.sk89q.worldedit.world.World world -> world.getName().equals(ref.getName());
+            case null, default -> false;
+        };
     }
 
     @Override

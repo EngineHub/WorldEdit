@@ -238,18 +238,14 @@ public class MultiStageReorder extends AbstractBufferingExtent implements Reorde
         if (srcPriority != PlacementPriority.FIRST) {
             BaseBlock replacement = (block.getBlockType().getMaterial().isAir() ? block : BlockTypes.AIR.getDefaultState()).toBaseBlock();
 
-            switch (srcPriority) {
-                case FINAL:
-                    stages.get(PlacementPriority.CLEAR_FINAL).put(location, replacement);
-                    break;
-                case LATE:
-                    stages.get(PlacementPriority.CLEAR_LATE).put(location, replacement);
-                    break;
-                case LAST:
-                    stages.get(PlacementPriority.CLEAR_LAST).put(location, replacement);
-                    break;
-                default:
-                    break;
+            BlockMap<BaseBlock> stage = switch (srcPriority) {
+                case FINAL -> stages.get(PlacementPriority.CLEAR_FINAL);
+                case LATE -> stages.get(PlacementPriority.CLEAR_LATE);
+                case LAST -> stages.get(PlacementPriority.CLEAR_LAST);
+                default -> null;
+            };
+            if (stage != null) {
+                stage.put(location, replacement);
             }
 
             if (block.getBlockType().getMaterial().isAir()) {

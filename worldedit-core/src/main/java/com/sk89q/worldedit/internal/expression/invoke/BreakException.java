@@ -23,6 +23,8 @@ package com.sk89q.worldedit.internal.expression.invoke;
  * Thrown when a break or continue is encountered.
  * Loop constructs catch this exception.
  */
+// Suppress StaticAssignmentOfThrowable: Intentionally uses static instances for performance
+@SuppressWarnings("StaticAssignmentOfThrowable")
 class BreakException extends RuntimeException {
 
     public static final BreakException BREAK = new BreakException(false);

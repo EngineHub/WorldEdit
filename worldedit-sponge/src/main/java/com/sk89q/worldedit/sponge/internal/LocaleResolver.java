@@ -27,8 +27,8 @@ import java.util.Locale;
 
 public class LocaleResolver {
     public static Locale resolveLocale(Audience audience) {
-        if (audience instanceof LocaleSource) {
-            return ((LocaleSource) audience).locale();
+        if (audience instanceof LocaleSource localeSource) {
+            return localeSource.locale();
         }
         return WorldEdit.getInstance().getConfiguration().defaultLocale;
     }

@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.math;
 
 import com.google.common.collect.ComparisonChain;
+import com.google.errorprone.annotations.Immutable;
 import com.sk89q.worldedit.math.transform.AffineTransform;
 
 import java.util.Comparator;
@@ -29,6 +30,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 /**
  * An immutable 3-dimensional vector.
  */
+@Immutable
 public record Vector3(double x, double y, double z) {
 
     public static final Vector3 ZERO = new Vector3(0, 0, 0);
@@ -42,18 +44,18 @@ public record Vector3(double x, double y, double z) {
         // in MC y is rarely 0/1 on selections
         int yTrunc = (int) y;
         switch (yTrunc) {
-            case 0:
+            case 0 -> {
                 if (x == 0 && y == 0 && z == 0) {
                     return ZERO;
                 }
-                break;
-            case 1:
+            }
+            case 1 -> {
                 if (x == 1 && y == 1 && z == 1) {
                     return ONE;
                 }
-                break;
-            default:
-                break;
+            }
+            default -> {
+            }
         }
         return new Vector3(x, y, z);
     }

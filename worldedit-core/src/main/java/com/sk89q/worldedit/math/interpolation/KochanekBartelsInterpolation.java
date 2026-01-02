@@ -210,19 +210,15 @@ public class KochanekBartelsInterpolation implements Interpolation {
      * Assumes a < b.
      */
     private double arcLengthRecursive(int indexLeft, double remainderLeft, int indexRight, double remainderRight) {
-        switch (indexRight - indexLeft) {
-            case 0:
-                return arcLengthRecursive(indexLeft, remainderLeft, remainderRight);
-
-            case 1:
+        return switch (indexRight - indexLeft) {
+            case 0 -> arcLengthRecursive(indexLeft, remainderLeft, remainderRight);
+            case 1 ->
                 // This case is merely a speed-up for a very common case
-                return arcLengthRecursive(indexLeft, remainderLeft, 1.0)
+                arcLengthRecursive(indexLeft, remainderLeft, 1.0)
                     + arcLengthRecursive(indexRight, 0.0, remainderRight);
-
-            default:
-                return arcLengthRecursive(indexLeft, remainderLeft, indexRight - 1, 1.0)
-                    + arcLengthRecursive(indexRight, 0.0, remainderRight);
-        }
+            default -> arcLengthRecursive(indexLeft, remainderLeft, indexRight - 1, 1.0)
+                + arcLengthRecursive(indexRight, 0.0, remainderRight);
+        };
     }
 
     private double arcLengthRecursive(int index, double remainderLeft, double remainderRight) {

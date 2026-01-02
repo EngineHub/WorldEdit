@@ -74,91 +74,67 @@ public class NbtAdapter {
     }
 
     private static LinTag<?> adaptUnknownToWorldEdit(Object object) {
-        if (object instanceof DataView) {
-            return adaptToWorldEdit((DataView) object);
-        }
-        if (object instanceof Boolean) {
-            return LinByteTag.of((byte) ((Boolean) object ? 1 : 0));
-        }
-        if (object instanceof Byte) {
-            return LinByteTag.of((Byte) object);
-        }
-        if (object instanceof Short) {
-            return LinShortTag.of(((Short) object));
-        }
-        if (object instanceof Integer) {
-            return LinIntTag.of(((Integer) object));
-        }
-        if (object instanceof Long) {
-            return LinLongTag.of(((Long) object));
-        }
-        if (object instanceof Float) {
-            return LinFloatTag.of(((Float) object));
-        }
-        if (object instanceof Double) {
-            return LinDoubleTag.of(((Double) object));
-        }
-        if (object instanceof String) {
-            return LinStringTag.of((String) object);
-        }
-        if (object instanceof byte[]) {
-            return LinByteArrayTag.of(((byte[]) object));
-        }
-        if (object instanceof Byte[] array) {
-            byte[] copy = new byte[array.length];
-            for (int i = 0; i < copy.length; i++) {
-                copy[i] = array[i];
+        return switch (object) {
+            case DataView dataView -> adaptToWorldEdit(dataView);
+            case Boolean b -> LinByteTag.of((byte) (b ? 1 : 0));
+            case Byte b -> LinByteTag.of(b);
+            case Short aShort -> LinShortTag.of(aShort);
+            case Integer integer -> LinIntTag.of(integer);
+            case Long l -> LinLongTag.of(l);
+            case Float v -> LinFloatTag.of(v);
+            case Double v -> LinDoubleTag.of(v);
+            case String s -> LinStringTag.of(s);
+            case byte[] bytes -> LinByteArrayTag.of(bytes);
+            case Byte[] array -> {
+                byte[] copy = new byte[array.length];
+                for (int i = 0; i < copy.length; i++) {
+                    copy[i] = array[i];
+                }
+                yield LinByteArrayTag.of(copy);
             }
-            return LinByteArrayTag.of(copy);
-        }
-        if (object instanceof int[]) {
-            return LinIntArrayTag.of(((int[]) object));
-        }
-        if (object instanceof Integer[] array) {
-            int[] copy = new int[array.length];
-            for (int i = 0; i < copy.length; i++) {
-                copy[i] = array[i];
+            case int[] ints -> LinIntArrayTag.of(ints);
+            case Integer[] array -> {
+                int[] copy = new int[array.length];
+                for (int i = 0; i < copy.length; i++) {
+                    copy[i] = array[i];
+                }
+                yield LinIntArrayTag.of(copy);
             }
-            return LinIntArrayTag.of(copy);
-        }
-        if (object instanceof long[]) {
-            return LinLongArrayTag.of(((long[]) object));
-        }
-        if (object instanceof Long[] array) {
-            long[] copy = new long[array.length];
-            for (int i = 0; i < copy.length; i++) {
-                copy[i] = array[i];
+            case long[] longs -> LinLongArrayTag.of(longs);
+            case Long[] array -> {
+                long[] copy = new long[array.length];
+                for (int i = 0; i < copy.length; i++) {
+                    copy[i] = array[i];
+                }
+                yield LinLongArrayTag.of(copy);
             }
-            return LinLongArrayTag.of(copy);
-        }
-        if (object instanceof List<?> objects) {
-            if (objects.isEmpty()) {
-                return LinListTag.empty(LinTagType.endTag());
+            case List<?> objects -> {
+                if (objects.isEmpty()) {
+                    yield LinListTag.empty(LinTagType.endTag());
+                }
+                LinTag<?> first = adaptUnknownToWorldEdit(objects.get(0));
+                @SuppressWarnings("unchecked")
+                LinListTag.Builder<LinTag<?>> builder = LinListTag.builder((LinTagType<LinTag<?>>) first.type());
+                builder.add(first);
+                for (int i = 1; i < objects.size(); i++) {
+                    Object value = objects.get(i);
+                    builder.add(adaptUnknownToWorldEdit(value));
+                }
+                yield builder.build();
             }
-            LinTag<?> first = adaptUnknownToWorldEdit(objects.get(0));
-            @SuppressWarnings("unchecked")
-            LinListTag.Builder<LinTag<?>> builder = LinListTag.builder((LinTagType<LinTag<?>>) first.type());
-            builder.add(first);
-            for (int i = 1; i < objects.size(); i++) {
-                Object value = objects.get(i);
-                builder.add(adaptUnknownToWorldEdit(value));
+            case Map<?, ?> map -> {
+                LinCompoundTag.Builder builder = LinCompoundTag.builder();
+                for (Map.Entry<?, ?> entry : map.entrySet()) {
+                    String key = entry.getKey() instanceof DataQuery
+                        ? ((DataQuery) entry.getKey()).asString(BREAKING_SEPARATOR)
+                        : entry.getKey().toString();
+                    builder.put(key, adaptUnknownToWorldEdit(entry.getValue()));
+                }
+                yield builder.build();
             }
-            return builder.build();
-        }
-        if (object instanceof Map) {
-            LinCompoundTag.Builder builder = LinCompoundTag.builder();
-            for (Map.Entry<?, ?> entry : ((Map<?, ?>) object).entrySet()) {
-                String key = entry.getKey() instanceof DataQuery
-                    ? ((DataQuery) entry.getKey()).asString(BREAKING_SEPARATOR)
-                    : entry.getKey().toString();
-                builder.put(key, adaptUnknownToWorldEdit(entry.getValue()));
-            }
-            return builder.build();
-        }
-        if (object instanceof DataSerializable) {
-            return adaptToWorldEdit(((DataSerializable) object).toContainer());
-        }
-        throw new UnsupportedOperationException("Unable to translate into NBT: " + object.getClass());
+            case DataSerializable dataSerializable -> adaptToWorldEdit(dataSerializable.toContainer());
+            default -> throw new UnsupportedOperationException("Unable to translate into NBT: " + object.getClass());
+        };
     }
 
     public static DataContainer adaptFromWorldEdit(LinCompoundTag tag) {

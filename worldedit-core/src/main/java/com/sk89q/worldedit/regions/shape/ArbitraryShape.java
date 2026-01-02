@@ -26,6 +26,8 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.block.BaseBlock;
 
+import java.util.Objects;
+
 /**
  * Generates solid and hollow shapes according to materials returned by the
  * {@link #getMaterial} method.
@@ -160,14 +162,11 @@ public abstract class ArbitraryShape {
 
     private Object getMaterialCached(int x, int y, int z, Pattern pattern) {
         final int index = (y - cacheOffsetY) + (z - cacheOffsetZ) * cacheSizeY + (x - cacheOffsetX) * cacheSizeY * cacheSizeZ;
-        final Object cacheEntry = cache[index];
+        Object cacheEntry = cache[index];
         if (cacheEntry == null) {
             final BaseBlock material = getMaterial(x, y, z, pattern.applyBlock(BlockVector3.at(x, y, z)));
-            if (material == null) {
-                return cache[index] = OUTSIDE;
-            } else {
-                return cache[index] = material;
-            }
+            cacheEntry = Objects.requireNonNullElse(material, OUTSIDE);
+            cache[index] = cacheEntry;
         }
         return cacheEntry;
     }

@@ -86,7 +86,7 @@ public abstract class EventHandler implements Comparable<EventHandler> {
 
     @Override
     public int compareTo(EventHandler o) {
-        return getPriority().ordinal() - o.getPriority().ordinal();
+        return getPriority().compareTo(o.getPriority());
     }
 
     @Override

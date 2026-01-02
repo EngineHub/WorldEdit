@@ -470,9 +470,12 @@ public class RegionCommands {
     @Command(
         name = "/deform",
         desc = "Deforms a selected region with an expression",
-        descFooter = "The expression is executed for each block and is expected\n"
-            + "to modify the variables x, y and z to point to a new block\n"
-            + "to fetch. For details, see https://ehub.to/we/expr"
+        descFooter =
+            """
+            The expression is executed for each block and is expected
+            to modify the variables x, y and z to point to a new block
+            to fetch. For details, see https://ehub.to/we/expr
+            """
     )
     @CommandPermissions("worldedit.region.deform")
     @Logging(ALL)
@@ -521,8 +524,8 @@ public class RegionCommands {
 
         try {
             final int affected = editSession.deformRegion(region, zero, unit, String.join(" ", expression), session.getTimeout());
-            if (actor instanceof Player) {
-                ((Player) actor).findFreePosition();
+            if (actor instanceof Player player) {
+                player.findFreePosition();
             }
             actor.printInfo(TranslatableComponent.of("worldedit.deform.deformed", TextComponent.of(affected)));
             return affected;

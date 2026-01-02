@@ -91,7 +91,7 @@ public class TypeOrStateApplyingPatternParser extends InputParser<Pattern> {
             if (!parts[1].endsWith("]")) {
                 throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.missing-rbracket"));
             }
-            final String[] states = parts[1].substring(0, parts[1].length() - 1).split(",");
+            final String[] states = parts[1].substring(0, parts[1].length() - 1).split(",", 0);
             Map<String, String> statesToSet = new HashMap<>();
             for (String state : states) {
                 if (state.isEmpty()) {

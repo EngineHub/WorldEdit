@@ -62,18 +62,12 @@ public final class MathUtils {
             if (dInt < 0) {
                 dInt += 360;
             }
-            switch (dInt) {
-                case 0:
-                    return 1.0;
-                case 90:
-                    return 0.0;
-                case 180:
-                    return -1.0;
-                case 270:
-                    return 0.0;
-                default:
-                    break;
-            }
+            return switch (dInt) {
+                case 0 -> 1.0;
+                case 90, 270 -> 0.0;
+                case 180 -> -1.0;
+                default -> throw new AssertionError("dInt should be one of 0, 90, 180, 270; got " + dInt);
+            };
         }
         return Math.cos(Math.toRadians(degrees));
     }
@@ -93,18 +87,12 @@ public final class MathUtils {
             if (dInt < 0) {
                 dInt += 360;
             }
-            switch (dInt) {
-                case 0:
-                    return 0.0;
-                case 90:
-                    return 1.0;
-                case 180:
-                    return 0.0;
-                case 270:
-                    return -1.0;
-                default:
-                    break;
-            }
+            return switch (dInt) {
+                case 0, 180 -> 0.0;
+                case 90 -> 1.0;
+                case 270 -> -1.0;
+                default -> throw new AssertionError("dInt should be one of 0, 90, 180, 270; got " + dInt);
+            };
         }
         return Math.sin(Math.toRadians(degrees));
     }

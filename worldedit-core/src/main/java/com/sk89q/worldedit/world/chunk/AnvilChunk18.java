@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.world.chunk;
 
+import com.google.errorprone.annotations.InlineMe;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
@@ -55,6 +56,7 @@ public class AnvilChunk18 implements Chunk {
      * @throws DataException on a data error
      * @deprecated Use {@link #AnvilChunk18(LinCompoundTag)}
      */
+    @InlineMe(replacement = "this(tag.toLinTag())")
     @Deprecated
     public AnvilChunk18(CompoundTag tag) throws DataException {
         this(tag.toLinTag());

@@ -51,10 +51,10 @@ public final class ActorCallbackPaste {
 
         AsyncCommandBuilder.wrap(task, sender)
                 .registerWithSupervisor(supervisor, "Submitting content to a pastebin service.")
-                .sendMessageAfterDelay("(Please wait... sending output to pastebin...)")
+                .setDelayMessage(TranslatableComponent.of("worldedit.pastebin.uploading"))
                 .onSuccess((String) null, url -> sender.print(String.format(successMessage, url)))
                 .onFailure("Failed to submit paste", null)
-                .buildAndExec(Pasters.getExecutor());
+                .buildAndExecNoReturnValue(Pasters.getExecutor());
     }
 
     /**
@@ -74,7 +74,7 @@ public final class ActorCallbackPaste {
                 .setDelayMessage(TranslatableComponent.of("worldedit.pastebin.uploading"))
                 .onSuccess((String) null, url -> sender.printInfo(successMessage.args(TextComponent.of(url.toString())).build()))
                 .onFailure("Failed to submit paste", null)
-                .buildAndExec(Pasters.getExecutor());
+                .buildAndExecNoReturnValue(Pasters.getExecutor());
     }
 
 
@@ -96,7 +96,7 @@ public final class ActorCallbackPaste {
             .setDelayMessage(TranslatableComponent.of("worldedit.pastebin.uploading"))
             .onSuccess((String) null, url -> sender.printInfo(successMessage.args(TextComponent.of(url.toString())).build()))
             .onFailure("Failed to submit paste", null)
-            .buildAndExec(Pasters.getExecutor());
+            .buildAndExecNoReturnValue(Pasters.getExecutor());
     }
 
 }

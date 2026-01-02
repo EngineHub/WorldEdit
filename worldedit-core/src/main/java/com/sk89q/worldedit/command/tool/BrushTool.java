@@ -209,8 +209,8 @@ public class BrushTool implements TraceTool {
 
                 if (existingMask == null) {
                     editSession.setMask(mask);
-                } else if (existingMask instanceof MaskIntersection) {
-                    ((MaskIntersection) existingMask).add(mask);
+                } else if (existingMask instanceof MaskIntersection maskIntersection) {
+                    maskIntersection.add(mask);
                 } else {
                     MaskIntersection newMask = new MaskIntersection(existingMask);
                     newMask.add(mask);

@@ -116,8 +116,8 @@ public class BiomeCommands {
         String messageKey;
 
         if (useLineOfSight) {
-            if (actor instanceof Player) {
-                Location blockPosition = ((Player) actor).getBlockTrace(300);
+            if (actor instanceof Player player) {
+                Location blockPosition = player.getBlockTrace(300);
                 if (blockPosition == null) {
                     actor.printError(TranslatableComponent.of("worldedit.raytrace.noblock"));
                     return;
@@ -132,8 +132,8 @@ public class BiomeCommands {
                 return;
             }
         } else if (usePosition) {
-            if (actor instanceof Locatable) {
-                BiomeType biome = world.getBiome(((Locatable) actor).getLocation().toVector().toBlockPoint());
+            if (actor instanceof Locatable locatable) {
+                BiomeType biome = world.getBiome(locatable.getLocation().toVector().toBlockPoint());
                 biomes.add(biome);
 
                 messageKey = "worldedit.biomeinfo.position";
@@ -173,8 +173,8 @@ public class BiomeCommands {
         Region region;
 
         if (atPosition) {
-            if (actor instanceof Locatable) {
-                final BlockVector3 pos = ((Locatable) actor).getLocation().toVector().toBlockPoint();
+            if (actor instanceof Locatable locatable) {
+                final BlockVector3 pos = locatable.getLocation().toVector().toBlockPoint();
                 region = new CuboidRegion(pos, pos);
             } else {
                 actor.printError(TranslatableComponent.of("worldedit.setbiome.not-locatable"));

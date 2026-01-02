@@ -41,10 +41,8 @@ public class CommandRegistrationHandler {
         registration.containerInstance(instance)
             .commandManager(manager)
             .listeners(callListeners);
-        if (registration instanceof CommandPermissionsConditionGenerator.Registration) {
-            ((CommandPermissionsConditionGenerator.Registration) registration).commandPermissionsConditionGenerator(
-                PERM_GEN
-            );
+        if (registration instanceof CommandPermissionsConditionGenerator.Registration permissionReg) {
+            permissionReg.commandPermissionsConditionGenerator(PERM_GEN);
         }
         registration.build();
     }

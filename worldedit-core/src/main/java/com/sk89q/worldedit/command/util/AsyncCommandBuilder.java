@@ -23,6 +23,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.errorprone.annotations.InlineMe;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.command.exception.ExceptionConverter;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
@@ -86,11 +87,17 @@ public final class AsyncCommandBuilder<T> {
         return this;
     }
 
+    @InlineMe(
+        replacement = "this.setDelayMessage(TextComponent.of(checkNotNull(message)))",
+        imports = "com.sk89q.worldedit.util.formatting.text.TextComponent",
+        staticImports = "com.google.common.base.Preconditions.checkNotNull"
+    )
     @Deprecated
     public AsyncCommandBuilder<T> sendMessageAfterDelay(String message) {
-        return sendMessageAfterDelay(TextComponent.of(checkNotNull(message)));
+        return setDelayMessage(TextComponent.of(checkNotNull(message)));
     }
 
+    @InlineMe(replacement = "this.setDelayMessage(message)")
     @Deprecated
     public AsyncCommandBuilder<T> sendMessageAfterDelay(Component message) {
         return setDelayMessage(message);
@@ -149,6 +156,12 @@ public final class AsyncCommandBuilder<T> {
             supervisor.monitor(FutureForwardingTask.create(future, description, sender));
         }
         return future;
+    }
+
+    // Suppress FutureReturnValueIgnored: We handle the future internally
+    @SuppressWarnings("FutureReturnValueIgnored")
+    public void buildAndExecNoReturnValue(ListeningExecutorService executor) {
+        buildAndExec(executor);
     }
 
     @SuppressWarnings("deprecation")

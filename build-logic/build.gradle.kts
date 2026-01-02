@@ -17,6 +17,7 @@ dependencies {
     implementation(libs.shadow)
     implementation(libs.jfrog.buildinfo)
     implementation(libs.paperweight)
+    implementation(libs.errorprone.gradle.plugin)
     implementation(libs.gson)
 
     implementation(libs.sponge.vanillagradle)

@@ -72,6 +72,7 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
                     editSession.setBlock(pos.toVector().subtract(pos.getDirection()).toBlockPoint(), secondary);
                 }
             } catch (MaxChangedBlocksException ignored) {
+                // Just finish up if we hit max blocks
             } finally {
                 session.remember(editSession);
             }
@@ -102,6 +103,7 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
                     editSession.setBlock(pos.toVector().subtract(pos.getDirection()).toBlockPoint(), primary);
                 }
             } catch (MaxChangedBlocksException ignored) {
+                // Just finish up if we hit max blocks
             } finally {
                 session.remember(editSession);
             }

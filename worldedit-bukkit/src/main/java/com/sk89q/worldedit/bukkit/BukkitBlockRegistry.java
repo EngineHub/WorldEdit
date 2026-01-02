@@ -82,14 +82,10 @@ public class BukkitBlockRegistry extends BundledBlockRegistry {
 
         @Override
         public boolean isAir() {
-            switch (material) {
-                case AIR:
-                case CAVE_AIR:
-                case VOID_AIR:
-                    return true;
-                default:
-                    return false;
-            }
+            return switch (material) {
+                case AIR, CAVE_AIR, VOID_AIR -> true;
+                default -> false;
+            };
         }
 
         @Override

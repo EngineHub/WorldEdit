@@ -155,8 +155,8 @@ public class BukkitServerInterface extends AbstractPlatform implements MultiUser
     @Nullable
     @Override
     public BukkitWorld matchWorld(com.sk89q.worldedit.world.World world) {
-        if (world instanceof BukkitWorld) {
-            return (BukkitWorld) world;
+        if (world instanceof BukkitWorld bukkitWorld) {
+            return bukkitWorld;
         } else {
             World bukkitWorld = server.getWorld(world.getName());
             return bukkitWorld != null ? new BukkitWorld(bukkitWorld) : null;

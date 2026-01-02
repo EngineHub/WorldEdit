@@ -117,11 +117,11 @@ public class OffsetConverter implements ArgumentConverter<BlockVector3> {
                 Actor actor = context.injectedValue(Key.of(Actor.class))
                     .orElseThrow(() -> new IllegalStateException("An actor is required to use relative offsets"));
 
-                if (!(actor instanceof Locatable)) {
+                if (!(actor instanceof Locatable locatable)) {
                     throw new IllegalStateException("Only a locatable actor may use relative offsets");
                 }
 
-                Location location = ((Locatable) actor).getLocation();
+                Location location = locatable.getLocation();
 
                 return vectorConverter.convert(input.substring(1), context).map(blockVector3s ->
                     blockVector3s.stream()

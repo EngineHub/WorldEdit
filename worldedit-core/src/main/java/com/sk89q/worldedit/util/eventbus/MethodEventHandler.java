@@ -64,11 +64,9 @@ public class MethodEventHandler extends EventHandler {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof MethodEventHandler that)) {
             return false;
         }
-
-        MethodEventHandler that = (MethodEventHandler) o;
 
         if (!method.equals(that.method)) {
             return false;

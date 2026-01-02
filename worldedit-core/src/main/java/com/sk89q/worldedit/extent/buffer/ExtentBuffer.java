@@ -68,7 +68,7 @@ public class ExtentBuffer extends AbstractBufferingExtent {
     @Override
     protected BaseBlock getBufferedFullBlock(BlockVector3 position) {
         if (mask.test(position)) {
-            return buffer.computeIfAbsent(position, (pos -> getExtent().getFullBlock(pos)));
+            return buffer.computeIfAbsent(position, pos -> getExtent().getFullBlock(pos));
         }
         return null;
     }

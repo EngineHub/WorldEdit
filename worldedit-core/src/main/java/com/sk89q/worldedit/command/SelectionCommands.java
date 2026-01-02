@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.command;
 
-import com.google.common.base.Strings;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -306,8 +305,8 @@ public class SelectionCommands {
                     : ChunkStore.toChunk3d(coordinates);
             } else {
                 // use player loc
-                if (actor instanceof Locatable) {
-                    minChunk = ChunkStore.toChunk3d(((Locatable) actor).getBlockLocation().toVector().toBlockPoint());
+                if (actor instanceof Locatable locatable) {
+                    minChunk = ChunkStore.toChunk3d(locatable.getBlockLocation().toVector().toBlockPoint());
                 } else {
                     throw new StopExecutionException(TextComponent.of("A player or coordinates are required."));
                 }
@@ -828,7 +827,7 @@ public class SelectionCommands {
             final int curDigits = (int) (Math.log10(count) + 1);
             line.append(String.format("%s%.3f%%  ", perc < 10 ? "  " : "", perc), TextColor.GOLD);
             final int space = maxDigits - curDigits;
-            String pad = Strings.repeat(" ", space == 0 ? 2 : 2 * space + 1);
+            String pad = " ".repeat(space == 0 ? 2 : 2 * space + 1);
             line.append(String.format("%s%s", count, pad), TextColor.YELLOW);
 
             final BlockState state = c.getID();

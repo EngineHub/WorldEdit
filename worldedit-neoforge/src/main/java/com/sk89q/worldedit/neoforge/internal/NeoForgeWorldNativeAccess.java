@@ -82,8 +82,8 @@ public class NeoForgeWorldNativeAccess implements WorldNativeAccess<LevelChunk, 
     @Nullable
     @Override
     public BlockState setBlockState(LevelChunk chunk, BlockPos position, BlockState state) {
-        if (chunk instanceof ExtendedChunk) {
-            return ((ExtendedChunk) chunk).setBlockState(
+        if (chunk instanceof ExtendedChunk extendedChunk) {
+            return extendedChunk.setBlockState(
                 position, state, 0, sideEffectSet.shouldApply(SideEffect.UPDATE)
             );
         }

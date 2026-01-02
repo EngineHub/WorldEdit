@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.world.block;
 
+import com.google.errorprone.annotations.InlineMe;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.blocks.TileEntityBlock;
 import com.sk89q.worldedit.registry.state.Property;
@@ -65,6 +66,11 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
      * @param state The block state
      * @param nbtData NBT data, which must be provided
      */
+    @InlineMe(
+        replacement = "this(state, LazyReference.from(checkNotNull(nbtData)::toLinTag))",
+        imports = "com.sk89q.worldedit.util.concurrency.LazyReference",
+        staticImports = "com.google.common.base.Preconditions.checkNotNull"
+    )
     @Deprecated
     protected BaseBlock(BlockState state, CompoundTag nbtData) {
         this(state, LazyReference.from(checkNotNull(nbtData)::toLinTag));
