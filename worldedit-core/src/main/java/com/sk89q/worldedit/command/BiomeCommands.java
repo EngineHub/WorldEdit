@@ -207,7 +207,7 @@ public class BiomeCommands {
     @Logging(REGION)
     @CommandPermissions("worldedit.biome.set")
     public void replaceBiome(Actor actor, World world, LocalSession session, EditSession editSession,
-                         @Arg(desc = "The mask representing biomes to replace", def = "")
+                         @Arg(desc = "The mask representing where to replace biomes")
                             Mask from,
                          @Arg(desc = "Biome type")
                             BiomeType target,
