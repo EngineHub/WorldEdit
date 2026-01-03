@@ -40,8 +40,8 @@ public class PluginPermissionsResolver implements PermissionsResolver {
 
         // Looking for plugin
         for (Plugin plugin : server.getPluginManager().getPlugins()) {
-            if (plugin instanceof PermissionsProvider) {
-                return new PluginPermissionsResolver((PermissionsProvider) plugin, plugin);
+            if (plugin instanceof PermissionsProvider permissionsProvider) {
+                return new PluginPermissionsResolver(permissionsProvider, plugin);
             }
         }
 

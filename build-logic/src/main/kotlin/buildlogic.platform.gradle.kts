@@ -14,11 +14,20 @@ tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJ
     archiveClassifier.set("dist")
     relocate("com.sk89q.jchronic", "com.sk89q.worldedit.jchronic")
     val jchronic = stringyLibs.getLibrary("jchronic").get()
+    val linBusDeps = listOf(
+        "common",
+        "stream",
+        "tree",
+        "format-snbt"
+    ).map { stringyLibs.getLibrary("linBus-$it").get() }
     dependencies {
         include(project(":worldedit-libs:core"))
         include(project(":worldedit-libs:${project.name.replace("worldedit-", "")}"))
         include(project(":worldedit-core"))
         include(dependency(jchronic))
+        linBusDeps.forEach {
+            include(dependency(it))
+        }
         exclude(dependency("com.google.code.findbugs:jsr305"))
     }
     exclude("GradleStart**")
@@ -28,6 +37,10 @@ tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJ
     minimize {
         // jchronic uses reflection to load things, so we need to exclude it from minimizing
         exclude(dependency(jchronic))
+        // we provide the full lin-bus API, so don't minimize that
+        linBusDeps.forEach {
+            exclude(dependency(it))
+        }
     }
 }
 val javaComponent = components["java"] as AdhocComponentWithVariants

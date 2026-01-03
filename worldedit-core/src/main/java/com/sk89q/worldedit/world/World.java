@@ -257,8 +257,8 @@ public interface World extends Extent, Keyed {
     )
     default boolean regenerate(Region region, Extent extent, RegenOptions options) {
         DeprecationUtil.checkDelegatingOverride(getClass());
-        if (extent instanceof EditSession) {
-            return regenerate(region, (EditSession) extent);
+        if (extent instanceof EditSession editSession) {
+            return regenerate(region, editSession);
         }
         throw new UnsupportedOperationException("This World class ("
             + getClass().getName()

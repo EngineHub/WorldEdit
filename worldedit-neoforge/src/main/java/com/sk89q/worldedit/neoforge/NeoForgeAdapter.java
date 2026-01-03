@@ -83,8 +83,8 @@ public final class NeoForgeAdapter {
      */
     public static ServerLevel adapt(World world) {
         checkNotNull(world);
-        if (world instanceof NeoForgeWorld) {
-            return ((NeoForgeWorld) world).getWorld();
+        if (world instanceof NeoForgeWorld neoForgeWorld) {
+            return neoForgeWorld.getWorld();
         } else {
             // TODO introduce a better cross-platform world API to match more easily
             throw new UnsupportedOperationException("Cannot adapt from a " + world.getClass());
@@ -154,6 +154,8 @@ public final class NeoForgeAdapter {
      *
      * @deprecated without replacement, use the block adapter methods
      */
+    // Suppress InlineMeSuggester: There is no replacement, so this shouldn't be inlined
+    @SuppressWarnings("InlineMeSuggester")
     @Deprecated
     public static Property<?> adaptProperty(net.minecraft.world.level.block.state.properties.Property<?> property) {
         return NeoForgeTransmogrifier.transmogToWorldEditProperty(property);

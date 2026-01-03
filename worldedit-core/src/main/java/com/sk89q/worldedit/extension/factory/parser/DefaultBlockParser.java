@@ -74,9 +74,9 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
     }
 
     private static BaseBlock getBlockInHand(Actor actor, HandSide handSide) throws InputParseException {
-        if (actor instanceof Player) {
+        if (actor instanceof Player player) {
             try {
-                return ((Player) actor).getBlockInHand(handSide);
+                return player.getBlockInHand(handSide);
             } catch (NotABlockException e) {
                 throw new InputParseException(e.getRichMessage());
             } catch (WorldEditException e) {
@@ -151,7 +151,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
         // Parse the block data (optional)
         for (String parseableData : stateProperties) {
             try {
-                String[] parts = parseableData.split("=");
+                String[] parts = parseableData.split("=", 0);
                 if (parts.length != 2) {
                     throw new InputParseException(
                             TranslatableComponent.of("worldedit.error.parser.bad-state-format",
@@ -240,6 +240,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                             BlockVector3 primaryPosition = session.getRegionSelector(world).getPrimaryPosition();
                             type = world.getBlock(primaryPosition).getBlockType();
                         } catch (IncompleteRegionException ignored) {
+                            // We don't care if the region is incomplete here, we'll just not provide suggestions
                         }
                     }
                 }
@@ -263,7 +264,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
     private BaseBlock parseLogic(String input, ParserContext context) throws InputParseException {
         BlockType blockType = null;
         Map<Property<?>, Object> blockStates = new HashMap<>();
-        String[] blockAndExtraData = input.trim().split("\\|");
+        String[] blockAndExtraData = input.trim().split("\\|", 0);
         if (blockAndExtraData.length == 0) {
             throw new NoMatchException(TranslatableComponent.of("worldedit.error.unknown-block", TextComponent.of(input)));
         }
@@ -290,6 +291,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                     blockType = state.getBlockType();
                 }
             } catch (NumberFormatException ignored) {
+                // If it doesn't match legacy, just parse it normally
             }
         }
 

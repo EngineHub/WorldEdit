@@ -23,7 +23,6 @@ import com.sk89q.util.ReflectionUtil;
 import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.PluginIdentifiableCommand;
@@ -64,9 +63,8 @@ public class CommandRegistration {
         if (serverCommandMap == null) {
             return null;
         }
-        Command command = serverCommandMap.getCommand(label);
-        if (command instanceof PluginIdentifiableCommand) {
-            return ((PluginIdentifiableCommand) command).getPlugin();
+        if (serverCommandMap.getCommand(label) instanceof PluginIdentifiableCommand pluginIdentifiableCmd) {
+            return pluginIdentifiableCmd.getPlugin();
         }
         return null;
     }
@@ -120,9 +118,10 @@ public class CommandRegistration {
         if (knownCommands == null || aliases == null) {
             return false;
         }
-        for (Iterator<org.bukkit.command.Command> i = knownCommands.values().iterator(); i.hasNext();) {
+        for (Iterator<org.bukkit.command.Command> i = knownCommands.values().iterator(); i.hasNext(); ) {
             org.bukkit.command.Command cmd = i.next();
-            if (cmd instanceof DynamicPluginCommand && ((DynamicPluginCommand) cmd).getOwner().equals(executor)) {
+            if (cmd instanceof DynamicPluginCommand dynamicPluginCommand
+                && dynamicPluginCommand.getOwner().equals(executor)) {
                 i.remove();
                 for (String alias : cmd.getAliases()) {
                     org.bukkit.command.Command aliasCmd = knownCommands.get(alias);

@@ -34,7 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * {@link #equals(Object)} are subject to minor differences caused by
  * floating point errors.</p>
  */
-public class Location {
+public final class Location {
 
     private final Extent extent;
     private final Vector3 position;
@@ -350,11 +350,9 @@ public class Location {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof Location location)) {
             return false;
         }
-
-        Location location = (Location) o;
 
         if (Double.doubleToLongBits(pitch) != Double.doubleToLongBits(location.pitch)) {
             return false;
@@ -381,4 +379,13 @@ public class Location {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "Location{"
+            + "extent=" + extent
+            + ",position=" + position
+            + ",pitch=" + pitch
+            + ",yaw=" + yaw
+            + '}';
+    }
 }

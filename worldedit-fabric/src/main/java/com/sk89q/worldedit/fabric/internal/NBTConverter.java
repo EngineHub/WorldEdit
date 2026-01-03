@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.fabric.internal;
 
+import net.minecraft.nbt.EndTag;
 import net.minecraft.nbt.Tag;
 import org.enginehub.linbus.common.LinTagId;
 import org.enginehub.linbus.tree.LinByteArrayTag;
@@ -49,33 +50,21 @@ public final class NBTConverter {
     }
 
     public static net.minecraft.nbt.Tag toNative(LinTag<?> tag) {
-        if (tag instanceof LinIntArrayTag t) {
-            return toNative(t);
-        } else if (tag instanceof LinListTag<?> t) {
-            return toNative(t);
-        } else if (tag instanceof LinLongTag t) {
-            return toNative(t);
-        } else if (tag instanceof LinLongArrayTag t) {
-            return toNative(t);
-        } else if (tag instanceof LinStringTag t) {
-            return toNative(t);
-        } else if (tag instanceof LinIntTag t) {
-            return toNative(t);
-        } else if (tag instanceof LinByteTag t) {
-            return toNative(t);
-        } else if (tag instanceof LinByteArrayTag t) {
-            return toNative(t);
-        } else if (tag instanceof LinCompoundTag t) {
-            return toNative(t);
-        } else if (tag instanceof LinFloatTag t) {
-            return toNative(t);
-        } else if (tag instanceof LinShortTag t) {
-            return toNative(t);
-        } else if (tag instanceof LinDoubleTag t) {
-            return toNative(t);
-        } else {
-            throw new IllegalArgumentException("Can't convert tag of type " + tag.getClass().getCanonicalName());
-        }
+        return switch (tag) {
+            case LinIntArrayTag t -> toNative(t);
+            case LinListTag<?> t -> toNative(t);
+            case LinLongTag t -> toNative(t);
+            case LinLongArrayTag t -> toNative(t);
+            case LinStringTag t -> toNative(t);
+            case LinIntTag t -> toNative(t);
+            case LinByteTag t -> toNative(t);
+            case LinByteArrayTag t -> toNative(t);
+            case LinCompoundTag t -> toNative(t);
+            case LinFloatTag t -> toNative(t);
+            case LinShortTag t -> toNative(t);
+            case LinDoubleTag t -> toNative(t);
+            case LinEndTag ignored -> EndTag.INSTANCE;
+        };
     }
 
     public static net.minecraft.nbt.IntArrayTag toNative(LinIntArrayTag tag) {
@@ -134,47 +123,21 @@ public final class NBTConverter {
     }
 
     public static LinTag<?> fromNative(net.minecraft.nbt.Tag other) {
-        if (other instanceof net.minecraft.nbt.IntArrayTag) {
-            return fromNative((net.minecraft.nbt.IntArrayTag) other);
-
-        } else if (other instanceof net.minecraft.nbt.ListTag) {
-            return fromNative((net.minecraft.nbt.ListTag) other);
-
-        } else if (other instanceof net.minecraft.nbt.EndTag) {
-            return fromNative((net.minecraft.nbt.EndTag) other);
-
-        } else if (other instanceof net.minecraft.nbt.LongTag) {
-            return fromNative((net.minecraft.nbt.LongTag) other);
-
-        } else if (other instanceof net.minecraft.nbt.LongArrayTag) {
-            return fromNative((net.minecraft.nbt.LongArrayTag) other);
-
-        } else if (other instanceof net.minecraft.nbt.StringTag) {
-            return fromNative((net.minecraft.nbt.StringTag) other);
-
-        } else if (other instanceof net.minecraft.nbt.IntTag) {
-            return fromNative((net.minecraft.nbt.IntTag) other);
-
-        } else if (other instanceof net.minecraft.nbt.ByteTag) {
-            return fromNative((net.minecraft.nbt.ByteTag) other);
-
-        } else if (other instanceof net.minecraft.nbt.ByteArrayTag) {
-            return fromNative((net.minecraft.nbt.ByteArrayTag) other);
-
-        } else if (other instanceof net.minecraft.nbt.CompoundTag) {
-            return fromNative((net.minecraft.nbt.CompoundTag) other);
-
-        } else if (other instanceof net.minecraft.nbt.FloatTag) {
-            return fromNative((net.minecraft.nbt.FloatTag) other);
-
-        } else if (other instanceof net.minecraft.nbt.ShortTag) {
-            return fromNative((net.minecraft.nbt.ShortTag) other);
-
-        } else if (other instanceof net.minecraft.nbt.DoubleTag) {
-            return fromNative((net.minecraft.nbt.DoubleTag) other);
-        } else {
-            throw new IllegalArgumentException("Can't convert other of type " + other.getClass().getCanonicalName());
-        }
+        return switch (other) {
+            case net.minecraft.nbt.IntArrayTag tags -> fromNative(tags);
+            case net.minecraft.nbt.ListTag tags -> fromNative(tags);
+            case net.minecraft.nbt.EndTag endTag -> fromNative(endTag);
+            case net.minecraft.nbt.LongTag longTag -> fromNative(longTag);
+            case net.minecraft.nbt.LongArrayTag tags -> fromNative(tags);
+            case net.minecraft.nbt.StringTag stringTag -> fromNative(stringTag);
+            case net.minecraft.nbt.IntTag intTag -> fromNative(intTag);
+            case net.minecraft.nbt.ByteTag byteTag -> fromNative(byteTag);
+            case net.minecraft.nbt.ByteArrayTag tags -> fromNative(tags);
+            case net.minecraft.nbt.CompoundTag compoundTag -> fromNative(compoundTag);
+            case net.minecraft.nbt.FloatTag floatTag -> fromNative(floatTag);
+            case net.minecraft.nbt.ShortTag shortTag -> fromNative(shortTag);
+            case net.minecraft.nbt.DoubleTag doubleTag -> fromNative(doubleTag);
+        };
     }
 
     public static LinIntArrayTag fromNative(net.minecraft.nbt.IntArrayTag other) {

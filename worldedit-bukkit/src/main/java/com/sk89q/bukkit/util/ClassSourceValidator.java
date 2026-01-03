@@ -19,7 +19,6 @@
 
 package com.sk89q.bukkit.util;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -40,7 +39,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ClassSourceValidator {
 
-    private static final String SEPARATOR_LINE = Strings.repeat("*", 46);
+    private static final String SEPARATOR_LINE = "*".repeat(46);
     private static final Method loadClass;
     private static Class<?> pluginClassLoaderClass;
 
@@ -96,7 +95,7 @@ public class ClassSourceValidator {
                 continue;
             }
             ClassLoader targetLoader = target.getClass().getClassLoader();
-            if (!(pluginClassLoaderClass.isAssignableFrom(targetLoader.getClass()))) {
+            if (!pluginClassLoaderClass.isAssignableFrom(targetLoader.getClass())) {
                 continue;
             }
             for (Class<?> testClass : classes) {
@@ -112,7 +111,7 @@ public class ClassSourceValidator {
             }
         }
 
-        return mismatches;
+        return ImmutableMap.copyOf(mismatches);
     }
 
     /**

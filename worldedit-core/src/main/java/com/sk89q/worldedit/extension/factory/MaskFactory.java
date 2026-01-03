@@ -87,7 +87,7 @@ public final class MaskFactory extends AbstractFactory<Mask> {
 
     @Override
     public List<String> getSuggestions(String input, ParserContext context) {
-        final String[] split = input.split(" ");
+        final String[] split = input.split(" ", 0);
         if (split.length > 1) {
             String prev = input.substring(0, input.lastIndexOf(' ')) + " ";
             return super.getSuggestions(split[split.length - 1], context).stream()
@@ -101,7 +101,7 @@ public final class MaskFactory extends AbstractFactory<Mask> {
     public Mask parseFromInput(String input, ParserContext context) throws InputParseException {
         List<Mask> masks = new ArrayList<>();
 
-        for (String component : input.split(" ")) {
+        for (String component : input.split(" ", 0)) {
             if (component.isEmpty()) {
                 continue;
             }

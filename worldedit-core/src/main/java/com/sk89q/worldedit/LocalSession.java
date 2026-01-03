@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit;
 
+import com.google.common.collect.Iterables;
 import com.sk89q.jchronic.Chronic;
 import com.sk89q.jchronic.Options;
 import com.sk89q.jchronic.utils.Span;
@@ -62,12 +63,12 @@ import org.enginehub.linbus.tree.LinCompoundTag;
 import org.enginehub.linbus.tree.LinTagType;
 
 import java.time.ZoneId;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -83,8 +84,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class LocalSession {
 
-    private static final transient int CUI_VERSION_UNINITIALIZED = -1;
-    public static transient int MAX_HISTORY_SIZE = 15;
+    private static final int CUI_VERSION_UNINITIALIZED = -1;
+    public static int MAX_HISTORY_SIZE = 15;
 
     // Non-session related fields
     private transient LocalConfiguration config;
@@ -98,7 +99,7 @@ public class LocalSession {
     // Session related
     private transient RegionSelector selector = new CuboidRegionSelector();
     private transient Placement placement = new Placement(PlacementType.PLAYER, BlockVector3.ZERO);
-    private final transient LinkedList<EditSession> history = new LinkedList<>();
+    private final transient ArrayDeque<EditSession> history = new ArrayDeque<>();
     private transient int historyPointer = 0;
     private transient ClipboardHolder clipboard;
     private transient boolean superPickaxe = false;
@@ -237,11 +238,11 @@ public class LocalSession {
 
         // Destroy any sessions after this undo point
         while (historyPointer < history.size()) {
-            history.remove(historyPointer);
+            history.removeLast();
         }
-        history.add(editSession);
+        history.addLast(editSession);
         while (history.size() > MAX_HISTORY_SIZE) {
-            history.remove(0);
+            history.removeFirst();
         }
         historyPointer = history.size();
     }
@@ -257,7 +258,7 @@ public class LocalSession {
         checkNotNull(actor);
         --historyPointer;
         if (historyPointer >= 0) {
-            EditSession editSession = history.get(historyPointer);
+            EditSession editSession = Iterables.get(history, historyPointer);
             try (EditSession newEditSession =
                      WorldEdit.getInstance().newEditSessionBuilder()
                          .world(editSession.getWorld()).blockBag(newBlockBag).actor(actor)
@@ -282,7 +283,7 @@ public class LocalSession {
     public EditSession redo(@Nullable BlockBag newBlockBag, Actor actor) {
         checkNotNull(actor);
         if (historyPointer < history.size()) {
-            EditSession editSession = history.get(historyPointer);
+            EditSession editSession = Iterables.get(history, historyPointer);
             try (EditSession newEditSession =
                      WorldEdit.getInstance().newEditSessionBuilder()
                          .world(editSession.getWorld()).blockBag(newBlockBag).actor(actor)
@@ -474,6 +475,8 @@ public class LocalSession {
      * @return true always - see deprecation notice
      * @deprecated The wand is now a tool that can be bound/unbound.
      */
+    // Suppress InlineMeSuggester: This method cannot be made final due to backwards compatibility
+    @SuppressWarnings("InlineMeSuggester")
     @Deprecated
     public boolean isToolControlEnabled() {
         return true;
@@ -581,6 +584,7 @@ public class LocalSession {
 
     /**
      * Sets the current placement used for many operations, like <code>//sphere</code>.
+     *
      * <p>
      * Example usage: <code>session.setPlacement(new Placement(PlacementType.WORLD, BlockVector3.at(123, 456, 789)</code>
      * </p>
@@ -1054,7 +1058,7 @@ public class LocalSession {
     public void handleCUIInitializationMessage(String text, Actor actor) {
         checkNotNull(text);
 
-        String[] split = text.split("\\|");
+        String[] split = text.split("\\|", 0);
         List<String> args = split.length > 1 ? new ArrayList<>(Arrays.asList(Arrays.copyOfRange(split, 1, split.length))) : List.of();
 
         handleCUIInitializationMessage(split[0], args, actor);
@@ -1134,8 +1138,8 @@ public class LocalSession {
         World world = null;
         if (hasWorldOverride()) {
             world = getWorldOverride();
-        } else if (actor instanceof Locatable && ((Locatable) actor).getExtent() instanceof World) {
-            world = (World) ((Locatable) actor).getExtent();
+        } else if (actor instanceof Locatable locatable && locatable.getExtent() instanceof World actorWorld) {
+            world = actorWorld;
         }
 
         // Create an edit session
@@ -1144,8 +1148,8 @@ public class LocalSession {
             .actor(actor)
             .maxBlocks(getBlockChangeLimit())
             .tracing(isTracingActions());
-        if (actor.isPlayer() && actor instanceof Player) {
-            builder.blockBag(getBlockBag((Player) actor));
+        if (actor.isPlayer() && actor instanceof Player player) {
+            builder.blockBag(getBlockBag(player));
         }
         EditSession editSession = builder.build();
         Request.request().setEditSession(editSession);

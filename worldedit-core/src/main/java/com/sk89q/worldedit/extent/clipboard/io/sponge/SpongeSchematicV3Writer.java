@@ -159,7 +159,7 @@ public class SpongeSchematicV3Writer implements ClipboardWriter {
         private final Object2IntMap<String> contents = new Object2IntLinkedOpenHashMap<>();
         private int nextId = 0;
 
-        public int getId(String key) {
+        private int getId(String key) {
             int result = contents.getOrDefault(key, -1);
             if (result != -1) {
                 return result;
@@ -170,7 +170,7 @@ public class SpongeSchematicV3Writer implements ClipboardWriter {
             return newValue;
         }
 
-        public LinCompoundTag toNbt() {
+        private LinCompoundTag toNbt() {
             LinCompoundTag.Builder result = LinCompoundTag.builder();
             Object2IntMaps.fastForEach(contents, e -> result.putInt(e.getKey(), e.getIntValue()));
             return result.build();
@@ -227,12 +227,7 @@ public class SpongeSchematicV3Writer implements ClipboardWriter {
 
                     String key = keyFunction.apply(point);
                     int id = paletteMap.getId(key);
-
-                    while ((id & -128) != 0) {
-                        buffer.write(id & 127 | 128);
-                        id >>>= 7;
-                    }
-                    buffer.write(id);
+                    WriterUtil.writeVarInt(buffer, id);
                 }
             }
         }

@@ -65,9 +65,6 @@ public class HttpRequest implements Closeable {
     private HttpURLConnection conn;
     private InputStream inputStream;
 
-    private long contentLength = -1;
-    private long readBytes = 0;
-
     /**
      * Create a new HTTP request.
      *
@@ -85,7 +82,7 @@ public class HttpRequest implements Closeable {
      * @return this object
      */
     public HttpRequest body(String data) {
-        body = data.getBytes();
+        body = data.getBytes(StandardCharsets.UTF_8);
         return this;
     }
 
@@ -285,24 +282,12 @@ public class HttpRequest implements Closeable {
         BufferedInputStream bis;
 
         try {
-            String field = conn.getHeaderField("Content-Length");
-            if (field != null) {
-                long len = Long.parseLong(field);
-                if (len >= 0) { // Let's just not deal with really big numbers
-                    contentLength = len;
-                }
-            }
-        } catch (NumberFormatException ignored) {
-        }
-
-        try {
             bis = new BufferedInputStream(inputStream);
 
             byte[] data = new byte[READ_BUFFER_SIZE];
-            int len = 0;
+            int len;
             while ((len = bis.read(data, 0, READ_BUFFER_SIZE)) >= 0) {
                 out.write(data, 0, len);
-                readBytes += len;
             }
         } finally {
             close();
@@ -456,7 +441,7 @@ public class HttpRequest implements Closeable {
     /**
      * Used to buffer the response in memory.
      */
-    public class BufferedResponse {
+    public static final class BufferedResponse {
         private final byte[] data;
 
         private BufferedResponse(byte[] data) {

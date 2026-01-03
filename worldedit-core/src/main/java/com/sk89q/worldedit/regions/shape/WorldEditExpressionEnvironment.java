@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.regions.shape;
 
+import com.google.errorprone.annotations.InlineMe;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.expression.ExpressionEnvironment;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -38,6 +39,7 @@ public class WorldEditExpressionEnvironment implements ExpressionEnvironment {
      *
      * @deprecated Use {@link #WorldEditExpressionEnvironment(Extent, Transform)} and pass a {@link ScaleAndTranslateTransform}.
      */
+    @InlineMe(replacement = "this(extent, new ScaleAndTranslateTransform(zero, unit))", imports = "com.sk89q.worldedit.math.transform.ScaleAndTranslateTransform")
     @Deprecated
     public WorldEditExpressionEnvironment(Extent extent, Vector3 unit, Vector3 zero) {
         this(extent, new ScaleAndTranslateTransform(zero, unit));

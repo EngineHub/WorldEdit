@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.util.eventbus;
 
+import com.google.errorprone.annotations.Keep;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -28,6 +30,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Used to mark methods as event handlers.
  */
+@Keep
 @Retention(RUNTIME)
 @Target(METHOD)
 public @interface Subscribe {

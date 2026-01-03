@@ -47,6 +47,8 @@ public abstract class InputParser<E> {
      * @return a stream of suggestions
      * @deprecated Use the version that takes a {@link ParserContext}, {@link #getSuggestions(String, ParserContext)}
      */
+    // Suppress InlineMeSuggester: This method cannot be made final due to backwards compatibility
+    @SuppressWarnings("InlineMeSuggester")
     @Deprecated(forRemoval = true)
     public Stream<String> getSuggestions(String input) {
         return Stream.empty();

@@ -109,18 +109,15 @@ public class GenerationCommands {
         double radiusX;
         double radiusZ;
         switch (radii.size()) {
-            case 1:
-                radiusX = radiusZ = Math.max(1, radii.get(0));
-                break;
-
-            case 2:
+            case 1 -> radiusX = radiusZ = Math.max(1, radii.get(0));
+            case 2 -> {
                 radiusX = Math.max(1, radii.get(0));
                 radiusZ = Math.max(1, radii.get(1));
-                break;
-
-            default:
+            }
+            default -> {
                 actor.printError(TranslatableComponent.of("worldedit.cyl.invalid-radius"));
                 return 0;
+            }
         }
 
         worldEdit.checkMaxRadius(radiusX);
@@ -213,19 +210,16 @@ public class GenerationCommands {
         double radiusY;
         double radiusZ;
         switch (radii.size()) {
-            case 1:
-                radiusX = radiusY = radiusZ = Math.max(0, radii.get(0));
-                break;
-
-            case 3:
+            case 1 -> radiusX = radiusY = radiusZ = Math.max(0, radii.get(0));
+            case 3 -> {
                 radiusX = Math.max(0, radii.get(0));
                 radiusY = Math.max(0, radii.get(1));
                 radiusZ = Math.max(0, radii.get(2));
-                break;
-
-            default:
+            }
+            default -> {
                 actor.printError(TranslatableComponent.of("worldedit.sphere.invalid-radius"));
                 return 0;
+            }
         }
 
         worldEdit.checkMaxRadius(radiusX);
@@ -238,8 +232,8 @@ public class GenerationCommands {
         }
 
         int affected = editSession.makeSphere(pos, pattern, radiusX, radiusY, radiusZ, !hollow);
-        if (actor instanceof Player) {
-            ((Player) actor).findFreePosition();
+        if (actor instanceof Player player) {
+            player.findFreePosition();
         }
         actor.printInfo(TranslatableComponent.of("worldedit.sphere.created", TextComponent.of(affected)));
         return affected;
@@ -345,8 +339,8 @@ public class GenerationCommands {
         worldEdit.checkMaxRadius(size);
         BlockVector3 pos = session.getPlacementPosition(actor);
         int affected = editSession.makePyramid(pos, pattern, size, !hollow);
-        if (actor instanceof Player) {
-            ((Player) actor).findFreePosition();
+        if (actor instanceof Player player) {
+            player.findFreePosition();
         }
         actor.printInfo(TranslatableComponent.of("worldedit.pyramid.created", TextComponent.of(affected)));
         return affected;
@@ -378,8 +372,8 @@ public class GenerationCommands {
 
         try {
             final int affected = editSession.makeShape(region, transform, pattern, String.join(" ", expression), hollow, session.getTimeout());
-            if (actor instanceof Player) {
-                ((Player) actor).findFreePosition();
+            if (actor instanceof Player player) {
+                player.findFreePosition();
             }
             actor.printInfo(TranslatableComponent.of("worldedit.generate.created", TextComponent.of(affected)));
             return affected;

@@ -40,6 +40,7 @@ public class ImageHeightmapLoader extends AssetLoader<ImageHeightmap> {
         super(worldEdit, assetDir);
     }
 
+    @Override
     @Nullable
     public ImageHeightmap loadAssetFromPath(Path path) throws Exception {
         if (!Files.exists(path)) {

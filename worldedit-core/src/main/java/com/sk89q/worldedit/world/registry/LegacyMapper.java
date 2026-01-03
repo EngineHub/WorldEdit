@@ -108,6 +108,7 @@ public final class LegacyMapper {
                     String newEntry = fixer.fixUp(DataFixer.FixTypes.BLOCK_STATE, value, Constants.DATA_VERSION_MC_1_13_2);
                     state = blockFactory.parseFromInput(newEntry, parserContext).toImmutableState();
                 } catch (InputParseException ignored) {
+                    // We don't need to know specific errors.
                 }
             }
 
@@ -116,6 +117,7 @@ public final class LegacyMapper {
                 try {
                     state = blockFactory.parseFromInput(value, parserContext).toImmutableState();
                 } catch (InputParseException ignored) {
+                    // We don't need to know specific errors.
                 }
             }
 

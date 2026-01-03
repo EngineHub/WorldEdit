@@ -111,5 +111,62 @@
                 "CLASS_NOW_FINAL"
             ]
         }
+    ],
+    "EditSession is not externally extendable": [
+        {
+            "type": "com.sk89q.worldedit.EditSession",
+            "member": "Method com.sk89q.worldedit.EditSession.green(com.sk89q.worldedit.math.BlockVector3,double,boolean)",
+            "changes": [
+                "METHOD_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.EditSession",
+            "member": "Method com.sk89q.worldedit.EditSession.makeCuboidFaces(com.sk89q.worldedit.regions.Region,com.sk89q.worldedit.world.block.BlockStateHolder)",
+            "changes": [
+                "METHOD_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.EditSession",
+            "member": "Method com.sk89q.worldedit.EditSession.simulateSnow(com.sk89q.worldedit.math.BlockVector3,double)",
+            "changes": [
+                "METHOD_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.EditSession",
+            "member": "Method com.sk89q.worldedit.EditSession.thaw(com.sk89q.worldedit.math.BlockVector3,double)",
+            "changes": [
+                "METHOD_NOW_FINAL"
+            ]
+        }
+    ],
+    "Extending Location made little sense and could not work with the equals implementation": [
+        {
+            "type": "com.sk89q.worldedit.util.Location",
+            "member": "Class com.sk89q.worldedit.util.Location",
+            "changes": [
+                "CLASS_NOW_FINAL"
+            ]
+        }
+    ],
+    "Extending BufferedResponse was impossible due to private constructor": [
+        {
+            "type": "com.sk89q.worldedit.util.net.HttpRequest$BufferedResponse",
+            "member": "Class com.sk89q.worldedit.util.net.HttpRequest$BufferedResponse",
+            "changes": [
+                "CLASS_NOW_FINAL"
+            ]
+        }
+    ],
+    "Extending SideEffectSet made little sense": [
+        {
+            "type": "com.sk89q.worldedit.util.SideEffectSet",
+            "member": "Class com.sk89q.worldedit.util.SideEffectSet",
+            "changes": [
+                "CLASS_NOW_FINAL"
+            ]
+        }
     ]
 }

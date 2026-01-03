@@ -19,10 +19,6 @@
 
 package com.sk89q.worldedit.session;
 
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -57,8 +53,9 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
-import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -74,8 +71,9 @@ public class SessionManager {
 
     public static int EXPIRATION_GRACE = 10 * 60 * 1000;
     private static final int FLUSH_PERIOD = 1000 * 30;
-    private static final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(
-            EvenMoreExecutors.newBoundedCachedThreadPool(0, 1, 5, "WorldEdit Session Saver - %s"));
+    private static final ExecutorService executorService = EvenMoreExecutors.newBoundedCachedThreadPool(
+        0, 1, 5, "WorldEdit Session Saver - %s"
+    );
     private static final Logger LOGGER = LogManagerCompat.getLogger();
     private static final Set<String> warnedInvalidTool = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
@@ -210,7 +208,7 @@ public class SessionManager {
         session.setUseInventory(config.useInventory
                 && !(config.useInventoryOverride
                 && (owner.hasPermission("worldedit.inventory.unrestricted")
-                || (config.useInventoryCreativeOverride && (!(owner instanceof Player) || ((Player) owner).getGameMode() == GameModes.CREATIVE)))));
+                || (config.useInventoryCreativeOverride && (!(owner instanceof Player player) || player.getGameMode() == GameModes.CREATIVE)))));
 
         // Force non-locatable actors to use placeAtPos1
         if (!(owner instanceof Locatable)) {
@@ -245,18 +243,15 @@ public class SessionManager {
      * Save a map of sessions to disk.
      *
      * @param sessions a map of sessions to save
-     * @return a future that completes on save or error
      */
-    private ListenableFuture<?> commit(final Map<SessionKey, LocalSession> sessions) {
+    private void commit(final Map<SessionKey, LocalSession> sessions) {
         checkNotNull(sessions);
 
         if (sessions.isEmpty()) {
-            return Futures.immediateFuture(sessions);
+            return;
         }
 
-        return executorService.submit((Callable<Object>) () -> {
-            Exception exception = null;
-
+        CompletableFuture<Map<SessionKey, LocalSession>> ftr = CompletableFuture.supplyAsync(() -> {
             for (Map.Entry<SessionKey, LocalSession> entry : sessions.entrySet()) {
                 SessionKey key = entry.getKey();
 
@@ -265,16 +260,15 @@ public class SessionManager {
                         store.save(getKey(key), entry.getValue());
                     } catch (IOException e) {
                         LOGGER.warn("Failed to write session for UUID " + getKey(key), e);
-                        exception = e;
                     }
                 }
             }
 
-            if (exception != null) {
-                throw exception;
-            }
-
             return sessions;
+        }, executorService);
+        ftr.exceptionally(t -> {
+            LOGGER.warn("An unexpected error occurred while saving sessions", t);
+            return null;
         });
     }
 

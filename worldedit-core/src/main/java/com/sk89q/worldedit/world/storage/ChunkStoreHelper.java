@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.world.storage;
 
+import com.google.errorprone.annotations.InlineMe;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.NBTInputStream;
 import com.sk89q.jnbt.Tag;
@@ -64,12 +65,12 @@ public class ChunkStoreHelper {
         try (InputStream stream = input.openInputStream();
             NBTInputStream nbt = new NBTInputStream(stream)) {
             Tag<?, ?> tag = nbt.readNamedTag().getTag();
-            if (!(tag instanceof CompoundTag)) {
+            if (!(tag instanceof CompoundTag compoundTag)) {
                 throw new ChunkStoreException("CompoundTag expected for chunk; got "
                     + tag.getClass().getName());
             }
 
-            return (CompoundTag) tag;
+            return compoundTag;
         }
     }
 
@@ -81,6 +82,10 @@ public class ChunkStoreHelper {
      * @throws DataException if the rootTag is not valid chunk data
      * @deprecated Use {@link #getChunk(LinCompoundTag)}
      */
+    @InlineMe(
+        replacement = "ChunkStoreHelper.getChunk(rootTag.toLinTag())",
+        imports = "com.sk89q.worldedit.world.storage.ChunkStoreHelper"
+    )
     @Deprecated
     public static Chunk getChunk(CompoundTag rootTag) throws DataException {
         return getChunk(rootTag.toLinTag());

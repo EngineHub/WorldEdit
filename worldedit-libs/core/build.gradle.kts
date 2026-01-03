@@ -11,10 +11,4 @@ dependencies {
     "shade"(libs.piston.core)
     "shade"(libs.piston.coreAp.runtime)
     "shade"(libs.piston.defaultImpl)
-    // Linbus
-    "shade"(platform(libs.linBus.bom))
-    "shade"(libs.linBus.common)
-    "shade"(libs.linBus.stream)
-    "shade"(libs.linBus.tree)
-    "shade"(libs.linBus.format.snbt)
 }

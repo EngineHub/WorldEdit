@@ -29,6 +29,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -73,7 +74,7 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
         BufferedReader buff = null;
 
         try {
-            FileReader input = new FileReader(this.groupFile);
+            FileReader input = new FileReader(this.groupFile, StandardCharsets.UTF_8);
             buff = new BufferedReader(input);
 
             String line;
@@ -87,12 +88,12 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
                     continue;
                 }
 
-                String[] parts = line.split(":");
+                String[] parts = line.split(":", 0);
 
                 String key = parts[0];
 
                 if (parts.length > 1) {
-                    String[] perms = parts[1].split(",");
+                    String[] perms = parts[1].split(",", 0);
 
                     Set<String> groupPerms = new HashSet<>(Arrays.asList(perms));
                     userGroupPermissions.put(key, groupPerms);
@@ -106,6 +107,7 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
                     buff.close();
                 }
             } catch (IOException ignored) {
+                // If we can't close the stream, oh well
             }
         }
 
@@ -127,7 +129,7 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
         BufferedReader buff =  null;
 
         try {
-            FileReader input = new FileReader(this.userFile);
+            FileReader input = new FileReader(this.userFile, StandardCharsets.UTF_8);
             buff = new BufferedReader(input);
 
             String line;
@@ -143,13 +145,13 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
                     continue;
                 }
 
-                String[] parts = line.split(":");
+                String[] parts = line.split(":", 0);
 
                 String key = parts[0];
 
                 if (parts.length > 1) {
-                    String[] groups = (parts[1] + ",default").split(",");
-                    String[] perms = parts.length > 2 ? parts[2].split(",") : new String[0];
+                    String[] groups = (parts[1] + ",default").split(",", 0);
+                    String[] perms = parts.length > 2 ? parts[2].split(",", 0) : new String[0];
 
                     permsCache.addAll(Arrays.asList(perms));
 
@@ -172,6 +174,7 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
                     buff.close();
                 }
             } catch (IOException ignored) {
+                // If we can't close the stream, oh well
             }
         }
     }
@@ -213,7 +216,7 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
             return new String[0];
         }
 
-        return groups.toArray(new String[groups.size()]);
+        return groups.toArray(new String[0]);
     }
 
     @Override

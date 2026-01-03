@@ -6,6 +6,7 @@ eclipse
 *.iml
 *.ipr
 *.iws
+.kotlin
 
 bin
 build
@@ -23,3 +24,8 @@ runs
 # i18n
 worldedit-core/src/main/resources/lang/*
 !worldedit-core/src/main/resources/lang/strings.json
+
+# docgen
+.archive-unpack/
+commands.rst
+permissions.rst

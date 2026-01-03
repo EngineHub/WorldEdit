@@ -55,7 +55,6 @@ public class Paint implements Contextual<Operation> {
         checkNotNull(destination, "destination");
         checkNotNull(region, "region");
         checkNotNull(function, "function");
-        checkNotNull(density, "density");
         this.destination = destination;
         this.region = region;
         this.function = function;

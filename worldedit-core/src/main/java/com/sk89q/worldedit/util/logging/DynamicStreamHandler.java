@@ -19,6 +19,9 @@
 
 package com.sk89q.worldedit.util.logging;
 
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
+import org.apache.logging.log4j.Logger;
+
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Filter;
 import java.util.logging.Formatter;
@@ -35,6 +38,7 @@ import javax.annotation.Nullable;
  * the delegate handler will receive those records.
  */
 public class DynamicStreamHandler extends StreamHandler {
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     private @Nullable StreamHandler handler;
     private @Nullable Formatter formatter;
@@ -68,7 +72,8 @@ public class DynamicStreamHandler extends StreamHandler {
             handler.setFilter(filter);
             try {
                 handler.setEncoding(encoding);
-            } catch (UnsupportedEncodingException ignored) {
+            } catch (UnsupportedEncodingException e) {
+                LOGGER.warn("Failed to set encoding " + encoding + " on handler", e);
             }
             handler.setLevel(level);
         }

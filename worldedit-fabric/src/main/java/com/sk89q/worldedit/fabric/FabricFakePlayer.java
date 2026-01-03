@@ -29,10 +29,14 @@ import net.minecraft.stats.Stat;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.ChatVisiblity;
 
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class FabricFakePlayer extends ServerPlayer {
-    private static final GameProfile FAKE_WORLDEDIT_PROFILE = new GameProfile(UUID.nameUUIDFromBytes("worldedit".getBytes()), "[WorldEdit]");
+    private static final GameProfile FAKE_WORLDEDIT_PROFILE = new GameProfile(
+        UUID.nameUUIDFromBytes("worldedit".getBytes(StandardCharsets.UTF_8)),
+        "[WorldEdit]"
+    );
     private static final ClientInformation FAKE_CLIENT_INFO = new ClientInformation(
         "en_US", 16, ChatVisiblity.FULL, true, 0, HumanoidArm.LEFT, false, false, ParticleStatus.MINIMAL
     );

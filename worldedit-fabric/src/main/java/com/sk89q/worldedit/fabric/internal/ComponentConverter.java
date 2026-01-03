@@ -38,7 +38,7 @@ import javax.annotation.Nullable;
 public class ComponentConverter {
 
     public static class Serializer {
-        private static final Gson GSON = (new GsonBuilder()).disableHtmlEscaping().create();
+        private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
         private Serializer() {
         }

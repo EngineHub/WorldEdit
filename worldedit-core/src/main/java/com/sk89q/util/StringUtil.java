@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -170,7 +169,7 @@ public final class StringUtil {
     }
 
     /**
-     * <p>Find the Levenshtein distance between two Strings.</p>
+     * Find the Levenshtein distance between two Strings.
      *
      * <p>This is the number of changes needed to change one String into
      * another, where each change is a single character modification (deletion,
@@ -305,20 +304,6 @@ public final class StringUtil {
         }
 
         return type;
-    }
-
-    private static int indexOfRegEx(String input, Pattern pattern) {
-        Matcher m = pattern.matcher(input);
-        return m.find() ? m.start() : -1;
-    }
-
-    private static int lastIndexOfRegEx(String input, Pattern pattern) {
-        // Reverse the input string and run a forwards search on the backwards string
-        StringBuilder builder = new StringBuilder(input).reverse();
-        int reverseIndex = indexOfRegEx(builder.toString(), pattern);
-
-        // If it wasn't found return -1, otherwise take length - index - 1.
-        return (reverseIndex == -1) ? -1 : (input.length() - reverseIndex - 1);
     }
 
     public static List<String> parseListInQuotes(String[] input, char delimiter, char quoteOpen, char quoteClose) {

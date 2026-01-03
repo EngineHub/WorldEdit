@@ -214,9 +214,12 @@ public class ClipboardCommands {
     @Command(
         name = "/rotate",
         desc = "Rotate the contents of the clipboard",
-        descFooter = "Non-destructively rotate the contents of the clipboard.\n"
-            + "Angles are provided in degrees and a positive angle will result in a clockwise rotation. "
-            + "Multiple rotations can be stacked. Interpolation is not performed so angles should be a multiple of 90 degrees.\n"
+        descFooter =
+            """
+            Non-destructively rotate the contents of the clipboard.
+            Angles are provided in degrees and a positive angle will result in a clockwise rotation. \
+            Multiple rotations can be stacked. Interpolation is not performed so angles should be a multiple of 90 degrees.
+            """
     )
     @CommandPermissions("worldedit.clipboard.rotate")
     public void rotate(Actor actor, LocalSession session,

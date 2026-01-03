@@ -225,8 +225,10 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
         int j = points.size() - 1;
 
         for (i = 0; i < points.size(); ++i) {
-            long x = points.get(j).x() + points.get(i).x();
-            long z = points.get(j).z() - points.get(i).z();
+            BlockVector2 iPoint = points.get(i);
+            BlockVector2 jPoint = points.get(j);
+            long x = jPoint.x() + (long) iPoint.x();
+            long z = jPoint.z() - (long) iPoint.z();
             area += x * z;
             j = i;
         }

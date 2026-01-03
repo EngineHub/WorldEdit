@@ -140,7 +140,7 @@ public class FabricPlayer extends AbstractPlayerActor {
     @Override
     @Deprecated
     public void printRaw(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             this.player.sendSystemMessage(
                 net.minecraft.network.chat.Component.literal(part)
             );
@@ -174,7 +174,7 @@ public class FabricPlayer extends AbstractPlayerActor {
     }
 
     private void sendColorized(String msg, ChatFormatting formatting) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             MutableComponent component = net.minecraft.network.chat.Component.literal(part)
                 .withStyle(style -> style.withColor(formatting));
             this.player.sendSystemMessage(component);
@@ -224,12 +224,12 @@ public class FabricPlayer extends AbstractPlayerActor {
     @Override
     public <B extends BlockStateHolder<B>> void sendFakeBlock(BlockVector3 pos, B block) {
         World world = getWorld();
-        if (!(world instanceof FabricWorld)) {
+        if (!(world instanceof FabricWorld fabricWorld)) {
             return;
         }
         BlockPos loc = FabricAdapter.toBlockPos(pos);
         if (block == null) {
-            final ClientboundBlockUpdatePacket packetOut = new ClientboundBlockUpdatePacket(((FabricWorld) world).getWorld(), loc);
+            final ClientboundBlockUpdatePacket packetOut = new ClientboundBlockUpdatePacket(fabricWorld.getWorld(), loc);
             player.connection.send(packetOut);
         } else {
             final ClientboundBlockUpdatePacket packetOut = new ClientboundBlockUpdatePacket(
@@ -237,8 +237,8 @@ public class FabricPlayer extends AbstractPlayerActor {
                 FabricAdapter.adapt(block.toImmutableState())
             );
             player.connection.send(packetOut);
-            if (block instanceof BaseBlock && block.getBlockType().equals(BlockTypes.STRUCTURE_BLOCK)) {
-                final LinCompoundTag nbtData = ((BaseBlock) block).getNbt();
+            if (block instanceof BaseBlock baseBlock && block.getBlockType().equals(BlockTypes.STRUCTURE_BLOCK)) {
+                final LinCompoundTag nbtData = baseBlock.getNbt();
                 if (nbtData != null) {
                     player.connection.send(new ClientboundBlockEntityDataPacket(
                         new BlockPos(pos.x(), pos.y(), pos.z()),

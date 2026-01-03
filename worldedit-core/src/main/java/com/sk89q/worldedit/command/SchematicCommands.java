@@ -113,8 +113,6 @@ public class SchematicCommands {
                      Path schematic,
                      @Arg(desc = "Format name.", def = "sponge")
                          ClipboardFormat format) throws FilenameException {
-        LocalConfiguration config = worldEdit.getConfiguration();
-
         // Schematic.path is relative, so treat it as filename
         String filename = schematic.toString();
         File schematicsRoot = worldEdit.getSchematicsManager().getRoot().toFile();
@@ -142,7 +140,7 @@ public class SchematicCommands {
                                 .append(CodeFormat.wrap("//paste").clickEvent(ClickEvent.of(ClickEvent.Action.SUGGEST_COMMAND, "//paste"))),
                         session::setClipboard)
                 .onFailure("Failed to load schematic", worldEdit.getPlatformManager().getPlatformCommandManager().getExceptionConverter())
-                .buildAndExec(worldEdit.getExecutorService());
+                .buildAndExecNoReturnValue(worldEdit.getExecutorService());
     }
 
     @Command(
@@ -197,7 +195,7 @@ public class SchematicCommands {
                 .setWorkingMessage(TranslatableComponent.of("worldedit.schematic.save.still-saving"))
                 .onSuccess(filename + " saved" + (overwrite ? " (overwriting previous file)." : "."), null)
                 .onFailure("Failed to save schematic", worldEdit.getPlatformManager().getPlatformCommandManager().getExceptionConverter())
-                .buildAndExec(worldEdit.getExecutorService());
+                .buildAndExecNoReturnValue(worldEdit.getExecutorService());
     }
 
     @Command(
@@ -237,9 +235,9 @@ public class SchematicCommands {
             .registerWithSupervisor(worldEdit.getSupervisor(), "Sharing schematic")
             .setDelayMessage(TranslatableComponent.of("worldedit.schematic.save.saving"))
             .setWorkingMessage(TranslatableComponent.of("worldedit.schematic.save.still-saving"))
-            .onSuccess("Shared", (consumer -> consumer.accept(actor)))
+            .onSuccess("Shared", consumer -> consumer.accept(actor))
             .onFailure("Failed to share schematic", worldEdit.getPlatformManager().getPlatformCommandManager().getExceptionConverter())
-            .buildAndExec(worldEdit.getExecutorService());
+            .buildAndExecNoReturnValue(worldEdit.getExecutorService());
     }
 
     @Command(
@@ -336,7 +334,7 @@ public class SchematicCommands {
                 ? "//schem list -p %page%" + flag : null;
 
         WorldEditAsyncCommandBuilder.createAndSendMessage(actor,
-                new SchematicListTask(pathComparator::compare, page, pageCommand),
+                new SchematicListTask(pathComparator, page, pageCommand),
                 SubtleFormat.wrap("(Please wait... gathering schematic list.)"));
     }
 
@@ -366,15 +364,15 @@ public class SchematicCommands {
     }
 
     private abstract static class SchematicOutputTask<T> implements Callable<T> {
-        protected final ClipboardFormat format;
-        protected final ClipboardHolder holder;
+        final ClipboardFormat format;
+        final ClipboardHolder holder;
 
         SchematicOutputTask(ClipboardFormat format, ClipboardHolder holder) {
             this.format = format;
             this.holder = holder;
         }
 
-        protected void writeToOutputStream(OutputStream outputStream) throws IOException, WorldEditException {
+        void writeToOutputStream(OutputStream outputStream) throws IOException, WorldEditException {
             Clipboard clipboard = holder.getClipboard();
             Transform transform = holder.getTransform();
             Clipboard target = clipboard.transform(transform);

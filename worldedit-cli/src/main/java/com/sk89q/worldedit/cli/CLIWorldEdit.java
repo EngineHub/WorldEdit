@@ -265,7 +265,7 @@ public class CLIWorldEdit {
     }
 
     public void run(InputStream inputStream) {
-        try (Scanner scanner = new Scanner(inputStream)) {
+        try (Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8)) {
             while (true) {
                 System.err.print("> ");
                 if (!scanner.hasNextLine()) {
@@ -368,14 +368,14 @@ public class CLIWorldEdit {
 
             app.run(inputStream);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("An error occurred", e);
             exitCode = 1;
         } finally {
             app.onStopped();
             try {
                 inputStream.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.warn("Failed to close stdin", e);
             }
         }
 

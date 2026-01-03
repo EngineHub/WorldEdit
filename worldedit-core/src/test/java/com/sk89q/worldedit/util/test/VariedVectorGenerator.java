@@ -55,15 +55,16 @@ public class VariedVectorGenerator {
         this.divisionsXZ = divisionsXZ == -1 ? DEFAULT_DIVISIONS_XZ : divisionsXZ;
         this.divisionsY = divisionsY == -1 ? DEFAULT_DIVISIONS_Y : divisionsY;
         maxXZ = 30_000_000;
-        maxY = vanilla ? 2047 : Integer.MAX_VALUE;
+        int intMaxY = vanilla ? 2047 : Integer.MAX_VALUE;
+        maxY = intMaxY;
         xzStep = (maxXZ * 2) / this.divisionsXZ;
         yStep = (maxY * 2) / this.divisionsY;
         alwaysInclude =
             ImmutableSet.of(BlockVector3.ZERO, BlockVector3.ONE,
-                BlockVector3.at(-maxXZ, -maxY - 1, -maxXZ),
-                BlockVector3.at(maxXZ, -maxY - 1, maxXZ),
-                BlockVector3.at(-maxXZ, maxY, -maxXZ),
-                BlockVector3.at(maxXZ, maxY, maxXZ));
+                BlockVector3.at(-maxXZ, -intMaxY - 1, -maxXZ),
+                BlockVector3.at(maxXZ, -intMaxY - 1, maxXZ),
+                BlockVector3.at(-maxXZ, intMaxY, -maxXZ),
+                BlockVector3.at(maxXZ, intMaxY, maxXZ));
     }
 
     public Stream<BlockVector3> makeVectorsStream() {

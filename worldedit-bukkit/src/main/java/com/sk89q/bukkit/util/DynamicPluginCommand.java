@@ -95,8 +95,7 @@ public class DynamicPluginCommand extends org.bukkit.command.Command implements 
             return true;
         }
 
-        if (registeredWith instanceof CommandInspector) {
-            CommandInspector resolver = (CommandInspector) registeredWith;
+        if (registeredWith instanceof CommandInspector resolver) {
             return resolver.testPermission(sender, this);
         } else if (registeredWith instanceof CommandsManager<?>) {
             try {
@@ -107,10 +106,11 @@ public class DynamicPluginCommand extends org.bukkit.command.Command implements 
                 }
                 return false;
             } catch (Throwable ignored) {
+                // If there are errors, we want to just fallback to the super method
             }
-        } else if (PermissionsResolverManager.isInitialized() && sender instanceof OfflinePlayer) {
+        } else if (PermissionsResolverManager.isInitialized() && sender instanceof OfflinePlayer offlinePlayer) {
             for (String permission : permissions) {
-                if (PermissionsResolverManager.getInstance().hasPermission((OfflinePlayer) sender, permission)) {
+                if (PermissionsResolverManager.getInstance().hasPermission(offlinePlayer, permission)) {
                     return true;
                 }
             }

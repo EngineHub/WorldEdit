@@ -22,6 +22,7 @@ package com.sk89q.worldedit.cli.schematic;
 import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.cli.CLIWorld;
@@ -213,7 +214,7 @@ public class ClipboardWorld extends AbstractWorld implements Clipboard, CLIWorld
                 writer.write(this);
                 dirty = false;
             } catch (IOException e) {
-                e.printStackTrace();
+                WorldEdit.logger.warn("Failed to save clipboard to file: " + file, e);
             }
         }
     }

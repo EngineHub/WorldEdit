@@ -65,7 +65,7 @@ public class NeoForgeCommandSender extends AbstractNonPlayerActor {
     @Override
     @Deprecated
     public void printRaw(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             sendMessage(net.minecraft.network.chat.Component.literal(part));
         }
     }
@@ -97,7 +97,7 @@ public class NeoForgeCommandSender extends AbstractNonPlayerActor {
     }
 
     private void sendColorized(String msg, ChatFormatting formatting) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             var component = net.minecraft.network.chat.Component.literal(part);
             component.withStyle(formatting);
             sendMessage(component);

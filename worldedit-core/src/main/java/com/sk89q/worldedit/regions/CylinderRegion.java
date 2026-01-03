@@ -107,7 +107,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
 
     @Override
     public Vector3 getCenter() {
-        return center.toVector3((maxY + minY) / 2);
+        return center.toVector3((maxY + minY) / 2.0);
     }
 
     /**

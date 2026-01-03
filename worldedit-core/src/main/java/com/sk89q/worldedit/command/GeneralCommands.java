@@ -127,17 +127,14 @@ public class GeneralCommands {
             return TextComponent.of("There is not yet a replacement for //fast"
                 + " with no arguments");
         }
-        String arg0 = args.get(0).toLowerCase(Locale.ENGLISH);
+        String arg0 = args.get(0).toLowerCase(Locale.ROOT);
         String flipped;
         switch (arg0) {
-            case "on":
-                flipped = "off";
-                break;
-            case "off":
-                flipped = "on";
-                break;
-            default:
+            case "on" -> flipped = "off";
+            case "off" -> flipped = "on";
+            default -> {
                 return TextComponent.of("There is no replacement for //fast " + arg0);
+            }
         }
         return CommandUtil.createNewCommandReplacementText("//perf " + flipped);
     }
@@ -503,7 +500,6 @@ public class GeneralCommands {
             String command = "/searchitem " + (blocksOnly ? "-b " : "") + (itemsOnly ? "-i " : "") + "-p %page% " + search;
             Map<String, Component> results = new TreeMap<>();
             String idMatch = search.replace(' ', '_');
-            String nameMatch = search.toLowerCase(Locale.ROOT);
             for (ItemType searchType : ItemType.REGISTRY) {
                 if (blocksOnly && !searchType.hasBlockType()) {
                     continue;

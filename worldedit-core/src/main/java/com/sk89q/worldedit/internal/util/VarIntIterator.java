@@ -46,7 +46,8 @@ public class VarIntIterator implements PrimitiveIterator.OfInt {
         }
 
         nextInt = readNextInt();
-        return hasNextInt = true;
+        hasNextInt = true;
+        return true;
     }
 
     private int readNextInt() {

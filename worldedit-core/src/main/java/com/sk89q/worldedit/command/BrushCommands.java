@@ -485,7 +485,7 @@ public class BrushCommands {
                     ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
                 })
                 .onFailure(TranslatableComponent.of("worldedit.asset.load.failed"), worldEdit.getPlatformManager().getPlatformCommandManager().getExceptionConverter())
-                .buildAndExec(worldEdit.getExecutorService());
+                .buildAndExecNoReturnValue(worldEdit.getExecutorService());
         } else {
             player.printError(TranslatableComponent.of("worldedit.brush.heightmap.unknown", TextComponent.of(imageName)));
         }

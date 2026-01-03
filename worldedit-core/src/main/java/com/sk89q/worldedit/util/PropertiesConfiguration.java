@@ -21,6 +21,7 @@
 
 package com.sk89q.worldedit.util;
 
+import com.google.errorprone.annotations.InlineMe;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
@@ -71,6 +72,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
      * @param path the path to the configuration
      * @deprecated Use {@link PropertiesConfiguration#PropertiesConfiguration(Path)}
      */
+    @InlineMe(replacement = "this(path.toPath())")
     @Deprecated
     public PropertiesConfiguration(File path) {
         this(path.toPath());
@@ -81,6 +83,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         try (InputStream stream = new FileInputStream(path)) {
             properties.load(stream);
         } catch (FileNotFoundException ignored) {
+            // We expect to not find the file the first time
         } catch (IOException e) {
             LOGGER.warn("Failed to read configuration", e);
         }
@@ -109,6 +112,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         try {
             wandItem = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(wandItem)).id();
         } catch (Throwable ignored) {
+            // This is just for compatibility with old configs, ignore errors
         }
         superPickaxeDrop = getBool("super-pickaxe-drop-items", superPickaxeDrop);
         superPickaxeManyDrop = getBool("super-pickaxe-many-drop-items", superPickaxeManyDrop);
@@ -119,6 +123,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         try {
             navigationWand = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(navigationWand)).id();
         } catch (Throwable ignored) {
+            // This is just for compatibility with old configs, ignore errors
         }
         navigationWandMaxDistance = getInt("nav-wand-distance", navigationWandMaxDistance);
         navigationUseGlass = getBool("nav-use-glass", navigationUseGlass);
@@ -255,12 +260,13 @@ public class PropertiesConfiguration extends LocalConfiguration {
             return set;
         } else {
             Set<Integer> set = new HashSet<>();
-            String[] parts = val.split(",");
+            String[] parts = val.split(",", 0);
             for (String part : parts) {
                 try {
                     int v = Integer.parseInt(part.trim());
                     set.add(v);
                 } catch (NumberFormatException ignored) {
+                    // Historically ignored
                 }
             }
             return set;
@@ -281,13 +287,10 @@ public class PropertiesConfiguration extends LocalConfiguration {
             return new HashSet<>(Arrays.asList(def));
         } else {
             Set<String> set = new HashSet<>();
-            String[] parts = val.split(",");
+            String[] parts = val.split(",", 0);
             for (String part : parts) {
-                try {
-                    String v = part.trim();
-                    set.add(v);
-                } catch (NumberFormatException ignored) {
-                }
+                String v = part.trim();
+                set.add(v);
             }
             return set;
         }

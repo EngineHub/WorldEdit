@@ -317,7 +317,12 @@ public final class SpongeWorld extends AbstractWorld {
             throw new RuntimeException(e);
         } finally {
             // Remove temp world
-            server.worldManager().unloadWorld(key).thenRun(() -> server.worldManager().deleteWorld(key));
+            server.worldManager().unloadWorld(key)
+                .thenCompose(b -> server.worldManager().deleteWorld(key))
+                .exceptionally(t -> {
+                    LOGGER.warn("Failed to delete temp world", t);
+                    return null;
+                });
         }
 
         return true;
@@ -351,7 +356,12 @@ public final class SpongeWorld extends AbstractWorld {
             case CHERRY -> TreePlacements.CHERRY_CHECKED;
             case PALE_OAK -> TreePlacements.PALE_OAK_CHECKED;
             case PALE_OAK_CREAKING -> TreePlacements.PALE_OAK_CREAKING_CHECKED;
-            case RANDOM -> createTreeFeatureGenerator(com.sk89q.worldedit.util.TreeGenerator.TreeType.values()[ThreadLocalRandom.current().nextInt(com.sk89q.worldedit.util.TreeGenerator.TreeType.values().length)]);
+            case RANDOM -> {
+                // We're intentionally using index here to get a random tree type
+                @SuppressWarnings("EnumOrdinal")
+                com.sk89q.worldedit.util.TreeGenerator.TreeType randomTreeType = com.sk89q.worldedit.util.TreeGenerator.TreeType.values()[ThreadLocalRandom.current().nextInt(com.sk89q.worldedit.util.TreeGenerator.TreeType.values().length)];
+                yield createTreeFeatureGenerator(randomTreeType);
+            }
             default -> null;
         };
     }
@@ -467,16 +477,15 @@ public final class SpongeWorld extends AbstractWorld {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null) {
-            return false;
-        } else if ((o instanceof SpongeWorld other)) {
-            ServerWorld otherWorld = other.worldRef.get();
-            ServerWorld thisWorld = worldRef.get();
-            return otherWorld != null && otherWorld.equals(thisWorld);
-        } else {
-            return o instanceof com.sk89q.worldedit.world.World
-                && ((com.sk89q.worldedit.world.World) o).getName().equals(getName());
-        }
+        return switch (o) {
+            case SpongeWorld other -> {
+                ServerWorld otherWorld = other.worldRef.get();
+                ServerWorld thisWorld = worldRef.get();
+                yield otherWorld != null && otherWorld.equals(thisWorld);
+            }
+            case World world -> world.getName().equals(getName());
+            case null, default -> false;
+        };
     }
 
     @Override

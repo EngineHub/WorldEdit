@@ -36,12 +36,41 @@ import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 
 import java.util.Optional;
-import java.util.function.Function;
 
 public enum SelectorChoice implements SelectorChoiceOrList {
-    CUBOID(CuboidRegionSelector::new, CuboidRegionSelector::new, "worldedit.select.cuboid.message"),
-    EXTEND(ExtendingCuboidRegionSelector::new, ExtendingCuboidRegionSelector::new, "worldedit.select.extend.message"),
-    POLY(Polygonal2DRegionSelector::new, Polygonal2DRegionSelector::new, "worldedit.select.poly.message") {
+    CUBOID("worldedit.select.cuboid.message") {
+        @Override
+        public RegionSelector createNewSelector(World world) {
+            return new CuboidRegionSelector(world);
+        }
+
+        @Override
+        public RegionSelector createNewSelector(RegionSelector oldSelector) {
+            return new CuboidRegionSelector(oldSelector);
+        }
+    },
+    EXTEND("worldedit.select.extend.message") {
+        @Override
+        public RegionSelector createNewSelector(World world) {
+            return new ExtendingCuboidRegionSelector(world);
+        }
+
+        @Override
+        public RegionSelector createNewSelector(RegionSelector oldSelector) {
+            return new ExtendingCuboidRegionSelector(oldSelector);
+        }
+    },
+    POLY("worldedit.select.poly.message") {
+        @Override
+        public RegionSelector createNewSelector(World world) {
+            return new Polygonal2DRegionSelector(world);
+        }
+
+        @Override
+        public RegionSelector createNewSelector(RegionSelector oldSelector) {
+            return new Polygonal2DRegionSelector(oldSelector);
+        }
+
         @Override
         public void explainNewSelector(Actor actor) {
             super.explainNewSelector(actor);
@@ -51,7 +80,17 @@ public enum SelectorChoice implements SelectorChoiceOrList {
             )));
         }
     },
-    POLYEXTEND(ExtendingPolygonal2DRegionSelector::new, ExtendingPolygonal2DRegionSelector::new, "worldedit.select.polyextend.message") {
+    POLYEXTEND("worldedit.select.polyextend.message") {
+        @Override
+        public RegionSelector createNewSelector(World world) {
+            return new ExtendingPolygonal2DRegionSelector(world);
+        }
+
+        @Override
+        public RegionSelector createNewSelector(RegionSelector oldSelector) {
+            return new ExtendingPolygonal2DRegionSelector(oldSelector);
+        }
+
         @Override
         public void explainNewSelector(Actor actor) {
             super.explainNewSelector(actor);
@@ -61,10 +100,50 @@ public enum SelectorChoice implements SelectorChoiceOrList {
             )));
         }
     },
-    ELLIPSOID(EllipsoidRegionSelector::new, EllipsoidRegionSelector::new, "worldedit.select.ellipsoid.message"),
-    SPHERE(SphereRegionSelector::new, SphereRegionSelector::new, "worldedit.select.sphere.message"),
-    CYL(CylinderRegionSelector::new, CylinderRegionSelector::new, "worldedit.select.cyl.message"),
-    CONVEX(ConvexPolyhedralRegionSelector::new, ConvexPolyhedralRegionSelector::new, "worldedit.select.convex.message") {
+    ELLIPSOID("worldedit.select.ellipsoid.message") {
+        @Override
+        public RegionSelector createNewSelector(World world) {
+            return new EllipsoidRegionSelector(world);
+        }
+
+        @Override
+        public RegionSelector createNewSelector(RegionSelector oldSelector) {
+            return new EllipsoidRegionSelector(oldSelector);
+        }
+    },
+    SPHERE("worldedit.select.sphere.message") {
+        @Override
+        public RegionSelector createNewSelector(World world) {
+            return new SphereRegionSelector(world);
+        }
+
+        @Override
+        public RegionSelector createNewSelector(RegionSelector oldSelector) {
+            return new SphereRegionSelector(oldSelector);
+        }
+    },
+    CYL("worldedit.select.cyl.message") {
+        @Override
+        public RegionSelector createNewSelector(World world) {
+            return new CylinderRegionSelector(world);
+        }
+
+        @Override
+        public RegionSelector createNewSelector(RegionSelector oldSelector) {
+            return new CylinderRegionSelector(oldSelector);
+        }
+    },
+    CONVEX("worldedit.select.convex.message") {
+        @Override
+        public RegionSelector createNewSelector(World world) {
+            return new ConvexPolyhedralRegionSelector(world);
+        }
+
+        @Override
+        public RegionSelector createNewSelector(RegionSelector oldSelector) {
+            return new ConvexPolyhedralRegionSelector(oldSelector);
+        }
+
         @Override
         public void explainNewSelector(Actor actor) {
             super.explainNewSelector(actor);
@@ -76,25 +155,17 @@ public enum SelectorChoice implements SelectorChoiceOrList {
     },
     ;
 
-    private final Function<World, RegionSelector> newFromWorld;
-    private final Function<RegionSelector, RegionSelector> newFromOld;
+    // Suppress ImmutableEnumChecker: Component is immutable but not able to be marked as such
+    @SuppressWarnings("ImmutableEnumChecker")
     private final Component messageComponent;
 
-    SelectorChoice(Function<World, RegionSelector> newFromWorld,
-                   Function<RegionSelector, RegionSelector> newFromOld,
-                   String message) {
-        this.newFromWorld = newFromWorld;
-        this.newFromOld = newFromOld;
+    SelectorChoice(String message) {
         this.messageComponent = TranslatableComponent.of(message);
     }
 
-    public RegionSelector createNewSelector(World world) {
-        return this.newFromWorld.apply(world);
-    }
+    public abstract RegionSelector createNewSelector(World world);
 
-    public RegionSelector createNewSelector(RegionSelector oldSelector) {
-        return this.newFromOld.apply(oldSelector);
-    }
+    public abstract RegionSelector createNewSelector(RegionSelector oldSelector);
 
     public void explainNewSelector(Actor actor) {
         actor.printInfo(messageComponent);

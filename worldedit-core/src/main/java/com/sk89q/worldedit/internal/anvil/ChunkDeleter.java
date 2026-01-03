@@ -90,14 +90,14 @@ public final class ChunkDeleter {
                     chunkDeleter.getDeletedChunkCount(), chunkDeleter.getDeletionsRequested(),
                     System.currentTimeMillis() - start);
             if (deleteOnSuccess) {
-                boolean deletedFile = false;
                 try {
-                    deletedFile = Files.deleteIfExists(chunkFile);
-                } catch (IOException ignored) {
-                }
-                if (!deletedFile) {
-                    LOGGER.warn("Chunk deletion file could not be cleaned up. This may have unintended consequences"
-                        + " on next startup, or if /delchunks is used again.");
+                    Files.deleteIfExists(chunkFile);
+                } catch (IOException e) {
+                    LOGGER.warn(
+                        "Chunk deletion file could not be cleaned up. This may have unintended consequences"
+                            + " on next startup, or if /delchunks is used again.",
+                        e
+                    );
                 }
             }
         } else {
@@ -169,8 +169,8 @@ public final class ChunkDeleter {
             final RegionFilePos minRegion = new RegionFilePos(minChunk);
             final RegionFilePos maxRegion = new RegionFilePos(maxChunk);
             Map<Path, Stream<BlockVector2>> groupedChunks = new HashMap<>();
-            for (int regX = minRegion.getX(); regX <= maxRegion.getX(); regX++) {
-                for (int regZ = minRegion.getZ(); regZ <= maxRegion.getZ(); regZ++) {
+            for (int regX = minRegion.x(); regX <= maxRegion.x(); regX++) {
+                for (int regZ = minRegion.z(); regZ <= maxRegion.z(); regZ++) {
                     final Path regionPath = worldPath.resolve("region").resolve(new RegionFilePos(regX, regZ).getFileName());
                     if (!Files.exists(regionPath)) {
                         continue;
@@ -301,55 +301,13 @@ public final class ChunkDeleter {
         }
     }
 
-    private static class RegionFilePos {
-        private final int x;
-        private final int z;
-
+    private record RegionFilePos(int x, int z) {
         RegionFilePos(BlockVector2 chunk) {
-            this.x = chunk.x() >> 5;
-            this.z = chunk.z() >> 5;
+            this(chunk.x() >> 5, chunk.z() >> 5);
         }
 
-        RegionFilePos(int regX, int regZ) {
-            this.x = regX;
-            this.z = regZ;
-        }
-
-        public int getX() {
-            return x;
-        }
-
-        public int getZ() {
-            return z;
-        }
-
-        public String getFileName() {
+        private String getFileName() {
             return "r." + x + "." + z + ".mca";
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-
-            RegionFilePos that = (RegionFilePos) o;
-
-            if (x != that.x) {
-                return false;
-            }
-            return z == that.z;
-
-        }
-
-        @Override
-        public int hashCode() {
-            int result = x;
-            result = 31 * result + z;
-            return result;
         }
 
         @Override

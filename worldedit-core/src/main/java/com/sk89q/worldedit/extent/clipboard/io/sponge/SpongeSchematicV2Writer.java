@@ -179,11 +179,7 @@ public class SpongeSchematicV2Writer implements ClipboardWriter {
                         paletteMax++;
                     }
 
-                    while ((blockId & -128) != 0) {
-                        buffer.write(blockId & 127 | 128);
-                        blockId >>>= 7;
-                    }
-                    buffer.write(blockId);
+                    WriterUtil.writeVarInt(buffer, blockId);
                 }
             }
         }
@@ -239,11 +235,7 @@ public class SpongeSchematicV2Writer implements ClipboardWriter {
                     paletteMax++;
                 }
 
-                while ((biomeId & -128) != 0) {
-                    buffer.write(biomeId & 127 | 128);
-                    biomeId >>>= 7;
-                }
-                buffer.write(biomeId);
+                WriterUtil.writeVarInt(buffer, biomeId);
             }
         }
 

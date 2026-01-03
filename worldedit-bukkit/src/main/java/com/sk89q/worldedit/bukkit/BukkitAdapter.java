@@ -104,8 +104,8 @@ public class BukkitAdapter {
      * @return a wrapped Bukkit world
      */
     public static BukkitWorld asBukkitWorld(World world) {
-        if (world instanceof BukkitWorld) {
-            return (BukkitWorld) world;
+        if (world instanceof BukkitWorld bukkitWorld) {
+            return bukkitWorld;
         } else {
             BukkitWorld bukkitWorld = WorldEditPlugin.getInstance().getInternalPlatform().matchWorld(world);
             if (bukkitWorld == null) {
@@ -153,12 +153,11 @@ public class BukkitAdapter {
      * @return The Bukkit command sender
      */
     public static CommandSender adapt(Actor actor) {
-        if (actor instanceof com.sk89q.worldedit.entity.Player) {
-            return adapt((com.sk89q.worldedit.entity.Player) actor);
-        } else if (actor instanceof BukkitBlockCommandSender) {
-            return ((BukkitBlockCommandSender) actor).getSender();
-        }
-        return ((BukkitCommandSender) actor).getSender();
+        return switch (actor) {
+            case com.sk89q.worldedit.entity.Player player -> adapt(player);
+            case BukkitBlockCommandSender bukkitBlockCommandSender -> bukkitBlockCommandSender.getSender();
+            default -> ((BukkitCommandSender) actor).getSender();
+        };
     }
 
     /**
@@ -178,19 +177,15 @@ public class BukkitAdapter {
      * @return a WorldEdit direction
      */
     public static Direction adapt(@Nullable BlockFace face) {
-        if (face == null) {
-            return null;
-        }
-        switch (face) {
-            case NORTH: return Direction.NORTH;
-            case SOUTH: return Direction.SOUTH;
-            case WEST: return Direction.WEST;
-            case EAST: return Direction.EAST;
-            case DOWN: return Direction.DOWN;
-            case UP:
-            default:
-                return Direction.UP;
-        }
+        return switch (face) {
+            case null -> null;
+            case NORTH -> Direction.NORTH;
+            case SOUTH -> Direction.SOUTH;
+            case WEST -> Direction.WEST;
+            case EAST -> Direction.EAST;
+            case DOWN -> Direction.DOWN;
+            default -> Direction.UP;
+        };
     }
 
     /**
@@ -201,8 +196,8 @@ public class BukkitAdapter {
      */
     public static org.bukkit.World adapt(World world) {
         checkNotNull(world);
-        if (world instanceof BukkitWorld) {
-            return ((BukkitWorld) world).getWorld();
+        if (world instanceof BukkitWorld bukkitWorld) {
+            return bukkitWorld.getWorld();
         } else {
             org.bukkit.World match = Bukkit.getServer().getWorld(world.getName());
             if (match != null) {

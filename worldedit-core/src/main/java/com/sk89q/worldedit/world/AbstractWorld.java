@@ -105,6 +105,8 @@ public abstract class AbstractWorld implements World {
     public void fixLighting(Iterable<BlockVector2> chunks) {
     }
 
+    // Suppress InlineMeSuggester: This method cannot be made final due to backwards compatibility
+    @SuppressWarnings("InlineMeSuggester")
     @Deprecated
     @Override
     public boolean playEffect(Vector3 position, int type, int data) {
@@ -187,7 +189,8 @@ public abstract class AbstractWorld implements World {
         }
 
         @Deprecated
-        public void play() {
+        @SuppressWarnings("deprecation")
+        private void play() {
             playEffect(position, 2001, blockType.getLegacyId());
         }
 

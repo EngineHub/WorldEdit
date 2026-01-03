@@ -30,7 +30,9 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class SideEffectSet {
+// Suppress EnumOrdinal: We are, like EnumSet, using ordinal values for bit manipulation.
+@SuppressWarnings("EnumOrdinal")
+public final class SideEffectSet {
     private static final SideEffectSet DEFAULT = new SideEffectSet(ImmutableMap.of());
     private static final SideEffectSet NONE = new SideEffectSet(
         Arrays.stream(SideEffect.values())
@@ -46,7 +48,8 @@ public class SideEffectSet {
         int maxEffects = Integer.SIZE / 2;
         Verify.verify(
             SideEffect.values().length <= maxEffects,
-            "Implementation requires less than " + maxEffects + " side effects"
+            "Implementation requires less than %s side effects",
+            maxEffects
         );
         Verify.verify(
             SideEffect.State.OFF.ordinal() == 0,

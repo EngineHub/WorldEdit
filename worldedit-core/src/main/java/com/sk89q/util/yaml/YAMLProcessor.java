@@ -19,7 +19,9 @@
 
 package com.sk89q.util.yaml;
 
+import com.google.errorprone.annotations.InlineMe;
 import com.sk89q.util.StringUtil;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.DumperOptions;
@@ -121,6 +123,7 @@ public class YAMLProcessor extends YAMLNode {
      *
      * @deprecated Use {@link #YAMLProcessor(Path, boolean, YAMLFormat)} instead.
      */
+    @InlineMe(replacement = "this(file.toPath(), writeDefaults, format)")
     @Deprecated
     public YAMLProcessor(File file, boolean writeDefaults, YAMLFormat format) {
         this(file.toPath(), writeDefaults, format);
@@ -135,9 +138,10 @@ public class YAMLProcessor extends YAMLNode {
      *
      * @deprecated Use {@link #YAMLProcessor(Path, boolean)} instead.
      */
+    @InlineMe(replacement = "this(file.toPath(), writeDefaults, YAMLFormat.COMPACT)", imports = "com.sk89q.util.yaml.YAMLFormat")
     @Deprecated
     public YAMLProcessor(File file, boolean writeDefaults) {
-        this(file, writeDefaults, YAMLFormat.COMPACT);
+        this(file.toPath(), writeDefaults, YAMLFormat.COMPACT);
     }
 
     /**
@@ -237,7 +241,8 @@ public class YAMLProcessor extends YAMLNode {
                 }
             }
             return true;
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            WorldEdit.logger.warn("Could not save YAML configuration to " + path.toAbsolutePath(), e);
         }
 
         return false;

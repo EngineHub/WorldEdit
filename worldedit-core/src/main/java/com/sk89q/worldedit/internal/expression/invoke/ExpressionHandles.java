@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.internal.expression.invoke;
 
 import com.google.common.base.Throwables;
+import com.google.errorprone.annotations.Keep;
 import com.sk89q.worldedit.internal.expression.CompiledExpression;
 import com.sk89q.worldedit.internal.expression.EvaluationException;
 import com.sk89q.worldedit.internal.expression.ExecutionData;
@@ -200,12 +201,12 @@ class ExpressionHandles {
         String name = nameToken.getText();
         LocalSlot slot = data.slots().getSlot(name)
             .orElseThrow(varNotInitException(nameToken));
-        if (!(slot instanceof LocalSlot.Variable)) {
+        if (!(slot instanceof LocalSlot.Variable variable)) {
             throw ExpressionHelper.evalException(
                 nameToken, "'" + name + "' is not a variable"
             );
         }
-        return (LocalSlot.Variable) slot;
+        return variable;
     }
 
     static double getSlotValue(ExecutionData data, Token nameToken) {
@@ -236,6 +237,7 @@ class ExpressionHandles {
         );
     }
 
+    @Keep
     private static boolean doubleToBool(double bool) {
         return bool != 0;
     }
@@ -264,6 +266,7 @@ class ExpressionHandles {
             init, condition, body, update);
     }
 
+    @Keep
     private static Double whileForLoopImpl(ExecutionData data,
                                            @Nullable MethodHandle init,
                                            MethodHandle condition,
@@ -296,6 +299,7 @@ class ExpressionHandles {
         return insertArguments(DO_WHILE_LOOP_IMPL, 1, condition, body);
     }
 
+    @Keep
     private static Double doWhileLoopImpl(ExecutionData data,
                                           MethodHandle condition,
                                           ExecNode body) {
@@ -324,6 +328,7 @@ class ExpressionHandles {
             first, last, counter, body);
     }
 
+    @Keep
     private static Double simpleForLoopImpl(ExecutionData data,
                                             MethodHandle getFirst,
                                             MethodHandle getLast,
@@ -356,6 +361,7 @@ class ExpressionHandles {
         return insertArguments(SWITCH_IMPL, 1, cases, getValue, defaultCase);
     }
 
+    @Keep
     private static Double switchImpl(ExecutionData data,
                                      Double2ObjectMap<ExecNode> cases,
                                      MethodHandle getValue,

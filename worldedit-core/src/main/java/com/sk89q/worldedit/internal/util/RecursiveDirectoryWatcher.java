@@ -219,6 +219,7 @@ public class RecursiveDirectoryWatcher implements Closeable {
                     }
                 }
             } catch (ClosedWatchServiceException | FilenameException ignored) {
+                // Watch service closed, exit
             }
             LOGGER.debug("RecursiveDirectoryWatcher::EventConsumer exited");
         });

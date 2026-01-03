@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.event.platform;
 
+import com.google.errorprone.annotations.InlineMe;
 import com.sk89q.worldedit.event.Cancellable;
 import com.sk89q.worldedit.event.Event;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -47,6 +48,7 @@ public class BlockInteractEvent extends Event implements Cancellable {
      * @param location the location of the block
      * @param type the type of interaction
      */
+    @InlineMe(replacement = "this(cause, location, null, type)")
     @Deprecated
     public BlockInteractEvent(Actor cause, Location location, Interaction type) {
         this(cause, location, null, type);

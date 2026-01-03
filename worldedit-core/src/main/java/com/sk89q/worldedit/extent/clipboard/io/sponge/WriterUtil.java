@@ -30,6 +30,8 @@ import org.enginehub.linbus.tree.LinFloatTag;
 import org.enginehub.linbus.tree.LinListTag;
 import org.enginehub.linbus.tree.LinTagType;
 
+import java.io.ByteArrayOutputStream;
+
 class WriterUtil {
     static LinListTag<LinCompoundTag> encodeEntities(Clipboard clipboard, boolean positionIsRelative) {
         LinListTag.Builder<LinCompoundTag> entities = LinListTag.builder(LinTagType.compoundTag());
@@ -87,5 +89,13 @@ class WriterUtil {
             .add(LinFloatTag.of(location.getYaw()))
             .add(LinFloatTag.of(location.getPitch()))
             .build();
+    }
+
+    static void writeVarInt(ByteArrayOutputStream out, int value) {
+        while ((value & -128) != 0) {
+            out.write((value & 127) | 128);
+            value >>>= 7;
+        }
+        out.write(value);
     }
 }

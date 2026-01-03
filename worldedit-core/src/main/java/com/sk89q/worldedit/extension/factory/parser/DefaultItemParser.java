@@ -64,7 +64,7 @@ public class DefaultItemParser extends InputParser<BaseItem> {
         // Legacy matcher
         if (context.isTryingLegacy()) {
             try {
-                String[] split = input.split(":");
+                String[] split = input.split(":", 2);
                 if (split.length == 0) {
                     throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.invalid-colon"));
                 } else if (split.length == 1) {
@@ -76,6 +76,7 @@ public class DefaultItemParser extends InputParser<BaseItem> {
                     item = new BaseItem(itemType);
                 }
             } catch (NumberFormatException ignored) {
+                // If it doesn't match legacy, just parse it normally
             }
         }
 
@@ -139,8 +140,8 @@ public class DefaultItemParser extends InputParser<BaseItem> {
     }
 
     private BaseItemStack getItemInHand(Actor actor, HandSide handSide) throws InputParseException {
-        if (actor instanceof Player) {
-            return ((Player) actor).getItemInHand(handSide);
+        if (actor instanceof Player player) {
+            return player.getItemInHand(handSide);
         } else {
             throw new InputParseException(TranslatableComponent.of(
                     "worldedit.error.parser.player-only",

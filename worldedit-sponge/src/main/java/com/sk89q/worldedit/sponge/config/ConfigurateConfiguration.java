@@ -67,6 +67,7 @@ public class ConfigurateConfiguration extends LocalConfiguration {
         try {
             wandItem = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(wandItem)).id();
         } catch (Throwable ignored) {
+            // This is just for old configs, so ignore errors
         }
 
         defaultChangeLimit = Math.max(-1, node.node("limits", "max-blocks-changed", "default").getInt(defaultChangeLimit));
@@ -118,6 +119,7 @@ public class ConfigurateConfiguration extends LocalConfiguration {
         try {
             navigationWand = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(navigationWand)).id();
         } catch (Throwable ignored) {
+            // This is just for old configs, so ignore errors
         }
         navigationWandMaxDistance = node.node("navigation-wand", "max-distance").getInt(navigationWandMaxDistance);
         navigationUseGlass = node.node("navigation", "use-glass").getBoolean(navigationUseGlass);
