@@ -24,7 +24,6 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.FileDialogUtil;
-import com.sk89q.worldedit.util.auth.AuthorizationException;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.serializer.plain.PlainComponentSerializer;
@@ -43,14 +42,12 @@ public class CLICommandSender implements Actor {
      */
     private static final UUID DEFAULT_ID = UUID.fromString("a233eb4b-4cab-42cd-9fd9-7e7b9a3f74be");
 
-    private final CLIWorldEdit app;
     private final Logger sender;
 
     public CLICommandSender(CLIWorldEdit app, Logger sender) {
         checkNotNull(app);
         checkNotNull(sender);
 
-        this.app = app;
         this.sender = sender;
     }
 
@@ -67,7 +64,7 @@ public class CLICommandSender implements Actor {
     @Override
     @Deprecated
     public void printRaw(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             sender.info(part);
         }
     }
@@ -80,7 +77,7 @@ public class CLICommandSender implements Actor {
     @Override
     @Deprecated
     public void print(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             sender.info(ANSI_PURPLE + part + ANSI_RESET);
         }
     }
@@ -88,7 +85,7 @@ public class CLICommandSender implements Actor {
     @Override
     @Deprecated
     public void printDebug(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             sender.debug(ANSI_GREEN + part + ANSI_RESET);
         }
     }
@@ -96,7 +93,7 @@ public class CLICommandSender implements Actor {
     @Override
     @Deprecated
     public void printError(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             sender.error(ANSI_RED + part + ANSI_RESET);
         }
     }
@@ -122,7 +119,7 @@ public class CLICommandSender implements Actor {
     }
 
     @Override
-    public void checkPermission(String permission) throws AuthorizationException {
+    public void checkPermission(String permission) {
     }
 
     @Override

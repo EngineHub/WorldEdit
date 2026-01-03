@@ -28,6 +28,8 @@ import org.enginehub.linbus.tree.LinCompoundTag;
 @Beta
 public interface DataFixer {
 
+    // Suppress UnusedTypeParameter: it's used by the generic methods
+    @SuppressWarnings("UnusedTypeParameter")
     final class FixType<T> {
         private FixType() {
         }

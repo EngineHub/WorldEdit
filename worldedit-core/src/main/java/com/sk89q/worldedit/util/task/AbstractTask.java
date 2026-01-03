@@ -32,6 +32,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @param <V> the type returned
  */
+// Suppress JavaUtilDate: For backwards compatibility we still use Date here.
+@SuppressWarnings("JavaUtilDate")
 public abstract class AbstractTask<V> extends AbstractFuture<V> implements Task<V> {
 
     private final UUID uniqueId = UUID.randomUUID();

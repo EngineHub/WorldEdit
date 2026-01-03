@@ -76,6 +76,8 @@ public abstract class AbstractBufferingExtent extends AbstractDelegateExtent {
      * @deprecated New subclasses should override {@link #getBufferedFullBlock(BlockVector3)}
      *     instead
      */
+    // Suppress InlineMeSuggester: This method cannot be made final due to backwards compatibility
+    @SuppressWarnings("InlineMeSuggester")
     @Deprecated
     protected Optional<BaseBlock> getBufferedBlock(BlockVector3 position) {
         return Optional.ofNullable(getBufferedFullBlock(position));

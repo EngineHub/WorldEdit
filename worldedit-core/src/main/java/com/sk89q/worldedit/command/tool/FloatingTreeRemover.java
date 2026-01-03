@@ -36,8 +36,8 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
+import java.util.ArrayDeque;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Set;
 import javax.annotation.Nullable;
 
@@ -120,8 +120,8 @@ public class FloatingTreeRemover implements BlockTool {
      * @return a set containing all blocks in the tree/shroom or null if this is not a floating tree/shroom.
      */
     private Set<BlockVector3> bfs(World world, BlockVector3 origin) {
-        final Set<BlockVector3> visited = new HashSet<>();
-        final LinkedList<BlockVector3> queue = new LinkedList<>();
+        var visited = new HashSet<BlockVector3>();
+        var queue = new ArrayDeque<BlockVector3>();
 
         queue.addLast(origin);
         visited.add(origin);

@@ -131,7 +131,7 @@ public class FabricEntityProperties implements EntityProperties {
 
     @Override
     public boolean isTamed() {
-        return entity instanceof TamableAnimal && ((TamableAnimal) entity).isTame();
+        return entity instanceof TamableAnimal tamableAnimal && tamableAnimal.isTame();
     }
 
     @Override

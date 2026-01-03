@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
@@ -82,7 +81,7 @@ public class MessageBox extends TextComponentProducer {
     }
 
     private TextComponent createBorder(int count) {
-        return TextComponent.of(Strings.repeat("-", count),
+        return TextComponent.of("-".repeat(count),
                 borderColor, Sets.newHashSet(TextDecoration.STRIKETHROUGH));
     }
 

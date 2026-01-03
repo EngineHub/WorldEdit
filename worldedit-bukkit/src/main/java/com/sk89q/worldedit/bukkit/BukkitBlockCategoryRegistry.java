@@ -38,7 +38,7 @@ public class BukkitBlockCategoryRegistry implements BlockCategoryRegistry {
 
     @Override
     public Set<BlockType> getCategorisedByName(String category) {
-        String[] split = category.split(":");
+        String[] split = category.split(":", 0);
         String namespace = split.length > 1 ? split[0] : "minecraft";
         String key =  split.length > 1 ? split[1] : category;
         @SuppressWarnings("deprecation")

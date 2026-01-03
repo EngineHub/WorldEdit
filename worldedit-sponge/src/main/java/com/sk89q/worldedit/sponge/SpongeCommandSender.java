@@ -68,7 +68,7 @@ public class SpongeCommandSender implements Actor {
     @Override
     @Deprecated
     public void printRaw(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             sender.sendMessage(net.kyori.adventure.text.Component.text(part));
         }
     }
@@ -76,7 +76,7 @@ public class SpongeCommandSender implements Actor {
     @Override
     @Deprecated
     public void print(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             print(TextComponent.of(part, TextColor.LIGHT_PURPLE));
         }
     }
@@ -84,7 +84,7 @@ public class SpongeCommandSender implements Actor {
     @Override
     @Deprecated
     public void printDebug(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             print(TextComponent.of(part, TextColor.GRAY));
         }
     }
@@ -92,7 +92,7 @@ public class SpongeCommandSender implements Actor {
     @Override
     @Deprecated
     public void printError(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             print(TextComponent.of(part, TextColor.RED));
         }
     }

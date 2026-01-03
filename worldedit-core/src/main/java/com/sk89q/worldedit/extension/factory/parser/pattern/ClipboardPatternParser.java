@@ -81,7 +81,7 @@ public class ClipboardPatternParser extends InputParser<Pattern> {
                 || coords.charAt(0) != '[' || coords.charAt(coords.length() - 1) != ']') {
                 throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.clipboard.missing-offset"));
             }
-            String[] offsetSplit = coords.substring(1, coords.length() - 1).split(",");
+            String[] offsetSplit = coords.substring(1, coords.length() - 1).split(",", 0);
             if (offsetSplit.length != 3) {
                 throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.clipboard.missing-coordinates"));
             }

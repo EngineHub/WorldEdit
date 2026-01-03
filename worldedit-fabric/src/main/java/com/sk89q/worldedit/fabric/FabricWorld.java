@@ -29,6 +29,7 @@ import com.google.common.collect.Streams;
 import com.google.common.util.concurrent.Futures;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
@@ -56,6 +57,7 @@ import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.io.file.SafeFiles;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.RegenOptions;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -72,6 +74,7 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.features.EndFeatures;
 import net.minecraft.data.worldgen.features.TreeFeatures;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
@@ -220,8 +223,8 @@ public class FabricWorld extends AbstractWorld {
         checkNotNull(position);
 
         BlockEntity tile = getWorld().getBlockEntity(FabricAdapter.toBlockPos(position));
-        if ((tile instanceof Clearable)) {
-            ((Clearable) tile).clearContent();
+        if (tile instanceof Clearable clearable) {
+            clearable.clearContent();
             return true;
         }
         return false;
@@ -364,9 +367,7 @@ public class FabricWorld extends AbstractWorld {
                 regenForWorld(region, extent, serverWorld, options);
 
                 // drive the server executor until all tasks are popped off
-                while (originalWorld.getServer().pollTask()) {
-                    Thread.yield();
-                }
+                originalWorld.getServer().managedBlock(() -> originalWorld.getServer().getPendingTasksCount() == 0);
             } finally {
                 levelProperties.worldOptions = originalOpts;
             }
@@ -417,7 +418,7 @@ public class FabricWorld extends AbstractWorld {
             if (blockEntity != null) {
                 var tagValueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, getWorld().registryAccess());
                 blockEntity.saveWithId(tagValueOutput);
-                net.minecraft.nbt.CompoundTag tag = tagValueOutput.buildResult();
+                CompoundTag tag = tagValueOutput.buildResult();
                 state = state.toBaseBlock(LazyReference.from(() -> NBTConverter.fromNative(tag)));
             }
             extent.setBlock(vec, state.toBaseBlock());
@@ -469,7 +470,12 @@ public class FabricWorld extends AbstractWorld {
             case CHERRY -> TreeFeatures.CHERRY;
             case PALE_OAK -> TreeFeatures.PALE_OAK;
             case PALE_OAK_CREAKING -> TreeFeatures.PALE_OAK_CREAKING;
-            case RANDOM -> createTreeFeatureGenerator(TreeType.values()[ThreadLocalRandom.current().nextInt(TreeType.values().length)]);
+            case RANDOM -> {
+                // We're intentionally using index here to get a random tree type
+                @SuppressWarnings("EnumOrdinal")
+                TreeType randomTreeType = TreeType.values()[ThreadLocalRandom.current().nextInt(TreeType.values().length)];
+                yield createTreeFeatureGenerator(randomTreeType);
+            }
             default -> null;
         };
     }
@@ -492,6 +498,7 @@ public class FabricWorld extends AbstractWorld {
         }
     }
 
+    @Override
     public boolean generateFeature(ConfiguredFeatureType type, EditSession editSession, BlockVector3 position) {
         ServerLevel world = (ServerLevel) getWorld();
         ConfiguredFeature<?, ?> feature = world.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).getValue(Identifier.tryParse(type.id()));
@@ -569,9 +576,14 @@ public class FabricWorld extends AbstractWorld {
     public void fixLighting(Iterable<BlockVector2> chunks) {
         Level world = getWorld();
         for (BlockVector2 chunk : chunks) {
-            world.getChunkSource().getLightEngine().setLightEnabled(
-                new ChunkPos(chunk.x(), chunk.z()), true
-            );
+            // Fetch the chunk after light initialization at least
+            // We'll be doing a full relight anyways, so we don't need to be LIGHT yet
+            ((ServerLevel) world).getChunkSource().getLightEngine().lightChunk(world.getChunk(
+                chunk.x(), chunk.z(), ChunkStatus.INITIALIZE_LIGHT
+            ), false).exceptionally(t -> {
+                WorldEdit.logger.warn("Failed to relight chunk at " + chunk, t);
+                return null;
+            });
         }
     }
 
@@ -662,7 +674,7 @@ public class FabricWorld extends AbstractWorld {
         if (tile != null) {
             var tagValueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, getWorld().registryAccess());
             tile.saveWithId(tagValueOutput);
-            net.minecraft.nbt.CompoundTag tag = tagValueOutput.buildResult();
+            CompoundTag tag = tagValueOutput.buildResult();
             return getBlock(position).toBaseBlock(LazyReference.from(() -> NBTConverter.fromNative(tag)));
         } else {
             return getBlock(position).toBaseBlock();
@@ -676,15 +688,15 @@ public class FabricWorld extends AbstractWorld {
 
     @Override
     public boolean equals(Object o) {
-        if ((o instanceof FabricWorld other)) {
-            Level otherWorld = other.worldRef.get();
-            Level thisWorld = worldRef.get();
-            return otherWorld != null && otherWorld.equals(thisWorld);
-        } else if (o instanceof com.sk89q.worldedit.world.World) {
-            return ((com.sk89q.worldedit.world.World) o).getName().equals(getName());
-        } else {
-            return false;
-        }
+        return switch (o) {
+            case FabricWorld other -> {
+                Level otherWorld = other.worldRef.get();
+                Level thisWorld = worldRef.get();
+                yield otherWorld != null && otherWorld.equals(thisWorld);
+            }
+            case World world -> world.getName().equals(getName());
+            case null, default -> false;
+        };
     }
 
     @Override
@@ -707,10 +719,10 @@ public class FabricWorld extends AbstractWorld {
     @Override
     public List<? extends Entity> getEntities() {
         final Level world = getWorld();
-        if (!(world instanceof ServerLevel)) {
+        if (!(world instanceof ServerLevel serverLevel)) {
             return Collections.emptyList();
         }
-        return Streams.stream(((ServerLevel) world).getAllEntities())
+        return Streams.stream(serverLevel.getAllEntities())
             .map(FabricEntity::new)
             .collect(ImmutableList.toImmutableList());
     }
@@ -725,12 +737,12 @@ public class FabricWorld extends AbstractWorld {
             return null;
         }
         LinCompoundTag linTag = entity.getNbt();
-        net.minecraft.nbt.CompoundTag tag;
+        CompoundTag tag;
         if (linTag != null) {
             tag = NBTConverter.toNative(linTag);
             removeUnwantedEntityTagsRecursively(tag);
         } else {
-            tag = new net.minecraft.nbt.CompoundTag();
+            tag = new CompoundTag();
         }
         tag.putString("id", entityId);
 
@@ -745,7 +757,7 @@ public class FabricWorld extends AbstractWorld {
         return null;
     }
 
-    private void removeUnwantedEntityTagsRecursively(net.minecraft.nbt.CompoundTag tag) {
+    private void removeUnwantedEntityTagsRecursively(CompoundTag tag) {
         for (String name : Constants.NO_COPY_ENTITY_NBT_FIELDS) {
             tag.remove(name);
         }

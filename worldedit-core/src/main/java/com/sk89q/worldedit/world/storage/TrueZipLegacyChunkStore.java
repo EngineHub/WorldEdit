@@ -36,7 +36,6 @@ import java.util.zip.ZipException;
  */
 public class TrueZipLegacyChunkStore extends LegacyChunkStore {
 
-    private final File zipFile;
     private final ZipFile zip;
     private String folder;
 
@@ -51,7 +50,6 @@ public class TrueZipLegacyChunkStore extends LegacyChunkStore {
      * @throws ZipException if there is an error opening the zip
      */
     public TrueZipLegacyChunkStore(File zipFile, String folder) throws IOException, ZipException {
-        this.zipFile = zipFile;
         this.folder = folder;
 
         zip = new ZipFile(zipFile);
@@ -66,8 +64,6 @@ public class TrueZipLegacyChunkStore extends LegacyChunkStore {
      * @throws ZipException if there is an error opening the zip
      */
     public TrueZipLegacyChunkStore(File zipFile) throws IOException, ZipException {
-        this.zipFile = zipFile;
-
         zip = new ZipFile(zipFile);
     }
 

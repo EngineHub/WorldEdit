@@ -45,6 +45,8 @@ public class NullBiomeRegistry implements BiomeRegistry {
         );
     }
 
+    // Suppress InlineMeSuggester: This method cannot be made final due to backwards compatibility
+    @SuppressWarnings("InlineMeSuggester")
     @Deprecated
     @Nullable
     @Override

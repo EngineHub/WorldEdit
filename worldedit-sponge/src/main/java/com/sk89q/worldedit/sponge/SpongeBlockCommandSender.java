@@ -64,7 +64,7 @@ public class SpongeBlockCommandSender extends AbstractCommandBlockActor {
     @Override
     @Deprecated
     public void printRaw(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             sendMessage(net.kyori.adventure.text.Component.text(part));
         }
     }
@@ -72,7 +72,7 @@ public class SpongeBlockCommandSender extends AbstractCommandBlockActor {
     @Override
     @Deprecated
     public void print(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             print(TextComponent.of(part, TextColor.LIGHT_PURPLE));
         }
     }
@@ -80,7 +80,7 @@ public class SpongeBlockCommandSender extends AbstractCommandBlockActor {
     @Override
     @Deprecated
     public void printDebug(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             print(TextComponent.of(part, TextColor.GRAY));
         }
     }
@@ -88,7 +88,7 @@ public class SpongeBlockCommandSender extends AbstractCommandBlockActor {
     @Override
     @Deprecated
     public void printError(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             print(TextComponent.of(part, TextColor.RED));
         }
     }

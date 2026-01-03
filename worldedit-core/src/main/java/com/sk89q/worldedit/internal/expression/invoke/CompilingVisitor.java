@@ -198,6 +198,7 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
         );
     }
 
+    // TODO: Consider rewriting expression compiler to avoid using exceptions for control flow
     private static final MethodHandle BREAK_STATEMENT =
         ExpressionHandles.dropData(MethodHandles.throwException(Double.class, BreakException.class)
             .bindTo(BreakException.BREAK));
@@ -298,16 +299,15 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
     @Override
     public MethodHandle visitPlusMinusExpr(ExpressionParser.PlusMinusExprContext ctx) {
         MethodHandle value = evaluateForValue(ctx.expr);
-        switch (ctx.op.getType()) {
-            case PLUS:
-                return value;
-            case MINUS:
-                return ExpressionHandles.call(data ->
-                    -(double) ExpressionHandles.standardInvoke(value, data)
-                );
-            default:
-                throw ExpressionHelper.evalException(ctx, "Invalid text for plus/minus expr: " + ctx.op.getText());
-        }
+        return switch (ctx.op.getType()) {
+            case PLUS -> value;
+            case MINUS -> ExpressionHandles.call(data ->
+                -(double) ExpressionHandles.standardInvoke(value, data)
+            );
+            default -> throw ExpressionHelper.evalException(
+                ctx, "Invalid text for plus/minus expr: " + ctx.op.getText()
+            );
+        };
     }
 
     @Override
@@ -395,79 +395,58 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
 
     @Override
     public MethodHandle visitMultiplicativeExpr(ExpressionParser.MultiplicativeExprContext ctx) {
-        return evaluateBinary(ctx.left, ctx.right, () -> {
-            switch (ctx.op.getType()) {
-                case TIMES:
-                    return (l, r) -> l * r;
-                case DIVIDE:
-                    return (l, r) -> l / r;
-                case REMAINDER:
-                    return (l, r) -> l % r;
-                default:
-                    throw ExpressionHelper.evalException(ctx, "Invalid text for multiplicative expr: " + ctx.op.getText());
-            }
+        return evaluateBinary(ctx.left, ctx.right, () -> switch (ctx.op.getType()) {
+            case TIMES -> (l, r) -> l * r;
+            case DIVIDE -> (l, r) -> l / r;
+            case REMAINDER -> (l, r) -> l % r;
+            default -> throw ExpressionHelper.evalException(
+                ctx, "Invalid text for multiplicative expr: " + ctx.op.getText()
+            );
         });
     }
 
     @Override
     public MethodHandle visitAddExpr(ExpressionParser.AddExprContext ctx) {
-        return evaluateBinary(ctx.left, ctx.right, () -> {
-            switch (ctx.op.getType()) {
-                case PLUS:
-                    return Double::sum;
-                case MINUS:
-                    return (l, r) -> l - r;
-                default:
-                    throw ExpressionHelper.evalException(ctx, "Invalid text for additive expr: " + ctx.op.getText());
-            }
+        return evaluateBinary(ctx.left, ctx.right, () -> switch (ctx.op.getType()) {
+            case PLUS -> Double::sum;
+            case MINUS -> (l, r) -> l - r;
+            default -> throw ExpressionHelper.evalException(
+                ctx, "Invalid text for additive expr: " + ctx.op.getText()
+            );
         });
     }
 
     @Override
     public MethodHandle visitShiftExpr(ExpressionParser.ShiftExprContext ctx) {
-        return evaluateBinary(ctx.left, ctx.right, () -> {
-            switch (ctx.op.getType()) {
-                case LEFT_SHIFT:
-                    return (l, r) -> (double) ((long) l << (long) r);
-                case RIGHT_SHIFT:
-                    return (l, r) -> (double) ((long) l >> (long) r);
-                default:
-                    throw ExpressionHelper.evalException(ctx, "Invalid text for shift expr: " + ctx.op.getText());
-            }
+        return evaluateBinary(ctx.left, ctx.right, () -> switch (ctx.op.getType()) {
+            case LEFT_SHIFT -> (l, r) -> (double) ((long) l << (long) r);
+            case RIGHT_SHIFT -> (l, r) -> (double) ((long) l >> (long) r);
+            default -> throw ExpressionHelper.evalException(ctx, "Invalid text for shift expr: " + ctx.op.getText());
         });
     }
 
     @Override
     public MethodHandle visitRelationalExpr(ExpressionParser.RelationalExprContext ctx) {
-        return evaluateBinary(ctx.left, ctx.right, () -> {
-            switch (ctx.op.getType()) {
-                case LESS_THAN:
-                    return (l, r) -> ExpressionHandles.boolToDouble(l < r);
-                case LESS_THAN_OR_EQUAL:
-                    return (l, r) -> ExpressionHandles.boolToDouble(l <= r);
-                case GREATER_THAN:
-                    return (l, r) -> ExpressionHandles.boolToDouble(l > r);
-                case GREATER_THAN_OR_EQUAL:
-                    return (l, r) -> ExpressionHandles.boolToDouble(l >= r);
-                default:
-                    throw ExpressionHelper.evalException(ctx, "Invalid text for relational expr: " + ctx.op.getText());
-            }
+        return evaluateBinary(ctx.left, ctx.right, () -> switch (ctx.op.getType()) {
+            case LESS_THAN -> (l, r) -> ExpressionHandles.boolToDouble(l < r);
+            case LESS_THAN_OR_EQUAL -> (l, r) -> ExpressionHandles.boolToDouble(l <= r);
+            case GREATER_THAN -> (l, r) -> ExpressionHandles.boolToDouble(l > r);
+            case GREATER_THAN_OR_EQUAL -> (l, r) -> ExpressionHandles.boolToDouble(l >= r);
+            default -> throw ExpressionHelper.evalException(
+                ctx, "Invalid text for relational expr: " + ctx.op.getText()
+            );
         });
     }
 
     @Override
     public MethodHandle visitEqualityExpr(ExpressionParser.EqualityExprContext ctx) {
-        return evaluateBinary(ctx.left, ctx.right, () -> {
-            switch (ctx.op.getType()) {
-                case EQUAL:
-                    return (l, r) -> ExpressionHandles.boolToDouble(l == r);
-                case NOT_EQUAL:
-                    return (l, r) -> ExpressionHandles.boolToDouble(l != r);
-                case NEAR:
-                    return (l, r) -> ExpressionHandles.boolToDouble(almostEqual2sComplement(l, r));
-                default:
-                    throw ExpressionHelper.evalException(ctx, "Invalid text for equality expr: " + ctx.op.getText());
-            }
+        return evaluateBinary(ctx.left, ctx.right, () -> switch (ctx.op.getType()) {
+            case EQUAL -> (l, r) -> ExpressionHandles.boolToDouble(l == r);
+            case NOT_EQUAL -> (l, r) -> ExpressionHandles.boolToDouble(l != r);
+            case NEAR -> (l, r) -> ExpressionHandles.boolToDouble(almostEqual2sComplement(l, r));
+            default -> throw ExpressionHelper.evalException(
+                ctx, "Invalid text for equality expr: " + ctx.op.getText()
+            );
         });
     }
 
@@ -542,30 +521,17 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
                 value = arg;
             } else {
                 variable = ExpressionHandles.getVariable(data, target);
-                value = variable.value();
-                switch (type) {
-                    case POWER_ASSIGN:
-                        value = Math.pow(value, arg);
-                        break;
-                    case TIMES_ASSIGN:
-                        value *= arg;
-                        break;
-                    case DIVIDE_ASSIGN:
-                        value /= arg;
-                        break;
-                    case REMAINDER_ASSIGN:
-                        value %= arg;
-                        break;
-                    case PLUS_ASSIGN:
-                        value += arg;
-                        break;
-                    case MINUS_ASSIGN:
-                        value -= arg;
-                        break;
-                    default:
-                        throw ExpressionHelper.evalException(ctx, "Invalid text for assign expr: "
-                            + ctx.assignmentOperator().getText());
-                }
+                value = switch (type) {
+                    case POWER_ASSIGN -> Math.pow(variable.value(), arg);
+                    case TIMES_ASSIGN -> variable.value() * arg;
+                    case DIVIDE_ASSIGN -> variable.value() / arg;
+                    case REMAINDER_ASSIGN -> variable.value() % arg;
+                    case PLUS_ASSIGN -> variable.value() + arg;
+                    case MINUS_ASSIGN -> variable.value() - arg;
+                    default -> throw ExpressionHelper.evalException(
+                        ctx, "Invalid text for assign expr: " + ctx.assignmentOperator().getText()
+                    );
+                };
             }
             variable.setValue(value);
             return value;
@@ -648,13 +614,13 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
         int n = node.getChildCount();
         for (int i = 0; i < n; i++) {
             ParseTree c = node.getChild(i);
-            if (c instanceof TerminalNode && ((TerminalNode) c).getSymbol().getType() == Token.EOF) {
+            if (c instanceof TerminalNode terminalNode && terminalNode.getSymbol().getType() == Token.EOF) {
                 break;
             }
 
             MethodHandle childResult = c.accept(this);
-            if (c instanceof ParserRuleContext) {
-                checkHandle(childResult, (ParserRuleContext) c);
+            if (c instanceof ParserRuleContext parserRuleContext) {
+                checkHandle(childResult, parserRuleContext);
             }
 
             result = aggregateHandleResult(result, childResult);

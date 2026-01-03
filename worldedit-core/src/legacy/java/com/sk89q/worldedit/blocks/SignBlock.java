@@ -95,6 +95,8 @@ public class SignBlock extends LegacyBaseBlockWrapper {
         this.text = text;
     }
 
+    // Suppress InlineMeSuggester: This method cannot be made final due to backwards compatibility
+    @SuppressWarnings("InlineMeSuggester")
     @Override
     @Deprecated
     public boolean hasNbtData() {

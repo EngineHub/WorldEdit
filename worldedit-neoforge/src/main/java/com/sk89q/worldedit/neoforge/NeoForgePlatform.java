@@ -117,8 +117,8 @@ class NeoForgePlatform extends AbstractPlatform implements MultiUserPlatform {
     public NeoForgeWatchdog getWatchdog() {
         if (watchdog == null) {
             MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-            if (server instanceof DedicatedServer) {
-                watchdog = new NeoForgeWatchdog((DedicatedServer) server);
+            if (server instanceof DedicatedServer dedicatedServer) {
+                watchdog = new NeoForgeWatchdog(dedicatedServer);
             }
         }
         return watchdog;

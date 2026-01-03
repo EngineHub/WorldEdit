@@ -98,8 +98,8 @@ public final class Masks {
             return ALWAYS_FALSE;
         } else if (mask instanceof AlwaysFalse) {
             return ALWAYS_TRUE;
-        } else if (mask instanceof NegatedMask) {
-            return ((NegatedMask) mask).mask;
+        } else if (mask instanceof NegatedMask(Mask originalMask)) {
+            return originalMask;
         }
 
         checkNotNull(mask);
@@ -117,8 +117,8 @@ public final class Masks {
             return ALWAYS_FALSE;
         } else if (mask instanceof AlwaysFalse) {
             return ALWAYS_TRUE;
-        } else if (mask instanceof NegatedMask2D) {
-            return ((NegatedMask2D) mask).mask;
+        } else if (mask instanceof NegatedMask2D(Mask2D originalMask)) {
+            return originalMask;
         }
 
         checkNotNull(mask);

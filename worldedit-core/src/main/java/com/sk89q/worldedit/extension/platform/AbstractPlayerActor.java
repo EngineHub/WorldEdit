@@ -324,6 +324,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
                 try (EditSession session = WorldEdit.getInstance().newEditSession(this)) {
                     session.setBlock(spot, BlockTypes.GLASS.getDefaultState());
                 } catch (MaxChangedBlocksException ignored) {
+                    // If we can't set the glass, that's OK.
                 }
             }
         } else {

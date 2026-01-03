@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.command.util;
 
+import com.google.errorprone.annotations.InlineMe;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
@@ -37,6 +38,10 @@ public class MessageTimerTask extends TimerTask {
 
     private boolean hasRunBefore = false;
 
+    @InlineMe(
+        replacement = "this(sender, TextComponent.of(message), null)",
+        imports = "com.sk89q.worldedit.util.formatting.text.TextComponent"
+    )
     @Deprecated
     MessageTimerTask(Actor sender, String message) {
         this(sender, TextComponent.of(message), null);

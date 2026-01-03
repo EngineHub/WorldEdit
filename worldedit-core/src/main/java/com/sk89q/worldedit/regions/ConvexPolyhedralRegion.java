@@ -154,22 +154,21 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
 
 
         switch (vertices.size()) {
-            case 0:
-            case 1:
-            case 2:
+            case 0, 1, 2 -> {
                 // Incomplete, can't make a mesh yet
                 return true;
-
-            case 3:
+            }
+            case 3 -> {
                 // Generate minimal mesh to start from
                 final BlockVector3[] v = vertices.toArray(new BlockVector3[0]);
 
-                triangles.add((new Triangle(v[0].toVector3(), v[1].toVector3(), v[2].toVector3())));
-                triangles.add((new Triangle(v[0].toVector3(), v[2].toVector3(), v[1].toVector3())));
+                triangles.add(new Triangle(v[0].toVector3(), v[1].toVector3(), v[2].toVector3()));
+                triangles.add(new Triangle(v[0].toVector3(), v[2].toVector3(), v[1].toVector3()));
                 return true;
-
-            default:
-                break;
+            }
+            default -> {
+                // Ready to build the mesh
+            }
         }
 
         // Look for triangles that face the vertex and remove them

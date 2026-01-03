@@ -21,6 +21,7 @@ package com.sk89q.worldedit.bukkit.adapter.impl.v1_21_9;
 
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Table;
+import com.google.errorprone.annotations.Keep;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
@@ -92,6 +93,7 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler, A
         );
     }
 
+    @Keep
     @Nullable
     private BlockEntity getBlockEntity(BlockPos blockPos) {
         // This doesn't synthesize or load from world. I think editing existing block entities without setting the block
@@ -104,6 +106,7 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler, A
         return adapter.adapt(this.editSession.getBlockWithBuffer(adapt(blockPos)));
     }
 
+    @Keep
     private boolean isStateAtPosition(BlockPos blockPos, Predicate<BlockState> predicate) {
         return predicate.test(getBlockState(blockPos));
     }
@@ -140,10 +143,12 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler, A
         createdBlockEntities.remove(pos);
     }
 
+    @Keep
     private boolean removeBlock(BlockPos blockPos) {
         return setBlock(blockPos, Blocks.AIR.defaultBlockState());
     }
 
+    @Keep
     private boolean addEntity(Entity entity) {
         Vec3 pos = entity.getPosition(0.0f);
         Location location = new Location(BukkitAdapter.adapt(serverLevel.getWorld()), pos.x(), pos.y(), pos.z());

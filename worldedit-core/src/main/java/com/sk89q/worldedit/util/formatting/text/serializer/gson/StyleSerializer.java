@@ -45,6 +45,7 @@ import com.sk89q.worldedit.util.formatting.text.format.TextDecoration;
 import java.lang.reflect.Type;
 
 // This class was copied and manually "relocated" from text3 to update the click/hover events for 1.21.5.
+@SuppressWarnings("unused")
 public class StyleSerializer implements JsonDeserializer<Style>, JsonSerializer<Style> {
     public static final StyleSerializer INSTANCE = new StyleSerializer();
 
@@ -69,6 +70,7 @@ public class StyleSerializer implements JsonDeserializer<Style>, JsonSerializer<
             tmp = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.USER_COMMANDS)
                     .getDataVersion() < Constants.DATA_VERSION_MC_1_21_5;
         } catch (Exception ignored) {
+            // If we can't determine the data version, assume newest.
         }
         PRE_1215 = tmp;
         CLICK_EVENT = PRE_1215 ? "clickEvent" : "click_event";

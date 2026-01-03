@@ -83,6 +83,8 @@ public class SkullBlock extends LegacyBaseBlockWrapper {
         return owner;
     }
 
+    // Suppress InlineMeSuggester: This method cannot be made final due to backwards compatibility
+    @SuppressWarnings("InlineMeSuggester")
     @Override
     @Deprecated
     public boolean hasNbtData() {

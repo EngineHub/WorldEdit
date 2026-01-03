@@ -153,6 +153,7 @@ public class TestOfflinePermissible implements OfflinePlayer, Permissible {
         return "Tester";
     }
 
+    @Override
     public UUID getUniqueId() {
         return randomUuid;
     }
@@ -167,16 +168,22 @@ public class TestOfflinePermissible implements OfflinePlayer, Permissible {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    // Suppress TypeParameterUnusedInFormals: Required by parent interface
+    @SuppressWarnings("TypeParameterUnusedInFormals")
     @Override
     public <E extends BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E ban(String reason, Date expires, String source) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    // Suppress TypeParameterUnusedInFormals: Required by parent interface
+    @SuppressWarnings("TypeParameterUnusedInFormals")
     @Override
     public <E extends BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E ban(String reason, Instant expires, String source) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    // Suppress TypeParameterUnusedInFormals: Required by parent interface
+    @SuppressWarnings("TypeParameterUnusedInFormals")
     @Override
     public <E extends BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E ban(String reason, Duration duration, String source) {
         throw new UnsupportedOperationException("Not supported yet.");

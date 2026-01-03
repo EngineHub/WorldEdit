@@ -152,12 +152,12 @@ final class SpigotAdapter implements Adapter {
         final BaseComponent[] components = {new AdapterComponent(component)};
         for (final Iterator<? extends CommandSender> it = viewers.iterator(); it.hasNext(); ) {
             final CommandSender viewer = it.next();
-            if (viewer instanceof Player) {
+            if (viewer instanceof Player player) {
                 try {
-                    consumer.accept((Player) viewer, components);
+                    consumer.accept(player, components);
                     it.remove();
-                } catch (final Throwable e) {
-                    e.printStackTrace();
+                } catch (final Throwable ignored) {
+                    // If we can't send, don't worry about it
                 }
             }
         }

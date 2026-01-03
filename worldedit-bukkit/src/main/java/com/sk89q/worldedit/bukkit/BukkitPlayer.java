@@ -110,7 +110,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
     @Override
     @Deprecated
     public void printRaw(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             player.sendMessage(part);
         }
     }
@@ -118,7 +118,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
     @Override
     @Deprecated
     public void print(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             player.sendMessage("§d" + part);
         }
     }
@@ -126,7 +126,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
     @Override
     @Deprecated
     public void printDebug(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             player.sendMessage("§7" + part);
         }
     }
@@ -134,7 +134,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
     @Override
     @Deprecated
     public void printError(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             player.sendMessage("§c" + part);
         }
     }
@@ -301,8 +301,8 @@ public class BukkitPlayer extends AbstractPlayerActor {
             player.sendBlockChange(loc, BukkitAdapter.adapt(block));
             BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
             if (adapter != null) {
-                if (block.getBlockType() == BlockTypes.STRUCTURE_BLOCK && block instanceof BaseBlock) {
-                    LinCompoundTag nbt = ((BaseBlock) block).getNbt();
+                if (block.getBlockType() == BlockTypes.STRUCTURE_BLOCK && block instanceof BaseBlock baseBlock) {
+                    LinCompoundTag nbt = baseBlock.getNbt();
                     if (nbt != null) {
                         adapter.sendFakeNBT(player, pos, nbt);
                         adapter.sendFakeOP(player);

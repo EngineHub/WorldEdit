@@ -77,8 +77,8 @@ public class SpongeWorldNativeAccess implements WorldNativeAccess<LevelChunk, Bl
     @Nullable
     @Override
     public BlockState setBlockState(LevelChunk chunk, BlockPos position, BlockState state) {
-        if (chunk instanceof ExtendedChunk) {
-            return ((ExtendedChunk) chunk).setBlockState(
+        if (chunk instanceof ExtendedChunk extendedChunk) {
+            return extendedChunk.setBlockState(
                 position, state, 0, sideEffectSet.shouldApply(SideEffect.UPDATE)
             );
         }

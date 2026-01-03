@@ -21,7 +21,8 @@ package com.sk89q.worldedit.util.logging;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
@@ -30,8 +31,8 @@ import java.util.logging.LogRecord;
  */
 public class LogFormat extends Formatter {
     public static final String DEFAULT_FORMAT = "[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS %4$s]: %5$s%6$s%n";
-    private final Date dat = new Date();
     private final String format;
+    private LocalDateTime currentDateTime = LocalDateTime.now(ZoneId.systemDefault());
 
     public LogFormat() {
         this(null);
@@ -42,8 +43,9 @@ public class LogFormat extends Formatter {
             format = DEFAULT_FORMAT;
         }
         try {
-            //noinspection ResultOfMethodCallIgnored
-            String.format(format, new Date(), "", "", "", "", "");
+            // Validate format:
+            @SuppressWarnings("unused")
+            var unused = String.format(format, currentDateTime, "", "", "", "", "");
         } catch (IllegalArgumentException var3) {
             format = DEFAULT_FORMAT;
         }
@@ -52,7 +54,7 @@ public class LogFormat extends Formatter {
 
     @Override
     public String format(LogRecord record) {
-        dat.setTime(record.getMillis());
+        currentDateTime = LocalDateTime.ofInstant(record.getInstant(), ZoneId.systemDefault());
         String source;
         if (record.getSourceClassName() != null) {
             source = record.getSourceClassName();
@@ -73,7 +75,7 @@ public class LogFormat extends Formatter {
             throwable = sw.toString();
         }
         return String.format(format,
-                dat,
+                currentDateTime,
                 source,
                 record.getLoggerName(),
                 record.getLevel().getName(),

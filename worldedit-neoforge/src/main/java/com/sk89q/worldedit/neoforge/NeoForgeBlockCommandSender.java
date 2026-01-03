@@ -66,7 +66,7 @@ public class NeoForgeBlockCommandSender extends AbstractCommandBlockActor {
     @Override
     @Deprecated
     public void printRaw(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             sendMessage(net.minecraft.network.chat.Component.literal(part));
         }
     }
@@ -98,7 +98,7 @@ public class NeoForgeBlockCommandSender extends AbstractCommandBlockActor {
     }
 
     private void sendColorized(String msg, ChatFormatting formatting) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             var component = net.minecraft.network.chat.Component.literal(part);
             component.withStyle(formatting);
             sendMessage(component);
@@ -167,7 +167,11 @@ public class NeoForgeBlockCommandSender extends AbstractCommandBlockActor {
 
             @Override
             public boolean isActive() {
-                level.getServer().submitAsync(this::updateActive);
+                level.getServer().submitAsync(this::updateActive)
+                    .exceptionally(t -> {
+                        WorldEdit.logger.warn("Could not update command block session key active state", t);
+                        return null;
+                    });
                 return active;
             }
 

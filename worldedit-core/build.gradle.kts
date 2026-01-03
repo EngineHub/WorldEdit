@@ -18,6 +18,13 @@ dependencies {
     }
 
     "api"(project(":worldedit-libs:core"))
+
+    "api"(platform(libs.linBus.bom))
+    "api"(libs.linBus.common)
+    "api"(libs.linBus.stream)
+    "api"(libs.linBus.tree)
+    "api"(libs.linBus.format.snbt)
+
     "compileOnly"(libs.trueZip)
     "implementation"(libs.rhino)
     "implementation"(libs.snakeyaml)

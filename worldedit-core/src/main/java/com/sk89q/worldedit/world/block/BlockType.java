@@ -266,6 +266,6 @@ public class BlockType implements Keyed {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof BlockType && this.id.equals(((BlockType) obj).id);
+        return obj instanceof BlockType blockType && this.id.equals(blockType.id);
     }
 }

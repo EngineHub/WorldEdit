@@ -29,6 +29,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.sk89q.worldedit.internal.util.SwitchEnhancements.dummyValue;
+import static com.sk89q.worldedit.internal.util.SwitchEnhancements.exhaustive;
+
 public class CommandArgParser {
 
     public static CommandArgParser forArgString(String argString) {
@@ -63,18 +66,18 @@ public class CommandArgParser {
     public Stream<Substring> parseArgs() {
         for (; index < input.size(); index++) {
             Substring nextPart = input.get(index);
-            switch (state) {
-                case NORMAL:
+            exhaustive(switch (state) {
+                case NORMAL -> {
                     handleNormal(nextPart);
-                    break;
-                case QUOTE:
+                    yield dummyValue();
+                }
+                case QUOTE -> {
                     handleQuote(nextPart);
-                    break;
-                default:
-                    break;
-            }
+                    yield dummyValue();
+                }
+            });
         }
-        if (currentArg.size() > 0) {
+        if (!currentArg.isEmpty()) {
             finishArg(); // force finish "hanging" args
         }
         return args.build();

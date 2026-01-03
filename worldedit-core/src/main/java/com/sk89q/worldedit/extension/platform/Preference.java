@@ -53,7 +53,7 @@ public enum Preference {
      */
     public boolean isPreferredOver(Preference other) {
         checkNotNull(other);
-        return ordinal() < other.ordinal();
+        return compareTo(other) < 0;
     }
 
 }

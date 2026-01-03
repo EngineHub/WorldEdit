@@ -58,6 +58,8 @@ public class CommandListBox extends PaginationBox {
         appendCommand(alias, description, null);
     }
 
+    // Suppress InlineMeSuggester: This method cannot be made final due to backwards compatibility
+    @SuppressWarnings("InlineMeSuggester")
     @Deprecated
     public void appendCommand(String alias, String description, String insertion) {
         appendCommand(alias, TextComponent.of(description), insertion);

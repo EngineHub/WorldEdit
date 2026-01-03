@@ -26,7 +26,8 @@ public final class ReflectionUtil {
     private ReflectionUtil() {
     }
 
-    @SuppressWarnings("unchecked")
+    // Suppress unchecked, TypeParameterUnusedInFormals: This is bad code but we're already planning to remove it
+    @SuppressWarnings({"unchecked", "TypeParameterUnusedInFormals"})
     public static <T> T getField(Object from, String name) {
         Class<?> checkClass = from.getClass();
         do {
@@ -35,6 +36,7 @@ public final class ReflectionUtil {
                 field.setAccessible(true);
                 return (T) field.get(from);
             } catch (NoSuchFieldException | IllegalAccessException ignored) {
+                // We want to keep searching
             }
         } while (checkClass.getSuperclass() != Object.class && ((checkClass = checkClass.getSuperclass()) != null));
         return null;

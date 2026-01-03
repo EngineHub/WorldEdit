@@ -40,7 +40,7 @@ import java.util.function.Consumer;
 public enum BuiltInClipboardShareDestinations implements ClipboardShareDestination {
 
     /**
-     * The EngineHub pastebin service, at https://paste.enginehub.org/
+     * The EngineHub pastebin service, at <a href="https://paste.enginehub.org/">https://paste.enginehub.org/</a>.
      */
     ENGINEHUB_PASTEBIN("enginehub_paste", "ehpaste") {
         @Override

@@ -108,6 +108,8 @@ class BlockMapTest extends BaseWorldEditTest {
 
     @Test
     @DisplayName("throws ClassCastException if invalid argument to get")
+    // Intentionally violating these warnings to test invalid argument behavior
+    @SuppressWarnings({"CollectionIncompatibleType", "SuspiciousMethodCalls"})
     void throwsFromGetOnInvalidArgument() {
         BlockMap<BaseBlock> map = BlockMap.createForBaseBlock();
         assertThrows(ClassCastException.class, () -> map.get(""));

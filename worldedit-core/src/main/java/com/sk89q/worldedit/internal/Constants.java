@@ -41,97 +41,97 @@ public final class Constants {
     }
 
     /**
-     * The DataVersion for Minecraft 1.13
+     * The DataVersion for Minecraft 1.13.
      */
     public static final int DATA_VERSION_MC_1_13 = 1519;
 
     /**
-     * The DataVersion for Minecraft 1.13.2
+     * The DataVersion for Minecraft 1.13.2.
      */
     public static final int DATA_VERSION_MC_1_13_2 = 1631;
 
     /**
-     * The DataVersion for Minecraft 1.14
+     * The DataVersion for Minecraft 1.14.
      */
     public static final int DATA_VERSION_MC_1_14 = 1952;
 
     /**
-     * The DataVersion for Minecraft 1.15
+     * The DataVersion for Minecraft 1.15.
      */
     public static final int DATA_VERSION_MC_1_15 = 2225;
 
     /**
-     * The DataVersion for Minecraft 1.16
+     * The DataVersion for Minecraft 1.16.
      */
     public static final int DATA_VERSION_MC_1_16 = 2566;
 
     /**
-     * The DataVersion for Minecraft 1.17
+     * The DataVersion for Minecraft 1.17.
      */
     public static final int DATA_VERSION_MC_1_17 = 2724;
 
     /**
-     * The DataVersion for Minecraft 1.18
+     * The DataVersion for Minecraft 1.18.
      */
     public static final int DATA_VERSION_MC_1_18 = 2860;
 
     /**
-     * The DataVersion for Minecraft 1.19
+     * The DataVersion for Minecraft 1.19.
      */
     public static final int DATA_VERSION_MC_1_19 = 3105;
 
     /**
-     * The DataVersion for Minecraft 1.20
+     * The DataVersion for Minecraft 1.20.
      */
     public static final int DATA_VERSION_MC_1_20 = 3463;
 
     /**
-     * The DataVersion for Minecraft 1.21
+     * The DataVersion for Minecraft 1.21.
      */
     public static final int DATA_VERSION_MC_1_21 = 3953;
 
     /**
-     * The DataVersion for Minecraft 1.21.3
+     * The DataVersion for Minecraft 1.21.3.
      */
     public static final int DATA_VERSION_MC_1_21_3 = 4082;
 
     /**
-     * The DataVersion for Minecraft 1.21.4
+     * The DataVersion for Minecraft 1.21.4.
      */
     public static final int DATA_VERSION_MC_1_21_4 = 4189;
 
     /**
-     * The DataVersion for Minecraft 1.21.5
+     * The DataVersion for Minecraft 1.21.5.
      */
     public static final int DATA_VERSION_MC_1_21_5 = 4325;
 
     /**
-     * The DataVersion for Minecraft 1.21.6
+     * The DataVersion for Minecraft 1.21.6.
      */
     public static final int DATA_VERSION_MC_1_21_6 = 4435;
 
     /**
-     * The DataVersion for Minecraft 1.21.7
+     * The DataVersion for Minecraft 1.21.7.
      */
     public static final int DATA_VERSION_MC_1_21_7 = 4438;
 
     /**
-     * The DataVersion for Minecraft 1.21.8
+     * The DataVersion for Minecraft 1.21.8.
      */
     public static final int DATA_VERSION_MC_1_21_8 = 4440;
 
     /**
-     * The DataVersion for Minecraft 1.21.9
+     * The DataVersion for Minecraft 1.21.9.
      */
     public static final int DATA_VERSION_MC_1_21_9 = 4554;
 
     /**
-     * The DataVersion for Minecraft 1.21.10
+     * The DataVersion for Minecraft 1.21.10.
      */
     public static final int DATA_VERSION_MC_1_21_10 = 4556;
 
     /**
-     * The DataVersion for Minecraft 1.21.11
+     * The DataVersion for Minecraft 1.21.11.
      */
     public static final int DATA_VERSION_MC_1_21_11 = 4671;
 }

@@ -68,7 +68,7 @@ public class InfoEntryPoint {
     }
 
     private static class NavigableEditorPane extends JTextPane {
-        public NavigableEditorPane(String htmlBody) {
+        private NavigableEditorPane(String htmlBody) {
             super(new HTMLDocument());
             setEditorKit(new HTMLEditorKit());
             setText(htmlBody.replace("\n", "<br>"));
@@ -79,7 +79,7 @@ public class InfoEntryPoint {
                     try {
                         Desktop.getDesktop().browse(e.getURL().toURI());
                     } catch (IOException | URISyntaxException ex) {
-                        ex.printStackTrace();
+                        throw new RuntimeException(ex);
                     }
                 }
             });

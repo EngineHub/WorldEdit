@@ -255,7 +255,7 @@ public class CommandUtil {
             return Optional.empty();
         }
         checkState(end <= builder.length(),
-            "Suggestion ends too late, last=%s, suggestion=", last, suggestion);
+            "Suggestion ends too late, last=%s, suggestion=%s", last, suggestion);
         builder.replace(start, end, suggestion.getSubstring());
         return Optional.of(builder.toString());
     }

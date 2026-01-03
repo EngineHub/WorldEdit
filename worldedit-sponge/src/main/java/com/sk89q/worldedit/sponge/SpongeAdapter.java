@@ -116,8 +116,8 @@ public class SpongeAdapter {
      */
     public static ServerWorld adapt(World world) {
         checkNotNull(world);
-        if (world instanceof SpongeWorld) {
-            return ((SpongeWorld) world).getWorld();
+        if (world instanceof SpongeWorld spongeWorld) {
+            return spongeWorld.getWorld();
         } else {
             // Currently this is 99% certain to fail, we don't have consistent world name/id mapping
             ServerWorld match = Sponge.server().worldManager().world(

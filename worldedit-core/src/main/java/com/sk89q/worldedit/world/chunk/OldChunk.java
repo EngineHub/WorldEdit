@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.world.chunk;
 
+import com.google.errorprone.annotations.InlineMe;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -57,6 +58,7 @@ public class OldChunk implements Chunk {
      * @throws DataException if there is an error getting the chunk data
      * @deprecated Use {@link #OldChunk(LinCompoundTag)}
      */
+    @InlineMe(replacement = "this(tag.toLinTag())")
     @Deprecated
     public OldChunk(CompoundTag tag) throws DataException {
         this(tag.toLinTag());

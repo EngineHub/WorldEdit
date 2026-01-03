@@ -121,23 +121,13 @@ public class WorldEditListener implements Listener {
         final Block clickedBlock = event.getClickedBlock();
         final Location pos = clickedBlock == null ? null : new Location(world, clickedBlock.getX(), clickedBlock.getY(), clickedBlock.getZ());
 
-        boolean result = false;
-        switch (event.getAction()) {
-            case LEFT_CLICK_BLOCK:
-                result = we.handleBlockLeftClick(player, pos, direction) || we.handleArmSwing(player);
-                break;
-            case LEFT_CLICK_AIR:
-                result = we.handleArmSwing(player);
-                break;
-            case RIGHT_CLICK_BLOCK:
-                result = we.handleBlockRightClick(player, pos, direction) || we.handleRightClick(player);
-                break;
-            case RIGHT_CLICK_AIR:
-                result = we.handleRightClick(player);
-                break;
-            default:
-                break;
-        }
+        boolean result = switch (event.getAction()) {
+            case LEFT_CLICK_BLOCK -> we.handleBlockLeftClick(player, pos, direction) || we.handleArmSwing(player);
+            case LEFT_CLICK_AIR -> we.handleArmSwing(player);
+            case RIGHT_CLICK_BLOCK -> we.handleBlockRightClick(player, pos, direction) || we.handleRightClick(player);
+            case RIGHT_CLICK_AIR -> we.handleRightClick(player);
+            default -> false;
+        };
 
         debouncer.setLastInteraction(player, result);
         if (result) {

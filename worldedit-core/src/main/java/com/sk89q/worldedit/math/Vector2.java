@@ -34,18 +34,18 @@ public record Vector2(double x, double z) {
     public static Vector2 at(double x, double z) {
         int xTrunc = (int) x;
         switch (xTrunc) {
-            case 0:
+            case 0 -> {
                 if (x == 0 && z == 0) {
                     return ZERO;
                 }
-                break;
-            case 1:
+            }
+            case 1 -> {
                 if (x == 1 && z == 1) {
                     return ONE;
                 }
-                break;
-            default:
-                break;
+            }
+            default -> {
+            }
         }
         return new Vector2(x, z);
     }

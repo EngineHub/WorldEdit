@@ -201,6 +201,9 @@ Checks based on Google Checks, modified for EngineHub.
             <property name="format" value="(?!Character)\.to(Lower|Upper)Case\(\)"/>
             <property name="illegalPattern" value="true"/>
         </module>
+        <module name="PatternVariableAssignment"/>
+        <module name="UnnecessaryNullCheckWithInstanceOf"/>
+        <module name="WhenShouldBeUsed"/>
     </module>
     <!-- Validate that command annotations are formatted correctly -->
     <module name="RegexpMultiline">

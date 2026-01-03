@@ -82,8 +82,8 @@ public final class Regions {
      * @return a flat region
      */
     public static FlatRegion asFlatRegion(Region region) {
-        if (region instanceof FlatRegion) {
-            return (FlatRegion) region;
+        if (region instanceof FlatRegion flatRegion) {
+            return flatRegion;
         } else {
             return CuboidRegion.makeCuboid(region);
         }
