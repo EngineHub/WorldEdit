@@ -21,22 +21,20 @@ package com.sk89q.worldedit.world.block;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
+import com.google.common.collect.Tables;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Watchdog;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -77,8 +75,12 @@ public class BlockState implements BlockStateHolder<BlockState> {
     private volatile int internalId = BlockStateIdAccess.invalidId();
 
     BlockState(BlockType blockType) {
+        this(blockType, Collections.emptyMap());
+    }
+
+    BlockState(BlockType blockType, Map<Property<?>, Object> values) {
         this.blockType = blockType;
-        this.values = new LinkedHashMap<>();
+        this.values = values;
         this.emptyBaseBlock = new BaseBlock(this);
         this.lazyStringRepresentation = LazyReference.from(BlockStateHolder.super::getAsString);
     }
@@ -103,16 +105,15 @@ public class BlockState implements BlockStateHolder<BlockState> {
             List<List<Object>> valueLists = Lists.cartesianProduct(separatedValues);
             stateMapBuilder = ImmutableMap.builderWithExpectedSize(valueLists.size());
             for (List<Object> valueList : valueLists) {
-                Map<Property<?>, Object> valueMap = Maps.newTreeMap(Comparator.comparing(Property::name));
-                BlockState stateMaker = new BlockState(blockType);
                 int valueCount = valueList.size();
+                Map<Property<?>, Object> valueMap = new Reference2ObjectArrayMap<>(valueCount);
                 for (int i = 0; i < valueCount; i++) {
                     Property<?> property = properties.get(i);
                     Object value = valueList.get(i);
                     valueMap.put(property, value);
-                    stateMaker.setState(property, value);
                 }
-                stateMapBuilder.put(ImmutableMap.copyOf(valueMap), stateMaker);
+                valueMap = Collections.unmodifiableMap(valueMap);
+                stateMapBuilder.put(valueMap, new BlockState(blockType, valueMap));
             }
         }
 
@@ -151,7 +152,10 @@ public class BlockState implements BlockStateHolder<BlockState> {
      * @param stateMap The state map to generate the table from
      */
     private void populate(Map<Map<Property<?>, Object>, BlockState> stateMap) {
-        final ImmutableTable.Builder<Property<?>, Object, BlockState> states = ImmutableTable.builder();
+        Table<Property<?>, Object, BlockState> table = Tables.newCustomTable(
+                new Reference2ObjectArrayMap<>(this.values.size()),
+                Reference2ObjectArrayMap::new
+        );
 
         for (final Map.Entry<Property<?>, Object> entry : this.values.entrySet()) {
             final Property<Object> property = (Property<Object>) entry.getKey();
@@ -160,28 +164,28 @@ public class BlockState implements BlockStateHolder<BlockState> {
                 if (value != entry.getValue()) {
                     BlockState modifiedState = stateMap.get(this.withValue(property, value));
                     if (modifiedState != null) {
-                        states.put(property, value, modifiedState);
+                        table.put(property, value, modifiedState);
                     } else {
-                        System.out.println(stateMap);
+                        WorldEdit.logger.warn(stateMap);
                         WorldEdit.logger.warn("Found a null state at " + this.withValue(property, value));
                     }
                 }
             }
         }
 
-        this.states = states.build();
+        this.states = Tables.unmodifiableTable(table);
     }
 
     private <V> Map<Property<?>, Object> withValue(final Property<V> property, final V value) {
-        final ImmutableMap.Builder<Property<?>, Object> values = ImmutableMap.builderWithExpectedSize(this.values.size());
+        final Map<Property<?>, Object> values = new Reference2ObjectArrayMap<>(this.values.size());
         for (Map.Entry<Property<?>, Object> entry : this.values.entrySet()) {
             if (entry.getKey().equals(property)) {
                 values.put(entry.getKey(), value);
             } else {
-                values.put(entry);
+                values.put(entry.getKey(), entry.getValue());
             }
         }
-        return values.build();
+        return Collections.unmodifiableMap(values);
     }
 
     @Override
@@ -202,7 +206,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
 
     @Override
     public Map<Property<?>, Object> getStates() {
-        return Collections.unmodifiableMap(this.values);
+        return this.values;
     }
 
     @Override
@@ -214,7 +218,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
             // Added a reference equality check for speediness
             return true;
         }
-        if (!getBlockType().equals(o.getBlockType())) {
+        if (!blockType.equals(o.getBlockType())) {
             return false;
         }
 
@@ -224,13 +228,13 @@ public class BlockState implements BlockStateHolder<BlockState> {
                 differingProperties.add(state);
             }
         }
-        for (Property<?> property : getStates().keySet()) {
+        for (Property<?> property : values.keySet()) {
             if (o.getState(property) == null) {
                 differingProperties.add(property);
             }
         }
 
-        for (Property<?> property : getStates().keySet()) {
+        for (Property<?> property : values.keySet()) {
             if (differingProperties.contains(property)) {
                 continue;
             }
@@ -258,18 +262,6 @@ public class BlockState implements BlockStateHolder<BlockState> {
             return toBaseBlock();
         }
         return new BaseBlock(this, compoundTag);
-    }
-
-    /**
-     * Internal method used for creating the initial BlockState.
-     *
-     * @param property The state
-     * @param value The value
-     * @return The blockstate, for chaining
-     */
-    BlockState setState(final Property<?> property, final Object value) {
-        this.values.put(property, value);
-        return this;
     }
 
     @Override
