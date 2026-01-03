@@ -218,7 +218,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
             // Added a reference equality check for speediness
             return true;
         }
-        if (!getBlockType().equals(o.getBlockType())) {
+        if (!blockType.equals(o.getBlockType())) {
             return false;
         }
 
@@ -228,13 +228,13 @@ public class BlockState implements BlockStateHolder<BlockState> {
                 differingProperties.add(state);
             }
         }
-        for (Property<?> property : getStates().keySet()) {
+        for (Property<?> property : values.keySet()) {
             if (o.getState(property) == null) {
                 differingProperties.add(property);
             }
         }
 
-        for (Property<?> property : getStates().keySet()) {
+        for (Property<?> property : values.keySet()) {
             if (differingProperties.contains(property)) {
                 continue;
             }

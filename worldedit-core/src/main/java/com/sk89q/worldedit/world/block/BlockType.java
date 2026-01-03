@@ -55,16 +55,7 @@ public class BlockType implements Keyed {
         = LazyReference.from(() -> new FuzzyBlockState(this));
     @SuppressWarnings("this-escape")
     private final LazyReference<Map<String, ? extends Property<?>>> properties
-        = LazyReference.from(() -> {
-            var propertiesMap = WorldEdit.getInstance().getPlatformManager()
-                    .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getProperties(this);
-            List<String> sortedPropertyNames = propertiesMap.keySet().stream().sorted().toList();
-            Map<String, Property<?>> sortedPropertiesMap = new Reference2ObjectArrayMap<>(propertiesMap.size());
-            for (String propertyName : sortedPropertyNames) {
-                sortedPropertiesMap.put(propertyName, propertiesMap.get(propertyName));
-            }
-            return Collections.unmodifiableMap(sortedPropertiesMap);
-        });
+        = LazyReference.from(this::computeProperties);
     @SuppressWarnings("this-escape")
     private final LazyReference<BlockMaterial> blockMaterial
         = LazyReference.from(() -> WorldEdit.getInstance().getPlatformManager()
@@ -93,6 +84,17 @@ public class BlockType implements Keyed {
         }
         this.id = id;
         this.values = values;
+    }
+
+    private Map<String, ? extends Property<?>> computeProperties() {
+        var propertiesMap = WorldEdit.getInstance().getPlatformManager()
+                .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getProperties(this);
+        List<String> sortedPropertyNames = propertiesMap.keySet().stream().sorted().toList();
+        Map<String, Property<?>> sortedPropertiesMap = new Reference2ObjectArrayMap<>(propertiesMap.size());
+        for (String propertyName : sortedPropertyNames) {
+            sortedPropertiesMap.put(propertyName, propertiesMap.get(propertyName));
+        }
+        return Collections.unmodifiableMap(sortedPropertiesMap);
     }
 
     private BlockState computeDefaultState() {
