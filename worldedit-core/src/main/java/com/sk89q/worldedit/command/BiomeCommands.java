@@ -190,12 +190,7 @@ public class BiomeCommands {
         RegionVisitor visitor = new RegionVisitor(region, replace);
         Operations.completeLegacy(visitor);
 
-        actor.printInfo(TranslatableComponent.of(
-            "worldedit.setbiome.changed",
-            TextComponent.of(visitor.getAffected())
-        )
-            .append(TextComponent.newline())
-            .append(TranslatableComponent.of("worldedit.setbiome.warning")));
+        actor.printInfo(TranslatableComponent.of("worldedit.setbiome.changed", TextComponent.of(visitor.getAffected())));
     }
 
 
@@ -232,11 +227,6 @@ public class BiomeCommands {
         RegionVisitor visitor = new RegionVisitor(region, filter);
         Operations.completeLegacy(visitor);
 
-        actor.printInfo(TranslatableComponent.of(
-            "worldedit.replacebiome.changed",
-            TextComponent.of(visitor.getAffected())
-        )
-            .append(TextComponent.newline())
-            .append(TranslatableComponent.of("worldedit.setbiome.warning")));
+        actor.printInfo(TranslatableComponent.of("worldedit.replacebiome.changed", TextComponent.of(visitor.getAffected())));
     }
 }

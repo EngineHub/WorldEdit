@@ -45,7 +45,6 @@
     "worldedit.replacebiome.changed": "Biomes were changed for approximately {0} blocks.",
 
     "worldedit.setbiome.changed": "Biomes were changed for approximately {0} blocks.",
-    "worldedit.setbiome.warning": "You may have to re-join your game (or close and re-open your world) to see changes.",
     "worldedit.setbiome.not-locatable": "Command sender must be present in the world to use the -p flag.",
 
     "worldedit.drawsel.disabled": "Server CUI disabled.",
