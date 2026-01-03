@@ -300,11 +300,11 @@ public class ToolCommands {
     )
     @CommandPermissions("worldedit.tool.lrbuild")
     public void longrangebuildtool(Player player, LocalSession session,
-                                   @Arg(desc = "Pattern to set on main hand interaction")
+                                   @Arg(desc = "Pattern to set on left-click")
                                        Pattern primary,
-                                   @Arg(desc = "Pattern to set on off-hand interaction")
+                                   @Arg(desc = "Pattern to set on right-click")
                                        Pattern secondary) throws WorldEditException {
-        setTool(player, session, new LongRangeBuildTool(secondary, primary), "worldedit.tool.lrbuild.equip");
+        setTool(player, session, new LongRangeBuildTool(primary, secondary), "worldedit.tool.lrbuild.equip");
         Component primaryName;
         Component secondaryName;
         if (primary instanceof BlockStateHolder) {

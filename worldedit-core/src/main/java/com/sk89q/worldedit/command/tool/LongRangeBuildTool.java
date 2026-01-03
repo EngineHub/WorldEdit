@@ -42,7 +42,7 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
     private final Pattern primary;
     private final Pattern secondary;
 
-    public LongRangeBuildTool(Pattern secondary, Pattern primary) {
+    public LongRangeBuildTool(Pattern primary, Pattern secondary) {
         super("worldedit.tool.lrbuild");
         this.primary = primary;
         this.secondary = secondary;
