@@ -305,10 +305,12 @@ public class ClipboardCommands {
         Operations.complete(copy);
 
         ClipboardHolder holder = new ClipboardHolder(clipboard);
+        // Offset this by half a block to ensure rotations are aligned properly
+        AffineTransform offsetTransform = new AffineTransform().translate(0.5, 0.5, 0.5);
 
         // Now paste it multiple times, rotating each time
         for (int i = 1; i < pasteCount; i++) {
-            holder.setTransform(new AffineTransform().rotateY((reverse ? 1 : -1) * (360 * i) / (double) pasteCount));
+            holder.setTransform(offsetTransform.rotateY((reverse ? 1 : -1) * (360 * i) / (double) pasteCount));
 
             Operation operation = holder
                     .createPaste(editSession)
