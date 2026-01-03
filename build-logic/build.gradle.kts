@@ -3,11 +3,20 @@ plugins {
 }
 
 repositories {
-    gradlePluginPortal()
     maven {
-        name = "EngineHub Repository"
-        url = uri("https://maven.enginehub.org/repo/")
+        name = "SpongePowered Snapshots"
+        url = uri("https://repo.spongepowered.org/repository/maven-snapshots/")
     }
+    maven {
+        name = "NeoForged"
+        url = uri("https://maven.neoforged.net/releases/")
+    }
+    maven {
+        name = "MinecraftForge"
+        url = uri("https://maven.minecraftforge.net/")
+    }
+    mavenCentral()
+    gradlePluginPortal()
 }
 
 dependencies {

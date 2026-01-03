@@ -1,3 +1,4 @@
+import buildlogic.addEngineHubRepository
 import buildlogic.internalVersion
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.neoforged.gradle.dsl.common.runs.run.Run
@@ -24,15 +25,8 @@ val apiClasspath = configurations.resolvable("apiClasspath") {
 jarJar.disableDefaultSources()
 
 repositories {
-    maven {
-        name = "EngineHub"
-        url = uri("https://maven.enginehub.org/repo/")
-    }
+    addEngineHubRepository()
     mavenCentral()
-    killNonEngineHubRepositories()
-    afterEvaluate {
-        killNonEngineHubRepositories()
-    }
 }
 
 configurations {
