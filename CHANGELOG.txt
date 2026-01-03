@@ -12,10 +12,13 @@
 - Added the ability to source from the clipboard via //deform
 - Added an extend selection mode for polygon selections
 - Added a //revolve command to paste a rotated copy of a selection around an axis
+- Added a //replacebiome command to replace biomes in a selection by a given mask
 - Reworked tree and forest generation commands to use a new tree-specific registry to improve reliability and mod support
 - Fixed block limits not applying to the //update command
 - Deprecate bundled item data, bundled block data, World#playEffect, legacy tree systems, and more for removal in WE 8
+- Deprecate some remnants of the fast mode system that are superseded by the side effect system
 - Reworked the way WorldEdit CLI pulls in versioned data, allowing dynamic data loading
+- Fixed the hand, offhand, and pos1 patterns not showing in suggestions
 
 7.3.18
 - Added support for 1.21.11
