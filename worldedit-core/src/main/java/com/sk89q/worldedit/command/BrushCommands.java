@@ -649,7 +649,6 @@ public class BrushCommands {
 
         setOperationBasedBrush(player, localSession, radius,
             new ApplyRegion(new BiomeFactory(biomeType)), shape, "worldedit.brush.biome");
-        player.printInfo(TranslatableComponent.of("worldedit.setbiome.warning"));
         ToolCommands.sendUnbindInstruction(player, UNBIND_COMMAND_COMPONENT);
     }
 
