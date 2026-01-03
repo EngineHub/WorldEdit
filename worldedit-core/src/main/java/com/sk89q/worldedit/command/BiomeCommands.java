@@ -32,7 +32,9 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Locatable;
 import com.sk89q.worldedit.function.RegionFunction;
+import com.sk89q.worldedit.function.RegionMaskingFilter;
 import com.sk89q.worldedit.function.biome.BiomeReplace;
+import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.visitor.RegionVisitor;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -196,4 +198,45 @@ public class BiomeCommands {
             .append(TranslatableComponent.of("worldedit.setbiome.warning")));
     }
 
+
+    @Command(
+        name = "/replacebiome",
+        desc = "Replaces the biome of your current block or region.",
+        descFooter = "By default, uses all the blocks in your selection"
+    )
+    @Logging(REGION)
+    @CommandPermissions("worldedit.biome.set")
+    public void replaceBiome(Actor actor, World world, LocalSession session, EditSession editSession,
+                         @Arg(desc = "The mask representing biomes to replace", def = "")
+                            Mask from,
+                         @Arg(desc = "Biome type")
+                            BiomeType target,
+                         @Switch(name = 'p', desc = "Use your current position")
+                            boolean atPosition) throws WorldEditException {
+        Region region;
+
+        if (atPosition) {
+            if (actor instanceof Locatable locatable) {
+                final BlockVector3 pos = locatable.getLocation().toVector().toBlockPoint();
+                region = new CuboidRegion(pos, pos);
+            } else {
+                actor.printError(TranslatableComponent.of("worldedit.setbiome.not-locatable"));
+                return;
+            }
+        } else {
+            region = session.getSelection(world);
+        }
+
+        RegionFunction replace = new BiomeReplace(editSession, target);
+        RegionMaskingFilter filter = new RegionMaskingFilter(from, replace);
+        RegionVisitor visitor = new RegionVisitor(region, filter);
+        Operations.completeLegacy(visitor);
+
+        actor.printInfo(TranslatableComponent.of(
+                        "worldedit.replacebiome.changed",
+                        TextComponent.of(visitor.getAffected())
+                )
+                .append(TextComponent.newline())
+                .append(TranslatableComponent.of("worldedit.setbiome.warning")));
+    }
 }
