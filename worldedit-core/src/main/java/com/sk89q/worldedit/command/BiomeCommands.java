@@ -209,7 +209,7 @@ public class BiomeCommands {
     public void replaceBiome(Actor actor, World world, LocalSession session, EditSession editSession,
                          @Arg(desc = "The mask representing where to replace biomes")
                             Mask from,
-                         @Arg(desc = "Biome type")
+                         @Arg(desc = "Biome type to set")
                             BiomeType target,
                          @Switch(name = 'p', desc = "Use your current position")
                             boolean atPosition) throws WorldEditException {
@@ -233,10 +233,10 @@ public class BiomeCommands {
         Operations.completeLegacy(visitor);
 
         actor.printInfo(TranslatableComponent.of(
-                        "worldedit.replacebiome.changed",
-                        TextComponent.of(visitor.getAffected())
-                )
-                .append(TextComponent.newline())
-                .append(TranslatableComponent.of("worldedit.setbiome.warning")));
+            "worldedit.replacebiome.changed",
+            TextComponent.of(visitor.getAffected())
+        )
+            .append(TextComponent.newline())
+            .append(TranslatableComponent.of("worldedit.setbiome.warning")));
     }
 }
