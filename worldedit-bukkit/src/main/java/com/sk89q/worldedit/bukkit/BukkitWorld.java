@@ -320,6 +320,7 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     @Override
+    @SuppressWarnings({"FutureReturnValueIgnored", "unused"})
     public void checkLoadedChunk(BlockVector3 pt) {
         World world = getWorld();
         executeOnRegionVoid(pt, () -> {
@@ -474,8 +475,6 @@ public class BukkitWorld extends AbstractWorld {
         // No adapter, we can't generate this.
         return false;
     }
-
-    private static final boolean hasWarnedImplError = false;
 
     @Override
     public com.sk89q.worldedit.world.block.BlockState getBlock(BlockVector3 position) {

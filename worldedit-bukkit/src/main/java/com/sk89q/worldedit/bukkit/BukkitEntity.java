@@ -83,7 +83,8 @@ class BukkitEntity implements Entity {
         }
 
         if (PaperLib.isPaper()) {
-            FoliaScheduler.getEntityScheduler().run(
+            @SuppressWarnings({"FutureReturnValueIgnored", "unused"})
+            var unused = FoliaScheduler.getEntityScheduler().run(
                 entity,
                 WorldEditPlugin.getInstance(),
                 o -> entity.teleportAsync(BukkitAdapter.adapt(location)),
@@ -118,6 +119,7 @@ class BukkitEntity implements Entity {
                 return adapter.getEntity(entity);
             }
         } catch (Throwable ignored) {
+            // It's fine if we couldn't remove it
         }
 
         CompletableFuture<BaseEntity> future = new CompletableFuture<>();
@@ -203,6 +205,7 @@ class BukkitEntity implements Entity {
                         try {
                             task.run();
                         } catch (Throwable ignored) {
+                            // It's fine if we couldn't remove it
                         }
                     },
                     null

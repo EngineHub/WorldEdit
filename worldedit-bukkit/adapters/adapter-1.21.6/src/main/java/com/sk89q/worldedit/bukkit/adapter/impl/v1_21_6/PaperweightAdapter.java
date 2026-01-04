@@ -908,6 +908,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
                 Map<String, World> map = (Map<String, World>) serverWorldsField.get(Bukkit.getServer());
                 map.remove("worldeditregentempworld");
             } catch (IllegalAccessException ignored) {
+                // It's fine if we couldn't remove it
             }
             SafeFiles.tryHardToDeleteDir(tempDir);
         }
@@ -945,7 +946,8 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
                         CompletableFuture<ChunkResult<ChunkAccess>> chunkFuture =
                             ((CompletableFuture<ChunkResult<ChunkAccess>>)
                                 getChunkFutureMethod.invoke(chunkManager, chunkPos.x, chunkPos.z, ChunkStatus.FEATURES, true));
-                        chunkFuture.thenApply(either -> either.orElse(null))
+                        @SuppressWarnings({"FutureReturnValueIgnored", "unused"})
+                        var ignored = chunkFuture.thenApply(either -> either.orElse(null))
                             .whenComplete((chunkAccess, throwable) -> {
                                 if (throwable != null) {
                                     future.completeExceptionally(new IllegalStateException("Couldn't load chunk for regen.", throwable));
@@ -1009,7 +1011,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "unused"})
     private List<CompletableFuture<ChunkAccess>> submitChunkLoadTasksFolia(Region region, ServerLevel serverWorld) {
         ServerChunkCache chunkManager = serverWorld.getChunkSource();
         List<CompletableFuture<ChunkAccess>> chunkLoadings = new ArrayList<>();
@@ -1030,7 +1032,8 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
                         CompletableFuture<ChunkResult<ChunkAccess>> chunkFuture =
                             ((CompletableFuture<ChunkResult<ChunkAccess>>)
                                 getChunkFutureMethod.invoke(chunkManager, chunkX, chunkZ, ChunkStatus.FEATURES, true));
-                        chunkFuture.thenApply(either -> either.orElse(null))
+                        @SuppressWarnings({"FutureReturnValueIgnored", "unused"})
+                        var ignored = chunkFuture.thenApply(either -> either.orElse(null))
                             .whenComplete((chunkAccess, throwable) -> {
                                 if (throwable != null) {
                                     future.completeExceptionally(throwable);

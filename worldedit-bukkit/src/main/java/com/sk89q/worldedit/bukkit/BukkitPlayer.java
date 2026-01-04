@@ -149,7 +149,8 @@ public class BukkitPlayer extends AbstractPlayerActor {
     @Override
     public boolean trySetPosition(Vector3 pos, float pitch, float yaw) {
         if (PaperLib.isPaper()) {
-            FoliaScheduler.getEntityScheduler().run(player, WorldEditPlugin.getInstance(),
+            @SuppressWarnings({"FutureReturnValueIgnored", "unused"})
+            var unused = FoliaScheduler.getEntityScheduler().run(player, WorldEditPlugin.getInstance(),
                 o -> player.teleportAsync(new Location(player.getWorld(), pos.x(), pos.y(), pos.z(), yaw, pitch)), null);
             return true;
         }
@@ -232,7 +233,8 @@ public class BukkitPlayer extends AbstractPlayerActor {
     @Override
     public boolean setLocation(com.sk89q.worldedit.util.Location location) {
         if (PaperLib.isPaper()) {
-            FoliaScheduler.getEntityScheduler().run(player, WorldEditPlugin.getInstance(),
+            @SuppressWarnings({"FutureReturnValueIgnored", "unused"})
+            var unused = FoliaScheduler.getEntityScheduler().run(player, WorldEditPlugin.getInstance(),
                 o -> player.teleportAsync(BukkitAdapter.adapt(location)), null);
             return true;
         }
