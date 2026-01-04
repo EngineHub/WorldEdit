@@ -62,7 +62,7 @@ public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
     @Override
     @Deprecated
     public void printRaw(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             sender.sendMessage(part);
         }
     }
@@ -70,7 +70,7 @@ public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
     @Override
     @Deprecated
     public void print(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             print(TextComponent.of(part, TextColor.LIGHT_PURPLE));
         }
     }
@@ -78,7 +78,7 @@ public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
     @Override
     @Deprecated
     public void printDebug(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             print(TextComponent.of(part, TextColor.GRAY));
         }
     }
@@ -86,7 +86,7 @@ public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
     @Override
     @Deprecated
     public void printError(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             print(TextComponent.of(part, TextColor.RED));
         }
     }
@@ -157,8 +157,15 @@ public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
                     updateActive();
                 } else {
                     // we should update it eventually or on the owning region thread
+                    // Suppress FutureReturnValueIgnored: We handle it in the block.
                     FoliaScheduler.getRegionScheduler().execute(plugin, sender.getBlock().getLocation(),
-                        this::updateActive);
+                        () -> {
+                            try {
+                                updateActive();
+                            } catch (Throwable t) {
+                                WorldEdit.logger.warn("Exception while updating command block sender active state", t);
+                            }
+                        });
                 }
                 return active;
             }
