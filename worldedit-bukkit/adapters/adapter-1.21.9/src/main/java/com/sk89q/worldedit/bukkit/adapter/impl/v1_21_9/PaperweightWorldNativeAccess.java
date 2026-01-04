@@ -142,12 +142,12 @@ public class PaperweightWorldNativeAccess implements WorldNativeAccess<LevelChun
         } else {
             // When we don't want events, manually run the physics without them.
             Block block = oldState.getBlock();
-            fireNeighborChanged(pos, world, block, pos.west());
-            fireNeighborChanged(pos, world, block, pos.east());
-            fireNeighborChanged(pos, world, block, pos.below());
-            fireNeighborChanged(pos, world, block, pos.above());
-            fireNeighborChanged(pos, world, block, pos.north());
-            fireNeighborChanged(pos, world, block, pos.south());
+            fireNeighborChanged(world, block, pos.west());
+            fireNeighborChanged(world, block, pos.east());
+            fireNeighborChanged(world, block, pos.below());
+            fireNeighborChanged(world, block, pos.above());
+            fireNeighborChanged(world, block, pos.north());
+            fireNeighborChanged(world, block, pos.south());
         }
         if (newState.hasAnalogOutputSignal()) {
             world.updateNeighbourForOutputSignal(pos, newState.getBlock());
@@ -160,7 +160,7 @@ public class PaperweightWorldNativeAccess implements WorldNativeAccess<LevelChun
         newState.onPlace(world, pos, oldState, false);
     }
 
-    private void fireNeighborChanged(BlockPos pos, ServerLevel world, Block block, BlockPos neighborPos) {
+    private void fireNeighborChanged(ServerLevel world, Block block, BlockPos neighborPos) {
         world.getBlockState(neighborPos).handleNeighborChanged(world, neighborPos, block, ExperimentalRedstoneUtils.initialOrientation(world, null, null), false);
     }
 

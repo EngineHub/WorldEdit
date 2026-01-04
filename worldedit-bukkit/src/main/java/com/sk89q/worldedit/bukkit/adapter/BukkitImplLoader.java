@@ -31,6 +31,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.regex.Pattern;
 
 /**
  * Loads Bukkit implementation adapters.
@@ -45,6 +46,7 @@ public class BukkitImplLoader {
     private static final String SEARCH_PACKAGE_DOT = SEARCH_PACKAGE + ".";
     private static final String SEARCH_PATH = SEARCH_PACKAGE.replace(".", "/");
     private static final String CLASS_SUFFIX = ".class";
+    private static final Pattern CLASS_SEPARATOR_PATTERN = Pattern.compile("[/\\\\]+");
 
     private static final String LOAD_ERROR_MESSAGE =
             """
@@ -86,14 +88,13 @@ public class BukkitImplLoader {
      * @throws IOException thrown on I/O error
      */
     public void addFromJar(File file) throws IOException {
-        Closer closer = Closer.create();
-        JarFile jar = closer.register(new JarFile(file));
-        try {
+        try (Closer closer = Closer.create()) {
+            JarFile jar = closer.register(new JarFile(file));
             Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
                 JarEntry jarEntry = entries.nextElement();
 
-                String className = jarEntry.getName().replaceAll("[/\\\\]+", ".");
+                String className = CLASS_SEPARATOR_PATTERN.matcher(jarEntry.getName()).replaceAll(".");
 
                 if (!className.startsWith(SEARCH_PACKAGE_DOT) || jarEntry.isDirectory()) {
                     continue;
@@ -104,8 +105,6 @@ public class BukkitImplLoader {
                 className = className.substring(beginIndex, endIndex);
                 adapterCandidates.add(className);
             }
-        } finally {
-            closer.close();
         }
     }
 

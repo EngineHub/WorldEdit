@@ -28,14 +28,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 abstract class PositionListTest {
 
-    static class Long extends PositionListTest {
+    static class LongPosListTest extends PositionListTest {
         @Override
         protected PositionList createPositionList() {
             return new LongPositionList();
         }
     }
 
-    static class Vector extends PositionListTest {
+    static class VectorPosListTest extends PositionListTest {
         @Override
         protected PositionList createPositionList() {
             return new VectorPositionList();

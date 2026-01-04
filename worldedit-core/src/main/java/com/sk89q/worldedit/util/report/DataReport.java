@@ -21,6 +21,8 @@ package com.sk89q.worldedit.util.report;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.errorprone.annotations.FormatMethod;
+import com.google.errorprone.annotations.FormatString;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,7 +47,8 @@ public class DataReport implements Report {
         lines.add(new Line(key, message));
     }
 
-    public void append(String key, String message, Object... values) {
+    @FormatMethod
+    public void append(String key, @FormatString String message, Object... values) {
         checkNotNull(message, "values");
         checkNotNull(values, "values");
         append(key, String.format(message, values));

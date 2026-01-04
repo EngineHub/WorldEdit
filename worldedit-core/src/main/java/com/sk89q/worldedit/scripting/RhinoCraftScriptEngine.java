@@ -71,8 +71,8 @@ public class RhinoCraftScriptEngine implements CraftScriptEngine {
             String msg;
             int line = (line = e.lineNumber()) == 0 ? -1 : line;
 
-            if (e instanceof JavaScriptException) {
-                msg = String.valueOf(((JavaScriptException) e).getValue());
+            if (e instanceof JavaScriptException jsException) {
+                msg = String.valueOf(jsException.getValue());
             } else {
                 msg = e.getMessage();
             }

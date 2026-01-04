@@ -75,7 +75,7 @@ public final class SuggestionHelper {
         Set<String> matchedProperties = new HashSet<>();
         String[] propParts = props.split(",", -1);
         for (int i = 0; i < propParts.length; i++) {
-            String[] propVal = propParts[i].split("=");
+            String[] propVal = propParts[i].split("=", 0);
             final String matchProp = propVal[0].toLowerCase(Locale.ROOT);
             if (i == propParts.length - 1) {
                 // suggest for next property

@@ -216,7 +216,8 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
     public PaperweightAdapter() throws NoSuchFieldException, NoSuchMethodException {
         // A simple test
-        CraftServer.class.cast(Bukkit.getServer());
+        @SuppressWarnings({"ReturnValueIgnored", "unused"})
+        var unused = CraftServer.class.cast(Bukkit.getServer());
 
         int dataVersion = SharedConstants.getCurrentVersion().getDataVersion().getVersion();
         if (dataVersion != Constants.DATA_VERSION_MC_1_21_3) {
@@ -256,6 +257,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             Class.forName("org.spigotmc.SpigotConfig");
             SpigotConfig.config.set("world-settings.worldeditregentempworld.verbose", false);
         } catch (ClassNotFoundException ignored) {
+            // It's fine if we couldn't set it
         }
     }
 
@@ -659,8 +661,8 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         CraftWorld craftWorld = (CraftWorld) world;
         ServerLevel worldServer = craftWorld.getHandle();
         ItemStack stack = CraftItemStack.asNMSCopy(adapt(
-            item instanceof BaseItemStack
-                ? ((BaseItemStack) item)
+            item instanceof BaseItemStack baseItemStack
+                ? baseItemStack
                 : new BaseItemStack(item.getType(), item.getNbtReference(), 1)
         ));
 
@@ -789,6 +791,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
                 Map<String, World> map = (Map<String, World>) serverWorldsField.get(Bukkit.getServer());
                 map.remove("worldeditregentempworld");
             } catch (IllegalAccessException ignored) {
+                // It's fine if we couldn't remove it
             }
             SafeFiles.tryHardToDeleteDir(tempDir);
         }
@@ -1136,8 +1139,8 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         ServerLevel originalWorld = ((CraftWorld) world).getHandle();
 
         BlockEntity entity = originalWorld.getBlockEntity(new BlockPos(pt.x(), pt.y(), pt.z()));
-        if (entity instanceof Clearable) {
-            ((Clearable) entity).clearContent();
+        if (entity instanceof Clearable clearable) {
+            clearable.clearContent();
             return true;
         }
         return false;
@@ -1185,6 +1188,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         });
     }
 
+    @Override
     public boolean generateFeature(ConfiguredFeatureType type, World world, EditSession session, BlockVector3 pt) {
         ServerLevel originalWorld = ((CraftWorld) world).getHandle();
         ConfiguredFeature<?, ?> k = originalWorld.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).getValue(ResourceLocation.tryParse(type.id()));
@@ -1193,6 +1197,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         return k != null && k.place(proxyLevel, chunkManager.getGenerator(), random, new BlockPos(pt.x(), pt.y(), pt.z()));
     }
 
+    @Override
     public boolean generateStructure(StructureType type, World world, EditSession session, BlockVector3 pt) {
         ServerLevel originalWorld = ((CraftWorld) world).getHandle();
         Structure k = originalWorld.registryAccess().lookupOrThrow(Registries.STRUCTURE).getValue(ResourceLocation.tryParse(type.id()));
@@ -1407,6 +1412,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             try {
                 tickField.set(server, Util.getMillis());
             } catch (IllegalAccessException ignored) {
+                // It's fine if we couldn't set it
             }
         }
     }

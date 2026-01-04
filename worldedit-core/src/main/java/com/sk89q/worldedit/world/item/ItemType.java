@@ -126,6 +126,6 @@ public class ItemType implements Keyed {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof ItemType && this.id.equals(((ItemType) obj).id);
+        return obj instanceof ItemType itemType && this.id.equals(itemType.id);
     }
 }

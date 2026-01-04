@@ -105,6 +105,7 @@ public class BlockBagExtent extends AbstractDelegateExtent {
                     try {
                         blockBag.storeDroppedBlock(existing);
                     } catch (BlockBagException ignored) {
+                        // If we can't store the block, void it
                     }
                 }
             }

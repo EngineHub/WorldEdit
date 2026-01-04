@@ -101,7 +101,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
 
     protected PermissionsResolverManager(Plugin plugin) {
         this.server = plugin.getServer();
-        (new ServerListener()).register(plugin); // Register the events
+        new ServerListener().register(plugin); // Register the events
 
         loadConfig(new File("wepif.yml"));
         findResolver();
@@ -119,7 +119,6 @@ public class PermissionsResolverManager implements PermissionsResolver {
                 }
             } catch (Throwable e) {
                 LOGGER.warn("Error in factory method for " + resolverClass.getSimpleName(), e);
-                continue;
             }
         }
         if (permissionResolver == null) {
@@ -130,11 +129,11 @@ public class PermissionsResolverManager implements PermissionsResolver {
     }
 
     public void setPluginPermissionsResolver(Plugin plugin) {
-        if (!(plugin instanceof PermissionsProvider)) {
+        if (!(plugin instanceof PermissionsProvider permissionsProvider)) {
             return;
         }
 
-        permissionResolver = new PluginPermissionsResolver((PermissionsProvider) plugin, plugin);
+        permissionResolver = new PluginPermissionsResolver(permissionsProvider, plugin);
         LOGGER.info("WEPIF: " + permissionResolver.getDetectionMessage());
     }
 
@@ -229,6 +228,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
                 try {
                     next = Class.forName(getClass().getPackage().getName() + "." + nextName);
                 } catch (ClassNotFoundException ignored) {
+                    // It's okay, we'll just log below
                 }
 
                 if (next == null || !PermissionsResolver.class.isAssignableFrom(next)) {

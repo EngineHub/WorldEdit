@@ -110,7 +110,7 @@ public class GardenPatchGenerator implements RegionFunction {
         BlockState log = BlockTypes.OAK_LOG.getDefaultState();
 
         switch (t) {
-            case 0:
+            case 0 -> {
                 if (random.nextBoolean()) {
                     placeVine(basePos, pos.add(1, 0, 0));
                 }
@@ -118,11 +118,11 @@ public class GardenPatchGenerator implements RegionFunction {
                     setBlockIfAir(editSession, pos.add(1, h, -1), log);
                     affected++;
                 }
-                setBlockIfAir(editSession, p = pos.add(0, 0, -1), plant.applyBlock(p));
+                p = pos.add(0, 0, -1);
+                setBlockIfAir(editSession, p, plant.applyBlock(p));
                 affected++;
-                break;
-
-            case 1:
+            }
+            case 1 -> {
                 if (random.nextBoolean()) {
                     placeVine(basePos, pos.add(0, 0, 1));
                 }
@@ -130,11 +130,11 @@ public class GardenPatchGenerator implements RegionFunction {
                     setBlockIfAir(editSession, pos.add(1, h, 0), log);
                     affected++;
                 }
-                setBlockIfAir(editSession, p = pos.add(1, 0, 1), plant.applyBlock(p));
+                p = pos.add(1, 0, 1);
+                setBlockIfAir(editSession, p, plant.applyBlock(p));
                 affected++;
-                break;
-
-            case 2:
+            }
+            case 2 -> {
                 if (random.nextBoolean()) {
                     placeVine(basePos, pos.add(0, 0, -1));
                 }
@@ -142,11 +142,11 @@ public class GardenPatchGenerator implements RegionFunction {
                     setBlockIfAir(editSession, pos.add(-1, h, 0), log);
                     affected++;
                 }
-                setBlockIfAir(editSession, p = pos.add(-1, 0, 1), plant.applyBlock(p));
+                p = pos.add(-1, 0, 1);
+                setBlockIfAir(editSession, p, plant.applyBlock(p));
                 affected++;
-                break;
-
-            case 3:
+            }
+            case 3 -> {
                 if (random.nextBoolean()) {
                     placeVine(basePos, pos.add(-1, 0, 0));
                 }
@@ -154,11 +154,11 @@ public class GardenPatchGenerator implements RegionFunction {
                     setBlockIfAir(editSession, pos.add(-1, h, -1), log);
                     affected++;
                 }
-                setBlockIfAir(editSession, p = pos.add(-1, 0, -1), plant.applyBlock(p));
+                p = pos.add(-1, 0, -1);
+                setBlockIfAir(editSession, p, plant.applyBlock(p));
                 affected++;
-                break;
-            default:
-                break;
+            }
+            default -> throw new AssertionError("randInt(4) should always be 0-3, got " + t);
         }
     }
 

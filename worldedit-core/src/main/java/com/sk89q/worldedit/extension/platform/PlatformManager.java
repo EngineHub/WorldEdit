@@ -61,6 +61,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.internal.util.SwitchEnhancements.dummyValue;
+import static com.sk89q.worldedit.internal.util.SwitchEnhancements.exhaustive;
 
 /**
  * Manages registered {@link Platform}s for WorldEdit. Platforms are
@@ -340,6 +342,8 @@ public class PlatformManager {
      * You shouldn't have been calling this anyways, but this is now deprecated. Either don't
      * fire this event at all, or fire the new event via the event bus if you're a platform.
      */
+    // Suppress InlineMeSuggester: This method cannot be made final due to backwards compatibility
+    @SuppressWarnings("InlineMeSuggester")
     @Deprecated
     public void handlePlatformReady(@SuppressWarnings("unused") PlatformReadyEvent event) {
         handlePlatformsRegistered(new PlatformsRegisteredEvent());
@@ -415,8 +419,8 @@ public class PlatformManager {
                 }
 
                 Tool tool = session.getTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
-                if (tool instanceof DoubleActionBlockTool && tool.canUse(player)) {
-                    if (((DoubleActionBlockTool) tool).actSecondary(queryCapability(Capability.WORLD_EDITING),
+                if (tool instanceof DoubleActionBlockTool doubleActionBlockTool && tool.canUse(player)) {
+                    if (doubleActionBlockTool.actSecondary(queryCapability(Capability.WORLD_EDITING),
                             getConfiguration(), player, session, location, event.getFace())) {
                         event.setCancelled(true);
                     }
@@ -424,8 +428,8 @@ public class PlatformManager {
 
             } else if (event.getType() == Interaction.OPEN) {
                 Tool tool = session.getTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
-                if (tool instanceof BlockTool && tool.canUse(player)) {
-                    if (((BlockTool) tool).actPrimary(queryCapability(Capability.WORLD_EDITING),
+                if (tool instanceof BlockTool blockTool && tool.canUse(player)) {
+                    if (blockTool.actPrimary(queryCapability(Capability.WORLD_EDITING),
                             getConfiguration(), player, session, location, event.getFace())) {
                         event.setCancelled(true);
                     }
@@ -447,36 +451,30 @@ public class PlatformManager {
         Request.request().setWorld(player.getWorld());
 
         try {
-            switch (event.getInputType()) {
-                case PRIMARY: {
+            exhaustive(switch (event.getInputType()) {
+                case PRIMARY -> {
                     Tool tool = session.getTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
-                    if (tool instanceof DoubleActionTraceTool && tool.canUse(player)) {
-                        if (((DoubleActionTraceTool) tool).actSecondary(queryCapability(Capability.WORLD_EDITING),
+                    if (tool instanceof DoubleActionTraceTool doubleActionTraceTool && tool.canUse(player)) {
+                        if (doubleActionTraceTool.actSecondary(queryCapability(Capability.WORLD_EDITING),
                                 getConfiguration(), player, session)) {
                             event.setCancelled(true);
                         }
-                        return;
                     }
 
-                    break;
+                    yield dummyValue();
                 }
-
-                case SECONDARY: {
+                case SECONDARY -> {
                     Tool tool = session.getTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
-                    if (tool instanceof TraceTool && tool.canUse(player)) {
-                        if (((TraceTool) tool).actPrimary(queryCapability(Capability.WORLD_EDITING),
+                    if (tool instanceof TraceTool traceTool && tool.canUse(player)) {
+                        if (traceTool.actPrimary(queryCapability(Capability.WORLD_EDITING),
                                 getConfiguration(), player, session)) {
                             event.setCancelled(true);
                         }
-                        return;
                     }
 
-                    break;
+                    yield dummyValue();
                 }
-
-                default:
-                    break;
-            }
+            });
         } finally {
             Request.reset();
         }

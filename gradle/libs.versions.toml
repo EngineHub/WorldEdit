@@ -5,10 +5,12 @@ sponge-vanillagradle = { id = "org.spongepowered.gradle.vanilla", version.ref = 
 
 [versions]
 kyoriText = "3.0.4"
-piston = "0.5.10"
+piston = "0.5.11"
 autoValue = "1.10.4"
 antlr = "4.13.2"
 cuiProtocol = "4.0.2"
+
+errorprone = "2.45.0"
 
 fabric-api = "0.139.5+1.21.11"
 
@@ -45,6 +47,10 @@ japicmp = "me.champeau.gradle:japicmp-gradle-plugin:0.4.6"
 shadow = "com.gradleup.shadow:com.gradleup.shadow.gradle.plugin:8.3.9"
 jfrog-buildinfo = "org.jfrog.buildinfo:build-info-extractor-gradle:6.0.4"
 
+errorprone-gradle-plugin = "net.ltgt.errorprone:net.ltgt.errorprone.gradle.plugin:4.3.0"
+errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone" }
+errorprone-annotations = { module = "com.google.errorprone:error_prone_annotations", version.ref = "errorprone" }
+
 # https://maven.fabricmc.net/net/fabricmc/sponge-mixin/
 fabric-mixin = "net.fabricmc:sponge-mixin:0.17.0+mixin.0.8.7"
 
@@ -60,7 +66,6 @@ autoService = "com.google.auto.service:auto-service:1.1.1"
 
 jsr305 = "com.google.code.findbugs:jsr305:3.0.2"
 jetbrains-annotations = "org.jetbrains:annotations:24.1.0"
-errorprone-annotations = "com.google.errorprone:error_prone_annotations:2.11.0"
 
 junit-bom = "org.junit:junit-bom:6.0.1"
 junit-jupiter-api.module = "org.junit.jupiter:junit-jupiter-api"

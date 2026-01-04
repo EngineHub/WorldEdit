@@ -120,7 +120,7 @@ public class NeoForgeServerLevelDelegateProxy implements InvocationHandler, Auto
         createdBlockEntities.remove(pos);
     }
 
-    private boolean removeBlock(BlockPos blockPos, boolean bl) {
+    private boolean removeBlock(BlockPos blockPos) {
         return setBlock(blockPos, Blocks.AIR.defaultBlockState());
     }
 
@@ -175,8 +175,8 @@ public class NeoForgeServerLevelDelegateProxy implements InvocationHandler, Auto
                 }
             }
             case "removeBlock", "destroyBlock", "m_7471_", "m_7740_" -> {
-                if (args.length >= 2 && args[0] instanceof BlockPos blockPos && args[1] instanceof Boolean bl) {
-                    return removeBlock(blockPos, bl);
+                if (args.length >= 2 && args[0] instanceof BlockPos blockPos && args[1] instanceof Boolean) {
+                    return removeBlock(blockPos);
                 }
             }
             case "addEntity", "m_8872_", "addFreshEntityWithPassengers", "m_47205_" -> {

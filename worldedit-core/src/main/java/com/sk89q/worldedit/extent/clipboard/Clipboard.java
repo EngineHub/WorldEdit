@@ -27,7 +27,7 @@ import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.regions.Region;
 
 /**
- * Specifies an object that implements something suitable as a "clipboard."
+ * Specifies an object that implements something suitable as a "clipboard.".
  */
 public interface Clipboard extends Extent {
 

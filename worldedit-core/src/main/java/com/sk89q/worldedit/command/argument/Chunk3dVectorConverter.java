@@ -45,16 +45,10 @@ public class Chunk3dVectorConverter<C, T> implements ArgumentConverter<T> {
             new Chunk3dVectorConverter<>(
                 intConverter,
                 Range.closed(2, 3),
-                cmps -> {
-                    switch (cmps.size()) {
-                        case 2:
-                            return BlockVector3.at(cmps.get(0), 0, cmps.get(1));
-                        case 3:
-                            return BlockVector3.at(cmps.get(0), cmps.get(1), cmps.get(2));
-                        default:
-                            break;
-                    }
-                    throw new AssertionError("Expected 2 or 3 components");
+                cmps -> switch (cmps.size()) {
+                    case 2 -> BlockVector3.at(cmps.get(0), 0, cmps.get(1));
+                    case 3 -> BlockVector3.at(cmps.get(0), cmps.get(1), cmps.get(2));
+                    default -> throw new AssertionError("Expected 2 or 3 components");
                 },
                 "block vector in the form x,z or x,y,z"
             ));

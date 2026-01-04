@@ -60,7 +60,7 @@ public class PackedIntArrayReader {
     }
 
     private int adjustIndex(int i) {
-        return (int) ((long) i * factor + factor >> 32);
+        return (int) (((long) i * factor + factor) >> 32);
     }
 
 }

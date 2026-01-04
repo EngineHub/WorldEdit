@@ -49,7 +49,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
         Plugin plugin = pluginManager.getPlugin("Permissions");
 
         // Check if plugin is loaded and has Permissions interface
-        if (!(plugin instanceof Permissions)) {
+        if (!(plugin instanceof Permissions permissions)) {
             return null;
         }
 
@@ -58,7 +58,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
             return null;
         }
 
-        return new NijiPermissionsResolver(server, (Permissions) plugin);
+        return new NijiPermissionsResolver(server, permissions);
     }
 
     @Override
@@ -171,7 +171,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
     public static boolean isFakeNijiPerms(Plugin plugin) {
         PluginCommand permsCommand = Bukkit.getServer().getPluginCommand("permissions");
 
-        return permsCommand == null || !(permsCommand.getPlugin().equals(plugin));
+        return permsCommand == null || !permsCommand.getPlugin().equals(plugin);
     }
 
     @Override

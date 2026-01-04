@@ -1,10 +1,12 @@
 import buildlogic.stringyLibs
 import buildlogic.getLibrary
+import net.ltgt.gradle.errorprone.errorprone
 
 plugins {
     id("eclipse")
     id("idea")
     id("checkstyle")
+    id("net.ltgt.errorprone")
     id("buildlogic.common")
 }
 
@@ -22,11 +24,24 @@ tasks
         options.encoding = "UTF-8"
         options.compilerArgs.add("-parameters")
         options.compilerArgs.add("-Werror")
+        options.errorprone {
+            // We use -Werror, so we don't need errorprone to fail the build separately
+            allErrorsAsWarnings = true
+            // Obviously we don't need to fix generated code
+            disableWarningsInGeneratedCode = true
+            // We use reference equality intentionally in several places
+            // Perhaps we should consider testing the performance impact of using .equals() instead?
+            // Especially for the types that are only compared by reference equality, we could consider
+            // removing their .equals() implementations to avoid confusion.
+            disable("ReferenceEquality")
+            // We're on JDK 21, so System.console() can still be null
+            disable("SystemConsoleNull")
+        }
     }
 
 configure<CheckstyleExtension> {
     configFile = rootProject.file("config/checkstyle/checkstyle.xml")
-    toolVersion = "10.16.0"
+    toolVersion = "12.3.1"
 }
 
 tasks.withType<Test>().configureEach {
@@ -37,6 +52,8 @@ tasks.withType<Test>().configureEach {
 
 dependencies {
     "compileOnly"(stringyLibs.getLibrary("jsr305"))
+    "compileOnlyApi"(stringyLibs.getLibrary("errorprone-annotations"))
+    "errorprone"(stringyLibs.getLibrary("errorprone-core"))
     "testImplementation"(platform(stringyLibs.getLibrary("junit-bom")))
     "testImplementation"(stringyLibs.getLibrary("junit-jupiter-api"))
     "testImplementation"(stringyLibs.getLibrary("junit-jupiter-params"))

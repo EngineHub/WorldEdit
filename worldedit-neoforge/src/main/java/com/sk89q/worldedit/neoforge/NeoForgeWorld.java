@@ -29,6 +29,7 @@ import com.google.common.collect.Streams;
 import com.google.common.util.concurrent.Futures;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
@@ -213,8 +214,8 @@ public class NeoForgeWorld extends AbstractWorld {
         checkNotNull(position);
 
         BlockEntity tile = getWorld().getBlockEntity(NeoForgeAdapter.toBlockPos(position));
-        if (tile instanceof Clearable) {
-            ((Clearable) tile).clearContent();
+        if (tile instanceof Clearable clearable) {
+            clearable.clearContent();
             return true;
         }
         return false;
@@ -356,9 +357,7 @@ public class NeoForgeWorld extends AbstractWorld {
                 regenForWorld(region, extent, serverWorld, options);
 
                 // drive the server executor until all tasks are popped off
-                while (originalWorld.getServer().pollTask()) {
-                    Thread.yield();
-                }
+                originalWorld.getServer().managedBlock(() -> originalWorld.getServer().getPendingTasksCount() == 0);
             } finally {
                 levelProperties.worldOptions = originalOpts;
             }
@@ -450,7 +449,12 @@ public class NeoForgeWorld extends AbstractWorld {
             case CHERRY -> TreeFeatures.CHERRY;
             case PALE_OAK -> TreeFeatures.PALE_OAK;
             case PALE_OAK_CREAKING -> TreeFeatures.PALE_OAK_CREAKING;
-            case RANDOM -> createTreeFeatureGenerator(TreeType.values()[ThreadLocalRandom.current().nextInt(TreeType.values().length)]);
+            case RANDOM -> {
+                // We're intentionally using index here to get a random tree type
+                @SuppressWarnings("EnumOrdinal")
+                TreeType randomTreeType = TreeType.values()[ThreadLocalRandom.current().nextInt(TreeType.values().length)];
+                yield createTreeFeatureGenerator(randomTreeType);
+            }
             default -> null;
         };
     }
@@ -556,7 +560,10 @@ public class NeoForgeWorld extends AbstractWorld {
             // We'll be doing a full relight anyways, so we don't need to be LIGHT yet
             world.getChunkSource().getLightEngine().lightChunk(world.getChunk(
                 chunk.x(), chunk.z(), ChunkStatus.INITIALIZE_LIGHT
-            ), false);
+            ), false).exceptionally(t -> {
+                WorldEdit.logger.warn("Failed to relight chunk at " + chunk, t);
+                return null;
+            });
         }
     }
 
@@ -662,17 +669,15 @@ public class NeoForgeWorld extends AbstractWorld {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null) {
-            return false;
-        } else if ((o instanceof NeoForgeWorld other)) {
-            Level otherWorld = other.worldRef.get();
-            Level thisWorld = worldRef.get();
-            return otherWorld != null && otherWorld.equals(thisWorld);
-        } else if (o instanceof com.sk89q.worldedit.world.World) {
-            return ((com.sk89q.worldedit.world.World) o).getName().equals(getName());
-        } else {
-            return false;
-        }
+        return switch (o) {
+            case NeoForgeWorld other -> {
+                Level otherWorld = other.worldRef.get();
+                Level thisWorld = worldRef.get();
+                yield otherWorld != null && otherWorld.equals(thisWorld);
+            }
+            case com.sk89q.worldedit.world.World world -> world.getName().equals(getName());
+            case null, default -> false;
+        };
     }
 
     @Override

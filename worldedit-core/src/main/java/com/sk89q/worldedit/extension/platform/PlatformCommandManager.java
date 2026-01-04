@@ -94,7 +94,6 @@ import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
-import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.annotation.OptionalArg;
 import com.sk89q.worldedit.internal.annotation.Selection;
 import com.sk89q.worldedit.internal.command.CommandArgParser;
@@ -269,8 +268,8 @@ public final class PlatformCommandManager {
                         try {
                             if (localSession.hasWorldOverride()) {
                                 return localSession.getWorldOverride();
-                            } else if (actor instanceof Locatable && ((Locatable) actor).getExtent() instanceof World) {
-                                return (World) ((Locatable) actor).getExtent();
+                            } else if (actor instanceof Locatable locatable && locatable.getExtent() instanceof World world) {
+                                return world;
                             } else {
                                 throw new MissingWorldException();
                             }
@@ -485,11 +484,8 @@ public final class PlatformCommandManager {
 
         LocalSession session = worldEdit.getSessionManager().get(actor);
         Request.request().setSession(session);
-        if (actor instanceof Entity) {
-            Extent extent = ((Entity) actor).getExtent();
-            if (extent instanceof World) {
-                Request.request().setWorld(((World) extent));
-            }
+        if (actor instanceof Entity entity && entity.getExtent() instanceof World world) {
+            Request.request().setWorld(world);
         }
         LocalConfiguration config = worldEdit.getConfiguration();
 
@@ -575,9 +571,9 @@ public final class PlatformCommandManager {
     private MemoizingValueAccess initializeInjectedValues(Arguments arguments, Actor actor) {
         InjectedValueStore store = MapBackedValueStore.create();
         store.injectValue(Key.of(Actor.class), ValueProvider.constant(actor));
-        if (actor instanceof Player) {
-            store.injectValue(Key.of(Player.class), ValueProvider.constant((Player) actor));
-            store.injectValue(Key.of(Player.class, OptionalArg.class), ValueProvider.constant((Player) actor));
+        if (actor instanceof Player player) {
+            store.injectValue(Key.of(Player.class), ValueProvider.constant(player));
+            store.injectValue(Key.of(Player.class, OptionalArg.class), ValueProvider.constant(player));
         } else {
             store.injectValue(Key.of(Player.class), context -> {
                 throw new CommandException(TranslatableComponent.of("worldedit.command.player-only"), ImmutableList.of());

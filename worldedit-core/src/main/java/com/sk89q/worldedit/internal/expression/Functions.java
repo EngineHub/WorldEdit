@@ -196,7 +196,8 @@ public final class Functions {
     }
 
     private static double setBufferItem(final Int2ObjectMap<double[]> megabuf, final int index, double value) {
-        return getSubBuffer(megabuf, index & ~1023)[index & 1023] = value;
+        getSubBuffer(megabuf, index & ~1023)[index & 1023] = value;
+        return value;
     }
 
     @ExpressionFunction
@@ -318,11 +319,11 @@ public final class Functions {
         double ret = ((type.value() == -1 || typeId == type.value())
             && (data.value() == -1 || dataValue == data.value())) ? 1.0 : 0.0;
 
-        if (type instanceof Variable) {
-            ((Variable) type).setValue(typeId);
+        if (type instanceof Variable typeVar) {
+            typeVar.setValue(typeId);
         }
-        if (data instanceof Variable) {
-            ((Variable) data).setValue(dataValue);
+        if (data instanceof Variable dataVar) {
+            dataVar.setValue(dataValue);
         }
 
         return ret;

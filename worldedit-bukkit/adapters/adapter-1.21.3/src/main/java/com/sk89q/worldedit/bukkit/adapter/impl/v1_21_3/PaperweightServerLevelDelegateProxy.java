@@ -21,6 +21,7 @@ package com.sk89q.worldedit.bukkit.adapter.impl.v1_21_3;
 
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Table;
+import com.google.errorprone.annotations.Keep;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
@@ -72,6 +73,7 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler {
         );
     }
 
+    @Keep
     @Nullable
     private BlockEntity getBlockEntity(BlockPos blockPos) {
         BlockEntity tileEntity = this.serverLevel.getChunkAt(blockPos).getBlockEntity(blockPos);
@@ -90,6 +92,7 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler {
         return adapter.adapt(this.editSession.getBlockWithBuffer(BlockVector3.at(blockPos.getX(), blockPos.getY(), blockPos.getZ())));
     }
 
+    @Keep
     private boolean isStateAtPosition(BlockPos blockPos, Predicate<BlockState> predicate) {
         return predicate.test(getBlockState(blockPos));
     }
@@ -102,10 +105,12 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler {
         }
     }
 
+    @Keep
     private boolean removeBlock(BlockPos blockPos) {
         return setBlock(blockPos, Blocks.AIR.defaultBlockState());
     }
 
+    @Keep
     private boolean addEntity(Entity entity) {
         Vec3 pos = entity.getPosition(0.0f);
         Location location = new Location(BukkitAdapter.adapt(serverLevel.getWorld()), pos.x(), pos.y(), pos.z());

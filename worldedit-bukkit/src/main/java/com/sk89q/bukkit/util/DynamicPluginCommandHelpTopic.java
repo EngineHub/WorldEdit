@@ -108,10 +108,10 @@ public class DynamicPluginCommandHelpTopic extends HelpTopic {
                     // Doesn't take the CommandSender (Hooray for compile-time generics!), we have other methods at our disposal
                 }
             }
-            if (player instanceof OfflinePlayer) {
+            if (player instanceof OfflinePlayer offlinePlayer) {
                 try {
                     for (String perm : cmd.getPermissions()) {
-                        if (PermissionsResolverManager.getInstance().hasPermission((OfflinePlayer) player, perm)) {
+                        if (PermissionsResolverManager.getInstance().hasPermission(offlinePlayer, perm)) {
                             return true;
                         }
                     }

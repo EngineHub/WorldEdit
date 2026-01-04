@@ -77,7 +77,7 @@ public class HistoryCommands {
         }
         int timesUndone = 0;
         for (int i = 0; i < times; ++i) {
-            BlockBag blockBag = actor instanceof Player ? undoSession.getBlockBag((Player) actor) : null;
+            BlockBag blockBag = actor instanceof Player player ? undoSession.getBlockBag(player) : null;
             EditSession undone = undoSession.undo(blockBag, actor);
             if (undone != null) {
                 timesUndone++;
@@ -116,7 +116,7 @@ public class HistoryCommands {
         }
         int timesRedone = 0;
         for (int i = 0; i < times; ++i) {
-            BlockBag blockBag = actor instanceof Player ? redoSession.getBlockBag((Player) actor) : null;
+            BlockBag blockBag = actor instanceof Player player ? redoSession.getBlockBag(player) : null;
             EditSession redone = redoSession.redo(blockBag, actor);
             if (redone != null) {
                 timesRedone++;

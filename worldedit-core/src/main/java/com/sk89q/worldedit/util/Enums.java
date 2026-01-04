@@ -48,6 +48,7 @@ public final class Enums {
             try {
                 return Enum.valueOf(enumType, val);
             } catch (IllegalArgumentException ignored) {
+                // Ignore if invalid
             }
         }
         return null;

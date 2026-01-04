@@ -231,7 +231,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                         }
 
                         String value = (String) result.getState(property);
-                        String[] parts = value.split("_");
+                        String[] parts = value.split("_", 2);
                         String newStartString = parts[0];
                         if (!newStartString.equals("ascending")) {
                             Direction start = Direction.valueOf(parts[0].toUpperCase(Locale.ROOT));
@@ -253,11 +253,11 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                             result = result.with(enumProp, newShapeSwapped);
                         }
                     }
-                } else if (property.getName().equals("orientation") && transform instanceof AffineTransform affineTransform) {
+                } else if (property.getName().equals("orientation") && transform instanceof AffineTransform) {
                     // crafters
                     String current = (String) result.getState(property);
 
-                    String[] parts = current.split("_");
+                    String[] parts = current.split("_", 2);
                     Direction facing = Direction.valueOf(parts[0].toUpperCase(Locale.ROOT));
                     Direction top = Direction.valueOf(parts[1].toUpperCase(Locale.ROOT));
 
@@ -301,16 +301,16 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
         for (Property<?> prop : properties) {
             if (directionNames.contains(prop.getName())) {
                 var state = result.getState(prop);
-                if (prop instanceof BooleanProperty && (Boolean) state
-                        || prop instanceof EnumProperty && !state.toString().equals("none")) {
+                if ((prop instanceof BooleanProperty && (Boolean) state)
+                        || (prop instanceof EnumProperty && !state.toString().equals("none"))) {
                     String origProp = prop.getName().toUpperCase(Locale.ROOT);
                     Direction dir = Direction.valueOf(origProp);
                     Direction closest = Direction.findClosest(transform.apply(dir.toVector()), Direction.Flag.CARDINAL);
                     if (closest != null) {
                         String closestProp = closest.name().toLowerCase(Locale.ROOT);
-                        if (prop instanceof BooleanProperty) {
-                            result = result.with((BooleanProperty) prop, Boolean.FALSE);
-                            directionalProperties.put(closestProp, Boolean.TRUE);
+                        if (prop instanceof BooleanProperty boolProp) {
+                            result = result.with(boolProp, false);
+                            directionalProperties.put(closestProp, true);
                         } else {
                             if (prop.getValues().contains("none")) {
                                 @SuppressWarnings("unchecked")

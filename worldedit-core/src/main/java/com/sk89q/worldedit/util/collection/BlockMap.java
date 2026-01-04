@@ -345,6 +345,7 @@ public class BlockMap<V> extends AbstractMap<BlockVector3, V> {
             return getOrCreateMap(groupKey).put(innerKey, value);
         }
 
+        @Override
         public boolean equals(Object o) {
             if (!(o instanceof Map.Entry)) {
                 return false;

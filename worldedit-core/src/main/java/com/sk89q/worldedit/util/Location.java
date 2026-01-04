@@ -33,6 +33,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * <p>At the moment, but this may change in the future, {@link #hashCode()} and
  * {@link #equals(Object)} are subject to minor differences caused by
  * floating point errors.</p>
+ *
+ * @apiNote This is only non-final to allow WorldGuard to extend it. It will be made final in a future release.
  */
 public class Location {
 
@@ -350,22 +352,20 @@ public class Location {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof Location location)) {
             return false;
         }
 
-        Location location = (Location) o;
-
-        if (Double.doubleToLongBits(pitch) != Double.doubleToLongBits(location.pitch)) {
+        if (Double.doubleToLongBits(getPitch()) != Double.doubleToLongBits(location.getPitch())) {
             return false;
         }
-        if (Double.doubleToLongBits(yaw) != Double.doubleToLongBits(location.yaw)) {
+        if (Double.doubleToLongBits(getYaw()) != Double.doubleToLongBits(location.getYaw())) {
             return false;
         }
-        if (!position.equals(location.position)) {
+        if (!toVector().equals(location.toVector())) {
             return false;
         }
-        if (!extent.equals(location.extent)) {
+        if (!getExtent().equals(location.getExtent())) {
             return false;
         }
 
@@ -374,11 +374,20 @@ public class Location {
 
     @Override
     public int hashCode() {
-        int result = extent.hashCode();
-        result = 31 * result + position.hashCode();
-        result = 31 * result + Float.floatToIntBits(this.pitch);
-        result = 31 * result + Float.floatToIntBits(this.yaw);
+        int result = getExtent().hashCode();
+        result = 31 * result + toVector().hashCode();
+        result = 31 * result + Float.floatToIntBits(this.getPitch());
+        result = 31 * result + Float.floatToIntBits(this.getYaw());
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "Location{"
+            + "extent=" + getExtent()
+            + ",position=" + toVector()
+            + ",pitch=" + getPitch()
+            + ",yaw=" + getYaw()
+            + '}';
+    }
 }

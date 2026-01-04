@@ -53,13 +53,13 @@ public class SpongeTransmogrifier {
             net.minecraft.world.level.block.state.properties.Property<?> nativeProperty =
                     (net.minecraft.world.level.block.state.properties.Property<?>) property;
             String propertyName = nativeProperty.getName();
-            if (nativeProperty instanceof net.minecraft.world.level.block.state.properties.BooleanProperty) {
+            if (nativeProperty instanceof net.minecraft.world.level.block.state.properties.BooleanProperty booleanProperty) {
                 return new BooleanProperty(propertyName,
-                    ImmutableList.copyOf(((net.minecraft.world.level.block.state.properties.BooleanProperty) nativeProperty).getPossibleValues()));
+                    ImmutableList.copyOf(booleanProperty.getPossibleValues()));
             }
-            if (nativeProperty instanceof net.minecraft.world.level.block.state.properties.IntegerProperty) {
+            if (nativeProperty instanceof net.minecraft.world.level.block.state.properties.IntegerProperty integerProperty) {
                 return new IntegerProperty(propertyName,
-                    ImmutableList.copyOf(((net.minecraft.world.level.block.state.properties.IntegerProperty) nativeProperty).getPossibleValues()));
+                    ImmutableList.copyOf(integerProperty.getPossibleValues()));
             }
             if (isDirectionProperty(nativeProperty)) {
                 return new DirectionalProperty(propertyName,
@@ -68,9 +68,9 @@ public class SpongeTransmogrifier {
                         .toList()
                 );
             }
-            if (nativeProperty instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
+            if (nativeProperty instanceof net.minecraft.world.level.block.state.properties.EnumProperty<?> enumProperty) {
                 return new EnumProperty(propertyName,
-                    ((net.minecraft.world.level.block.state.properties.EnumProperty<?>) nativeProperty).getPossibleValues().stream()
+                    enumProperty.getPossibleValues().stream()
                         .map(StringRepresentable::getSerializedName)
                         .toList());
             }
@@ -106,41 +106,26 @@ public class SpongeTransmogrifier {
     }
 
     private static Direction adaptDirection(net.minecraft.core.Direction direction) {
-        switch (direction) {
-            case UP:
-                return Direction.UP;
-            case DOWN:
-                return Direction.DOWN;
-            case EAST:
-                return Direction.EAST;
-            case WEST:
-                return Direction.WEST;
-            case NORTH:
-                return Direction.NORTH;
-            case SOUTH:
-                return Direction.SOUTH;
-            default:
-                throw new AssertionError("New direction added: " + direction);
-        }
+        return switch (direction) {
+            case UP -> Direction.UP;
+            case DOWN -> Direction.DOWN;
+            case EAST -> Direction.EAST;
+            case WEST -> Direction.WEST;
+            case NORTH -> Direction.NORTH;
+            case SOUTH -> Direction.SOUTH;
+        };
     }
 
     private static net.minecraft.core.Direction adaptDirection(Direction direction) {
-        switch (direction) {
-            case UP:
-                return net.minecraft.core.Direction.UP;
-            case DOWN:
-                return net.minecraft.core.Direction.DOWN;
-            case EAST:
-                return net.minecraft.core.Direction.EAST;
-            case WEST:
-                return net.minecraft.core.Direction.WEST;
-            case NORTH:
-                return net.minecraft.core.Direction.NORTH;
-            case SOUTH:
-                return net.minecraft.core.Direction.SOUTH;
-            default:
-                throw new AssertionError("New direction added: " + direction);
-        }
+        return switch (direction) {
+            case UP -> net.minecraft.core.Direction.UP;
+            case DOWN -> net.minecraft.core.Direction.DOWN;
+            case EAST -> net.minecraft.core.Direction.EAST;
+            case WEST -> net.minecraft.core.Direction.WEST;
+            case NORTH -> net.minecraft.core.Direction.NORTH;
+            case SOUTH -> net.minecraft.core.Direction.SOUTH;
+            default -> throw new AssertionError("Unmappable direction: " + direction);
+        };
     }
 
     private static net.minecraft.world.level.block.state.properties.Property<?> findPropertyByName(

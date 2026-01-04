@@ -86,9 +86,9 @@ public class Expression {
         slots.putSlot("false", new LocalSlot.Constant(0));
 
         for (String variableName : variableNames) {
-            slots.initVariable(variableName)
-                .orElseThrow(() -> new ExpressionException(-1,
-                    "Tried to overwrite identifier '" + variableName + "'"));
+            if (slots.initVariable(variableName).isEmpty()) {
+                throw new ExpressionException(-1, "Tried to overwrite identifier '" + variableName + "'");
+            }
         }
         this.providedSlots = ImmutableList.copyOf(variableNames);
 

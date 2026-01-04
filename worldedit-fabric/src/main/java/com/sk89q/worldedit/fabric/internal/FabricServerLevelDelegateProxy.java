@@ -117,7 +117,7 @@ public class FabricServerLevelDelegateProxy implements InvocationHandler, AutoCl
         createdBlockEntities.remove(pos);
     }
 
-    private boolean removeBlock(BlockPos blockPos, boolean bl) {
+    private boolean removeBlock(BlockPos blockPos) {
         return setBlock(blockPos, Blocks.AIR.defaultBlockState());
     }
 
@@ -166,8 +166,8 @@ public class FabricServerLevelDelegateProxy implements InvocationHandler, AutoCl
                 }
             }
             case "removeBlock", "destroyBlock", "method_8650", "method_8651" -> {
-                if (args.length >= 2 && args[0] instanceof BlockPos blockPos && args[1] instanceof Boolean bl) {
-                    return removeBlock(blockPos, bl);
+                if (args.length >= 2 && args[0] instanceof BlockPos blockPos && args[1] instanceof Boolean) {
+                    return removeBlock(blockPos);
                 }
             }
             case "addEntity", "method_14175", "addFreshEntityWithPassengers", "method_30771" -> {

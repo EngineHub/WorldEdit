@@ -47,6 +47,6 @@ public final class WorldEditAsyncCommandBuilder {
         builder
                 .onSuccess((String) null, actor::printInfo)
                 .onFailure((String) null, WorldEdit.getInstance().getPlatformManager().getPlatformCommandManager().getExceptionConverter())
-                .buildAndExec(WorldEdit.getInstance().getExecutorService());
+                .buildAndExecNoReturnValue(WorldEdit.getInstance().getExecutorService());
     }
 }

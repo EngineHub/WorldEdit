@@ -24,12 +24,6 @@ tasks.withType<RunGameTask>().configureEach {
     javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
 }
 
-repositories {
-    afterEvaluate {
-        verifyEngineHubRepositories()
-    }
-}
-
 dependencies {
     "api"(project(":worldedit-core"))
 

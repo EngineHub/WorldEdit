@@ -123,19 +123,15 @@ public class LinearInterpolation implements Interpolation {
      * Assumes a < b.
      */
     private double arcLengthRecursive(int indexA, double remainderA, int indexB, double remainderB) {
-        switch (indexB - indexA) {
-            case 0:
-                return arcLengthRecursive(indexA, remainderA, remainderB);
-
-            case 1:
+        return switch (indexB - indexA) {
+            case 0 -> arcLengthRecursive(indexA, remainderA, remainderB);
+            case 1 ->
                 // This case is merely a speed-up for a very common case
-                return arcLengthRecursive(indexA, remainderA, 1.0)
+                arcLengthRecursive(indexA, remainderA, 1.0)
                     + arcLengthRecursive(indexB, 0.0, remainderB);
-
-            default:
-                return arcLengthRecursive(indexA, remainderA, indexB - 1, 1.0)
-                    + arcLengthRecursive(indexB, 0.0, remainderB);
-        }
+            default -> arcLengthRecursive(indexA, remainderA, indexB - 1, 1.0)
+                + arcLengthRecursive(indexB, 0.0, remainderB);
+        };
     }
 
     private double arcLengthRecursive(int index, double remainderA, double remainderB) {

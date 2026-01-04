@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.fabric.mixin;
 
+import com.google.errorprone.annotations.Keep;
 import com.sk89q.worldedit.fabric.FabricWorldEdit;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.protocol.game.ServerboundSwingPacket;
@@ -39,6 +40,8 @@ public class MixinServerGamePacketListenerImpl {
     @Unique
     private int ignoreSwingPackets;
 
+    @Keep
+    @SuppressWarnings("UnusedVariable")
     @Inject(method = "handleAnimate", at = @At("HEAD"))
     private void onAnimate(ServerboundSwingPacket packet, CallbackInfo ci) {
         if (!this.player.gameMode.isDestroyingBlock) {
@@ -50,6 +53,8 @@ public class MixinServerGamePacketListenerImpl {
         }
     }
 
+    @Keep
+    @SuppressWarnings("UnusedVariable")
     @Inject(method = "handlePlayerAction", at = @At("HEAD"))
     private void onAction(ServerboundPlayerActionPacket packet, CallbackInfo ci) {
         switch (packet.getAction()) {

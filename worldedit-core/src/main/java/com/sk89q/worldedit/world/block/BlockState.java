@@ -284,11 +284,11 @@ public class BlockState implements BlockStateHolder<BlockState> {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof BlockState)) {
+        if (!(obj instanceof BlockState blockState)) {
             return false;
         }
 
-        return equalsFuzzy((BlockState) obj);
+        return equalsFuzzy(blockState);
     }
 
     private Integer hashCodeCache = null;

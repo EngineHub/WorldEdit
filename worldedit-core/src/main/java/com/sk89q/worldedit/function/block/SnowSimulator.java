@@ -45,10 +45,10 @@ public class SnowSimulator implements LayerFunction {
     private int affected;
 
     public SnowSimulator(Extent extent, boolean stack) {
-        if (extent instanceof World) {
-            this.world = (World) extent;
-        } else if (extent instanceof EditSession && ((EditSession) extent).getWorld() != null) {
-            this.world = ((EditSession) extent).getWorld();
+        if (extent instanceof World extentWorld) {
+            this.world = extentWorld;
+        } else if (extent instanceof EditSession editSession && editSession.getWorld() != null) {
+            this.world = editSession.getWorld();
         } else {
             throw new IllegalArgumentException("extent must be a world or EditSession with a world");
         }

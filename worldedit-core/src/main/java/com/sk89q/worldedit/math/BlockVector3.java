@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.math;
 
+import com.google.errorprone.annotations.Immutable;
 import com.sk89q.worldedit.math.transform.AffineTransform;
 
 import java.util.Comparator;
@@ -32,6 +33,7 @@ import static com.sk89q.worldedit.math.BitMath.unpackZ;
 /**
  * An immutable 3-dimensional vector.
  */
+@Immutable
 public record BlockVector3(int x, int y, int z) {
 
     public static final BlockVector3 ZERO = new BlockVector3(0, 0, 0);
@@ -51,18 +53,18 @@ public record BlockVector3(int x, int y, int z) {
         // switch for efficiency on typical cases
         // in MC y is rarely 0/1 on selections
         switch (y) {
-            case 0:
+            case 0 -> {
                 if (x == 0 && z == 0) {
                     return ZERO;
                 }
-                break;
-            case 1:
+            }
+            case 1 -> {
                 if (x == 1 && z == 1) {
                     return ONE;
                 }
-                break;
-            default:
-                break;
+            }
+            default -> {
+            }
         }
         return new BlockVector3(x, y, z);
     }
@@ -114,7 +116,7 @@ public record BlockVector3(int x, int y, int z) {
 
     public long toLongPackedForm() {
         checkLongPackable(this);
-        return (x & BITS_26) | ((z & BITS_26) << 26) | (((y & BITS_12) << (26 + 26)));
+        return (x & BITS_26) | ((z & BITS_26) << 26) | ((y & BITS_12) << (26 + 26));
     }
 
     /**

@@ -29,7 +29,7 @@ public class TaskStateComparator implements Comparator<Task<?>> {
 
     @Override
     public int compare(com.sk89q.worldedit.util.task.Task<?> o1, Task<?> o2) {
-        return Integer.compare(o1.getState().ordinal(), o2.getState().ordinal());
+        return o1.getState().compareTo(o2.getState());
     }
 
 }

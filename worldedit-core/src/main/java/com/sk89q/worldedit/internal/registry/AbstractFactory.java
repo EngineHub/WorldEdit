@@ -84,6 +84,8 @@ public abstract class AbstractFactory<E> {
         throw new NoMatchException(TranslatableComponent.of("worldedit.error.no-match", TextComponent.of(input)));
     }
 
+    // Suppress InlineMeSuggester: This method cannot be made final due to backwards compatibility
+    @SuppressWarnings("InlineMeSuggester")
     @Deprecated
     public List<String> getSuggestions(String input) {
         return getSuggestions(input, new ParserContext());

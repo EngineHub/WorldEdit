@@ -1,3 +1,4 @@
+import buildlogic.addEngineHubRepository
 import buildlogic.internalVersion
 import org.spongepowered.gradle.plugin.config.PluginLoaders
 import org.spongepowered.plugin.metadata.model.PluginDependency
@@ -21,14 +22,23 @@ minecraft {
 
 repositories {
     maven {
-        name = "EngineHub"
-        url = uri("https://maven.enginehub.org/repo/")
+        name = "SpongePowered Releases"
+        url = uri("https://repo.spongepowered.org/repository/maven-releases/")
+    }
+    maven {
+        name = "SpongePowered Snapshots"
+        url = uri("https://repo.spongepowered.org/repository/maven-snapshots/")
+    }
+    maven {
+        name = "MinecraftForge"
+        url = uri("https://maven.minecraftforge.net/")
+    }
+    addEngineHubRepository()
+    maven {
+        name = "Minecraft Libraries"
+        url = uri("https://libraries.minecraft.net/")
     }
     mavenCentral()
-    verifyEngineHubRepositories()
-    afterEvaluate {
-        verifyEngineHubRepositories()
-    }
 }
 
 sponge {

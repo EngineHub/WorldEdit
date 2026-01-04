@@ -87,7 +87,19 @@ import javax.annotation.Nullable;
  * receive the source version in the compound.
  * </p>
  */
-@SuppressWarnings({ "UnnecessarilyQualifiedStaticUsage", "unchecked", "rawtypes" })
+@SuppressWarnings({
+    "UnnecessarilyQualifiedStaticUsage",
+    "StringSplitter",
+    "ImmutableEnumChecker",
+    "MissingOverride",
+    "StaticAssignmentInConstructor",
+    "EffectivelyPrivate",
+    "FallThrough",
+    "MutablePublicArray",
+    "unused",
+    "unchecked",
+    "rawtypes"
+})
 class FabricDataFixer implements com.sk89q.worldedit.world.DataFixer {
 
     @Override

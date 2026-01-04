@@ -142,7 +142,7 @@ public class NeoForgePlayer extends AbstractPlayerActor {
     @Override
     @Deprecated
     public void printRaw(String msg) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             sendMessage(net.minecraft.network.chat.Component.literal(part));
         }
     }
@@ -174,7 +174,7 @@ public class NeoForgePlayer extends AbstractPlayerActor {
     }
 
     private void sendColorized(String msg, ChatFormatting formatting) {
-        for (String part : msg.split("\n")) {
+        for (String part : msg.split("\n", 0)) {
             var component = net.minecraft.network.chat.Component.literal(part);
             component.withStyle(formatting);
             sendMessage(component);
@@ -229,13 +229,13 @@ public class NeoForgePlayer extends AbstractPlayerActor {
     @Override
     public <B extends BlockStateHolder<B>> void sendFakeBlock(BlockVector3 pos, B block) {
         World world = getWorld();
-        if (!(world instanceof NeoForgeWorld)) {
+        if (!(world instanceof NeoForgeWorld neoForgeWorld)) {
             return;
         }
         BlockPos loc = NeoForgeAdapter.toBlockPos(pos);
         if (block == null) {
             final ClientboundBlockUpdatePacket packetOut = new ClientboundBlockUpdatePacket(
-                ((NeoForgeWorld) world).getWorld(),
+                neoForgeWorld.getWorld(),
                 loc
             );
             player.connection.send(packetOut);

@@ -152,7 +152,7 @@ public class Snapshot implements Comparable<Snapshot> {
                     throw new DataException("TrueZIP is required for .tar support");
                 }
             } else {
-                return (file.getName().equalsIgnoreCase(worldname));
+                return file.getName().equalsIgnoreCase(worldname);
             }
         } catch (IOException ex) {
             // Skip the file, but print an error
@@ -216,7 +216,7 @@ public class Snapshot implements Comparable<Snapshot> {
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof Snapshot && file.equals(((Snapshot) o).file);
+        return o instanceof Snapshot snapshot && file.equals(snapshot.file);
     }
 
     @Override

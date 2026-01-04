@@ -69,7 +69,7 @@ class FSSDContext {
         // World name is the last element of the path
         String worldName = Paths.get(name).getFileName().toString();
         // Without an extension
-        worldName = worldName.split("\\.")[0];
+        worldName = worldName.split("\\.", 0)[0];
         List<Snapshot> snapshots;
         try (Stream<Snapshot> snapshotStream = db.getSnapshots(worldName)) {
             snapshots = snapshotStream.collect(toList());

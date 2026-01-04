@@ -75,10 +75,10 @@ public class ServerCUIHandler {
         int height;
         int length;
 
-        if (regionSelector instanceof CuboidRegionSelector) {
+        if (regionSelector instanceof CuboidRegionSelector cuboidRegionSelector) {
             if (regionSelector.isDefined()) {
                 try {
-                    CuboidRegion region = ((CuboidRegionSelector) regionSelector).getRegion();
+                    CuboidRegion region = cuboidRegionSelector.getRegion();
 
                     posX = region.getMinimumPoint().x();
                     posY = region.getMinimumPoint().y();
@@ -88,12 +88,10 @@ public class ServerCUIHandler {
                     height = region.getHeight();
                     length = region.getLength();
                 } catch (IncompleteRegionException e) {
-                    // This will never happen.
-                    e.printStackTrace();
-                    return null;
+                    throw new AssertionError("Already checked isDefined()", e);
                 }
             } else {
-                CuboidRegion region = ((CuboidRegionSelector) regionSelector).getIncompleteRegion();
+                CuboidRegion region = cuboidRegionSelector.getIncompleteRegion();
                 BlockVector3 point;
                 if (region.getPos1() != null) {
                     point = region.getPos1();

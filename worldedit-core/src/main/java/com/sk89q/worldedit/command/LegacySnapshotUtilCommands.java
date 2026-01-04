@@ -129,7 +129,8 @@ class LegacySnapshotUtilCommands {
         } finally {
             try {
                 chunkStore.close();
-            } catch (IOException ignored) {
+            } catch (IOException e) {
+                WorldEdit.logger.warn("Failed to close chunk store after snapshot restore", e);
             }
         }
     }

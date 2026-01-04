@@ -148,7 +148,7 @@ class BukkitEntityProperties implements EntityProperties {
 
     @Override
     public boolean isTamed() {
-        return entity instanceof Tameable && ((Tameable) entity).isTamed();
+        return entity instanceof Tameable tameable && tameable.isTamed();
     }
 
     @Override

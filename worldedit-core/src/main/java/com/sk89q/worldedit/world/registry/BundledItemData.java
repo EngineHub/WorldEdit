@@ -130,6 +130,8 @@ public final class BundledItemData {
 
     public static class ItemEntry {
         private String id;
+        // This is part of the JSON but not used currently
+        @SuppressWarnings("unused")
         private String unlocalizedName;
         public String localizedName;
         private int maxDamage;

@@ -61,7 +61,7 @@ public class Edge {
     }
 
     /**
-     * Create a triangle from { this.start, this.end, vertex }
+     * Create a triangle from { this.start, this.end, vertex }.
      *
      * @param vertex the 3rd vertex for the triangle
      * @return a triangle
