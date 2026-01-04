@@ -1,10 +1,26 @@
+import java.net.URI
+
+apply(from = "gradle/shared-scripts/repo-reconfiguration.settings.gradle.kts")
 pluginManagement {
     repositories {
-        gradlePluginPortal()
         maven {
-            name = "EngineHub"
-            url = uri("https://maven.enginehub.org/repo/")
+            name = "FabricMC"
+            url = uri("https://maven.fabricmc.net/")
         }
+        maven {
+            name = "SpongePowered Snapshots"
+            url = uri("https://repo.spongepowered.org/repository/maven-snapshots/")
+        }
+        maven {
+            name = "NeoForged"
+            url = uri("https://maven.neoforged.net/releases/")
+        }
+        maven {
+            name = "MinecraftForge"
+            url = uri("https://maven.minecraftforge.net/")
+        }
+        mavenCentral()
+        gradlePluginPortal()
     }
 }
 plugins {
@@ -14,8 +30,20 @@ plugins {
 dependencyResolutionManagement {
     repositories {
         maven {
-            name = "EngineHub"
-            url = uri("https://maven.enginehub.org/repo/")
+            name = "ParchmentMC"
+            url = uri("https://maven.parchmentmc.org/")
+        }
+        maven {
+            name = "PaperMC"
+            url = uri("https://repo.papermc.io/repository/maven-public/")
+        }
+        maven {
+            name = "EngineHub (Non-Mirrored)"
+            url = URI.create("https://repo.enginehub.org/libs-release/")
+            metadataSources {
+                mavenPom()
+                artifact()
+            }
         }
         ivy {
             url = uri("https://repo.enginehub.org/language-files/")
@@ -29,23 +57,6 @@ dependencyResolutionManagement {
             }
             content {
                 includeModuleByRegex(".*", "worldedit-lang")
-            }
-        }
-        gradle.settingsEvaluated {
-            // Duplicates repositoriesHelper.kt, since we can't import it
-            val allowedPrefixes = listOf(
-                "https://maven.enginehub.org",
-                "https://repo.maven.apache.org/maven2/",
-                "file:"
-            )
-
-            for (repo in this@repositories) {
-                if (repo is MavenArtifactRepository) {
-                    val urlString = repo.url.toString()
-                    check(allowedPrefixes.any { urlString.startsWith(it) }) {
-                        "Only EngineHub/Central repositories are allowed: ${repo.url} found"
-                    }
-                }
             }
         }
     }

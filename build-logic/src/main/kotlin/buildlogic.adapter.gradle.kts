@@ -1,3 +1,4 @@
+import buildlogic.addEngineHubRepository
 import buildlogic.stringyLibs
 import buildlogic.getVersion
 
@@ -8,19 +9,28 @@ plugins {
     id("io.papermc.paperweight.userdev")
 }
 
-paperweight {
-    injectPaperRepository = false
-}
-
 repositories {
     maven {
-        name = "EngineHub"
-        url = uri("https://maven.enginehub.org/repo/")
+        name = "Minecraft Libraries"
+        url = uri("https://libraries.minecraft.net/")
     }
-    mavenCentral()
-    afterEvaluate {
-        killNonEngineHubRepositories()
+    maven {
+        name = "FabricMC"
+        url = uri("https://maven.fabricmc.net/")
     }
+    maven {
+        name = "FabricMC (Yarn)"
+        url = uri("https://maven.fabricmc.net/#yarn-only")
+    }
+    maven {
+        name = "SpongePowered Releases"
+        url = uri("https://repo.spongepowered.org/repository/maven-releases/")
+    }
+    maven {
+        name = "SpongePowered Snapshots"
+        url = uri("https://repo.spongepowered.org/repository/maven-snapshots/")
+    }
+    addEngineHubRepository()
 }
 
 dependencies {
