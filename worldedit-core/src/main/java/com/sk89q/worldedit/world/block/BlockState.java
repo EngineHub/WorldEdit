@@ -19,23 +19,12 @@
 
 package com.sk89q.worldedit.world.block;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Table;
-import com.google.common.collect.Tables;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.extension.platform.Capability;
-import com.sk89q.worldedit.extension.platform.Watchdog;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
-import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -62,130 +51,22 @@ public class BlockState implements BlockStateHolder<BlockState> {
 
     private final BlockType blockType;
     private final Map<Property<?>, Object> values;
+    private final int stateListIndex;
 
     private final BaseBlock emptyBaseBlock;
     private final LazyReference<String> lazyStringRepresentation;
-
-    // Neighbouring state table.
-    private Table<Property<?>, Object, BlockState> states;
 
     /**
      * The internal ID of the block state.
      */
     private volatile int internalId = BlockStateIdAccess.invalidId();
 
-    BlockState(BlockType blockType) {
-        this(blockType, Collections.emptyMap());
-    }
-
-    BlockState(BlockType blockType, Map<Property<?>, Object> values) {
+    BlockState(BlockType blockType, Map<Property<?>, Object> values, int stateListIndex) {
         this.blockType = blockType;
         this.values = values;
+        this.stateListIndex = stateListIndex;
         this.emptyBaseBlock = new BaseBlock(this);
         this.lazyStringRepresentation = LazyReference.from(BlockStateHolder.super::getAsString);
-    }
-
-    /**
-     * Generates a map of all possible states for a block type.
-     *
-     * @param blockType The block type
-     * @return The map of states
-     */
-    static Map<Map<Property<?>, Object>, BlockState> generateStateMap(BlockType blockType) {
-        List<? extends Property<?>> properties = blockType.getProperties();
-        ImmutableMap.Builder<Map<Property<?>, Object>, BlockState> stateMapBuilder = null;
-
-        if (!properties.isEmpty()) {
-            // Create a list of lists of values, with a copy of the underlying lists
-            List<List<Object>> separatedValues = Lists.newArrayListWithCapacity(properties.size());
-            for (Property<?> prop : properties) {
-                separatedValues.add(ImmutableList.copyOf(prop.values()));
-            }
-
-            List<List<Object>> valueLists = Lists.cartesianProduct(separatedValues);
-            stateMapBuilder = ImmutableMap.builderWithExpectedSize(valueLists.size());
-            for (List<Object> valueList : valueLists) {
-                int valueCount = valueList.size();
-                Map<Property<?>, Object> valueMap = new Reference2ObjectArrayMap<>(valueCount);
-                for (int i = 0; i < valueCount; i++) {
-                    Property<?> property = properties.get(i);
-                    Object value = valueList.get(i);
-                    valueMap.put(property, value);
-                }
-                valueMap = Collections.unmodifiableMap(valueMap);
-                stateMapBuilder.put(valueMap, new BlockState(blockType, valueMap));
-            }
-        }
-
-        ImmutableMap<Map<Property<?>, Object>, BlockState> stateMap;
-
-        if (stateMapBuilder == null) {
-            // No properties.
-            stateMap = ImmutableMap.of(ImmutableMap.of(), new BlockState(blockType));
-        } else {
-            stateMap = stateMapBuilder.build();
-        }
-
-        Watchdog watchdog = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
-            .getWatchdog();
-        long startTime = System.currentTimeMillis();
-
-        for (BlockState state : stateMap.values()) {
-            state.populate(stateMap);
-
-            // Sometimes loading can take a while. This is the perfect spot to let MC know we're working.
-            if (watchdog != null) {
-                watchdog.tick();
-            }
-        }
-        long timeTaken = System.currentTimeMillis() - startTime;
-        if (timeTaken > 5000) {
-            WorldEdit.logger.warn("Took more than 5 seconds to generate complete state map for " + blockType.id() + ". This block is likely improperly using properties. State count: " + stateMap.size() + ". " + timeTaken + "ms elapsed.");
-        }
-
-        return stateMap;
-    }
-
-    /**
-     * Creates the underlying state table for object lookups.
-     *
-     * @param stateMap The state map to generate the table from
-     */
-    private void populate(Map<Map<Property<?>, Object>, BlockState> stateMap) {
-        Table<Property<?>, Object, BlockState> table = Tables.newCustomTable(
-                new Reference2ObjectArrayMap<>(this.values.size()),
-                Reference2ObjectArrayMap::new
-        );
-
-        for (final Map.Entry<Property<?>, Object> entry : this.values.entrySet()) {
-            final Property<Object> property = (Property<Object>) entry.getKey();
-
-            for (Object value : property.values()) {
-                if (value != entry.getValue()) {
-                    BlockState modifiedState = stateMap.get(this.withValue(property, value));
-                    if (modifiedState != null) {
-                        table.put(property, value, modifiedState);
-                    } else {
-                        WorldEdit.logger.warn(stateMap);
-                        WorldEdit.logger.warn("Found a null state at " + this.withValue(property, value));
-                    }
-                }
-            }
-        }
-
-        this.states = Tables.unmodifiableTable(table);
-    }
-
-    private <V> Map<Property<?>, Object> withValue(final Property<V> property, final V value) {
-        final Map<Property<?>, Object> values = new Reference2ObjectArrayMap<>(this.values.size());
-        for (Map.Entry<Property<?>, Object> entry : this.values.entrySet()) {
-            if (entry.getKey().equals(property)) {
-                values.put(entry.getKey(), value);
-            } else {
-                values.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return Collections.unmodifiableMap(values);
     }
 
     @Override
@@ -195,8 +76,21 @@ public class BlockState implements BlockStateHolder<BlockState> {
 
     @Override
     public <V> BlockState with(final Property<V> property, final V value) {
-        BlockState result = states.get(property, value);
-        return result == null ? this : result;
+        if (this.stateListIndex == -1) {
+            return this;
+        }
+        Object currentValue = this.values.get(property);
+        if (Objects.equals(currentValue, value)) {
+            return this;
+        }
+
+        int newIndex = blockType.getInternalStateList().updateIndexOrInvalid(
+            this.stateListIndex, property, currentValue, value
+        );
+        if (newIndex == -1) {
+            return this;
+        }
+        return blockType.getInternalStateList().get(newIndex);
     }
 
     @Override
