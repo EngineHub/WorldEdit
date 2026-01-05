@@ -26,7 +26,7 @@ val adaptersScope = configurations.dependencyScope("adaptersScope") {
     description = "Adapters to include in the JAR"
 }
 val adaptersReobfScope = configurations.dependencyScope("adaptersReobfScope") {
-    description = "Reobfuscated adapters to include in the JAR"
+    description = "Reobfuscated adapters to include in the JAR (resolvable)"
 }
 
 val adapters = configurations.resolvable("adapters") {
