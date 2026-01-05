@@ -26,7 +26,7 @@ val adaptersScope = configurations.dependencyScope("adaptersScope") {
     description = "Adapters to include in the JAR"
 }
 val adaptersReobfScope = configurations.dependencyScope("adaptersReobfScope") {
-    description = "Reobfuscated adapters to include in the JAR (resolvable)"
+    description = "Reobfuscated adapters to include in the JAR"
 }
 
 val adapters = configurations.resolvable("adapters") {
@@ -40,7 +40,7 @@ val adapters = configurations.resolvable("adapters") {
 
 val adaptersReobf = configurations.resolvable("adaptersReobf") {
     extendsFrom(adaptersReobfScope.get())
-    description = "Adapters to include in the JAR (resolvable)"
+    description = "Reobfuscated adapters to include in the JAR (resolvable)"
     shouldResolveConsistentlyWith(configurations["runtimeClasspath"])
     attributes {
         attribute(Obfuscation.OBFUSCATION_ATTRIBUTE, objects.named(Obfuscation.OBFUSCATED))
