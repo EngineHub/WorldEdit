@@ -50,7 +50,6 @@ import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.lifecycle.Lifecycled;
 import com.sk89q.worldedit.util.lifecycle.SimpleLifecycled;
 import com.sk89q.worldedit.world.World;
-import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -208,16 +207,8 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent(platform));
     }
 
-    @SuppressWarnings({ "unchecked", "deprecation", "removal" })
+    @SuppressWarnings({ "unchecked" })
     private void initializeRegistries() {
-        // Biome
-        Registry.BIOME.forEach(biome -> {
-            // TODO Fix this check for 1.22 / when we drop < 1.21 support
-            if (!biome.name().equals("CUSTOM")) {
-                String key = biome.getKey().toString();
-                BiomeType.REGISTRY.register(key, new BiomeType(key));
-            }
-        });
         // Block & Item
         Registry.MATERIAL.forEach(material -> {
             String key = material.getKey().toString();
@@ -232,7 +223,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
                         FuzzyBlockState state = (FuzzyBlockState) WorldEdit.getInstance().getBlockFactory().parseFromInput(
                                 BukkitAdapter.adapt(blockState.getBlockType()).createBlockData().getAsString(), context
                         ).toImmutableState();
-                        BlockState defaultState = blockState.getBlockType().getAllStates().get(0);
+                        BlockState defaultState = blockState.getBlockType().getAllStates().getFirst();
                         for (Map.Entry<Property<?>, Object> propertyObjectEntry : state.getStates().entrySet()) {
                             //noinspection unchecked
                             defaultState = defaultState.with((Property<Object>) propertyObjectEntry.getKey(), propertyObjectEntry.getValue());
