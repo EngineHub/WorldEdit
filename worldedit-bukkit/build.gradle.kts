@@ -73,7 +73,7 @@ dependencies {
     project.project(":worldedit-bukkit:adapters").subprojects.forEach {
         "adaptersScope"(project(it.path))
     }
-    listOf("1.21.3", "1.21.4", "1.21.5", "1.21.6", "1.21.9", "1.21.11").forEach {
+    listOf("1.21.4", "1.21.5", "1.21.6", "1.21.9", "1.21.11").forEach {
         "adaptersReobfScope"(project(":worldedit-bukkit:adapters:adapter-$it"))
     }
 }
