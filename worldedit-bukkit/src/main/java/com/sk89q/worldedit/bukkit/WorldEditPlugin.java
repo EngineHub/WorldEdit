@@ -198,7 +198,6 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         loadAdapter();
         initializeRegistries(); // this creates the objects matching Bukkit's enums - but doesn't fill them with data yet
         config.load();
-        WorldEdit.getInstance().loadMappings();
     }
 
     private void setupWorldData() {

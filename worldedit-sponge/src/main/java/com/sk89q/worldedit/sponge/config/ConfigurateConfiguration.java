@@ -24,7 +24,6 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.util.report.Unreported;
-import com.sk89q.worldedit.world.registry.LegacyMapper;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurationOptions;
@@ -63,12 +62,7 @@ public class ConfigurateConfiguration extends LocalConfiguration {
 
         profile = node.node("debug").getBoolean(profile);
         traceUnflushedSessions = node.node("debugging", "trace-unflushed-sessions").getBoolean(traceUnflushedSessions);
-        wandItem = node.node("wand-item").getString(wandItem).toLowerCase(Locale.ROOT);
-        try {
-            wandItem = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(wandItem)).id();
-        } catch (Throwable ignored) {
-            // This is just for old configs, so ignore errors
-        }
+        wandItem = convertLegacyItem(node.node("wand-item").getString(wandItem)).toLowerCase(Locale.ROOT);
 
         defaultChangeLimit = Math.max(-1, node.node("limits", "max-blocks-changed", "default").getInt(defaultChangeLimit));
         maxChangeLimit = Math.max(-1, node.node("limits", "max-blocks-changed", "maximum").getInt(maxChangeLimit));
@@ -115,12 +109,8 @@ public class ConfigurateConfiguration extends LocalConfiguration {
         useInventoryOverride = node.node("use-inventory", "allow-override").getBoolean(useInventoryOverride);
         useInventoryCreativeOverride = node.node("use-inventory", "creative-mode-overrides").getBoolean(useInventoryCreativeOverride);
 
-        navigationWand = node.node("navigation-wand", "item").getString(navigationWand).toLowerCase(Locale.ROOT);
-        try {
-            navigationWand = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(navigationWand)).id();
-        } catch (Throwable ignored) {
-            // This is just for old configs, so ignore errors
-        }
+        navigationWand = convertLegacyItem(node.node("navigation-wand", "item").getString(navigationWand)).toLowerCase(Locale.ROOT);
+
         navigationWandMaxDistance = node.node("navigation-wand", "max-distance").getInt(navigationWandMaxDistance);
         navigationUseGlass = node.node("navigation", "use-glass").getBoolean(navigationUseGlass);
 
