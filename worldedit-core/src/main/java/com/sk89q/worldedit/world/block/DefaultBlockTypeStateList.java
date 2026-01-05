@@ -28,6 +28,8 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 // Suppress Immutable: Properly annotating BlockState with Immutable is for the future
 @SuppressWarnings("Immutable")
@@ -151,11 +153,17 @@ final class DefaultBlockTypeStateList extends BlockTypeStateList {
 
     @Override
     public int calculateIndex(Map<Property<?>, ?> state) {
+        if (state.size() != propertyEntries.size()) {
+            throw new IllegalArgumentException(getDetailedPropertyMismatchException(state));
+        }
         int index = 0;
         for (PropertyEntry entry : propertyEntries) {
             Object value = state.get(entry.property);
             if (value == null) {
-                throw new IllegalArgumentException("Missing or null value for property " + entry.property.name());
+                if (!state.containsKey(entry.property)) {
+                    throw new IllegalArgumentException(getDetailedPropertyMismatchException(state));
+                }
+                throw new IllegalArgumentException("Null value for property " + entry.property.name());
             }
             int offset = entry.getOffsetForValueOrInvalid(value);
             if (offset == -1) {
@@ -164,6 +172,25 @@ final class DefaultBlockTypeStateList extends BlockTypeStateList {
             index += offset;
         }
         return index;
+    }
+
+    private String getDetailedPropertyMismatchException(Map<Property<?>, ?> state) {
+        // Spend some time computing the incorrect properties for better error messages
+        Set<Property<?>> missingProperties = propertyEntries.stream()
+            .map(e -> e.property)
+            .filter(p -> !state.containsKey(p))
+            .collect(Collectors.toSet());
+        Set<Property<?>> extraProperties = state.keySet().stream()
+            .filter(p -> propertyEntries.stream().noneMatch(e -> e.property == p))
+            .collect(Collectors.toSet());
+        StringBuilder errorMessage = new StringBuilder("State has incorrect number of properties.");
+        if (!missingProperties.isEmpty()) {
+            errorMessage.append(" Missing properties: ").append(missingProperties).append(".");
+        }
+        if (!extraProperties.isEmpty()) {
+            errorMessage.append(" Extra properties: ").append(extraProperties).append(".");
+        }
+        return errorMessage.toString();
     }
 
     @Override
