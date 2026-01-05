@@ -37,11 +37,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class FuzzyBlockState extends BlockState {
 
     FuzzyBlockState(BlockType blockType) {
-        super(blockType);
+        super(blockType, Collections.emptyMap(), -1);
     }
 
     private FuzzyBlockState(BlockType blockType, Map<Property<?>, Object> values) {
-        super(blockType, Collections.unmodifiableMap(values));
+        super(blockType, Collections.unmodifiableMap(values), -1);
     }
 
     /**
