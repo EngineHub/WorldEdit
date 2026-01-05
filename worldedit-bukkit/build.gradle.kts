@@ -1,4 +1,3 @@
-import buildlogic.ArtifactPriority
 import buildlogic.internalVersion
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import io.papermc.paperweight.userdev.attribute.Obfuscation
@@ -26,18 +25,25 @@ configurations.named("testImplementation") {
 val adaptersScope = configurations.dependencyScope("adaptersScope") {
     description = "Adapters to include in the JAR"
 }
+val adaptersReobfScope = configurations.dependencyScope("adaptersReobfScope") {
+    description = "Reobfuscated adapters to include in the JAR"
+}
+
 val adapters = configurations.resolvable("adapters") {
     extendsFrom(adaptersScope.get())
     description = "Adapters to include in the JAR (resolvable)"
     shouldResolveConsistentlyWith(configurations["runtimeClasspath"])
     attributes {
-        if ((project.findProperty("enginehub.obf.none") as String?).toBoolean()) {
-            // If we're configured to not output obfuscated, request none
-            attribute(Obfuscation.OBFUSCATION_ATTRIBUTE, objects.named(Obfuscation.NONE))
-        } else {
-            // Otherwise, use the primary artifact, which may or may not be obfuscated
-            attribute(ArtifactPriority.ATTRIBUTE, objects.named(ArtifactPriority.PRIMARY))
-        }
+        attribute(Obfuscation.OBFUSCATION_ATTRIBUTE, objects.named(Obfuscation.NONE))
+    }
+}
+
+val adaptersReobf = configurations.resolvable("adaptersReobf") {
+    extendsFrom(adaptersReobfScope.get())
+    description = "Adapters to include in the JAR (resolvable)"
+    shouldResolveConsistentlyWith(configurations["runtimeClasspath"])
+    attributes {
+        attribute(Obfuscation.OBFUSCATION_ATTRIBUTE, objects.named(Obfuscation.OBFUSCATED))
     }
 }
 
@@ -67,6 +73,9 @@ dependencies {
     project.project(":worldedit-bukkit:adapters").subprojects.forEach {
         "adaptersScope"(project(it.path))
     }
+    listOf("1.21.3", "1.21.4", "1.21.5", "1.21.6", "1.21.9", "1.21.11").forEach {
+        "adaptersReobfScope"(project(":worldedit-bukkit:adapters:adapter-$it"))
+    }
 }
 
 tasks.named<Copy>("processResources") {
@@ -78,7 +87,15 @@ tasks.named<Copy>("processResources") {
     }
 }
 
+tasks.register<ShadowJar>("shadeReobfAdapters") {
+    archiveClassifier.set("reobf-adapters")
+    configurations.add(adaptersReobf.get())
+
+    relocate("com.sk89q.worldedit.bukkit.adapter.impl", "com.sk89q.worldedit.bukkit.adapter.impl.reobf")
+}
+
 tasks.named<ShadowJar>("shadowJar") {
+    from(tasks.named("shadeReobfAdapters"))
     configurations.add(adapters.get())
     dependencies {
         // In tandem with not bundling log4j, we shouldn't relocate base package here.
@@ -107,6 +124,9 @@ tasks.named<ShadowJar>("shadowJar") {
         minimize {
             exclude(dependency("${it.group}:${it.name}"))
         }
+    }
+    manifest {
+        attributes["paperweight-mappings-namespace"] = "mojang"
     }
 }
 
