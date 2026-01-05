@@ -71,7 +71,6 @@ import com.sk89q.worldedit.util.translation.TranslationManager;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.registry.LegacyMapper;
 import org.apache.logging.log4j.Logger;
 
 import java.io.DataInputStream;
@@ -411,9 +410,11 @@ public final class WorldEdit {
 
     /**
      * Load the bundled mappings.
+     *
+     * @deprecated This is no longer necessary as all mappings are loaded lazily.
      */
+    @Deprecated(forRemoval = true)
     public void loadMappings() {
-        LegacyMapper.getInstance(); // Load legacy mappings
     }
 
     /**

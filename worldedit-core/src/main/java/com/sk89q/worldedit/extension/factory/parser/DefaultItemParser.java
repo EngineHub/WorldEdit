@@ -68,9 +68,12 @@ public class DefaultItemParser extends InputParser<BaseItem> {
                 if (split.length == 0) {
                     throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.invalid-colon"));
                 } else if (split.length == 1) {
-                    itemType = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(split[0]));
+                    var legacyItemId = Integer.parseInt(split[0]);
+                    itemType = LegacyMapper.getInstance().getItemFromLegacy(legacyItemId);
                 } else {
-                    itemType = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
+                    var legacyItemId = Integer.parseInt(split[0]);
+                    var legacyDataValue = Integer.parseInt(split[1]);
+                    itemType = LegacyMapper.getInstance().getItemFromLegacy(legacyItemId, legacyDataValue);
                 }
                 if (itemType != null) {
                     item = new BaseItem(itemType);

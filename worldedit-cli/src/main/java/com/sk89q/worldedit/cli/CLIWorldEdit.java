@@ -202,7 +202,6 @@ public class CLIWorldEdit {
         setupPlatform();
 
         setupRegistries();
-        WorldEdit.getInstance().loadMappings();
 
         config.load();
 
