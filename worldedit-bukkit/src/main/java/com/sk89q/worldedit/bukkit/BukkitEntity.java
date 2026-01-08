@@ -20,15 +20,20 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
+import com.sk89q.worldedit.bukkit.folia.FoliaScheduler;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.entity.metadata.EntityProperties;
+import com.sk89q.worldedit.entity.metadata.EntitySchedulerFacet;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.NullWorld;
+import io.papermc.lib.PaperLib;
+import org.bukkit.Bukkit;
 
 import java.lang.ref.WeakReference;
+import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -73,44 +78,108 @@ class BukkitEntity implements Entity {
     @Override
     public boolean setLocation(Location location) {
         org.bukkit.entity.Entity entity = entityRef.get();
-        if (entity != null) {
-            return entity.teleport(BukkitAdapter.adapt(location));
-        } else {
+        if (entity == null) {
             return false;
         }
+
+        if (PaperLib.isPaper()) {
+            @SuppressWarnings({"FutureReturnValueIgnored", "unused"})
+            var unused = FoliaScheduler.getEntityScheduler().run(
+                entity,
+                WorldEditPlugin.getInstance(),
+                o -> entity.teleportAsync(BukkitAdapter.adapt(location)),
+                null
+            );
+            return true;
+        }
+        return entity.teleport(BukkitAdapter.adapt(location));
     }
 
     @Override
     public BaseEntity getState() {
         org.bukkit.entity.Entity entity = entityRef.get();
-        if (entity != null) {
-            if (entity instanceof Player) {
-                return null;
-            }
+        if (entity == null || entity instanceof Player) {
+            return null;
+        }
 
-            BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
-            if (adapter != null) {
-                return adapter.getEntity(entity);
+        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+        if (adapter == null) {
+            return null;
+        }
+
+        try {
+            var loc = entity.getLocation();
+            int cx = loc.getBlockX() >> 4;
+            int cz = loc.getBlockZ() >> 4;
+            if (FoliaScheduler.isFolia()) {
+                if (Bukkit.isOwnedByCurrentRegion(loc.getWorld(), cx, cz)) {
+                    return adapter.getEntity(entity);
+                }
             } else {
+                return adapter.getEntity(entity);
+            }
+        } catch (Throwable ignored) {
+            // It's fine if we couldn't remove it
+        }
+
+        CompletableFuture<BaseEntity> future = new CompletableFuture<>();
+        try {
+            FoliaScheduler.getEntityScheduler().run(
+                entity,
+                WorldEditPlugin.getInstance(),
+                task -> {
+                    try {
+                        BaseEntity result = adapter.getEntity(entity);
+                        future.complete(result);
+                    } catch (Throwable t) {
+                        future.completeExceptionally(t);
+                    }
+                },
+                null
+            );
+            try {
+                return future.get();
+            } catch (Exception e) {
                 return null;
             }
-        } else {
+        } catch (Throwable ignored) {
             return null;
         }
     }
 
+    /**
+     * Remove this entity safely, using region/main-thread scheduling as appropriate.
+     *
+     * @return true if removal was scheduled or completed successfully
+     */
     @Override
     public boolean remove() {
         org.bukkit.entity.Entity entity = entityRef.get();
-        if (entity != null) {
+        if (entity == null) {
+            return true;
+        }
+
+        try {
+            entity.remove();
+            return entity.isDead();
+        } catch (Throwable offThread) {
             try {
-                entity.remove();
+                FoliaScheduler.getEntityScheduler().run(
+                    entity,
+                    WorldEditPlugin.getInstance(),
+                    scheduledTask -> {
+                        try {
+                            entity.remove();
+                        } catch (UnsupportedOperationException ignored) {
+                            // Some entities may refuse removal
+                        }
+                    },
+                    null
+                );
+                return true;
             } catch (UnsupportedOperationException e) {
                 return false;
             }
-            return entity.isDead();
-        } else {
-            return true;
         }
     }
 
@@ -119,10 +188,30 @@ class BukkitEntity implements Entity {
     @Override
     public <T> T getFacet(Class<? extends T> cls) {
         org.bukkit.entity.Entity entity = entityRef.get();
-        if (entity != null && EntityProperties.class.isAssignableFrom(cls)) {
-            return (T) new BukkitEntityProperties(entity);
-        } else {
+        if (entity == null) {
             return null;
         }
+
+        if (EntityProperties.class.isAssignableFrom(cls)) {
+            return (T) new BukkitEntityProperties(entity);
+        }
+
+        if (EntitySchedulerFacet.class.isAssignableFrom(cls)) {
+            return (T) (EntitySchedulerFacet) task ->
+                FoliaScheduler.getEntityScheduler().run(
+                    entity,
+                    WorldEditPlugin.getInstance(),
+                    scheduledTask -> {
+                        try {
+                            task.run();
+                        } catch (Throwable ignored) {
+                            // It's fine if we couldn't remove it
+                        }
+                    },
+                    null
+                );
+        }
+
+        return null;
     }
 }
