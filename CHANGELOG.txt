@@ -19,6 +19,7 @@
 - Deprecate some remnants of the fast mode system that are superseded by the side effect system
 - Reworked the way WorldEdit CLI pulls in versioned data, allowing dynamic data loading
 - Fixed the hand, offhand, and pos1 patterns not showing in suggestions
+- Changed the legacy mapping system to not automatically load on startup, and instead load on first usage
 
 7.3.18
 - Added support for 1.21.11
