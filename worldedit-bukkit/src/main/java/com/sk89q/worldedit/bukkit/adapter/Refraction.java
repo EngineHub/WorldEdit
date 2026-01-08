@@ -23,7 +23,10 @@ package com.sk89q.worldedit.bukkit.adapter;
  * Reflection helper to deal with obfuscation.
  */
 public class Refraction {
-    private static final String MOJANG_MAPPED_CLASS_NAME = "net.minecraft.nbt.ListTag";
+    // Spigot remaps to a v1_21_R7 style, whereas Paper mojmap environments lack this.
+    // This is a safer method to determine whether a class is mojmapped, given Spigot now uses
+    // mojmapping purely for class names.
+    private static final String MOJANG_MAPPED_CLASS_NAME = "org.bukkit.craftbukkit.CraftServer";
     private static final boolean IS_MOJANG_MAPPED;
 
     static {
