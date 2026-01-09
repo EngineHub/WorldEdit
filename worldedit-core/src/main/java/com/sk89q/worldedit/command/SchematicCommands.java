@@ -494,7 +494,7 @@ public class SchematicCommands {
 
             String path = inRoot
                     ? file.getFileName().toString()
-                    : file.toString().substring(rootDir.toString().length());
+                    : rootDir.relativize(file).toString();
 
             return TextComponent.builder()
                     .content("")
