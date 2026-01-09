@@ -496,6 +496,11 @@ public class SchematicCommands {
                     ? file.getFileName().toString()
                     : file.toString().substring(rootDir.toString().length());
 
+            if (path.startsWith(File.separator)) {
+                // Remove leading separator from the path if present, the load command fails otherwise
+                path = path.substring(1);
+            }
+
             return TextComponent.builder()
                     .content("")
                     .append(TextComponent.of("[L]")
