@@ -25,15 +25,30 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 import java.util.BitSet;
 import java.util.OptionalInt;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkState;
 
 public final class BlockStateIdAccess {
 
+    /**
+     * A provider for the BlockRegistry, used for lazy loading of block state IDs.
+     */
+    private static Supplier<BlockRegistry> blockRegistryProvider;
+
+    /**
+     * Set the provider for obtaining the BlockRegistry. This is used for lazy loading of block state IDs.
+     *
+     * @param provider the BlockRegistry provider
+     */
+    public static void setBlockRegistryProvider(Supplier<BlockRegistry> provider) {
+        blockRegistryProvider = provider;
+    }
+
     private static final int INVALID_ID = -1;
     private static final int EXPECTED_BLOCK_COUNT = 2 << 14;
-    private static final Int2ObjectOpenHashMap<BlockState> TO_STATE =
+    private static final Int2ObjectOpenHashMap<BlockState> TO_STATE = 
         new Int2ObjectOpenHashMap<>(EXPECTED_BLOCK_COUNT);
 
     static {
@@ -54,6 +69,7 @@ public final class BlockStateIdAccess {
 
     /**
      * An invalid internal ID, for verification purposes.
+     * 
      * @return an internal ID which is never valid
      */
     public static int invalidId() {
@@ -65,7 +81,34 @@ public final class BlockStateIdAccess {
     }
 
     public static int getBlockStateId(BlockState holder) {
-        return blockStateInternalId.getInternalId(holder);
+        int id = blockStateInternalId.getInternalId(holder);
+        if (!isValidInternalId(id)) {
+            id = ensureRegistered(holder);
+        }
+        return id;
+    }
+
+    /**
+     * Grab an internal block state ID, registering it if not already registered.
+     *
+     * @param blockState the block state to ensure registration of
+     * @return the internal ID assigned to the block state
+     */
+    private static int ensureRegistered(BlockState blockState) {
+        int id = blockStateInternalId.getInternalId(blockState);
+        if (isValidInternalId(id)) {
+            return id;
+        }
+
+        // At this point we can assume it's not valid, so try to get it from the BlockRegistry
+        if (blockRegistryProvider != null) {
+            BlockRegistry registry = blockRegistryProvider.get();
+            if (registry != null) {
+                id = registry.getInternalBlockStateId(blockState).orElse(invalidId());
+            }
+        }
+        register(blockState, id);
+        return blockStateInternalId.getInternalId(blockState);
     }
 
     public static @Nullable BlockState getBlockStateById(int id) {
@@ -90,8 +133,8 @@ public final class BlockStateIdAccess {
         int i = isValidInternalId(id) ? id : provideUnusedWorldEditId();
         BlockState existing = getBlockStateById(id);
         checkState(existing == null || existing == blockState,
-            "BlockState %s is using the same block ID (%s) as BlockState %s",
-            blockState, i, existing);
+                "BlockState %s is using the same block ID (%s) as BlockState %s",
+                blockState, i, existing);
         blockStateInternalId.setInternalId(blockState, i);
         TO_STATE.put(i, blockState);
         usedIds.set(i);
