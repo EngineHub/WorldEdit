@@ -84,12 +84,12 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler, A
     public static LevelAndProxy newInstance(EditSession editSession, ServerLevel serverLevel, PaperweightAdapter adapter) {
         PaperweightServerLevelDelegateProxy proxy = new PaperweightServerLevelDelegateProxy(editSession, serverLevel, adapter);
         return new LevelAndProxy(
-            (WorldGenLevel) Proxy.newProxyInstance(
-                serverLevel.getClass().getClassLoader(),
-                serverLevel.getClass().getInterfaces(),
+                (WorldGenLevel) Proxy.newProxyInstance(
+                        serverLevel.getClass().getClassLoader(),
+                        serverLevel.getClass().getInterfaces(),
+                        proxy
+                ),
                 proxy
-            ),
-            proxy
         );
     }
 
@@ -174,22 +174,22 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler, A
             blockEntity.saveWithId(tagValueOutput);
             net.minecraft.nbt.CompoundTag tag = tagValueOutput.buildResult();
             editSession.setBlock(
-                blockPos,
-                adapter.adapt(blockEntity.getBlockState())
-                    .toBaseBlock(LazyReference.from(() -> (LinCompoundTag) adapter.toNative(tag)))
+                    blockPos,
+                    adapter.adapt(blockEntity.getBlockState())
+                            .toBaseBlock(LazyReference.from(() -> (LinCompoundTag) adapter.toNative(tag)))
             );
         }
     }
 
     private static void addMethodHandleToTable(
-        ImmutableTable.Builder<String, MethodType, MethodHandle> table,
-        String methodName,
-        MethodHandle methodHandle
+            ImmutableTable.Builder<String, MethodType, MethodHandle> table,
+            String methodName,
+            MethodHandle methodHandle
     ) {
         // We want to call these with Object[] args, not plain args
         // We skip the first argument, which is our receiver
         MethodHandle spreader = methodHandle.asSpreader(
-            1, Object[].class, methodHandle.type().parameterCount() - 1
+                1, Object[].class, methodHandle.type().parameterCount() - 1
         );
         // We drop the first argument, which is our receiver
         // We also drop the return type, which is not important
@@ -203,85 +203,85 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler, A
         var builder = ImmutableTable.<String, MethodType, MethodHandle>builder();
         try {
             addMethodHandleToTable(
-                builder,
-                StaticRefraction.GET_BLOCK_STATE,
-                lookup.unreflect(PaperweightServerLevelDelegateProxy.class.getDeclaredMethod("getBlockState", BlockPos.class))
+                    builder,
+                    StaticRefraction.GET_BLOCK_STATE,
+                    lookup.unreflect(PaperweightServerLevelDelegateProxy.class.getDeclaredMethod("getBlockState", BlockPos.class))
             );
 
             addMethodHandleToTable(
-                builder,
-                StaticRefraction.IS_STATE_AT_POSITION,
-                lookup.unreflect(PaperweightServerLevelDelegateProxy.class.getDeclaredMethod("isStateAtPosition", BlockPos.class, Predicate.class))
+                    builder,
+                    StaticRefraction.IS_STATE_AT_POSITION,
+                    lookup.unreflect(PaperweightServerLevelDelegateProxy.class.getDeclaredMethod("isStateAtPosition", BlockPos.class, Predicate.class))
             );
 
             MethodHandle addEntity = lookup.unreflect(PaperweightServerLevelDelegateProxy.class.getDeclaredMethod("addEntity", Entity.class));
             addMethodHandleToTable(
-                builder,
-                StaticRefraction.ADD_FRESH_ENTITY_WITH_PASSENGERS_ENTITY,
-                addEntity
+                    builder,
+                    StaticRefraction.ADD_FRESH_ENTITY_WITH_PASSENGERS_ENTITY,
+                    addEntity
             );
             addMethodHandleToTable(
-                builder,
-                StaticRefraction.ADD_FRESH_ENTITY_WITH_PASSENGERS_ENTITY_SPAWN_REASON,
-                // 0 - this, 1 - entity, 2 - reason
-                MethodHandles.dropArguments(addEntity, 2, CreatureSpawnEvent.SpawnReason.class)
+                    builder,
+                    StaticRefraction.ADD_FRESH_ENTITY_WITH_PASSENGERS_ENTITY_SPAWN_REASON,
+                    // 0 - this, 1 - entity, 2 - reason
+                    MethodHandles.dropArguments(addEntity, 2, CreatureSpawnEvent.SpawnReason.class)
             );
             addMethodHandleToTable(
-                builder,
-                StaticRefraction.ADD_FRESH_ENTITY,
-                addEntity
+                    builder,
+                    StaticRefraction.ADD_FRESH_ENTITY,
+                    addEntity
             );
             addMethodHandleToTable(
-                builder,
-                StaticRefraction.ADD_FRESH_ENTITY_SPAWN_REASON,
-                // 0 - this, 1 - entity, 2 - reason
-                MethodHandles.dropArguments(addEntity, 2, CreatureSpawnEvent.SpawnReason.class)
+                    builder,
+                    StaticRefraction.ADD_FRESH_ENTITY_SPAWN_REASON,
+                    // 0 - this, 1 - entity, 2 - reason
+                    MethodHandles.dropArguments(addEntity, 2, CreatureSpawnEvent.SpawnReason.class)
             );
 
             addMethodHandleToTable(
-                builder,
-                StaticRefraction.GET_BLOCK_ENTITY,
-                lookup.unreflect(PaperweightServerLevelDelegateProxy.class.getDeclaredMethod("getBlockEntity", BlockPos.class))
+                    builder,
+                    StaticRefraction.GET_BLOCK_ENTITY,
+                    lookup.unreflect(PaperweightServerLevelDelegateProxy.class.getDeclaredMethod("getBlockEntity", BlockPos.class))
             );
 
             MethodHandle setBlock = lookup.unreflect(PaperweightServerLevelDelegateProxy.class.getDeclaredMethod("setBlock", BlockPos.class, BlockState.class));
             addMethodHandleToTable(
-                builder,
-                StaticRefraction.SET_BLOCK,
-                // 0 - this, 1 - blockPos, 2 - blockState, 3 - flags
-                MethodHandles.dropArguments(setBlock, 3, int.class)
+                    builder,
+                    StaticRefraction.SET_BLOCK,
+                    // 0 - this, 1 - blockPos, 2 - blockState, 3 - flags
+                    MethodHandles.dropArguments(setBlock, 3, int.class)
             );
             addMethodHandleToTable(
-                builder,
-                StaticRefraction.SET_BLOCK_MAX_UPDATE,
-                // 0 - this, 1 - blockPos, 2 - blockState, 3 - flags, 4 - maxUpdateDepth
-                MethodHandles.dropArguments(setBlock, 3, int.class, int.class)
+                    builder,
+                    StaticRefraction.SET_BLOCK_MAX_UPDATE,
+                    // 0 - this, 1 - blockPos, 2 - blockState, 3 - flags, 4 - maxUpdateDepth
+                    MethodHandles.dropArguments(setBlock, 3, int.class, int.class)
             );
 
             MethodHandle removeBlock = lookup.unreflect(PaperweightServerLevelDelegateProxy.class.getDeclaredMethod("removeBlock", BlockPos.class));
             addMethodHandleToTable(
-                builder,
-                StaticRefraction.REMOVE_BLOCK,
-                // 0 - this, 1 - blockPos, 2 - move
-                MethodHandles.dropArguments(removeBlock, 2, boolean.class)
+                    builder,
+                    StaticRefraction.REMOVE_BLOCK,
+                    // 0 - this, 1 - blockPos, 2 - move
+                    MethodHandles.dropArguments(removeBlock, 2, boolean.class)
             );
             addMethodHandleToTable(
-                builder,
-                StaticRefraction.DESTROY_BLOCK,
-                // 0 - this, 1 - blockPos, 2 - drop
-                MethodHandles.dropArguments(removeBlock, 2, boolean.class)
+                    builder,
+                    StaticRefraction.DESTROY_BLOCK,
+                    // 0 - this, 1 - blockPos, 2 - drop
+                    MethodHandles.dropArguments(removeBlock, 2, boolean.class)
             );
             addMethodHandleToTable(
-                builder,
-                StaticRefraction.DESTROY_BLOCK_BREAKING_ENTITY,
-                // 0 - this, 1 - blockPos, 2 - drop, 3 - breakingEntity
-                MethodHandles.dropArguments(removeBlock, 2, boolean.class, Entity.class)
+                    builder,
+                    StaticRefraction.DESTROY_BLOCK_BREAKING_ENTITY,
+                    // 0 - this, 1 - blockPos, 2 - drop, 3 - breakingEntity
+                    MethodHandles.dropArguments(removeBlock, 2, boolean.class, Entity.class)
             );
             addMethodHandleToTable(
-                builder,
-                StaticRefraction.DESTROY_BLOCK_BREAKING_ENTITY_MAX_UPDATE,
-                // 0 - this, 1 - blockPos, 2 - drop, 3 - breakingEntity, 4 - maxUpdateDepth
-                MethodHandles.dropArguments(removeBlock, 2, boolean.class, Entity.class, int.class)
+                    builder,
+                    StaticRefraction.DESTROY_BLOCK_BREAKING_ENTITY_MAX_UPDATE,
+                    // 0 - this, 1 - blockPos, 2 - drop, 3 - breakingEntity, 4 - maxUpdateDepth
+                    MethodHandles.dropArguments(removeBlock, 2, boolean.class, Entity.class, int.class)
             );
         } catch (IllegalAccessException | NoSuchMethodException e) {
             throw new RuntimeException("Failed to bind to own methods", e);
@@ -292,8 +292,8 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler, A
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         MethodHandle delegate = METHOD_MAP.get(
-            // ignore return type, we only need the parameter types
-            method.getName(), MethodType.methodType(void.class, method.getParameterTypes())
+                // ignore return type, we only need the parameter types
+                method.getName(), MethodType.methodType(void.class, method.getParameterTypes())
         );
         if (delegate != null) {
             return delegate.invoke(this, args);

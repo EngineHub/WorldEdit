@@ -29,7 +29,7 @@ tasks.check {
 // Pull the version before our current version.
 val baseVersion = "(,${rootProject.version.toString().substringBefore("-SNAPSHOT")}["
 // TODO Re-add neoforge when it's fixed
-for (projectFragment in listOf("bukkit", "cli", "core", "fabric", "sponge")) {
+for (projectFragment in listOf("bukkit", "core", "fabric", "sponge")) {
     val capitalizedFragment =
         projectFragment.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
     val changeFile = project.file("src/changes/accepted-$projectFragment-public-api-changes.json").toPath()

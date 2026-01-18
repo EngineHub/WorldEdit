@@ -38,25 +38,25 @@ class NeoForgePropertyAdapter<T extends Comparable<T>> implements Property<T> {
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return property.getName();
     }
 
     @Override
-    public List<T> getValues() {
+    public List<T> values() {
         return values;
     }
 
     @Override
     public T getValueFor(String string) throws IllegalArgumentException {
         Optional<T> val = property.getValue(string);
-        checkArgument(val.isPresent(), "%s has no value for %s", getName(), string);
+        checkArgument(val.isPresent(), "%s has no value for %s", name(), string);
         return val.get();
     }
 
     @Override
     public int hashCode() {
-        return getName().hashCode();
+        return name().hashCode();
     }
 
     @Override
@@ -64,7 +64,7 @@ class NeoForgePropertyAdapter<T extends Comparable<T>> implements Property<T> {
         if (!(obj instanceof Property)) {
             return false;
         }
-        return getName().equals(((Property<?>) obj).getName());
+        return name().equals(((Property<?>) obj).name());
     }
 
 }

@@ -46,6 +46,7 @@ import javax.annotation.Nullable;
  */
 public abstract class AbstractWorld implements World {
 
+    @Deprecated
     private final PriorityQueue<QueuedEffect> effectQueue = new PriorityQueue<>();
     private int taskId = -1;
 
@@ -90,6 +91,7 @@ public abstract class AbstractWorld implements World {
     public void checkLoadedChunk(BlockVector3 pt) {
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void fixAfterFastMode(Iterable<BlockVector2> chunks) {
     }
@@ -98,15 +100,20 @@ public abstract class AbstractWorld implements World {
     public void sendBiomeUpdates(Iterable<BlockVector2> chunks) {
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void fixLighting(Iterable<BlockVector2> chunks) {
     }
 
+    // Suppress InlineMeSuggester: This method cannot be made final due to backwards compatibility
+    @SuppressWarnings("InlineMeSuggester")
+    @Deprecated
     @Override
     public boolean playEffect(Vector3 position, int type, int data) {
         return false;
     }
 
+    @Deprecated
     @Override
     public boolean queueBlockBreakEffect(Platform server, BlockVector3 position, BlockType blockType, double priority) {
         if (taskId == -1) {
@@ -169,6 +176,7 @@ public abstract class AbstractWorld implements World {
         return true;
     }
 
+    @Deprecated
     private class QueuedEffect implements Comparable<QueuedEffect> {
         private final Vector3 position;
         private final BlockType blockType;
@@ -180,6 +188,7 @@ public abstract class AbstractWorld implements World {
             this.priority = priority;
         }
 
+        @Deprecated
         @SuppressWarnings("deprecation")
         private void play() {
             playEffect(position, 2001, blockType.getLegacyId());

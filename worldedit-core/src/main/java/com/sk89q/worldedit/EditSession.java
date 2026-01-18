@@ -29,6 +29,7 @@ import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Watchdog;
 import com.sk89q.worldedit.extent.ChangeSetExtent;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extent.InputExtent;
 import com.sk89q.worldedit.extent.MaskingExtent;
 import com.sk89q.worldedit.extent.NullExtent;
 import com.sk89q.worldedit.extent.TracingExtent;
@@ -41,7 +42,6 @@ import com.sk89q.worldedit.extent.reorder.ChunkBatchingExtent;
 import com.sk89q.worldedit.extent.reorder.MultiStageReorder;
 import com.sk89q.worldedit.extent.validation.BlockChangeLimiter;
 import com.sk89q.worldedit.extent.validation.DataValidatorExtent;
-import com.sk89q.worldedit.extent.world.BiomeQuirkExtent;
 import com.sk89q.worldedit.extent.world.ChunkLoadingExtent;
 import com.sk89q.worldedit.extent.world.SideEffectExtent;
 import com.sk89q.worldedit.extent.world.SurvivalModeExtent;
@@ -97,6 +97,8 @@ import com.sk89q.worldedit.math.interpolation.KochanekBartelsInterpolation;
 import com.sk89q.worldedit.math.interpolation.Node;
 import com.sk89q.worldedit.math.noise.RandomNoise;
 import com.sk89q.worldedit.math.transform.AffineTransform;
+import com.sk89q.worldedit.math.transform.ScaleAndTranslateTransform;
+import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.EllipsoidRegion;
@@ -125,6 +127,7 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.generation.TreeType;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 import org.apache.logging.log4j.Logger;
 
@@ -268,7 +271,6 @@ public class EditSession implements Extent, AutoCloseable {
                 watchdogExtents.add(watchdogExtent);
             }
             extent = traceIfNeeded(survivalExtent = new SurvivalModeExtent(extent, world));
-            extent = traceIfNeeded(new BiomeQuirkExtent(extent));
             extent = traceIfNeeded(new ChunkLoadingExtent(extent, world));
             extent = traceIfNeeded(new LastAccessExtentCache(extent));
             extent = traceIfNeeded(blockBagExtent = new BlockBagExtent(extent, blockBag));
@@ -693,11 +695,6 @@ public class EditSession implements Extent, AutoCloseable {
      */
     public int getBlockChangeCount() {
         return changeSet.size();
-    }
-
-    @Override
-    public boolean fullySupports3DBiomes() {
-        return bypassNone.fullySupports3DBiomes();
     }
 
     @Override
@@ -2280,7 +2277,9 @@ public class EditSession implements Extent, AutoCloseable {
      * @param treeType the tree type
      * @return number of trees created
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     * @deprecated Use {@link #makeForest(Region, double, TreeType)}.
      */
+    @Deprecated
     public int makeForest(BlockVector3 basePosition, int size, double density, TreeGenerator.TreeType treeType) throws MaxChangedBlocksException {
         return makeForest(CuboidRegion.fromCenter(basePosition, size), density, treeType);
     }
@@ -2293,9 +2292,43 @@ public class EditSession implements Extent, AutoCloseable {
      * @param treeType the tree type
      * @return number of trees created
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     * @deprecated Use {@link #makeForest(Region, double, TreeType)}.
      */
+    @Deprecated
     public int makeForest(Region region, double density, TreeGenerator.TreeType treeType) throws MaxChangedBlocksException {
         ForestGenerator generator = new ForestGenerator(this, treeType);
+        GroundFunction ground = new GroundFunction(new ExistingBlockMask(this), generator);
+        LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
+        visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));
+        Operations.completeLegacy(visitor);
+        return ground.getAffected();
+    }
+
+    /**
+     * Makes a forest.
+     *
+     * @param basePosition a position
+     * @param size a size
+     * @param density between 0 and 1, inclusive
+     * @param treeType the tree type
+     * @return number of trees created
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    public int makeForest(BlockVector3 basePosition, int size, double density, TreeType treeType) throws MaxChangedBlocksException {
+        return makeForest(CuboidRegion.fromCenter(basePosition, size), density, treeType);
+    }
+
+    /**
+     * Makes a forest.
+     *
+     * @param region the region to generate trees in
+     * @param density between 0 and 1, inclusive
+     * @param treeType the tree type
+     * @return number of trees created
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    public int makeForest(Region region, double density, TreeType treeType) throws MaxChangedBlocksException {
+        com.sk89q.worldedit.function.generator.TreeGenerator generator = new com.sk89q.worldedit.function.generator.TreeGenerator(this, treeType);
         GroundFunction ground = new GroundFunction(new ExistingBlockMask(this), generator);
         LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
         visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));
@@ -2310,7 +2343,18 @@ public class EditSession implements Extent, AutoCloseable {
      * @return the results
      */
     public List<Countable<BlockState>> getBlockDistribution(Region region, boolean separateStates) {
-        BlockDistributionCounter count = new BlockDistributionCounter(this, separateStates);
+        return getBlockDistribution(region, Masks.alwaysTrue(), separateStates);
+    }
+
+    /**
+     * Get the block distribution inside a region.
+     *
+     * @param region a region
+     * @param mask a mask to filter the blocks to count
+     * @return the results
+     */
+    public List<Countable<BlockState>> getBlockDistribution(Region region, @Nullable Mask mask, boolean separateStates) {
+        BlockDistributionCounter count = new BlockDistributionCounter(this, mask, separateStates);
         RegionVisitor visitor = new RegionVisitor(region, count);
         Operations.completeBlindly(visitor);
         return count.getDistribution();
@@ -2328,11 +2372,14 @@ public class EditSession implements Extent, AutoCloseable {
      * @return number of blocks changed
      * @throws ExpressionException if there is a problem with the expression
      * @throws MaxChangedBlocksException if the maximum block change limit is exceeded
+     * @deprecated Use {@link EditSession#makeShape(Region, Transform, Pattern, String, boolean, int)} and pass a {@link ScaleAndTranslateTransform}.
      */
-    public int makeShape(final Region region, final Vector3 zero, final Vector3 unit,
+    @InlineMe(replacement = "this.makeShape(region, new ScaleAndTranslateTransform(zero, unit), pattern, expressionString, hollow, WorldEdit.getInstance().getConfiguration().calculationTimeout)", imports = {"com.sk89q.worldedit.WorldEdit", "com.sk89q.worldedit.math.transform.ScaleAndTranslateTransform"})
+    @Deprecated
+    public final int makeShape(final Region region, final Vector3 zero, final Vector3 unit,
                          final Pattern pattern, final String expressionString, final boolean hollow)
             throws ExpressionException, MaxChangedBlocksException {
-        return makeShape(region, zero, unit, pattern, expressionString, hollow, WorldEdit.getInstance().getConfiguration().calculationTimeout);
+        return makeShape(region, new ScaleAndTranslateTransform(zero, unit), pattern, expressionString, hollow, WorldEdit.getInstance().getConfiguration().calculationTimeout);
     }
 
     /**
@@ -2348,13 +2395,58 @@ public class EditSession implements Extent, AutoCloseable {
      * @return number of blocks changed
      * @throws ExpressionException if there is a problem with the expression
      * @throws MaxChangedBlocksException if the maximum block change limit is exceeded
+     * @deprecated Use {@link EditSession#makeShape(Region, Transform, Pattern, String, boolean, int)} and pass a {@link ScaleAndTranslateTransform}.
      */
-    public int makeShape(final Region region, final Vector3 zero, final Vector3 unit,
+    @InlineMe(replacement = "this.makeShape(region, new ScaleAndTranslateTransform(zero, unit), pattern, expressionString, hollow, timeout)", imports = "com.sk89q.worldedit.math.transform.ScaleAndTranslateTransform")
+    @Deprecated
+    public final int makeShape(final Region region, final Vector3 zero, final Vector3 unit,
                          final Pattern pattern, final String expressionString, final boolean hollow, final int timeout)
+            throws ExpressionException, MaxChangedBlocksException {
+        return makeShape(region, new ScaleAndTranslateTransform(zero, unit), pattern, expressionString, hollow, timeout);
+    }
+
+    /**
+     * Generate a shape for the given expression.
+     *
+     * @param region the region to generate the shape in
+     * @param zero the coordinate origin for x/y/z variables
+     * @param unit the scale of the x/y/z/ variables
+     * @param pattern the default material to make the shape from
+     * @param expression the expression defining the shape
+     * @param hollow whether the shape should be hollow
+     * @param timeout the time, in milliseconds, to wait for each expression evaluation before halting it. -1 to disable
+     * @return number of blocks changed
+     * @throws ExpressionException if there is a problem with the expression
+     * @throws MaxChangedBlocksException if the maximum block change limit is exceeded
+     * @deprecated Use {@link EditSession#makeShape(Region, Transform, Pattern, String, boolean, int)} and pass a {@link ScaleAndTranslateTransform}.
+     */
+    @InlineMe(replacement = "this.makeShape(region, new ScaleAndTranslateTransform(zero, unit), pattern, expression, hollow, timeout)", imports = "com.sk89q.worldedit.math.transform.ScaleAndTranslateTransform")
+    @Deprecated
+    public final int makeShape(final Region region, final Vector3 zero, final Vector3 unit,
+                         final Pattern pattern, final Expression expression, final boolean hollow, final int timeout)
+            throws ExpressionException, MaxChangedBlocksException {
+        return makeShape(region, new ScaleAndTranslateTransform(zero, unit), pattern, expression, hollow, timeout);
+    }
+
+    /**
+     * Generate a shape for the given expression.
+     *
+     * @param region           the region to generate the shape in
+     * @param transform        the transformation for x/y/z variables
+     * @param pattern          the default material to make the shape from
+     * @param expressionString the expression defining the shape
+     * @param hollow           whether the shape should be hollow
+     * @param timeout          the time, in milliseconds, to wait for each expression evaluation before halting it. -1 to disable
+     * @return number of blocks changed
+     * @throws ExpressionException       if there is a problem with the expression
+     * @throws MaxChangedBlocksException if the maximum block change limit is exceeded
+     */
+    public int makeShape(final Region region,
+                         Transform transform, final Pattern pattern, final String expressionString, final boolean hollow, final int timeout)
             throws ExpressionException, MaxChangedBlocksException {
         final Expression expression = Expression.compile(expressionString, "x", "y", "z", "type", "data");
         expression.optimize();
-        return makeShape(region, zero, unit, pattern, expression, hollow, timeout);
+        return makeShape(region, transform, pattern, expression, hollow, timeout);
     }
 
     /**
@@ -2364,7 +2456,7 @@ public class EditSession implements Extent, AutoCloseable {
      * The Expression class is subject to change. Expressions should be provided via the string overload.
      * </p>
      */
-    public int makeShape(final Region region, final Vector3 zero, final Vector3 unit,
+    public int makeShape(final Region region, Transform transform,
                          final Pattern pattern, final Expression expression, final boolean hollow, final int timeout)
             throws ExpressionException, MaxChangedBlocksException {
 
@@ -2375,16 +2467,17 @@ public class EditSession implements Extent, AutoCloseable {
         final Variable typeVariable = getRequiredVariable("type", expression);
         final Variable dataVariable = getRequiredVariable("data", expression);
 
-        final WorldEditExpressionEnvironment environment = new WorldEditExpressionEnvironment(this, unit, zero);
+        final WorldEditExpressionEnvironment environment = new WorldEditExpressionEnvironment(this, transform);
         expression.setEnvironment(environment);
 
         final int[] timedOut = {0};
+        final Transform transformInverse = transform.inverse();
         final ArbitraryShape shape = new ArbitraryShape(region) {
             @Override
             protected BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial) {
                 final Vector3 current = Vector3.at(x, y, z);
                 environment.setCurrentBlock(current);
-                final Vector3 scaled = current.subtract(zero).divide(unit);
+                final Vector3 inputPosition = transformInverse.apply(current);
 
                 try {
                     int[] legacy = LegacyMapper.getInstance().getLegacyFromBlock(defaultMaterial.toImmutableState());
@@ -2396,7 +2489,7 @@ public class EditSession implements Extent, AutoCloseable {
                             dataVar = legacy[1];
                         }
                     }
-                    if (expression.evaluate(new double[]{ scaled.x(), scaled.y(), scaled.z(), typeVar, dataVar}, timeout) <= 0) {
+                    if (expression.evaluate(new double[]{ inputPosition.x(), inputPosition.y(), inputPosition.z(), typeVar, dataVar}, timeout) <= 0) {
                         return null;
                     }
                     int newType = (int) typeVariable.value();
@@ -2445,7 +2538,9 @@ public class EditSession implements Extent, AutoCloseable {
      *
      * @throws ExpressionException thrown on invalid expression input
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     * @deprecated Use {@link EditSession#deformRegion(Region, Transform, String, int, InputExtent, Transform)} and pass a {@link ScaleAndTranslateTransform}.
      */
+    @Deprecated
     public int deformRegion(final Region region, final Vector3 zero, final Vector3 unit, final String expressionString)
             throws ExpressionException, MaxChangedBlocksException {
         return deformRegion(region, zero, unit, expressionString, WorldEdit.getInstance().getConfiguration().calculationTimeout);
@@ -2466,12 +2561,58 @@ public class EditSession implements Extent, AutoCloseable {
      *
      * @throws ExpressionException thrown on invalid expression input
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     * @deprecated Use {@link EditSession#deformRegion(Region, Transform, String, int, InputExtent, Transform)} and pass a {@link ScaleAndTranslateTransform}.
      */
+    @Deprecated
     public int deformRegion(final Region region, final Vector3 zero, final Vector3 unit, final String expressionString,
                             final int timeout) throws ExpressionException, MaxChangedBlocksException {
         final Expression expression = Expression.compile(expressionString, "x", "y", "z");
         expression.optimize();
         return deformRegion(region, zero, unit, expression, timeout);
+    }
+
+    /**
+     * Deforms the region by a given expression. A deform provides a block's x, y, and z coordinates (possibly scaled)
+     * to an expression, and then sets the block to the block given by the resulting values of the variables, if they
+     * have changed.
+     *
+     * @param region           the region to deform
+     * @param targetTransform  the target coordinate system
+     * @param expressionString the expression to evaluate for each block
+     * @param timeout          maximum time for the expression to evaluate for each block. -1 for unlimited.
+     * @param sourceExtent     the InputExtent to fetch blocks from, for instance a World or a Clipboard
+     * @param sourceTransform  the source coordinate system
+     * @return number of blocks changed
+     * @throws ExpressionException       thrown on invalid expression input
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    public int deformRegion(final Region region, final Transform targetTransform, final String expressionString,
+                            final int timeout, InputExtent sourceExtent, Transform sourceTransform) throws ExpressionException, MaxChangedBlocksException {
+        final Expression expression = Expression.compile(expressionString, "x", "y", "z");
+        expression.optimize();
+        return deformRegion(region, targetTransform, expression, timeout, sourceExtent, sourceTransform);
+    }
+
+    /**
+     * Deforms the region by a given expression. A deform provides a block's x, y, and z coordinates (possibly scaled)
+     * to an expression, and then sets the block to the block given by the resulting values of the variables, if they
+     * have changed.
+     *
+     * @param region           the region to deform
+     * @param zero the coordinate origin for x/y/z variables
+     * @param unit the scale of the x/y/z/ variables
+     * @param expression the expression to evaluate for each block
+     * @param timeout          maximum time for the expression to evaluate for each block. -1 for unlimited.
+     * @return number of blocks changed
+     * @throws ExpressionException       thrown on invalid expression input
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     * @deprecated Use {@link EditSession#deformRegion(Region, Transform, String, int, InputExtent, Transform)}.
+     */
+    @Deprecated
+    public int deformRegion(final Region region, final Vector3 zero, final Vector3 unit, final Expression expression,
+                            final int timeout) throws ExpressionException, MaxChangedBlocksException {
+        var transform = new ScaleAndTranslateTransform(zero, unit);
+        return deformRegion(region, transform, expression, timeout, world, transform);
     }
 
     /**
@@ -2481,8 +2622,8 @@ public class EditSession implements Extent, AutoCloseable {
      * The Expression class is subject to change. Expressions should be provided via the string overload.
      * </p>
      */
-    public int deformRegion(final Region region, final Vector3 zero, final Vector3 unit, final Expression expression,
-                            final int timeout) throws ExpressionException, MaxChangedBlocksException {
+    public int deformRegion(final Region region, final Transform targetTransform, final Expression expression,
+                            final int timeout, InputExtent sourceExtent, final Transform sourceTransform) throws ExpressionException, MaxChangedBlocksException {
         final Variable x = expression.getSlots().getVariable("x")
             .orElseThrow(IllegalStateException::new);
         final Variable y = expression.getSlots().getVariable("y")
@@ -2490,25 +2631,28 @@ public class EditSession implements Extent, AutoCloseable {
         final Variable z = expression.getSlots().getVariable("z")
             .orElseThrow(IllegalStateException::new);
 
-        final WorldEditExpressionEnvironment environment = new WorldEditExpressionEnvironment(this, unit, zero);
+        final WorldEditExpressionEnvironment environment = new WorldEditExpressionEnvironment(this, targetTransform);
         expression.setEnvironment(environment);
 
         final DoubleArrayList<BlockVector3, BaseBlock> queue = new DoubleArrayList<>(false);
 
+        final Transform targetTransformInverse = targetTransform.inverse();
         for (BlockVector3 targetBlockPosition : region) {
             final Vector3 targetPosition = targetBlockPosition.toVector3();
             environment.setCurrentBlock(targetPosition);
 
-            // offset, scale
-            final Vector3 scaled = targetPosition.subtract(zero).divide(unit);
+            // transform from target coordinates
+            final Vector3 inputPosition = targetTransformInverse.apply(targetPosition);
 
-            // transform
-            expression.evaluate(new double[]{ scaled.x(), scaled.y(), scaled.z() }, timeout);
+            // deform
+            expression.evaluate(new double[]{ inputPosition.x(), inputPosition.y(), inputPosition.z() }, timeout);
+            final Vector3 outputPosition = Vector3.at(x.value(), y.value(), z.value());
 
-            final BlockVector3 sourcePosition = environment.toWorld(x.value(), y.value(), z.value());
+            // transform to source coordinates, round-nearest
+            final BlockVector3 sourcePosition = sourceTransform.apply(outputPosition).add(0.5, 0.5, 0.5).toBlockPoint();
 
-            // read block from world
-            final BaseBlock material = world.getFullBlock(sourcePosition);
+            // read block from source extent (e.g. world/clipboard)
+            final BaseBlock material = sourceExtent.getFullBlock(sourcePosition);
 
             // queue operation
             queue.put(targetBlockPosition, material);
@@ -2516,11 +2660,11 @@ public class EditSession implements Extent, AutoCloseable {
 
         int affected = 0;
         for (Map.Entry<BlockVector3, BaseBlock> entry : queue) {
-            BlockVector3 position = entry.getKey();
+            BlockVector3 targetPosition = entry.getKey();
             BaseBlock material = entry.getValue();
 
-            // set at new position
-            if (setBlock(position, material)) {
+            // set at new targetPosition
+            if (setBlock(targetPosition, material)) {
                 ++affected;
             }
         }
@@ -2813,31 +2957,63 @@ public class EditSession implements Extent, AutoCloseable {
         }
     }
 
-    public int makeBiomeShape(final Region region, final Vector3 zero, final Vector3 unit, final BiomeType biomeType,
+    /**
+     * Generate a biome shape for the given expression.
+     *
+     * @deprecated Use {@link EditSession#makeBiomeShape(Region, Transform, BiomeType, String, boolean, int)} and pass a {@link ScaleAndTranslateTransform}.
+     */
+    @InlineMe(replacement = "this.makeBiomeShape(region, new ScaleAndTranslateTransform(zero, unit), biomeType, expressionString, hollow, WorldEdit.getInstance().getConfiguration().calculationTimeout)", imports = {"com.sk89q.worldedit.WorldEdit", "com.sk89q.worldedit.math.transform.ScaleAndTranslateTransform"})
+    @Deprecated
+    public final int makeBiomeShape(final Region region, final Vector3 zero, final Vector3 unit, final BiomeType biomeType,
                               final String expressionString, final boolean hollow) throws ExpressionException {
-        return makeBiomeShape(region, zero, unit, biomeType, expressionString, hollow, WorldEdit.getInstance().getConfiguration().calculationTimeout);
+        return makeBiomeShape(region, new ScaleAndTranslateTransform(zero, unit), biomeType, expressionString, hollow, WorldEdit.getInstance().getConfiguration().calculationTimeout);
     }
 
-    public int makeBiomeShape(final Region region, final Vector3 zero, final Vector3 unit, final BiomeType biomeType,
+    /**
+     * Generate a biome shape for the given expression.
+     *
+     * @deprecated Use {@link EditSession#makeBiomeShape(Region, Transform, BiomeType, String, boolean, int)} and pass a {@link ScaleAndTranslateTransform}.
+     */
+    @InlineMe(replacement = "this.makeBiomeShape(region, new ScaleAndTranslateTransform(zero, unit), biomeType, expressionString, hollow, timeout)", imports = "com.sk89q.worldedit.math.transform.ScaleAndTranslateTransform")
+    @Deprecated
+    public final int makeBiomeShape(final Region region, final Vector3 zero, final Vector3 unit, final BiomeType biomeType,
+                              final String expressionString, final boolean hollow, final int timeout) throws ExpressionException {
+        return makeBiomeShape(region, new ScaleAndTranslateTransform(zero, unit), biomeType, expressionString, hollow, timeout);
+    }
+
+    /**
+     * Generate a biome shape for the given expression.
+     *
+     * @param region the region to generate the shape in
+     * @param transform the transformation for x/y/z variables
+     * @param biomeType the biome to make the shape from
+     * @param expressionString the expression defining the shape
+     * @param hollow whether the shape should be hollow
+     * @param timeout maximum time for the expression to evaluate for each block. -1 for unlimited.
+     * @return number of blocks changed
+     * @throws ExpressionException if there is a problem with the expression
+     */
+    public int makeBiomeShape(final Region region, Transform transform, final BiomeType biomeType,
                               final String expressionString, final boolean hollow, final int timeout) throws ExpressionException {
 
         final Expression expression = Expression.compile(expressionString, "x", "y", "z");
         expression.optimize();
 
         final EditSession editSession = this;
-        final WorldEditExpressionEnvironment environment = new WorldEditExpressionEnvironment(editSession, unit, zero);
+        final WorldEditExpressionEnvironment environment = new WorldEditExpressionEnvironment(editSession, transform);
         expression.setEnvironment(environment);
 
         AtomicInteger timedOut = new AtomicInteger();
+        final Transform transformInverse = transform.inverse();
         final ArbitraryBiomeShape shape = new ArbitraryBiomeShape(region) {
             @Override
             protected BiomeType getBiome(int x, int y, int z, BiomeType defaultBiomeType) {
                 final Vector3 current = Vector3.at(x, y, z);
                 environment.setCurrentBlock(current);
-                final Vector3 scaled = current.subtract(zero).divide(unit);
+                final Vector3 inputPosition = transformInverse.apply(current);
 
                 try {
-                    if (expression.evaluate(new double[]{ scaled.x(), scaled.y(), scaled.z() }, timeout) <= 0) {
+                    if (expression.evaluate(new double[]{ inputPosition.x(), inputPosition.y(), inputPosition.z() }, timeout) <= 0) {
                         return null;
                     }
 

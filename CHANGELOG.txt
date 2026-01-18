@@ -1,3 +1,35 @@
+7.4.0
+- Added a -c option to //regen to output to clipboard
+- Added #clipboard mask, to mask against blocks that match the clipboard
+- Added a #fullcube mask that matches all blocks that fill an entire cube
+- Enabled the new experimental snapshot mode by default for new setups
+- Added command completions for available schematic files to schematic commands
+- Added a //registry command to search available registries
+- Added an adjacency mask (~) to mask blocks that are adjacent to other blocks
+- Added an -m flag to the //distr command to mask included blocks
+- Added an API to override the copy region in PasteBuilder, to make it easier to paste a subset of a clipboard
+- Added the ability to use any other pattern in the type applying pattern
+- Added the ability to source from the clipboard via //deform
+- Added an extend selection mode for polygon selections
+- Added a //revolve command to paste a rotated copy of a selection around an axis
+- Added a //replacebiome command to replace biomes in a selection by a given mask
+- Reworked tree and forest generation commands to use a new tree-specific registry to improve reliability and mod support
+- Tweaked the block property system to reduce memory usage and improve performance during startup in some situations
+- Fixed block limits not applying to the //update command
+- Deprecate bundled item data, bundled block data, World#playEffect, legacy tree systems, and more for removal in WE 8
+- Deprecate some remnants of the fast mode system that are superseded by the side effect system
+- Reworked the way WorldEdit CLI pulls in versioned data, allowing dynamic data loading
+- Fixed the hand, offhand, and pos1 patterns not showing in suggestions
+- Changed the legacy mapping system to not automatically load on startup, and instead load on first usage
+- Updated the default values in the configuration files to better match supported Minecraft versions
+
+7.3.19
+- General cleanups across codebase
+- Final release of the 7.3.x series in preparation for 7.4 release
+- [Bukkit] Add a separate Gradle configuration for reobfuscation to better prepare for MC 26.1 support without dropping prior versions
+- [Bukkit] Drop 1.21.3 adapters due to resource constraints
+- [Bukkit] Tweaked logic to detect Mojang mappings to be more reliable with recent changes to non-mojmapped (Spigot) environments
+
 7.3.18
 - Added support for 1.21.11
 - Improved rotation of special rail blocks (activator, detector, powered, etc)

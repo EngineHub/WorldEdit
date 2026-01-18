@@ -22,6 +22,7 @@ package com.sk89q.worldedit.sponge;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
@@ -46,20 +47,22 @@ import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.generation.TreeType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.features.EndFeatures;
-import net.minecraft.data.worldgen.features.TreeFeatures;
+import net.minecraft.data.worldgen.placement.EndPlacements;
+import net.minecraft.data.worldgen.placement.TreePlacements;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import org.apache.logging.log4j.Logger;
 import org.enginehub.linbus.tree.LinCompoundTag;
 import org.enginehub.linbus.tree.LinIntTag;
@@ -326,53 +329,63 @@ public final class SpongeWorld extends AbstractWorld {
     }
 
 
+    @SuppressWarnings("deprecation")
     @Nullable
-    private static net.minecraft.resources.ResourceKey<ConfiguredFeature<?, ?>> createTreeFeatureGenerator(TreeGenerator.TreeType type) {
+    private static net.minecraft.resources.ResourceKey<PlacedFeature> createTreeFeatureGenerator(com.sk89q.worldedit.util.TreeGenerator.TreeType type) {
         return switch (type) {
             // Based off of the SaplingGenerator class, as well as uses of DefaultBiomeFeatures fields
-            case TREE -> TreeFeatures.OAK;
-            case BIG_TREE -> TreeFeatures.FANCY_OAK;
-            case REDWOOD -> TreeFeatures.SPRUCE;
-            case TALL_REDWOOD -> TreeFeatures.MEGA_SPRUCE;
-            case MEGA_REDWOOD -> TreeFeatures.MEGA_PINE;
-            case BIRCH -> TreeFeatures.BIRCH;
-            case JUNGLE -> TreeFeatures.MEGA_JUNGLE_TREE;
-            case SMALL_JUNGLE -> TreeFeatures.JUNGLE_TREE;
-            case SHORT_JUNGLE -> TreeFeatures.JUNGLE_TREE_NO_VINE;
-            case JUNGLE_BUSH -> TreeFeatures.JUNGLE_BUSH;
-            case SWAMP -> TreeFeatures.SWAMP_OAK;
-            case ACACIA -> TreeFeatures.ACACIA;
-            case DARK_OAK -> TreeFeatures.DARK_OAK;
-            case TALL_BIRCH -> TreeFeatures.SUPER_BIRCH_BEES_0002;
-            case RED_MUSHROOM -> TreeFeatures.HUGE_RED_MUSHROOM;
-            case BROWN_MUSHROOM -> TreeFeatures.HUGE_BROWN_MUSHROOM;
-            case WARPED_FUNGUS -> TreeFeatures.WARPED_FUNGUS;
-            case CRIMSON_FUNGUS -> TreeFeatures.CRIMSON_FUNGUS;
-            case CHORUS_PLANT -> EndFeatures.CHORUS_PLANT;
-            case MANGROVE -> TreeFeatures.MANGROVE;
-            case TALL_MANGROVE -> TreeFeatures.TALL_MANGROVE;
-            case CHERRY -> TreeFeatures.CHERRY;
-            case PALE_OAK -> TreeFeatures.PALE_OAK;
-            case PALE_OAK_CREAKING -> TreeFeatures.PALE_OAK_CREAKING;
+            case TREE -> TreePlacements.OAK_CHECKED;
+            case BIG_TREE -> TreePlacements.FANCY_OAK_CHECKED;
+            case REDWOOD -> TreePlacements.SPRUCE_CHECKED;
+            case TALL_REDWOOD -> TreePlacements.MEGA_SPRUCE_CHECKED;
+            case MEGA_REDWOOD -> TreePlacements.MEGA_PINE_CHECKED;
+            case BIRCH -> TreePlacements.BIRCH_CHECKED;
+            case JUNGLE -> TreePlacements.MEGA_JUNGLE_TREE_CHECKED;
+            case SMALL_JUNGLE -> TreePlacements.JUNGLE_TREE_CHECKED;
+            case SHORT_JUNGLE -> TreePlacements.JUNGLE_TREE_CHECKED;
+            case JUNGLE_BUSH -> TreePlacements.JUNGLE_BUSH;
+            case SWAMP -> TreePlacements.OAK_CHECKED;
+            case ACACIA -> TreePlacements.ACACIA_CHECKED;
+            case DARK_OAK -> TreePlacements.DARK_OAK_CHECKED;
+            case TALL_BIRCH -> TreePlacements.SUPER_BIRCH_BEES_0002;
+            case WARPED_FUNGUS -> TreePlacements.WARPED_FUNGI;
+            case CRIMSON_FUNGUS -> TreePlacements.CRIMSON_FUNGI;
+            case CHORUS_PLANT -> EndPlacements.CHORUS_PLANT;
+            case MANGROVE -> TreePlacements.MANGROVE_CHECKED;
+            case TALL_MANGROVE -> TreePlacements.TALL_MANGROVE_CHECKED;
+            case CHERRY -> TreePlacements.CHERRY_CHECKED;
+            case PALE_OAK -> TreePlacements.PALE_OAK_CHECKED;
+            case PALE_OAK_CREAKING -> TreePlacements.PALE_OAK_CREAKING_CHECKED;
             case RANDOM -> {
                 // We're intentionally using index here to get a random tree type
                 @SuppressWarnings("EnumOrdinal")
-                TreeGenerator.TreeType randomTreeType = TreeGenerator.TreeType.values()[ThreadLocalRandom.current().nextInt(TreeGenerator.TreeType.values().length)];
+                com.sk89q.worldedit.util.TreeGenerator.TreeType randomTreeType = com.sk89q.worldedit.util.TreeGenerator.TreeType.values()[ThreadLocalRandom.current().nextInt(com.sk89q.worldedit.util.TreeGenerator.TreeType.values().length)];
                 yield createTreeFeatureGenerator(randomTreeType);
             }
             default -> null;
         };
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, BlockVector3 position) {
         ServerLevel world = (ServerLevel) getWorld();
-        ConfiguredFeature<?, ?> generator = Optional.ofNullable(createTreeFeatureGenerator(type))
-            .map(k -> world.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).getValue(k))
+        PlacedFeature generator = Optional.ofNullable(createTreeFeatureGenerator(type))
+            .map(k -> world.registryAccess().lookupOrThrow(Registries.PLACED_FEATURE).getValue(k))
             .orElse(null);
         return generator != null && generator.place(
             world, world.getChunkSource().getGenerator(), random,
             new BlockPos(position.x(), position.y(), position.z())
+        );
+    }
+
+    @Override
+    public boolean generateTree(TreeType type, EditSession editSession, BlockVector3 position) throws MaxChangedBlocksException {
+        ServerLevel world = (ServerLevel) getWorld();
+        PlacedFeature generator = world.registryAccess().lookupOrThrow(Registries.PLACED_FEATURE).getValue(Identifier.tryParse(type.id()));
+        return generator != null && generator.place(
+                world, world.getChunkSource().getGenerator(), random,
+                new BlockPos(position.x(), position.y(), position.z())
         );
     }
 

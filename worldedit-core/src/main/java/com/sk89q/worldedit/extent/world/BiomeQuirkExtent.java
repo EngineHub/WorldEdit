@@ -26,7 +26,10 @@ import com.sk89q.worldedit.world.biome.BiomeType;
 
 /**
  * Handles quirks when placing biomes.
+ *
+ * @deprecated This extent currently performs no functions.
  */
+@Deprecated
 public class BiomeQuirkExtent extends AbstractDelegateExtent {
 
     /**
@@ -40,11 +43,6 @@ public class BiomeQuirkExtent extends AbstractDelegateExtent {
 
     @Override
     public boolean setBiome(BlockVector3 position, BiomeType biome) {
-        boolean success = false;
-        if (!fullySupports3DBiomes()) {
-            // Also place at Y = 0 for proper handling
-            success = super.setBiome(position.withY(0), biome);
-        }
-        return super.setBiome(position, biome) || success;
+        return super.setBiome(position, biome);
     }
 }

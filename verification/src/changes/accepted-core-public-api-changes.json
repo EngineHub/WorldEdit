@@ -64,6 +64,52 @@
             "changes": [
                 "FIELD_REMOVED_IN_SUPERCLASS"
             ]
+        },
+        {
+            "type": "com.sk89q.util.yaml.YAMLProcessor",
+            "member": "Field file",
+            "changes": [
+                "FIELD_REMOVED"
+            ]
+        }
+    ],
+    "Acceptable addition of default method in interface": [
+        {
+            "type": "com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat",
+            "member": "Method com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat.isFormat(java.nio.file.Path)",
+            "changes": [
+              "METHOD_NEW_DEFAULT"
+            ]
+        }
+    ],
+    "Record conversion of Properties, no one should be extending this": [
+        {
+            "type": "com.sk89q.worldedit.registry.state.BooleanProperty",
+            "member": "Class com.sk89q.worldedit.registry.state.BooleanProperty",
+            "changes": [
+                "CLASS_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.registry.state.DirectionalProperty",
+            "member": "Class com.sk89q.worldedit.registry.state.DirectionalProperty",
+            "changes": [
+                "CLASS_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.registry.state.EnumProperty",
+            "member": "Class com.sk89q.worldedit.registry.state.EnumProperty",
+            "changes": [
+                "CLASS_NOW_FINAL"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.registry.state.IntegerProperty",
+            "member": "Class com.sk89q.worldedit.registry.state.IntegerProperty",
+            "changes": [
+                "CLASS_NOW_FINAL"
+            ]
         }
     ],
     "EditSession is not externally extendable": [

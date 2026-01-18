@@ -30,10 +30,6 @@ public class CLIConfiguration extends PropertiesConfiguration {
     }
 
     @Override
-    protected void loadExtra() {
-    }
-
-    @Override
     public Path getWorkingDirectoryPath() {
         return CLIWorldEdit.inst.getWorkingDir();
     }

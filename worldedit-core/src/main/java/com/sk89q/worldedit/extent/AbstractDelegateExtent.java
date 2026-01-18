@@ -95,11 +95,6 @@ public abstract class AbstractDelegateExtent implements Extent {
     }
 
     @Override
-    public boolean fullySupports3DBiomes() {
-        return extent.fullySupports3DBiomes();
-    }
-
-    @Override
     public BiomeType getBiome(BlockVector3 position) {
         return extent.getBiome(position);
     }

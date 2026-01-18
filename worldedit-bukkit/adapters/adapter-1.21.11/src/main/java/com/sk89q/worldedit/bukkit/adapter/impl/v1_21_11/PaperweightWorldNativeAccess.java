@@ -73,8 +73,8 @@ public class PaperweightWorldNativeAccess implements WorldNativeAccess<LevelChun
     public net.minecraft.world.level.block.state.BlockState toNative(BlockState state) {
         int stateId = BlockStateIdAccess.getBlockStateId(state);
         return BlockStateIdAccess.isValidInternalId(stateId)
-            ? Block.stateById(stateId)
-            : ((CraftBlockData) BukkitAdapter.adapt(state)).getState();
+                ? Block.stateById(stateId)
+                : ((CraftBlockData) BukkitAdapter.adapt(state)).getState();
     }
 
     @Override

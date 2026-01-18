@@ -20,21 +20,15 @@
 package com.sk89q.worldedit.registry.state;
 
 import java.util.List;
-import javax.annotation.Nullable;
 
-public class IntegerProperty extends AbstractProperty<Integer> {
+public record IntegerProperty(String name, List<Integer> values) implements Property<Integer> {
 
-    public IntegerProperty(final String name, final List<Integer> values) {
-        super(name, values);
-    }
-
-    @Nullable
     @Override
     public Integer getValueFor(String string) {
         try {
             int val = Integer.parseInt(string);
-            if (!getValues().contains(val)) {
-                throw new IllegalArgumentException("Invalid int value: " + string + ". Must be in " + getValues().toString());
+            if (!values().contains(val)) {
+                throw new IllegalArgumentException("Invalid int value: " + string + ". Must be in " + values());
             }
             return val;
         } catch (NumberFormatException e) {

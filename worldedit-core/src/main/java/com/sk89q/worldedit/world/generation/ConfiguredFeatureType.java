@@ -23,7 +23,7 @@ import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
 
 public record ConfiguredFeatureType(String id) implements Keyed {
-    public static final NamespacedRegistry<ConfiguredFeatureType> REGISTRY = new NamespacedRegistry<>("configured feature type");
+    public static final NamespacedRegistry<ConfiguredFeatureType> REGISTRY = new NamespacedRegistry<>("configured feature type", "configured_feature_type", "minecraft");
 
     @Override
     public String toString() {

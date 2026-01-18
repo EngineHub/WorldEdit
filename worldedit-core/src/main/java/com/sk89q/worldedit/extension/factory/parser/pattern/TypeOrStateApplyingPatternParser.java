@@ -60,8 +60,8 @@ public class TypeOrStateApplyingPatternParser extends InputParser<Pattern> {
         String[] parts = input.split("\\[", 2);
         String type = parts[0];
 
-        if (parts.length == 1) {
-            return worldEdit.getBlockFactory().getSuggestions(input, context).stream().map(s -> "^" + s);
+        if (parts.length == 1 || input.startsWith("#")) {
+            return worldEdit.getPatternFactory().getSuggestions(input, context).stream().map(s -> "^" + s);
         } else {
             if (type.isEmpty()) {
                 return Stream.empty(); // without knowing a type, we can't really suggest states
@@ -83,9 +83,9 @@ public class TypeOrStateApplyingPatternParser extends InputParser<Pattern> {
         String[] parts = input.split("\\[", 2);
         String type = parts[0];
 
-        if (parts.length == 1) {
-            return new TypeApplyingPattern(extent,
-                    worldEdit.getBlockFactory().parseFromInput(type, context).getBlockType().getDefaultState());
+        if (parts.length == 1 || input.startsWith("#")) {
+            // This is something we can likely parse as a pattern directly
+            return new TypeApplyingPattern(extent, worldEdit.getPatternFactory().parseFromInput(input, context));
         } else {
             // states given
             if (!parts[1].endsWith("]")) {

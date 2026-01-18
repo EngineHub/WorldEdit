@@ -19,21 +19,21 @@
 
 package com.sk89q.worldedit.cli.data;
 
-import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.cli.CLIWorldEdit;
-import com.sk89q.worldedit.extension.platform.Capability;
-import com.sk89q.worldedit.util.io.ResourceLoader;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class FileRegistries {
+
+    private static final int CLI_DATA_VERSION = 1;
+    private static final String DATA_FILE_DOWNLOAD_URL = "https://services.enginehub.org/cassette-deck/we-cli-data/";
 
     private final CLIWorldEdit app;
     private final Gson gson = new GsonBuilder().create();
@@ -45,12 +45,23 @@ public class FileRegistries {
     }
 
     public void loadDataFiles() {
-        ResourceLoader resourceLoader = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.CONFIGURATION).getResourceLoader();
+        Path outputFolder = WorldEdit.getInstance().getWorkingDirectoryPath("cli-data");
+        Path checkPath = outputFolder.resolve(app.getPlatform().getDataVersion() + "_" + CLI_DATA_VERSION + ".json");
+
         try {
-            URL url = resourceLoader.getResource(FileRegistries.class, app.getPlatform().getDataVersion() + ".json");
-            this.dataFile = gson.fromJson(Resources.toString(url, StandardCharsets.UTF_8), DataFile.class);
+            Files.createDirectories(outputFolder);
+
+            if (!Files.exists(checkPath)) {
+                URL url = URI.create(DATA_FILE_DOWNLOAD_URL + app.getPlatform().getDataVersion() + "/" + CLI_DATA_VERSION).toURL();
+
+                try (var stream = url.openStream()) {
+                    Files.copy(stream, checkPath);
+                }
+            }
+
+            this.dataFile = gson.fromJson(Files.readString(checkPath), DataFile.class);
         } catch (IOException e) {
-            throw new RuntimeException("The provided file is not compatible with this version of WorldEdit-CLI. Please update or report this.");
+            throw new RuntimeException("The provided file is not compatible with this version of WorldEdit-CLI. Please update or report this.", e);
         }
     }
 
@@ -58,23 +69,4 @@ public class FileRegistries {
         return this.dataFile;
     }
 
-    public static class BlockManifest {
-        public String defaultstate;
-        public Map<String, BlockProperty> properties;
-    }
-
-    public static class BlockProperty {
-        public List<String> values;
-        public String type;
-    }
-
-    public static class DataFile {
-        public Map<String, List<String>> itemtags;
-        public Map<String, List<String>> blocktags;
-        public Map<String, List<String>> entitytags;
-        public List<String> items;
-        public List<String> entities;
-        public List<String> biomes;
-        public Map<String, BlockManifest> blocks;
-    }
 }

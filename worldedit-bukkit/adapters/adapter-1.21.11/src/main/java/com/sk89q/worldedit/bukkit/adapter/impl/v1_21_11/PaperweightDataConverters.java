@@ -184,7 +184,7 @@ class PaperweightDataConverters implements com.sk89q.worldedit.world.DataFixer {
 
     private static String fixName(String key, int srcVer, TypeReference type) {
         return INSTANCE.fixer.update(type, new Dynamic<>(OPS_NBT, StringTag.valueOf(key)), srcVer, DATA_VERSION)
-            .asString().result().orElse(key);
+                .asString().result().orElse(key);
     }
 
     private final PaperweightAdapter adapter;

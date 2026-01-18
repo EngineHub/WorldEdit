@@ -129,13 +129,13 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
             if (property instanceof DirectionalProperty dirProp) {
                 Direction value = (Direction) result.getState(property);
                 if (value != null) {
-                    Vector3 newValue = getNewStateValue(dirProp.getValues(), transform, value.toVector());
+                    Vector3 newValue = getNewStateValue(dirProp.values(), transform, value.toVector());
                     if (newValue != null) {
                         result = result.with(dirProp, Direction.findClosest(newValue, Direction.Flag.ALL));
                     }
                 }
             } else if (property instanceof EnumProperty enumProp) {
-                if (property.getName().equals("axis")) {
+                if (property.name().equals("axis")) {
                     // We have an axis - this is something we can do the rotations to :sunglasses:
                     Direction value = switch ((String) result.getState(property)) {
                         case "x" -> Direction.EAST;
@@ -159,7 +159,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                             }
                         }
                     }
-                } else if (property.getName().equals("type") && transform instanceof AffineTransform affineTransform) {
+                } else if (property.name().equals("type") && transform instanceof AffineTransform affineTransform) {
                     // chests
                     if (affineTransform.isHorizontalFlip()) {
                         String value = (String) result.getState(property);
@@ -168,7 +168,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                             case "right" -> "left";
                             default -> null;
                         };
-                        if (newValue != null && enumProp.getValues().contains(newValue)) {
+                        if (newValue != null && enumProp.values().contains(newValue)) {
                             result = result.with(enumProp, newValue);
                         }
                     }
@@ -180,11 +180,11 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                             case "top" -> "bottom";
                             default -> null;
                         };
-                        if (newValue != null && enumProp.getValues().contains(newValue)) {
+                        if (newValue != null && enumProp.values().contains(newValue)) {
                             result = result.with(enumProp, newValue);
                         }
                     }
-                } else if (property.getName().equals("half") && transform instanceof AffineTransform affineTransform) {
+                } else if (property.name().equals("half") && transform instanceof AffineTransform affineTransform) {
                     // stairs
                     if (affineTransform.isVerticalFlip()) {
                         String value = (String) result.getState(property);
@@ -193,11 +193,11 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                             case "top" -> "bottom";
                             default -> null;
                         };
-                        if (newValue != null && enumProp.getValues().contains(newValue)) {
+                        if (newValue != null && enumProp.values().contains(newValue)) {
                             result = result.with(enumProp, newValue);
                         }
                     }
-                } else if (property.getName().equals("shape") && transform instanceof AffineTransform affineTransform) {
+                } else if (property.name().equals("shape") && transform instanceof AffineTransform affineTransform) {
                     // stairs
                     if (affineTransform.isHorizontalFlip()) {
                         String value = (String) result.getState(property);
@@ -208,7 +208,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                             case "inner_right" -> "inner_left";
                             default -> null;
                         };
-                        if (newValue != null && enumProp.getValues().contains(newValue)) {
+                        if (newValue != null && enumProp.values().contains(newValue)) {
                             result = result.with(enumProp, newValue);
                         }
                     }
@@ -225,7 +225,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                                 case "ascending_south" -> "ascending_north";
                                 default -> null;
                             };
-                            if (newValue != null && enumProp.getValues().contains(newValue)) {
+                            if (newValue != null && enumProp.values().contains(newValue)) {
                                 result = result.with(enumProp, newValue);
                             }
                         }
@@ -247,13 +247,13 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
 
                         String newShape = newStartString + "_" + newEndString;
                         String newShapeSwapped = newEndString + "_" + newStartString;
-                        if (enumProp.getValues().contains(newShape)) {
+                        if (enumProp.values().contains(newShape)) {
                             result = result.with(enumProp, newShape);
-                        } else if (enumProp.getValues().contains(newShapeSwapped)) {
+                        } else if (enumProp.values().contains(newShapeSwapped)) {
                             result = result.with(enumProp, newShapeSwapped);
                         }
                     }
-                } else if (property.getName().equals("orientation") && transform instanceof AffineTransform) {
+                } else if (property.name().equals("orientation") && transform instanceof AffineTransform) {
                     // crafters
                     String current = (String) result.getState(property);
 
@@ -273,14 +273,14 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                     String newOrientation = newFacing.toString().toLowerCase(Locale.ROOT)
                             + "_" + newTop.toString().toLowerCase(Locale.ROOT);
 
-                    if (enumProp.getValues().contains(newOrientation)) {
+                    if (enumProp.values().contains(newOrientation)) {
                         result = result.with(enumProp, newOrientation);
                     }
 
                 }
             } else if (property instanceof IntegerProperty intProp) {
-                if (property.getName().equals("rotation")) {
-                    if (intProp.getValues().size() == 16) {
+                if (property.name().equals("rotation")) {
+                    if (intProp.values().size() == 16) {
                         Optional<Direction> direction = Direction.fromRotationIndex(result.getState(intProp));
                         int horizontalFlags = Direction.Flag.CARDINAL | Direction.Flag.ORDINAL | Direction.Flag.SECONDARY_ORDINAL;
                         if (direction.isPresent()) {
@@ -299,11 +299,11 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
 
         Map<String, Object> directionalProperties = new HashMap<>();
         for (Property<?> prop : properties) {
-            if (directionNames.contains(prop.getName())) {
+            if (directionNames.contains(prop.name())) {
                 var state = result.getState(prop);
                 if ((prop instanceof BooleanProperty && (Boolean) state)
                         || (prop instanceof EnumProperty && !state.toString().equals("none"))) {
-                    String origProp = prop.getName().toUpperCase(Locale.ROOT);
+                    String origProp = prop.name().toUpperCase(Locale.ROOT);
                     Direction dir = Direction.valueOf(origProp);
                     Direction closest = Direction.findClosest(transform.apply(dir.toVector()), Direction.Flag.CARDINAL);
                     if (closest != null) {
@@ -312,7 +312,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                             result = result.with(boolProp, false);
                             directionalProperties.put(closestProp, true);
                         } else {
-                            if (prop.getValues().contains("none")) {
+                            if (prop.values().contains("none")) {
                                 @SuppressWarnings("unchecked")
                                 Property<Object> propAsObj = (Property<Object>) prop;
                                 result = result.with(propAsObj, "none");
@@ -366,8 +366,8 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
     }
 
     private static boolean isRailShape(EnumProperty property) {
-        List<String> propertyValues = property.getValues();
-        List<Object> straightRailShapeValues = BlockTypes.DETECTOR_RAIL.getProperty("shape").getValues();
+        List<String> propertyValues = property.values();
+        List<Object> straightRailShapeValues = BlockTypes.DETECTOR_RAIL.getProperty("shape").values();
 
         if (propertyValues.size() < straightRailShapeValues.size()) {
             return false;

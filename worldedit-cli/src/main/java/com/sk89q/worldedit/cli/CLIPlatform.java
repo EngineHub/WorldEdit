@@ -25,7 +25,6 @@ import com.sk89q.worldedit.extension.platform.AbstractPlatform;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Preference;
 import com.sk89q.worldedit.util.SideEffect;
-import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.entity.EntityTypes;
 import com.sk89q.worldedit.world.registry.Registries;
@@ -65,11 +64,6 @@ class CLIPlatform extends AbstractPlatform {
 
     public void setDataVersion(int dataVersion) {
         this.dataVersion = dataVersion;
-    }
-
-    @Override
-    public DataFixer getDataFixer() {
-        return null;
     }
 
     @Override
@@ -132,6 +126,9 @@ class CLIPlatform extends AbstractPlatform {
 
     @Override
     public String getVersion() {
+        if (app.getInternalVersion() == null) {
+            return "unknown"; // Run from IDE
+        }
         return app.getInternalVersion();
     }
 
@@ -142,7 +139,7 @@ class CLIPlatform extends AbstractPlatform {
 
     @Override
     public String getPlatformVersion() {
-        return app.getInternalVersion();
+        return this.getVersion();
     }
 
     @Override

@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * String utilities.
@@ -367,5 +368,21 @@ public final class StringUtil {
         }
 
         return parsableBlocks;
+    }
+
+    /**
+     * Converts a glob pattern to a regex pattern, supporting * and ?.
+     *
+     * <p>
+     * Note: this assumes that the text has been pre-validated or quoted, to not contain any regex special characters.
+     * </p>
+     *
+     * @param glob The glob pattern
+     * @return The regex pattern
+     */
+    public static Pattern convertGlobToRegex(String glob) {
+        return Pattern.compile("^" + glob
+                .replace("*", ".*")
+                .replace("?", ".") + "$");
     }
 }

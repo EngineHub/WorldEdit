@@ -56,7 +56,7 @@ limits:
     - "minecraft:yellow_bed"
     - "minecraft:powered_rail"
     - "minecraft:detector_rail"
-    - "minecraft:grass"
+    - "minecraft:short_grass"
     - "minecraft:dead_bush"
     - "minecraft:moving_piston"
     - "minecraft:piston_head"

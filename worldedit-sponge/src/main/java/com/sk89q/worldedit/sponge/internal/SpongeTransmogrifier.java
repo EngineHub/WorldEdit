@@ -86,7 +86,7 @@ public class SpongeTransmogrifier {
         BlockType block,
         net.minecraft.world.level.block.state.BlockState blockState
     ) {
-        Map<Property<?>, Object> properties = new TreeMap<>(Comparator.comparing(Property::getName));
+        Map<Property<?>, Object> properties = new TreeMap<>(Comparator.comparing(Property::name));
         for (net.minecraft.world.level.block.state.properties.Property<?> nativeProperty: blockState.getProperties()) {
             Object value = blockState.getValue(nativeProperty);
             if (isDirectionProperty(nativeProperty)) {
@@ -152,7 +152,7 @@ public class SpongeTransmogrifier {
             Property<?> property = stateEntry.getKey();
             Object value = stateEntry.getValue();
             net.minecraft.world.level.block.state.properties.Property<?> nativeProperty =
-                findPropertyByName(nativeBlockState, property.getName());
+                findPropertyByName(nativeBlockState, property.name());
             Comparable<?> nativeValue;
             if (property instanceof DirectionalProperty) {
                 Direction directionValue = (Direction) value;
@@ -161,7 +161,7 @@ public class SpongeTransmogrifier {
                 String valueName = (String) value;
                 Optional<? extends Comparable<?>> nativeValueOpt = nativeProperty.getValue(valueName);
                 if (nativeValueOpt.isEmpty()) {
-                    throw new IllegalStateException("Failed to parse " + valueName + " into " + property.getName());
+                    throw new IllegalStateException("Failed to parse " + valueName + " into " + property.name());
                 }
                 nativeValue = nativeValueOpt.get();
             } else {

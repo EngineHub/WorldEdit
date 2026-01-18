@@ -62,6 +62,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static org.enginehub.piston.converter.SuggestionHelper.byPrefix;
+
 /**
  * Parses block input strings.
  */
@@ -184,7 +186,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                     throw new NoMatchException(TranslatableComponent.of(
                             "worldedit.error.parser.unknown-value",
                             TextComponent.of(parts[1]),
-                            TextComponent.of(propertyKey.getName())
+                            TextComponent.of(propertyKey.name())
                     ));
                 }
 
@@ -206,7 +208,14 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
     public Stream<String> getSuggestions(String input, ParserContext context) {
         final int idx = input.lastIndexOf('[');
         if (idx < 0) {
-            return SuggestionHelper.getNamespacedRegistrySuggestions(BlockType.REGISTRY, input);
+            Stream<String> additionalSuggestions = context.getActor() != null && context.getActor().isPlayer()
+                    ? Stream.of("pos1", "hand", "offhand")
+                    : Stream.of("pos1");
+
+            return Stream.concat(
+                    additionalSuggestions.filter(byPrefix(input)),
+                    SuggestionHelper.getNamespacedRegistrySuggestions(BlockType.REGISTRY, input)
+            );
         }
         String blockType = input.substring(0, idx);
         BlockType type = BlockTypes.get(blockType.toLowerCase(Locale.ROOT));
@@ -246,7 +255,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
 
         String props = input.substring(idx + 1);
         if (props.isEmpty()) {
-            return type.getProperties().stream().map(p -> input + p.getName() + "=");
+            return type.getProperties().stream().map(p -> input + p.name() + "=");
         }
 
         return SuggestionHelper.getBlockPropertySuggestions(blockType, type, props);
@@ -274,9 +283,12 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                 if (split.length == 0) {
                     throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.invalid-colon"));
                 } else if (split.length == 1) {
-                    state = LegacyMapper.getInstance().getBlockFromLegacy(Integer.parseInt(split[0]));
+                    var legacyTypeId = Integer.parseInt(split[0]);
+                    state = LegacyMapper.getInstance().getBlockFromLegacy(legacyTypeId);
                 } else {
-                    state = LegacyMapper.getInstance().getBlockFromLegacy(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
+                    var legacyTypeId = Integer.parseInt(split[0]);
+                    var legacyDataValue = Integer.parseInt(split[1]);
+                    state = LegacyMapper.getInstance().getBlockFromLegacy(legacyTypeId, legacyDataValue);
                 }
                 if (state != null) {
                     blockType = state.getBlockType();

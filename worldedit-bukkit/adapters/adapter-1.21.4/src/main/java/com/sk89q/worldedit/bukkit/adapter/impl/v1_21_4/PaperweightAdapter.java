@@ -70,7 +70,9 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.entity.EntityTypes;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.generation.StructureType;
+import com.sk89q.worldedit.world.generation.TreeType;
 import com.sk89q.worldedit.world.item.ItemType;
+import com.sk89q.worldedit.world.registry.BlockMaterial;
 import net.minecraft.SharedConstants;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -131,6 +133,9 @@ import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.CoralTreeFeature;
+import net.minecraft.world.level.levelgen.feature.TreeFeature;
+import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
@@ -442,7 +447,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     ) {
         for (Map.Entry<Property<?>, Object> state : states.entrySet()) {
             net.minecraft.world.level.block.state.properties.Property<?> property =
-                stateContainer.getProperty(state.getKey().getName());
+                stateContainer.getProperty(state.getKey().name());
             Comparable<?> value = (Comparable) state.getValue();
             // we may need to adapt this value, depending on the source prop
             if (property instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
@@ -557,6 +562,12 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         );
     }
 
+    @Override
+    public BlockMaterial getBlockMaterial(BlockType blockType) {
+        net.minecraft.world.level.block.state.BlockState mcBlockState = getBlockFromType(blockType).defaultBlockState();
+        return new PaperweightBlockMaterial(mcBlockState);
+    }
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private static final LoadingCache<net.minecraft.world.level.block.state.properties.Property, Property<?>> PROPERTY_CACHE = CacheBuilder.newBuilder().build(new CacheLoader<>() {
         @Override
@@ -589,7 +600,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             block.getStateDefinition();
         for (net.minecraft.world.level.block.state.properties.Property state : blockStateList.getProperties()) {
             Property<?> property = PROPERTY_CACHE.getUnchecked(state);
-            properties.put(property.getName(), property);
+            properties.put(property.name(), property);
         }
         return properties;
     }
@@ -1173,6 +1184,19 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             }
         }
 
+        // Trees
+        Registry<PlacedFeature> placedFeatureRegistry = server.registryAccess().lookupOrThrow(Registries.PLACED_FEATURE);
+        for (ResourceLocation name : placedFeatureRegistry.keySet()) {
+            // Do some hackery to make sure this is a tree
+            var underlyingFeature = placedFeatureRegistry.get(name).get().value().feature().value().feature();
+            if (underlyingFeature instanceof TreeFeature || underlyingFeature instanceof CoralTreeFeature) {
+                String key = name.toString();
+                if (TreeType.REGISTRY.get(key) == null) {
+                    TreeType.REGISTRY.register(key, new TreeType(key));
+                }
+            }
+        }
+
         // BiomeCategories
         Registry<Biome> biomeRegistry = server.registryAccess().lookupOrThrow(Registries.BIOME);
         biomeRegistry.getTags().forEach(tag -> {
@@ -1189,6 +1213,17 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
                 );
             }
         });
+    }
+
+    @Override
+    public boolean generateTree(TreeType treeType, World world, EditSession session, BlockVector3 pt) throws MaxChangedBlocksException {
+        ServerLevel originalWorld = ((CraftWorld) world).getHandle();
+        PlacedFeature feature = originalWorld.registryAccess().lookupOrThrow(Registries.PLACED_FEATURE).getValue(ResourceLocation.tryParse(treeType.id()));
+        ServerChunkCache chunkManager = originalWorld.getChunkSource();
+        try (PaperweightServerLevelDelegateProxy.LevelAndProxy proxyLevel =
+                     PaperweightServerLevelDelegateProxy.newInstance(session, originalWorld, this)) {
+            return feature != null && feature.place(proxyLevel.level(), chunkManager.getGenerator(), random, new BlockPos(pt.x(), pt.y(), pt.z()));
+        }
     }
 
     @Override

@@ -27,7 +27,6 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.util.report.Unreported;
-import com.sk89q.worldedit.world.registry.LegacyMapper;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
@@ -108,23 +107,13 @@ public class PropertiesConfiguration extends LocalConfiguration {
         logFile = getString("log-file", logFile);
         logFormat = getString("log-format", logFormat);
         registerHelp = getBool("register-help", registerHelp);
-        wandItem = getString("wand-item", wandItem).toLowerCase(Locale.ROOT);
-        try {
-            wandItem = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(wandItem)).id();
-        } catch (Throwable ignored) {
-            // This is just for compatibility with old configs, ignore errors
-        }
+        wandItem = convertLegacyItem(getString("wand-item", wandItem)).toLowerCase(Locale.ROOT);
         superPickaxeDrop = getBool("super-pickaxe-drop-items", superPickaxeDrop);
         superPickaxeManyDrop = getBool("super-pickaxe-many-drop-items", superPickaxeManyDrop);
         useInventory = getBool("use-inventory", useInventory);
         useInventoryOverride = getBool("use-inventory-override", useInventoryOverride);
         useInventoryCreativeOverride = getBool("use-inventory-creative-override", useInventoryCreativeOverride);
-        navigationWand = getString("nav-wand-item", navigationWand).toLowerCase(Locale.ROOT);
-        try {
-            navigationWand = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(navigationWand)).id();
-        } catch (Throwable ignored) {
-            // This is just for compatibility with old configs, ignore errors
-        }
+        navigationWand = convertLegacyItem(getString("nav-wand-item", navigationWand)).toLowerCase(Locale.ROOT);
         navigationWandMaxDistance = getInt("nav-wand-distance", navigationWandMaxDistance);
         navigationUseGlass = getBool("nav-use-glass", navigationUseGlass);
         scriptTimeout = getInt("scripting-timeout", scriptTimeout);
@@ -143,7 +132,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         LocalSession.MAX_HISTORY_SIZE = Math.max(15, getInt("history-size", 15));
 
         String snapshotsDir = getString("snapshots-dir", "");
-        boolean experimentalSnapshots = getBool("snapshots-experimental", false);
+        boolean experimentalSnapshots = getBool("snapshots-experimental", true);
         initializeSnapshotConfiguration(snapshotsDir, experimentalSnapshots);
 
         path.getParentFile().mkdirs();

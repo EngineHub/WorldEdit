@@ -46,6 +46,7 @@ import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
+import com.sk89q.worldedit.registry.Registries;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.lifecycle.Lifecycled;
 import com.sk89q.worldedit.util.lifecycle.SimpleLifecycled;
@@ -100,20 +101,6 @@ import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAM
  */
 public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
-    // This must be before the Logger is initialized, which fails in 1.8
-    static {
-        if (PaperLib.getMinecraftVersion() < 13) {
-            throw new IllegalStateException(
-                """
-                **********************************************
-                ** This Minecraft version (%s) is not supported by this version of WorldEdit.
-                ** Please download an OLDER version of WorldEdit which does.
-                **********************************************
-                """.formatted(Bukkit.getVersion())
-            );
-        }
-    }
-
     private static final Logger LOGGER = LogManagerCompat.getLogger();
     public static final String CUI_PLUGIN_CHANNEL = "worldedit:cui";
     private static WorldEditPlugin INSTANCE;
@@ -139,7 +126,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
         createDefaultConfiguration("config.yml"); // Create the default configuration file
 
-        config = new BukkitConfiguration(new YAMLProcessor(new File(getDataFolder(), "config.yml"), true), this);
+        config = new BukkitConfiguration(new YAMLProcessor(new File(getDataFolder(), "config.yml").toPath(), true), this);
 
         Path delChunks = Paths.get(getDataFolder().getPath(), DELCHUNKS_FILE_NAME);
         if (Files.exists(delChunks)) {
@@ -197,7 +184,6 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         loadAdapter();
         initializeRegistries(); // this creates the objects matching Bukkit's enums - but doesn't fill them with data yet
         config.load();
-        WorldEdit.getInstance().loadMappings();
     }
 
     private void setupWorldData() {
@@ -246,14 +232,16 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             EntityType.REGISTRY.register(key, new EntityType(key));
         });
 
-        // ... :|
-        GameModes.get("");
-        WeatherTypes.get("");
-
+        // Registries only available via NMS
         BukkitImplAdapter adapter = getBukkitImplAdapter();
         if (adapter != null) {
             adapter.initializeRegistries();
         }
+
+        // ... :|
+        GameModes.get("");
+        WeatherTypes.get("");
+        Registries.get("");
     }
 
     private void setupTags() {

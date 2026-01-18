@@ -25,6 +25,7 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.Futures;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import com.sk89q.worldedit.EditSession;
@@ -33,9 +34,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
-import com.sk89q.worldedit.bukkit.folia.FoliaScheduler;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.Watchdog;
 import com.sk89q.worldedit.extent.Extent;
@@ -70,7 +69,9 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.entity.EntityTypes;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.generation.StructureType;
+import com.sk89q.worldedit.world.generation.TreeType;
 import com.sk89q.worldedit.world.item.ItemType;
+import com.sk89q.worldedit.world.registry.BlockMaterial;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -131,6 +132,10 @@ import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.CoralTreeFeature;
+import net.minecraft.world.level.levelgen.feature.FallenTreeFeature;
+import net.minecraft.world.level.levelgen.feature.TreeFeature;
+import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
@@ -213,12 +218,12 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     private static final RandomSource random = RandomSource.create();
 
     private static final String WRONG_VERSION =
-        """
-        This version of WorldEdit has not been tested with the current Minecraft version.
-        While it may work, there might be unexpected issues.
-        It is recommended to use a version of WorldEdit that supports your Minecraft version.
-        For more information, see https://worldedit.enginehub.org/en/latest/faq/#bukkit-adapters
-        """.stripIndent();
+            """
+            This version of WorldEdit has not been tested with the current Minecraft version.
+            While it may work, there might be unexpected issues.
+            It is recommended to use a version of WorldEdit that supports your Minecraft version.
+            For more information, see https://worldedit.enginehub.org/en/latest/faq/#bukkit-adapters
+            """.stripIndent();
 
     // ------------------------------------------------------------------------
     // Code that may break between versions of Minecraft
@@ -238,13 +243,13 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         serverWorldsField.setAccessible(true);
 
         getChunkFutureMethod = ServerChunkCache.class.getDeclaredMethod(
-            StaticRefraction.GET_CHUNK_FUTURE_MAIN_THREAD,
-            int.class, int.class, ChunkStatus.class, boolean.class
+                StaticRefraction.GET_CHUNK_FUTURE_MAIN_THREAD,
+                int.class, int.class, ChunkStatus.class, boolean.class
         );
         getChunkFutureMethod.setAccessible(true);
 
         chunkProviderExecutorField = ServerChunkCache.class.getDeclaredField(
-            StaticRefraction.MAIN_THREAD_PROCESSOR
+                StaticRefraction.MAIN_THREAD_PROCESSOR
         );
         chunkProviderExecutorField.setAccessible(true);
 
@@ -448,13 +453,13 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     private net.minecraft.world.level.block.state.BlockState applyProperties(
-        StateDefinition<Block, net.minecraft.world.level.block.state.BlockState> stateContainer,
-        net.minecraft.world.level.block.state.BlockState newState,
-        Map<Property<?>, Object> states
+            StateDefinition<Block, net.minecraft.world.level.block.state.BlockState> stateContainer,
+            net.minecraft.world.level.block.state.BlockState newState,
+            Map<Property<?>, Object> states
     ) {
         for (Map.Entry<Property<?>, Object> state : states.entrySet()) {
             net.minecraft.world.level.block.state.properties.Property<?> property =
-                stateContainer.getProperty(state.getKey().getName());
+                    stateContainer.getProperty(state.getKey().name());
             Comparable<?> value = (Comparable) state.getValue();
             // we may need to adapt this value, depending on the source prop
             if (property instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
@@ -463,17 +468,17 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
                 } else {
                     String enumName = (String) value;
                     value = ((net.minecraft.world.level.block.state.properties.EnumProperty<?>) property)
-                        .getValue(enumName).orElseThrow(() ->
-                            new IllegalStateException(
-                                "Enum property " + property.getName() + " does not contain " + enumName
-                            )
-                        );
+                            .getValue(enumName).orElseThrow(() ->
+                                    new IllegalStateException(
+                                            "Enum property " + property.getName() + " does not contain " + enumName
+                                    )
+                            );
                 }
             }
 
             newState = newState.setValue(
-                (net.minecraft.world.level.block.state.properties.Property) property,
-                (Comparable) value
+                    (net.minecraft.world.level.block.state.properties.Property) property,
+                    (Comparable) value
             );
         }
         return newState;
@@ -493,8 +498,8 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             return null;
         }
         return new BaseEntity(
-            EntityTypes.get(id),
-            LazyReference.from(() -> (LinCompoundTag) toNative(tagValueOutput.buildResult()))
+                EntityTypes.get(id),
+                LazyReference.from(() -> (LinCompoundTag) toNative(tagValueOutput.buildResult()))
         );
     }
 
@@ -560,11 +565,17 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     @Override
     public Component getRichItemName(BaseItemStack itemStack) {
         return GsonComponentSerializer.INSTANCE.deserialize(
-            ComponentConverter.Serializer.toJson(
-                CraftItemStack.asNMSCopy(BukkitAdapter.adapt(itemStack)).getItemName(),
-                ((CraftServer) Bukkit.getServer()).getServer().registryAccess()
-            )
+                ComponentConverter.Serializer.toJson(
+                        CraftItemStack.asNMSCopy(BukkitAdapter.adapt(itemStack)).getItemName(),
+                        ((CraftServer) Bukkit.getServer()).getServer().registryAccess()
+                )
         );
+    }
+
+    @Override
+    public BlockMaterial getBlockMaterial(BlockType blockType) {
+        net.minecraft.world.level.block.state.BlockState mcBlockState = getBlockFromType(blockType).defaultBlockState();
+        return new PaperweightBlockMaterial(mcBlockState);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -573,19 +584,19 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         public Property<?> load(net.minecraft.world.level.block.state.properties.Property state) {
             return switch (state) {
                 case net.minecraft.world.level.block.state.properties.BooleanProperty ignored ->
-                    new BooleanProperty(state.getName(), ImmutableList.copyOf(state.getPossibleValues()));
+                        new BooleanProperty(state.getName(), ImmutableList.copyOf(state.getPossibleValues()));
                 case net.minecraft.world.level.block.state.properties.EnumProperty ignored -> {
                     if (state.getValueClass() == net.minecraft.core.Direction.class) {
                         yield new DirectionalProperty(state.getName(),
-                            (List<Direction>) state.getPossibleValues().stream().map(e -> Direction.valueOf(((StringRepresentable) e).getSerializedName().toUpperCase(Locale.ROOT))).toList());
+                                (List<Direction>) state.getPossibleValues().stream().map(e -> Direction.valueOf(((StringRepresentable) e).getSerializedName().toUpperCase(Locale.ROOT))).toList());
                     }
                     yield new EnumProperty(state.getName(),
-                        (List<String>) state.getPossibleValues().stream().map(e -> ((StringRepresentable) e).getSerializedName()).toList());
+                            (List<String>) state.getPossibleValues().stream().map(e -> ((StringRepresentable) e).getSerializedName()).toList());
                 }
                 case net.minecraft.world.level.block.state.properties.IntegerProperty ignored ->
-                    new IntegerProperty(state.getName(), ImmutableList.copyOf(state.getPossibleValues()));
+                        new IntegerProperty(state.getName(), ImmutableList.copyOf(state.getPossibleValues()));
                 default ->
-                    throw new IllegalArgumentException("WorldEdit needs an update to support " + state.getClass().getSimpleName());
+                        throw new IllegalArgumentException("WorldEdit needs an update to support " + state.getClass().getSimpleName());
             };
         }
     });
@@ -596,10 +607,10 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         Map<String, Property<?>> properties = new TreeMap<>();
         Block block = getBlockFromType(blockType);
         StateDefinition<Block, net.minecraft.world.level.block.state.BlockState> blockStateList =
-            block.getStateDefinition();
+                block.getStateDefinition();
         for (net.minecraft.world.level.block.state.properties.Property state : blockStateList.getProperties()) {
             Property<?> property = PROPERTY_CACHE.getUnchecked(state);
-            properties.put(property.getName(), property);
+            properties.put(property.name(), property);
         }
         return properties;
     }
@@ -607,20 +618,20 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     @Override
     public void sendFakeNBT(Player player, BlockVector3 pos, LinCompoundTag nbtData) {
         var structureBlock = new StructureBlockEntity(
-            new BlockPos(pos.x(), pos.y(), pos.z()),
-            Blocks.STRUCTURE_BLOCK.defaultBlockState()
+                new BlockPos(pos.x(), pos.y(), pos.z()),
+                Blocks.STRUCTURE_BLOCK.defaultBlockState()
         );
         structureBlock.setLevel(((CraftPlayer) player).getHandle().level());
         ((CraftPlayer) player).getHandle().connection.send(ClientboundBlockEntityDataPacket.create(
-            structureBlock,
-            (blockEntity, registryAccess) -> (net.minecraft.nbt.CompoundTag) fromNative(nbtData)
+                structureBlock,
+                (blockEntity, registryAccess) -> (net.minecraft.nbt.CompoundTag) fromNative(nbtData)
         ));
     }
 
     @Override
     public void sendFakeOP(Player player) {
         ((CraftPlayer) player).getHandle().connection.send(new ClientboundEntityEventPacket(
-            ((CraftPlayer) player).getHandle(), (byte) 28
+                ((CraftPlayer) player).getHandle(), (byte) 28
         ));
     }
 
@@ -628,24 +639,24 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
      * For serializing and deserializing components.
      */
     private static final Codec<DataComponentPatch> COMPONENTS_CODEC = DataComponentPatch.CODEC.optionalFieldOf(
-        "components", DataComponentPatch.EMPTY
+            "components", DataComponentPatch.EMPTY
     ).codec();
 
     @Override
     public org.bukkit.inventory.ItemStack adapt(BaseItemStack baseItemStack) {
         var registryAccess = DedicatedServer.getServer().registryAccess();
         ItemStack stack = new ItemStack(
-            registryAccess.lookupOrThrow(Registries.ITEM).getOrThrow(ResourceKey.create(
-                Registries.ITEM,
-                Identifier.tryParse(baseItemStack.getType().id())
-            )),
-            baseItemStack.getAmount()
+                registryAccess.lookupOrThrow(Registries.ITEM).getOrThrow(ResourceKey.create(
+                        Registries.ITEM,
+                        Identifier.tryParse(baseItemStack.getType().id())
+                )),
+                baseItemStack.getAmount()
         );
         LinCompoundTag nbt = baseItemStack.getNbt();
         if (nbt != null) {
             DataComponentPatch componentPatch = COMPONENTS_CODEC.parse(
-                registryAccess.createSerializationContext(NbtOps.INSTANCE),
-                fromNative(nbt)
+                    registryAccess.createSerializationContext(NbtOps.INSTANCE),
+                    fromNative(nbt)
             ).getOrThrow();
             stack.applyComponents(componentPatch);
         }
@@ -657,23 +668,23 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         var registryAccess = DedicatedServer.getServer().registryAccess();
         final ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
         CompoundTag tag = (CompoundTag) COMPONENTS_CODEC.encodeStart(
-            registryAccess.createSerializationContext(NbtOps.INSTANCE),
-            nmsStack.getComponentsPatch()
+                registryAccess.createSerializationContext(NbtOps.INSTANCE),
+                nmsStack.getComponentsPatch()
         ).getOrThrow();
         return new BaseItemStack(BukkitAdapter.asItemType(itemStack.getType()), LazyReference.from(() -> (LinCompoundTag) toNative(tag)), itemStack.getAmount());
     }
 
     private final LoadingCache<ServerLevel, PaperweightFakePlayer> fakePlayers
-        = CacheBuilder.newBuilder().weakKeys().softValues().build(CacheLoader.from(PaperweightFakePlayer::new));
+            = CacheBuilder.newBuilder().weakKeys().softValues().build(CacheLoader.from(PaperweightFakePlayer::new));
 
     @Override
     public boolean simulateItemUse(World world, BlockVector3 position, BaseItem item, Direction face) {
         CraftWorld craftWorld = (CraftWorld) world;
         ServerLevel worldServer = craftWorld.getHandle();
         ItemStack stack = CraftItemStack.asNMSCopy(adapt(
-            item instanceof BaseItemStack baseItemStack
-                ? baseItemStack
-                : new BaseItemStack(item.getType(), item.getNbtReference(), 1)
+                item instanceof BaseItemStack baseItemStack
+                        ? baseItemStack
+                        : new BaseItemStack(item.getType(), item.getNbtReference(), 1)
         ));
 
         PaperweightFakePlayer fakePlayer;
@@ -684,7 +695,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         }
         fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, stack);
         fakePlayer.absSnapTo(position.x(), position.y(), position.z(),
-            (float) face.toVector().toYaw(), (float) face.toVector().toPitch());
+                (float) face.toVector().toYaw(), (float) face.toVector().toPitch());
 
         final BlockPos blockPos = new BlockPos(position.x(), position.y(), position.z());
         final Vec3 blockVec = Vec3.atLowerCornerOf(blockPos);
@@ -712,10 +723,6 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
     @Override
     public boolean regenerate(World bukkitWorld, Region region, Extent extent, RegenOptions options) {
-        if (FoliaScheduler.isFolia()) {
-            return regenerateFolia(bukkitWorld, region, extent, options);
-        }
-
         try {
             doRegen(bukkitWorld, region, extent, options);
         } catch (Exception e) {
@@ -723,14 +730,6 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         }
 
         return true;
-    }
-
-    private boolean regenerateFolia(World bukkitWorld, Region region, Extent extent, RegenOptions options) {
-        try {
-            return doRegenFolia(bukkitWorld, region, extent, options);
-        } catch (Exception e) {
-            throw new IllegalStateException("Regen failed on Folia.", e);
-        }
     }
 
     private void doRegen(World bukkitWorld, Region region, Extent extent, RegenOptions options) throws Exception {
@@ -743,51 +742,51 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         try (LevelStorageSource.LevelStorageAccess session = levelStorage.createAccess("worldeditregentempworld", worldDimKey)) {
             ServerLevel originalWorld = ((CraftWorld) bukkitWorld).getHandle();
             PrimaryLevelData levelProperties = (PrimaryLevelData) originalWorld.getServer()
-                .getWorldData().overworldData();
+                    .getWorldData().overworldData();
             WorldOptions originalOpts = levelProperties.worldGenOptions();
 
             long seed = options.getSeed().orElse(originalWorld.getSeed());
             WorldOptions newOpts = options.getSeed().isPresent()
-                ? originalOpts.withSeed(OptionalLong.of(seed))
-                : originalOpts;
+                    ? originalOpts.withSeed(OptionalLong.of(seed))
+                    : originalOpts;
 
             LevelSettings newWorldSettings = new LevelSettings(
-                "worldeditregentempworld",
-                levelProperties.settings.gameType(),
-                levelProperties.settings.hardcore(),
-                levelProperties.settings.difficulty(),
-                levelProperties.settings.allowCommands(),
-                levelProperties.settings.gameRules(),
-                levelProperties.settings.getDataConfiguration()
+                    "worldeditregentempworld",
+                    levelProperties.settings.gameType(),
+                    levelProperties.settings.hardcore(),
+                    levelProperties.settings.difficulty(),
+                    levelProperties.settings.allowCommands(),
+                    levelProperties.settings.gameRules(),
+                    levelProperties.settings.getDataConfiguration()
             );
 
             @SuppressWarnings("deprecation")
             PrimaryLevelData.SpecialWorldProperty specialWorldProperty =
-                levelProperties.isFlatWorld()
-                    ? PrimaryLevelData.SpecialWorldProperty.FLAT
-                    : levelProperties.isDebugWorld()
-                    ? PrimaryLevelData.SpecialWorldProperty.DEBUG
-                    : PrimaryLevelData.SpecialWorldProperty.NONE;
+                    levelProperties.isFlatWorld()
+                            ? PrimaryLevelData.SpecialWorldProperty.FLAT
+                            : levelProperties.isDebugWorld()
+                            ? PrimaryLevelData.SpecialWorldProperty.DEBUG
+                            : PrimaryLevelData.SpecialWorldProperty.NONE;
 
             PrimaryLevelData newWorldData = new PrimaryLevelData(newWorldSettings, newOpts, specialWorldProperty, Lifecycle.stable());
 
             ServerLevel freshWorld = new ServerLevel(
-                originalWorld.getServer(),
-                originalWorld.getServer().executor,
-                session, newWorldData,
-                originalWorld.dimension(),
-                new LevelStem(
-                    originalWorld.dimensionTypeRegistration(),
-                    originalWorld.getChunkSource().getGenerator()
-                ),
-                originalWorld.isDebug(),
-                seed,
-                ImmutableList.of(),
-                false,
-                originalWorld.getRandomSequences(),
-                env,
-                gen,
-                bukkitWorld.getBiomeProvider()
+                    originalWorld.getServer(),
+                    originalWorld.getServer().executor,
+                    session, newWorldData,
+                    originalWorld.dimension(),
+                    new LevelStem(
+                            originalWorld.dimensionTypeRegistration(),
+                            originalWorld.getChunkSource().getGenerator()
+                    ),
+                    originalWorld.isDebug(),
+                    seed,
+                    ImmutableList.of(),
+                    false,
+                    originalWorld.getRandomSequences(),
+                    env,
+                    gen,
+                    bukkitWorld.getBiomeProvider()
             );
             try {
                 regenForWorld(region, extent, freshWorld, options);
@@ -804,248 +803,6 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             }
             SafeFiles.tryHardToDeleteDir(tempDir);
         }
-    }
-
-    private boolean doRegenFolia(World bukkitWorld, Region region, Extent extent, RegenOptions options) throws Exception {
-        Environment env = bukkitWorld.getEnvironment();
-        ChunkGenerator gen = bukkitWorld.getGenerator();
-
-        Path tempDir = Files.createTempDirectory("WorldEditWorldGen");
-        LevelStorageSource levelStorage = LevelStorageSource.createDefault(tempDir);
-        ResourceKey<LevelStem> worldDimKey = getWorldDimKey(env);
-        try (LevelStorageSource.LevelStorageAccess session = levelStorage.createAccess("worldeditregentempworld", worldDimKey)) {
-            ServerLevel originalWorld = ((CraftWorld) bukkitWorld).getHandle();
-            PrimaryLevelData levelProperties = (PrimaryLevelData) originalWorld.getServer()
-                .getWorldData().overworldData();
-            WorldOptions originalOpts = levelProperties.worldGenOptions();
-
-            long seed = options.getSeed().orElse(originalWorld.getSeed());
-            WorldOptions newOpts = options.getSeed().isPresent()
-                ? originalOpts.withSeed(OptionalLong.of(seed))
-                : originalOpts;
-
-            LevelSettings newWorldSettings = new LevelSettings(
-                "worldeditregentempworld",
-                levelProperties.settings.gameType(),
-                levelProperties.settings.hardcore(),
-                levelProperties.settings.difficulty(),
-                levelProperties.settings.allowCommands(),
-                levelProperties.settings.gameRules(),
-                levelProperties.settings.getDataConfiguration()
-            );
-
-            @SuppressWarnings("deprecation")
-            PrimaryLevelData.SpecialWorldProperty specialWorldProperty =
-                levelProperties.isFlatWorld()
-                    ? PrimaryLevelData.SpecialWorldProperty.FLAT
-                    : levelProperties.isDebugWorld()
-                    ? PrimaryLevelData.SpecialWorldProperty.DEBUG
-                    : PrimaryLevelData.SpecialWorldProperty.NONE;
-
-            PrimaryLevelData newWorldData = new PrimaryLevelData(newWorldSettings, newOpts, specialWorldProperty, Lifecycle.stable());
-
-            ServerLevel freshWorld = new ServerLevel(
-                originalWorld.getServer(),
-                originalWorld.getServer().executor,
-                session, newWorldData,
-                originalWorld.dimension(),
-                new LevelStem(
-                    originalWorld.dimensionTypeRegistration(),
-                    originalWorld.getChunkSource().getGenerator()
-                ),
-                originalWorld.isDebug(),
-                seed,
-                ImmutableList.of(),
-                false,
-                originalWorld.getRandomSequences(),
-                env,
-                gen,
-                bukkitWorld.getBiomeProvider()
-            );
-
-            try {
-                ChunkPos spawnChunk = new ChunkPos(
-                    freshWorld.getChunkSource().randomState().sampler().findSpawnPosition()
-                );
-
-                try {
-                    Field randomSpawnField = ServerLevel.class.getDeclaredField("randomSpawnSelection");
-                    randomSpawnField.setAccessible(true);
-                    randomSpawnField.set(freshWorld, spawnChunk);
-                } catch (ReflectiveOperationException e) {
-                    throw new RuntimeException("Failed to set spawn chunk for Folia", e);
-                }
-
-                MinecraftServer console = originalWorld.getServer();
-                CompletableFuture<Void> initFuture = new CompletableFuture<>();
-
-                FoliaScheduler.getRegionScheduler().run(
-                    WorldEditPlugin.getInstance(),
-                    freshWorld.getWorld(),
-                    spawnChunk.x, spawnChunk.z,
-                    o -> {
-                        try {
-                            console.initWorld(freshWorld, newWorldData, newWorldData.worldGenOptions());
-                            initFuture.complete(null);
-                        } catch (Exception e) {
-                            initFuture.completeExceptionally(e);
-                        }
-                    }
-                );
-
-                initFuture.get();
-
-                regenForWorldFolia(region, extent, freshWorld, options);
-            } finally {
-                freshWorld.getChunkSource().close(false);
-            }
-        } finally {
-            try {
-                @SuppressWarnings("unchecked")
-                Map<String, World> map = (Map<String, World>) serverWorldsField.get(Bukkit.getServer());
-                map.remove("worldeditregentempworld");
-            } catch (IllegalAccessException ignored) {
-                // It's fine if we couldn't remove it
-            }
-            SafeFiles.tryHardToDeleteDir(tempDir);
-        }
-
-        return true;
-    }
-
-    @SuppressWarnings("unchecked")
-    private void regenForWorldFolia(Region region, Extent extent, ServerLevel serverWorld, RegenOptions options) throws WorldEditException {
-        Map<BlockVector3, BlockStateHolder<?>> blockStates = new HashMap<>();
-        Map<BlockVector3, BiomeType> biomes = new HashMap<>();
-        Map<ChunkPos, List<BlockVector3>> blocksByChunk = new HashMap<>();
-
-        for (BlockVector3 vec : region) {
-            ChunkPos chunkPos = new ChunkPos(vec.x() >> 4, vec.z() >> 4);
-            blocksByChunk.computeIfAbsent(chunkPos, k -> new ArrayList<>()).add(vec);
-        }
-
-        World bukkitWorld = serverWorld.getWorld();
-        List<CompletableFuture<Void>> extractionFutures = new ArrayList<>();
-
-        for (Map.Entry<ChunkPos, List<BlockVector3>> entry : blocksByChunk.entrySet()) {
-            ChunkPos chunkPos = entry.getKey();
-            List<BlockVector3> blocks = entry.getValue();
-            CompletableFuture<Void> future = new CompletableFuture<>();
-
-            FoliaScheduler.getRegionScheduler().execute(
-                WorldEditPlugin.getInstance(),
-                bukkitWorld,
-                chunkPos.x,
-                chunkPos.z,
-                () -> {
-                    try {
-                        ServerChunkCache chunkManager = serverWorld.getChunkSource();
-                        CompletableFuture<ChunkResult<ChunkAccess>> chunkFuture =
-                            ((CompletableFuture<ChunkResult<ChunkAccess>>)
-                                getChunkFutureMethod.invoke(chunkManager, chunkPos.x, chunkPos.z, ChunkStatus.FEATURES, true));
-                        @SuppressWarnings({"FutureReturnValueIgnored", "unused"})
-                        var ignored = chunkFuture.thenApply(either -> either.orElse(null))
-                            .whenComplete((chunkAccess, throwable) -> {
-                                if (throwable != null) {
-                                    future.completeExceptionally(new IllegalStateException("Couldn't load chunk for regen.", throwable));
-                                } else if (chunkAccess != null) {
-                                    try {
-                                        for (BlockVector3 vec : blocks) {
-                                            BlockPos pos = new BlockPos(vec.x(), vec.y(), vec.z());
-                                            final net.minecraft.world.level.block.state.BlockState blockData = chunkAccess.getBlockState(pos);
-                                            int internalId = Block.getId(blockData);
-                                            BlockStateHolder<?> state = BlockStateIdAccess.getBlockStateById(internalId);
-                                            Objects.requireNonNull(state);
-                                            BlockEntity blockEntity = chunkAccess.getBlockEntity(pos);
-                                            if (blockEntity != null) {
-                                                var tagValueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, serverWorld.registryAccess());
-                                                blockEntity.saveWithId(tagValueOutput);
-                                                net.minecraft.nbt.CompoundTag tag = tagValueOutput.buildResult();
-                                                state = state.toBaseBlock(LazyReference.from(() -> (LinCompoundTag) toNative(tag)));
-                                            }
-                                            synchronized (blockStates) {
-                                                blockStates.put(vec, state);
-                                            }
-                                            if (options.shouldRegenBiomes()) {
-                                                Biome origBiome = chunkAccess.getNoiseBiome(vec.x(), vec.y(), vec.z()).value();
-                                                BiomeType adaptedBiome = adapt(serverWorld, origBiome);
-                                                if (adaptedBiome != null) {
-                                                    synchronized (biomes) {
-                                                        biomes.put(vec, adaptedBiome);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        future.complete(null);
-                                    } catch (Exception e) {
-                                        future.completeExceptionally(e);
-                                    }
-                                } else {
-                                    future.completeExceptionally(new IllegalStateException("Failed to generate a chunk, regen failed."));
-                                }
-                            });
-                    } catch (IllegalAccessException | InvocationTargetException e) {
-                        future.completeExceptionally(new IllegalStateException("Couldn't load chunk for regen.", e));
-                    }
-                }
-            );
-            extractionFutures.add(future);
-        }
-
-        CompletableFuture.allOf(extractionFutures.toArray(new CompletableFuture<?>[0])).join();
-
-        for (BlockVector3 vec : region) {
-            BlockStateHolder<?> state = blockStates.get(vec);
-            if (state != null) {
-                extent.setBlock(vec, state.toBaseBlock());
-                if (options.shouldRegenBiomes()) {
-                    BiomeType biome = biomes.get(vec);
-                    if (biome != null) {
-                        extent.setBiome(vec, biome);
-                    }
-                }
-            }
-        }
-    }
-
-    @SuppressWarnings({"unchecked", "unused"})
-    private List<CompletableFuture<ChunkAccess>> submitChunkLoadTasksFolia(Region region, ServerLevel serverWorld) {
-        ServerChunkCache chunkManager = serverWorld.getChunkSource();
-        List<CompletableFuture<ChunkAccess>> chunkLoadings = new ArrayList<>();
-        World bukkitWorld = serverWorld.getWorld();
-
-        for (BlockVector2 chunk : region.getChunks()) {
-            CompletableFuture<ChunkAccess> future = new CompletableFuture<>();
-            final int chunkX = chunk.x();
-            final int chunkZ = chunk.z();
-
-            FoliaScheduler.getRegionScheduler().execute(
-                WorldEditPlugin.getInstance(),
-                bukkitWorld,
-                chunkX,
-                chunkZ,
-                () -> {
-                    try {
-                        CompletableFuture<ChunkResult<ChunkAccess>> chunkFuture =
-                            ((CompletableFuture<ChunkResult<ChunkAccess>>)
-                                getChunkFutureMethod.invoke(chunkManager, chunkX, chunkZ, ChunkStatus.FEATURES, true));
-                        @SuppressWarnings({"FutureReturnValueIgnored", "unused"})
-                        var ignored = chunkFuture.thenApply(either -> either.orElse(null))
-                            .whenComplete((chunkAccess, throwable) -> {
-                                if (throwable != null) {
-                                    future.completeExceptionally(throwable);
-                                } else {
-                                    future.complete(chunkAccess);
-                                }
-                            });
-                    } catch (IllegalAccessException | InvocationTargetException e) {
-                        future.completeExceptionally(new IllegalStateException("Couldn't load chunk for regen.", e));
-                    }
-                }
-            );
-            chunkLoadings.add(future);
-        }
-        return chunkLoadings;
     }
 
     private BiomeType adapt(ServerLevel serverWorld, Biome origBiome) {
@@ -1068,7 +825,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         executor.managedBlock(() -> {
             // bail out early if a future fails
             if (chunkLoadings.stream().anyMatch(ftr ->
-                ftr.isDone() && ftr.getNow(null) == null
+                    ftr.isDone() && Futures.getUnchecked(ftr) == null
             )) {
                 return false;
             }
@@ -1116,9 +873,9 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             try {
                 //noinspection unchecked
                 chunkLoadings.add(
-                    ((CompletableFuture<ChunkResult<ChunkAccess>>)
-                        getChunkFutureMethod.invoke(chunkManager, chunk.x(), chunk.z(), ChunkStatus.FEATURES, true))
-                        .thenApply(either -> either.orElse(null))
+                        ((CompletableFuture<ChunkResult<ChunkAccess>>)
+                                getChunkFutureMethod.invoke(chunkManager, chunk.x(), chunk.z(), ChunkStatus.FEATURES, true))
+                                .thenApply(either -> either.orElse(null))
                 );
             } catch (IllegalAccessException | InvocationTargetException e) {
                 throw new IllegalStateException("Couldn't load chunk for regen.", e);
@@ -1136,12 +893,12 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     }
 
     private static final Set<SideEffect> SUPPORTED_SIDE_EFFECTS = Sets.immutableEnumSet(
-        SideEffect.NEIGHBORS,
-        SideEffect.LIGHTING,
-        SideEffect.VALIDATION,
-        SideEffect.ENTITY_AI,
-        SideEffect.EVENTS,
-        SideEffect.UPDATE
+            SideEffect.NEIGHBORS,
+            SideEffect.LIGHTING,
+            SideEffect.VALIDATION,
+            SideEffect.ENTITY_AI,
+            SideEffect.EVENTS,
+            SideEffect.UPDATE
     );
 
     @Override
@@ -1185,22 +942,46 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             }
         }
 
+        // Trees
+        Registry<PlacedFeature> placedFeatureRegistry = server.registryAccess().lookupOrThrow(Registries.PLACED_FEATURE);
+        for (Identifier name : placedFeatureRegistry.keySet()) {
+            // Do some hackery to make sure this is a tree
+            var underlyingFeature = placedFeatureRegistry.get(name).get().value().feature().value().feature();
+            if (underlyingFeature instanceof TreeFeature || underlyingFeature instanceof FallenTreeFeature || underlyingFeature instanceof CoralTreeFeature) {
+                String key = name.toString();
+                if (TreeType.REGISTRY.get(key) == null) {
+                    TreeType.REGISTRY.register(key, new TreeType(key));
+                }
+            }
+        }
+
         // BiomeCategories
         Registry<Biome> biomeRegistry = server.registryAccess().lookupOrThrow(Registries.BIOME);
         biomeRegistry.getTags().forEach(tag -> {
             String key = tag.key().location().toString();
             if (BiomeCategory.REGISTRY.get(key) == null) {
                 BiomeCategory.REGISTRY.register(key, new BiomeCategory(
-                    key,
-                    () -> biomeRegistry.get(tag.key())
-                        .stream()
-                        .flatMap(HolderSet.Named::stream)
-                        .map(Holder::value)
-                        .map(this::adapt)
-                        .collect(Collectors.toSet()))
+                        key,
+                        () -> biomeRegistry.get(tag.key())
+                                .stream()
+                                .flatMap(HolderSet.Named::stream)
+                                .map(Holder::value)
+                                .map(this::adapt)
+                                .collect(Collectors.toSet()))
                 );
             }
         });
+    }
+
+    @Override
+    public boolean generateTree(TreeType treeType, World world, EditSession session, BlockVector3 pt) throws MaxChangedBlocksException {
+        ServerLevel originalWorld = ((CraftWorld) world).getHandle();
+        PlacedFeature feature = originalWorld.registryAccess().lookupOrThrow(Registries.PLACED_FEATURE).getValue(Identifier.tryParse(treeType.id()));
+        ServerChunkCache chunkManager = originalWorld.getChunkSource();
+        try (PaperweightServerLevelDelegateProxy.LevelAndProxy proxyLevel =
+                     PaperweightServerLevelDelegateProxy.newInstance(session, originalWorld, this)) {
+            return feature != null && feature.place(proxyLevel.level(), chunkManager.getGenerator(), random, new BlockPos(pt.x(), pt.y(), pt.z()));
+        }
     }
 
     @Override
@@ -1209,7 +990,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         ConfiguredFeature<?, ?> feature = originalWorld.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).getValue(Identifier.tryParse(type.id()));
         ServerChunkCache chunkManager = originalWorld.getChunkSource();
         try (PaperweightServerLevelDelegateProxy.LevelAndProxy proxyLevel =
-                 PaperweightServerLevelDelegateProxy.newInstance(session, originalWorld, this)) {
+                     PaperweightServerLevelDelegateProxy.newInstance(session, originalWorld, this)) {
             return feature != null && feature.place(proxyLevel.level(), chunkManager.getGenerator(), random, new BlockPos(pt.x(), pt.y(), pt.z()));
         } catch (MaxChangedBlocksException e) {
             throw new RuntimeException(e);
@@ -1227,13 +1008,13 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
         ServerChunkCache chunkManager = originalWorld.getChunkSource();
         try (PaperweightServerLevelDelegateProxy.LevelAndProxy proxyLevel =
-                 PaperweightServerLevelDelegateProxy.newInstance(session, originalWorld, this)) {
+                     PaperweightServerLevelDelegateProxy.newInstance(session, originalWorld, this)) {
             ChunkPos chunkPos = new ChunkPos(new BlockPos(pt.x(), pt.y(), pt.z()));
             StructureStart structureStart = structure.generate(
-                structureRegistry.wrapAsHolder(structure), originalWorld.dimension(), originalWorld.registryAccess(),
-                chunkManager.getGenerator(), chunkManager.getGenerator().getBiomeSource(), chunkManager.randomState(),
-                originalWorld.getStructureManager(), originalWorld.getSeed(), chunkPos, 0,
-                proxyLevel.level(), biome -> true
+                    structureRegistry.wrapAsHolder(structure), originalWorld.dimension(), originalWorld.registryAccess(),
+                    chunkManager.getGenerator(), chunkManager.getGenerator().getBiomeSource(), chunkManager.randomState(),
+                    originalWorld.getStructureManager(), originalWorld.getSeed(), chunkPos, 0,
+                    proxyLevel.level(), biome -> true
             );
 
             if (!structureStart.isValid()) {
@@ -1243,14 +1024,14 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
                 ChunkPos min = new ChunkPos(SectionPos.blockToSectionCoord(boundingBox.minX()), SectionPos.blockToSectionCoord(boundingBox.minZ()));
                 ChunkPos max = new ChunkPos(SectionPos.blockToSectionCoord(boundingBox.maxX()), SectionPos.blockToSectionCoord(boundingBox.maxZ()));
                 ChunkPos.rangeClosed(min, max).forEach((chunkPosx) ->
-                    structureStart.placeInChunk(
-                        proxyLevel.level(), originalWorld.structureManager(), chunkManager.getGenerator(),
-                        originalWorld.getRandom(),
-                        new BoundingBox(
-                            chunkPosx.getMinBlockX(), originalWorld.getMinY(), chunkPosx.getMinBlockZ(),
-                            chunkPosx.getMaxBlockX(), originalWorld.getMaxY(), chunkPosx.getMaxBlockZ()
-                        ), chunkPosx
-                    )
+                        structureStart.placeInChunk(
+                                proxyLevel.level(), originalWorld.structureManager(), chunkManager.getGenerator(),
+                                originalWorld.getRandom(),
+                                new BoundingBox(
+                                        chunkPosx.getMinBlockX(), originalWorld.getMinY(), chunkPosx.getMinBlockZ(),
+                                        chunkPosx.getMaxBlockX(), originalWorld.getMaxY(), chunkPosx.getMaxBlockZ()
+                                ), chunkPosx
+                        )
                 );
                 return true;
             }

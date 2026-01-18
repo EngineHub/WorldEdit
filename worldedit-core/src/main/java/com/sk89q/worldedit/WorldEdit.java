@@ -46,6 +46,7 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.SchematicsEventListener;
 import com.sk89q.worldedit.internal.expression.invoke.ReturnException;
+import com.sk89q.worldedit.internal.schematic.SchematicsManager;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.scripting.CraftScriptContext;
@@ -70,9 +71,6 @@ import com.sk89q.worldedit.util.translation.TranslationManager;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.registry.BundledBlockData;
-import com.sk89q.worldedit.world.registry.BundledItemData;
-import com.sk89q.worldedit.world.registry.LegacyMapper;
 import org.apache.logging.log4j.Logger;
 
 import java.io.DataInputStream;
@@ -125,6 +123,7 @@ public final class WorldEdit {
     private final SessionManager sessions = new SessionManager(this);
     private final Supervisor supervisor = new SimpleSupervisor();
     private final AssetLoaders assetLoaders = new AssetLoaders(this);
+    private final SchematicsManager schematicsManager = new SchematicsManager(this);
 
     private final BlockFactory blockFactory = new BlockFactory(this);
     private final ItemFactory itemFactory = new ItemFactory(this);
@@ -261,6 +260,15 @@ public final class WorldEdit {
     }
 
     /**
+     * Return the Schematics Manager instance.
+     *
+     * @return the schematics manager instance
+     */
+    public SchematicsManager getSchematicsManager() {
+        return schematicsManager;
+    }
+
+    /**
      * Gets the path to a file. This method will check to see if the filename
      * has valid characters and has an extension. It also prevents directory
      * traversal exploits by checking the root directory and the file directory.
@@ -394,17 +402,19 @@ public final class WorldEdit {
         return new File(dir, filename);
     }
 
+    private static final java.util.regex.Pattern SAFE_FILENAME_REGEX = java.util.regex.Pattern.compile("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+\\.[A-Za-z0-9]+$");
+
     private boolean checkFilename(String filename) {
-        return filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+\\.[A-Za-z0-9]+$");
+        return SAFE_FILENAME_REGEX.matcher(filename).matches();
     }
 
     /**
      * Load the bundled mappings.
+     *
+     * @deprecated This is no longer necessary as all mappings are loaded lazily.
      */
+    @Deprecated(forRemoval = true)
     public void loadMappings() {
-        BundledBlockData.getInstance(); // Load block registry
-        BundledItemData.getInstance(); // Load item registry
-        LegacyMapper.getInstance(); // Load item registry
     }
 
     /**

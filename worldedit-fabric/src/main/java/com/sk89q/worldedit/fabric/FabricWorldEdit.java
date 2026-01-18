@@ -41,10 +41,13 @@ import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.entity.EntityType;
+import com.sk89q.worldedit.world.gamemode.GameModes;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.generation.StructureType;
+import com.sk89q.worldedit.world.generation.TreeType;
 import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
+import com.sk89q.worldedit.world.weather.WeatherTypes;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -78,6 +81,10 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.levelgen.feature.CoralTreeFeature;
+import net.minecraft.world.level.levelgen.feature.FallenTreeFeature;
+import net.minecraft.world.level.levelgen.feature.TreeFeature;
+import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.phys.BlockHitResult;
 import org.apache.logging.log4j.Logger;
 import org.enginehub.piston.Command;
@@ -212,7 +219,7 @@ public class FabricWorldEdit implements ModInitializer {
                     .map(ModContainer::getMetadata)
                     .map(ModMetadata::getVersion);
 
-            if (version.isPresent() && !VersionPredicate.parse(">=0.5.0").test(version.get())) {
+            if (version.isPresent() && !VersionPredicate.parse(">=0.6.0").test(version.get())) {
                 throw new RuntimeException("Fabric permissions version " + version.get() + " is not supported. Please update Fabric Permissions API");
             }
 
@@ -299,6 +306,23 @@ public class FabricWorldEdit implements ModInitializer {
                 StructureType.REGISTRY.register(key, new StructureType(key));
             }
         }
+        // Trees
+        Registry<PlacedFeature> placedFeatureRegistry = server.registryAccess().lookupOrThrow(Registries.PLACED_FEATURE);
+        for (Identifier name : placedFeatureRegistry.keySet()) {
+            // Do some hackery to make sure this is a tree
+            var underlyingFeature = placedFeatureRegistry.get(name).get().value().feature().value().feature();
+            if (underlyingFeature instanceof TreeFeature || underlyingFeature instanceof FallenTreeFeature || underlyingFeature instanceof CoralTreeFeature) {
+                String key = name.toString();
+                if (TreeType.REGISTRY.get(key) == null) {
+                    TreeType.REGISTRY.register(key, new TreeType(key));
+                }
+            }
+        }
+
+        // ... :|
+        GameModes.get("");
+        WeatherTypes.get("");
+        com.sk89q.worldedit.registry.Registries.get("");
     }
 
     private void onStartingServer(MinecraftServer minecraftServer) {

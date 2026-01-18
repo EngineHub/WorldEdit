@@ -43,6 +43,7 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.generation.StructureType;
+import com.sk89q.worldedit.world.generation.TreeType;
 import com.sk89q.worldedit.world.weather.WeatherType;
 
 import java.nio.file.Path;
@@ -272,8 +273,23 @@ public interface World extends Extent, Keyed {
      * @param position the position
      * @return true if generation was successful
      * @throws MaxChangedBlocksException thrown if too many blocks were changed
+     * @deprecated Use {@link #generateTree(TreeType, EditSession, BlockVector3)} instead
      */
-    boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, BlockVector3 position) throws MaxChangedBlocksException;
+    @Deprecated
+    default boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, BlockVector3 position) throws MaxChangedBlocksException {
+        return false;
+    }
+
+    /**
+     * Generate a tree at the given position.
+     *
+     * @param type the tree type
+     * @param editSession the {@link EditSession}
+     * @param position the position
+     * @return true if generation was successful
+     * @throws MaxChangedBlocksException thrown if too many blocks were changed
+     */
+    boolean generateTree(TreeType type, EditSession editSession, BlockVector3 position) throws MaxChangedBlocksException;
 
     default boolean generateStructure(StructureType type, EditSession editSession, BlockVector3 position) {
         return false;
@@ -308,7 +324,11 @@ public interface World extends Extent, Keyed {
      * errors and may trigger block change notifications.</p>
      *
      * @param chunks a list of chunk coordinates to fix
+     * @deprecated This method refers to the old fast mode system, which was replaced by fine-grained side effects.
+     *     Any post-edit tasks should be handled within the side effect system. To manually apply side effects,
+     *     use {@link #applySideEffects(BlockVector3, BlockState, SideEffectSet)}.
      */
+    @Deprecated
     void fixAfterFastMode(Iterable<BlockVector2> chunks);
 
     /**
@@ -326,7 +346,11 @@ public interface World extends Extent, Keyed {
      * Relight the given chunks if possible.
      *
      * @param chunks a list of chunk coordinates to fix
+     * @deprecated This was part of the old fast mode system, which was replaced by fine-grained side effects. Use
+     *     {@link #applySideEffects(BlockVector3, BlockState, SideEffectSet)} with the {@link SideEffect#LIGHTING} side
+     *     effect to manually relight blocks.
      */
+    @Deprecated
     void fixLighting(Iterable<BlockVector2> chunks);
 
     /**
@@ -336,7 +360,9 @@ public interface World extends Extent, Keyed {
      * @param type the effect type
      * @param data the effect data
      * @return true if the effect was played
+     * @deprecated This is deprecated without replacement.
      */
+    @Deprecated
     boolean playEffect(Vector3 position, int type, int data);
 
     /**
@@ -347,7 +373,9 @@ public interface World extends Extent, Keyed {
      * @param blockType the block type
      * @param priority the priority
      * @return true if the effect was played
+     * @deprecated This is deprecated without replacement.
      */
+    @Deprecated
     boolean queueBlockBreakEffect(Platform server, BlockVector3 position, BlockType blockType, double priority);
 
     /**

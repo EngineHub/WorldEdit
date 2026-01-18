@@ -30,6 +30,10 @@ import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extent.InputExtent;
+import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.GroundFunction;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.RegionMaskingFilter;
@@ -42,11 +46,13 @@ import com.sk89q.worldedit.function.mask.MaskIntersection;
 import com.sk89q.worldedit.function.mask.NoiseFilter2D;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.function.util.ChangeLimitingFilter;
 import com.sk89q.worldedit.function.visitor.LayerVisitor;
 import com.sk89q.worldedit.function.visitor.RegionVisitor;
 import com.sk89q.worldedit.internal.annotation.Offset;
 import com.sk89q.worldedit.internal.annotation.Selection;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
+import com.sk89q.worldedit.internal.util.TransformUtil;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.math.convolution.GaussianKernel;
@@ -54,18 +60,20 @@ import com.sk89q.worldedit.math.convolution.HeightMap;
 import com.sk89q.worldedit.math.convolution.HeightMapFilter;
 import com.sk89q.worldedit.math.convolution.SnowHeightMap;
 import com.sk89q.worldedit.math.noise.RandomNoise;
+import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.regions.ConvexPolyhedralRegion;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
+import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.SideEffectSet;
-import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.util.formatting.component.TextUtils;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.RegenOptions;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.generation.TreeType;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
@@ -447,7 +455,9 @@ public class RegionCommands {
                     @Arg(desc = "The seed to regenerate with, otherwise uses world seed", def = "")
                         Long seed,
                     @Switch(name = 'b', desc = "Regenerate biomes as well")
-                        boolean regenBiomes) {
+                        boolean regenBiomes,
+                    @Switch(name = 'c', desc = "Regenerate to the clipboard")
+                        boolean toClipboard) throws WorldEditException {
         Mask mask = session.getMask();
         boolean success;
         try {
@@ -456,7 +466,17 @@ public class RegionCommands {
                 .seed(seed)
                 .regenBiomes(regenBiomes)
                 .build();
-            success = world.regenerate(region, editSession, options);
+            Extent outputExtent = editSession;
+            BlockArrayClipboard clipboard = null;
+            if (toClipboard) {
+                clipboard = new BlockArrayClipboard(region);
+                clipboard.setOrigin(session.getPlacementPosition(actor));
+                outputExtent = clipboard;
+            }
+            success = world.regenerate(region, outputExtent, options);
+            if (success && toClipboard) {
+                session.setClipboard(new ClipboardHolder(clipboard));
+            }
         } finally {
             session.setMask(mask);
         }
@@ -486,44 +506,30 @@ public class RegionCommands {
                       @Switch(name = 'r', desc = "Use the game's coordinate origin")
                           boolean useRawCoords,
                       @Switch(name = 'o', desc = "Use the placement's coordinate origin")
-                          boolean offset,
+                          boolean offsetPlacement,
                       @Switch(name = 'c', desc = "Use the selection's center as origin")
-                          boolean offsetCenter) throws WorldEditException {
-        final Vector3 zero;
-        Vector3 unit;
+                          boolean offsetCenter,
+                      @Switch(name = 'l', desc = "Fetch from the clipboard instead of the world")
+                          boolean useClipboard) throws WorldEditException {
+        final Transform targetTransform = TransformUtil.createTransformForExpressionCommand(actor, session, region, useRawCoords, offsetPlacement, offsetCenter);
 
-        if (useRawCoords) {
-            zero = Vector3.ZERO;
-            unit = Vector3.ONE;
-        } else if (offset) {
-            zero = session.getPlacementPosition(actor).toVector3();
-            unit = Vector3.ONE;
-        } else if (offsetCenter) {
-            final Vector3 min = region.getMinimumPoint().toVector3();
-            final Vector3 max = region.getMaximumPoint().toVector3();
+        final InputExtent sourceExtent;
+        final Transform sourceTransform;
+        if (useClipboard) {
+            final Clipboard clipboard = session.getClipboard().getClipboard();
+            sourceExtent = clipboard;
 
-            zero = max.add(min).multiply(0.5);
-            unit = Vector3.ONE;
+            final Vector3 clipboardMin = clipboard.getMinimumPoint().toVector3();
+            final Vector3 clipboardMax = clipboard.getMaximumPoint().toVector3();
+
+            sourceTransform = TransformUtil.createTransformForExpressionCommand(useRawCoords, offsetPlacement, offsetCenter, clipboardMin, clipboardMax, clipboardMin);
         } else {
-            final Vector3 min = region.getMinimumPoint().toVector3();
-            final Vector3 max = region.getMaximumPoint().toVector3();
-
-            zero = max.add(min).divide(2);
-            unit = max.subtract(zero);
-
-            if (unit.x() == 0) {
-                unit = unit.withX(1.0);
-            }
-            if (unit.y() == 0) {
-                unit = unit.withY(1.0);
-            }
-            if (unit.z() == 0) {
-                unit = unit.withZ(1.0);
-            }
+            sourceExtent = editSession.getWorld();
+            sourceTransform = targetTransform;
         }
 
         try {
-            final int affected = editSession.deformRegion(region, zero, unit, String.join(" ", expression), session.getTimeout());
+            final int affected = editSession.deformRegion(region, targetTransform, String.join(" ", expression), session.getTimeout(), sourceExtent, sourceTransform);
             if (actor instanceof Player player) {
                 player.findFreePosition();
             }
@@ -609,6 +615,10 @@ public class RegionCommands {
         RegionFunction apply = new ApplySideEffect(injectedWorld, sideEffectSet);
         if (session.getMask() != null) {
             apply = new RegionMaskingFilter(session.getMask(), apply);
+        }
+        if (session.getBlockChangeLimit() >= 0) {
+            // Only apply limits if one is set.
+            apply = new ChangeLimitingFilter(session.getBlockChangeLimit(), apply);
         }
 
         RegionVisitor visitor = new RegionVisitor(session.getSelection(injectedWorld), apply);

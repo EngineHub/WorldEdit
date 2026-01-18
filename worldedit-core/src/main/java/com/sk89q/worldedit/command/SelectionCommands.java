@@ -700,19 +700,21 @@ public class SelectionCommands {
                       @Switch(name = 'd', desc = "Separate blocks by state")
                           boolean separateStates,
                       @ArgFlag(name = 'p', desc = "Gets page from a previous distribution.")
-                          Integer page) throws WorldEditException {
+                          Integer page,
+                      @ArgFlag(name = 'm', desc = "Only include blocks matching the given mask")
+                          Mask sourceMask) throws WorldEditException {
         List<Countable<BlockState>> distribution;
 
         if (page == null) {
             if (clipboardDistr) {
                 Clipboard clipboard = session.getClipboard().getClipboard(); // throws if missing
-                BlockDistributionCounter count = new BlockDistributionCounter(clipboard, separateStates);
+                BlockDistributionCounter count = new BlockDistributionCounter(clipboard, sourceMask, separateStates);
                 RegionVisitor visitor = new RegionVisitor(clipboard.getRegion(), count);
                 Operations.completeBlindly(visitor);
                 distribution = count.getDistribution();
             } else {
                 try (EditSession editSession = session.createEditSession(actor)) {
-                    distribution = editSession.getBlockDistribution(session.getSelection(world), separateStates);
+                    distribution = editSession.getBlockDistribution(session.getSelection(world), sourceMask, separateStates);
                 }
             }
             session.setLastDistribution(distribution);
@@ -765,6 +767,7 @@ public class SelectionCommands {
             box.appendCommand("cuboid", TranslatableComponent.of("worldedit.select.cuboid.description"), "//sel cuboid");
             box.appendCommand("extend", TranslatableComponent.of("worldedit.select.extend.description"), "//sel extend");
             box.appendCommand("poly", TranslatableComponent.of("worldedit.select.poly.description"), "//sel poly");
+            box.appendCommand("polyextend", TranslatableComponent.of("worldedit.select.polyextend.description"), "//sel polyextend");
             box.appendCommand("ellipsoid", TranslatableComponent.of("worldedit.select.ellipsoid.description"), "//sel ellipsoid");
             box.appendCommand("sphere", TranslatableComponent.of("worldedit.select.sphere.description"), "//sel sphere");
             box.appendCommand("cyl", TranslatableComponent.of("worldedit.select.cyl.description"), "//sel cyl");

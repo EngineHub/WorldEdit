@@ -66,7 +66,9 @@ public class BundledRegistries implements Registries {
         return url;
     }
 
+    @SuppressWarnings("removal")
     private final BundledBlockRegistry blockRegistry = new BundledBlockRegistry();
+    @SuppressWarnings("removal")
     private final BundledItemRegistry itemRegistry = new BundledItemRegistry();
     private final NullEntityRegistry entityRegistry = new NullEntityRegistry();
     private final NullBiomeRegistry biomeRegistry = new NullBiomeRegistry();
