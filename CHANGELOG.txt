@@ -22,6 +22,13 @@
 - Fixed the hand, offhand, and pos1 patterns not showing in suggestions
 - Changed the legacy mapping system to not automatically load on startup, and instead load on first usage
 
+7.3.19
+- General cleanups across codebase
+- Final release of the 7.3.x series in preparation for 7.4 release
+- [Bukkit] Add a separate Gradle configuration for reobfuscation to better prepare for MC 26.1 support without dropping prior versions
+- [Bukkit] Drop 1.21.3 adapters due to resource constraints
+- [Bukkit] Tweaked logic to detect Mojang mappings to be more reliable with recent changes to non-mojmapped (Spigot) environments
+
 7.3.18
 - Added support for 1.21.11
 - Improved rotation of special rail blocks (activator, detector, powered, etc)

@@ -12,14 +12,14 @@ cuiProtocol = "4.0.2"
 
 errorprone = "2.45.0"
 
-fabric-api = "0.139.5+1.21.11"
+fabric-api = "0.141.1+1.21.11"
 
-neogradle = "7.1.11"
+neogradle = "7.1.20"
 neoforge-minecraft = "1.21.11"
 
 sponge-minecraft = "1.21.11"
 # https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/spongeapi/
-sponge-api = "18.0.0-20251210.214305-1"
+sponge-api = "18.0.0-20260114.133414-3"
 sponge-api-major = "18"
 
 # https://parchmentmc.org/docs/getting-started; note that we use older MC versions some times which is OK
@@ -35,8 +35,8 @@ minimumJdependency = "2.10"
 minimumTinyRemapper = "0.8.11"
 
 # https://repo.enginehub.org/language-files/com/sk89q/worldedit/worldedit-lang/
-lang-worldeditBase = "7.3.18"
-lang-version = "2036"
+lang-worldeditBase = "7.3.19"
+lang-version = "2062"
 
 [libraries]
 neogradle-neoform = { module = "net.neoforged.gradle:neoform", version.ref = "neogradle" }
@@ -95,10 +95,10 @@ jchronic = "com.sk89q:jchronic:0.2.4a"
 jlibnoise = "com.sk89q.lib:jlibnoise:1.0.0"
 
 fabric-minecraft = "com.mojang:minecraft:1.21.11"
-fabric-loader = "net.fabricmc:fabric-loader:0.18.2"
-fabric-permissions-api = "me.lucko:fabric-permissions-api:0.5.0"
+fabric-loader = "net.fabricmc:fabric-loader:0.18.4"
+fabric-permissions-api = "me.lucko:fabric-permissions-api:0.6.1"
 
-neoforge = "net.neoforged:neoforge:21.11.6-beta"
+neoforge = "net.neoforged:neoforge:21.11.34-beta"
 
 # Mojang-provided libraries, CHECK AGAINST MINECRAFT for versions
 guava = "com.google.guava:guava:33.5.0-jre!!"
