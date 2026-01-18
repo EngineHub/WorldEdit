@@ -99,20 +99,6 @@ import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAM
  */
 public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
-    // This must be before the Logger is initialized, which fails in 1.8
-    static {
-        if (PaperLib.getMinecraftVersion() < 13) {
-            throw new IllegalStateException(
-                """
-                **********************************************
-                ** This Minecraft version (%s) is not supported by this version of WorldEdit.
-                ** Please download an OLDER version of WorldEdit which does.
-                **********************************************
-                """.formatted(Bukkit.getVersion())
-            );
-        }
-    }
-
     private static final Logger LOGGER = LogManagerCompat.getLogger();
     public static final String CUI_PLUGIN_CHANNEL = "worldedit:cui";
     private static WorldEditPlugin INSTANCE;
