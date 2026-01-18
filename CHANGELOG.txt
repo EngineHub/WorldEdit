@@ -21,6 +21,7 @@
 - Reworked the way WorldEdit CLI pulls in versioned data, allowing dynamic data loading
 - Fixed the hand, offhand, and pos1 patterns not showing in suggestions
 - Changed the legacy mapping system to not automatically load on startup, and instead load on first usage
+- Updated the default values in the configuration files to better match supported Minecraft versions
 
 7.3.19
 - General cleanups across codebase
