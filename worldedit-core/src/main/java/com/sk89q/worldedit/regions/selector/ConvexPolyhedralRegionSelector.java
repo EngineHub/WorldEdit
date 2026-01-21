@@ -131,7 +131,7 @@ public class ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion
 
         Optional<Integer> vertexLimit = limits.getPolyhedronVertexLimit();
 
-        if (vertexLimit.isPresent() && region.getVertices().size() > vertexLimit.get()) {
+        if (vertexLimit.isPresent() && region.getVertices().size() >= vertexLimit.get()) {
             return false;
         }
 
@@ -169,7 +169,12 @@ public class ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion
 
     @Override
     public void learnChanges() {
-        pos1 = region.getVertices().iterator().next();
+        if (!region.getTriangles().isEmpty()) {
+            Triangle t = region.getTriangles().iterator().next();
+            pos1 = t.getVertex(0).toBlockPoint();
+        } else {
+            pos1 = region.getVertices().iterator().next();
+        }
     }
 
     @Override
@@ -186,8 +191,20 @@ public class ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion
     public List<Component> getSelectionInfoLines() {
         List<Component> ret = new ArrayList<>();
 
-        ret.add(TranslatableComponent.of("worldedit.selection.convex.info.vertices", TextComponent.of(region.getVertices().size())));
-        ret.add(TranslatableComponent.of("worldedit.selection.convex.info.triangles", TextComponent.of(region.getTriangles().size())));
+        int vertexCount = region.getVertices().size();
+        int triangleCount = region.getTriangles().size();
+        ret.add(TranslatableComponent.of("worldedit.selection.convex.info.vertices", TextComponent.of(vertexCount)));
+        ret.add(TranslatableComponent.of("worldedit.selection.convex.info.triangles", TextComponent.of(triangleCount)));
+
+        if (triangleCount == 0) {
+            if (vertexCount < 3) {
+                ret.add(TranslatableComponent.of("worldedit.selection.convex.error.too-few"));
+            } else {
+                ret.add(TranslatableComponent.of("worldedit.selection.convex.error.all-collinear"));
+            }
+        } else if (triangleCount == 2) {
+            ret.add(TranslatableComponent.of("worldedit.selection.convex.info.planar"));
+        }
 
         return ret;
     }
@@ -212,7 +229,25 @@ public class ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion
 
         session.describeCUI(player);
 
-        player.printInfo(TranslatableComponent.of("worldedit.selection.convex.explain.secondary", TextComponent.of(pos.toString())));
+        if (region.isBacklogVertex(pos)) {
+            if (region.getTriangles().isEmpty()) {
+                player.printInfo(TranslatableComponent.of(
+                    "worldedit.selection.convex.info.backlog.collinear",
+                    TextComponent.of(pos.toString())
+                ));
+            } else {
+                player.printInfo(TranslatableComponent.of(
+                    "worldedit.selection.convex.info.backlog.coplanar",
+                    TextComponent.of(pos.toString())
+                ));
+            }
+        } else {
+            player.printInfo(TranslatableComponent.of("worldedit.selection.convex.explain.secondary", TextComponent.of(pos.toString())));
+        }
+
+        if (!region.isDefined() && region.getVertices().size() >= 3) {
+            player.printInfo(TranslatableComponent.of("worldedit.selection.convex.error.all-collinear"));
+        }
     }
 
     @Override
