@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.internal;
 
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
@@ -43,5 +44,9 @@ public class SchematicsEventListener {
         } catch (IOException e) {
             LOGGER.warn("Failed to create schematics directory", e);
         }
+
+        // Initialize the schematics manager, running uninit first in case this is a reload.
+        WorldEdit.getInstance().getSchematicsManager().uninit();
+        WorldEdit.getInstance().getSchematicsManager().init();
     }
 }
