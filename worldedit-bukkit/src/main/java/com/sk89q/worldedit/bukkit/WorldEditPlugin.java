@@ -33,6 +33,7 @@ import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplLoader;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
+import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.event.platform.PlatformUnreadyEvent;
 import com.sk89q.worldedit.event.platform.PlatformsRegisteredEvent;
@@ -183,6 +184,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         loadAdapter();
         initializeRegistries(); // this creates the objects matching Bukkit's enums - but doesn't fill them with data yet
         config.load();
+        WorldEdit.getInstance().getEventBus().post(new ConfigurationLoadEvent(getLocalConfiguration()));
     }
 
     private void setupWorldData() {
