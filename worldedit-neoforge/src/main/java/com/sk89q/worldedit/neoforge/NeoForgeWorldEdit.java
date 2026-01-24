@@ -24,6 +24,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.util.PermissionCondition;
+import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.event.platform.PlatformUnreadyEvent;
 import com.sk89q.worldedit.event.platform.PlatformsRegisteredEvent;
@@ -296,6 +297,7 @@ public class NeoForgeWorldEdit {
         setupRegistries(event.getServer());
 
         config.load();
+        WorldEdit.getInstance().getEventBus().post(new ConfigurationLoadEvent(config));
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent(platform));
     }
 
