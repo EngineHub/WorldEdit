@@ -177,14 +177,39 @@ public class ExtentEntityCopy implements EntityFunction {
                         tagX.value().intValue(), tagY.value().intValue(), tagZ.value().intValue()
                     );
                     BlockVector3 newLeash = transform.apply(tilePosition.subtract(from)).add(to).toBlockPoint();
-                    return new BaseEntity(state.getType(), LazyReference.computed(tag.toBuilder()
+                    state = new BaseEntity(state.getType(), LazyReference.computed(tag.toBuilder()
                         .put("Leash", leashCompound.toBuilder()
                             .putInt("X", newLeash.x())
                             .putInt("Y", newLeash.y())
                             .putInt("Z", newLeash.z())
                             .build()
                         ).build()));
+                    tag = state.getNbt();
                 }
+            }
+            LinIntArrayTag leashArray = tag.findTag("leash", LinTagType.intArrayTag());
+            if (leashArray != null) {
+                Vector3 tilePosition = Vector3.at(
+                        leashArray.value()[0], leashArray.value()[1], leashArray.value()[2]
+                );
+                BlockVector3 newLeash = transform.apply(tilePosition.subtract(from)).add(to).toBlockPoint();
+                state = new BaseEntity(state.getType(), LazyReference.computed(tag.toBuilder()
+                        .putIntArray("leash", new int[]{newLeash.x(), newLeash.y(), newLeash.z()})
+                        .build()));
+                tag = state.getNbt();
+            }
+
+            // Handle home position for mobs
+            LinIntArrayTag homePosArray = tag.findTag("home_pos", LinTagType.intArrayTag());
+            if (homePosArray != null) {
+                Vector3 tilePosition = Vector3.at(
+                        homePosArray.value()[0], homePosArray.value()[1], homePosArray.value()[2]
+                );
+                BlockVector3 newLeash = transform.apply(tilePosition.subtract(from)).add(to).toBlockPoint();
+                state = new BaseEntity(state.getType(), LazyReference.computed(tag.toBuilder()
+                        .putIntArray("home_pos", new int[]{newLeash.x(), newLeash.y(), newLeash.z()})
+                        .build()));
+                tag = state.getNbt();
             }
 
             // Handle hanging entities (paintings, item frames, etc.)
