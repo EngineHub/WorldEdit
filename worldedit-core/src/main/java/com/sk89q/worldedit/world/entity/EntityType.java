@@ -23,7 +23,7 @@ import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
 
 public record EntityType(String id) implements Keyed {
-    public static final NamespacedRegistry<EntityType> REGISTRY = new NamespacedRegistry<>("entity type", true);
+    public static final NamespacedRegistry<EntityType> REGISTRY = new NamespacedRegistry<>("entity type", "entity_type", "minecraft", true);
 
     public EntityType {
         // If it has no namespace, assume minecraft.

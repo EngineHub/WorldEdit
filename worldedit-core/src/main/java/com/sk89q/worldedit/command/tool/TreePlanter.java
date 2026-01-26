@@ -23,14 +23,15 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
-import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.function.generator.TreeGenerator;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.world.generation.TreeType;
 
 import javax.annotation.Nullable;
 
@@ -39,9 +40,9 @@ import javax.annotation.Nullable;
  */
 public class TreePlanter implements BlockTool {
 
-    private final TreeGenerator.TreeType treeType;
+    private final TreeType treeType;
 
-    public TreePlanter(TreeGenerator.TreeType treeType) {
+    public TreePlanter(TreeType treeType) {
         this.treeType = treeType;
     }
 
@@ -55,21 +56,15 @@ public class TreePlanter implements BlockTool {
 
         try (EditSession editSession = BlockTool.createEditSession(player, session, clicked)) {
             try {
-                boolean successful = false;
-
-                final BlockVector3 pos = clicked.toVector().add(0, 1, 0).toBlockPoint();
-                for (int i = 0; i < 10; i++) {
-                    if (treeType.generate(editSession, pos)) {
-                        successful = true;
-                        break;
-                    }
-                }
+                boolean successful = new TreeGenerator(editSession, treeType).apply(clicked.toVector().toBlockPoint());
 
                 if (!successful) {
                     player.printError(TranslatableComponent.of("worldedit.tool.tree.obstructed"));
                 }
             } catch (MaxChangedBlocksException e) {
                 player.printError(TranslatableComponent.of("worldedit.tool.max-block-changes"));
+            } catch (WorldEditException ignored) {
+                // This should never happen
             } finally {
                 session.remember(editSession);
             }

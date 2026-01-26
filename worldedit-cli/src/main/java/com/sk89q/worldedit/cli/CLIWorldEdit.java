@@ -21,9 +21,11 @@ package com.sk89q.worldedit.cli;
 
 import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.cli.data.DataFile;
 import com.sk89q.worldedit.cli.data.FileRegistries;
 import com.sk89q.worldedit.cli.schematic.ClipboardWorld;
 import com.sk89q.worldedit.event.platform.CommandEvent;
+import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.event.platform.PlatformsRegisteredEvent;
 import com.sk89q.worldedit.extension.input.InputParseException;
@@ -100,7 +102,6 @@ public class CLIWorldEdit {
         WorldEdit.getInstance().getEventBus().post(new PlatformsRegisteredEvent());
 
         this.fileRegistries = new FileRegistries(this);
-        this.fileRegistries.loadDataFiles();
     }
 
     private void registerCommands() {
@@ -116,8 +117,11 @@ public class CLIWorldEdit {
     }
 
     public void setupRegistries() {
+        this.fileRegistries.loadDataFiles();
+
         // Blocks
-        for (Map.Entry<String, FileRegistries.BlockManifest> manifestEntry : fileRegistries.getDataFile().blocks.entrySet()) {
+        BlockType.REGISTRY.clear();
+        for (Map.Entry<String, DataFile.BlockManifest> manifestEntry : fileRegistries.getDataFile().blocks().entrySet()) {
             if (BlockType.REGISTRY.get(manifestEntry.getKey()) == null) {
                 BlockType.REGISTRY.register(manifestEntry.getKey(), new BlockType(manifestEntry.getKey(), input -> {
                     ParserContext context = new ParserContext();
@@ -126,7 +130,7 @@ public class CLIWorldEdit {
                     context.setRestricted(false);
                     try {
                         FuzzyBlockState state = (FuzzyBlockState) WorldEdit.getInstance().getBlockFactory().parseFromInput(
-                            manifestEntry.getValue().defaultstate,
+                            manifestEntry.getValue().defaultState(),
                             context
                         ).toImmutableState();
                         BlockState defaultState = input.getBlockType().getAllStates().get(0);
@@ -144,30 +148,35 @@ public class CLIWorldEdit {
             }
         }
         // Items
-        for (String name : fileRegistries.getDataFile().items) {
+        ItemType.REGISTRY.clear();
+        for (String name : fileRegistries.getDataFile().items()) {
             if (ItemType.REGISTRY.get(name) == null) {
                 ItemType.REGISTRY.register(name, new ItemType(name));
             }
         }
         // Entities
-        for (String name : fileRegistries.getDataFile().entities) {
+        EntityType.REGISTRY.clear();
+        for (String name : fileRegistries.getDataFile().entities()) {
             if (EntityType.REGISTRY.get(name) == null) {
                 EntityType.REGISTRY.register(name, new EntityType(name));
             }
         }
         // Biomes
-        for (String name : fileRegistries.getDataFile().biomes) {
+        BiomeType.REGISTRY.clear();
+        for (String name : fileRegistries.getDataFile().biomes()) {
             if (BiomeType.REGISTRY.get(name) == null) {
                 BiomeType.REGISTRY.register(name, new BiomeType(name));
             }
         }
         // Tags
-        for (String name : fileRegistries.getDataFile().blocktags.keySet()) {
+        BlockCategory.REGISTRY.clear();
+        for (String name : fileRegistries.getDataFile().blockTags().keySet()) {
             if (BlockCategory.REGISTRY.get(name) == null) {
                 BlockCategory.REGISTRY.register(name, new BlockCategory(name));
             }
         }
-        for (String name : fileRegistries.getDataFile().itemtags.keySet()) {
+        ItemCategory.REGISTRY.clear();
+        for (String name : fileRegistries.getDataFile().itemTags().keySet()) {
             if (ItemCategory.REGISTRY.get(name) == null) {
                 ItemCategory.REGISTRY.register(name, new ItemCategory(name));
             }
@@ -185,7 +194,7 @@ public class CLIWorldEdit {
             }
         }
 
-        this.commandSender = new CLICommandSender(this, LOGGER);
+        this.commandSender = new CLICommandSender(LOGGER);
         this.platform = new CLIPlatform(this);
         LOGGER.info("WorldEdit CLI (version " + getInternalVersion() + ") is loaded");
     }
@@ -194,9 +203,9 @@ public class CLIWorldEdit {
         setupPlatform();
 
         setupRegistries();
-        WorldEdit.getInstance().loadMappings();
 
         config.load();
+        WorldEdit.getInstance().getEventBus().post(new ConfigurationLoadEvent(config));
 
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent(platform));
     }
@@ -314,7 +323,7 @@ public class CLIWorldEdit {
             if (file.getName().endsWith("level.dat")) {
                 throw new IllegalArgumentException("level.dat file support is unfinished.");
             } else {
-                ClipboardFormat format = ClipboardFormats.findByFile(file);
+                ClipboardFormat format = ClipboardFormats.findByPath(file.toPath());
                 if (format != null) {
                     int dataVersion;
                     if (format != BuiltInClipboardFormat.MCEDIT_SCHEMATIC) {
@@ -333,6 +342,7 @@ public class CLIWorldEdit {
                     try (ClipboardReader clipboardReader = format.getReader(Files.newInputStream(file.toPath(), StandardOpenOption.READ))) {
                         world = new ClipboardWorld(
                                 file,
+                                format,
                                 clipboardReader.read(),
                                 file.getName()
                         );

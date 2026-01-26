@@ -47,7 +47,6 @@ import org.enginehub.piston.util.HelpGenerator
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.stream.Stream
-import kotlin.streams.toList
 
 class DocumentationPrinter private constructor() {
 

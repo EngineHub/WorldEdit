@@ -39,6 +39,8 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.extent.clipboard.io.share.ClipboardShareDestination;
 import com.sk89q.worldedit.extent.clipboard.io.share.ClipboardShareMetadata;
+import com.sk89q.worldedit.internal.annotation.SchematicPath;
+import com.sk89q.worldedit.internal.schematic.SchematicsManager;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.session.ClipboardHolder;
@@ -71,8 +73,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -108,14 +108,15 @@ public class SchematicCommands {
     )
     @CommandPermissions({"worldedit.clipboard.load", "worldedit.schematic.load"})
     public void load(Actor actor, LocalSession session,
+                     @SchematicPath
                      @Arg(desc = "File name.")
-                         String filename,
+                     Path schematic,
                      @Arg(desc = "Format name.", def = "sponge")
                          ClipboardFormat format) throws FilenameException {
-        LocalConfiguration config = worldEdit.getConfiguration();
-
-        File dir = worldEdit.getWorkingDirectoryPath(config.saveDir).toFile();
-        File f = worldEdit.getSafeOpenFile(actor, dir, filename,
+        // Schematic.path is relative, so treat it as filename
+        String filename = schematic.toString();
+        File schematicsRoot = worldEdit.getSchematicsManager().getRoot().toFile();
+        File f = worldEdit.getSafeOpenFile(actor, schematicsRoot, filename,
                 BuiltInClipboardFormat.SPONGE_V3_SCHEMATIC.getPrimaryFileExtension(),
                 ClipboardFormats.getFileExtensionArray());
 
@@ -124,7 +125,7 @@ public class SchematicCommands {
             return;
         }
 
-        ClipboardFormat inferredFormat = ClipboardFormats.findByFile(f);
+        ClipboardFormat inferredFormat = ClipboardFormats.findByPath(f.toPath());
         if (inferredFormat != null) {
             format = inferredFormat;
         }
@@ -246,11 +247,14 @@ public class SchematicCommands {
     )
     @CommandPermissions("worldedit.schematic.delete")
     public void delete(Actor actor,
+                       @SchematicPath
                        @Arg(desc = "File name.")
-                           String filename) throws WorldEditException {
+                       Path schematic) throws WorldEditException {
         LocalConfiguration config = worldEdit.getConfiguration();
         File dir = worldEdit.getWorkingDirectoryPath(config.saveDir).toFile();
 
+        // Schematic.path is relative, so treat it as filename
+        String filename = schematic.toString();
         File f = worldEdit.getSafeOpenFile(actor,
                 dir, filename, "schematic", ClipboardFormats.getFileExtensionArray());
 
@@ -314,7 +318,6 @@ public class SchematicCommands {
         if (oldFirst && newFirst) {
             throw new StopExecutionException(TextComponent.of("Cannot sort by oldest and newest."));
         }
-        final String saveDir = worldEdit.getConfiguration().saveDir;
         Comparator<Path> pathComparator;
         String flag;
         if (oldFirst) {
@@ -331,7 +334,7 @@ public class SchematicCommands {
                 ? "//schem list -p %page%" + flag : null;
 
         WorldEditAsyncCommandBuilder.createAndSendMessage(actor,
-                new SchematicListTask(saveDir, pathComparator, page, pageCommand),
+                new SchematicListTask(pathComparator, page, pageCommand),
                 SubtleFormat.wrap("(Please wait... gathering schematic list.)"));
     }
 
@@ -399,6 +402,7 @@ public class SchematicCommands {
         public Void call() throws Exception {
             try {
                 writeToOutputStream(new FileOutputStream(file));
+                WorldEdit.getInstance().getSchematicsManager().update();
                 LOGGER.info(actor.getName() + " saved " + file.getCanonicalPath() + (overwrite ? " (overwriting previous file)" : ""));
             } catch (IOException e) {
                 file.delete();
@@ -439,20 +443,19 @@ public class SchematicCommands {
     private static class SchematicListTask implements Callable<Component> {
         private final Comparator<Path> pathComparator;
         private final int page;
-        private final Path rootDir;
         private final String pageCommand;
 
-        SchematicListTask(String prefix, Comparator<Path> pathComparator, int page, String pageCommand) {
+        SchematicListTask(Comparator<Path> pathComparator, int page, String pageCommand) {
             this.pathComparator = pathComparator;
             this.page = page;
-            this.rootDir = WorldEdit.getInstance().getWorkingDirectoryPath(prefix);
             this.pageCommand = pageCommand;
         }
 
         @Override
         public Component call() throws Exception {
-            Path resolvedRoot = rootDir.toRealPath();
-            List<Path> fileList = allFiles(resolvedRoot);
+            SchematicsManager schematicsManager = WorldEdit.getInstance().getSchematicsManager();
+            // Copy this to a mutable list, we're sorting it below.
+            List<Path> fileList = new ArrayList<>(schematicsManager.getSchematicPaths());
 
             if (fileList.isEmpty()) {
                 return ErrorFormat.wrap("No schematics found.");
@@ -460,23 +463,9 @@ public class SchematicCommands {
 
             fileList.sort(pathComparator);
 
-            PaginationBox paginationBox = new SchematicPaginationBox(resolvedRoot, fileList, pageCommand);
+            PaginationBox paginationBox = new SchematicPaginationBox(schematicsManager.getRoot(), fileList, pageCommand);
             return paginationBox.create(page);
         }
-    }
-
-    private static List<Path> allFiles(Path root) throws IOException {
-        List<Path> pathList = new ArrayList<>();
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(root)) {
-            for (Path path : stream) {
-                if (Files.isDirectory(path)) {
-                    pathList.addAll(allFiles(path));
-                } else {
-                    pathList.add(path);
-                }
-            }
-        }
-        return pathList;
     }
 
     private static class SchematicPaginationBox extends PaginationBox {
@@ -505,7 +494,7 @@ public class SchematicCommands {
 
             String path = inRoot
                     ? file.getFileName().toString()
-                    : file.toString().substring(rootDir.toString().length());
+                    : rootDir.relativize(file).toString();
 
             return TextComponent.builder()
                     .content("")

@@ -156,6 +156,17 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
     }
 
     /**
+     * Insert a point into the list.
+     *
+     * @param i index to insert after
+     * @param position the position
+     */
+    public void addPoint(int i, BlockVector2 position) {
+        points.add(i, position);
+        recalculate();
+    }
+
+    /**
      * Add a point to the list.
      *
      * @param position the position

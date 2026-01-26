@@ -21,7 +21,7 @@ package com.sk89q.worldedit.cli;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.sk89q.worldedit.cli.data.FileRegistries;
+import com.sk89q.worldedit.cli.data.DataFile;
 import com.sk89q.worldedit.registry.state.BooleanProperty;
 import com.sk89q.worldedit.registry.state.DirectionalProperty;
 import com.sk89q.worldedit.registry.state.EnumProperty;
@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 
+@SuppressWarnings("removal")
 public class CLIBlockRegistry extends BundledBlockRegistry {
 
     private Property<?> createProperty(String type, String key, List<String> values) {
@@ -51,10 +52,10 @@ public class CLIBlockRegistry extends BundledBlockRegistry {
     @Nullable
     @Override
     public Map<String, ? extends Property<?>> getProperties(BlockType blockType) {
-        Map<String, FileRegistries.BlockProperty> properties =
-                CLIWorldEdit.inst.getFileRegistries().getDataFile().blocks.get(blockType.id()).properties;
-        Maps.EntryTransformer<String, FileRegistries.BlockProperty, Property<?>> entryTransform =
-            (key, value) -> createProperty(value.type, key, value.values);
+        Map<String, DataFile.BlockProperty> properties =
+                CLIWorldEdit.inst.getFileRegistries().getDataFile().blocks().get(blockType.id()).properties();
+        Maps.EntryTransformer<String, DataFile.BlockProperty, Property<?>> entryTransform =
+            (key, value) -> createProperty(value.type(), key, value.values());
         return ImmutableMap.copyOf(Maps.transformEntries(properties, entryTransform));
     }
 }

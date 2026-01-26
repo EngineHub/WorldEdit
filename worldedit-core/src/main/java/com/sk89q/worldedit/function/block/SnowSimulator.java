@@ -115,7 +115,7 @@ public class SnowSimulator implements LayerFunction {
         if (stack && above.getBlockType() == BlockTypes.SNOW) {
             int currentHeight = above.getState(snowLayersProperty);
             // We've hit the highest layer (If it doesn't contain current + 2 it means it's 1 away from full)
-            if (!snowLayersProperty.getValues().contains(currentHeight + 2)) {
+            if (!snowLayersProperty.values().contains(currentHeight + 2)) {
                 if (this.extent.setBlock(abovePosition, snowBlock)) {
                     this.affected++;
                 }

@@ -57,6 +57,7 @@ public enum Capability {
 
         @Override
         void uninitialize(PlatformManager platformManager, Platform platform) {
+            WorldEdit.getInstance().getSchematicsManager().uninit();
             WorldEdit.getInstance().getAssetLoaders().uninit();
         }
     },

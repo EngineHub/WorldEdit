@@ -25,6 +25,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
+import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.event.platform.PlatformUnreadyEvent;
 import com.sk89q.worldedit.event.platform.PlatformsRegisteredEvent;
@@ -34,10 +35,12 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.internal.command.CommandUtil;
+import com.sk89q.worldedit.registry.Registries;
 import com.sk89q.worldedit.sponge.config.SpongeConfiguration;
 import com.sk89q.worldedit.world.biome.BiomeCategory;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
+import com.sk89q.worldedit.world.generation.TreeType;
 import com.sk89q.worldedit.world.item.ItemCategory;
 import net.kyori.adventure.audience.Audience;
 import org.apache.logging.log4j.Logger;
@@ -64,6 +67,7 @@ import org.spongepowered.api.event.lifecycle.StoppingEngineEvent;
 import org.spongepowered.api.registry.RegistryTypes;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.world.LocatableBlock;
+import org.spongepowered.api.world.generation.feature.FeatureTypes;
 import org.spongepowered.api.world.server.ServerWorld;
 import org.spongepowered.plugin.PluginContainer;
 import org.spongepowered.plugin.builtin.jvm.Plugin;
@@ -211,6 +215,15 @@ public class SpongeWorldEdit {
         //            }
         //        });
 
+        event.game().registry(RegistryTypes.PLACED_FEATURE).streamEntries().forEach(feature -> {
+            String id = feature.key().asString();
+            var underlyingFeatureType = feature.value().feature().type();
+            if (underlyingFeatureType.equals(FeatureTypes.TREE) || underlyingFeatureType.equals(FeatureTypes.FALLEN_TREE) || underlyingFeatureType.equals(FeatureTypes.CORAL_TREE)) {
+                if (!TreeType.REGISTRY.keySet().contains(id)) {
+                    TreeType.REGISTRY.register(id, new TreeType(id));
+                }
+            }
+        });
         event.game().registry(RegistryTypes.BLOCK_TYPE).tags().forEach(blockTypeTag -> {
             String id = blockTypeTag.key().asString();
             if (!BlockCategory.REGISTRY.keySet().contains(id)) {
@@ -223,14 +236,17 @@ public class SpongeWorldEdit {
                 ItemCategory.REGISTRY.register(id, new ItemCategory(id));
             }
         });
-        Sponge.server().registry(RegistryTypes.BIOME).tags().forEach(biomeTag -> {
+        event.game().registry(RegistryTypes.BIOME).tags().forEach(biomeTag -> {
             String id = biomeTag.key().asString();
             if (!BiomeCategory.REGISTRY.keySet().contains(id)) {
                 BiomeCategory.REGISTRY.register(id, new BiomeCategory(id, () -> event.game().registry(RegistryTypes.BIOME).taggedValues(biomeTag).map(SpongeAdapter::adapt).collect(Collectors.toSet())));
             }
         });
 
+        Registries.get("");
+
         config.load();
+        WorldEdit.getInstance().getEventBus().post(new ConfigurationLoadEvent(config));
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent(platform));
     }
 

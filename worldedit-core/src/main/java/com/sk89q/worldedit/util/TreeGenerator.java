@@ -40,8 +40,10 @@ import javax.annotation.Nullable;
 /**
  * Tree generator.
  */
+@Deprecated
 public final class TreeGenerator {
 
+    @Deprecated
     public enum TreeType {
         TREE("Oak tree", "oak", "tree", "regular"),
         BIG_TREE("Large oak tree", "largeoak", "bigoak", "big", "bigtree"),

@@ -33,7 +33,6 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
-import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.biome.BiomeTypes;
 import com.sk89q.worldedit.world.block.BaseBlock;
@@ -91,11 +90,6 @@ public class NullWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean fullySupports3DBiomes() {
-        return false;
-    }
-
-    @Override
     public BiomeType getBiome(BlockVector3 position) {
         return BiomeTypes.THE_VOID;
     }
@@ -119,7 +113,7 @@ public class NullWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean generateTree(TreeType type, EditSession editSession, BlockVector3 position) throws MaxChangedBlocksException {
+    public boolean generateTree(com.sk89q.worldedit.world.generation.TreeType type, EditSession editSession, BlockVector3 position) throws MaxChangedBlocksException {
         return false;
     }
 

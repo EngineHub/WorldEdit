@@ -30,10 +30,10 @@ import com.sk89q.worldedit.bukkit.adapter.Refraction;
  */
 public final class StaticRefraction {
     public static final String GET_CHUNK_FUTURE_MAIN_THREAD = Refraction.pickName(
-        "getChunkFutureMainThread", "c"
+            "getChunkFutureMainThread", "c"
     );
     public static final String MAIN_THREAD_PROCESSOR = Refraction.pickName(
-        "mainThreadProcessor", "g"
+            "mainThreadProcessor", "g"
     );
     public static final String NEXT_TICK_TIME = Refraction.pickName("nextTickTimeNanos", "am");
     public static final String GET_BLOCK_STATE = Refraction.pickName("getBlockState", "a_");
@@ -42,13 +42,13 @@ public final class StaticRefraction {
      * {@code addFreshEntityWithPassengers(Entity entity)}.
      */
     public static final String ADD_FRESH_ENTITY_WITH_PASSENGERS_ENTITY = Refraction.pickName(
-        "addFreshEntityWithPassengers", "a_"
+            "addFreshEntityWithPassengers", "a_"
     );
     /**
      * {@code addFreshEntityWithPassengers(Entity entity, CreatureSpawnEvent.SpawnReason reason)}.
      */
     public static final String ADD_FRESH_ENTITY_WITH_PASSENGERS_ENTITY_SPAWN_REASON =
-        Refraction.pickName("addFreshEntityWithPassengers", "a_");
+            Refraction.pickName("addFreshEntityWithPassengers", "a_");
     /**
      * {@code addFreshEntity(Entity entity)}.
      */
@@ -57,7 +57,7 @@ public final class StaticRefraction {
      * {@code addFreshEntity(Entity entity, CreatureSpawnEvent.SpawnReason reason)}.
      */
     public static final String ADD_FRESH_ENTITY_SPAWN_REASON = Refraction.pickName(
-        "addFreshEntity", "b"
+            "addFreshEntity", "b"
     );
     /**
      * {@code getBlockEntity(BlockPos blockPos)}.
@@ -80,12 +80,12 @@ public final class StaticRefraction {
      * {@code destroyBlock(BlockPos blockPos, boolean drop, Entity breakingEntity)}.
      */
     public static final String DESTROY_BLOCK_BREAKING_ENTITY = Refraction.pickName(
-        "destroyBlock", "a"
+            "destroyBlock", "a"
     );
     /**
      * {@code destroyBlock(BlockPos blockPos, boolean drop, Entity breakingEntity, int maxUpdateDepth)}.
      */
     public static final String DESTROY_BLOCK_BREAKING_ENTITY_MAX_UPDATE = Refraction.pickName(
-        "destroyBlock", "a"
+            "destroyBlock", "a"
     );
 }

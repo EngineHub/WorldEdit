@@ -31,8 +31,10 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.adapter.AdapterLoadException;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplLoader;
+import com.sk89q.worldedit.bukkit.folia.FoliaScheduler;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
+import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.event.platform.PlatformUnreadyEvent;
 import com.sk89q.worldedit.event.platform.PlatformsRegisteredEvent;
@@ -45,6 +47,7 @@ import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
+import com.sk89q.worldedit.registry.Registries;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.lifecycle.Lifecycled;
 import com.sk89q.worldedit.util.lifecycle.SimpleLifecycled;
@@ -124,7 +127,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
         createDefaultConfiguration("config.yml"); // Create the default configuration file
 
-        config = new BukkitConfiguration(new YAMLProcessor(new File(getDataFolder(), "config.yml"), true), this);
+        config = new BukkitConfiguration(new YAMLProcessor(new File(getDataFolder(), "config.yml").toPath(), true), this);
 
         Path delChunks = Paths.get(getDataFolder().getPath(), DELCHUNKS_FILE_NAME);
         if (Files.exists(delChunks)) {
@@ -182,7 +185,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         loadAdapter();
         initializeRegistries(); // this creates the objects matching Bukkit's enums - but doesn't fill them with data yet
         config.load();
-        WorldEdit.getInstance().loadMappings();
+        WorldEdit.getInstance().getEventBus().post(new ConfigurationLoadEvent(config));
     }
 
     private void setupWorldData() {
@@ -231,14 +234,16 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             EntityType.REGISTRY.register(key, new EntityType(key));
         });
 
-        // ... :|
-        GameModes.get("");
-        WeatherTypes.get("");
-
+        // Registries only available via NMS
         BukkitImplAdapter adapter = getBukkitImplAdapter();
         if (adapter != null) {
             adapter.initializeRegistries();
         }
+
+        // ... :|
+        GameModes.get("");
+        WeatherTypes.get("");
+        Registries.get("");
     }
 
     private void setupTags() {
@@ -307,7 +312,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         if (config != null) {
             config.unload();
         }
-        this.getServer().getScheduler().cancelTasks(this);
+        cancelTasks();
     }
 
     /**
@@ -486,7 +491,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
      * @return an instance of the plugin
      * @throws NullPointerException if the plugin hasn't been enabled
      */
-    static WorldEditPlugin getInstance() {
+    public static WorldEditPlugin getInstance() {
         return checkNotNull(INSTANCE);
     }
 
@@ -556,6 +561,15 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
             event.setCompletions(CommandUtil.fixSuggestions(buffer, suggestEvent.getSuggestions()));
             event.setHandled(true);
+        }
+    }
+
+    private void cancelTasks() {
+        if (FoliaScheduler.isFolia()) {
+            FoliaScheduler.getAsyncScheduler().cancel(this);
+            FoliaScheduler.getGlobalRegionScheduler().cancel(this);
+        } else {
+            this.getServer().getScheduler().cancelTasks(this);
         }
     }
 }

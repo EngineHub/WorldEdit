@@ -20,34 +20,45 @@
 package com.sk89q.worldedit.fabric;
 
 import com.sk89q.worldedit.world.registry.BlockMaterial;
-import com.sk89q.worldedit.world.registry.PassthroughBlockMaterial;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.Clearable;
+import net.minecraft.world.level.EmptyBlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.PushReaction;
-
-import javax.annotation.Nullable;
 
 /**
  * Fabric block material that pulls as much info as possible from the Minecraft
  * Material, and passes the rest to another implementation, typically the
  * bundled block info.
  */
-public class FabricBlockMaterial extends PassthroughBlockMaterial {
+public class FabricBlockMaterial implements BlockMaterial {
 
     private final BlockState block;
 
-    public FabricBlockMaterial(BlockState block, @Nullable BlockMaterial secondary) {
-        super(secondary);
+    public FabricBlockMaterial(BlockState block) {
         this.block = block;
     }
 
     @Override
     public boolean isAir() {
-        return block.isAir() || super.isAir();
+        return block.isAir();
+    }
+
+    @Override
+    public boolean isFullCube() {
+        return Block.isShapeFullBlock(block.getShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO));
     }
 
     @Override
     public boolean isOpaque() {
         return block.canOcclude();
+    }
+
+    @Override
+    public boolean isPowerSource() {
+        return block.isSignalSource();
     }
 
     @Override
@@ -63,6 +74,26 @@ public class FabricBlockMaterial extends PassthroughBlockMaterial {
     }
 
     @Override
+    public float getHardness() {
+        return block.getDestroySpeed(EmptyBlockGetter.INSTANCE, BlockPos.ZERO);
+    }
+
+    @Override
+    public float getResistance() {
+        return block.getBlock().getExplosionResistance();
+    }
+
+    @Override
+    public float getSlipperiness() {
+        return block.getBlock().getFriction();
+    }
+
+    @Override
+    public int getLightValue() {
+        return block.getLightEmission();
+    }
+
+    @Override
     public boolean isFragileWhenPushed() {
         return block.getPistonPushReaction() == PushReaction.DESTROY;
     }
@@ -70,6 +101,11 @@ public class FabricBlockMaterial extends PassthroughBlockMaterial {
     @Override
     public boolean isUnpushable() {
         return block.getPistonPushReaction() == PushReaction.BLOCK;
+    }
+
+    @Override
+    public boolean isTicksRandomly() {
+        return block.isRandomlyTicking();
     }
 
     @Override
@@ -91,6 +127,17 @@ public class FabricBlockMaterial extends PassthroughBlockMaterial {
     @Override
     public boolean isReplacedDuringPlacement() {
         return block.canBeReplaced();
+    }
+
+    @Override
+    public boolean isTranslucent() {
+        return !block.canOcclude();
+    }
+
+    @Override
+    public boolean hasContainer() {
+        return block.getBlock() instanceof EntityBlock entityBlock
+                && entityBlock.newBlockEntity(BlockPos.ZERO, block) instanceof Clearable;
     }
 
 }

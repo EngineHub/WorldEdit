@@ -22,19 +22,19 @@ package com.sk89q.worldedit.command.factory;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.EditContext;
-import com.sk89q.worldedit.function.generator.ForestGenerator;
-import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.function.generator.TreeGenerator;
+import com.sk89q.worldedit.world.generation.TreeType;
 
-public final class TreeGeneratorFactory implements Contextual<ForestGenerator> {
-    private final TreeGenerator.TreeType type;
+public final class TreeGeneratorFactory implements Contextual<TreeGenerator> {
+    private final TreeType type;
 
-    public TreeGeneratorFactory(TreeGenerator.TreeType type) {
+    public TreeGeneratorFactory(TreeType type) {
         this.type = type;
     }
 
     @Override
-    public ForestGenerator createFromContext(EditContext input) {
-        return new ForestGenerator((EditSession) input.getDestination(), type);
+    public TreeGenerator createFromContext(EditContext input) {
+        return new TreeGenerator((EditSession) input.getDestination(), type);
     }
 
     @Override

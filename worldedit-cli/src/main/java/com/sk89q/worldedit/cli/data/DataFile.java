@@ -17,20 +17,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.bukkit;
+package com.sk89q.worldedit.cli.data;
 
-import com.sk89q.worldedit.util.TreeGenerator;
-import org.junit.jupiter.api.Test;
+import com.google.gson.annotations.SerializedName;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.util.List;
+import java.util.Map;
 
-public class BukkitWorldTest {
+public record DataFile(@SerializedName("itemtags") Map<String, List<String>> itemTags,
+                       @SerializedName("blocktags") Map<String, List<String>> blockTags,
+                       @SerializedName("entitytags") Map<String, List<String>> entityTags,
+                       List<String> items,
+                       List<String> entities,
+                       List<String> biomes,
+                       Map<String, BlockManifest> blocks) {
 
-    @Test
-    public void testTreeTypeMapping() {
-        for (TreeGenerator.TreeType type : TreeGenerator.TreeType.values()) {
-            assertNotNull(BukkitWorld.toBukkitTreeType(type), "No mapping for: " + type);
-        }
+    public record BlockManifest(@SerializedName("defaultstate") String defaultState, Map<String, BlockProperty> properties) {
     }
 
+    public record BlockProperty(List<String> values, String type) {
+    }
 }

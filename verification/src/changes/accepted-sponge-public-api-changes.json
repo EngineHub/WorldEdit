@@ -1,2 +1,11 @@
 {
+  "Not API": [
+    {
+      "type": "com.sk89q.worldedit.sponge.SpongeBlockMaterial",
+      "member": "Constructor com.sk89q.worldedit.sponge.SpongeBlockMaterial(net.minecraft.world.level.block.state.BlockState,com.sk89q.worldedit.world.registry.BlockMaterial)",
+      "changes": [
+        "CONSTRUCTOR_REMOVED"
+      ]
+    }
+  ]
 }

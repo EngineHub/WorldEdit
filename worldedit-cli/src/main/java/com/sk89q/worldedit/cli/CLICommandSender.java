@@ -44,8 +44,7 @@ public class CLICommandSender implements Actor {
 
     private final Logger sender;
 
-    public CLICommandSender(CLIWorldEdit app, Logger sender) {
-        checkNotNull(app);
+    public CLICommandSender(Logger sender) {
         checkNotNull(sender);
 
         this.sender = sender;

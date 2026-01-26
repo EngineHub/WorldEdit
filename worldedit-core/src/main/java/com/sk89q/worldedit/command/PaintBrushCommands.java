@@ -38,11 +38,11 @@ import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.annotation.Direction;
 import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.regions.factory.RegionFactory;
-import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.util.formatting.text.format.TextDecoration;
+import com.sk89q.worldedit.world.generation.TreeType;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.CommandManagerService;
 import org.enginehub.piston.CommandParameters;
@@ -114,7 +114,7 @@ public class PaintBrushCommands {
     public void forest(CommandParameters parameters,
                        Player player, LocalSession localSession,
                        @Arg(desc = "The type of tree to plant")
-                           TreeGenerator.TreeType type) throws WorldEditException {
+                           TreeType type) throws WorldEditException {
         setPaintBrush(parameters, player, localSession, new TreeGeneratorFactory(type));
     }
 

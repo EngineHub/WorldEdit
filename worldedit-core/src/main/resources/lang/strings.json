@@ -42,8 +42,9 @@
     "worldedit.brush.none.equip": "Brush unbound from your current item.",
     "worldedit.brush.none.equipped": "You have no brush bound to your current item. Try /brush sphere for a basic brush.",
 
+    "worldedit.replacebiome.changed": "Biomes were changed for approximately {0} blocks.",
+
     "worldedit.setbiome.changed": "Biomes were changed for approximately {0} blocks.",
-    "worldedit.setbiome.warning": "You may have to re-join your game (or close and re-open your world) to see changes.",
     "worldedit.setbiome.not-locatable": "Command sender must be present in the world to use the -p flag.",
 
     "worldedit.drawsel.disabled": "Server CUI disabled.",
@@ -166,10 +167,12 @@
     "worldedit.select.cuboid.message": "Cuboid: left click for point 1, right click for point 2",
     "worldedit.select.cuboid.description": "Select two corners of a cuboid",
     "worldedit.select.extend.message": "Cuboid: left click for a starting point, right click to extend",
-    "worldedit.select.extend.description": "Fast cuboid selection mode",
+    "worldedit.select.extend.description": "Extending cuboid selection mode",
     "worldedit.select.poly.message": "2D polygon selector: Left/right click to add a point.",
     "worldedit.select.poly.limit-message": "{0} points maximum.",
     "worldedit.select.poly.description": "Select a 2D polygon with height",
+    "worldedit.select.polyextend.message": "2D polygon selector: left click for a starting point, right click to extend",
+    "worldedit.select.polyextend.description": "Extending 2D polygonal selection mode",
     "worldedit.select.ellipsoid.message": "Ellipsoid selector: left click=center, right click to extend",
     "worldedit.select.ellipsoid.description": "Select an ellipsoid",
     "worldedit.select.sphere.message": "Sphere selector: left click=center, right click to set radius",
@@ -212,6 +215,8 @@
     "worldedit.rotate.rotated": "The clipboard copy has been rotated.",
     "worldedit.flip.flipped": "The clipboard copy has been flipped.",
     "worldedit.clearclipboard.cleared": "Clipboard cleared.",
+    "worldedit.revolve.revolved": "The selection has been pasted {0} times.",
+    "worldedit.revolve.too-few-pastes": "Paste count must be at least 2.",
 
     "worldedit.set.done": "Operation completed.",
     "worldedit.set.done.verbose": "Operation completed ({0}).",
@@ -294,6 +299,9 @@
     "worldedit.asset.load.loading": "(Please wait... loading asset.)",
     "worldedit.asset.load.still-loading": "(Please wait... still loading asset.)",
     "worldedit.asset.load.failed": "Failed to load asset",
+
+    "worldedit.registry.error.invalid-key": "Invalid registry key: {0}",
+    "worldedit.registry.searching": "(Please wait... searching registry...)",
 
     "worldedit.tool.max-block-changes": "Max blocks change limit reached.",
     "worldedit.tool.no-block": "No block in sight!",

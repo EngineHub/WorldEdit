@@ -46,7 +46,10 @@ import javax.annotation.Nullable;
  * <p>The data is read from a JSON file that is bundled with WorldEdit. If
  * reading fails (which occurs when this class is first instantiated), then
  * the methods will return {@code null}s for all items.</p>
+ *
+ * @deprecated Deprecated without replacement.
  */
+@Deprecated(forRemoval = true)
 public final class BundledItemData {
 
     private static final Logger LOGGER = LogManagerCompat.getLogger();
@@ -91,6 +94,7 @@ public final class BundledItemData {
      * @return the entry, or null
      */
     @Nullable
+    @Deprecated
     public ItemEntry findById(String id) {
         // If it has no namespace, assume minecraft.
         if (!id.contains(":")) {
@@ -104,8 +108,11 @@ public final class BundledItemData {
      *
      * @param id the string ID
      * @return the material's properties, or null
+     * @deprecated Deprecated without alternative
      */
     @Nullable
+    @Deprecated(forRemoval = true)
+    @SuppressWarnings("removal")
     public ItemMaterial getMaterialById(String id) {
         ItemEntry entry = findById(id);
         if (entry != null) {
@@ -121,6 +128,7 @@ public final class BundledItemData {
      *
      * @return the instance
      */
+    @Deprecated
     public static BundledItemData getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new BundledItemData();

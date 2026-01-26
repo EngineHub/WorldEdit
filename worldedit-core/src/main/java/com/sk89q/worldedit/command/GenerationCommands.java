@@ -32,15 +32,16 @@ import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.annotation.Radii;
 import com.sk89q.worldedit.internal.annotation.Selection;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
+import com.sk89q.worldedit.internal.util.TransformUtil;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.math.Vector3;
+import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.generation.StructureType;
+import com.sk89q.worldedit.world.generation.TreeType;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
@@ -364,45 +365,13 @@ public class GenerationCommands {
                         @Switch(name = 'r', desc = "Use the game's coordinate origin")
                             boolean useRawCoords,
                         @Switch(name = 'o', desc = "Use the placement's coordinate origin")
-                            boolean offset,
+                            boolean offsetPlacement,
                         @Switch(name = 'c', desc = "Use the selection's center as origin")
                             boolean offsetCenter) throws WorldEditException {
-
-        final Vector3 zero;
-        Vector3 unit;
-
-        if (useRawCoords) {
-            zero = Vector3.ZERO;
-            unit = Vector3.ONE;
-        } else if (offset) {
-            zero = session.getPlacementPosition(actor).toVector3();
-            unit = Vector3.ONE;
-        } else if (offsetCenter) {
-            final Vector3 min = region.getMinimumPoint().toVector3();
-            final Vector3 max = region.getMaximumPoint().toVector3();
-
-            zero = max.add(min).multiply(0.5);
-            unit = Vector3.ONE;
-        } else {
-            final Vector3 min = region.getMinimumPoint().toVector3();
-            final Vector3 max = region.getMaximumPoint().toVector3();
-
-            zero = max.add(min).multiply(0.5);
-            unit = max.subtract(zero);
-
-            if (unit.x() == 0) {
-                unit = unit.withX(1.0);
-            }
-            if (unit.y() == 0) {
-                unit = unit.withY(1.0);
-            }
-            if (unit.z() == 0) {
-                unit = unit.withZ(1.0);
-            }
-        }
+        final Transform transform = TransformUtil.createTransformForExpressionCommand(actor, session, region, useRawCoords, offsetPlacement, offsetCenter);
 
         try {
-            final int affected = editSession.makeShape(region, zero, unit, pattern, String.join(" ", expression), hollow, session.getTimeout());
+            final int affected = editSession.makeShape(region, transform, pattern, String.join(" ", expression), hollow, session.getTimeout());
             if (actor instanceof Player player) {
                 player.findFreePosition();
             }
@@ -433,44 +402,13 @@ public class GenerationCommands {
                              @Switch(name = 'r', desc = "Use the game's coordinate origin")
                                  boolean useRawCoords,
                              @Switch(name = 'o', desc = "Use the placement's coordinate origin")
-                                 boolean offset,
+                                 boolean offsetPlacement,
                              @Switch(name = 'c', desc = "Use the selection's center as origin")
                                  boolean offsetCenter) throws WorldEditException {
-        final Vector3 zero;
-        Vector3 unit;
-
-        if (useRawCoords) {
-            zero = Vector3.ZERO;
-            unit = Vector3.ONE;
-        } else if (offset) {
-            zero = session.getPlacementPosition(actor).toVector3();
-            unit = Vector3.ONE;
-        } else if (offsetCenter) {
-            final Vector3 min = region.getMinimumPoint().toVector3();
-            final Vector3 max = region.getMaximumPoint().toVector3();
-
-            zero = max.add(min).multiply(0.5);
-            unit = Vector3.ONE;
-        } else {
-            final Vector3 min = region.getMinimumPoint().toVector3();
-            final Vector3 max = region.getMaximumPoint().toVector3();
-
-            zero = max.add(min).multiply(0.5);
-            unit = max.subtract(zero);
-
-            if (unit.x() == 0) {
-                unit = unit.withX(1.0);
-            }
-            if (unit.y() == 0) {
-                unit = unit.withY(1.0);
-            }
-            if (unit.z() == 0) {
-                unit = unit.withZ(1.0);
-            }
-        }
+        final Transform transform = TransformUtil.createTransformForExpressionCommand(actor, session, region, useRawCoords, offsetPlacement, offsetCenter);
 
         try {
-            final int affected = editSession.makeBiomeShape(region, zero, unit, target, String.join(" ", expression), hollow, session.getTimeout());
+            final int affected = editSession.makeBiomeShape(region, transform, target, String.join(" ", expression), hollow, session.getTimeout());
             actor.printInfo(TranslatableComponent.of("worldedit.generatebiome.changed", TextComponent.of(affected)));
             return affected;
         } catch (ExpressionException e) {

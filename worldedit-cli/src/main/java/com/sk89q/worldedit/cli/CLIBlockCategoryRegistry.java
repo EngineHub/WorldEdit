@@ -30,7 +30,7 @@ public class CLIBlockCategoryRegistry implements BlockCategoryRegistry {
 
     @Override
     public Set<BlockType> getCategorisedByName(String category) {
-        return CLIWorldEdit.inst.getFileRegistries().getDataFile().blocktags.getOrDefault(category, Collections.emptyList()).stream()
+        return CLIWorldEdit.inst.getFileRegistries().getDataFile().blockTags().getOrDefault(category, Collections.emptyList()).stream()
                 .map(BlockType.REGISTRY::get)
                 .collect(Collectors.toSet());
     }

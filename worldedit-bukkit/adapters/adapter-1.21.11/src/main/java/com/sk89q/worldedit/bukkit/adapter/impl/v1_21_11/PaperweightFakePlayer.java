@@ -44,7 +44,7 @@ class PaperweightFakePlayer extends ServerPlayer {
     );
     private static final Vec3 ORIGIN = new Vec3(0.0D, 0.0D, 0.0D);
     private static final ClientInformation FAKE_CLIENT_INFO = new ClientInformation(
-        "en_US", 16, ChatVisiblity.FULL, true, 0, HumanoidArm.LEFT, false, false, ParticleStatus.MINIMAL
+            "en_US", 16, ChatVisiblity.FULL, true, 0, HumanoidArm.LEFT, false, false, ParticleStatus.MINIMAL
     );
 
     PaperweightFakePlayer(ServerLevel world) {

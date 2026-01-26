@@ -51,7 +51,6 @@ import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
-import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.io.file.SafeFiles;
 import com.sk89q.worldedit.world.AbstractWorld;
@@ -70,8 +69,8 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.features.EndFeatures;
-import net.minecraft.data.worldgen.features.TreeFeatures;
+import net.minecraft.data.worldgen.placement.EndPlacements;
+import net.minecraft.data.worldgen.placement.TreePlacements;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerChunkCache;
@@ -100,6 +99,7 @@ import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
@@ -422,57 +422,71 @@ public class NeoForgeWorld extends AbstractWorld {
         return chunkLoadings;
     }
 
+    @SuppressWarnings("deprecation")
     @Nullable
-    private static ResourceKey<ConfiguredFeature<?, ?>> createTreeFeatureGenerator(TreeType type) {
+    private static ResourceKey<PlacedFeature> createTreeFeatureGenerator(com.sk89q.worldedit.util.TreeGenerator.TreeType type) {
         return switch (type) {
-            case TREE -> TreeFeatures.OAK;
-            case BIG_TREE -> TreeFeatures.FANCY_OAK;
-            case REDWOOD -> TreeFeatures.SPRUCE;
-            case TALL_REDWOOD -> TreeFeatures.MEGA_SPRUCE;
-            case MEGA_REDWOOD -> TreeFeatures.MEGA_PINE;
-            case BIRCH -> TreeFeatures.BIRCH;
-            case JUNGLE -> TreeFeatures.MEGA_JUNGLE_TREE;
-            case SMALL_JUNGLE -> TreeFeatures.JUNGLE_TREE;
-            case SHORT_JUNGLE -> TreeFeatures.JUNGLE_TREE_NO_VINE;
-            case JUNGLE_BUSH -> TreeFeatures.JUNGLE_BUSH;
-            case SWAMP -> TreeFeatures.SWAMP_OAK;
-            case ACACIA -> TreeFeatures.ACACIA;
-            case DARK_OAK -> TreeFeatures.DARK_OAK;
-            case TALL_BIRCH -> TreeFeatures.SUPER_BIRCH_BEES_0002;
-            case RED_MUSHROOM -> TreeFeatures.HUGE_RED_MUSHROOM;
-            case BROWN_MUSHROOM -> TreeFeatures.HUGE_BROWN_MUSHROOM;
-            case WARPED_FUNGUS -> TreeFeatures.WARPED_FUNGUS;
-            case CRIMSON_FUNGUS -> TreeFeatures.CRIMSON_FUNGUS;
-            case CHORUS_PLANT -> EndFeatures.CHORUS_PLANT;
-            case MANGROVE -> TreeFeatures.MANGROVE;
-            case TALL_MANGROVE -> TreeFeatures.TALL_MANGROVE;
-            case CHERRY -> TreeFeatures.CHERRY;
-            case PALE_OAK -> TreeFeatures.PALE_OAK;
-            case PALE_OAK_CREAKING -> TreeFeatures.PALE_OAK_CREAKING;
+            // Based off of the SaplingGenerator class, as well as uses of DefaultBiomeFeatures fields
+            case TREE -> TreePlacements.OAK_CHECKED;
+            case BIG_TREE -> TreePlacements.FANCY_OAK_CHECKED;
+            case REDWOOD -> TreePlacements.SPRUCE_CHECKED;
+            case TALL_REDWOOD -> TreePlacements.MEGA_SPRUCE_CHECKED;
+            case MEGA_REDWOOD -> TreePlacements.MEGA_PINE_CHECKED;
+            case BIRCH -> TreePlacements.BIRCH_CHECKED;
+            case JUNGLE -> TreePlacements.MEGA_JUNGLE_TREE_CHECKED;
+            case SMALL_JUNGLE -> TreePlacements.JUNGLE_TREE_CHECKED;
+            case SHORT_JUNGLE -> TreePlacements.JUNGLE_TREE_CHECKED;
+            case JUNGLE_BUSH -> TreePlacements.JUNGLE_BUSH;
+            case SWAMP -> TreePlacements.OAK_CHECKED;
+            case ACACIA -> TreePlacements.ACACIA_CHECKED;
+            case DARK_OAK -> TreePlacements.DARK_OAK_CHECKED;
+            case TALL_BIRCH -> TreePlacements.SUPER_BIRCH_BEES_0002;
+            case WARPED_FUNGUS -> TreePlacements.WARPED_FUNGI;
+            case CRIMSON_FUNGUS -> TreePlacements.CRIMSON_FUNGI;
+            case CHORUS_PLANT -> EndPlacements.CHORUS_PLANT;
+            case MANGROVE -> TreePlacements.MANGROVE_CHECKED;
+            case TALL_MANGROVE -> TreePlacements.TALL_MANGROVE_CHECKED;
+            case CHERRY -> TreePlacements.CHERRY_CHECKED;
+            case PALE_OAK -> TreePlacements.PALE_OAK_CHECKED;
+            case PALE_OAK_CREAKING -> TreePlacements.PALE_OAK_CREAKING_CHECKED;
             case RANDOM -> {
                 // We're intentionally using index here to get a random tree type
                 @SuppressWarnings("EnumOrdinal")
-                TreeType randomTreeType = TreeType.values()[ThreadLocalRandom.current().nextInt(TreeType.values().length)];
+                com.sk89q.worldedit.util.TreeGenerator.TreeType randomTreeType = com.sk89q.worldedit.util.TreeGenerator.TreeType.values()[ThreadLocalRandom.current().nextInt(com.sk89q.worldedit.util.TreeGenerator.TreeType.values().length)];
                 yield createTreeFeatureGenerator(randomTreeType);
             }
             default -> null;
         };
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    public boolean generateTree(TreeType type, EditSession editSession, BlockVector3 position) throws MaxChangedBlocksException {
+    public boolean generateTree(com.sk89q.worldedit.util.TreeGenerator.TreeType type, EditSession editSession, BlockVector3 position) throws MaxChangedBlocksException {
         ServerLevel world = getWorld();
-        ConfiguredFeature<?, ?> generator = Optional.ofNullable(createTreeFeatureGenerator(type))
-            .flatMap(k -> world.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).getOptional(k))
-            .orElse(null);
+        PlacedFeature generator = Optional.ofNullable(createTreeFeatureGenerator(type))
+                .map(k -> world.registryAccess().lookupOrThrow(Registries.PLACED_FEATURE).getValue(k))
+                .orElse(null);
         ServerChunkCache chunkManager = world.getChunkSource();
-        if (type == TreeType.CHORUS_PLANT) {
+        if (type == com.sk89q.worldedit.util.TreeGenerator.TreeType.CHORUS_PLANT) {
             position = position.add(0, 1, 0);
         }
-        try (NeoForgeServerLevelDelegateProxy.LevelAndProxy levelProxy =
-                 NeoForgeServerLevelDelegateProxy.newInstance(editSession, world)) {
+        try (NeoForgeServerLevelDelegateProxy.LevelAndProxy proxyLevel = NeoForgeServerLevelDelegateProxy.newInstance(editSession, world)) {
             return generator != null && generator.place(
-                levelProxy.level(), chunkManager.getGenerator(), random, NeoForgeAdapter.toBlockPos(position)
+                    proxyLevel.level(), chunkManager.getGenerator(), random,
+                    NeoForgeAdapter.toBlockPos(position)
+            );
+        }
+    }
+
+    @Override
+    public boolean generateTree(com.sk89q.worldedit.world.generation.TreeType type, EditSession editSession, BlockVector3 position) throws MaxChangedBlocksException {
+        ServerLevel world = getWorld();
+        PlacedFeature generator = world.registryAccess().lookupOrThrow(Registries.PLACED_FEATURE).getValue(Identifier.tryParse(type.id()));
+        ServerChunkCache chunkManager = world.getChunkSource();
+        try (NeoForgeServerLevelDelegateProxy.LevelAndProxy proxyLevel = NeoForgeServerLevelDelegateProxy.newInstance(editSession, world)) {
+            return generator != null && generator.place(
+                    proxyLevel.level(), chunkManager.getGenerator(), random,
+                    NeoForgeAdapter.toBlockPos(position)
             );
         }
     }
@@ -565,13 +579,6 @@ public class NeoForgeWorld extends AbstractWorld {
                 return null;
             });
         }
-    }
-
-    @Override
-    public boolean playEffect(Vector3 position, int type, int data) {
-        // TODO update sound API
-        // getWorld().play(type, NeoForgeAdapter.toBlockPos(position.toBlockPoint()), data);
-        return true;
     }
 
     @Override

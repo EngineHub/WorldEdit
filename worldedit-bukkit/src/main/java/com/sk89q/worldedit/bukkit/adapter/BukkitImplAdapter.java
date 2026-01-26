@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.bukkit.adapter;
 
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
@@ -40,7 +41,9 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.generation.StructureType;
+import com.sk89q.worldedit.world.generation.TreeType;
 import com.sk89q.worldedit.world.item.ItemType;
+import com.sk89q.worldedit.world.registry.BlockMaterial;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.data.BlockData;
@@ -148,6 +151,15 @@ public interface BukkitImplAdapter {
      * @return The name
      */
     Component getRichItemName(BaseItemStack itemStack);
+
+    /**
+     * Gets the block material for the given block type.
+     *
+     * @param blockType the block type
+     * @return the material
+     */
+    @Nullable
+    BlockMaterial getBlockMaterial(BlockType blockType);
 
     /**
      * Get a map of {@code string -> property}.
@@ -273,6 +285,19 @@ public interface BukkitImplAdapter {
      */
     default BiomeType getBiome(Location location) {
         throw new UnsupportedOperationException("This adapter does not support custom biomes.");
+    }
+
+    /**
+     * Generates a Minecraft tree at the given location.
+     *
+     * @param treeType The tree
+     * @param world The world
+     * @param session The EditSession
+     * @param pt The location
+     * @return If it succeeded
+     */
+    default boolean generateTree(TreeType treeType, World world, EditSession session, BlockVector3 pt) throws MaxChangedBlocksException {
+        throw new UnsupportedOperationException("This adapter does not support generating features.");
     }
 
     /**

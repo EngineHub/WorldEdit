@@ -69,7 +69,7 @@ public class BlockDataCyler implements DoubleActionBlockTool {
             return true;
         }
 
-        if (block.getStates().keySet().isEmpty()) {
+        if (block.getStates().isEmpty()) {
             player.printError(TranslatableComponent.of("worldedit.tool.data-cycler.cant-cycle"));
         } else {
             Property<?> currentProperty = selectedProperties.get(player.getUniqueId());
@@ -81,11 +81,11 @@ public class BlockDataCyler implements DoubleActionBlockTool {
 
             if (forward) {
                 block.getState(currentProperty);
-                int index = currentProperty.getValues().indexOf(block.getState(currentProperty));
-                index = (index + 1) % currentProperty.getValues().size();
+                int index = currentProperty.values().indexOf(block.getState(currentProperty));
+                index = (index + 1) % currentProperty.values().size();
                 @SuppressWarnings("unchecked")
                 Property<Object> objProp = (Property<Object>) currentProperty;
-                BaseBlock newBlock = block.with(objProp, currentProperty.getValues().get(index));
+                BaseBlock newBlock = block.with(objProp, currentProperty.values().get(index));
 
                 try (EditSession editSession = BlockTool.createEditSession(player, session, clicked)) {
                     editSession.disableBuffering();
@@ -94,8 +94,8 @@ public class BlockDataCyler implements DoubleActionBlockTool {
                         editSession.setBlock(blockPoint, newBlock);
                         player.printInfo(TranslatableComponent.of(
                                 "worldedit.tool.data-cycler.new-value",
-                                TextComponent.of(currentProperty.getName()),
-                                TextComponent.of(String.valueOf(currentProperty.getValues().get(index)))
+                                TextComponent.of(currentProperty.name()),
+                                TextComponent.of(String.valueOf(currentProperty.values().get(index)))
                         ));
                     } catch (MaxChangedBlocksException e) {
                         player.printError(TranslatableComponent.of("worldedit.tool.max-block-changes"));
@@ -109,7 +109,7 @@ public class BlockDataCyler implements DoubleActionBlockTool {
                 index = (index + 1) % properties.size();
                 currentProperty = properties.get(index);
                 selectedProperties.put(player.getUniqueId(), currentProperty);
-                player.printInfo(TranslatableComponent.of("worldedit.tool.data-cycler.cycling", TextComponent.of(currentProperty.getName())));
+                player.printInfo(TranslatableComponent.of("worldedit.tool.data-cycler.cycling", TextComponent.of(currentProperty.name())));
             }
         }
 

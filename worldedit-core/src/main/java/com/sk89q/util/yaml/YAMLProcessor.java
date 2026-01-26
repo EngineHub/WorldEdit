@@ -19,8 +19,11 @@
 
 package com.sk89q.util.yaml;
 
+import com.google.errorprone.annotations.InlineMe;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
+import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -30,13 +33,15 @@ import org.yaml.snakeyaml.reader.UnicodeReader;
 import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -73,10 +78,11 @@ import java.util.Map.Entry;
  */
 public class YAMLProcessor extends YAMLNode {
 
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
     public static final String LINE_BREAK = DumperOptions.LineBreak.getPlatformLineBreak().getString();
     public static final char COMMENT_CHAR = '#';
     protected final Yaml yaml;
-    protected final File file;
+    protected final Path path;
     protected String header = null;
     protected YAMLFormat format;
 
@@ -87,7 +93,7 @@ public class YAMLProcessor extends YAMLNode {
      */
     private final Map<String, String> comments = new HashMap<>();
 
-    public YAMLProcessor(File file, boolean writeDefaults, YAMLFormat format) {
+    public YAMLProcessor(Path path, boolean writeDefaults, YAMLFormat format) {
         super(new LinkedHashMap<>(), writeDefaults);
         this.format = format;
 
@@ -109,11 +115,33 @@ public class YAMLProcessor extends YAMLNode {
 
         yaml = new Yaml(new SafeConstructor(loaderOptions), representer, dumperOptions, loaderOptions);
 
-        this.file = file;
+        this.path = path;
     }
 
+    /**
+     * Create a new YAML processor.
+     *
+     * @deprecated Use {@link #YAMLProcessor(Path, boolean, YAMLFormat)} instead.
+     */
+    @InlineMe(replacement = "this(file.toPath(), writeDefaults, format)")
+    @Deprecated
+    public YAMLProcessor(File file, boolean writeDefaults, YAMLFormat format) {
+        this(file.toPath(), writeDefaults, format);
+    }
+
+    public YAMLProcessor(Path path, boolean writeDefaults) {
+        this(path, writeDefaults, YAMLFormat.COMPACT);
+    }
+
+    /**
+     * Create a new YAML processor.
+     *
+     * @deprecated Use {@link #YAMLProcessor(Path, boolean)} instead.
+     */
+    @InlineMe(replacement = "this(file.toPath(), writeDefaults, YAMLFormat.COMPACT)", imports = "com.sk89q.util.yaml.YAMLFormat")
+    @Deprecated
     public YAMLProcessor(File file, boolean writeDefaults) {
-        this(file, writeDefaults, YAMLFormat.COMPACT);
+        this(file.toPath(), writeDefaults, YAMLFormat.COMPACT);
     }
 
     /**
@@ -178,10 +206,13 @@ public class YAMLProcessor extends YAMLNode {
      * @return true if it was successful
      */
     public boolean save() {
-
-        File parent = file.getParentFile();
+        Path parent = path.getParent();
         if (parent != null) {
-            parent.mkdirs();
+            try {
+                Files.createDirectories(parent);
+            } catch (IOException e) {
+                LOGGER.warn("Exception while saving yaml file to " + path, e);
+            }
         }
         try (OutputStream stream = getOutputStream()) {
             if (stream == null) {
@@ -211,7 +242,7 @@ public class YAMLProcessor extends YAMLNode {
             }
             return true;
         } catch (IOException e) {
-            WorldEdit.logger.warn("Could not save YAML configuration to " + file.getAbsolutePath(), e);
+            WorldEdit.logger.warn("Could not save YAML configuration to " + path.toAbsolutePath(), e);
         }
 
         return false;
@@ -231,11 +262,19 @@ public class YAMLProcessor extends YAMLNode {
     }
 
     public InputStream getInputStream() throws IOException {
-        return new FileInputStream(file);
+        try {
+            return Files.newInputStream(path);
+        } catch (NoSuchFileException e) {
+            throw new FileNotFoundException(e.getMessage());
+        }
     }
 
     public OutputStream getOutputStream() throws IOException {
-        return new FileOutputStream(file);
+        try {
+            return Files.newOutputStream(path);
+        } catch (NoSuchFileException e) {
+            throw new FileNotFoundException(e.getMessage());
+        }
     }
 
     /**

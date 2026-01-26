@@ -22,17 +22,13 @@ package com.sk89q.worldedit.registry.state;
 import java.util.List;
 import javax.annotation.Nullable;
 
-public class EnumProperty extends AbstractProperty<String> {
-
-    public EnumProperty(final String name, final List<String> values) {
-        super(name, values);
-    }
+public record EnumProperty(String name, List<String> values) implements Property<String> {
 
     @Nullable
     @Override
     public String getValueFor(String string) {
-        if (!getValues().contains(string)) {
-            throw new IllegalArgumentException("Invalid value: " + string + ". Must be in " + getValues().toString());
+        if (!values().contains(string)) {
+            throw new IllegalArgumentException("Invalid value: " + string + ". Must be in " + values());
         }
         return string;
     }

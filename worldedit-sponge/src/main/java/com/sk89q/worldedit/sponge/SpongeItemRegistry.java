@@ -31,6 +31,7 @@ import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.registry.RegistryTypes;
 
+@SuppressWarnings("removal")
 public class SpongeItemRegistry extends BundledItemRegistry {
 
     @Override

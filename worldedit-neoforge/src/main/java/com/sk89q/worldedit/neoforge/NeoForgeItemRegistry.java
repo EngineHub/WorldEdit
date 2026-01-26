@@ -28,6 +28,7 @@ import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.BundledItemRegistry;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
+@SuppressWarnings("removal")
 public class NeoForgeItemRegistry extends BundledItemRegistry {
 
     @Override

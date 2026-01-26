@@ -1,2 +1,20 @@
 {
+  "Removal of constructor in non-API class": [
+    {
+      "type": "com.sk89q.worldedit.fabric.FabricBlockMaterial",
+      "member": "Constructor com.sk89q.worldedit.fabric.FabricBlockMaterial(net.minecraft.class_2680,com.sk89q.worldedit.world.registry.BlockMaterial)",
+      "changes": [
+        "CONSTRUCTOR_REMOVED"
+      ]
+    }
+  ],
+  "Removal of override": [
+    {
+      "type": "com.sk89q.worldedit.fabric.FabricWorld",
+      "member": "Method com.sk89q.worldedit.fabric.FabricWorld.playEffect(com.sk89q.worldedit.math.Vector3,int,int)",
+      "changes": [
+        "METHOD_REMOVED"
+      ]
+    }
+  ]
 }

@@ -22,6 +22,7 @@ package com.sk89q.worldedit.world.registry;
 import com.sk89q.worldedit.internal.util.DeprecationUtil;
 import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
 
+@Deprecated(forRemoval = true)
 public interface ItemMaterial {
     /**
      * Gets the the maximum quantity of this item that can be in a single stack.
@@ -38,7 +39,9 @@ public interface ItemMaterial {
      * Gets the the maximum quantity of this item that can be in a single stack.
      *
      * @return the maximum quantity
+     * @deprecated Deprecated with no alternative
      */
+    @Deprecated(forRemoval = true)
     @NonAbstractForCompatibility(delegateName = "getMaxStackSize", delegateParams = {})
     default int maxStackSize() {
         DeprecationUtil.checkDelegatingOverride(getClass());
@@ -60,7 +63,9 @@ public interface ItemMaterial {
      * Gets the the maximum damage this item can take before being broken.
      *
      * @return the maximum damage, or 0 if not applicable
+     * @deprecated Deprecated with no alternative
      */
+    @Deprecated(forRemoval = true)
     @NonAbstractForCompatibility(delegateName = "getMaxDamage", delegateParams = {})
     default int maxDamage() {
         DeprecationUtil.checkDelegatingOverride(getClass());

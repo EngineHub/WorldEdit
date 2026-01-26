@@ -32,6 +32,7 @@ import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.block.BlockReplace;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
@@ -60,6 +61,7 @@ import java.util.List;
 
 import static com.sk89q.worldedit.command.util.Logging.LogMode.PLACEMENT;
 import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
+import static com.sk89q.worldedit.internal.command.CommandUtil.checkCommandArgument;
 
 /**
  * Clipboard commands.
@@ -267,5 +269,77 @@ public class ClipboardCommands {
     public void clearClipboard(Actor actor, LocalSession session) {
         session.setClipboard(null);
         actor.printInfo(TranslatableComponent.of("worldedit.clearclipboard.cleared"));
+    }
+
+
+    @Command(
+        name = "/revolve",
+        desc = "Revolve the selection around a vertical axis"
+    )
+    @CommandPermissions("worldedit.revolve")
+    void revolve(Actor actor, LocalSession session, EditSession editSession, @Selection Region region,
+                 @Arg(desc = "The number of pastes")
+                    int pasteCount,
+                 @ArgFlag(name = 'm', desc = "Set the source mask, non-matching blocks are not revolved")
+                    Mask mask,
+                 @Switch(name = 'r', desc = "Perform revolutions in reverse (counter-clockwise)")
+                    boolean reverse,
+                 @Switch(name = 'e', desc = "Copy entities")
+                    boolean copyEntities,
+                 @Switch(name = 'b', desc = "Copy biomes")
+                    boolean copyBiomes) throws WorldEditException {
+        checkRegionBounds(region, session);
+        checkCommandArgument(pasteCount >= 2, TranslatableComponent.of("worldedit.revolve.too-few-pastes"));
+
+        BlockVector3 pasteOrigin = session.getPlacementPosition(actor);
+
+        // Copy the selection into a clipboard
+        BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
+        clipboard.setOrigin(pasteOrigin);
+        ForwardExtentCopy copy = new ForwardExtentCopy(editSession, region, clipboard, region.getMinimumPoint());
+        copy.setCopyingEntities(copyEntities);
+        copy.setCopyingBiomes(copyBiomes);
+
+        if (mask != null) {
+            copy.setSourceMask(mask);
+        }
+        Operations.complete(copy);
+
+        ClipboardHolder holder = new ClipboardHolder(clipboard);
+        // Offset this by half a block to ensure rotations are aligned properly
+        AffineTransform offsetTransform = new AffineTransform().translate(0.5, 0.5, 0.5);
+
+        // Entities can't be offset like blocks, so we need a separate transform. Ideally can be fixed in WE8 by always
+        // offsetting block stuff in ExtentBlockCopy so we don't need the above to be offset.
+        AffineTransform entityTransform = copyEntities ? new AffineTransform() : null;
+
+        // Now paste it multiple times, rotating each time
+        for (int i = 1; i < pasteCount; i++) {
+            double theta = (reverse ? 1 : -1) * (360 * i) / (double) pasteCount;
+            holder.setTransform(offsetTransform.rotateY(theta));
+
+            Operation operation = holder
+                    .createPaste(editSession)
+                    .ignoreAirBlocks(true)
+                    .copyEntities(false)
+                    .copyBiomes(copyBiomes)
+                    .to(pasteOrigin)
+                    .build();
+            Operations.complete(operation);
+
+            if (copyEntities) {
+                // Paste entities separately with correct transform
+                holder.setTransform(entityTransform.rotateY(theta));
+                Operation entityOperation = holder
+                        .createPaste(editSession)
+                        .maskSource(Masks.negate(Masks.alwaysTrue()))
+                        .copyEntities(true)
+                        .to(pasteOrigin)
+                        .build();
+                Operations.complete(entityOperation);
+            }
+        }
+
+        actor.printInfo(TranslatableComponent.of("worldedit.revolve.revolved", TextComponent.of(pasteCount)));
     }
 }

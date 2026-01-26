@@ -50,7 +50,6 @@ public class SideEffectExtent extends AbstractDelegateExtent {
 
     private final World world;
     private final Map<BlockVector3, BlockState> positions = BlockMap.create();
-    private final Set<BlockVector2> dirtyChunks = new HashSet<>();
     private final Set<BlockVector2> dirtyBiomes = new HashSet<>();
     private SideEffectSet sideEffectSet = SideEffectSet.defaults();
     private boolean postEditSimulation;
@@ -89,9 +88,6 @@ public class SideEffectExtent extends AbstractDelegateExtent {
 
     @Override
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 location, B block) throws WorldEditException {
-        if (sideEffectSet.getState(SideEffect.LIGHTING) == SideEffect.State.DELAYED) {
-            dirtyChunks.add(BlockVector2.at(location.x() >> 4, location.z() >> 4));
-        }
         if (postEditSimulation) {
             positions.put(location, world.getBlock(location));
         }
@@ -106,7 +102,7 @@ public class SideEffectExtent extends AbstractDelegateExtent {
     }
 
     public boolean commitRequired() {
-        return postEditSimulation || !dirtyChunks.isEmpty() || !dirtyBiomes.isEmpty();
+        return postEditSimulation || !dirtyBiomes.isEmpty();
     }
 
     @Override
@@ -117,10 +113,6 @@ public class SideEffectExtent extends AbstractDelegateExtent {
         return new Operation() {
             @Override
             public Operation resume(RunContext run) throws WorldEditException {
-                if (!dirtyChunks.isEmpty()) {
-                    world.fixAfterFastMode(dirtyChunks);
-                }
-
                 if (!dirtyBiomes.isEmpty()) {
                     world.sendBiomeUpdates(dirtyBiomes);
                 }
