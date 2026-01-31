@@ -25,6 +25,7 @@ import com.sk89q.worldedit.cli.data.DataFile;
 import com.sk89q.worldedit.cli.data.FileRegistries;
 import com.sk89q.worldedit.cli.schematic.ClipboardWorld;
 import com.sk89q.worldedit.event.platform.CommandEvent;
+import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.event.platform.PlatformsRegisteredEvent;
 import com.sk89q.worldedit.extension.input.InputParseException;
@@ -204,6 +205,7 @@ public class CLIWorldEdit {
         setupRegistries();
 
         config.load();
+        WorldEdit.getInstance().getEventBus().post(new ConfigurationLoadEvent(config));
 
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent(platform));
     }

@@ -23,6 +23,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.util.PermissionCondition;
+import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.event.platform.PlatformUnreadyEvent;
 import com.sk89q.worldedit.event.platform.PlatformsRegisteredEvent;
@@ -336,6 +337,7 @@ public class FabricWorldEdit implements ModInitializer {
         setupRegistries(minecraftServer);
 
         config.load();
+        WorldEdit.getInstance().getEventBus().post(new ConfigurationLoadEvent(config));
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent(platform));
     }
 
