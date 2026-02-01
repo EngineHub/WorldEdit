@@ -2481,8 +2481,8 @@ public class EditSession implements Extent, AutoCloseable {
 
                 try {
                     int[] legacy = LegacyMapper.getInstance().getLegacyFromBlock(defaultMaterial.toImmutableState());
-                    int typeVar = 0;
-                    int dataVar = 0;
+                    int typeVar = -1;
+                    int dataVar = -1;
                     if (legacy != null) {
                         typeVar = legacy[0];
                         if (legacy.length > 1) {
