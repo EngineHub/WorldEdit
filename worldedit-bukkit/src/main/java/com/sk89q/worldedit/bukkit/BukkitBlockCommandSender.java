@@ -151,6 +151,25 @@ public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
 
             @Override
             public boolean isActive() {
+                if (WorldEditPlugin.getInstance().isFolia()) {
+                    // On Folia, we need to perform the update on the thread that owns the block.
+                    if (Bukkit.isOwnedByCurrentRegion(sender.getBlock())) {
+                        // This thread owns the block, so we can immediately update.
+                        updateActive();
+                    } else {
+                        // We need to delegate to the right thread.
+                        Bukkit.getRegionScheduler().execute(plugin, sender.getBlock().getLocation(), () -> {
+                            try {
+                                updateActive();
+                            } catch (Throwable t) {
+                                WorldEdit.logger.warn("Exception while updating command block sender active state", t);
+                            }
+                        });
+                    }
+
+                    return active;
+                }
+
                 if (Bukkit.isPrimaryThread()) {
                     // we can update eagerly
                     updateActive();
@@ -159,14 +178,14 @@ public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
                     // Suppress FutureReturnValueIgnored: We handle it in the block.
                     @SuppressWarnings({"FutureReturnValueIgnored", "unused"})
                     var unused = Bukkit.getScheduler().callSyncMethod(plugin,
-                        () -> {
-                            try {
-                                updateActive();
-                            } catch (Throwable t) {
-                                WorldEdit.logger.warn("Exception while updating command block sender active state", t);
-                            }
-                            return null;
-                        });
+                            () -> {
+                                try {
+                                    updateActive();
+                                } catch (Throwable t) {
+                                    WorldEdit.logger.warn("Exception while updating command block sender active state", t);
+                                }
+                                return null;
+                            });
                 }
                 return active;
             }
