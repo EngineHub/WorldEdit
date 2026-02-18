@@ -24,7 +24,6 @@ package com.sk89q.worldedit.bukkit;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.SessionIdleEvent;
-import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.event.InteractionDebouncer;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
@@ -35,15 +34,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerCommandSendEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import org.enginehub.piston.CommandManager;
-import org.enginehub.piston.inject.InjectedValueStore;
-import org.enginehub.piston.inject.Key;
-import org.enginehub.piston.inject.MapBackedValueStore;
 
 import java.util.Optional;
 
@@ -73,20 +67,6 @@ public class WorldEditListener implements Listener {
 
         // this will automatically refresh their session, we don't have to do anything
         WorldEdit.getInstance().getSessionManager().get(plugin.wrapPlayer(event.getPlayer()));
-    }
-
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onPlayerCommandSend(PlayerCommandSendEvent event) {
-        InjectedValueStore store = MapBackedValueStore.create();
-        store.injectValue(Key.of(Actor.class), context ->
-            Optional.of(plugin.wrapCommandSender(event.getPlayer())));
-        CommandManager commandManager = plugin.getWorldEdit().getPlatformManager().getPlatformCommandManager().getCommandManager();
-        event.getCommands().removeIf(name ->
-            // remove if in the manager and not satisfied
-            commandManager.getCommand(name)
-                .filter(command -> !command.getCondition().satisfied(store))
-                .isPresent()
-        );
     }
 
     /**
