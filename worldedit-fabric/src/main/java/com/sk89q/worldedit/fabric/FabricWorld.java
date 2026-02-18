@@ -253,7 +253,7 @@ public class FabricWorld extends AbstractWorld {
         // Screw it, we know it's really mutable...
         var biomeArray = (PalettedContainer<Holder<Biome>>) chunk.getSection(chunk.getSectionIndex(position.y())).getBiomes();
         biomeArray.getAndSetUnchecked(
-            position.x() & 3, position.y() & 3, position.z() & 3,
+            (position.x() >> 2) & 3, (position.y() >> 2) & 3, (position.z() >> 2) & 3,
             getWorld().registryAccess().lookup(Registries.BIOME)
                 .orElseThrow()
                 .getOrThrow(ResourceKey.create(Registries.BIOME, Identifier.parse(biome.id())))
