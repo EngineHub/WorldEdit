@@ -243,7 +243,7 @@ public class NeoForgeWorld extends AbstractWorld {
         LevelChunk chunk = getWorld().getChunk(position.x() >> 4, position.z() >> 4);
         var biomes = (PalettedContainer<Holder<Biome>>) chunk.getSection(chunk.getSectionIndex(position.y())).getBiomes();
         biomes.getAndSetUnchecked(
-            position.x() & 3, position.y() & 3, position.z() & 3,
+            (position.x() >> 2) & 3, (position.y() >> 2) & 3, (position.z() >> 2) & 3,
             getWorld().registryAccess().lookupOrThrow(Registries.BIOME)
                 .getOrThrow(ResourceKey.create(Registries.BIOME, Identifier.parse(biome.id())))
         );
