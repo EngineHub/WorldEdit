@@ -534,6 +534,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             }
         } catch (Throwable t) {
             // Ignore, this likely means an outdated version.
+            LOGGER.warn("Failed to check if server is running Folia", t);
         }
 
         return false;
