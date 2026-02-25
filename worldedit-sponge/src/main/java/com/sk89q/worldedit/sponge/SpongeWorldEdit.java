@@ -215,10 +215,10 @@ public class SpongeWorldEdit {
         //            }
         //        });
 
-        event.game().registry(RegistryTypes.PLACED_FEATURE).streamEntries().forEach(feature -> {
+        RegistryTypes.PLACED_FEATURE.get().streamEntries().forEach(feature -> {
             String id = feature.key().asString();
             var underlyingFeatureType = feature.value().feature().type();
-            if (underlyingFeatureType.equals(FeatureTypes.TREE) || underlyingFeatureType.equals(FeatureTypes.FALLEN_TREE) || underlyingFeatureType.equals(FeatureTypes.CORAL_TREE)) {
+            if (underlyingFeatureType.equals(FeatureTypes.TREE.get()) || underlyingFeatureType.equals(FeatureTypes.FALLEN_TREE.get()) || underlyingFeatureType.equals(FeatureTypes.CORAL_TREE.get())) {
                 if (!TreeType.REGISTRY.keySet().contains(id)) {
                     TreeType.REGISTRY.register(id, new TreeType(id));
                 }
@@ -236,7 +236,7 @@ public class SpongeWorldEdit {
                 ItemCategory.REGISTRY.register(id, new ItemCategory(id));
             }
         });
-        event.game().registry(RegistryTypes.BIOME).tags().forEach(biomeTag -> {
+        RegistryTypes.BIOME.get().tags().forEach(biomeTag -> {
             String id = biomeTag.key().asString();
             if (!BiomeCategory.REGISTRY.keySet().contains(id)) {
                 BiomeCategory.REGISTRY.register(id, new BiomeCategory(id, () -> event.game().registry(RegistryTypes.BIOME).taggedValues(biomeTag).map(SpongeAdapter::adapt).collect(Collectors.toSet())));
