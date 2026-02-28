@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.command;
 
-import com.google.common.collect.Collections2;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -45,7 +44,6 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
-import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
@@ -57,14 +55,11 @@ import com.sk89q.worldedit.world.generation.TreeType;
 import com.sk89q.worldedit.world.item.ItemType;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.CommandManagerService;
-import org.enginehub.piston.CommandMetadata;
-import org.enginehub.piston.CommandParameters;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
 import org.enginehub.piston.part.SubCommandPart;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -88,56 +83,19 @@ public class ToolCommands {
             new ToolCommands(worldEdit)
         );
 
-        // Register deprecated global commands
-        Set<org.enginehub.piston.Command> commands = collect.getAllCommands()
-            .collect(Collectors.toSet());
-        for (org.enginehub.piston.Command command : commands) {
-            if (command.getAliases().contains("unbind")) {
-                // Don't register new /tool <whatever> alias
-                command = command.toBuilder().aliases(
-                    Collections2.filter(command.getAliases(), alias -> !"unbind".equals(alias))
-                ).build();
-            }
-            if (command.getName().equals("stacker")) {
-                // Don't register /stacker
-                continue;
-            }
-            commandManager.register(CommandUtil.deprecate(
-                command, "Global tool names cause conflicts "
-                    + "and will be removed in WorldEdit 8",
-                CommandUtil.ReplacementMessageGenerator.forNewCommand(ToolCommands::asNonGlobal)
-            ));
-        }
-
-        // Remove aliases with / in them, since it doesn't make sense for sub-commands.
-        Set<org.enginehub.piston.Command> nonGlobalCommands = commands.stream()
-            .map(command ->
-                command.toBuilder().aliases(
-                    Collections2.filter(command.getAliases(), alias -> !alias.startsWith("/"))
-                ).build()
-            )
-            .collect(Collectors.toSet());
+        Set<org.enginehub.piston.Command> commands = collect.getAllCommands().collect(Collectors.toSet());
         commandManager.register("tool", command -> {
             command.addPart(SubCommandPart.builder(
                 TranslatableComponent.of("tool"),
                 TextComponent.of("The tool to bind")
             )
-                .withCommands(nonGlobalCommands)
+                .withCommands(commands)
                 .required()
                 .build());
             command.description(TextComponent.of("Binds a tool to the item in your hand"));
 
-            command.condition(new SubCommandPermissionCondition.Generator(nonGlobalCommands).build());
+            command.condition(new SubCommandPermissionCondition.Generator(commands).build());
         });
-    }
-
-    private static String asNonGlobal(org.enginehub.piston.Command oldCommand,
-                                      CommandParameters oldParameters) {
-        String name = Optional.ofNullable(oldParameters.getMetadata())
-            .map(CommandMetadata::getCalledName)
-            .filter(n -> !n.startsWith("/"))
-            .orElseGet(oldCommand::getName);
-        return "/tool " + name;
     }
 
     static void setToolNone(Player player, LocalSession session, boolean isBrush)
@@ -183,7 +141,6 @@ public class ToolCommands {
 
     @Command(
         name = "selwand",
-        aliases = "/selwand",
         desc = "Selection wand tool"
     )
     @CommandPermissions("worldedit.setwand")
@@ -193,7 +150,6 @@ public class ToolCommands {
 
     @Command(
         name = "navwand",
-        aliases = "/navwand",
         desc = "Navigation wand tool"
     )
     @CommandPermissions("worldedit.setwand")
@@ -295,7 +251,6 @@ public class ToolCommands {
 
     @Command(
         name = "lrbuild",
-        aliases = { "/lrbuild" },
         desc = "Long-range building tool"
     )
     @CommandPermissions("worldedit.tool.lrbuild")
