@@ -20,14 +20,23 @@
 package com.sk89q.worldedit.util.io.file;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.net.URI;
 import java.nio.file.FileSystem;
+import java.nio.file.FileSystemAlreadyExistsException;
+import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public final class ZipArchiveNioSupport implements ArchiveNioSupport {
 
     private static final ZipArchiveNioSupport INSTANCE = new ZipArchiveNioSupport();
+
+    private static final Map<Path, RefCountedFs> OPEN_ZIPS = new ConcurrentHashMap<>();
 
     public static ZipArchiveNioSupport getInstance() {
         return INSTANCE;
@@ -41,11 +50,26 @@ public final class ZipArchiveNioSupport implements ArchiveNioSupport {
         if (!archive.getFileName().toString().endsWith(".zip")) {
             return Optional.empty();
         }
-        FileSystem zipFs = FileSystems.newFileSystem(
-            archive, getClass().getClassLoader()
-        );
+        Path key = archive.toAbsolutePath().normalize();
+        RefCountedFs ref;
+        try {
+            ref = OPEN_ZIPS.compute(key, (__, existing) -> {
+                if (existing != null && existing.fileSystem.isOpen()) {
+                    existing.refCount.incrementAndGet();
+                    return existing;
+                }
+                try {
+                    FileSystem fs = openZipFileSystem(archive);
+                    return new RefCountedFs(fs, new AtomicInteger(1));
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            });
+        } catch (UncheckedIOException e) {
+            throw e.getCause();
+        }
         Path root = ArchiveNioSupports.skipRootSameName(
-            zipFs.getPath("/"), archive.getFileName().toString()
+            ref.fileSystem.getPath("/"), archive.getFileName().toString()
                 .replaceFirst("\\.zip$", "")
         );
         return Optional.of(new ArchiveDir() {
@@ -56,9 +80,30 @@ public final class ZipArchiveNioSupport implements ArchiveNioSupport {
 
             @Override
             public void close() throws IOException {
-                zipFs.close();
+                closeRef(key, ref);
             }
         });
     }
 
+    private static FileSystem openZipFileSystem(Path archive) throws IOException {
+        try {
+            return FileSystems.newFileSystem(archive, ZipArchiveNioSupport.class.getClassLoader());
+        } catch (FileSystemAlreadyExistsException ex) {
+            try {
+                return FileSystems.getFileSystem(URI.create("jar:" + archive.toUri()));
+            } catch (FileSystemNotFoundException notFound) {
+                throw ex;
+            }
+        }
+    }
+
+    private static void closeRef(Path key, RefCountedFs ref) throws IOException {
+        if (ref.refCount.decrementAndGet() == 0) {
+            OPEN_ZIPS.remove(key, ref);
+            ref.fileSystem.close();
+        }
+    }
+
+    private record RefCountedFs(FileSystem fileSystem, AtomicInteger refCount) {
+    }
 }
