@@ -133,15 +133,19 @@ public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
             private volatile boolean active = true;
 
             private void updateActive() {
-                Block block = sender.getBlock();
-                if (!block.getWorld().isChunkLoaded(block.getX() >> 4, block.getZ() >> 4)) {
-                    active = false;
-                    return;
+                try {
+                    Block block = sender.getBlock();
+                    if (!block.getWorld().isChunkLoaded(block.getX() >> 4, block.getZ() >> 4)) {
+                        active = false;
+                        return;
+                    }
+                    Material type = block.getType();
+                    active = type == Material.COMMAND_BLOCK
+                        || type == Material.CHAIN_COMMAND_BLOCK
+                        || type == Material.REPEATING_COMMAND_BLOCK;
+                } catch (Throwable t) {
+                    WorldEdit.logger.warn("Exception while updating command block sender active state", t);
                 }
-                Material type = block.getType();
-                active = type == Material.COMMAND_BLOCK
-                    || type == Material.CHAIN_COMMAND_BLOCK
-                    || type == Material.REPEATING_COMMAND_BLOCK;
             }
 
             @Override
@@ -151,6 +155,19 @@ public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
 
             @Override
             public boolean isActive() {
+                if (WorldEditPlugin.getInstance().isFolia()) {
+                    // On Folia, we need to perform the update on the thread that owns the block.
+                    if (Bukkit.isOwnedByCurrentRegion(sender.getBlock())) {
+                        // This thread owns the block, so we can immediately update.
+                        updateActive();
+                    } else {
+                        // We need to delegate to the right thread.
+                        Bukkit.getRegionScheduler().execute(plugin, sender.getBlock().getLocation(), this::updateActive);
+                    }
+
+                    return active;
+                }
+
                 if (Bukkit.isPrimaryThread()) {
                     // we can update eagerly
                     updateActive();
@@ -158,15 +175,10 @@ public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
                     // we should update it eventually
                     // Suppress FutureReturnValueIgnored: We handle it in the block.
                     @SuppressWarnings({"FutureReturnValueIgnored", "unused"})
-                    var unused = Bukkit.getScheduler().callSyncMethod(plugin,
-                        () -> {
-                            try {
-                                updateActive();
-                            } catch (Throwable t) {
-                                WorldEdit.logger.warn("Exception while updating command block sender active state", t);
-                            }
-                            return null;
-                        });
+                    var unused = Bukkit.getScheduler().callSyncMethod(plugin, () -> {
+                        updateActive();
+                        return null;
+                    });
                 }
                 return active;
             }

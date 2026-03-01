@@ -31,6 +31,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.adapter.AdapterLoadException;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplLoader;
+import com.sk89q.worldedit.bukkit.folia.FoliaExtentListener;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
@@ -48,6 +49,7 @@ import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.registry.Registries;
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.lifecycle.Lifecycled;
 import com.sk89q.worldedit.util.lifecycle.SimpleLifecycled;
 import com.sk89q.worldedit.world.World;
@@ -61,6 +63,8 @@ import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
 import io.papermc.lib.PaperLib;
+import io.papermc.paper.ServerBuildInfo;
+import net.kyori.adventure.key.Key;
 import org.apache.logging.log4j.Logger;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -178,6 +182,11 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         // Enable metrics
         new Metrics(this, BSTATS_PLUGIN_ID);
         PaperLib.suggestPaper(this);
+
+        if (isFolia()) {
+            // Inject Folia-anti-break extent
+            WorldEdit.getInstance().getEventBus().register(new FoliaExtentListener());
+        }
     }
 
     private void setupPreWorldData() {
@@ -311,7 +320,14 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         if (config != null) {
             config.unload();
         }
-        this.getServer().getScheduler().cancelTasks(this);
+
+        if (isFolia()) {
+            this.getServer().getGlobalRegionScheduler().cancelTasks(this);
+            this.getServer().getAsyncScheduler().cancelTasks(this);
+            // Region schedulers do not support cancelling tasks
+        } else {
+            this.getServer().getScheduler().cancelTasks(this);
+        }
     }
 
     /**
@@ -505,6 +521,27 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
     BukkitImplAdapter getBukkitImplAdapter() {
         return adapter.value().orElse(null);
+    }
+
+    private final LazyReference<Boolean> folia = LazyReference.from(() -> {
+        try {
+            // Folia is Paper-based, so this is a good first check.
+            if (PaperLib.isPaper()) {
+                // Then we can check against the `papermc:folia` key, as per the `isBrandCompatible` javadoc.
+                // This API is experimental so might randomly break on us (hence the try/catch)
+                // TODO if we drop Spigot support in the future, remove this check and purely use Folia-compatible APIs.
+                return ServerBuildInfo.buildInfo().isBrandCompatible(Key.key("papermc", "folia"));
+            }
+        } catch (Throwable t) {
+            // Ignore, this likely means an outdated version.
+            LOGGER.warn("Failed to check if server is running Folia", t);
+        }
+
+        return false;
+    });
+
+    protected boolean isFolia() {
+        return folia.getValue();
     }
 
     private class WorldInitListener implements Listener {
