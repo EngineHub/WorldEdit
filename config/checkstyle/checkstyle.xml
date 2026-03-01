@@ -71,6 +71,7 @@ Checks based on Google Checks, modified for EngineHub.
         <module name="MultipleVariableDeclarations"/>
         <module name="ArrayTypeStyle"/>
         <module name="MissingSwitchDefault"/>
+        <module name="UseEnhancedSwitch"/>
         <module name="FallThrough">
             <property name="reliefPattern" value="FALL-THROUGH|falls?[ -]?thr(u|ough)"/>
         </module>
