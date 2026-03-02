@@ -23,6 +23,7 @@ import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.ArchiveDir;
 import com.sk89q.worldedit.util.io.file.ArchiveNioSupport;
 import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
+import com.sk89q.worldedit.world.snapshot.experimental.SnapshotInfo;
 
 import java.io.IOException;
 import java.net.URI;
@@ -70,19 +71,16 @@ class FSSDContext {
         String worldName = Paths.get(name).getFileName().toString();
         // Without an extension
         worldName = worldName.split("\\.", 0)[0];
-        List<Snapshot> snapshots;
-        try (Stream<Snapshot> snapshotStream = db.getSnapshots(worldName)) {
-            snapshots = snapshotStream.collect(toList());
+        List<SnapshotInfo> snapshotInfos;
+        try (Stream<SnapshotInfo> snapshotStream = db.getSnapshotInfos(worldName)) {
+            snapshotInfos = snapshotStream.collect(toList());
         }
-        try {
-            assertTrue(snapshots.size() <= 1,
-                "Too many snapshots matched for " + worldName);
-            return requireSnapshot(name, snapshots.stream().findAny().orElse(null));
-        } catch (Throwable t) {
-            Closer closer = Closer.create();
-            snapshots.forEach(closer::register);
-            throw closer.rethrowAndClose(t);
-        }
+        assertTrue(snapshotInfos.size() <= 1,
+            "Too many snapshots matched for " + worldName);
+        SnapshotInfo info = snapshotInfos.stream().findAny().orElse(null);
+        assertNotNull(info, "No snapshot listed for " + name);
+        Snapshot snapshot = db.getSnapshot(info).orElse(null);
+        return requireSnapshot(name, snapshot);
     }
 
     Snapshot requireSnapshot(String name, @Nullable Snapshot snapshot) throws IOException {

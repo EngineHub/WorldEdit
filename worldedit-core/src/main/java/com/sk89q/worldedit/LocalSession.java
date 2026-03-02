@@ -58,7 +58,7 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
-import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
+import com.sk89q.worldedit.world.snapshot.experimental.SnapshotInfo;
 import org.enginehub.linbus.tree.LinCompoundTag;
 import org.enginehub.linbus.tree.LinTagType;
 
@@ -109,7 +109,7 @@ public class LocalSession {
     private transient int maxTimeoutTime;
     private transient boolean useInventory;
     private transient com.sk89q.worldedit.world.snapshot.Snapshot snapshot;
-    private transient Snapshot snapshotExperimental;
+    private transient SnapshotInfo snapshotExperimental;
     private transient SideEffectSet sideEffectSet = SideEffectSet.defaults();
     private transient Mask mask;
     private transient ZoneId timezone = ZoneId.systemDefault();
@@ -676,20 +676,20 @@ public class LocalSession {
     }
 
     /**
-     * Get the snapshot that has been selected.
+     * Get the snapshot info that has been selected.
      *
-     * @return the snapshot
+     * @return the snapshot info
      */
-    public @Nullable Snapshot getSnapshotExperimental() {
+    public @Nullable SnapshotInfo getSnapshotExperimental() {
         return snapshotExperimental;
     }
 
     /**
-     * Select a snapshot.
+     * Select a snapshot by its info.
      *
-     * @param snapshotExperimental a snapshot
+     * @param snapshotExperimental a snapshot info
      */
-    public void setSnapshotExperimental(@Nullable Snapshot snapshotExperimental) {
+    public void setSnapshotExperimental(@Nullable SnapshotInfo snapshotExperimental) {
         this.snapshotExperimental = snapshotExperimental;
     }
 

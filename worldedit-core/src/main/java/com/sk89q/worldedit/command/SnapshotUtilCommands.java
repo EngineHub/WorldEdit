@@ -33,6 +33,7 @@ import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
+import com.sk89q.worldedit.world.snapshot.experimental.SnapshotInfo;
 import com.sk89q.worldedit.world.snapshot.experimental.SnapshotRestore;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
@@ -80,6 +81,7 @@ public class SnapshotUtilCommands {
         Snapshot snapshot;
 
         if (snapshotName != null) {
+            // Get snapshot from provided name
             URI uri = resolveSnapshotName(config, snapshotName);
             Optional<Snapshot> snapOpt = config.snapshotDatabase.getSnapshot(uri);
             if (snapOpt.isEmpty()) {
@@ -88,31 +90,46 @@ public class SnapshotUtilCommands {
             }
             snapshot = snapOpt.get();
         } else {
-            snapshot = session.getSnapshotExperimental();
+            // Get snapshot from session
+            SnapshotInfo snapshotInfo = session.getSnapshotExperimental();
+            if (snapshotInfo != null) {
+                Optional<Snapshot> snapOpt = config.snapshotDatabase.getSnapshot(snapshotInfo);
+                if (snapOpt.isEmpty()) {
+                    actor.printError(TranslatableComponent.of("worldedit.restore.not-available"));
+                    return;
+                }
+                snapshot = snapOpt.get();
+            } else {
+                // Get newest snapshot for world
+                SnapshotInfo newestInfo;
+                try (Stream<SnapshotInfo> snapshotStream =
+                         config.snapshotDatabase.getSnapshotInfosNewestFirst(world.getName())) {
+                    newestInfo = snapshotStream.findFirst().orElse(null);
+                }
+
+                if (newestInfo == null) {
+                    actor.printError(TranslatableComponent.of(
+                        "worldedit.restore.none-for-specific-world",
+                        TextComponent.of(world.getName())
+                    ));
+                    return;
+                }
+
+                Optional<Snapshot> snapOpt = config.snapshotDatabase.getSnapshot(newestInfo);
+                if (snapOpt.isEmpty()) {
+                    actor.printError(TranslatableComponent.of("worldedit.restore.not-available"));
+                    return;
+                }
+                snapshot = snapOpt.get();
+            }
         }
 
-        // No snapshot set?
-        if (snapshot == null) {
-            try (Stream<Snapshot> snapshotStream =
-                     config.snapshotDatabase.getSnapshotsNewestFirst(world.getName())) {
-                snapshot = snapshotStream
-                    .findFirst().orElse(null);
-            }
-
-            if (snapshot == null) {
-                actor.printError(TranslatableComponent.of(
-                    "worldedit.restore.none-for-specific-world",
-                    TextComponent.of(world.getName())
-                ));
-                return;
-            }
-        }
         actor.printInfo(TranslatableComponent.of(
             "worldedit.restore.loaded",
             TextComponent.of(snapshot.getInfo().getDisplayName())
         ));
 
-        try {
+        try (snapshot) {
             // Restore snapshot
             SnapshotRestore restore = new SnapshotRestore(snapshot, editSession, region);
             //player.print(restore.getChunksAffected() + " chunk(s) will be loaded.");
@@ -134,12 +151,8 @@ public class SnapshotUtilCommands {
                     TextComponent.of(restore.getMissingChunks().size()),
                     TextComponent.of(restore.getErrorChunks().size())));
             }
-        } finally {
-            try {
-                snapshot.close();
-            } catch (IOException e) {
-                WorldEdit.logger.warn("Failed to close chunk store after snapshot restore", e);
-            }
+        } catch (IOException e) {
+            WorldEdit.logger.warn("Failed to close chunk store after snapshot restore", e);
         }
     }
 }

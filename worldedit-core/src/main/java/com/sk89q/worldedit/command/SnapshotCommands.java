@@ -37,6 +37,7 @@ import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
+import com.sk89q.worldedit.world.snapshot.experimental.SnapshotInfo;
 import com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabase;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
@@ -53,8 +54,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * Snapshot commands.
@@ -110,11 +109,9 @@ public class SnapshotCommands {
             return;
         }
 
-        List<Snapshot> snapshots;
-        try (Stream<Snapshot> snapshotStream =
-                 config.snapshotDatabase.getSnapshotsNewestFirst(world.getName())) {
-            snapshots = snapshotStream
-                .collect(toList());
+        List<SnapshotInfo> snapshots;
+        try (Stream<SnapshotInfo> snapshotStream = config.snapshotDatabase.getSnapshotInfosNewestFirst(world.getName())) {
+            snapshots = snapshotStream.toList();
         }
 
         if (!snapshots.isEmpty()) {
@@ -156,17 +153,13 @@ public class SnapshotCommands {
 
         // Want the latest snapshot?
         if (name.equalsIgnoreCase("latest")) {
-            Snapshot snapshot;
-            try (Stream<Snapshot> snapshotStream =
-                     config.snapshotDatabase.getSnapshotsNewestFirst(world.getName())) {
-                snapshot = snapshotStream
-                    .findFirst().orElse(null);
+            SnapshotInfo snapshotInfo;
+            try (Stream<SnapshotInfo> snapshotStream = config.snapshotDatabase.getSnapshotInfosNewestFirst(world.getName())) {
+                snapshotInfo = snapshotStream.findFirst().orElse(null);
             }
 
-            if (snapshot != null) {
-                if (session.getSnapshotExperimental() != null) {
-                    session.getSnapshotExperimental().close();
-                }
+            if (snapshotInfo != null) {
+                session.setSnapshotExperimental(null);
                 session.setSnapshot(null);
                 actor.printInfo(TranslatableComponent.of("worldedit.snapshot.use.newest"));
             } else {
@@ -176,10 +169,8 @@ public class SnapshotCommands {
             URI uri = resolveSnapshotName(config, name);
             Optional<Snapshot> snapshot = config.snapshotDatabase.getSnapshot(uri);
             if (snapshot.isPresent()) {
-                if (session.getSnapshotExperimental() != null) {
-                    session.getSnapshotExperimental().close();
-                }
-                session.setSnapshotExperimental(snapshot.get());
+                session.setSnapshotExperimental(snapshot.get().getInfo());
+                snapshot.get().close();
                 actor.printInfo(TranslatableComponent.of(
                     "worldedit.snapshot.use", TextComponent.of(name)
                 ));
@@ -210,11 +201,9 @@ public class SnapshotCommands {
             return;
         }
 
-        List<Snapshot> snapshots;
-        try (Stream<Snapshot> snapshotStream =
-                 config.snapshotDatabase.getSnapshotsNewestFirst(world.getName())) {
-            snapshots = snapshotStream
-                .collect(toList());
+        List<SnapshotInfo> snapshots;
+        try (Stream<SnapshotInfo> snapshotStream = config.snapshotDatabase.getSnapshotInfosNewestFirst(world.getName())) {
+            snapshots = snapshotStream.toList();
         }
         if (snapshots.size() < index) {
             actor.printError(TranslatableComponent.of(
@@ -223,28 +212,25 @@ public class SnapshotCommands {
             ));
             return;
         }
-        Snapshot snapshot = snapshots.get(index - 1);
-        if (snapshot == null) {
+        SnapshotInfo snapshotInfo = snapshots.get(index - 1);
+        if (snapshotInfo == null) {
             actor.printError(TranslatableComponent.of("worldedit.restore.not-available"));
             return;
         }
-        if (session.getSnapshotExperimental() != null) {
-            session.getSnapshotExperimental().close();
-        }
-        session.setSnapshotExperimental(snapshot);
+        session.setSnapshotExperimental(snapshotInfo);
         actor.printInfo(TranslatableComponent.of(
             "worldedit.snapshot.use",
-            TextComponent.of(snapshot.getInfo().getDisplayName())
+            TextComponent.of(snapshotInfo.getDisplayName())
         ));
     }
 
     @Command(
         name = "before",
-        desc = "Choose the nearest snapshot before a date"
+        desc = "Choose the first snapshot that occurred before the given date"
     )
     @CommandPermissions("worldedit.snapshots.restore")
     void before(Actor actor, World world, LocalSession session,
-                       @Arg(desc = "The soonest date that may be used")
+                       @Arg(desc = "The date before which to search for snapshots")
                            ZonedDateTime date) throws IOException {
         LocalConfiguration config = we.getConfiguration();
         checkSnapshotsConfigured(config);
@@ -254,37 +240,35 @@ public class SnapshotCommands {
             return;
         }
 
-        Snapshot snapshot;
-        try (Stream<Snapshot> snapshotStream =
-                 config.snapshotDatabase.getSnapshotsNewestFirst(world.getName())) {
-            snapshot = snapshotStream
-                .findFirst().orElse(null);
+        SnapshotInfo snapshotInfo;
+        try (Stream<SnapshotInfo> snapshotStream = config.snapshotDatabase.getSnapshotInfosNewestFirst(world.getName())) {
+            snapshotInfo = snapshotStream
+                .filter(info -> info.getDateTime().isBefore(date))
+                .findFirst()
+                .orElse(null);
         }
 
-        if (snapshot == null) {
+        if (snapshotInfo == null) {
             actor.printError(TranslatableComponent.of(
                 "worldedit.snapshot.none-before",
                 TextComponent.of(dateFormat.withZone(session.getTimeZone()).format(date)))
             );
         } else {
-            if (session.getSnapshotExperimental() != null) {
-                session.getSnapshotExperimental().close();
-            }
-            session.setSnapshotExperimental(snapshot);
+            session.setSnapshotExperimental(snapshotInfo);
             actor.printInfo(TranslatableComponent.of(
                 "worldedit.snapshot.use",
-                TextComponent.of(snapshot.getInfo().getDisplayName())
+                TextComponent.of(snapshotInfo.getDisplayName())
             ));
         }
     }
 
     @Command(
         name = "after",
-        desc = "Choose the nearest snapshot after a date"
+        desc = "Choose the first snapshot that occurred after the given date"
     )
     @CommandPermissions("worldedit.snapshots.restore")
     void after(Actor actor, World world, LocalSession session,
-                      @Arg(desc = "The soonest date that may be used")
+                      @Arg(desc = "The date after which to search for snapshots")
                           ZonedDateTime date) throws IOException {
         LocalConfiguration config = we.getConfiguration();
         checkSnapshotsConfigured(config);
@@ -294,41 +278,39 @@ public class SnapshotCommands {
             return;
         }
 
-        Snapshot snapshot;
-        try (Stream<Snapshot> snapshotStream =
-                 config.snapshotDatabase.getSnapshotsNewestFirst(world.getName())) {
-            snapshot = snapshotStream
-                .findFirst().orElse(null);
+        SnapshotInfo snapshotInfo;
+        try (Stream<SnapshotInfo> snapshotStream = config.snapshotDatabase.getSnapshotInfosOldestFirst(world.getName())) {
+            snapshotInfo = snapshotStream
+                .filter(info -> info.getDateTime().isAfter(date))
+                .findFirst()
+                .orElse(null);
         }
-        if (snapshot == null) {
+        if (snapshotInfo == null) {
             actor.printError(TranslatableComponent.of(
                 "worldedit.snapshot.none-after",
                 TextComponent.of(dateFormat.withZone(session.getTimeZone()).format(date)))
             );
         } else {
-            if (session.getSnapshotExperimental() != null) {
-                session.getSnapshotExperimental().close();
-            }
-            session.setSnapshotExperimental(snapshot);
+            session.setSnapshotExperimental(snapshotInfo);
             actor.printInfo(TranslatableComponent.of(
                 "worldedit.snapshot.use",
-                TextComponent.of(snapshot.getInfo().getDisplayName())
+                TextComponent.of(snapshotInfo.getDisplayName())
             ));
         }
     }
 
     private static class SnapshotListBox extends PaginationBox {
-        private final List<Snapshot> snapshots;
+        private final List<SnapshotInfo> snapshots;
 
-        SnapshotListBox(String world, List<Snapshot> snapshots) {
+        SnapshotListBox(String world, List<SnapshotInfo> snapshots) {
             super("Snapshots for: " + world, "/snap list -p %page%");
             this.snapshots = snapshots;
         }
 
         @Override
         public Component getComponent(int number) {
-            final Snapshot snapshot = snapshots.get(number);
-            String displayName = snapshot.getInfo().getDisplayName();
+            final SnapshotInfo snapshotInfo = snapshots.get(number);
+            String displayName = snapshotInfo.getDisplayName();
             return TextComponent.of(number + 1 + ". ", TextColor.GOLD)
                 .append(TextComponent.builder(displayName, TextColor.LIGHT_PURPLE)
                     .hoverEvent(HoverEvent.showText(TextComponent.of("Click to use")))
