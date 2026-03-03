@@ -1,4 +1,4 @@
-import net.fabricmc.loom.task.RemapJarTask
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import java.util.jar.Attributes
 import java.util.jar.Manifest
 
@@ -60,7 +60,7 @@ open class MergeManifests : DefaultTask() {
 }
 
 val fabricZipTree = zipTree(
-    project(":worldedit-fabric").tasks.named<RemapJarTask>("remapShadowJar").flatMap { it.archiveFile }
+    project(":worldedit-fabric").tasks.named<ShadowJar>("shadowJar").flatMap { it.archiveFile }
 )
 
 val mergeManifests = tasks.register<MergeManifests>("mergeManifests") {
@@ -70,7 +70,7 @@ val mergeManifests = tasks.register<MergeManifests>("mergeManifests") {
     )
 
     dependsOn(
-        project(":worldedit-fabric").tasks.named<RemapJarTask>("remapShadowJar"),
+        project(":worldedit-fabric").tasks.named<ShadowJar>("shadowJar"),
         project(":worldedit-neoforge").tasks.named("jarJar")
     )
     inputManifests.from(
@@ -86,7 +86,7 @@ tasks.register<Jar>("jar") {
     )
 
     dependsOn(
-        project(":worldedit-fabric").tasks.named<RemapJarTask>("remapShadowJar"),
+        project(":worldedit-fabric").tasks.named<ShadowJar>("shadowJar"),
         project(":worldedit-neoforge").tasks.named("jarJar"),
         mergeManifests
     )
