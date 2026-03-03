@@ -149,13 +149,12 @@ public class BukkitPlayer extends AbstractPlayerActor {
     public boolean trySetPosition(Vector3 pos, float pitch, float yaw) {
         Location location = new Location(player.getWorld(), pos.x(), pos.y(),
                 pos.z(), yaw, pitch);
-        if (PaperLib.isPaper()) {
+        if (WorldEditPlugin.getInstance().isFolia()) {
             var unused = PaperLib.teleportAsync(player, location);
             return true;
         } else {
             return player.teleport(location);
         }
-
     }
 
     @Override
@@ -232,7 +231,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
 
     @Override
     public boolean setLocation(com.sk89q.worldedit.util.Location location) {
-        if (PaperLib.isPaper()) {
+        if (WorldEditPlugin.getInstance().isFolia()) {
             var unused = PaperLib.teleportAsync(player, BukkitAdapter.adapt(location));
             return true;
         } else {
