@@ -1,10 +1,9 @@
 import buildlogic.internalVersion
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.RunGameTask
 
 plugins {
-    id("fabric-loom")
+    id("net.fabricmc.fabric-loom") version "1.15.4"
     `java-library`
     id("buildlogic.platform")
 }
@@ -28,13 +27,9 @@ dependencies {
     "api"(project(":worldedit-core"))
 
     "minecraft"(libs.fabric.minecraft)
-    "mappings"(loom.layered {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-${libs.versions.parchment.minecraft.get()}:${libs.versions.parchment.mappings.get()}@zip")
-    })
-    "modImplementation"(libs.fabric.loader)
-    "include"(libs.cuiProtocol.fabric)
-    "modImplementation"(libs.cuiProtocol.fabric)
+    "implementation"(libs.fabric.loader)
+    //"include"(libs.cuiProtocol.fabric)
+    //"implementation"(libs.cuiProtocol.fabric)
 
     // [1] Load the API dependencies from the fabric mod json...
     @Suppress("UNCHECKED_CAST")
@@ -48,11 +43,11 @@ dependencies {
     for (wantedDependency in wantedDependencies) {
         val dep = fabricApi.module(wantedDependency, libs.versions.fabric.api.get())
         "include"(dep)
-        "modImplementation"(dep)
+        "implementation"(dep)
     }
 
     // No need for this at runtime
-    "modCompileOnly"(libs.fabric.permissions.api)
+    //"compileOnly"(libs.fabric.permissions.api)
 
     // Silence some warnings, since apparently this isn't on the compile classpath like it should be.
     "compileOnly"(libs.errorprone.annotations)
@@ -80,7 +75,7 @@ tasks.named<Copy>("processResources") {
 }
 
 tasks.named<ShadowJar>("shadowJar") {
-    archiveClassifier.set("dist-dev")
+    archiveClassifier.set("dist")
     dependencies {
         relocate("org.antlr.v4", "com.sk89q.worldedit.antlr4")
         relocate("net.royawesome.jlibnoise", "com.sk89q.worldedit.jlibnoise")
@@ -90,14 +85,6 @@ tasks.named<ShadowJar>("shadowJar") {
     }
 }
 
-tasks.register<RemapJarTask>("remapShadowJar") {
-    val shadowJar = tasks.getByName<ShadowJar>("shadowJar")
-    dependsOn(shadowJar)
-    inputFile.set(shadowJar.archiveFile)
-    archiveFileName.set(shadowJar.archiveFileName.get().replace(Regex("-dev\\.jar$"), ".jar"))
-    addNestedDependencies.set(true)
-}
-
 tasks.named("assemble").configure {
-    dependsOn("remapShadowJar")
+    dependsOn("shadowJar")
 }
