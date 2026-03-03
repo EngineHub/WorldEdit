@@ -45,6 +45,7 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.gamemode.GameMode;
 import com.sk89q.worldedit.world.gamemode.GameModes;
+import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -146,8 +147,15 @@ public class BukkitPlayer extends AbstractPlayerActor {
 
     @Override
     public boolean trySetPosition(Vector3 pos, float pitch, float yaw) {
-        return player.teleport(new Location(player.getWorld(), pos.x(), pos.y(),
-            pos.z(), yaw, pitch));
+        Location location = new Location(player.getWorld(), pos.x(), pos.y(),
+                pos.z(), yaw, pitch);
+        if (PaperLib.isPaper()) {
+            var unused = PaperLib.teleportAsync(player, location);
+            return true;
+        } else {
+            return player.teleport(location);
+        }
+
     }
 
     @Override
@@ -224,7 +232,12 @@ public class BukkitPlayer extends AbstractPlayerActor {
 
     @Override
     public boolean setLocation(com.sk89q.worldedit.util.Location location) {
-        return player.teleport(BukkitAdapter.adapt(location));
+        if (PaperLib.isPaper()) {
+            var unused = PaperLib.teleportAsync(player, BukkitAdapter.adapt(location));
+            return true;
+        } else {
+            return player.teleport(BukkitAdapter.adapt(location));
+        }
     }
 
     @SuppressWarnings("deprecation") // Paper's deprecation, we need to support Spigot still

@@ -29,6 +29,7 @@ import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.NullWorld;
+import io.papermc.lib.PaperLib;
 
 import java.lang.ref.WeakReference;
 import javax.annotation.Nullable;
@@ -76,7 +77,12 @@ class BukkitEntity implements Entity {
     public boolean setLocation(Location location) {
         org.bukkit.entity.Entity entity = entityRef.get();
         if (entity != null) {
-            return entity.teleport(BukkitAdapter.adapt(location));
+            if (PaperLib.isPaper()) {
+                var unused = PaperLib.teleportAsync(entity, BukkitAdapter.adapt(location));
+                return true;
+            } else {
+                return entity.teleport(BukkitAdapter.adapt(location));
+            }
         } else {
             return false;
         }
