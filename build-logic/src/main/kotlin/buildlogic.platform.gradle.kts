@@ -10,6 +10,10 @@ val platform = extensions.create<buildlogic.PlatformExtension>("platform")
 platform.includeClasspath.convention(false)
 platform.extraAttributes.convention(mapOf())
 
+shadow {
+    addShadowVariantIntoJavaComponent = false
+}
+
 tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
     archiveClassifier.set("dist")
     relocate("com.sk89q.jchronic", "com.sk89q.worldedit.jchronic")
@@ -42,11 +46,6 @@ tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJ
             exclude(dependency(it))
         }
     }
-}
-val javaComponent = components["java"] as AdhocComponentWithVariants
-// I don't think we want this published (it's the shadow jar)
-javaComponent.withVariantsFromConfiguration(configurations["shadowRuntimeElements"]) {
-    skip()
 }
 
 afterEvaluate {

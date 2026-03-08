@@ -8,8 +8,8 @@ pluginManagement {
             url = uri("https://maven.fabricmc.net/")
         }
         maven {
-            name = "SpongePowered Snapshots"
-            url = uri("https://repo.spongepowered.org/repository/maven-snapshots/")
+            name = "SpongePowered"
+            url = uri("https://repo.spongepowered.org/repository/maven-releases/")
         }
         maven {
             name = "NeoForged"

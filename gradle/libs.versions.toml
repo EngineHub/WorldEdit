@@ -26,8 +26,7 @@ sponge-api-major = "18"
 parchment-minecraft = "1.21.11"
 parchment-mappings = "2025.12.20"
 
-# https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/vanillagradle/
-sponge-vanillagradle = "0.2.2-20251112.100313-2"
+sponge-vanillagradle = "0.2.2"
 
 # Minimum versions we apply to make dependencies support newer Java
 minimumAsm = "9.7"
@@ -44,7 +43,7 @@ sponge-vanillagradle = { module = "org.spongepowered:vanillagradle", version.ref
 
 levelHeadered = "net.octyl.level-headered:plugin:0.1.1"
 japicmp = "me.champeau.gradle:japicmp-gradle-plugin:0.4.6"
-shadow = "com.gradleup.shadow:com.gradleup.shadow.gradle.plugin:8.3.10"
+shadow = "com.gradleup.shadow:com.gradleup.shadow.gradle.plugin:9.3.2"
 jfrog-buildinfo = "org.jfrog.buildinfo:build-info-extractor-gradle:6.0.4"
 
 errorprone-gradle-plugin = "net.ltgt.errorprone:net.ltgt.errorprone.gradle.plugin:5.1.0"
