@@ -1,4 +1,13 @@
 {
+    "Constructor was not useful": [
+        {
+            "type": "com.sk89q.worldedit.registry.Registries",
+            "member": "Constructor com.sk89q.worldedit.registry.Registries()",
+            "changes": [
+                "CONSTRUCTOR_LESS_ACCESSIBLE"
+            ]
+        }
+    ],
     "Experimental API may change freely": [
         {
             "type": "com.sk89q.worldedit.LocalSession",

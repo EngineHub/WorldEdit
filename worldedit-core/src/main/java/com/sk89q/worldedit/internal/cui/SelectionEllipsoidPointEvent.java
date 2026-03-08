@@ -42,7 +42,7 @@ public class SelectionEllipsoidPointEvent implements CUIEvent {
             String.valueOf(id),
             String.valueOf(pos.x()),
             String.valueOf(pos.y()),
-            String.valueOf(pos.z())
+            String.valueOf(pos.z()),
         };
     }
 

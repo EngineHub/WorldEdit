@@ -3,14 +3,15 @@
         "https://checkstyle.org/dtds/suppressions_1_2.dtd">
 
 <suppressions>
-    <suppress files=".*DataFixer\.java" checks="MethodName|FallThrough"/>
-    <suppress files=".*DataConverters\.java" checks="MethodName|FallThrough|JavadocParagraph"/>
+    <suppress files=".*DataFixer\.java" checks="MethodName|FallThrough|EmptyStatement|UseEnhancedSwitch"/>
+    <suppress files=".*DataConverters\.java"
+              checks="MethodName|FallThrough|EmptyStatement|UseEnhancedSwitch|DefaultComesLast|JavadocParagraph"/>
     <!-- The adapters don't have standard package names -->
     <suppress files=".*[\\/]worldedit[\\/]bukkit[\\/]adapter[\\/]impl[\\/].*\.java" checks="PackageName"/>
     <suppress files=".*[\\/]MathUtils.java" checks="MethodName"/>
     <suppress files=".*[\\/]bPermissionsResolver.java" checks="TypeName"/>
-    <!-- This thing only works via the use of a finalizer. -->
-    <suppress files=".*[\\/]TracedEditSession.java" checks="NoFinalizer"/>
     <!-- None of the old command stuff really matters -->
     <suppress files=".*[\\/]minecraft[\\/]util[\\/]commands[\\/].*\.java" checks=".*"/>
+    <!-- Tests don't need to obey some checks. -->
+    <suppress files=".*[\\/].*\.java" checks="AvoidNestedBlocks"/>
 </suppressions>

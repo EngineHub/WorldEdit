@@ -13,11 +13,22 @@ Checks based on Google Checks, modified for EngineHub.
     <property name="severity" value="error"/>
 
     <property name="fileExtensions" value="java, properties, xml"/>
+    <module name="SuppressionFilter">
+        <property name="file" value="${config_loc}/checkstyle-suppression.xml"/>
+    </module>
     <!-- Checks for whitespace                               -->
     <!-- See http://checkstyle.sf.net/config_whitespace.html -->
     <module name="FileTabCharacter">
         <property name="eachLine" value="true"/>
     </module>
+
+    <!-- Validate that command annotations are formatted correctly -->
+    <module name="RegexpMultiline">
+        <property name="format" value="^( +)@(Arg|Switch|Command)\(.*?\r?\n\1 {5,}"/>
+    </module>
+    <module name="LineEnding"/>
+    <module name="NewlineAtEndOfFile"/>
+    <module name="UniqueProperties"/>
 
     <module name="TreeWalker">
         <module name="OuterTypeFilename"/>
@@ -32,14 +43,20 @@ Checks based on Google Checks, modified for EngineHub.
             <property name="allowByTailComment" value="true"/>
             <property name="allowNonPrintableEscapes" value="true"/>
         </module>
-        <module name="AvoidStarImport"/>
         <module name="OneTopLevelClass"/>
         <module name="NoLineWrap"/>
+        <module name="AvoidNestedBlocks"/>
         <module name="EmptyBlock">
             <property name="option" value="TEXT"/>
             <property name="tokens" value="LITERAL_TRY, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE, LITERAL_SWITCH"/>
         </module>
+        <module name="EmptyCatchBlock">
+            <property name="exceptionVariableName" value="expected|ignored"/>
+        </module>
         <module name="NeedBraces"/>
+        <module name="LeftCurly">
+            <property name="ignoreEnums" value="false"/>
+        </module>
         <module name="RightCurly"/>
         <module name="RightCurly">
             <property name="option" value="alone"/>
@@ -67,15 +84,34 @@ Checks based on Google Checks, modified for EngineHub.
             <property name="tokens" value="SEMI"/>
             <property name="allowLineBreaks" value="true"/>
         </module>
-        <module name="OneStatementPerLine"/>
         <module name="MultipleVariableDeclarations"/>
         <module name="ArrayTypeStyle"/>
-        <module name="MissingSwitchDefault"/>
+        <module name="ArrayTrailingComma"/>
+        <module name="AvoidDoubleBraceInitialization"/>
+        <module name="ConstructorsDeclarationGrouping"/>
+        <module name="CovariantEquals"/>
+        <module name="DefaultComesLast"/>
+        <module name="EmptyStatement"/>
         <module name="FallThrough">
             <property name="reliefPattern" value="FALL-THROUGH|falls?[ -]?thr(u|ough)"/>
         </module>
-        <module name="UpperEll"/>
+        <module name="IllegalInstantiation"/>
+        <module name="MissingSwitchDefault"/>
+        <module name="NoFinalizer"/>
+        <module name="OneStatementPerLine"/>
+        <module name="PackageDeclaration"/>
+        <module name="PatternVariableAssignment"/>
+        <module name="SimplifyBooleanExpression"/>
+        <module name="StringLiteralEquality"/>
+        <module name="TextBlockGoogleStyleFormatting"/>
+        <module name="UnnecessaryNullCheckWithInstanceOf"/>
+        <module name="UnnecessarySemicolonAfterOuterTypeDeclaration"/>
+        <module name="UnnecessarySemicolonAfterTypeMemberDeclaration"/>
+        <module name="UnnecessarySemicolonInTryWithResources"/>
+        <module name="UseEnhancedSwitch"/>
+        <module name="WhenShouldBeUsed"/>
         <module name="ModifierOrder"/>
+        <module name="RedundantModifier"/>
         <module name="EmptyLineSeparator">
             <property name="allowNoEmptyLineBetweenFields" value="true"/>
         </module>
@@ -116,7 +152,6 @@ Checks based on Google Checks, modified for EngineHub.
             <message key="name.invalidPattern"
                      value="Method type name ''{0}'' must match pattern ''{1}''."/>
         </module>
-        <module name="NoFinalizer"/>
         <module name="GenericWhitespace">
             <message key="ws.followed"
                      value="GenericWhitespace ''{0}'' is followed by whitespace."/>
@@ -132,6 +167,7 @@ Checks based on Google Checks, modified for EngineHub.
             <property name="illegalPattern" value="true"/>
             <property name="message" value="Trailing whitespace"/>
         </module>
+        <module name="HexLiteralCase"/>
         <module name="Indentation">
             <property name="basicOffset" value="4"/>
             <property name="braceAdjustment" value="0"/>
@@ -140,7 +176,10 @@ Checks based on Google Checks, modified for EngineHub.
             <property name="lineWrappingIndentation" value="4"/>
             <property name="arrayInitIndent" value="4"/>
         </module>
-        <module name="UnusedImports"/>
+        <module name="NoCodeInFile"/>
+        <module name="OuterTypeFilename"/>
+        <module name="UpperEll"/>
+        <module name="AvoidStarImport"/>
         <module name="CustomImportOrder">
             <property name="sortImportsInGroupAlphabetically" value="true"/>
             <property name="customImportOrderRules" value="THIRD_PARTY_PACKAGE###STANDARD_JAVA_PACKAGE###STATIC"/>
@@ -149,6 +188,8 @@ Checks based on Google Checks, modified for EngineHub.
             <property name="illegalPkgs" value="org.slf4j"/>
             <message key="name.invalidPattern" value="Illegal import - {0}. Use Log4J instead."/>
         </module>
+        <module name="RedundantImport"/>
+        <module name="UnusedImports"/>
         <module name="MethodParamPad"/>
         <module name="OperatorWrap">
             <property name="option" value="NL"/>
@@ -162,6 +203,8 @@ Checks based on Google Checks, modified for EngineHub.
             <property name="tokens" value="VARIABLE_DEF"/>
             <property name="allowSamelineMultipleAnnotations" value="true"/>
         </module>
+        <module name="MissingOverride"/>
+        <module name="MissingOverrideOnRecordAccessor"/>
         <module name="NonEmptyAtclauseDescription"/>
         <module name="JavadocTagContinuationIndentation"/>
         <module name="SummaryJavadocCheck">
@@ -169,6 +212,8 @@ Checks based on Google Checks, modified for EngineHub.
                       value="^@return the *|^This method returns |^A [{]@code [a-zA-Z0-9]+[}]( is a )"/>
         </module>
         <module name="JavadocParagraph"/>
+        <module name="HideUtilityClassConstructor"/>
+        <module name="InterfaceIsType"/>
         <module name="AtclauseOrder">
             <property name="tagOrder" value="@param, @return, @throws, @deprecated"/>
             <property name="target" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF, VARIABLE_DEF"/>
@@ -191,9 +236,6 @@ Checks based on Google Checks, modified for EngineHub.
         <module name="SingleLineJavadoc">
             <property name="ignoreInlineTags" value="false"/>
         </module>
-        <module name="EmptyCatchBlock">
-            <property name="exceptionVariableName" value="expected|ignored"/>
-        </module>
         <module name="CommentsIndentation"/>
         <!-- Validate String.to(Lower|Upper)Case() calls include Locale argument -->
         <module name="Regexp">
@@ -201,19 +243,5 @@ Checks based on Google Checks, modified for EngineHub.
             <property name="format" value="(?!Character)\.to(Lower|Upper)Case\(\)"/>
             <property name="illegalPattern" value="true"/>
         </module>
-        <module name="PatternVariableAssignment"/>
-        <module name="UnnecessaryNullCheckWithInstanceOf"/>
-        <module name="WhenShouldBeUsed"/>
-    </module>
-    <!-- Validate that command annotations are formatted correctly -->
-    <module name="RegexpMultiline">
-        <property name="format" value="^( +)@(Arg|Switch|Command)\(.*?\r?\n\1 {5,}"/>
-    </module>
-    <module name="RegexpMultiline">
-        <property name="format" value="(?s:(\r\n|\r).*)"/>
-        <property name="message" value="CRLF and CR line endings are prohibited, but this file uses them."/>
-    </module>
-    <module name="SuppressionFilter">
-        <property name="file" value="${config_loc}/checkstyle-suppression.xml"/>
     </module>
 </module>

@@ -52,7 +52,7 @@ public class SelectionPointEvent implements CUIEvent {
             String.valueOf(pos.x()),
             String.valueOf(pos.y()),
             String.valueOf(pos.z()),
-            String.valueOf(area)
+            String.valueOf(area),
         };
     }
 

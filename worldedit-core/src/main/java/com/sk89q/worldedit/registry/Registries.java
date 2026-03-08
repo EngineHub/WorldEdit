@@ -59,4 +59,7 @@ public class Registries {
     public static Registry<?> get(final String id) {
         return Registry.REGISTRY.get(id);
     }
+
+    private Registries() {
+    }
 }

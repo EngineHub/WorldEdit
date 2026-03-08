@@ -84,7 +84,7 @@ public class ClipboardTransformBaker {
             minimum.withZ(maximum.z()),
             maximum.withX(minimum.x()),
             maximum.withY(minimum.y()),
-            maximum.withZ(minimum.z())
+            maximum.withZ(minimum.z()),
         };
 
         for (int i = 0; i < corners.length; i++) {
