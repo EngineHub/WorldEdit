@@ -88,7 +88,7 @@ configure<BasePluginExtension> {
 
 tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
     dependencies {
-        include(dependency("org.bstats:"))
+        include(dependency("org.bstats:.*"))
         include(dependency("org.antlr:antlr4-runtime"))
         include(dependency("com.sk89q.lib:jlibnoise"))
 
