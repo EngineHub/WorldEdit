@@ -97,7 +97,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
         NijiPermissionsResolver.class,
         VaultResolver.class,
         DinnerPermsResolver.class,
-        FlatFilePermissionsResolver.class
+        FlatFilePermissionsResolver.class,
     };
 
     protected PermissionsResolverManager(Plugin plugin) {

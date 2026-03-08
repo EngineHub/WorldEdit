@@ -451,7 +451,7 @@ public final class WorldEdit {
      */
     @InlineMe(replacement = "this.getWorkingDirectoryPath(path).toFile()")
     @Deprecated
-    public final File getWorkingDirectoryFile(String path) {
+    public File getWorkingDirectoryFile(String path) {
         return getWorkingDirectoryPath(path).toFile();
     }
 

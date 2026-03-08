@@ -87,4 +87,7 @@ public class InfoEntryPoint {
             setBorder(null);
         }
     }
+
+    private InfoEntryPoint() {
+    }
 }

@@ -156,7 +156,7 @@ public class SafeFiles {
                         PosixFilePermission.OWNER_READ,
                         PosixFilePermission.OWNER_WRITE
                     )
-                )
+                ),
             };
             OWNER_ONLY_DIR_ATTRS = new FileAttribute<?>[] {
                 PosixFilePermissions.asFileAttribute(
@@ -165,7 +165,7 @@ public class SafeFiles {
                         PosixFilePermission.OWNER_WRITE,
                         PosixFilePermission.OWNER_EXECUTE
                     )
-                )
+                ),
             };
         } else {
             OWNER_ONLY_FILE_ATTRS = new FileAttribute<?>[0];
