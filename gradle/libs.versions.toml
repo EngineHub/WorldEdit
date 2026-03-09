@@ -2,6 +2,7 @@
 neogradle-userdev = { id = "net.neoforged.gradle.userdev", version.ref = "neogradle" }
 sponge-spongegradle = "org.spongepowered.gradle.plugin:2.3.0"
 sponge-vanillagradle = { id = "org.spongepowered.gradle.vanilla", version.ref = "sponge-vanillagradle" }
+fabric-loom = "net.fabricmc.fabric-loom:1.15.4"
 
 [versions]
 kyoriText = "3.0.4"
@@ -12,7 +13,7 @@ cuiProtocol = "4.0.2"
 
 errorprone = "2.48.0"
 
-fabric-api = "0.141.3+1.21.11"
+fabric-api = "0.143.11+26.1"
 
 neogradle = "7.1.20"
 neoforge-minecraft = "1.21.11"
@@ -93,7 +94,7 @@ rhino = "org.mozilla:rhino-runtime:1.7.13"
 jchronic = "com.sk89q:jchronic:0.2.4a"
 jlibnoise = "com.sk89q.lib:jlibnoise:1.0.0"
 
-fabric-minecraft = "com.mojang:minecraft:26.1-snapshot-10"
+fabric-minecraft = "com.mojang:minecraft:26.1-snapshot-11"
 fabric-loader = "net.fabricmc:fabric-loader:0.18.4"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.6.1"
 
@@ -101,7 +102,7 @@ neoforge = "net.neoforged:neoforge:21.11.38-beta"
 
 # Mojang-provided libraries, CHECK AGAINST MINECRAFT for versions
 guava = "com.google.guava:guava:33.5.0-jre!!"
-log4j-bom = "org.apache.logging.log4j:log4j-bom:2.24.1!!"
+log4j-bom = "org.apache.logging.log4j:log4j-bom:2.25.2!!"
 log4j-api.module = "org.apache.logging.log4j:log4j-api"
 log4j-core.module = "org.apache.logging.log4j:log4j-core"
 gson = "com.google.code.gson:gson:2.13.2!!"

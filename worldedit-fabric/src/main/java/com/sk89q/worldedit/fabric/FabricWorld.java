@@ -341,7 +341,7 @@ public class FabricWorld extends AbstractWorld {
         try (LevelStorageSource.LevelStorageAccess session = levelStorage.createAccess("WorldEditTempGen")) {
             ServerLevel originalWorld = (ServerLevel) getWorld();
             PrimaryLevelData levelProperties = getPrimaryLevelData(originalWorld.getLevelData());
-            WorldOptions originalOpts = levelProperties.worldGenOptions();
+            WorldOptions originalOpts = levelProperties.worldGenSettingsLifecycle();
 
             long seed = options.getSeed().orElse(originalWorld.getSeed());
             levelProperties.worldOptions = options.getSeed().isPresent()

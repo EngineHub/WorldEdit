@@ -94,7 +94,7 @@ public class DynamicStreamHandler extends StreamHandler {
     }
 
     @Override
-    public void setEncoding(@Nullable String encoding) throws SecurityException, UnsupportedEncodingException {
+    public synchronized void setEncoding(@Nullable String encoding) throws SecurityException, UnsupportedEncodingException {
         StreamHandler handler = this.handler;
         this.encoding = encoding;
         if (handler != null) {
@@ -117,7 +117,7 @@ public class DynamicStreamHandler extends StreamHandler {
     }
 
     @Override
-    public void setFormatter(@Nullable Formatter newFormatter) throws SecurityException {
+    public synchronized void setFormatter(@Nullable Formatter newFormatter) throws SecurityException {
         StreamHandler handler = this.handler;
         this.formatter = newFormatter;
         if (handler != null) {
@@ -150,7 +150,7 @@ public class DynamicStreamHandler extends StreamHandler {
     }
 
     @Override
-    public void setFilter(@Nullable Filter newFilter) throws SecurityException {
+    public synchronized void setFilter(@Nullable Filter newFilter) throws SecurityException {
         StreamHandler handler = this.handler;
         this.filter = newFilter;
         if (handler != null) {

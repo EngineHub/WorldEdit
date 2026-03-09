@@ -89,8 +89,6 @@ import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.phys.BlockHitResult;
 import org.apache.logging.log4j.Logger;
 import org.enginehub.piston.Command;
-import org.enginehub.worldeditcui.protocol.CUIPacket;
-import org.enginehub.worldeditcui.protocol.CUIPacketHandler;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -177,7 +175,8 @@ public class FabricWorldEdit implements ModInitializer {
         config = new FabricConfiguration(this);
         this.provider = getInitialPermissionsProvider();
 
-        CUIPacketHandler.instance().registerServerboundHandler(this::onCuiPacket);
+        // TODO CUI
+        // CUIPacketHandler.instance().registerServerboundHandler(this::onCuiPacket);
 
         ServerTickEvents.END_SERVER_TICK.register(ThreadSafeCache.getInstance());
         CommandRegistrationCallback.EVENT.register(this::registerCommands);
@@ -440,16 +439,17 @@ public class FabricWorldEdit implements ModInitializer {
             .post(new SessionIdleEvent(new FabricPlayer.SessionKeyImpl(handler.player)));
     }
 
-    private void onCuiPacket(CUIPacket payload, CUIPacketHandler.PacketContext context) {
-        if (!(context.player() instanceof ServerPlayer player)) {
-            // Ignore - this is not a server-bound packet
-            return;
-        }
-
-        FabricPlayer actor = FabricAdapter.adaptPlayer(player);
-        LocalSession session = WorldEdit.getInstance().getSessionManager().get(actor);
-        session.handleCUIInitializationMessage(payload.eventType(), payload.args(), actor);
-    }
+    // TODO CUI
+    //    private void onCuiPacket(CUIPacket payload, CUIPacketHandler.PacketContext context) {
+    //        if (!(context.player() instanceof ServerPlayer player)) {
+    //            // Ignore - this is not a server-bound packet
+    //            return;
+    //        }
+    //
+    //        FabricPlayer actor = FabricAdapter.adaptPlayer(player);
+    //        LocalSession session = WorldEdit.getInstance().getSessionManager().get(actor);
+    //        session.handleCUIInitializationMessage(payload.eventType(), payload.args(), actor);
+    //    }
 
     /**
      * Get the configuration.

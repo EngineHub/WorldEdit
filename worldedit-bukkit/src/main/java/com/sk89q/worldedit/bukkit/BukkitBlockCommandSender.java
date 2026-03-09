@@ -173,9 +173,8 @@ public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
                     updateActive();
                 } else {
                     // we should update it eventually
-                    // Suppress FutureReturnValueIgnored: We handle it in the block.
-                    @SuppressWarnings({"FutureReturnValueIgnored", "unused"})
-                    var unused = Bukkit.getScheduler().callSyncMethod(plugin, () -> {
+                    // We don't need the future as we handle exceptions in `updateActive`
+                    var _  = Bukkit.getScheduler().callSyncMethod(plugin, () -> {
                         updateActive();
                         return null;
                     });

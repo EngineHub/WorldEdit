@@ -158,10 +158,13 @@ public final class AsyncCommandBuilder<T> {
         return future;
     }
 
-    // Suppress FutureReturnValueIgnored: We handle the future internally
-    @SuppressWarnings("FutureReturnValueIgnored")
+    /**
+     * Like {@link #buildAndExec(ListeningExecutorService)}, but ignores the return value of the task.
+     *
+     * @param executor the executor to run the task on
+     */
     public void buildAndExecNoReturnValue(ListeningExecutorService executor) {
-        buildAndExec(executor);
+        var _ = buildAndExec(executor);
     }
 
     @SuppressWarnings("deprecation")
