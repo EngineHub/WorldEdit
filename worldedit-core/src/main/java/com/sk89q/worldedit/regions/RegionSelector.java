@@ -180,6 +180,8 @@ public interface RegionSelector {
      * Get lines of information about the selection.
      *
      * @return a list of lines describing the region
+     * @deprecated Use {@link #getSelectionInfoLines()} instead, which returns a list of {@link Component}s instead of
+     *      strings.
      */
     @Deprecated
     default List<String> getInformationLines() {

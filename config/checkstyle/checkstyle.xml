@@ -203,6 +203,7 @@ Checks based on Google Checks, modified for EngineHub.
             <property name="tokens" value="VARIABLE_DEF"/>
             <property name="allowSamelineMultipleAnnotations" value="true"/>
         </module>
+        <module name="MissingDeprecated"/>
         <module name="MissingOverride"/>
         <module name="MissingOverrideOnRecordAccessor"/>
         <module name="NonEmptyAtclauseDescription"/>

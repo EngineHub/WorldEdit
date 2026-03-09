@@ -46,6 +46,8 @@ import javax.annotation.Nullable;
  * <p>The data is read from a JSON file that is bundled with WorldEdit. If
  * reading fails (which occurs when this class is first instantiated), then
  * the methods will return {@code null}s for all blocks.</p>
+ *
+ * @deprecated Prefer sourcing block information from the normal registries.
  */
 @Deprecated(forRemoval = true)
 public final class BundledBlockData {

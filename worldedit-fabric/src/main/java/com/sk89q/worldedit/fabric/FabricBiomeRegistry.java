@@ -43,9 +43,6 @@ class FabricBiomeRegistry implements BiomeRegistry {
         return new FabricBiomeData(biome);
     }
 
-    /**
-     * Cached biome data information.
-     */
     @Deprecated
     private static class FabricBiomeData implements BiomeData {
         private final BiomeType biome;

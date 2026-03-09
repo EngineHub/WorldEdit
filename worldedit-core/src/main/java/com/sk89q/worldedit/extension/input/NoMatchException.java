@@ -39,6 +39,7 @@ public class NoMatchException extends InputParseException {
      * Create with a message.
      *
      * @param message the message
+     * @deprecated Use {@link #NoMatchException(Component)} instead, which supports rich text messages.
      */
     @Deprecated
     public NoMatchException(String message) {
@@ -60,6 +61,7 @@ public class NoMatchException extends InputParseException {
      *
      * @param message the message
      * @param cause the cause
+     * @deprecated Use {@link #NoMatchException(Component, Throwable)} instead, which supports rich text messages.
      */
     @Deprecated
     public NoMatchException(String message, Throwable cause) {

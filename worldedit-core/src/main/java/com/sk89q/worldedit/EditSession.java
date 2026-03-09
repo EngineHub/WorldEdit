@@ -182,6 +182,8 @@ public class EditSession implements Extent, AutoCloseable {
      * FAST = Use the fast mode. Good for mods.
      * NONE = Place blocks without worrying about placement order.
      * </p>
+     *
+     * @deprecated Only "fast" will be implemented in the future, as it works flawlessly now.
      */
     @Deprecated
     public enum ReorderMode {
@@ -376,6 +378,7 @@ public class EditSession implements Extent, AutoCloseable {
      * Sets the {@link ReorderMode} of this EditSession, and flushes the session.
      *
      * @param reorderMode The reorder mode
+     * @deprecated See {@link ReorderMode} for details.
      */
     @Deprecated
     public void setReorderMode(ReorderMode reorderMode) {
@@ -425,6 +428,7 @@ public class EditSession implements Extent, AutoCloseable {
      * Get the reorder mode.
      *
      * @return the reorder mode
+     * @deprecated See {@link ReorderMode} for details.
      */
     @Deprecated
     public ReorderMode getReorderMode() {
@@ -541,6 +545,8 @@ public class EditSession implements Extent, AutoCloseable {
      * notification.</p>
      *
      * @param enabled true to enable
+     * @deprecated Prefer to pick specific side-effects to enable or disable and call
+     *     {@link #setSideEffectApplier(SideEffectSet)}.
      */
     @Deprecated
     public void setFastMode(boolean enabled) {
@@ -567,6 +573,7 @@ public class EditSession implements Extent, AutoCloseable {
      * notification.</p>
      *
      * @return true if enabled
+     * @deprecated Prefer to query {@link #getSideEffectApplier()} and check specific side-effects.
      */
     @Deprecated
     public boolean hasFastMode() {
