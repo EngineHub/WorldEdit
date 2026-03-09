@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.fabric;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.AbstractPlatform;
@@ -28,7 +27,7 @@ import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
 import com.sk89q.worldedit.extension.platform.Preference;
 import com.sk89q.worldedit.extension.platform.Watchdog;
-import com.sk89q.worldedit.fabric.internal.ExtendedChunk;
+import com.sk89q.worldedit.fabric.internal.FabricWatchdogImpl;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.lifecycle.Lifecycled;
 import com.sk89q.worldedit.world.DataFixer;
@@ -40,13 +39,11 @@ import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
-import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.storage.ServerLevelData;
 import org.enginehub.piston.CommandManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +65,7 @@ class FabricPlatform extends AbstractPlatform implements MultiUserPlatform {
 
         this.watchdog = FabricWorldEdit.LIFECYCLED_SERVER.map(
             server -> server instanceof DedicatedServer
-                ? Optional.of((Watchdog) server)
+                ? Optional.of(new FabricWatchdogImpl(server))
                 : Optional.empty()
         );
     }
@@ -200,22 +197,17 @@ class FabricPlatform extends AbstractPlatform implements MultiUserPlatform {
         return capabilities;
     }
 
-    private static final Set<SideEffect> SUPPORTED_SIDE_EFFECTS_NO_MIXIN = Sets.immutableEnumSet(
+    private static final Set<SideEffect> SUPPORTED_SIDE_EFFECTS = Sets.immutableEnumSet(
         SideEffect.VALIDATION,
         SideEffect.ENTITY_AI,
         SideEffect.LIGHTING,
-        SideEffect.NEIGHBORS
-    );
-
-    private static final Set<SideEffect> SUPPORTED_SIDE_EFFECTS = Sets.immutableEnumSet(
-        Iterables.concat(SUPPORTED_SIDE_EFFECTS_NO_MIXIN, Collections.singleton(SideEffect.UPDATE))
+        SideEffect.NEIGHBORS,
+        SideEffect.UPDATE
     );
 
     @Override
     public Set<SideEffect> getSupportedSideEffects() {
-        return ExtendedChunk.class.isAssignableFrom(LevelChunk.class)
-            ? SUPPORTED_SIDE_EFFECTS
-            : SUPPORTED_SIDE_EFFECTS_NO_MIXIN;
+        return SUPPORTED_SIDE_EFFECTS;
     }
 
     @Override

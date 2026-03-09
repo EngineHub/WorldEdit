@@ -36,7 +36,6 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.fabric.internal.ExtendedMinecraftServer;
 import com.sk89q.worldedit.fabric.internal.FabricEntity;
 import com.sk89q.worldedit.fabric.internal.FabricLoggingProblemReporter;
 import com.sk89q.worldedit.fabric.internal.FabricServerLevelDelegateProxy;
@@ -194,8 +193,8 @@ public class FabricWorld extends AbstractWorld {
     public Path getStoragePath() {
         final Level world = getWorld();
         MinecraftServer server = world.getServer();
-        checkState(server instanceof ExtendedMinecraftServer, "Need a server world");
-        return ((ExtendedMinecraftServer) server).getStoragePath(world);
+        checkState(server != null, "Need a server world");
+        return server.storageSource.getDimensionPath(world.dimension());
     }
 
     @Override
