@@ -17,42 +17,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.fabric.mixin;
+package com.sk89q.worldedit.fabric.internal;
 
-import com.google.errorprone.annotations.Keep;
 import com.sk89q.worldedit.extension.platform.Watchdog;
-import com.sk89q.worldedit.fabric.internal.ExtendedMinecraftServer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Util;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.LevelStorageSource;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 
-import java.nio.file.Path;
+public final class FabricWatchdogImpl implements Watchdog {
+    private final MinecraftServer server;
 
-@Mixin(MinecraftServer.class)
-public abstract class MixinMinecraftServer implements Watchdog, ExtendedMinecraftServer {
+    public FabricWatchdogImpl(MinecraftServer server) {
+        this.server = server;
+    }
 
-    @Keep
-    @Shadow
-    private long nextTickTimeNanos;
-    @Final
-    @Shadow
-    protected LevelStorageSource.LevelStorageAccess storageSource;
-
-    @Unique
     @Override
     public void tick() {
-        nextTickTimeNanos = Util.getNanos();
+        server.nextTickTimeNanos = Util.getNanos();
     }
-
-    @Unique
-    @Override
-    public Path getStoragePath(Level world) {
-        return storageSource.getDimensionPath(world.dimension());
-    }
-
 }
