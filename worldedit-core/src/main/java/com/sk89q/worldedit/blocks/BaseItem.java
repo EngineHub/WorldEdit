@@ -57,6 +57,7 @@ public class BaseItem implements NbtValued {
      *
      * @param itemType Type of the item
      * @param nbtData NBT Compound tag
+     * @deprecated Lazy-initialized NBT data is preferred, but you shouldn't be constructing this anyways.
      */
     @Deprecated
     public BaseItem(ItemType itemType, @Nullable CompoundTag nbtData) {

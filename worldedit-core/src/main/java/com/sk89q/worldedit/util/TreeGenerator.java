@@ -39,10 +39,16 @@ import javax.annotation.Nullable;
 
 /**
  * Tree generator.
+ *
+ * @deprecated we use a registry to store tree types now, {@link com.sk89q.worldedit.world.generation.TreeType}.
  */
 @Deprecated
 public final class TreeGenerator {
 
+    /**
+     * Tree types.
+     * @deprecated we use a registry to store tree types now, {@link com.sk89q.worldedit.world.generation.TreeType}.
+     */
     @Deprecated
     public enum TreeType {
         TREE("Oak tree", "oak", "tree", "regular"),

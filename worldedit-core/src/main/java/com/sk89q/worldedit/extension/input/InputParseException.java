@@ -40,6 +40,7 @@ public class InputParseException extends WorldEditException {
      * Throw with a message.
      *
      * @param message the message
+     * @deprecated Use {@link #InputParseException(Component)} instead, which supports rich text messages.
      */
     @Deprecated
     public InputParseException(String message) {
@@ -61,6 +62,7 @@ public class InputParseException extends WorldEditException {
      *
      * @param message the message
      * @param cause the cause
+     * @deprecated Use {@link #InputParseException(Component, Throwable)} instead, which supports rich text messages.
      */
     @Deprecated
     public InputParseException(String message, Throwable cause) {

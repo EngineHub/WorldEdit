@@ -39,6 +39,8 @@ public class NotABlockException extends WorldEditException {
      * Create a new instance.
      *
      * @param input the input that was used
+     * @deprecated Use {@link #NotABlockException(ItemType)} instead, as items are no longer identified by strings or
+     *      integers.
      */
     @Deprecated
     public NotABlockException(String input) {
@@ -49,6 +51,8 @@ public class NotABlockException extends WorldEditException {
      * Create a new instance.
      *
      * @param input the input that was used
+     * @deprecated Use {@link #NotABlockException(ItemType)} instead, as items are no longer identified by strings or
+     *      integers.
      */
     @Deprecated
     public NotABlockException(int input) {

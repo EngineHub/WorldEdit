@@ -121,6 +121,7 @@ public interface World extends Extent, Keyed {
      * @param block block to set
      * @param notifyAndLight true to to notify and light
      * @return true if the block was successfully set (return value may not be accurate)
+     * @deprecated Use {@link #setBlock(BlockVector3, BlockStateHolder, SideEffectSet)} with specific side-effects.
      */
     @Deprecated
     default <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, boolean notifyAndLight) throws WorldEditException {
@@ -151,6 +152,7 @@ public interface World extends Extent, Keyed {
      * @param position position of the block
      * @param previousType the type of the previous block that was there
      * @return true if the block was successfully notified
+     * @deprecated Use {@link #applySideEffects(BlockVector3, BlockState, SideEffectSet)} with specific side-effects.
      */
     @Deprecated
     default boolean notifyAndLightBlock(BlockVector3 position, BlockState previousType) throws WorldEditException {

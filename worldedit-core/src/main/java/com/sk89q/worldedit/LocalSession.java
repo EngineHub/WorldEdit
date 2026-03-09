@@ -1192,6 +1192,7 @@ public class LocalSession {
      * Checks if the session has fast mode enabled.
      *
      * @return true if fast mode is enabled
+     * @deprecated Use {@link #getSideEffectSet()} and check for specific side-effects instead.
      */
     @Deprecated
     public boolean hasFastMode() {
@@ -1202,6 +1203,7 @@ public class LocalSession {
      * Set fast mode.
      *
      * @param fastMode true if fast mode is enabled
+     * @deprecated Use {@link #setSideEffectSet(SideEffectSet)} with a specific set of side-effects instead.
      */
     @Deprecated
     public void setFastMode(boolean fastMode) {
@@ -1212,6 +1214,7 @@ public class LocalSession {
      * Gets the reorder mode of the session.
      *
      * @return The reorder mode
+     * @deprecated See {@link EditSession.ReorderMode} for more information.
      */
     @Deprecated
     public EditSession.ReorderMode getReorderMode() {
@@ -1222,6 +1225,7 @@ public class LocalSession {
      * Sets the reorder mode of the session.
      *
      * @param reorderMode The reorder mode
+     * @deprecated See {@link EditSession.ReorderMode} for more information.
      */
     @Deprecated
     public void setReorderMode(EditSession.ReorderMode reorderMode) {

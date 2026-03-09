@@ -247,6 +247,7 @@ public class BukkitWorld extends AbstractWorld {
 
     /**
      * An EnumMap that stores which WorldEdit TreeTypes apply to which Bukkit TreeTypes.
+     * @deprecated because {@link com.sk89q.worldedit.util.TreeGenerator.TreeType} is
      */
     @Deprecated
     private static final EnumMap<TreeGenerator.TreeType, TreeType> treeTypeMapping =
