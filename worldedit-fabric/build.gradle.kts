@@ -1,9 +1,10 @@
 import buildlogic.internalVersion
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.fabricmc.loom.task.RunGameTask
+import java.net.URI
 
 plugins {
-    id("net.fabricmc.fabric-loom") version "1.15.4"
+    alias(libs.plugins.fabric.loom)
     `java-library`
     id("buildlogic.platform")
 }
@@ -21,6 +22,18 @@ loom {
 
 tasks.withType<RunGameTask>().configureEach {
     javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
+}
+
+repositories {
+    maven {
+        name = "EngineHub (Non-Mirrored)"
+        url = URI.create("https://repo.enginehub.org/libs-release/")
+        metadataSources {
+            gradleMetadata()
+            mavenPom()
+            artifact()
+        }
+    }
 }
 
 dependencies {

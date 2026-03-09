@@ -40,6 +40,7 @@ dependencyResolutionManagement {
             name = "EngineHub (Non-Mirrored)"
             url = URI.create("https://repo.enginehub.org/libs-release/")
             metadataSources {
+                gradleMetadata()
                 mavenPom()
                 artifact()
             }
@@ -57,6 +58,11 @@ dependencyResolutionManagement {
             content {
                 includeModuleByRegex(".*", "worldedit-lang")
             }
+        }
+        mavenCentral()
+        maven {
+            name = "Minecraft Libraries"
+            url = uri("https://libraries.minecraft.net/")
         }
     }
 }

@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.fabric;
 
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
 
@@ -58,8 +57,10 @@ public interface FabricPermissionsProvider {
 
         @Override
         public boolean hasPermission(ServerPlayer player, String permission) {
-            return Permissions.getPermissionValue(player, permission)
-                .orElseGet(() -> super.hasPermission(player, permission));
+            return false;
+            // TODO Perms API
+            //            return Permissions.getPermissionValue(player, permission)
+            //                .orElseGet(() -> super.hasPermission(player, permission));
         }
 
         @Override

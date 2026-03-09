@@ -9,6 +9,19 @@ plugins {
     id("io.papermc.paperweight.userdev")
 }
 
+java {
+    // Required when we de-sync release option and declared Java versions.
+    disableAutoTargetJvm()
+}
+
+tasks
+    .withType<JavaCompile>()
+    .matching { it.name == "compileJava" || it.name == "compileTestJava" }
+    .configureEach {
+        // We use Java 21 for most of the pre-existing adapters.
+        options.release.set(21)
+    }
+
 repositories {
     maven {
         name = "Minecraft Libraries"

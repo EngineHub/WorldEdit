@@ -78,7 +78,7 @@ class BukkitEntity implements Entity {
         org.bukkit.entity.Entity entity = entityRef.get();
         if (entity != null) {
             if (WorldEditPlugin.getInstance().isFolia()) {
-                var unused = PaperLib.teleportAsync(entity, BukkitAdapter.adapt(location));
+                var _  = PaperLib.teleportAsync(entity, BukkitAdapter.adapt(location));
                 return true;
             } else {
                 return entity.teleport(BukkitAdapter.adapt(location));
