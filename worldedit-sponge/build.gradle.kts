@@ -82,6 +82,11 @@ dependencies {
     "compileOnly"(libs.errorprone.annotations)
 }
 
+tasks.compileJava {
+    // Currently need to allow warning about supported source versions for annotation processors.
+    options.compilerArgs.remove("-Werror")
+}
+
 configure<BasePluginExtension> {
     archivesName.set("${project.name}-api${libs.versions.sponge.api.major.get()}")
 }

@@ -5,7 +5,8 @@
     "mixins": [
         "MixinLevelChunkSetBlockHook",
         "MixinMinecraftServer",
-        "MixinServerGamePacketListenerImpl"
+        "MixinServerGamePacketListenerImpl",
+        "MixinServerLevel"
     ],
     "plugin": "com.sk89q.worldedit.fabric.internal.MixinConfigPlugin",
     "server": [

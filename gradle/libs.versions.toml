@@ -75,7 +75,7 @@ junit-platform-launcher.module = "org.junit.platform:junit-platform-launcher"
 
 jqwik = "net.jqwik:jqwik:1.9.0"
 
-mockito-bom = "org.mockito:mockito-bom:5.11.0"
+mockito-bom = "org.mockito:mockito-bom:5.22.0"
 mockito-core.module = "org.mockito:mockito-core"
 mockito-junit-jupiter.module = "org.mockito:mockito-junit-jupiter"
 
