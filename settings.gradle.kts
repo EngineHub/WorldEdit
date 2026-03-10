@@ -8,8 +8,8 @@ pluginManagement {
             url = uri("https://maven.fabricmc.net/")
         }
         maven {
-            name = "SpongePowered Snapshots"
-            url = uri("https://repo.spongepowered.org/repository/maven-snapshots/")
+            name = "SpongePowered"
+            url = uri("https://repo.spongepowered.org/repository/maven-releases/")
         }
         maven {
             name = "NeoForged"
@@ -25,7 +25,7 @@ pluginManagement {
 }
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
-    id("fabric-loom") version "1.14.7"
+    id("fabric-loom") version "1.15.4"
 }
 dependencyResolutionManagement {
     repositories {

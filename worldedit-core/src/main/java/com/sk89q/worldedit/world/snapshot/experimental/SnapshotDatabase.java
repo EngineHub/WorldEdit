@@ -21,11 +21,9 @@ package com.sk89q.worldedit.world.snapshot.experimental;
 
 import java.io.IOException;
 import java.net.URI;
-import java.time.ZonedDateTime;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Stream;
-
-import static com.sk89q.worldedit.util.collection.MoreStreams.takeWhile;
 
 /**
  * Handler for querying snapshot storage.
@@ -46,36 +44,29 @@ public interface SnapshotDatabase {
     Optional<Snapshot> getSnapshot(URI name) throws IOException;
 
     /**
-     * Get all snapshots by world, unsorted. The stream should be
+     * Get a snapshot from its info.
+     *
+     * @param info the snapshot info, as previously obtained from this database
+     * @return the snapshot if still available
+     */
+    default Optional<Snapshot> getSnapshot(SnapshotInfo info) throws IOException {
+        return getSnapshot(info.getName());
+    }
+
+    /**
+     * Get all snapshot infos by world, unsorted. The stream should be
      * {@linkplain Stream#close() closed}, as it may allocate filesystem or network resources.
      *
      * @param worldName the name of the world
-     * @return a stream of all snapshots for the given world in this database
+     * @return a stream of all snapshot infos for the given world in this database
      */
-    Stream<Snapshot> getSnapshots(String worldName) throws IOException;
+    Stream<SnapshotInfo> getSnapshotInfos(String worldName) throws IOException;
 
-    default Stream<Snapshot> getSnapshotsNewestFirst(String worldName) throws IOException {
-        return getSnapshots(worldName).sorted(SnapshotComparator.getInstance().reversed());
+    default Stream<SnapshotInfo> getSnapshotInfosNewestFirst(String worldName) throws IOException {
+        return getSnapshotInfos(worldName).sorted(Comparator.<SnapshotInfo>naturalOrder().reversed());
     }
 
-    default Stream<Snapshot> getSnapshotsOldestFirst(String worldName) throws IOException {
-        return getSnapshots(worldName).sorted(SnapshotComparator.getInstance());
+    default Stream<SnapshotInfo> getSnapshotInfosOldestFirst(String worldName) throws IOException {
+        return getSnapshotInfos(worldName).sorted();
     }
-
-    default Stream<Snapshot> getSnapshotsBefore(String worldName, ZonedDateTime date) throws IOException {
-        return takeWhile(
-            // sorted from oldest -> newest, so all `before` are at the front
-            getSnapshotsOldestFirst(worldName),
-            snap -> snap.getInfo().getDateTime().isBefore(date)
-        );
-    }
-
-    default Stream<Snapshot> getSnapshotsAfter(String worldName, ZonedDateTime date) throws IOException {
-        return takeWhile(
-            // sorted from newest -> oldest, so all `after` are at the front
-            getSnapshotsNewestFirst(worldName),
-            snap -> snap.getInfo().getDateTime().isAfter(date)
-        );
-    }
-
 }

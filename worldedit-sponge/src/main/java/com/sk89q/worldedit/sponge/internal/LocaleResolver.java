@@ -32,4 +32,7 @@ public class LocaleResolver {
         }
         return WorldEdit.getInstance().getConfiguration().defaultLocale;
     }
+
+    private LocaleResolver() {
+    }
 }

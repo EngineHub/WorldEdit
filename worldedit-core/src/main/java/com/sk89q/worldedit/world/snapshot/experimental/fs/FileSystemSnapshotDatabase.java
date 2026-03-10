@@ -199,7 +199,7 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
     }
 
     @Override
-    public Stream<Snapshot> getSnapshots(String worldName) throws IOException {
+    public Stream<SnapshotInfo> getSnapshotInfos(String worldName) throws IOException {
         /*
          There are a few possible snapshot formats we accept:
            - a world directory, identified by <worldName>/level.dat
@@ -233,12 +233,13 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
                 }
                 return getTimestampedEntries(worldName, entry);
             }))
-            .map(IOFunction.unchecked(id ->
-                getSnapshot(id)
-                    .orElseThrow(() ->
-                        new AssertionError("Could not find discovered snapshot: " + id)
-                    )
-            ));
+            .map(IOFunction.unchecked(id -> {
+                try (Snapshot snapshot = getSnapshot(id).orElseThrow(() ->
+                    new AssertionError("Could not find discovered snapshot: " + id)
+                )) {
+                    return snapshot.getInfo();
+                }
+            }));
     }
 
     private Stream<String> listTimestampedEntries(String worldName, Path directory) throws IOException {

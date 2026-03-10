@@ -47,6 +47,7 @@ public class BlockInteractEvent extends Event implements Cancellable {
      * @param cause the causing actor
      * @param location the location of the block
      * @param type the type of interaction
+     * @deprecated Face should be specified if possible, but you shouldn't be constructing this anyways.
      */
     @InlineMe(replacement = "this(cause, location, null, type)")
     @Deprecated

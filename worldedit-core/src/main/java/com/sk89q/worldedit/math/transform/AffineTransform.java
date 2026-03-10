@@ -39,21 +39,6 @@ public record AffineTransform(
     double m20, double m21, double m22, double m23
 ) implements Transform {
 
-    // ===================================================================
-    // constructors
-
-    /**
-     * Creates a new affine transform3D set to the identity.
-     */
-    public AffineTransform() {
-        // init to identity matrix
-        this(
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0
-        );
-    }
-
     private static double indexCoeffs(double[] coeffs, int destIndex) {
         if (coeffs.length == 12) {
             return coeffs[destIndex];
@@ -68,6 +53,22 @@ public record AffineTransform(
         // Adjust for missing holes
         destIndex -= destIndex / 3;
         return coeffs[destIndex];
+    }
+
+
+    // ===================================================================
+    // constructors
+
+    /**
+     * Creates a new affine transform3D set to the identity.
+     */
+    public AffineTransform() {
+        // init to identity matrix
+        this(
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0
+        );
     }
 
     /**

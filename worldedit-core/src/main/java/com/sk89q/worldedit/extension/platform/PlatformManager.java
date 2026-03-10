@@ -339,8 +339,8 @@ public class PlatformManager {
     }
 
     /**
-     * You shouldn't have been calling this anyways, but this is now deprecated. Either don't
-     * fire this event at all, or fire the new event via the event bus if you're a platform.
+     * You shouldn't have been calling this anyways, but this is now deprecated.
+     * @deprecated Either don't fire this event at all, or fire the new event via the event bus if you're a platform.
      */
     // Suppress InlineMeSuggester: This method cannot be made final due to backwards compatibility
     @SuppressWarnings("InlineMeSuggester")

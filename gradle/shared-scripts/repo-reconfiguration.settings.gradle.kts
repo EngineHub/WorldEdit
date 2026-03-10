@@ -27,52 +27,33 @@ object Isolated {
         "file:",
     )
 
-    // Until https://github.com/gradle/gradle/issues/31888 is fixed in 9.4.0
-    // we need to explicitly exclude unique snapshots
-    private val UNIQUE_SNAPSHOT_MODULES = listOf(
-        ModuleDeclaration("org.spongepowered", "spongeapi"),
-        ModuleDeclaration("org.spongepowered", "vanillagradle"),
-        ModuleDeclaration("me.lucko", "spark-api"),
-    )
-
-    private fun MavenRepositoryContentDescriptor.enhancedReleasesOnly() {
-        releasesOnly()
-        UNIQUE_SNAPSHOT_MODULES.forEach {
-            if (it.version != null) {
-                excludeVersion(it.group, it.name, it.version)
-            } else {
-                excludeModule(it.group, it.name)
-            }
-        }
-    }
-
     private val REPO_RECONFIGURATIONS = listOf(
         "https://repo.maven.apache.org/maven2/" to
                 RepositoryReconfiguration("https://repo.enginehub.org/internal/maven-central-proxy/") {
-                    enhancedReleasesOnly()
+                    releasesOnly()
                 },
         "https://plugins.gradle.org/m2" to
                 RepositoryReconfiguration("https://repo.enginehub.org/internal/plugin-portal-proxy/") {
-                    enhancedReleasesOnly()
+                    releasesOnly()
                 },
         "https://libraries.minecraft.net/" to
                 RepositoryReconfiguration("https://repo.enginehub.org/internal/minecraft/") {
-                    enhancedReleasesOnly()
+                    releasesOnly()
                 },
         "https://maven.neoforged.net/releases/" to
                 RepositoryReconfiguration("https://repo.enginehub.org/internal/neoforged/") {
-                    enhancedReleasesOnly()
+                    releasesOnly()
                     includeGroupAndSubgroups("net.minecraftforge")
                     includeGroupAndSubgroups("net.neoforged")
                 },
         "https://maven.minecraftforge.net/" to
                 RepositoryReconfiguration("https://repo.enginehub.org/internal/forge/") {
-                    enhancedReleasesOnly()
+                    releasesOnly()
                     includeGroupAndSubgroups("net.minecraftforge")
                 },
         "https://maven.parchmentmc.org/" to
                 RepositoryReconfiguration("https://repo.enginehub.org/internal/parchment/") {
-                    enhancedReleasesOnly()
+                    releasesOnly()
                     includeGroup("org.parchmentmc.data")
                 },
         "https://repo.papermc.io/repository/maven-public/" to
@@ -85,29 +66,29 @@ object Isolated {
                 },
         "https://maven.fabricmc.net/" to
                 RepositoryReconfiguration("https://repo.enginehub.org/internal/fabricmc/") {
-                    enhancedReleasesOnly()
+                    releasesOnly()
                     includeGroupAndSubgroups("fabric-loom")
                     includeGroupAndSubgroups("net.fabricmc")
                     excludeModule("net.fabricmc", "yarn")
                 },
         "https://maven.fabricmc.net/#yarn-only" to
                 RepositoryReconfiguration("https://repo.enginehub.org/internal/fabricmc-yarn/") {
-                    enhancedReleasesOnly()
+                    releasesOnly()
                     includeModule("net.fabricmc", "yarn")
                 },
         "https://repo.spongepowered.org/repository/maven-releases/" to
                 RepositoryReconfiguration("https://repo.enginehub.org/internal/spongepowered-releases/") {
-                    enhancedReleasesOnly()
+                    releasesOnly()
                     includeGroupAndSubgroups("org.spongepowered")
                 },
         "https://repo.spongepowered.org/repository/maven-snapshots/" to
                 RepositoryReconfiguration("https://repo.enginehub.org/internal/spongepowered-snapshots/") {
-                    // Cannot actually call snapshotsOnly() because it excludes unique snapshots right now
+                    snapshotsOnly()
                     includeGroupAndSubgroups("org.spongepowered")
                 },
         "https://repo.enginehub.org/libs-release/" to
                 RepositoryReconfiguration("https://repo.enginehub.org/libs-release/") {
-                    enhancedReleasesOnly()
+                    releasesOnly()
                     includeGroupAndSubgroups("com.sk89q")
                     includeGroupAndSubgroups("org.enginehub")
                 },

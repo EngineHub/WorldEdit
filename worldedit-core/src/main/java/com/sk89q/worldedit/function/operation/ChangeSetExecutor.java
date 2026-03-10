@@ -33,7 +33,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ChangeSetExecutor implements Operation {
 
-    public enum Type { UNDO, REDO }
+    public enum Type {
+        UNDO, REDO
+    }
 
     private final Iterator<Change> iterator;
     private final Type type;

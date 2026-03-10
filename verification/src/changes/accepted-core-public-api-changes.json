@@ -1,2 +1,27 @@
 {
+    "Constructor was not useful": [
+        {
+            "type": "com.sk89q.worldedit.registry.Registries",
+            "member": "Constructor com.sk89q.worldedit.registry.Registries()",
+            "changes": [
+                "CONSTRUCTOR_LESS_ACCESSIBLE"
+            ]
+        }
+    ],
+    "Experimental API may change freely": [
+        {
+            "type": "com.sk89q.worldedit.LocalSession",
+            "member": "Method com.sk89q.worldedit.LocalSession.getSnapshotExperimental()",
+            "changes": [
+                "METHOD_RETURN_TYPE_CHANGED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.LocalSession",
+            "member": "Method com.sk89q.worldedit.LocalSession.setSnapshotExperimental(com.sk89q.worldedit.world.snapshot.experimental.Snapshot)",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        }
+    ]
 }

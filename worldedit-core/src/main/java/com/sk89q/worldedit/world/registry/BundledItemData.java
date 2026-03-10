@@ -47,7 +47,7 @@ import javax.annotation.Nullable;
  * reading fails (which occurs when this class is first instantiated), then
  * the methods will return {@code null}s for all items.</p>
  *
- * @deprecated Deprecated without replacement.
+ * @deprecated Prefer sourcing block information from the normal registries.
  */
 @Deprecated(forRemoval = true)
 public final class BundledItemData {
@@ -92,6 +92,7 @@ public final class BundledItemData {
      *
      * @param id the ID
      * @return the entry, or null
+     * @deprecated Prefer sourcing block information from the normal registries.
      */
     @Nullable
     @Deprecated
@@ -108,7 +109,7 @@ public final class BundledItemData {
      *
      * @param id the string ID
      * @return the material's properties, or null
-     * @deprecated Deprecated without alternative
+     * @deprecated Prefer sourcing block information from the normal registries.
      */
     @Nullable
     @Deprecated(forRemoval = true)
@@ -127,6 +128,7 @@ public final class BundledItemData {
      * Get a singleton instance of this object.
      *
      * @return the instance
+     * @deprecated Prefer sourcing block information from the normal registries.
      */
     @Deprecated
     public static BundledItemData getInstance() {

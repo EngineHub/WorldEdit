@@ -65,6 +65,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
      *
      * @param state The block state
      * @param nbtData NBT data, which must be provided
+     * @deprecated Lazy-initialized NBT data is preferred, but you shouldn't be constructing this anyways.
      */
     @InlineMe(
         replacement = "this(state, LazyReference.from(checkNotNull(nbtData)::toLinTag))",

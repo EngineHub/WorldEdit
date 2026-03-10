@@ -451,7 +451,7 @@ public final class WorldEdit {
      */
     @InlineMe(replacement = "this.getWorkingDirectoryPath(path).toFile()")
     @Deprecated
-    public final File getWorkingDirectoryFile(String path) {
+    public File getWorkingDirectoryFile(String path) {
         return getWorkingDirectoryPath(path).toFile();
     }
 
@@ -648,6 +648,7 @@ public final class WorldEdit {
      * @param player the player
      * @param clicked the clicked block
      * @return false if you want the action to go through
+     * @deprecated You shouldn't be calling this, but use {@link #handleBlockRightClick(Player, Location, Direction)}.
      */
     @InlineMe(replacement = "this.handleBlockRightClick(player, clicked, null)")
     @Deprecated
@@ -675,6 +676,7 @@ public final class WorldEdit {
      * @param player the player
      * @param clicked the clicked block
      * @return false if you want the action to go through
+     * @deprecated You shouldn't be calling this, but use {@link #handleBlockLeftClick(Player, Location, Direction)}.
      */
     @InlineMe(replacement = "this.handleBlockLeftClick(player, clicked, null)")
     @Deprecated
