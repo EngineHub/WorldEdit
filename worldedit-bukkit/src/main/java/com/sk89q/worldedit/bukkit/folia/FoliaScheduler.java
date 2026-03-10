@@ -38,6 +38,9 @@ import org.bukkit.plugin.Plugin;
  */
 public class FoliaScheduler {
 
+    private FoliaScheduler() {
+    }
+
     static final boolean isFolia;
     private static Class<? extends Event> regionizedServerInitEventClass;
 
