@@ -49,6 +49,7 @@ import com.sk89q.worldedit.regions.selector.RegionSelectorType;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.Placement;
 import com.sk89q.worldedit.session.PlacementType;
+import com.sk89q.worldedit.session.SessionCUIState;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.util.SideEffectSet;
@@ -84,17 +85,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class LocalSession {
 
-    private static final int CUI_VERSION_UNINITIALIZED = -1;
     public static int MAX_HISTORY_SIZE = 15;
 
     // Non-session related fields
     private transient LocalConfiguration config;
     private final transient AtomicBoolean dirty = new AtomicBoolean();
 
-    // Single-connection lifetime fields
-    private transient int failedCuiAttempts = 0;
-    private transient boolean hasCUISupport = false;
-    private transient int cuiVersion = CUI_VERSION_UNINITIALIZED;
+    // CUI state (extracted to SessionCUIState - move field)
+    private final transient SessionCUIState cuiState = new SessionCUIState();
 
     // Session related
     private transient RegionSelector selector = new CuboidRegionSelector();
@@ -113,7 +111,6 @@ public class LocalSession {
     private transient SideEffectSet sideEffectSet = SideEffectSet.defaults();
     private transient Mask mask;
     private transient ZoneId timezone = ZoneId.systemDefault();
-    private transient BlockVector3 cuiTemporaryBlock;
     @SuppressWarnings("deprecation")
     private transient EditSession.ReorderMode reorderMode = EditSession.ReorderMode.FAST;
     private transient List<Countable<BlockState>> lastDistribution;
@@ -899,10 +896,11 @@ public class LocalSession {
 
         Player player = (Player) actor;
 
-        if (!useServerCUI || hasCUISupport) {
-            if (cuiTemporaryBlock != null) {
-                player.sendFakeBlock(cuiTemporaryBlock, null);
-                cuiTemporaryBlock = null;
+        if (!useServerCUI || cuiState.hasCUISupport()) {
+            BlockVector3 pos = cuiState.getServerCuiStructureBlockPosition();
+            if (pos != null) {
+                player.sendFakeBlock(pos, null);
+                cuiState.setServerCuiStructureBlockPosition(null);
             }
             return; // If it's not enabled, ignore this.
         }
@@ -912,22 +910,23 @@ public class LocalSession {
             LinCompoundTag tags = Objects.requireNonNull(
                 block.getNbt(), "createStructureBlock should return nbt"
             );
-            BlockVector3 tempCuiTemporaryBlock = BlockVector3.at(
+            BlockVector3 newStructureBlockPosition = BlockVector3.at(
                 tags.getTag("x", LinTagType.intTag()).valueAsInt(),
                 tags.getTag("y", LinTagType.intTag()).valueAsInt(),
                 tags.getTag("z", LinTagType.intTag()).valueAsInt()
             );
-            // If it's null, we don't need to do anything. The old was already removed.
-            if (cuiTemporaryBlock != null && !tempCuiTemporaryBlock.equals(cuiTemporaryBlock)) {
-                // Update the existing block if it's the same location
-                player.sendFakeBlock(cuiTemporaryBlock, null);
+            BlockVector3 currentPos = cuiState.getServerCuiStructureBlockPosition();
+            if (currentPos != null && !newStructureBlockPosition.equals(currentPos)) {
+                player.sendFakeBlock(currentPos, null);
             }
-            cuiTemporaryBlock = tempCuiTemporaryBlock;
-            player.sendFakeBlock(cuiTemporaryBlock, block);
-        } else if (cuiTemporaryBlock != null) {
-            // Remove the old block
-            player.sendFakeBlock(cuiTemporaryBlock, null);
-            cuiTemporaryBlock = null;
+            cuiState.setServerCuiStructureBlockPosition(newStructureBlockPosition);
+            player.sendFakeBlock(newStructureBlockPosition, block);
+        } else {
+            BlockVector3 pos = cuiState.getServerCuiStructureBlockPosition();
+            if (pos != null) {
+                player.sendFakeBlock(pos, null);
+                cuiState.setServerCuiStructureBlockPosition(null);
+            }
         }
     }
 
@@ -941,7 +940,7 @@ public class LocalSession {
         checkNotNull(actor);
         checkNotNull(event);
 
-        if (hasCUISupport) {
+        if (cuiState.hasCUISupport()) {
             actor.dispatchCUIEvent(event);
         } else if (useServerCUI) {
             updateServerCUI(actor);
@@ -967,7 +966,7 @@ public class LocalSession {
     public void dispatchCUISelection(Actor actor) {
         checkNotNull(actor);
 
-        if (!hasCUISupport) {
+        if (!cuiState.hasCUISupport()) {
             if (useServerCUI) {
                 updateServerCUI(actor);
             }
@@ -975,7 +974,7 @@ public class LocalSession {
         }
 
         if (selector instanceof CUIRegion tempSel) {
-            if (tempSel.getProtocolVersion() > cuiVersion) {
+            if (tempSel.getProtocolVersion() > cuiState.getCUIVersion()) {
                 actor.dispatchCUIEvent(new SelectionShapeEvent(tempSel.getLegacyTypeID()));
                 tempSel.describeLegacyCUI(this, actor);
             } else {
@@ -994,12 +993,12 @@ public class LocalSession {
     public void describeCUI(Actor actor) {
         checkNotNull(actor);
 
-        if (!hasCUISupport) {
+        if (!cuiState.hasCUISupport()) {
             return;
         }
 
         if (selector instanceof CUIRegion tempSel) {
-            if (tempSel.getProtocolVersion() > cuiVersion) {
+            if (tempSel.getProtocolVersion() > cuiState.getCUIVersion()) {
                 tempSel.describeLegacyCUI(this, actor);
             } else {
                 tempSel.describeCUI(this, actor);
@@ -1019,18 +1018,18 @@ public class LocalSession {
         checkNotNull(eventType);
         checkNotNull(args);
 
-        if (this.hasCUISupport) {
+        if (cuiState.hasCUISupport()) {
             // WECUI is a bit aggressive about re-initializing itself
             // the last attempt to touch handshakes didn't go well, so this will do... for now
             dispatchCUISelection(actor);
             return;
-        } else if (this.failedCuiAttempts > 3) {
+        } else if (cuiState.getFailedCuiAttempts() > 3) {
             return;
         }
 
         if (!args.isEmpty() && eventType.equalsIgnoreCase("v")) { // enough fields and right message
             if (args.size() > 1) {
-                this.failedCuiAttempts++;
+                cuiState.incrementFailedCuiAttempts();
                 return;
             }
 
@@ -1039,11 +1038,11 @@ public class LocalSession {
                 version = Integer.parseInt(args.getFirst());
             } catch (NumberFormatException e) {
                 WorldEdit.logger.warn("Error while reading CUI init message");
-                this.failedCuiAttempts++;
+                cuiState.incrementFailedCuiAttempts();
                 return;
             }
-            setCUISupport(true);
-            setCUIVersion(version);
+            cuiState.setCUISupport(true);
+            cuiState.setCUIVersion(version);
             dispatchCUISelection(actor);
         }
     }
@@ -1070,7 +1069,7 @@ public class LocalSession {
      * @return true if CUI is enabled
      */
     public boolean hasCUISupport() {
-        return hasCUISupport;
+        return cuiState.hasCUISupport();
     }
 
     /**
@@ -1079,7 +1078,7 @@ public class LocalSession {
      * @param support true if CUI is enabled
      */
     public void setCUISupport(boolean support) {
-        hasCUISupport = support;
+        cuiState.setCUISupport(support);
     }
 
     /**
@@ -1088,7 +1087,7 @@ public class LocalSession {
      * @return the CUI version
      */
     public int getCUIVersion() {
-        return cuiVersion;
+        return cuiState.getCUIVersion();
     }
 
     /**
@@ -1097,11 +1096,7 @@ public class LocalSession {
      * @param cuiVersion the CUI version
      */
     public void setCUIVersion(int cuiVersion) {
-        if (cuiVersion < 0) {
-            throw new IllegalArgumentException("CUI protocol version must be non-negative, but '" + cuiVersion + "' was received.");
-        }
-
-        this.cuiVersion = cuiVersion;
+        cuiState.setCUIVersion(cuiVersion);
     }
 
     /**
@@ -1314,8 +1309,6 @@ public class LocalSession {
      * <p>This is for internal use only.</p>
      */
     public void onIdle() {
-        this.cuiVersion = CUI_VERSION_UNINITIALIZED;
-        this.hasCUISupport = false;
-        this.failedCuiAttempts = 0;
+        cuiState.reset();
     }
 }
