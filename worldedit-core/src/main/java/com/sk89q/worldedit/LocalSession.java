@@ -101,7 +101,7 @@ public class LocalSession {
     private transient int historyPointer = 0;
     private transient ClipboardHolder clipboard;
     private transient boolean superPickaxe = false;
-    private transient BlockTool pickaxeMode = new SinglePickaxe();
+    private transient BlockTool superPickaxeTool = new SinglePickaxe();
     private final transient Map<ItemType, Tool> tools = new HashMap<>();
     private transient int maxBlocksChanged = -1;
     private transient int maxTimeoutTime;
@@ -425,11 +425,23 @@ public class LocalSession {
      * @throws IncompleteRegionException if no region is selected, or the provided world is null
      */
     public Region getSelection(@Nullable World world) throws IncompleteRegionException {
-        if (world == null || selector.getIncompleteRegion().getWorld() == null
-            || !selector.getIncompleteRegion().getWorld().equals(world)) {
+        if (!isSelectionDefinedForWorld(world)) {
             throw new IncompleteRegionException();
         }
         return selector.getRegion();
+    }
+
+    /**
+     * Returns whether the selection is fully defined for the given world.
+     * Decomposed conditional for clarity (code smell: complex conditional).
+     */
+    private boolean isSelectionDefinedForWorld(@Nullable World world) {
+        if (world == null) {
+            return false;
+        }
+        World selectionWorld = selector.getIncompleteRegion().getWorld();
+        boolean selectionMatchesWorld = selectionWorld != null && selectionWorld.equals(world);
+        return selectionMatchesWorld;
     }
 
     /**
@@ -696,7 +708,7 @@ public class LocalSession {
      * @return the super pickaxe tool mode
      */
     public BlockTool getSuperPickaxe() {
-        return pickaxeMode;
+        return superPickaxeTool;
     }
 
     /**
@@ -706,7 +718,7 @@ public class LocalSession {
      */
     public void setSuperPickaxe(BlockTool tool) {
         checkNotNull(tool);
-        this.pickaxeMode = tool;
+        this.superPickaxeTool = tool;
     }
 
     /**
