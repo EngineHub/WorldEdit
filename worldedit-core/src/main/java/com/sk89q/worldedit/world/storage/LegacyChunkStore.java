@@ -40,6 +40,29 @@ import java.util.zip.GZIPInputStream;
 public abstract class LegacyChunkStore extends ChunkStore {
 
     /**
+     * Path components for a chunk file (folder1, folder2, filename).
+     * Pulled up so both getFilename and getChunkData use the same computation.
+     */
+    public static ChunkPathComponents getChunkPathComponents(BlockVector2 position) {
+        int x = position.x();
+        int z = position.z();
+        String folder1 = Integer.toString(divisorMod(x, 64), 36);
+        String folder2 = Integer.toString(divisorMod(z, 64), 36);
+        String filename = "c." + Integer.toString(x, 36)
+                + "." + Integer.toString(z, 36) + ".dat";
+        return new ChunkPathComponents(folder1, folder2, filename);
+    }
+
+    /**
+     * Path components for a legacy chunk file.
+     *
+     * @param folder1 first folder segment
+     * @param folder2 second folder segment
+     * @param filename chunk filename
+     */
+    public record ChunkPathComponents(String folder1, String folder2, String filename) {}
+
+    /**
      * Get the filename of a chunk.
      *
      * @param position chunk position
@@ -47,15 +70,8 @@ public abstract class LegacyChunkStore extends ChunkStore {
      * @return pathname
      */
     public static String getFilename(BlockVector2 position, String separator) {
-        int x = position.x();
-        int z = position.z();
-
-        String folder1 = Integer.toString(divisorMod(x, 64), 36);
-        String folder2 = Integer.toString(divisorMod(z, 64), 36);
-        String filename = "c." + Integer.toString(x, 36)
-                + "." + Integer.toString(z, 36) + ".dat";
-
-        return folder1 + separator + folder2 + separator + filename;
+        ChunkPathComponents path = getChunkPathComponents(position);
+        return path.folder1() + separator + path.folder2() + separator + path.filename();
     }
 
     /**
@@ -71,15 +87,8 @@ public abstract class LegacyChunkStore extends ChunkStore {
 
     @Override
     public LinCompoundTag getChunkData(BlockVector2 position, World world) throws DataException, IOException {
-        int x = position.x();
-        int z = position.z();
-
-        String folder1 = Integer.toString(divisorMod(x, 64), 36);
-        String folder2 = Integer.toString(divisorMod(z, 64), 36);
-        String filename = "c." + Integer.toString(x, 36)
-                + "." + Integer.toString(z, 36) + ".dat";
-
-        try (var chunkStream = new DataInputStream(new GZIPInputStream(getInputStream(folder1, folder2, filename)))) {
+        ChunkPathComponents path = getChunkPathComponents(position);
+        try (var chunkStream = new DataInputStream(new GZIPInputStream(getInputStream(path.folder1(), path.folder2(), path.filename())))) {
             return LinBinaryIO.readUsing(chunkStream, LinRootEntry::readFrom).toLinTag();
         }
     }
