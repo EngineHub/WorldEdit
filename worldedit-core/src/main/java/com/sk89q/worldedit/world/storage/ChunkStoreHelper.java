@@ -26,15 +26,9 @@ import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
-import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.DataFixer;
-import com.sk89q.worldedit.world.chunk.AnvilChunk;
-import com.sk89q.worldedit.world.chunk.AnvilChunk13;
-import com.sk89q.worldedit.world.chunk.AnvilChunk16;
-import com.sk89q.worldedit.world.chunk.AnvilChunk18;
 import com.sk89q.worldedit.world.chunk.Chunk;
-import com.sk89q.worldedit.world.chunk.OldChunk;
 import org.enginehub.linbus.tree.LinCompoundTag;
 import org.enginehub.linbus.tree.LinNumberTag;
 import org.enginehub.linbus.tree.LinTagType;
@@ -99,40 +93,40 @@ public class ChunkStoreHelper {
      * @throws DataException if the rootTag is not valid chunk data
      */
     public static Chunk getChunk(LinCompoundTag rootTag) throws DataException {
-        int dataVersion = rootTag.value().get("DataVersion") instanceof LinNumberTag<?> t
-            ? t.value().intValue() : -1;
+        int dataVersion = extractDataVersion(rootTag);
+        DataFixResult fixResult = applyDataFixerIfNeeded(rootTag, dataVersion);
+        return ChunkFromTagLoaders.loadChunk(fixResult.effectiveDataVersion(), fixResult.rootTag());
+    }
 
+    /**
+     * Extracts the DataVersion from the chunk root tag, or -1 if missing/invalid.
+     */
+    private static int extractDataVersion(LinCompoundTag rootTag) {
+        return rootTag.value().get("DataVersion") instanceof LinNumberTag<?> numberTag
+            ? numberTag.value().intValue() : -1;
+    }
+
+    private record DataFixResult(LinCompoundTag rootTag, int effectiveDataVersion) {}
+
+    /**
+     * Applies the platform data fixer when the chunk is in MCA format and behind current version.
+     * Only fixes MCA format; DFU doesn't support MCR chunks.
+     */
+    private static DataFixResult applyDataFixerIfNeeded(LinCompoundTag rootTag, int dataVersion) {
         final Platform platform = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING);
         final int currentDataVersion = platform.getDataVersion();
-        if ((dataVersion > 0 || hasLevelSections(rootTag)) && dataVersion < currentDataVersion) { // only fix up MCA format, DFU doesn't support MCR chunks
-            final DataFixer dataFixer = platform.getDataFixer();
-            if (dataFixer != null) {
-                rootTag = dataFixer.fixUp(DataFixer.FixTypes.CHUNK, rootTag, dataVersion);
-                dataVersion = currentDataVersion;
-            }
+        boolean isMcAFormat = dataVersion > 0 || hasLevelSections(rootTag);
+        boolean isBehindCurrentVersion = dataVersion < currentDataVersion;
+        boolean shouldApplyFix = isMcAFormat && isBehindCurrentVersion;
+        if (!shouldApplyFix) {
+            return new DataFixResult(rootTag, dataVersion);
         }
-
-        if (dataVersion >= Constants.DATA_VERSION_MC_1_18) {
-            return new AnvilChunk18(rootTag);
+        final DataFixer dataFixer = platform.getDataFixer();
+        if (dataFixer == null) {
+            return new DataFixResult(rootTag, dataVersion);
         }
-
-        LinCompoundTag tag = rootTag.findTag("Level", LinTagType.compoundTag());
-        if (tag == null) {
-            throw new ChunkStoreException("Missing root 'Level' tag");
-        }
-
-        if (dataVersion >= Constants.DATA_VERSION_MC_1_16) {
-            return new AnvilChunk16(tag);
-        }
-        if (dataVersion >= Constants.DATA_VERSION_MC_1_13) {
-            return new AnvilChunk13(tag);
-        }
-
-        if (tag.value().containsKey("Sections")) {
-            return new AnvilChunk(tag);
-        }
-
-        return new OldChunk(tag);
+        LinCompoundTag fixedTag = dataFixer.fixUp(DataFixer.FixTypes.CHUNK, rootTag, dataVersion);
+        return new DataFixResult(fixedTag, currentDataVersion);
     }
 
     private static boolean hasLevelSections(LinCompoundTag rootTag) {
