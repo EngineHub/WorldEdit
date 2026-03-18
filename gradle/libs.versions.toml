@@ -13,7 +13,7 @@ cuiProtocol = "4.0.2"
 
 errorprone = "2.48.0"
 
-fabric-api = "0.143.11+26.1"
+fabric-api = "0.143.14+26.1"
 
 neogradle = "7.1.20"
 neoforge-minecraft = "1.21.11"
@@ -94,7 +94,7 @@ rhino = "org.mozilla:rhino-runtime:1.7.13"
 jchronic = "com.sk89q:jchronic:0.2.4a"
 jlibnoise = "com.sk89q.lib:jlibnoise:1.0.0"
 
-fabric-minecraft = "com.mojang:minecraft:26.1-snapshot-11"
+fabric-minecraft = "com.mojang:minecraft:26.1-pre-3"
 fabric-loader = "net.fabricmc:fabric-loader:0.18.4"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.6.1"
 
