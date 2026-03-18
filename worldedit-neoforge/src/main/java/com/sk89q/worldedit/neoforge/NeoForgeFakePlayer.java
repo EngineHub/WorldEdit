@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.neoforge;
 
 import com.mojang.authlib.GameProfile;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.ParticleStatus;
 import net.minecraft.server.level.ServerLevel;
@@ -55,10 +54,5 @@ public class NeoForgeFakePlayer extends ServerPlayer {
 
     @Override
     public void awardStat(Stat<?> stat) {
-    }
-
-    @Override
-    public void displayClientMessage(Component message, boolean actionBar) {
-        super.displayClientMessage(message, actionBar);
     }
 }
