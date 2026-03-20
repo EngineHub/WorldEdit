@@ -37,6 +37,31 @@ import java.util.List;
  */
 public final class ChunkFromTagLoaders {
 
+    /**
+     * Strategy for creating a {@link Chunk} from NBT data.
+     * Used to replace version-based conditionals with polymorphism.
+     */
+    public interface ChunkFromTagLoader {
+
+        /**
+         * Whether this loader supports the given data version and tag structure.
+         *
+         * @param dataVersion the chunk data version
+         * @param rootTag the root NBT tag
+         * @return true if this loader can create a Chunk from the tag
+         */
+        boolean supports(int dataVersion, LinCompoundTag rootTag);
+
+        /**
+         * Create a Chunk from the given root tag.
+         *
+         * @param rootTag the root NBT tag (may be the full chunk or contain a Level tag)
+         * @return the chunk
+         * @throws DataException if the tag is not valid for this format
+         */
+        Chunk load(LinCompoundTag rootTag) throws DataException;
+    }
+
     private static final List<ChunkFromTagLoader> LOADERS = List.of(
         new AnvilChunk18Loader(),
         new AnvilChunk16Loader(),
