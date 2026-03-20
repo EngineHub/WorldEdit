@@ -593,6 +593,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType GOLDEN_BOOTS = get("minecraft:golden_boots");
     @Nullable public static final ItemType GOLDEN_CARROT = get("minecraft:golden_carrot");
     @Nullable public static final ItemType GOLDEN_CHESTPLATE = get("minecraft:golden_chestplate");
+    @Nullable public static final ItemType GOLDEN_DANDELION = get("minecraft:golden_dandelion");
     @Nullable public static final ItemType GOLDEN_HELMET = get("minecraft:golden_helmet");
     @Nullable public static final ItemType GOLDEN_HOE = get("minecraft:golden_hoe");
     @Nullable public static final ItemType GOLDEN_HORSE_ARMOR = get("minecraft:golden_horse_armor");
