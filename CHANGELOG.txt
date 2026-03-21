@@ -1,3 +1,14 @@
+7.4.1
+- [Bukkit] Added experimental Folia support
+- [Bukkit] Removed a legacy command permissions handler that's no longer necessary with newer Spigot versions
+- [Fabric & NeoForge] Tweaked maths used when setting biomes to be more accurate in certain edge cases
+- [Sponge] Fixed a "value not found" startup error on newer builds of Sponge
+- Fixed a few cases where the schematic path from the config file was not updated
+- Fixed entity rotations during `//revolve` to be more consistent across all entities
+- Changed blocks without legacy ID/data values to return `-1` in expressions, to allow differentiating from air
+- Fixed entity home positions not being updated when pasted
+- Fixed cases where the experimental snapshot mode may erroneously close a file too early, causing errors on usage
+
 7.4.0
 - Added a -c option to //regen to output to clipboard
 - Added #clipboard mask, to mask against blocks that match the clipboard
