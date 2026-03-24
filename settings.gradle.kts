@@ -29,10 +29,6 @@ plugins {
 dependencyResolutionManagement {
     repositories {
         maven {
-            name = "ParchmentMC"
-            url = uri("https://maven.parchmentmc.org/")
-        }
-        maven {
             name = "PaperMC"
             url = uri("https://repo.papermc.io/repository/maven-public/")
         }

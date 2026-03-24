@@ -73,14 +73,6 @@ runs {
     register("server").configure(runConfig)
 }
 
-subsystems {
-    parchment {
-        minecraftVersion = libs.versions.parchment.minecraft.get()
-        mappingsVersion = libs.versions.parchment.mappings.get()
-        addRepository = false
-    }
-}
-
 configure<BasePluginExtension> {
     archivesName.set("${archivesName.get()}-mc$minecraftVersion")
 }
