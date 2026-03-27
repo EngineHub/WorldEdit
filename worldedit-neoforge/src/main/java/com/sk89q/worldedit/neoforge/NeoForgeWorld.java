@@ -44,6 +44,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.neoforge.internal.NBTConverter;
 import com.sk89q.worldedit.neoforge.internal.NeoForgeEntity;
+import com.sk89q.worldedit.neoforge.internal.NeoForgeLoggingProblemReporter;
 import com.sk89q.worldedit.neoforge.internal.NeoForgeServerLevelDelegateProxy;
 import com.sk89q.worldedit.neoforge.internal.NeoForgeWorldNativeAccess;
 import com.sk89q.worldedit.regions.Region;
@@ -75,7 +76,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.Util;
 import net.minecraft.util.thread.BlockableEventLoop;
@@ -396,9 +396,14 @@ public class NeoForgeWorld extends AbstractWorld {
             BlockStateHolder<?> state = NeoForgeAdapter.adapt(chunk.getBlockState(pos));
             BlockEntity blockEntity = chunk.getBlockEntity(pos);
             if (blockEntity != null) {
-                var tagValueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, getWorld().registryAccess());
-                blockEntity.saveWithId(tagValueOutput);
-                net.minecraft.nbt.CompoundTag tag = tagValueOutput.buildResult();
+                net.minecraft.nbt.CompoundTag tag = NeoForgeLoggingProblemReporter.with(
+                    () -> "serializing block entity at " + pos,
+                    reporter -> {
+                        var tagValueOutput = TagValueOutput.createWithContext(reporter, getWorld().registryAccess());
+                        blockEntity.saveWithId(tagValueOutput);
+                        return tagValueOutput.buildResult();
+                    }
+                );
                 state = state.toBaseBlock(LazyReference.from(() -> NBTConverter.fromNative(tag)));
             }
             extent.setBlock(vec, state.toBaseBlock());
@@ -658,9 +663,14 @@ public class NeoForgeWorld extends AbstractWorld {
         BlockEntity tile = getWorld().getChunk(pos).getBlockEntity(pos);
 
         if (tile != null) {
-            var tagValueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, getWorld().registryAccess());
-            tile.saveWithId(tagValueOutput);
-            net.minecraft.nbt.CompoundTag tag = tagValueOutput.buildResult();
+            net.minecraft.nbt.CompoundTag tag = NeoForgeLoggingProblemReporter.with(
+                () -> "serializing block entity at " + pos,
+                reporter -> {
+                    var tagValueOutput = TagValueOutput.createWithContext(reporter, getWorld().registryAccess());
+                    tile.saveWithId(tagValueOutput);
+                    return tagValueOutput.buildResult();
+                }
+            );
             return getBlock(position).toBaseBlock(
                 LazyReference.from(() -> NBTConverter.fromNative(tag))
             );

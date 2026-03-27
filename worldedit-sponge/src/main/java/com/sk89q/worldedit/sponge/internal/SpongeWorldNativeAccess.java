@@ -27,7 +27,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.FullChunkStatus;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -108,7 +107,14 @@ public class SpongeWorldNativeAccess implements WorldNativeAccess<LevelChunk, Bl
             return false;
         }
         tileEntity.setLevel(getWorld());
-        tileEntity.loadWithComponents(TagValueInput.create(ProblemReporter.DISCARDING, getWorld().registryAccess(), nativeTag));
+        SpongeLoggingProblemReporter.with(
+            () -> "loading tile entity at " + position,
+            reporter -> {
+                var input = TagValueInput.create(reporter, getWorld().registryAccess(), nativeTag);
+                tileEntity.loadWithComponents(input);
+                return null;
+            }
+        );
         return true;
     }
 

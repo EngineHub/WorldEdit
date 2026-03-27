@@ -48,7 +48,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -211,9 +210,14 @@ public final class FabricAdapter {
             worldEdit = FabricTransmogrifier.transmogToWorldEdit(blockEntity.getBlockState());
         }
         // Save this outside the reference to ensure it doesn't mutate
-        var tagValueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, registries);
-        blockEntity.saveWithId(tagValueOutput);
-        net.minecraft.nbt.CompoundTag savedNative = tagValueOutput.buildResult();
+        net.minecraft.nbt.CompoundTag savedNative = com.sk89q.worldedit.fabric.internal.FabricLoggingProblemReporter.with(
+            () -> "serializing block entity " + blockEntity.getClass().getSimpleName(),
+            reporter -> {
+                var tagValueOutput = TagValueOutput.createWithContext(reporter, registries);
+                blockEntity.saveWithId(tagValueOutput);
+                return tagValueOutput.buildResult();
+            }
+        );
 
         return worldEdit.toBaseBlock(LazyReference.from(() -> NBTConverter.fromNative(savedNative)));
     }
