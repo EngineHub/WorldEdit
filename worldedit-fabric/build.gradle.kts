@@ -1,6 +1,8 @@
 import buildlogic.internalVersion
+import buildlogic.withCuiProtocolDependsOnCommonRule
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.fabricmc.loom.task.RunGameTask
+import org.gradle.kotlin.dsl.attributes
 import java.net.URI
 
 plugins {
@@ -36,13 +38,19 @@ repositories {
     }
 }
 
+withCuiProtocolDependsOnCommonRule(libs.cuiProtocol.fabric.get().module)
+
 dependencies {
     "api"(project(":worldedit-core"))
 
     "minecraft"(libs.fabric.minecraft)
     "implementation"(libs.fabric.loader)
-    //"include"(libs.cuiProtocol.fabric)
-    //"implementation"(libs.cuiProtocol.fabric)
+    "implementation"(libs.cuiProtocol.fabric)
+    "include"(libs.cuiProtocol.fabric) {
+        attributes {
+            attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling::class, Bundling.SHADOWED))
+        }
+    }
 
     // [1] Load the API dependencies from the fabric mod json...
     @Suppress("UNCHECKED_CAST")
@@ -60,7 +68,7 @@ dependencies {
     }
 
     // No need for this at runtime
-    //"compileOnly"(libs.fabric.permissions.api)
+    "compileOnly"(libs.fabric.permissions.api)
 
     // Silence some warnings, since apparently this isn't on the compile classpath like it should be.
     "compileOnly"(libs.errorprone.annotations)
@@ -89,6 +97,9 @@ tasks.named<Copy>("processResources") {
 
 tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("dist")
+    // Use the JAR output, not classes, as we need jar-in-jar from loom to work properly.
+    dependsOn(tasks.jar)
+    from(zipTree(tasks.jar.flatMap { it.archiveFile }))
     dependencies {
         relocate("org.antlr.v4", "com.sk89q.worldedit.antlr4")
         relocate("net.royawesome.jlibnoise", "com.sk89q.worldedit.jlibnoise")

@@ -9,7 +9,7 @@ kyoriText = "3.0.4"
 piston = "0.5.11"
 autoValue = "1.10.4"
 antlr = "4.13.2"
-cuiProtocol = "4.0.2"
+cuiProtocol = "4.0.3"
 
 errorprone = "2.48.0"
 
@@ -164,10 +164,14 @@ version.ref = "antlr"
 [libraries.antlr4-runtime]
 module = "org.antlr:antlr4-runtime"
 
+[libraries.cuiProtocol-common]
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-common-mc26.1"
+version.ref = "cuiProtocol"
+
 [libraries.cuiProtocol-fabric]
-module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-fabric-mc1.21.11"
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-fabric-mc26.1"
 version.ref = "cuiProtocol"
 
 [libraries.cuiProtocol-neoforge]
-module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-neoforge-mc1.21.11"
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-neoforge-mc26.1"
 version.ref = "cuiProtocol"

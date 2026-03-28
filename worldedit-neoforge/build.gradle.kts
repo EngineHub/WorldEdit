@@ -1,5 +1,6 @@
 import buildlogic.addEngineHubRepository
 import buildlogic.internalVersion
+import buildlogic.withCuiProtocolDependsOnCommonRule
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.neoforged.gradle.dsl.common.runs.run.Run
 
@@ -41,12 +42,18 @@ configurations {
     }
 }
 
+withCuiProtocolDependsOnCommonRule(libs.cuiProtocol.neoforge.get().module)
+
 dependencies {
     api(project(":worldedit-core"))
 
     implementation(libs.neoforge)
     implementation(libs.cuiProtocol.neoforge)
-    jarJar(libs.cuiProtocol.neoforge)
+    jarJar(libs.cuiProtocol.neoforge) {
+        attributes {
+            attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling::class, Bundling.SHADOWED))
+        }
+    }
 
     "coreResourcesScope"(project(":worldedit-core"))
 }
