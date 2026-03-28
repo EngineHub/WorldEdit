@@ -39,6 +39,7 @@ import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.MutableComponent;
@@ -50,6 +51,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.worldeditcui.protocol.CUIPacket;
 
 import java.util.Locale;
 import java.util.Set;
@@ -124,11 +126,10 @@ public class FabricPlayer extends AbstractPlayerActor {
 
     @Override
     public void dispatchCUIEvent(CUIEvent event) {
-        // TODO CUI
-        //        ServerPlayNetworking.send(
-        //            this.player,
-        //            new CUIPacket(event.getTypeId(), event.getParameters())
-        //        );
+        ServerPlayNetworking.send(
+            this.player,
+            new CUIPacket(event.getTypeId(), event.getParameters())
+        );
     }
 
     @Override

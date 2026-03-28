@@ -31,6 +31,7 @@
     },
 
     "depends": {
+        "worldeditcui_protocol": "*",
         "fabricloader": ">=0.4.0",
         "fabric-api-base": "*",
         "fabric-command-api-v2": "*",
@@ -39,7 +40,6 @@
         "fabric-networking-api-v1": "*"
     },
     "suggests": {
-        "worldeditcui_protocol": "*",
         "fabric-permissions-api-v0": "*"
     },
     "mixins": [
