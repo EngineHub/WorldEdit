@@ -29,7 +29,6 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
@@ -137,10 +136,14 @@ public class NeoForgeServerLevelDelegateProxy implements InvocationHandler, Auto
             BlockVector3 blockPos = entry.getKey();
             BlockEntity blockEntity = entry.getValue();
 
-            var tagValueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, serverLevel.registryAccess());
-            blockEntity.saveWithId(tagValueOutput);
-
-            net.minecraft.nbt.CompoundTag tag = tagValueOutput.buildResult();
+            net.minecraft.nbt.CompoundTag tag = NeoForgeLoggingProblemReporter.with(
+                () -> "saving block entity at " + blockPos,
+                reporter -> {
+                    var tagValueOutput = TagValueOutput.createWithContext(reporter, serverLevel.registryAccess());
+                    blockEntity.saveWithId(tagValueOutput);
+                    return tagValueOutput.buildResult();
+                }
+            );
             editSession.setBlock(
                 blockPos,
                 NeoForgeAdapter.adapt(blockEntity.getBlockState())

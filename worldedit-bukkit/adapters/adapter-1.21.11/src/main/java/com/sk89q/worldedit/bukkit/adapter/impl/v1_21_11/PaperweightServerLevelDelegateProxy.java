@@ -34,7 +34,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
@@ -155,9 +154,14 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler, A
 
         Identifier id = serverLevel.registryAccess().lookupOrThrow(Registries.ENTITY_TYPE).getKey(entity.getType());
 
-        var tagValueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, serverLevel.registryAccess());
-        entity.saveWithoutId(tagValueOutput);
-        net.minecraft.nbt.CompoundTag tag = tagValueOutput.buildResult();
+        net.minecraft.nbt.CompoundTag tag = PaperweightLoggingProblemReporter.with(
+            () -> "serializing entity " + entity.getStringUUID(),
+            reporter -> {
+                var tagValueOutput = TagValueOutput.createWithContext(reporter, serverLevel.registryAccess());
+                entity.saveWithoutId(tagValueOutput);
+                return tagValueOutput.buildResult();
+            }
+        );
 
         BaseEntity baseEntity = new BaseEntity(EntityTypes.get(id.toString()), LazyReference.from(() -> (LinCompoundTag) adapter.toNative(tag)));
 
@@ -170,9 +174,14 @@ public class PaperweightServerLevelDelegateProxy implements InvocationHandler, A
             BlockVector3 blockPos = entry.getKey();
             BlockEntity blockEntity = entry.getValue();
 
-            var tagValueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, serverLevel.registryAccess());
-            blockEntity.saveWithId(tagValueOutput);
-            net.minecraft.nbt.CompoundTag tag = tagValueOutput.buildResult();
+            net.minecraft.nbt.CompoundTag tag = PaperweightLoggingProblemReporter.with(
+                () -> "saving block entity at " + blockPos,
+                reporter -> {
+                    var tagValueOutput = TagValueOutput.createWithContext(reporter, serverLevel.registryAccess());
+                    blockEntity.saveWithId(tagValueOutput);
+                    return tagValueOutput.buildResult();
+                }
+            );
             editSession.setBlock(
                     blockPos,
                     adapter.adapt(blockEntity.getBlockState())

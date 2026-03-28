@@ -38,6 +38,7 @@ import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.fabric.internal.ExtendedMinecraftServer;
 import com.sk89q.worldedit.fabric.internal.FabricEntity;
+import com.sk89q.worldedit.fabric.internal.FabricLoggingProblemReporter;
 import com.sk89q.worldedit.fabric.internal.FabricServerLevelDelegateProxy;
 import com.sk89q.worldedit.fabric.internal.FabricWorldNativeAccess;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
@@ -80,7 +81,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.Util;
 import net.minecraft.world.Clearable;
@@ -417,9 +417,14 @@ public class FabricWorld extends AbstractWorld {
             BlockStateHolder<?> state = FabricAdapter.adapt(chunk.getBlockState(pos));
             BlockEntity blockEntity = chunk.getBlockEntity(pos);
             if (blockEntity != null) {
-                var tagValueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, getWorld().registryAccess());
-                blockEntity.saveWithId(tagValueOutput);
-                CompoundTag tag = tagValueOutput.buildResult();
+                CompoundTag tag = FabricLoggingProblemReporter.with(
+                    () -> "serializing block entity at " + pos,
+                    reporter -> {
+                        var tagValueOutput = TagValueOutput.createWithContext(reporter, getWorld().registryAccess());
+                        blockEntity.saveWithId(tagValueOutput);
+                        return tagValueOutput.buildResult();
+                    }
+                );
                 state = state.toBaseBlock(LazyReference.from(() -> NBTConverter.fromNative(tag)));
             }
             extent.setBlock(vec, state.toBaseBlock());
@@ -679,9 +684,14 @@ public class FabricWorld extends AbstractWorld {
         BlockEntity tile = ((LevelChunk) getWorld().getChunk(pos)).getBlockEntity(pos, LevelChunk.EntityCreationType.CHECK);
 
         if (tile != null) {
-            var tagValueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, getWorld().registryAccess());
-            tile.saveWithId(tagValueOutput);
-            CompoundTag tag = tagValueOutput.buildResult();
+            CompoundTag tag = FabricLoggingProblemReporter.with(
+                () -> "serializing block entity at " + pos,
+                reporter -> {
+                    var tagValueOutput = TagValueOutput.createWithContext(reporter, getWorld().registryAccess());
+                    tile.saveWithId(tagValueOutput);
+                    return tagValueOutput.buildResult();
+                }
+            );
             return getBlock(position).toBaseBlock(LazyReference.from(() -> NBTConverter.fromNative(tag)));
         } else {
             return getBlock(position).toBaseBlock();

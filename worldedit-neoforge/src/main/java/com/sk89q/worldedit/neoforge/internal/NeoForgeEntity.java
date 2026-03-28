@@ -33,7 +33,6 @@ import com.sk89q.worldedit.world.entity.EntityTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.storage.TagValueOutput;
 
 import java.lang.ref.WeakReference;
@@ -57,13 +56,20 @@ public class NeoForgeEntity implements Entity {
             return null;
         }
 
-        var tagValueOutput = TagValueOutput.createWithoutContext(ProblemReporter.DISCARDING);
+        net.minecraft.nbt.CompoundTag tag = NeoForgeLoggingProblemReporter.with(
+            () -> "serializing entity " + entity.getStringUUID(),
+            reporter -> {
+                TagValueOutput tagValueOutput = TagValueOutput.createWithContext(reporter, entity.registryAccess());
+                if (!entity.save(tagValueOutput)) {
+                    return null;
+                }
+                return tagValueOutput.buildResult();
+            }
+        );
 
-        if (!entity.save(tagValueOutput)) {
+        if (tag == null) {
             return null;
         }
-
-        net.minecraft.nbt.CompoundTag tag = tagValueOutput.buildResult();
 
         Identifier id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
         return new BaseEntity(

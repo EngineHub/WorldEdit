@@ -27,7 +27,6 @@ import com.sk89q.worldedit.util.SideEffectSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.FullChunkStatus;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -113,10 +112,15 @@ public class NeoForgeWorldNativeAccess implements WorldNativeAccess<LevelChunk, 
         if (tileEntity == null) {
             return false;
         }
-        var tagValueInput = TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(), nativeTag);
-        tileEntity.loadWithComponents(tagValueInput);
-        tileEntity.setChanged();
-        return true;
+        return NeoForgeLoggingProblemReporter.with(
+            () -> "loading tile entity at " + position,
+            reporter -> {
+                var tagValueInput = TagValueInput.create(reporter, level.registryAccess(), nativeTag);
+                tileEntity.loadWithComponents(tagValueInput);
+                tileEntity.setChanged();
+                return true;
+            }
+        );
     }
 
     @Override
