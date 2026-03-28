@@ -83,7 +83,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAME;
-import static java.util.stream.Collectors.toList;
 
 /**
  * The Sponge implementation of WorldEdit.
@@ -310,8 +309,7 @@ public class SpongeWorldEdit {
                 String args = rebuildArguments(command.getName(), arguments.remaining());
                 CommandSuggestionEvent weEvent = new CommandSuggestionEvent(SpongeWorldEdit.inst().wrapCommandCause(cause), args);
                 WorldEdit.getInstance().getEventBus().post(weEvent);
-                return CommandUtil.fixSuggestions(args, weEvent.getSuggestions())
-                    .stream().map(CommandCompletion::of).collect(toList());
+                return CommandUtil.fixSuggestions(args, weEvent.getSuggestions()).stream().map(CommandCompletion::of).toList();
             }
         };
         event.register(
