@@ -18,12 +18,12 @@ fabric-api = "0.144.0+26.1"
 neogradle = "7.1.21"
 neoforge-minecraft = "26.1"
 
-sponge-minecraft = "1.21.11"
+sponge-minecraft = "26.1"
 # https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/spongeapi/
-sponge-api = "18.0.0-20260220.200840-5"
-sponge-api-major = "18"
+sponge-api = "19.0.0-20260328.013918-1"
+sponge-api-major = "19"
 
-sponge-vanillagradle = "0.2.2"
+sponge-vanillagradle = "0.3.2"
 
 # Minimum versions we apply to make dependencies support newer Java
 minimumAsm = "9.7"
