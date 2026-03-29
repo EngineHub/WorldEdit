@@ -33,7 +33,6 @@ import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.entity.EntityTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.storage.TagValueOutput;
 
 import java.lang.ref.WeakReference;
@@ -57,13 +56,20 @@ public class FabricEntity implements Entity {
             return null;
         }
 
-        var tagValueOutput = TagValueOutput.createWithoutContext(ProblemReporter.DISCARDING);
+        net.minecraft.nbt.CompoundTag tag = FabricLoggingProblemReporter.with(
+            () -> "serializing entity " + entity.getStringUUID(),
+            reporter -> {
+                TagValueOutput tagValueOutput = TagValueOutput.createWithContext(reporter, entity.registryAccess());
+                if (!entity.save(tagValueOutput)) {
+                    return null;
+                }
+                return tagValueOutput.buildResult();
+            }
+        );
 
-        if (!entity.save(tagValueOutput)) {
+        if (tag == null) {
             return null;
         }
-
-        net.minecraft.nbt.CompoundTag tag = tagValueOutput.buildResult();
 
         Identifier id = FabricWorldEdit.getRegistry(Registries.ENTITY_TYPE).getKey(entity.getType());
         return new BaseEntity(

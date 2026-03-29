@@ -30,6 +30,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.sponge.internal.NbtAdapter;
+import com.sk89q.worldedit.sponge.internal.SpongeLoggingProblemReporter;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.text.Component;
@@ -42,7 +43,6 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.block.entity.StructureBlockEntity;
 import net.minecraft.world.level.storage.TagValueInput;
 import org.enginehub.linbus.tree.LinCompoundTag;
@@ -252,7 +252,13 @@ public class SpongePlayer extends AbstractPlayerActor {
 
                     StructureBlockEntity structureBlockEntity =
                         new StructureBlockEntity(new BlockPos(pos.x(), pos.y(), pos.z()), nativeBlock);
-                    structureBlockEntity.loadWithComponents(TagValueInput.create(ProblemReporter.DISCARDING, nativePlayer.level().registryAccess(), nativeNbtData));
+                    SpongeLoggingProblemReporter.with(
+                        () -> "loading structure block entity for fake player " + player.uniqueId(),
+                        reporter -> {
+                            structureBlockEntity.loadWithComponents(TagValueInput.create(reporter, nativePlayer.level().registryAccess(), nativeNbtData));
+                            return null;
+                        }
+                    );
                     nativePlayer.connection.send(
                         ClientboundBlockEntityDataPacket.create(structureBlockEntity, (be, ra) -> nativeNbtData));
                 }
