@@ -13,7 +13,7 @@ cuiProtocol = "4.0.3"
 
 errorprone = "2.48.0"
 
-fabric-api = "0.144.0+26.1"
+fabric-api = "0.144.3+26.1"
 
 neogradle = "7.1.21"
 neoforge-minecraft = "26.1"
@@ -91,10 +91,10 @@ jchronic = "com.sk89q:jchronic:0.2.4a"
 jlibnoise = "com.sk89q.lib:jlibnoise:1.0.0"
 
 fabric-minecraft = "com.mojang:minecraft:26.1"
-fabric-loader = "net.fabricmc:fabric-loader:0.18.4"
+fabric-loader = "net.fabricmc:fabric-loader:0.18.5"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.7.0"
 
-neoforge = "net.neoforged:neoforge:26.1.0.1-beta"
+neoforge = "net.neoforged:neoforge:26.1.0.15-beta"
 
 # Mojang-provided libraries, CHECK AGAINST MINECRAFT for versions
 guava = "com.google.guava:guava:33.5.0-jre!!"
