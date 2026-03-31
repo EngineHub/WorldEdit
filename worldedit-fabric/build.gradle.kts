@@ -99,6 +99,13 @@ tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("dist")
     // Use the JAR output, not classes, as we need jar-in-jar from loom to work properly.
     dependsOn(tasks.jar)
+    val processedFabricModJson = layout.buildDirectory.file("resources/main/fabric.mod.json").get().asFile.absoluteFile
+    eachFile {
+        // Exclude the fabric.mod.json in the resources folder to allow the one from Fabric's jar task to be added
+        if (path == "fabric.mod.json" && file.absoluteFile == processedFabricModJson) {
+            exclude()
+        }
+    }
     from(zipTree(tasks.jar.flatMap { it.archiveFile }))
     dependencies {
         relocate("org.antlr.v4", "com.sk89q.worldedit.antlr4")
