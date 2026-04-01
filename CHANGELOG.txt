@@ -1,3 +1,7 @@
+7.4.2
+- Changed entity and block entity handling to report serialization issues by Minecraft rather than ignore them
+- Fixed pasting entities with data that requires registry context (enchantments, etc)
+
 7.4.1
 - [Bukkit] Added experimental Folia support
 - [Bukkit] Removed a legacy command permissions handler that's no longer necessary with newer Spigot versions
