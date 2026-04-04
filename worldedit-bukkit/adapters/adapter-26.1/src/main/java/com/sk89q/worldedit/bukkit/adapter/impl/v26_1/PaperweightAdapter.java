@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.bukkit.adapter.impl.v1_21_11;
+package com.sk89q.worldedit.bukkit.adapter.impl.v26_1;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -27,7 +27,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Futures;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.Lifecycle;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEditException;
@@ -72,6 +71,8 @@ import com.sk89q.worldedit.world.generation.StructureType;
 import com.sk89q.worldedit.world.generation.TreeType;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
+import io.papermc.paper.world.PaperWorldLoader;
+import io.papermc.paper.world.saveddata.PaperWorldPDC;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -118,7 +119,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.LevelSettings;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -127,9 +127,9 @@ import net.minecraft.world.level.block.entity.StructureBlockEntity;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.dimension.LevelStem;
-import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.CoralTreeFeature;
 import net.minecraft.world.level.levelgen.feature.FallenTreeFeature;
@@ -139,7 +139,6 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.level.storage.LevelStorageSource;
-import net.minecraft.world.level.storage.PrimaryLevelData;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
@@ -155,6 +154,7 @@ import org.bukkit.craftbukkit.block.data.CraftBlockData;
 import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.persistence.CraftPersistentDataContainer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.generator.ChunkGenerator;
@@ -191,9 +191,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.OptionalInt;
-import java.util.OptionalLong;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -234,11 +234,8 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         var unused = CraftServer.class.cast(Bukkit.getServer());
 
         int dataVersion = SharedConstants.getCurrentVersion().dataVersion().version();
-        if (dataVersion != Constants.DATA_VERSION_MC_1_21_11) {
+        if (dataVersion != Constants.DATA_VERSION_MC_26_1 && dataVersion != Constants.DATA_VERSION_MC_26_1_1) {
             logger.warning(WRONG_VERSION);
-        }
-        if (dataVersion >= Constants.DATA_VERSION_MC_26_1) {
-            throw new RuntimeException("Force prevent this loading on 26.1+");
         }
 
         serverWorldsField = CraftServer.class.getDeclaredField("worlds");
@@ -441,7 +438,13 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
         final ServerLevel handle = craftWorld.getHandle();
         LevelChunk chunk = handle.getChunk(x >> 4, z >> 4);
-        chunk.setBiome(x >> 2, y >> 2, z >> 2, biomeTypeToNMSCache.computeIfAbsent(biome, b -> ((CraftServer) Bukkit.getServer()).getServer().registryAccess().lookupOrThrow(Registries.BIOME).getOrThrow(ResourceKey.create(Registries.BIOME, Identifier.parse(b.id())))));
+        var biomeArray = (PalettedContainer<Holder<Biome>>) chunk.getSection(chunk.getSectionIndex(y)).getBiomes();
+        biomeArray.getAndSetUnchecked(
+                (x >> 2) & 3, (y >> 2) & 3, (z >> 2) & 3,
+                biomeTypeToNMSCache.computeIfAbsent(biome, b -> craftWorld.getHandle().registryAccess().lookup(Registries.BIOME)
+                        .orElseThrow()
+                        .getOrThrow(ResourceKey.create(Registries.BIOME, Identifier.parse(b.id()))))
+        );
         chunk.markUnsaved();
     }
 
@@ -742,6 +745,10 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
     @Override
     public boolean regenerate(World bukkitWorld, Region region, Extent extent, RegenOptions options) {
+        if (options.getSeed().isPresent()) {
+            throw new UnsupportedOperationException("26.1+ worldgen does not support overriding the seed for regen");
+        }
+
         try {
             doRegen(bukkitWorld, region, extent, options);
         } catch (Exception e) {
@@ -758,54 +765,36 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         Path tempDir = Files.createTempDirectory("WorldEditWorldGen");
         LevelStorageSource levelStorage = LevelStorageSource.createDefault(tempDir);
         ResourceKey<LevelStem> worldDimKey = getWorldDimKey(env);
-        try (LevelStorageSource.LevelStorageAccess session = levelStorage.createAccess("worldeditregentempworld", worldDimKey)) {
+        try (LevelStorageSource.LevelStorageAccess session = levelStorage.createAccess("worldeditregentempworld")) {
             ServerLevel originalWorld = ((CraftWorld) bukkitWorld).getHandle();
-            PrimaryLevelData levelProperties = (PrimaryLevelData) originalWorld.getServer()
-                    .getWorldData().overworldData();
-            WorldOptions originalOpts = levelProperties.worldGenOptions();
 
-            long seed = options.getSeed().orElse(originalWorld.getSeed());
-            WorldOptions newOpts = options.getSeed().isPresent()
-                    ? originalOpts.withSeed(OptionalLong.of(seed))
-                    : originalOpts;
-
-            LevelSettings newWorldSettings = new LevelSettings(
+            PaperWorldLoader.LoadedWorldData loadedWorldData = new PaperWorldLoader.LoadedWorldData(
                     "worldeditregentempworld",
-                    levelProperties.settings.gameType(),
-                    levelProperties.settings.hardcore(),
-                    levelProperties.settings.difficulty(),
-                    levelProperties.settings.allowCommands(),
-                    levelProperties.settings.gameRules(),
-                    levelProperties.settings.getDataConfiguration()
+                    UUID.randomUUID(),
+                    new PaperWorldPDC((CraftPersistentDataContainer) bukkitWorld.getPersistentDataContainer()),
+                    originalWorld.serverLevelData
             );
-
-            @SuppressWarnings("deprecation")
-            PrimaryLevelData.SpecialWorldProperty specialWorldProperty =
-                    levelProperties.isFlatWorld()
-                            ? PrimaryLevelData.SpecialWorldProperty.FLAT
-                            : levelProperties.isDebugWorld()
-                            ? PrimaryLevelData.SpecialWorldProperty.DEBUG
-                            : PrimaryLevelData.SpecialWorldProperty.NONE;
-
-            PrimaryLevelData newWorldData = new PrimaryLevelData(newWorldSettings, newOpts, specialWorldProperty, Lifecycle.stable());
 
             ServerLevel freshWorld = new ServerLevel(
                     originalWorld.getServer(),
                     originalWorld.getServer().executor,
-                    session, newWorldData,
+                    session,
+                    originalWorld.worldGenSettings,
                     originalWorld.dimension(),
                     new LevelStem(
                             originalWorld.dimensionTypeRegistration(),
                             originalWorld.getChunkSource().getGenerator()
                     ),
                     originalWorld.isDebug(),
-                    seed,
-                    ImmutableList.of(),
+                    originalWorld.getSeed(),
+                    List.of(),
                     false,
-                    originalWorld.getRandomSequences(),
+                    worldDimKey,
                     env,
                     gen,
-                    bukkitWorld.getBiomeProvider()
+                    bukkitWorld.getBiomeProvider(),
+                    originalWorld.getDataStorage(),
+                    loadedWorldData
             );
             try {
                 regenForWorld(region, extent, freshWorld, options);
@@ -860,7 +849,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
         for (BlockVector3 vec : region) {
             BlockPos pos = new BlockPos(vec.x(), vec.y(), vec.z());
-            ChunkAccess chunk = chunks.get(new ChunkPos(pos));
+            ChunkAccess chunk = chunks.get(ChunkPos.containing(pos));
             final net.minecraft.world.level.block.state.BlockState blockData = chunk.getBlockState(pos);
             int internalId = Block.getId(blockData);
             BlockStateHolder<?> state = BlockStateIdAccess.getBlockStateById(internalId);
@@ -1033,7 +1022,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         ServerChunkCache chunkManager = originalWorld.getChunkSource();
         try (PaperweightServerLevelDelegateProxy.LevelAndProxy proxyLevel =
                      PaperweightServerLevelDelegateProxy.newInstance(session, originalWorld, this)) {
-            ChunkPos chunkPos = new ChunkPos(new BlockPos(pt.x(), pt.y(), pt.z()));
+            ChunkPos chunkPos = ChunkPos.containing(new BlockPos(pt.x(), pt.y(), pt.z()));
             StructureStart structureStart = structure.generate(
                     structureRegistry.wrapAsHolder(structure), originalWorld.dimension(), originalWorld.registryAccess(),
                     chunkManager.getGenerator(), chunkManager.getGenerator().getBiomeSource(), chunkManager.randomState(),
