@@ -1,3 +1,4 @@
+import buildlogic.addEngineHubRepository
 import buildlogic.internalVersion
 import buildlogic.withCuiProtocolDependsOnCommonRule
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
@@ -27,15 +28,7 @@ tasks.withType<RunGameTask>().configureEach {
 }
 
 repositories {
-    maven {
-        name = "EngineHub (Non-Mirrored)"
-        url = URI.create("https://repo.enginehub.org/libs-release/")
-        metadataSources {
-            gradleMetadata()
-            mavenPom()
-            artifact()
-        }
-    }
+    addEngineHubRepository()
 }
 
 withCuiProtocolDependsOnCommonRule(libs.cuiProtocol.fabric.get().module)

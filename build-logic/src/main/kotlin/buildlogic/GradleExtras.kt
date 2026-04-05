@@ -34,9 +34,5 @@ fun RepositoryHandler.addEngineHubRepository() {
     maven {
         name = "EngineHub (Non-Mirrored)"
         url = URI.create("https://repo.enginehub.org/libs-release/")
-        metadataSources {
-            mavenPom()
-            artifact()
-        }
     }
 }
