@@ -427,6 +427,8 @@
     "worldedit.selection.convex.info.triangles": "Triangles: {0}",
     "worldedit.selection.convex.explain.primary": "Started new selection with vertex {0}.",
     "worldedit.selection.convex.explain.secondary": "Added vertex {0} to the selection.",
+    "worldedit.selection.convex.error.cannot-expand": "Cannot expand a convex polyhedral region.",
+    "worldedit.selection.convex.error.cannot-contract": "Cannot contract a convex polyhedral region.",
     "worldedit.selection.cuboid.info.pos1": "Position 1: {0}",
     "worldedit.selection.cuboid.info.pos2": "Position 2: {0}",
     "worldedit.selection.cuboid.explain.primary": "First position set to {0}.",

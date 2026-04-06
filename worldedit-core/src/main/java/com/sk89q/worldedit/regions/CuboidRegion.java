@@ -281,7 +281,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
     }
 
     @Override
-    public void shift(BlockVector3 change) throws RegionOperationException {
+    public void shift(BlockVector3 change) {
         pos1 = pos1.add(change);
         pos2 = pos2.add(change);
 
