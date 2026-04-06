@@ -2076,6 +2076,9 @@ public class EditSession implements Extent, AutoCloseable {
     public int thaw(BlockVector3 position, double radius, int height)
         throws MaxChangedBlocksException {
         int affected = 0;
+
+        radius += 0.5;
+
         double radiusSq = radius * radius;
 
         int ox = position.x();
