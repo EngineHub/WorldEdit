@@ -25,6 +25,7 @@ import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockState;
@@ -120,7 +121,7 @@ public class SpongeBlockCommandSender extends AbstractCommandBlockActor {
     @Override
     public void checkPermission(String permission) throws AuthorizationException {
         if (!hasPermission(permission)) {
-            throw new AuthorizationException();
+            throw new AuthorizationException(TranslatableComponent.of("worldedit.command.permissions"));
         }
     }
 

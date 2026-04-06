@@ -191,11 +191,6 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
     }
 
     @ExceptionMatch
-    public void convert(AuthorizationException e) throws CommandException {
-        throw newCommandException(TranslatableComponent.of("worldedit.command.permissions"), e);
-    }
-
-    @ExceptionMatch
     public void convert(WorldEditException e) throws CommandException {
         throw newCommandException(e.getRichMessage(), e);
     }

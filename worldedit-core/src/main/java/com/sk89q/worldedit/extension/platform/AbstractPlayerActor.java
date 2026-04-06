@@ -534,7 +534,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
     @Override
     public void checkPermission(String permission) throws AuthorizationException {
         if (!hasPermission(permission)) {
-            throw new AuthorizationException();
+            throw new AuthorizationException(TranslatableComponent.of("worldedit.command.permissions"));
         }
     }
 

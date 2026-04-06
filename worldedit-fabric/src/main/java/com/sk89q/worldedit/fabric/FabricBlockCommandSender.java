@@ -27,6 +27,7 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -127,7 +128,7 @@ public class FabricBlockCommandSender extends AbstractCommandBlockActor {
     @Override
     public void checkPermission(String permission) throws AuthorizationException {
         if (!hasPermission(permission)) {
-            throw new AuthorizationException();
+            throw new AuthorizationException(TranslatableComponent.of("worldedit.command.permissions"));
         }
     }
 
