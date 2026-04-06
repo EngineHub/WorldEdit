@@ -111,7 +111,7 @@ public abstract class ArbitraryBiomeShape {
             if (!hollow) {
                 final BiomeType material = getBiome(x, y, z, baseBiome);
                 if (material != null) {
-                    editSession.getWorld().setBiome(position, material);
+                    editSession.setBiome(position, material);
                     ++affected;
                 }
 
@@ -127,7 +127,7 @@ public abstract class ArbitraryBiomeShape {
                 continue;
             }
 
-            editSession.getWorld().setBiome(position, material);
+            editSession.setBiome(position, material);
             ++affected;
         }
 
