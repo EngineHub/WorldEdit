@@ -128,7 +128,7 @@ public class FabricBlockCommandSender extends AbstractCommandBlockActor {
     @Override
     public void checkPermission(String permission) throws AuthorizationException {
         if (!hasPermission(permission)) {
-            throw new AuthorizationException(TranslatableComponent.of("worldedit.command.permissions"));
+            throw new AuthorizationException();
         }
     }
 
