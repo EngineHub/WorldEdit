@@ -21,9 +21,11 @@ package com.sk89q.worldedit.extension.factory.parser.pattern;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.util.SuggestionHelper;
+import com.sk89q.worldedit.extension.input.DisallowedUsageException;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.NoMatchException;
 import com.sk89q.worldedit.extension.input.ParserContext;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.RandomPattern;
 import com.sk89q.worldedit.internal.registry.InputParser;
@@ -66,6 +68,16 @@ public class BlockCategoryPatternParser extends InputParser<Pattern> {
         RandomPattern randomPattern = new RandomPattern();
 
         Set<BlockType> blocks = category.getAll();
+        if (context.isRestricted() && worldEdit.getConfiguration().disableDisallowedBlockCategories) {
+            Actor actor = context.requireActor();
+            if (actor != null
+                    && !actor.hasPermission("worldedit.anyblock")
+                    && blocks.stream().map(BlockType::id).anyMatch(
+                            worldEdit.getConfiguration().disallowedBlocks::contains)) {
+                throw new DisallowedUsageException(TranslatableComponent.of("worldedit.error.disallowed-blocks"));
+            }
+        }
+
         if (blocks.isEmpty()) {
             throw new InputParseException(TranslatableComponent.of("worldedit.error.empty-tag", TextComponent.of(category.id())));
         }

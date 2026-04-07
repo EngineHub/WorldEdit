@@ -52,6 +52,8 @@ public abstract class LocalConfiguration {
     public boolean profile = false;
     public boolean traceUnflushedSessions = true;
     public Set<String> disallowedBlocks = new HashSet<>();
+    public boolean disableDisallowedBlockCategories = true;
+    public boolean disableDisallowedBlockCopying = true;
     public int defaultChangeLimit = -1;
     public int maxChangeLimit = -1;
     public int defaultVerticalHeight = 256;

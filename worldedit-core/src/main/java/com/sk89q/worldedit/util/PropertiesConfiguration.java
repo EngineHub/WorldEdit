@@ -92,6 +92,8 @@ public class PropertiesConfiguration extends LocalConfiguration {
         profile = getBool("profile", profile);
         traceUnflushedSessions = getBool("trace-unflushed-sessions", traceUnflushedSessions);
         disallowedBlocks = getStringSet("disallowed-blocks", getDefaultDisallowedBlocks());
+        disableDisallowedBlockCategories = getBool("disable-disallowed-block-categories", disableDisallowedBlockCategories);
+        disableDisallowedBlockCopying = getBool("disable-disallowed-block-copying", disableDisallowedBlockCopying);
         defaultChangeLimit = getInt("default-max-changed-blocks", defaultChangeLimit);
         maxChangeLimit = getInt("max-changed-blocks", maxChangeLimit);
         defaultVerticalHeight = getInt("default-vertical-height", defaultVerticalHeight);

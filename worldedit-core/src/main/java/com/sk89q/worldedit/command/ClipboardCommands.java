@@ -50,6 +50,7 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.mask.BlockMaskUtil;
 import com.sk89q.worldedit.world.World;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
@@ -102,8 +103,10 @@ public class ClipboardCommands {
         ForwardExtentCopy copy = new ForwardExtentCopy(editSession, region, clipboard, region.getMinimumPoint());
         copy.setCopyingEntities(copyEntities);
         copy.setCopyingBiomes(copyBiomes);
-        if (mask != null) {
-            copy.setSourceMask(mask);
+        Mask sourceMask = BlockMaskUtil.checkForAllowedBlocksMask(actor, mask, editSession);
+
+        if (sourceMask != null) {
+            copy.setSourceMask(sourceMask);
         }
         Operations.completeLegacy(copy);
         session.setClipboard(new ClipboardHolder(clipboard));
@@ -135,8 +138,10 @@ public class ClipboardCommands {
         copy.setCopyingEntities(copyEntities);
         copy.setRemovingEntities(true);
         copy.setCopyingBiomes(copyBiomes);
-        if (mask != null) {
-            copy.setSourceMask(mask);
+        Mask sourceMask = BlockMaskUtil.checkForAllowedBlocksMask(actor, mask, editSession);
+
+        if (sourceMask != null) {
+            copy.setSourceMask(sourceMask);
         }
         Operations.completeLegacy(copy);
         session.setClipboard(new ClipboardHolder(clipboard));
@@ -299,9 +304,10 @@ public class ClipboardCommands {
         ForwardExtentCopy copy = new ForwardExtentCopy(editSession, region, clipboard, region.getMinimumPoint());
         copy.setCopyingEntities(copyEntities);
         copy.setCopyingBiomes(copyBiomes);
+        Mask sourceMask = BlockMaskUtil.checkForAllowedBlocksMask(actor, mask, editSession);
 
-        if (mask != null) {
-            copy.setSourceMask(mask);
+        if (sourceMask != null) {
+            copy.setSourceMask(sourceMask);
         }
         Operations.complete(copy);
 

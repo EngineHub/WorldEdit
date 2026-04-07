@@ -119,6 +119,7 @@ import com.sk89q.worldedit.util.collection.DoubleArrayList;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.mask.BlockMaskUtil;
 import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -1527,8 +1528,10 @@ public class EditSession implements Extent, AutoCloseable {
         copy.setTransform(new AffineTransform().translate(offset));
         copy.setCopyingEntities(copyEntities);
         copy.setCopyingBiomes(copyBiomes);
-        if (mask != null) {
-            copy.setSourceMask(mask);
+        Mask sourceMask = BlockMaskUtil.checkForAllowedBlocksMask(actor, mask, this);
+
+        if (sourceMask != null) {
+            copy.setSourceMask(sourceMask);
         }
         Operations.completeLegacy(copy);
         return copy.getAffected();
@@ -1587,9 +1590,10 @@ public class EditSession implements Extent, AutoCloseable {
         copy.setCopyingEntities(moveEntities);
         copy.setRemovingEntities(moveEntities);
         copy.setCopyingBiomes(copyBiomes);
+        Mask sourceMask = BlockMaskUtil.checkForAllowedBlocksMask(actor, mask, this);
 
-        if (mask != null) {
-            copy.setSourceMask(mask);
+        if (sourceMask != null) {
+            copy.setSourceMask(sourceMask);
         }
 
         // Then we need to copy the buffer to the world

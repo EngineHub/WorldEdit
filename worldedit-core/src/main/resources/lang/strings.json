@@ -379,6 +379,7 @@
     "worldedit.error.empty-tag": "Tag name '{0}' has no contents.",
     "worldedit.error.no-match": "No match for '{0}'.",
     "worldedit.error.disallowed-block": "Block '{0}' not allowed (see WorldEdit configuration).",
+    "worldedit.error.disallowed-blocks": "Some of the specified blocks are not allowed.",
     "worldedit.error.max-changes": "Max blocks changed in an operation reached ({0}).",
     "worldedit.error.max-brush-radius": "Maximum brush radius (in configuration): {0}",
     "worldedit.error.max-radius": "Maximum radius (in configuration): {0}",

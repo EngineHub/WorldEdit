@@ -97,6 +97,9 @@ public class ConfigurateConfiguration extends LocalConfiguration {
             logger.warn("Error loading WorldEdit configuration", e);
         }
 
+        disableDisallowedBlockCategories = node.node("disallowed-blocks", "disable-block-categories").getBoolean(disableDisallowedBlockCategories);
+        disableDisallowedBlockCopying = node.node("disallowed-blocks", "disable-block-copying").getBoolean(disableDisallowedBlockCopying);
+
         registerHelp = node.node("register-help").getBoolean(true);
         logCommands = node.node("logging", "log-commands").getBoolean(logCommands);
         logFile = node.node("logging", "file").getString(logFile);
