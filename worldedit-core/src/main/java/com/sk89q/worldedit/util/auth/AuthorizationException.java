@@ -21,6 +21,7 @@ package com.sk89q.worldedit.util.auth;
 
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 
 /**
  * Raised when authorization is not granted.
@@ -28,6 +29,7 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 public class AuthorizationException extends WorldEditException {
 
     public AuthorizationException() {
+        super(TranslatableComponent.of("worldedit.command.permissions"));
     }
 
     public AuthorizationException(Component message) {
