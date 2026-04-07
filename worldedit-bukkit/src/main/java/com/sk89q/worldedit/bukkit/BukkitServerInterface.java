@@ -25,6 +25,7 @@ import com.sk89q.bukkit.util.CommandRegistration;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
+import com.sk89q.worldedit.bukkit.folia.FoliaScheduler;
 import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.AbstractPlatform;
@@ -121,14 +122,7 @@ public class BukkitServerInterface extends AbstractPlatform implements MultiUser
 
     @Override
     public int schedule(long delay, long period, Runnable task) {
-        if (plugin.isFolia()) {
-            Bukkit.getGlobalRegionScheduler().runAtFixedRate(plugin, scheduledTask -> task.run(), delay, period);
-            // TODO Paper doesn't appear to have a concept of task IDs, so return 1 here for now.
-            //  We may want to store these tasks and map them to our own IDs to cancel them later.
-            return 1;
-        } else {
-            return Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, task, delay, period);
-        }
+        return FoliaScheduler.getGlobalRegionScheduler().runAtFixedRate(plugin, o -> task.run(), delay, period).getTaskId();
     }
 
     @Override

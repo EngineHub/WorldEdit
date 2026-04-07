@@ -23,6 +23,7 @@ import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
+import com.sk89q.worldedit.bukkit.folia.FoliaScheduler;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
@@ -147,14 +148,14 @@ public class BukkitPlayer extends AbstractPlayerActor {
 
     @Override
     public boolean trySetPosition(Vector3 pos, float pitch, float yaw) {
-        Location location = new Location(player.getWorld(), pos.x(), pos.y(),
-                pos.z(), yaw, pitch);
-        if (WorldEditPlugin.getInstance().isFolia()) {
-            var unused = PaperLib.teleportAsync(player, location);
+        if (PaperLib.isPaper()) {
+            @SuppressWarnings({"FutureReturnValueIgnored", "unused"})
+            var unused = FoliaScheduler.getEntityScheduler().run(player, WorldEditPlugin.getInstance(),
+                o -> player.teleportAsync(new Location(player.getWorld(), pos.x(), pos.y(), pos.z(), yaw, pitch)), null);
             return true;
-        } else {
-            return player.teleport(location);
         }
+        return player.teleport(new Location(player.getWorld(), pos.x(), pos.y(),
+            pos.z(), yaw, pitch));
     }
 
     @Override
@@ -231,12 +232,13 @@ public class BukkitPlayer extends AbstractPlayerActor {
 
     @Override
     public boolean setLocation(com.sk89q.worldedit.util.Location location) {
-        if (WorldEditPlugin.getInstance().isFolia()) {
-            var unused = PaperLib.teleportAsync(player, BukkitAdapter.adapt(location));
+        if (PaperLib.isPaper()) {
+            @SuppressWarnings({"FutureReturnValueIgnored", "unused"})
+            var unused = FoliaScheduler.getEntityScheduler().run(player, WorldEditPlugin.getInstance(),
+                o -> player.teleportAsync(BukkitAdapter.adapt(location)), null);
             return true;
-        } else {
-            return player.teleport(BukkitAdapter.adapt(location));
         }
+        return player.teleport(BukkitAdapter.adapt(location));
     }
 
     @SuppressWarnings("deprecation") // Paper's deprecation, we need to support Spigot still
