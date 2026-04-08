@@ -49,11 +49,7 @@ import com.sk89q.worldedit.extent.world.WatchdogTickingExtent;
 import com.sk89q.worldedit.function.GroundFunction;
 import com.sk89q.worldedit.function.RegionMaskingFilter;
 import com.sk89q.worldedit.function.biome.BiomeReplace;
-import com.sk89q.worldedit.function.block.BlockDistributionCounter;
-import com.sk89q.worldedit.function.block.BlockReplace;
-import com.sk89q.worldedit.function.block.Counter;
-import com.sk89q.worldedit.function.block.Naturalizer;
-import com.sk89q.worldedit.function.block.SnowSimulator;
+import com.sk89q.worldedit.function.block.*;
 import com.sk89q.worldedit.function.generator.ForestGenerator;
 import com.sk89q.worldedit.function.generator.GardenPatchGenerator;
 import com.sk89q.worldedit.function.mask.BlockMask;
@@ -2075,52 +2071,24 @@ public class EditSession implements Extent, AutoCloseable {
      */
     public int thaw(BlockVector3 position, double radius, int height)
         throws MaxChangedBlocksException {
-        int affected = 0;
 
-        radius += 0.5;
+        return thaw(new CylinderRegion(position, Vector2.at(radius, radius), position.y(), height));
+    }
 
-        double radiusSq = radius * radius;
+    /**
+     * Thaw blocks in a cylinder.
+     *
+     * @param region the region to thaw in
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    public final int thaw(FlatRegion region) throws MaxChangedBlocksException {
+        checkNotNull(region);
 
-        int ox = position.x();
-        int oy = position.y();
-        int oz = position.z();
-
-        BlockState air = BlockTypes.AIR.getDefaultState();
-        BlockState water = BlockTypes.WATER.getDefaultState();
-
-        int centerY = Math.max(getWorld().getMinY(), Math.min(getWorld().getMaxY(), oy));
-        int minY = Math.max(getWorld().getMinY(), centerY - height);
-        int maxY = Math.min(getWorld().getMaxY(), centerY + height);
-
-        int ceilRadius = (int) Math.ceil(radius);
-        for (int x = ox - ceilRadius; x <= ox + ceilRadius; ++x) {
-            for (int z = oz - ceilRadius; z <= oz + ceilRadius; ++z) {
-                if (BlockVector3.at(x, oy, z).distanceSq(position) > radiusSq) {
-                    continue;
-                }
-
-                for (int y = maxY; y > minY; --y) {
-                    BlockVector3 pt = BlockVector3.at(x, y, z);
-                    BlockType id = getBlock(pt).getBlockType();
-
-                    if (id == BlockTypes.ICE) {
-                        if (setBlock(pt, water)) {
-                            ++affected;
-                        }
-                    } else if (id == BlockTypes.SNOW) {
-                        if (setBlock(pt, air)) {
-                            ++affected;
-                        }
-                    } else if (id.getMaterial().isAir()) {
-                        continue;
-                    }
-
-                    break;
-                }
-            }
-        }
-
-        return affected;
+        Thawer thawer = new Thawer(this);
+        LayerVisitor layerVisitor = new LayerVisitor(region, region.getMinimumY(), region.getMaximumY(), thawer);
+        Operations.completeLegacy(layerVisitor);
+        return thawer.getAffected();
     }
 
     /**
