@@ -48,6 +48,7 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.generation.TreeType;
+import com.sk89q.worldedit.world.generation.WorldEditTreeGeneration;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
@@ -381,6 +382,10 @@ public final class SpongeWorld extends AbstractWorld {
 
     @Override
     public boolean generateTree(TreeType type, EditSession editSession, BlockVector3 position) throws MaxChangedBlocksException {
+        Boolean customResult = WorldEditTreeGeneration.handleWorldEditTrees(this, type, editSession, position);
+        if (customResult != null) {
+            return customResult;
+        }
         ServerLevel world = (ServerLevel) getWorld();
         PlacedFeature generator = world.registryAccess().lookupOrThrow(Registries.PLACED_FEATURE).getValue(Identifier.tryParse(type.id()));
         return generator != null && generator.place(

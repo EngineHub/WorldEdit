@@ -62,6 +62,7 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.generation.StructureType;
+import com.sk89q.worldedit.world.generation.WorldEditTreeGeneration;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
@@ -474,6 +475,10 @@ public class NeoForgeWorld extends AbstractWorld {
 
     @Override
     public boolean generateTree(com.sk89q.worldedit.world.generation.TreeType type, EditSession editSession, BlockVector3 position) throws MaxChangedBlocksException {
+        Boolean customResult = WorldEditTreeGeneration.handleWorldEditTrees(this, type, editSession, position);
+        if (customResult != null) {
+            return customResult;
+        }
         ServerLevel world = getWorld();
         PlacedFeature generator = world.registryAccess().lookupOrThrow(Registries.PLACED_FEATURE).getValue(Identifier.tryParse(type.id()));
         ServerChunkCache chunkManager = world.getChunkSource();

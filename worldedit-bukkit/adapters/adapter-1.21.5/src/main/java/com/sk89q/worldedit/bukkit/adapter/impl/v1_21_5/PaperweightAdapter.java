@@ -70,6 +70,7 @@ import com.sk89q.worldedit.world.entity.EntityTypes;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.generation.StructureType;
 import com.sk89q.worldedit.world.generation.TreeType;
+import com.sk89q.worldedit.world.generation.WorldEditTreeTypes;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import net.minecraft.SharedConstants;
@@ -940,6 +941,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
                 }
             }
         }
+        WorldEditTreeTypes.init();
 
         // BiomeCategories
         Registry<Biome> biomeRegistry = server.registryAccess().lookupOrThrow(Registries.BIOME);

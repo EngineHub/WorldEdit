@@ -50,6 +50,7 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.generation.StructureType;
+import com.sk89q.worldedit.world.generation.WorldEditTreeGeneration;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
 import io.papermc.lib.PaperLib;
@@ -318,6 +319,10 @@ public class BukkitWorld extends AbstractWorld {
 
     @Override
     public boolean generateTree(com.sk89q.worldedit.world.generation.TreeType type, EditSession editSession, BlockVector3 position) throws MaxChangedBlocksException {
+        Boolean customResult = WorldEditTreeGeneration.handleWorldEditTrees(this, type, editSession, position);
+        if (customResult != null) {
+            return customResult;
+        }
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         if (adapter != null) {
             return adapter.generateTree(type, getWorld(), editSession, position);
