@@ -189,20 +189,21 @@ public class RecursiveDirectoryWatcher implements Closeable {
                         if (kind.equals(StandardWatchEventKinds.ENTRY_CREATE)) {
                             try {
                                 path = WorldEdit.getInstance().getSafeOpenFile(null, schematicRoot.toFile(), schematicRoot.relativize(path).toString(), null).toPath();
-
-                                if (Files.isDirectory(path)) { // new subfolder created, create watch for it
-                                    try {
-                                        registerFolderWatcher(path);
-                                        triggerInitialEvents(path);
-                                    } catch (IOException | FilenameException e) {
-                                        LOGGER.error(e);
-                                    }
-                                } else { // new file created
-                                    eventConsumer.accept(new FileCreatedEvent(path));
-                                }
                             } catch (FilenameException e) {
                                 // Invalid filename, warn but don't fail.
                                 LOGGER.warn("Illegal file detected", e);
+                                continue;
+                            }
+
+                            if (Files.isDirectory(path)) { // new subfolder created, create watch for it
+                                try {
+                                    registerFolderWatcher(path);
+                                    triggerInitialEvents(path);
+                                } catch (IOException | FilenameException e) {
+                                    LOGGER.error(e);
+                                }
+                            } else { // new file created
+                                eventConsumer.accept(new FileCreatedEvent(path));
                             }
                         } else if (kind.equals(StandardWatchEventKinds.ENTRY_DELETE)) {
                             // When we are notified about a deleted entry, we can't simply ask the filesystem
