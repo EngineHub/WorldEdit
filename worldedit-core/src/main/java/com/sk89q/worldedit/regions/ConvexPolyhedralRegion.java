@@ -23,6 +23,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.polyhedron.Edge;
 import com.sk89q.worldedit.regions.polyhedron.Triangle;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 
 import java.util.ArrayList;
@@ -255,14 +256,16 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
 
     @Override
     public void expand(BlockVector3... changes) throws RegionOperationException {
+        throw new RegionOperationException(TranslatableComponent.of("worldedit.selection.convex.error.cannot-expand"));
     }
 
     @Override
     public void contract(BlockVector3... changes) throws RegionOperationException {
+        throw new RegionOperationException(TranslatableComponent.of("worldedit.selection.convex.error.cannot-contract"));
     }
 
     @Override
-    public void shift(BlockVector3 change) throws RegionOperationException {
+    public void shift(BlockVector3 change) {
         Vector3 vec = change.toVector3();
         shiftCollection(vertices, change);
         shiftCollection(vertexBacklog, change);
