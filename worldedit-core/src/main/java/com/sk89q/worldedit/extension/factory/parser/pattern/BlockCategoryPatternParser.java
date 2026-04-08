@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.extension.factory.parser.pattern;
 
+import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.util.SuggestionHelper;
 import com.sk89q.worldedit.extension.input.DisallowedUsageException;
@@ -68,12 +69,13 @@ public class BlockCategoryPatternParser extends InputParser<Pattern> {
         RandomPattern randomPattern = new RandomPattern();
 
         Set<BlockType> blocks = category.getAll();
-        if (context.isRestricted() && worldEdit.getConfiguration().disableDisallowedBlockCategories) {
+        LocalConfiguration config = worldEdit.getConfiguration();
+        if (context.isRestricted() && config.disableDisallowedBlockCategories) {
             Actor actor = context.requireActor();
+            Set<String> disallowedBlocks = config.disallowedBlocks;
             if (actor != null
                     && !actor.hasPermission("worldedit.anyblock")
-                    && blocks.stream().map(BlockType::id).anyMatch(
-                            worldEdit.getConfiguration().disallowedBlocks::contains)) {
+                    && blocks.stream().map(BlockType::id).anyMatch(disallowedBlocks::contains)) {
                 throw new DisallowedUsageException(TranslatableComponent.of("worldedit.error.disallowed-blocks"));
             }
         }
