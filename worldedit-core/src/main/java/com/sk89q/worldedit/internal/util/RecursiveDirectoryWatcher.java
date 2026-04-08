@@ -122,8 +122,13 @@ public class RecursiveDirectoryWatcher implements Closeable {
                 if (Files.isDirectory(path)) {
                     triggerInitialEvents(path);
                 } else {
-                    path = WorldEdit.getInstance().getSafeOpenFile(null, schematicRoot.toFile(), schematicRoot.relativize(path).toString(), null).toPath();
-                    eventConsumer.accept(new FileCreatedEvent(path));
+                    try {
+                        path = WorldEdit.getInstance().getSafeOpenFile(null, schematicRoot.toFile(), schematicRoot.relativize(path).toString(), null).toPath();
+                        eventConsumer.accept(new FileCreatedEvent(path));
+                    } catch (FilenameException e) {
+                        // Invalid filename, warn but don't fail.
+                        LOGGER.warn("Illegal file detected", e);
+                    }
                 }
             }
         }
@@ -182,7 +187,13 @@ public class RecursiveDirectoryWatcher implements Closeable {
                         path = parentPath.resolve(path);
 
                         if (kind.equals(StandardWatchEventKinds.ENTRY_CREATE)) {
-                            path = WorldEdit.getInstance().getSafeOpenFile(null, schematicRoot.toFile(), schematicRoot.relativize(path).toString(), null).toPath();
+                            try {
+                                path = WorldEdit.getInstance().getSafeOpenFile(null, schematicRoot.toFile(), schematicRoot.relativize(path).toString(), null).toPath();
+                            } catch (FilenameException e) {
+                                // Invalid filename, warn but don't fail.
+                                LOGGER.warn("Illegal file detected", e);
+                                continue;
+                            }
 
                             if (Files.isDirectory(path)) { // new subfolder created, create watch for it
                                 try {
@@ -218,7 +229,7 @@ public class RecursiveDirectoryWatcher implements Closeable {
                         }
                     }
                 }
-            } catch (ClosedWatchServiceException | FilenameException ignored) {
+            } catch (ClosedWatchServiceException ignored) {
                 // Watch service closed, exit
             }
             LOGGER.debug("RecursiveDirectoryWatcher::EventConsumer exited");
