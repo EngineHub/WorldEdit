@@ -170,7 +170,7 @@ public class PaperweightWorldNativeAccess implements WorldNativeAccess<LevelChun
         oldState.updateIndirectNeighbourShapes(world, pos, NOTIFY, recursionLimit);
         if (sideEffectSet.shouldApply(SideEffect.EVENTS)) {
             CraftWorld craftWorld = world.getWorld();
-            BlockPhysicsEvent event = new BlockPhysicsEvent(craftWorld.getBlockAt(pos.getX(), pos.getY(), pos.getZ()), CraftBlockData.createData(newState));
+            BlockPhysicsEvent event = new BlockPhysicsEvent(craftWorld.getBlockAt(pos.getX(), pos.getY(), pos.getZ()), newState.asBlockData());
             world.getCraftServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
                 return;
