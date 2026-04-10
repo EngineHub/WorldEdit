@@ -29,6 +29,7 @@ import com.sk89q.worldedit.world.fluid.FluidType;
 import com.sk89q.worldedit.world.gamemode.GameMode;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.generation.StructureType;
+import com.sk89q.worldedit.world.generation.TreeType;
 import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.weather.WeatherType;
@@ -36,6 +37,7 @@ import com.sk89q.worldedit.world.weather.WeatherType;
 import javax.annotation.Nullable;
 
 public class Registries {
+    public static final Registry<Registry<?>> REGISTRY = addRegistry(Registry.REGISTRY);
     public static final Registry<BlockType> BLOCK_TYPE = addRegistry(BlockType.REGISTRY);
     public static final Registry<BlockCategory> BLOCK_CATEGORY = addRegistry(BlockCategory.REGISTRY);
     public static final Registry<ItemType> ITEM_TYPE = addRegistry(ItemType.REGISTRY);
@@ -49,6 +51,7 @@ public class Registries {
     public static final Registry<FluidCategory> FLUID_CATEGORY = addRegistry(FluidCategory.REGISTRY);
     public static final Registry<ConfiguredFeatureType> CONFIGURED_FEATURE_TYPE = addRegistry(ConfiguredFeatureType.REGISTRY);
     public static final Registry<StructureType> STRUCTURE_TYPE = addRegistry(StructureType.REGISTRY);
+    public static final Registry<TreeType> TREE_TYPE = addRegistry(TreeType.REGISTRY);
 
     private static <T extends Keyed> Registry<T> addRegistry(Registry<T> registry) {
         Registry.REGISTRY.register(registry.id(), registry);

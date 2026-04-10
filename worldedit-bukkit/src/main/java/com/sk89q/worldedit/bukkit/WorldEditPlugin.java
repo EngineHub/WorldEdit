@@ -47,7 +47,7 @@ import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
-import com.sk89q.worldedit.registry.Registries;
+import com.sk89q.worldedit.registry.CommonRegistries;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.lifecycle.Lifecycled;
@@ -58,10 +58,8 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.FuzzyBlockState;
 import com.sk89q.worldedit.world.entity.EntityType;
-import com.sk89q.worldedit.world.gamemode.GameModes;
 import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
-import com.sk89q.worldedit.world.weather.WeatherTypes;
 import io.papermc.lib.PaperLib;
 import io.papermc.paper.ServerBuildInfo;
 import net.kyori.adventure.key.Key;
@@ -248,10 +246,8 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             adapter.initializeRegistries();
         }
 
-        // ... :|
-        GameModes.get("");
-        WeatherTypes.get("");
-        Registries.get("");
+        // Common registries
+        CommonRegistries.init();
     }
 
     private void setupTags() {
