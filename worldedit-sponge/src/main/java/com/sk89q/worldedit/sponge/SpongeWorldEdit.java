@@ -35,13 +35,12 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.internal.command.CommandUtil;
-import com.sk89q.worldedit.registry.Registries;
+import com.sk89q.worldedit.registry.CommonRegistries;
 import com.sk89q.worldedit.sponge.config.SpongeConfiguration;
 import com.sk89q.worldedit.world.biome.BiomeCategory;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.generation.TreeType;
-import com.sk89q.worldedit.world.generation.WorldEditTreeTypes;
 import com.sk89q.worldedit.world.item.ItemCategory;
 import net.kyori.adventure.audience.Audience;
 import org.apache.logging.log4j.Logger;
@@ -224,7 +223,6 @@ public class SpongeWorldEdit {
                 }
             }
         });
-        WorldEditTreeTypes.init();
         event.game().registry(RegistryTypes.BLOCK_TYPE).tags().forEach(blockTypeTag -> {
             String id = blockTypeTag.key().asString();
             if (!BlockCategory.REGISTRY.keySet().contains(id)) {
@@ -244,7 +242,8 @@ public class SpongeWorldEdit {
             }
         });
 
-        Registries.get("");
+        // Common registries
+        CommonRegistries.init();
 
         config.load();
         WorldEdit.getInstance().getEventBus().post(new ConfigurationLoadEvent(config));
