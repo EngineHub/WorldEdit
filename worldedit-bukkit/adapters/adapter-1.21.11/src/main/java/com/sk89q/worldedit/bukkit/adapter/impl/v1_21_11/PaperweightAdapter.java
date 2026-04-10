@@ -216,14 +216,6 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
     private static final RandomSource random = RandomSource.create();
 
-    private static final String WRONG_VERSION =
-            """
-            This version of WorldEdit has not been tested with the current Minecraft version.
-            While it may work, there might be unexpected issues.
-            It is recommended to use a version of WorldEdit that supports your Minecraft version.
-            For more information, see https://worldedit.enginehub.org/en/latest/faq/#bukkit-adapters
-            """.stripIndent();
-
     // ------------------------------------------------------------------------
     // Code that may break between versions of Minecraft
     // ------------------------------------------------------------------------
@@ -235,10 +227,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
         int dataVersion = SharedConstants.getCurrentVersion().dataVersion().version();
         if (dataVersion != Constants.DATA_VERSION_MC_1_21_11) {
-            logger.warning(WRONG_VERSION);
-        }
-        if (dataVersion >= Constants.DATA_VERSION_MC_26_1) {
-            throw new RuntimeException("Force prevent this loading on 26.1+");
+            throw new RuntimeException("Force prevent this loading on >=26.1 or <=1.21.10");
         }
 
         serverWorldsField = CraftServer.class.getDeclaredField("worlds");
