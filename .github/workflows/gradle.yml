@@ -1,5 +1,11 @@
 name: Gradle Build
-on: [push, pull_request, merge_group]
+on:
+  push:
+    branches:
+      - 'master'
+      - 'version/*'
+  pull_request:
+  merge_group:
 
 jobs:
   build:
