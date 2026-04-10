@@ -226,7 +226,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
         int dataVersion = SharedConstants.getCurrentVersion().getDataVersion().getVersion();
         if (dataVersion != Constants.DATA_VERSION_MC_1_21_4) {
-            throw new UnsupportedClassVersionError("Not 1.21.4!");
+            throw new RuntimeException("Not 1.21.4!");
         }
 
         serverWorldsField = CraftServer.class.getDeclaredField("worlds");

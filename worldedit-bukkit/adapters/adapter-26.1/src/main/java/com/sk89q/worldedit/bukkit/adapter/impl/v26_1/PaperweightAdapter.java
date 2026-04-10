@@ -224,7 +224,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             While it may work, there might be unexpected issues.
             It is recommended to use a version of WorldEdit that supports your Minecraft version.
             For more information, see https://worldedit.enginehub.org/en/latest/faq/#bukkit-adapters
-            """.stripIndent();
+            """;
 
     // ------------------------------------------------------------------------
     // Code that may break between versions of Minecraft
@@ -237,6 +237,9 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
         int dataVersion = SharedConstants.getCurrentVersion().dataVersion().version();
         if (dataVersion < Constants.DATA_VERSION_MC_26_1 || dataVersion > Constants.DATA_VERSION_MC_26_1_2) {
+            if (dataVersion <= Constants.DATA_VERSION_MC_1_21_11) {
+                throw new RuntimeException("Force prevent this loading on <=1.21.11");
+            }
             logger.warning(WRONG_VERSION);
         }
 
