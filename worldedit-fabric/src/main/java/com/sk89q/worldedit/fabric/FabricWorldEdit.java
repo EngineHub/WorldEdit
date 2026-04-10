@@ -46,6 +46,7 @@ import com.sk89q.worldedit.world.gamemode.GameModes;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.generation.StructureType;
 import com.sk89q.worldedit.world.generation.TreeType;
+import com.sk89q.worldedit.world.generation.WorldEditTreeTypes;
 import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
@@ -319,6 +320,7 @@ public class FabricWorldEdit implements ModInitializer {
                 }
             }
         }
+        WorldEditTreeTypes.init();
 
         // ... :|
         GameModes.get("");

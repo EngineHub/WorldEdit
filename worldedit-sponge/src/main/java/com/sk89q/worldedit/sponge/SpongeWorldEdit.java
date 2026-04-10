@@ -41,6 +41,7 @@ import com.sk89q.worldedit.world.biome.BiomeCategory;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.generation.TreeType;
+import com.sk89q.worldedit.world.generation.WorldEditTreeTypes;
 import com.sk89q.worldedit.world.item.ItemCategory;
 import net.kyori.adventure.audience.Audience;
 import org.apache.logging.log4j.Logger;
@@ -223,6 +224,7 @@ public class SpongeWorldEdit {
                 }
             }
         });
+        WorldEditTreeTypes.init();
         event.game().registry(RegistryTypes.BLOCK_TYPE).tags().forEach(blockTypeTag -> {
             String id = blockTypeTag.key().asString();
             if (!BlockCategory.REGISTRY.keySet().contains(id)) {
