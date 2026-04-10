@@ -139,6 +139,7 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.level.storage.LevelStorageSource;
+import net.minecraft.world.level.storage.SavedDataStorage;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
@@ -234,7 +235,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         var unused = CraftServer.class.cast(Bukkit.getServer());
 
         int dataVersion = SharedConstants.getCurrentVersion().dataVersion().version();
-        if (dataVersion != Constants.DATA_VERSION_MC_26_1 && dataVersion != Constants.DATA_VERSION_MC_26_1_1) {
+        if (dataVersion < Constants.DATA_VERSION_MC_26_1 || dataVersion > Constants.DATA_VERSION_MC_26_1_2) {
             logger.warning(WRONG_VERSION);
         }
 
@@ -793,7 +794,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
                     env,
                     gen,
                     bukkitWorld.getBiomeProvider(),
-                    originalWorld.getDataStorage(),
+                    new SavedDataStorage(session.getDimensionPath(originalWorld.dimension()), originalWorld.getServer().getFixerUpper(), originalWorld.registryAccess()),
                     loadedWorldData
             );
             try {
