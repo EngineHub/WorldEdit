@@ -19,12 +19,13 @@
 
 package com.sk89q.worldedit.world.generation;
 
+import com.google.common.collect.Iterables;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.World;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.concurrent.ThreadLocalRandom;
 import javax.annotation.Nullable;
 
@@ -38,8 +39,8 @@ public final class WorldEditTreeGeneration {
     public static Boolean handleWorldEditTrees(World world, TreeType type, EditSession editSession, BlockVector3 position)
             throws MaxChangedBlocksException {
         if (type == WorldEditTreeTypes.RANDOM) {
-            var treeTypes = List.copyOf(TreeType.REGISTRY.values());
-            TreeType randomType = treeTypes.get(ThreadLocalRandom.current().nextInt(treeTypes.size()));
+            Collection<TreeType> treeTypes = TreeType.REGISTRY.values();
+            TreeType randomType = Iterables.get(treeTypes, ThreadLocalRandom.current().nextInt(treeTypes.size()));
             return world.generateTree(randomType, editSession, position);
         }
 
