@@ -6,5 +6,5 @@ plugins {
 
 dependencies {
     // https://artifactory.papermc.io/ui/native/universe/io/papermc/paper/dev-bundle/
-    the<PaperweightUserDependenciesExtension>().paperDevBundle("26.1.1.build.14-alpha")
+    the<PaperweightUserDependenciesExtension>().paperDevBundle("26.1.1.build.29-alpha")
 }
