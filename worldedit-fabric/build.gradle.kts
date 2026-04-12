@@ -19,10 +19,6 @@ platform {
 
 val fabricApiConfiguration: Configuration = configurations.create("fabricApi")
 
-loom {
-    accessWidenerPath.set(project.file("src/main/resources/worldedit.accesswidener"))
-}
-
 tasks.withType<RunGameTask>().configureEach {
     javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
 }
@@ -34,12 +30,13 @@ repositories {
 withCuiProtocolDependsOnCommonRule(libs.cuiProtocol.fabric.get().module)
 
 dependencies {
-    "api"(project(":worldedit-core"))
+    api(project(":worldedit-core"))
+    api(project(":worldedit-core-mc"))
 
-    "minecraft"(libs.fabric.minecraft)
-    "implementation"(libs.fabric.loader)
-    "implementation"(libs.cuiProtocol.fabric)
-    "include"(libs.cuiProtocol.fabric) {
+    minecraft(libs.fabric.minecraft)
+    implementation(libs.fabric.loader)
+    implementation(libs.cuiProtocol.fabric)
+    include(libs.cuiProtocol.fabric) {
         attributes {
             attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling::class, Bundling.SHADOWED))
         }
@@ -56,15 +53,15 @@ dependencies {
     // [2] Request the matching dependency from fabric-loom
     for (wantedDependency in wantedDependencies) {
         val dep = fabricApi.module(wantedDependency, libs.versions.fabric.api.get())
-        "include"(dep)
-        "implementation"(dep)
+        include(dep)
+        implementation(dep)
     }
 
     // No need for this at runtime
-    "compileOnly"(libs.fabric.permissions.api)
+    compileOnly(libs.fabric.permissions.api)
 
     // Silence some warnings, since apparently this isn't on the compile classpath like it should be.
-    "compileOnly"(libs.errorprone.annotations)
+    compileOnly(libs.errorprone.annotations)
 }
 
 configure<BasePluginExtension> {

@@ -27,6 +27,10 @@ jarJar.disableDefaultSources()
 
 repositories {
     addEngineHubRepository()
+    maven {
+        name = "FabricMC"
+        url = uri("https://maven.fabricmc.net/")
+    }
     mavenCentral()
 }
 
@@ -35,6 +39,7 @@ configurations {
     resolvable("coreResourcesResolvable") {
         extendsFrom(coreResourcesScope.get())
         attributes {
+            // Attributes are related to how `expose-resources` works, see that plugin file for details.
             attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category::class, Category.VERIFICATION))
             attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling::class, Bundling.EXTERNAL))
             attribute(VerificationType.VERIFICATION_TYPE_ATTRIBUTE, objects.named(VerificationType::class, "resources"))
@@ -46,6 +51,7 @@ withCuiProtocolDependsOnCommonRule(libs.cuiProtocol.neoforge.get().module)
 
 dependencies {
     api(project(":worldedit-core"))
+    api(project(":worldedit-core-mc"))
 
     implementation(libs.neoforge)
     implementation(libs.cuiProtocol.neoforge)
@@ -56,20 +62,11 @@ dependencies {
     }
 
     "coreResourcesScope"(project(":worldedit-core"))
-}
-
-minecraft {
-    accessTransformers {
-        file("src/main/resources/META-INF/accesstransformer.cfg")
-    }
+    "coreResourcesScope"(project(":worldedit-core-mc"))
 }
 
 runs {
     val runConfig = Action<Run> {
-        systemProperties(mapOf(
-            "forge.logging.markers" to "SCAN,REGISTRIES,REGISTRYDUMP",
-            "forge.logging.console.level" to "debug"
-        ))
         workingDirectory(project.file("run").canonicalPath)
         modSources(sourceSets["main"])
         dependencies {

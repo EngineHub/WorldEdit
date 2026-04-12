@@ -1,9 +1,11 @@
+import buildlogic.CuiProtocolCommonIsNotFabricSpecificRule
 import buildlogic.addEngineHubRepository
 
 plugins {
     alias(libs.plugins.fabric.loom)
     `java-library`
     id("buildlogic.core-and-platform")
+    id("buildlogic.expose-resources")
 }
 
 description = "The Minecraft-specific implementation of WorldEdit's core module." +
@@ -13,18 +15,22 @@ repositories {
     addEngineHubRepository()
 }
 
-loom {
-    accessWidenerPath.set(project.file("src/main/resources/worldedit.accesswidener"))
-}
-
 dependencies {
-    "api"(project(":worldedit-core"))
+    api(project(":worldedit-core"))
+    api(project(":worldedit-libs:core-mc"))
 
-    "minecraft"(libs.fabric.minecraft)
-    "implementation"(libs.fabric.loader)
+    minecraft(libs.fabric.minecraft)
+
+    // Provided by platforms.
+    compileOnly(libs.fabric.mixin)
+
+    implementation(libs.cuiProtocol.common)
+    components {
+        withModule<CuiProtocolCommonIsNotFabricSpecificRule>(libs.cuiProtocol.common.get().module)
+    }
 
     // Silence some warnings, since apparently this isn't on the compile classpath like it should be.
-    "compileOnly"(libs.errorprone.annotations)
+    compileOnly(libs.errorprone.annotations)
 }
 
 base {

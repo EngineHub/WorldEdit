@@ -28,6 +28,7 @@ tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJ
         include(project(":worldedit-libs:core"))
         include(project(":worldedit-libs:${project.name.replace("worldedit-", "")}"))
         include(project(":worldedit-core"))
+        include(project(":worldedit-core-mc"))
         include(dependency(jchronic))
         linBusDeps.forEach {
             include(dependency(it))

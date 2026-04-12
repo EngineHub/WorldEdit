@@ -19,155 +19,31 @@
 
 package com.sk89q.worldedit.fabric;
 
-import com.google.common.collect.Sets;
-import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.extension.platform.AbstractPlatform;
-import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.extension.platform.Capability;
-import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
-import com.sk89q.worldedit.extension.platform.Preference;
-import com.sk89q.worldedit.extension.platform.Watchdog;
-import com.sk89q.worldedit.fabric.internal.FabricWatchdogImpl;
-import com.sk89q.worldedit.util.SideEffect;
+import com.sk89q.worldedit.coremc.internal.CoreMcPlatform;
 import com.sk89q.worldedit.util.lifecycle.Lifecycled;
-import com.sk89q.worldedit.world.DataFixer;
-import com.sk89q.worldedit.world.World;
-import com.sk89q.worldedit.world.registry.Registries;
-import net.minecraft.SharedConstants;
-import net.minecraft.resources.Identifier;
-import net.minecraft.server.dedicated.DedicatedServer;
-import net.minecraft.server.level.ServerLevel;
+import com.sk89q.worldedit.util.lifecycle.SimpleLifecycled;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.players.PlayerList;
-import net.minecraft.world.level.storage.ServerLevelData;
-import org.enginehub.piston.CommandManager;
+import org.enginehub.worldeditcui.protocol.CUIPacket;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import javax.annotation.Nullable;
+class FabricPlatform extends CoreMcPlatform {
 
-class FabricPlatform extends AbstractPlatform implements MultiUserPlatform {
-
-    private final FabricWorldEdit mod;
-    private final FabricDataFixer dataFixer;
-    private final Lifecycled<Optional<Watchdog>> watchdog;
-    private boolean hookingEvents = false;
+    private static Lifecycled<MinecraftServer> createMinecraftServerLifecycled() {
+        SimpleLifecycled<MinecraftServer> lifecycledServer = SimpleLifecycled.invalid();
+        ServerLifecycleEvents.SERVER_STARTING.register(lifecycledServer::newValue);
+        ServerLifecycleEvents.SERVER_STOPPING.register(_ -> lifecycledServer.invalidate());
+        return lifecycledServer;
+    }
 
     FabricPlatform(FabricWorldEdit mod) {
-        this.mod = mod;
-        this.dataFixer = new FabricDataFixer(getDataVersion());
-
-        this.watchdog = FabricWorldEdit.LIFECYCLED_SERVER.map(
-            server -> server instanceof DedicatedServer
-                ? Optional.of(new FabricWatchdogImpl(server))
-                : Optional.empty()
-        );
-    }
-
-    boolean isHookingEvents() {
-        return hookingEvents;
+        super(mod, createMinecraftServerLifecycled());
     }
 
     @Override
-    public Registries getRegistries() {
-        return FabricRegistries.getInstance();
-    }
-
-    @Override
-    public int getDataVersion() {
-        return SharedConstants.getCurrentVersion().dataVersion().version();
-    }
-
-    @Override
-    public DataFixer getDataFixer() {
-        return dataFixer;
-    }
-
-    @Override
-    public boolean isValidMobType(String type) {
-        return FabricWorldEdit.getRegistry(net.minecraft.core.registries.Registries.ENTITY_TYPE)
-            .containsKey(Identifier.parse(type));
-    }
-
-    @Override
-    public void reload() {
-        getConfiguration().load();
-        super.reload();
-    }
-
-    @Override
-    public int schedule(long delay, long period, Runnable task) {
-        return -1;
-    }
-
-    @Override
-    @Nullable
-    public Watchdog getWatchdog() {
-        return watchdog.value().flatMap(Function.identity()).orElse(null);
-    }
-
-    @Override
-    public List<? extends World> getWorlds() {
-        Iterable<ServerLevel> worlds = FabricWorldEdit.LIFECYCLED_SERVER.valueOrThrow().getAllLevels();
-        List<World> ret = new ArrayList<>();
-        for (ServerLevel world : worlds) {
-            ret.add(new FabricWorld(world));
-        }
-        return ret;
-    }
-
-    @Nullable
-    @Override
-    public Player matchPlayer(Player player) {
-        if (player instanceof FabricPlayer) {
-            return player;
-        } else {
-            ServerPlayer entity = FabricWorldEdit.LIFECYCLED_SERVER.valueOrThrow()
-                .getPlayerList().getPlayerByName(player.getName());
-            return entity != null ? new FabricPlayer(entity) : null;
-        }
-    }
-
-    @Nullable
-    @Override
-    public World matchWorld(World world) {
-        if (world instanceof FabricWorld) {
-            return world;
-        } else {
-            for (ServerLevel ws : FabricWorldEdit.LIFECYCLED_SERVER.valueOrThrow().getAllLevels()) {
-                if (((ServerLevelData) ws.getLevelData()).getLevelName().equals(world.getName())) {
-                    return new FabricWorld(ws);
-                }
-            }
-
-            return null;
-        }
-    }
-
-    @Override
-    public void registerCommands(CommandManager manager) {
-        // No-op, we register using Fabric's event
-    }
-
-    @Override
-    public void setGameHooksEnabled(boolean enabled) {
-        this.hookingEvents = enabled;
-    }
-
-    @Override
-    public FabricConfiguration getConfiguration() {
-        return mod.getConfig();
-    }
-
-    @Override
-    public String getVersion() {
-        return mod.getInternalVersion();
+    public void sendCUIPacket(ServerPlayer player, CUIPacket packet) {
+        ServerPlayNetworking.send(player, packet);
     }
 
     @Override
@@ -176,54 +52,7 @@ class FabricPlatform extends AbstractPlatform implements MultiUserPlatform {
     }
 
     @Override
-    public String getPlatformVersion() {
-        return mod.getInternalVersion();
-    }
-
-    @Override
     public String id() {
         return "enginehub:fabric";
-    }
-
-    @Override
-    public Map<Capability, Preference> getCapabilities() {
-        Map<Capability, Preference> capabilities = new EnumMap<>(Capability.class);
-        capabilities.put(Capability.CONFIGURATION, Preference.PREFER_OTHERS);
-        capabilities.put(Capability.WORLDEDIT_CUI, Preference.NORMAL);
-        capabilities.put(Capability.GAME_HOOKS, Preference.NORMAL);
-        capabilities.put(Capability.PERMISSIONS, Preference.NORMAL);
-        capabilities.put(Capability.USER_COMMANDS, Preference.NORMAL);
-        capabilities.put(Capability.WORLD_EDITING, Preference.PREFERRED);
-        return capabilities;
-    }
-
-    private static final Set<SideEffect> SUPPORTED_SIDE_EFFECTS = Sets.immutableEnumSet(
-        SideEffect.VALIDATION,
-        SideEffect.ENTITY_AI,
-        SideEffect.LIGHTING,
-        SideEffect.NEIGHBORS,
-        SideEffect.UPDATE
-    );
-
-    @Override
-    public Set<SideEffect> getSupportedSideEffects() {
-        return SUPPORTED_SIDE_EFFECTS;
-    }
-
-    @Override
-    public long getTickCount() {
-        return FabricWorldEdit.LIFECYCLED_SERVER.valueOrThrow().getTickCount();
-    }
-
-    @Override
-    public Collection<Actor> getConnectedUsers() {
-        List<Actor> users = new ArrayList<>();
-        PlayerList scm = FabricWorldEdit.LIFECYCLED_SERVER.valueOrThrow().getPlayerList();
-        for (ServerPlayer entity : scm.getPlayers()) {
-            if (entity != null) {
-                users.add(new FabricPlayer(entity));
-            }
-        }
-        return users;
     }
 }

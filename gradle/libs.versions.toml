@@ -48,7 +48,7 @@ errorprone-core = { module = "com.google.errorprone:error_prone_core", version.r
 errorprone-annotations = { module = "com.google.errorprone:error_prone_annotations", version.ref = "errorprone" }
 
 # https://maven.fabricmc.net/net/fabricmc/sponge-mixin/
-fabric-mixin = "net.fabricmc:sponge-mixin:0.17.0+mixin.0.8.7"
+fabric-mixin = "net.fabricmc:sponge-mixin:0.17.1+mixin.0.8.7"
 
 paperweight = "io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:2.0.0-beta.21"
 
