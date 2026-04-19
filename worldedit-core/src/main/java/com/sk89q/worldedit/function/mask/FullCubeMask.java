@@ -34,7 +34,7 @@ public final class FullCubeMask extends AbstractExtentMask {
     public boolean test(BlockVector3 vector) {
         Extent extent = getExtent();
         BlockState block = extent.getBlock(vector);
-        return block.getBlockType().getMaterial().isFullCube(ShapeType.SHAPE);
+        return block.getMaterial().isFullCube(ShapeType.SHAPE);
     }
 
 }
