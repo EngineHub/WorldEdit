@@ -1,2 +1,11 @@
 {
+    "Replaced by default method": [
+        {
+            "type": "com.sk89q.worldedit.sponge.SpongeBlockRegistry",
+            "member": "Method com.sk89q.worldedit.sponge.SpongeBlockRegistry.getMaterial(com.sk89q.worldedit.world.block.BlockType)",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        }
+    ]
 }
