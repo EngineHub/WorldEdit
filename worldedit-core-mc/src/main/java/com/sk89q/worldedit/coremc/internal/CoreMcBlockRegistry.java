@@ -52,10 +52,9 @@ public final class CoreMcBlockRegistry implements BlockRegistry {
     }
 
     @Override
-    public BlockMaterial getMaterial(BlockType blockType) {
-        Block block = platform.getAdapter().toNativeBlock(blockType);
+    public BlockMaterial getMaterial(BlockState blockState) {
         return materialMap.computeIfAbsent(
-            block.defaultBlockState(),
+            platform.getAdapter().toNativeBlockState(blockState),
             CoreMcBlockMaterial::new
         );
     }

@@ -8,5 +8,15 @@
                 "ANNOTATION_REMOVED"
             ]
         }
+    ],
+    "Replaced by default method": [
+        {
+            "type": "com.sk89q.worldedit.bukkit.BukkitBlockRegistry",
+            "member": "Method com.sk89q.worldedit.bukkit.BukkitBlockRegistry.getMaterial(com.sk89q.worldedit.world.block.BlockType)",
+            "changes": [
+                "METHOD_REMOVED",
+                "ANNOTATION_REMOVED"
+            ]
+        }
     ]
 }
