@@ -335,7 +335,10 @@ public class UtilityCommands {
         height = Math.max(1, height);
         we.checkMaxRadius(size);
 
-        int affected = editSession.thaw(session.getPlacementPosition(actor), size, height);
+        BlockVector3 position = session.getPlacementPosition(actor);
+
+        CylinderRegion region = new CylinderRegion(position, Vector2.at(size, size), position.y() - height, position.y() + height);
+        int affected = editSession.thaw(region);
         actor.printInfo(TranslatableComponent.of(
             "worldedit.thaw.removed", TextComponent.of(affected)
         ));
