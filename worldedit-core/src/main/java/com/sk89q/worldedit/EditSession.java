@@ -2077,7 +2077,7 @@ public class EditSession implements Extent, AutoCloseable {
     public int thaw(BlockVector3 position, double radius, int height)
         throws MaxChangedBlocksException {
 
-        return thaw(new CylinderRegion(position, Vector2.at(radius, radius), position.y(), height));
+        return thaw(new CylinderRegion(position, Vector2.at(radius, radius), position.y() - height, position.y() + height));
     }
 
     /**
@@ -2127,7 +2127,7 @@ public class EditSession implements Extent, AutoCloseable {
     public int simulateSnow(BlockVector3 position, double radius, int height)
         throws MaxChangedBlocksException {
 
-        return simulateSnow(new CylinderRegion(position, Vector2.at(radius, radius), position.y(), height), false);
+        return simulateSnow(new CylinderRegion(position, Vector2.at(radius, radius), position.y() - height, position.y() + height), false);
     }
 
 
