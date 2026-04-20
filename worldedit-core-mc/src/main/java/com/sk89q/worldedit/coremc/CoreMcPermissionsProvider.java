@@ -20,12 +20,10 @@
 package com.sk89q.worldedit.coremc;
 
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.coremc.internal.CoreMcConfiguration;
 import com.sk89q.worldedit.coremc.internal.CoreMcPlatform;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.GameType;
 import org.jspecify.annotations.NonNull;
 
 public interface CoreMcPermissionsProvider {
@@ -64,25 +62,4 @@ public interface CoreMcPermissionsProvider {
     boolean hasPermission(ServerPlayer player, String permission);
 
     void registerPermission(String permission);
-
-    class VanillaPermissionsProvider implements CoreMcPermissionsProvider {
-
-        private final CoreMcPlatform platform;
-
-        public VanillaPermissionsProvider(CoreMcPlatform platform) {
-            this.platform = platform;
-        }
-
-        @Override
-        public boolean hasPermission(ServerPlayer player, String permission) {
-            CoreMcConfiguration configuration = platform.getConfiguration();
-            return configuration.cheatMode
-                || player.level().getServer().getPlayerList().isOp(player.nameAndId())
-                || (configuration.creativeEnable && player.gameMode.getGameModeForPlayer() == GameType.CREATIVE);
-        }
-
-        @Override
-        public void registerPermission(String permission) {
-        }
-    }
 }

@@ -112,6 +112,8 @@ public class FabricWorldEdit extends CoreMcMod implements ModInitializer {
 
     @Override
     protected CoreMcPermissionsProvider createPermissionsProvider(CoreMcPlatform platform) {
+        CoreMcPermissionsProvider provider = super.createPermissionsProvider(platform);
+
         try {
             Class.forName("me.lucko.fabric.api.permissions.v0.Permissions", false, getClass().getClassLoader());
             Optional<Version> version = FabricLoader.getInstance().getModContainer("fabric-permissions-api-v0")
@@ -122,7 +124,7 @@ public class FabricWorldEdit extends CoreMcMod implements ModInitializer {
                 throw new RuntimeException("Fabric permissions version " + version.get() + " is not supported. Please update Fabric Permissions API");
             }
 
-            return new LuckoFabricPermissionsProvider(platform);
+            provider = new LuckoFabricPermissionsProvider(provider);
         } catch (ClassNotFoundException ignored) {
             // fallback to vanilla
         } catch (Exception e) {
@@ -130,6 +132,6 @@ public class FabricWorldEdit extends CoreMcMod implements ModInitializer {
             LOGGER.warn("Failed to load Fabric permissions provider. Falling back to Minecraft", e);
         }
 
-        return super.createPermissionsProvider(platform);
+        return provider;
     }
 }

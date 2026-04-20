@@ -28,6 +28,7 @@ import com.sk89q.worldedit.coremc.internal.CoreMcPlayer;
 import com.sk89q.worldedit.coremc.internal.CoreMcWorld;
 import com.sk89q.worldedit.coremc.internal.NBTConverter;
 import com.sk89q.worldedit.coremc.mixin.AccessorCommandSourceStack;
+import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -228,7 +229,7 @@ public abstract class CoreMcAdapter {
      * @param player the player
      * @return the WorldEdit player
      */
-    public CoreMcPlayer fromNativePlayer(ServerPlayer player) {
+    public Player fromNativePlayer(ServerPlayer player) {
         checkNotNull(player);
         return new CoreMcPlayer(getPlatform(), player);
     }

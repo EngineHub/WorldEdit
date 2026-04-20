@@ -24,6 +24,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.coremc.CoreMcPermissionsProvider;
+import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.event.platform.PlatformUnreadyEvent;
@@ -57,7 +58,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.feature.CoralTreeFeature;
 import net.minecraft.world.level.levelgen.feature.FallenTreeFeature;
@@ -89,7 +89,7 @@ public abstract class CoreMcMod {
     protected abstract String getInternalVersion();
 
     protected CoreMcPermissionsProvider createPermissionsProvider(CoreMcPlatform platform) {
-        return new CoreMcPermissionsProvider.VanillaPermissionsProvider(platform);
+        return new VanillaPermissionsProvider(platform);
     }
 
     protected final void init(CoreMcPlatform platform, Path gameConfigDir) {
@@ -254,7 +254,7 @@ public abstract class CoreMcMod {
         return platform == null || !platform.isHookingEvents();
     }
 
-    private boolean skipInteractionEvent(Player player, InteractionHand hand) {
+    private boolean skipInteractionEvent(net.minecraft.world.entity.player.Player player, InteractionHand hand) {
         return skipEvents() || hand != InteractionHand.MAIN_HAND || player.level().isClientSide() || !(player instanceof ServerPlayer);
     }
 
@@ -264,7 +264,7 @@ public abstract class CoreMcMod {
         }
 
         WorldEdit we = WorldEdit.getInstance();
-        CoreMcPlayer player = platform.getAdapter().fromNativePlayer(playerEntity);
+        Player player = platform.getAdapter().fromNativePlayer(playerEntity);
 
         Optional<Boolean> previousResult = debouncer.getDuplicateInteractionResult(player);
         if (previousResult.isPresent()) {
@@ -275,14 +275,14 @@ public abstract class CoreMcMod {
         debouncer.setLastInteraction(player, result);
     }
 
-    protected boolean onLeftClickBlock(Player playerEntity, InteractionHand hand, BlockPos blockPos, net.minecraft.core.Direction face) {
+    protected boolean onLeftClickBlock(net.minecraft.world.entity.player.Player playerEntity, InteractionHand hand, BlockPos blockPos, net.minecraft.core.Direction face) {
         if (skipInteractionEvent(playerEntity, hand)) {
             return false;
         }
 
         ServerPlayer serverPlayer = (ServerPlayer) playerEntity;
         WorldEdit we = WorldEdit.getInstance();
-        CoreMcPlayer player = platform.getAdapter().fromNativePlayer(serverPlayer);
+        Player player = platform.getAdapter().fromNativePlayer(serverPlayer);
         CoreMcWorld world = (CoreMcWorld) platform.getAdapter().fromNativeWorld(serverPlayer.level());
         Direction direction = platform.getAdapter().adaptEnumFacing(face);
 
@@ -294,14 +294,14 @@ public abstract class CoreMcMod {
         return result;
     }
 
-    protected boolean onRightClickBlock(Player playerEntity, InteractionHand hand, BlockPos blockPos, net.minecraft.core.Direction face) {
+    protected boolean onRightClickBlock(net.minecraft.world.entity.player.Player playerEntity, InteractionHand hand, BlockPos blockPos, net.minecraft.core.Direction face) {
         if (skipInteractionEvent(playerEntity, hand)) {
             return false;
         }
 
         ServerPlayer serverPlayer = (ServerPlayer) playerEntity;
         WorldEdit we = WorldEdit.getInstance();
-        CoreMcPlayer player = platform.getAdapter().fromNativePlayer(serverPlayer);
+        Player player = platform.getAdapter().fromNativePlayer(serverPlayer);
         CoreMcWorld world = (CoreMcWorld) platform.getAdapter().fromNativeWorld(serverPlayer.level());
         Direction direction = platform.getAdapter().adaptEnumFacing(face);
 
@@ -313,14 +313,14 @@ public abstract class CoreMcMod {
         return result;
     }
 
-    protected Optional<Boolean> onRightClickItem(Player playerEntity, InteractionHand hand) {
+    protected Optional<Boolean> onRightClickItem(net.minecraft.world.entity.player.Player playerEntity, InteractionHand hand) {
         if (skipInteractionEvent(playerEntity, hand)) {
             return Optional.empty();
         }
 
         ServerPlayer serverPlayer = (ServerPlayer) playerEntity;
         WorldEdit we = WorldEdit.getInstance();
-        CoreMcPlayer player = platform.getAdapter().fromNativePlayer(serverPlayer);
+        Player player = platform.getAdapter().fromNativePlayer(serverPlayer);
 
         Optional<Boolean> previousResult = debouncer.getDuplicateInteractionResult(player);
         if (previousResult.isPresent()) {
@@ -333,7 +333,7 @@ public abstract class CoreMcMod {
         return Optional.of(result);
     }
 
-    protected void onPlayerDisconnect(Player playerEntity) {
+    protected void onPlayerDisconnect(net.minecraft.world.entity.player.Player playerEntity) {
         if (!(playerEntity instanceof ServerPlayer player)) {
             return;
         }
@@ -347,7 +347,7 @@ public abstract class CoreMcMod {
         if (!(context.player() instanceof ServerPlayer player)) {
             return;
         }
-        CoreMcPlayer actor = platform.getAdapter().fromNativePlayer(player);
+        Player actor = platform.getAdapter().fromNativePlayer(player);
         LocalSession session = WorldEdit.getInstance().getSessionManager().get(actor);
         session.handleCUIInitializationMessage(payload.eventType(), payload.args(), actor);
     }

@@ -17,23 +17,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.fabric.internal;
+package com.sk89q.worldedit.coremc.internal;
 
 import com.sk89q.worldedit.coremc.CoreMcPermissionsProvider;
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.GameType;
 
-final class LuckoFabricPermissionsProvider implements CoreMcPermissionsProvider {
-    private final CoreMcPermissionsProvider fallback;
+final class VanillaPermissionsProvider implements CoreMcPermissionsProvider {
+    private final CoreMcPlatform platform;
 
-    LuckoFabricPermissionsProvider(CoreMcPermissionsProvider fallback) {
-        this.fallback = fallback;
+    VanillaPermissionsProvider(CoreMcPlatform platform) {
+        this.platform = platform;
     }
 
     @Override
     public boolean hasPermission(ServerPlayer player, String permission) {
-        return Permissions.getPermissionValue(player, permission)
-            .orElseGet(() -> fallback.hasPermission(player, permission));
+        CoreMcConfiguration configuration = platform.getConfiguration();
+        return configuration.cheatMode
+            || player.level().getServer().getPlayerList().isOp(player.nameAndId())
+            || (configuration.creativeEnable && player.gameMode.getGameModeForPlayer() == GameType.CREATIVE);
     }
 
     @Override
