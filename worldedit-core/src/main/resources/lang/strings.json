@@ -427,6 +427,8 @@
     "worldedit.selection.convex.info.triangles": "Triangles: {0}",
     "worldedit.selection.convex.explain.primary": "Started new selection with vertex {0}.",
     "worldedit.selection.convex.explain.secondary": "Added vertex {0} to the selection.",
+    "worldedit.selection.convex.error.cannot-expand": "Cannot expand a convex polyhedral region.",
+    "worldedit.selection.convex.error.cannot-contract": "Cannot contract a convex polyhedral region.",
     "worldedit.selection.cuboid.info.pos1": "Position 1: {0}",
     "worldedit.selection.cuboid.info.pos2": "Position 2: {0}",
     "worldedit.selection.cuboid.explain.primary": "First position set to {0}.",
@@ -489,5 +491,6 @@
     "worldedit.cli.unknown-command": "Unknown command!",
 
     "worldedit.version.bukkit.unsupported-adapter": "This WorldEdit version does not fully support your version of Bukkit. Block entities (e.g. chests) will be empty, block properties (e.g. rotation) will be missing, and other things may not work. Update WorldEdit to restore this functionality:\n{0}",
-    "worldedit.bukkit.no-edit-without-adapter": "Editing on unsupported versions is disabled."
+    "worldedit.bukkit.no-edit-without-adapter": "Editing on unsupported versions is disabled.",
+    "worldedit.bukkit.unsupported-on-folia": "This feature of WorldEdit is currently not supported on Folia."
 }

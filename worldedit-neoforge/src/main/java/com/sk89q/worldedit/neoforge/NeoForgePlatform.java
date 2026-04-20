@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.neoforge;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.util.PermissionCondition;
@@ -29,7 +28,6 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
 import com.sk89q.worldedit.extension.platform.Preference;
-import com.sk89q.worldedit.neoforge.internal.ExtendedChunk;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.io.ResourceLoader;
 import com.sk89q.worldedit.world.DataFixer;
@@ -44,7 +42,6 @@ import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
-import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.enginehub.piston.Command;
@@ -222,23 +219,17 @@ class NeoForgePlatform extends AbstractPlatform implements MultiUserPlatform {
         return capabilities;
     }
 
-    private static final Set<SideEffect> SUPPORTED_SIDE_EFFECTS_NO_MIXIN = Sets.immutableEnumSet(
+    private static final Set<SideEffect> SUPPORTED_SIDE_EFFECTS = Sets.immutableEnumSet(
         SideEffect.VALIDATION,
         SideEffect.ENTITY_AI,
         SideEffect.LIGHTING,
         SideEffect.NEIGHBORS,
-        SideEffect.EVENTS
-    );
-
-    private static final Set<SideEffect> SUPPORTED_SIDE_EFFECTS = Sets.immutableEnumSet(
-        Iterables.concat(SUPPORTED_SIDE_EFFECTS_NO_MIXIN, Collections.singleton(SideEffect.UPDATE))
+        SideEffect.UPDATE
     );
 
     @Override
     public Set<SideEffect> getSupportedSideEffects() {
-        return ExtendedChunk.class.isAssignableFrom(LevelChunk.class)
-            ? SUPPORTED_SIDE_EFFECTS
-            : SUPPORTED_SIDE_EFFECTS_NO_MIXIN;
+        return SUPPORTED_SIDE_EFFECTS;
     }
 
     @Override

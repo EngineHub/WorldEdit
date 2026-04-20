@@ -288,7 +288,7 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
     }
 
     @Override
-    public void shift(BlockVector3 change) throws RegionOperationException {
+    public void shift(BlockVector3 change) {
         for (int i = 0; i < points.size(); ++i) {
             BlockVector2 point = points.get(i);
             points.set(i, BlockVector2.at(point.x() + change.x(), point.z() + change.z()));

@@ -107,7 +107,7 @@ public class SpongeSchematicV2Writer implements ClipboardWriter {
             WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).id()
         );
         worldEditSection.putIntArray("Offset", new int[] {
-            offset.x(), offset.y(), offset.z()
+            offset.x(), offset.y(), offset.z(),
         });
 
         LinCompoundTag.Builder platformsSection = LinCompoundTag.builder();

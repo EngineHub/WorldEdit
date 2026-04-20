@@ -43,9 +43,6 @@ class NeoForgeBiomeRegistry implements BiomeRegistry {
         return new ForgeBiomeData(biome);
     }
 
-    /**
-     * Cached biome data information.
-     */
     @Deprecated
     private static class ForgeBiomeData implements BiomeData {
         private final BiomeType biome;

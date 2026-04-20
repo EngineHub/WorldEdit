@@ -98,4 +98,7 @@ class WriterUtil {
         }
         out.write(value);
     }
+
+    private WriterUtil() {
+    }
 }

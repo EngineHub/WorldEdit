@@ -445,6 +445,7 @@ public final class BlockTypes {
     @Nullable public static final BlockType GLOWSTONE = get("minecraft:glowstone");
     @Nullable public static final BlockType GOLD_BLOCK = get("minecraft:gold_block");
     @Nullable public static final BlockType GOLD_ORE = get("minecraft:gold_ore");
+    @Nullable public static final BlockType GOLDEN_DANDELION = get("minecraft:golden_dandelion");
     @Nullable public static final BlockType GRANITE = get("minecraft:granite");
     @Nullable public static final BlockType GRANITE_SLAB = get("minecraft:granite_slab");
     @Nullable public static final BlockType GRANITE_STAIRS = get("minecraft:granite_stairs");
@@ -815,6 +816,7 @@ public final class BlockTypes {
     @Nullable public static final BlockType POTTED_DEAD_BUSH = get("minecraft:potted_dead_bush");
     @Nullable public static final BlockType POTTED_FERN = get("minecraft:potted_fern");
     @Nullable public static final BlockType POTTED_FLOWERING_AZALEA_BUSH = get("minecraft:potted_flowering_azalea_bush");
+    @Nullable public static final BlockType POTTED_GOLDEN_DANDELION = get("minecraft:potted_golden_dandelion");
     @Nullable public static final BlockType POTTED_JUNGLE_SAPLING = get("minecraft:potted_jungle_sapling");
     @Nullable public static final BlockType POTTED_LILY_OF_THE_VALLEY = get("minecraft:potted_lily_of_the_valley");
     @Nullable public static final BlockType POTTED_MANGROVE_PROPAGULE = get("minecraft:potted_mangrove_propagule");

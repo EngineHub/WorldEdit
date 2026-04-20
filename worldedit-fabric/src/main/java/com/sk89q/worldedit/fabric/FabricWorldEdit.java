@@ -34,6 +34,7 @@ import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.internal.event.InteractionDebouncer;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
+import com.sk89q.worldedit.registry.CommonRegistries;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.lifecycle.Lifecycled;
 import com.sk89q.worldedit.util.lifecycle.SimpleLifecycled;
@@ -42,13 +43,11 @@ import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.entity.EntityType;
-import com.sk89q.worldedit.world.gamemode.GameModes;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.generation.StructureType;
 import com.sk89q.worldedit.world.generation.TreeType;
 import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
-import com.sk89q.worldedit.world.weather.WeatherTypes;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -220,7 +219,7 @@ public class FabricWorldEdit implements ModInitializer {
                     .map(ModContainer::getMetadata)
                     .map(ModMetadata::getVersion);
 
-            if (version.isPresent() && !VersionPredicate.parse(">=0.6.0").test(version.get())) {
+            if (version.isPresent() && !VersionPredicate.parse(">=0.7.0").test(version.get())) {
                 throw new RuntimeException("Fabric permissions version " + version.get() + " is not supported. Please update Fabric Permissions API");
             }
 
@@ -320,10 +319,8 @@ public class FabricWorldEdit implements ModInitializer {
             }
         }
 
-        // ... :|
-        GameModes.get("");
-        WeatherTypes.get("");
-        com.sk89q.worldedit.registry.Registries.get("");
+        // Common registries
+        CommonRegistries.init();
     }
 
     private void onStartingServer(MinecraftServer minecraftServer) {

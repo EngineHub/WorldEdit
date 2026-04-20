@@ -266,7 +266,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
     }
 
     @Override
-    public void shift(BlockVector3 change) throws RegionOperationException {
+    public void shift(BlockVector3 change) {
         center = center.add(change.toBlockVector2());
 
         int changeY = change.y();

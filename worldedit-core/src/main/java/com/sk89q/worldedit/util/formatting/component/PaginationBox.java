@@ -47,6 +47,21 @@ public abstract class PaginationBox extends MessageBox {
         this(title, null);
     }
 
+    /**
+     * Creates a Paginated component.
+     *
+     * @param title The title
+     * @param pageCommand The command to run to switch page, with %page% representing page number
+     */
+    protected PaginationBox(String title, @Nullable String pageCommand) {
+        super(title, new TextComponentProducer());
+
+        if (pageCommand != null && !pageCommand.contains("%page%")) {
+            throw new IllegalArgumentException("pageCommand must contain %page% if provided.");
+        }
+        this.pageCommand = pageCommand;
+    }
+
     public abstract Component getComponent(int number);
 
     public abstract int getComponentsSize();
@@ -62,21 +77,6 @@ public abstract class PaginationBox extends MessageBox {
 
     protected final int getCurrentPage() {
         return currentPage;
-    }
-
-    /**
-     * Creates a Paginated component.
-     *
-     * @param title The title
-     * @param pageCommand The command to run to switch page, with %page% representing page number
-     */
-    protected PaginationBox(String title, @Nullable String pageCommand) {
-        super(title, new TextComponentProducer());
-
-        if (pageCommand != null && !pageCommand.contains("%page%")) {
-            throw new IllegalArgumentException("pageCommand must contain %page% if provided.");
-        }
-        this.pageCommand = pageCommand;
     }
 
     public Component create(int page) throws InvalidComponentException {

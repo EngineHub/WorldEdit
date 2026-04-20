@@ -32,7 +32,7 @@ class NeoForgePropertyAdapter<T extends Comparable<T>> implements Property<T> {
     private final net.minecraft.world.level.block.state.properties.Property<T> property;
     private final List<T> values;
 
-    public NeoForgePropertyAdapter(net.minecraft.world.level.block.state.properties.Property<T> property) {
+    NeoForgePropertyAdapter(net.minecraft.world.level.block.state.properties.Property<T> property) {
         this.property = property;
         this.values = ImmutableList.copyOf(property.getPossibleValues());
     }

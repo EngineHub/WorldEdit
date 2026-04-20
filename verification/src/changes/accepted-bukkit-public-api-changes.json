@@ -1,31 +1,11 @@
 {
-    "Incorrect removal detection due to problems with classpath": [
+    "Not API": [
         {
-            "type": "com.sk89q.worldedit.bukkit.BukkitWorld",
-            "member": "Method com.sk89q.worldedit.bukkit.BukkitWorld.fullySupports3DBiomes()",
+            "type": "com.sk89q.worldedit.bukkit.WorldEditListener",
+            "member": "Method com.sk89q.worldedit.bukkit.WorldEditListener.onPlayerCommandSend(org.bukkit.event.player.PlayerCommandSendEvent)",
             "changes": [
-                "METHOD_REMOVED"
-            ]
-        },
-        {
-            "type": "com.sk89q.worldedit.bukkit.BukkitServerInterface",
-            "member": "Method com.sk89q.worldedit.bukkit.BukkitServerInterface.getId()",
-            "changes": [
-                "METHOD_REMOVED"
-            ]
-        },
-        {
-            "type": "com.sk89q.worldedit.bukkit.BukkitWorld",
-            "member": "Method com.sk89q.worldedit.bukkit.BukkitWorld.getId()",
-            "changes": [
-                "METHOD_REMOVED"
-            ]
-        },
-        {
-            "type": "com.sk89q.worldedit.bukkit.BukkitWorld",
-            "member": "Method com.sk89q.worldedit.bukkit.BukkitWorld.toBukkitTreeType(com.sk89q.worldedit.util.TreeGenerator$TreeType)",
-            "changes": [
-              "METHOD_REMOVED"
+                "METHOD_REMOVED",
+                "ANNOTATION_REMOVED"
             ]
         }
     ]

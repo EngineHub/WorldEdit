@@ -143,7 +143,7 @@ public class EllipsoidRegion extends AbstractRegion {
     }
 
     @Override
-    public void shift(BlockVector3 change) throws RegionOperationException {
+    public void shift(BlockVector3 change) {
         center = center.add(change);
     }
 

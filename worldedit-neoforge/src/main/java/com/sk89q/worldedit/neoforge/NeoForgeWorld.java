@@ -44,6 +44,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.neoforge.internal.NBTConverter;
 import com.sk89q.worldedit.neoforge.internal.NeoForgeEntity;
+import com.sk89q.worldedit.neoforge.internal.NeoForgeLoggingProblemReporter;
 import com.sk89q.worldedit.neoforge.internal.NeoForgeServerLevelDelegateProxy;
 import com.sk89q.worldedit.neoforge.internal.NeoForgeWorldNativeAccess;
 import com.sk89q.worldedit.regions.Region;
@@ -61,6 +62,7 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.generation.StructureType;
+import com.sk89q.worldedit.world.generation.WorldEditTreeGeneration;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
@@ -75,7 +77,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.Util;
 import net.minecraft.util.thread.BlockableEventLoop;
@@ -97,15 +98,13 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.dimension.LevelStem;
-import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
-import net.minecraft.world.level.storage.LevelData;
+import net.minecraft.world.level.saveddata.WeatherData;
 import net.minecraft.world.level.storage.LevelStorageSource;
-import net.minecraft.world.level.storage.PrimaryLevelData;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.phys.AABB;
@@ -122,7 +121,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.OptionalLong;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -243,7 +241,7 @@ public class NeoForgeWorld extends AbstractWorld {
         LevelChunk chunk = getWorld().getChunk(position.x() >> 4, position.z() >> 4);
         var biomes = (PalettedContainer<Holder<Biome>>) chunk.getSection(chunk.getSectionIndex(position.y())).getBiomes();
         biomes.getAndSetUnchecked(
-            position.x() & 3, position.y() & 3, position.z() & 3,
+            (position.x() >> 2) & 3, (position.y() >> 2) & 3, (position.z() >> 2) & 3,
             getWorld().registryAccess().lookupOrThrow(Registries.BIOME)
                 .getOrThrow(ResourceKey.create(Registries.BIOME, Identifier.parse(biome.id())))
         );
@@ -313,6 +311,10 @@ public class NeoForgeWorld extends AbstractWorld {
 
     @Override
     public boolean regenerate(Region region, Extent extent, RegenOptions options) {
+        if (options.getSeed().isPresent()) {
+            throw new UnsupportedOperationException("26.1+ worldgen does not support overriding the seed for regen");
+        }
+
         try {
             doRegen(region, extent, options);
         } catch (Exception e) {
@@ -327,15 +329,6 @@ public class NeoForgeWorld extends AbstractWorld {
         LevelStorageSource levelStorage = LevelStorageSource.createDefault(tempDir);
         try (LevelStorageSource.LevelStorageAccess session = levelStorage.createAccess("WorldEditTempGen")) {
             ServerLevel originalWorld = getWorld();
-            PrimaryLevelData levelProperties = (PrimaryLevelData) originalWorld.getServer()
-                .getWorldData().overworldData();
-            WorldOptions originalOpts = levelProperties.worldGenOptions();
-
-            long seed = options.getSeed().orElse(originalWorld.getSeed());
-
-            levelProperties.worldOptions = options.getSeed().isPresent()
-                ? originalOpts.withSeed(OptionalLong.of(seed))
-                : originalOpts;
 
             ResourceKey<Level> worldRegKey = originalWorld.dimension();
             try (ServerLevel serverWorld = new ServerLevel(
@@ -347,19 +340,16 @@ public class NeoForgeWorld extends AbstractWorld {
                     originalWorld.getChunkSource().getGenerator()
                 ),
                 originalWorld.isDebug(),
-                seed,
+                originalWorld.getSeed(),
                 // No spawners are needed for this world.
                 ImmutableList.of(),
                 // This controls ticking, we don't need it so set it to false.
-                false,
-                originalWorld.getRandomSequences()
+                false
             )) {
                 regenForWorld(region, extent, serverWorld, options);
 
                 // drive the server executor until all tasks are popped off
                 originalWorld.getServer().managedBlock(() -> originalWorld.getServer().getPendingTasksCount() == 0);
-            } finally {
-                levelProperties.worldOptions = originalOpts;
             }
         } finally {
             SafeFiles.tryHardToDeleteDir(tempDir);
@@ -392,13 +382,18 @@ public class NeoForgeWorld extends AbstractWorld {
 
         for (BlockVector3 vec : region) {
             BlockPos pos = NeoForgeAdapter.toBlockPos(vec);
-            ChunkAccess chunk = chunks.get(new ChunkPos(pos));
+            ChunkAccess chunk = chunks.get(ChunkPos.containing(pos));
             BlockStateHolder<?> state = NeoForgeAdapter.adapt(chunk.getBlockState(pos));
             BlockEntity blockEntity = chunk.getBlockEntity(pos);
             if (blockEntity != null) {
-                var tagValueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, getWorld().registryAccess());
-                blockEntity.saveWithId(tagValueOutput);
-                net.minecraft.nbt.CompoundTag tag = tagValueOutput.buildResult();
+                net.minecraft.nbt.CompoundTag tag = NeoForgeLoggingProblemReporter.with(
+                    () -> "serializing block entity at " + pos,
+                    reporter -> {
+                        var tagValueOutput = TagValueOutput.createWithContext(reporter, getWorld().registryAccess());
+                        blockEntity.saveWithId(tagValueOutput);
+                        return tagValueOutput.buildResult();
+                    }
+                );
                 state = state.toBaseBlock(LazyReference.from(() -> NBTConverter.fromNative(tag)));
             }
             extent.setBlock(vec, state.toBaseBlock());
@@ -480,6 +475,10 @@ public class NeoForgeWorld extends AbstractWorld {
 
     @Override
     public boolean generateTree(com.sk89q.worldedit.world.generation.TreeType type, EditSession editSession, BlockVector3 position) throws MaxChangedBlocksException {
+        Boolean customResult = WorldEditTreeGeneration.handleWorldEditTrees(this, type, editSession, position);
+        if (customResult != null) {
+            return customResult;
+        }
         ServerLevel world = getWorld();
         PlacedFeature generator = world.registryAccess().lookupOrThrow(Registries.PLACED_FEATURE).getValue(Identifier.tryParse(type.id()));
         ServerChunkCache chunkManager = world.getChunkSource();
@@ -516,7 +515,7 @@ public class NeoForgeWorld extends AbstractWorld {
         ServerChunkCache chunkManager = world.getChunkSource();
         try (NeoForgeServerLevelDelegateProxy.LevelAndProxy levelProxy =
                  NeoForgeServerLevelDelegateProxy.newInstance(editSession, world)) {
-            ChunkPos chunkPos = new ChunkPos(new BlockPos(position.x(), position.y(), position.z()));
+            ChunkPos chunkPos = ChunkPos.containing(new BlockPos(position.x(), position.y(), position.z()));
             StructureStart structureStart = structure.generate(
                 structureRegistry.wrapAsHolder(structure), world.dimension(), world.registryAccess(),
                 chunkManager.getGenerator(), chunkManager.getGenerator().getBiomeSource(), chunkManager.randomState(),
@@ -583,11 +582,11 @@ public class NeoForgeWorld extends AbstractWorld {
 
     @Override
     public WeatherType getWeather() {
-        LevelData info = getWorld().getLevelData();
-        if (info.isThundering()) {
+        WeatherData weatherData = getWorld().getServer().getWeatherData();
+        if (weatherData.isThundering()) {
             return WeatherTypes.THUNDER_STORM;
         }
-        if (info.isRaining()) {
+        if (weatherData.isRaining()) {
             return WeatherTypes.RAIN;
         }
         return WeatherTypes.CLEAR;
@@ -595,14 +594,14 @@ public class NeoForgeWorld extends AbstractWorld {
 
     @Override
     public long getRemainingWeatherDuration() {
-        ServerLevelData info = (ServerLevelData) getWorld().getLevelData();
-        if (info.isThundering()) {
-            return info.getThunderTime();
+        WeatherData weatherData = getWorld().getServer().getWeatherData();
+        if (weatherData.isThundering()) {
+            return weatherData.getThunderTime();
         }
-        if (info.isRaining()) {
-            return info.getRainTime();
+        if (weatherData.isRaining()) {
+            return weatherData.getRainTime();
         }
-        return info.getClearWeatherTime();
+        return weatherData.getClearWeatherTime();
     }
 
     @Override
@@ -612,19 +611,19 @@ public class NeoForgeWorld extends AbstractWorld {
 
     @Override
     public void setWeather(WeatherType weatherType, long duration) {
-        ServerLevelData info = (ServerLevelData) getWorld().getLevelData();
+        WeatherData weatherData = getWorld().getServer().getWeatherData();
         if (weatherType == WeatherTypes.THUNDER_STORM) {
-            info.setClearWeatherTime(0);
-            info.setThundering(true);
-            info.setThunderTime((int) duration);
+            weatherData.setClearWeatherTime(0);
+            weatherData.setThundering(true);
+            weatherData.setThunderTime((int) duration);
         } else if (weatherType == WeatherTypes.RAIN) {
-            info.setClearWeatherTime(0);
-            info.setRaining(true);
-            info.setRainTime((int) duration);
+            weatherData.setClearWeatherTime(0);
+            weatherData.setRaining(true);
+            weatherData.setRainTime((int) duration);
         } else if (weatherType == WeatherTypes.CLEAR) {
-            info.setRaining(false);
-            info.setThundering(false);
-            info.setClearWeatherTime((int) duration);
+            weatherData.setRaining(false);
+            weatherData.setThundering(false);
+            weatherData.setClearWeatherTime((int) duration);
         }
     }
 
@@ -658,9 +657,14 @@ public class NeoForgeWorld extends AbstractWorld {
         BlockEntity tile = getWorld().getChunk(pos).getBlockEntity(pos);
 
         if (tile != null) {
-            var tagValueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, getWorld().registryAccess());
-            tile.saveWithId(tagValueOutput);
-            net.minecraft.nbt.CompoundTag tag = tagValueOutput.buildResult();
+            net.minecraft.nbt.CompoundTag tag = NeoForgeLoggingProblemReporter.with(
+                () -> "serializing block entity at " + pos,
+                reporter -> {
+                    var tagValueOutput = TagValueOutput.createWithContext(reporter, getWorld().registryAccess());
+                    tile.saveWithId(tagValueOutput);
+                    return tagValueOutput.buildResult();
+                }
+            );
             return getBlock(position).toBaseBlock(
                 LazyReference.from(() -> NBTConverter.fromNative(tag))
             );

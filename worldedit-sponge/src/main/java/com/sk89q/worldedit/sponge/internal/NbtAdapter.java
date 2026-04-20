@@ -245,4 +245,7 @@ public class NbtAdapter {
     public static DoubleTag adaptNMSToWorldEdit(LinDoubleTag tag) {
         return DoubleTag.valueOf(tag.valueAsDouble());
     }
+
+    private NbtAdapter() {
+    }
 }

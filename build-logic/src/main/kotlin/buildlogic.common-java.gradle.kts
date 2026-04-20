@@ -18,7 +18,7 @@ tasks
         val disabledLint = listOf(
             "processing", "path", "fallthrough", "serial", "overloads", "this-escape",
         )
-        options.release.set(21)
+        options.release.set(25)
         options.compilerArgs.addAll(listOf("-Xlint:all") + disabledLint.map { "-Xlint:-$it" })
         options.isDeprecation = true
         options.encoding = "UTF-8"
@@ -41,7 +41,7 @@ tasks
 
 configure<CheckstyleExtension> {
     configFile = rootProject.file("config/checkstyle/checkstyle.xml")
-    toolVersion = "12.3.1"
+    toolVersion = "13.3.0"
 }
 
 tasks.withType<Test>().configureEach {

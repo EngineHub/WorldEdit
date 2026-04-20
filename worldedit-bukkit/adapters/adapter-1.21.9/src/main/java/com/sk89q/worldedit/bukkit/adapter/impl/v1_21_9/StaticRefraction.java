@@ -88,4 +88,7 @@ public final class StaticRefraction {
     public static final String DESTROY_BLOCK_BREAKING_ENTITY_MAX_UPDATE = Refraction.pickName(
         "destroyBlock", "a"
     );
+
+    private StaticRefraction() {
+    }
 }

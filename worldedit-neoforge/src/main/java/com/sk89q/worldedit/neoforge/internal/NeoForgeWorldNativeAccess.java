@@ -27,7 +27,6 @@ import com.sk89q.worldedit.util.SideEffectSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.FullChunkStatus;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -42,9 +41,6 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 
 public class NeoForgeWorldNativeAccess implements WorldNativeAccess<LevelChunk, BlockState, BlockPos> {
-    private static final int UPDATE = 1;
-    private static final int NOTIFY = 2;
-
     private final WeakReference<ServerLevel> world;
     private SideEffectSet sideEffectSet;
 
@@ -82,12 +78,14 @@ public class NeoForgeWorldNativeAccess implements WorldNativeAccess<LevelChunk, 
     @Nullable
     @Override
     public BlockState setBlockState(LevelChunk chunk, BlockPos position, BlockState state) {
-        if (chunk instanceof ExtendedChunk extendedChunk) {
-            return extendedChunk.setBlockState(
-                position, state, 0, sideEffectSet.shouldApply(SideEffect.UPDATE)
-            );
+        int flags = 0;
+        if (sideEffectSet != null) {
+            if (!sideEffectSet.shouldApply(SideEffect.UPDATE)) {
+                // We don't skip block entity side-effects as that's likely to cause problems.
+                flags |= Block.UPDATE_SKIP_ON_PLACE | Block.UPDATE_SKIP_SHAPE_UPDATE_ON_WIRE;
+            }
         }
-        return chunk.setBlockState(position, state, 0);
+        return chunk.setBlockState(position, state, flags);
     }
 
     @Override
@@ -113,16 +111,21 @@ public class NeoForgeWorldNativeAccess implements WorldNativeAccess<LevelChunk, 
         if (tileEntity == null) {
             return false;
         }
-        var tagValueInput = TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(), nativeTag);
-        tileEntity.loadWithComponents(tagValueInput);
-        tileEntity.setChanged();
-        return true;
+        return NeoForgeLoggingProblemReporter.with(
+            () -> "loading tile entity at " + position,
+            reporter -> {
+                var tagValueInput = TagValueInput.create(reporter, level.registryAccess(), nativeTag);
+                tileEntity.loadWithComponents(tagValueInput);
+                tileEntity.setChanged();
+                return true;
+            }
+        );
     }
 
     @Override
     public void notifyBlockUpdate(LevelChunk chunk, BlockPos position, BlockState oldState, BlockState newState) {
         if (chunk.getSections()[getWorld().getSectionIndex(position.getY())] != null) {
-            getWorld().sendBlockUpdated(position, oldState, newState, UPDATE | NOTIFY);
+            getWorld().sendBlockUpdated(position, oldState, newState, Block.UPDATE_NEIGHBORS | Block.UPDATE_CLIENTS);
         }
     }
 
@@ -163,9 +166,10 @@ public class NeoForgeWorldNativeAccess implements WorldNativeAccess<LevelChunk, 
     @Override
     public void updateNeighbors(BlockPos pos, BlockState oldState, BlockState newState, int recursionLimit) {
         ServerLevel world = getWorld();
-        oldState.updateIndirectNeighbourShapes(world, pos, NOTIFY, recursionLimit);
-        newState.updateNeighbourShapes(world, pos, NOTIFY, recursionLimit);
-        newState.updateIndirectNeighbourShapes(world, pos, NOTIFY, recursionLimit);
+        oldState.affectNeighborsAfterRemoval(world, pos, false);
+        oldState.updateIndirectNeighbourShapes(world, pos, Block.UPDATE_CLIENTS, recursionLimit);
+        newState.updateNeighbourShapes(world, pos, Block.UPDATE_CLIENTS, recursionLimit);
+        newState.updateIndirectNeighbourShapes(world, pos, Block.UPDATE_CLIENTS, recursionLimit);
     }
 
     @Override

@@ -35,7 +35,8 @@ import java.io.IOException;
 import java.util.OptionalInt;
 
 /**
- * Legacy multi-version reader. Do not use, pick a versioned one from {@link BuiltInClipboardFormat}.
+ * Legacy multi-version reader.
+ * @deprecated Do not use, pick a versioned one from {@link BuiltInClipboardFormat}.
  */
 @Deprecated
 public class SpongeSchematicReader extends NBTSchematicReader {

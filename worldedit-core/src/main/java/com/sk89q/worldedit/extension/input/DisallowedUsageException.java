@@ -39,6 +39,7 @@ public class DisallowedUsageException extends InputParseException {
      * Create with a message.
      *
      * @param message the message
+     * @deprecated Use {@link #DisallowedUsageException(Component)} instead.
      */
     @Deprecated
     public DisallowedUsageException(String message) {
@@ -60,6 +61,7 @@ public class DisallowedUsageException extends InputParseException {
      *
      * @param message the message
      * @param cause the cause
+     * @deprecated Use {@link #DisallowedUsageException(Component, Throwable)} instead.
      */
     @Deprecated
     public DisallowedUsageException(String message, Throwable cause) {

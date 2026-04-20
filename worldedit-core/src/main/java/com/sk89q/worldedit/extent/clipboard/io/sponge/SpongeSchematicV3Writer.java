@@ -110,7 +110,7 @@ public class SpongeSchematicV3Writer implements ClipboardWriter {
             WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).id()
         );
         worldEditSection.putIntArray("Origin", new int[] {
-            origin.x(), origin.y(), origin.z()
+            origin.x(), origin.y(), origin.z(),
         });
 
         LinCompoundTag.Builder platformsSection = LinCompoundTag.builder();
@@ -191,7 +191,7 @@ public class SpongeSchematicV3Writer implements ClipboardWriter {
                 builder.putIntArray("Pos", new int[] {
                     adjustedPos.x(),
                     adjustedPos.y(),
-                    adjustedPos.z()
+                    adjustedPos.z(),
                 });
                 builder.put("Data", nbt);
 

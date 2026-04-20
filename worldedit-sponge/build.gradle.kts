@@ -82,13 +82,18 @@ dependencies {
     "compileOnly"(libs.errorprone.annotations)
 }
 
+tasks.compileJava {
+    // Currently need to allow warning about supported source versions for annotation processors.
+    options.compilerArgs.remove("-Werror")
+}
+
 configure<BasePluginExtension> {
     archivesName.set("${project.name}-api${libs.versions.sponge.api.major.get()}")
 }
 
 tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
     dependencies {
-        include(dependency("org.bstats:"))
+        include(dependency("org.bstats:.*"))
         include(dependency("org.antlr:antlr4-runtime"))
         include(dependency("com.sk89q.lib:jlibnoise"))
 

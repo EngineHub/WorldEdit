@@ -87,7 +87,7 @@ tasks.named<Copy>("processResources") {
     }
 }
 
-tasks.register<ShadowJar>("shadeReobfAdapters") {
+val shadeReobfAdapters = tasks.register<ShadowJar>("shadeReobfAdapters") {
     archiveClassifier.set("reobf-adapters")
     configurations.add(adaptersReobf.get())
 
@@ -95,7 +95,8 @@ tasks.register<ShadowJar>("shadeReobfAdapters") {
 }
 
 tasks.named<ShadowJar>("shadowJar") {
-    from(tasks.named("shadeReobfAdapters"))
+    from(zipTree(shadeReobfAdapters.map { it.archiveFile }))
+    configurations.add(project.configurations.named("runtimeClasspath"))
     configurations.add(adapters.get())
     dependencies {
         // In tandem with not bundling log4j, we shouldn't relocate base package here.
@@ -105,7 +106,7 @@ tasks.named<ShadowJar>("shadowJar") {
         // If it turns out not to be true for Spigot/Paper, our only two official platforms, this can be uncommented.
         // include(dependency("org.apache.logging.log4j:log4j-api"))
         include(dependency("org.antlr:antlr4-runtime"))
-        include(dependency("org.bstats:"))
+        include(dependency("org.bstats:.*"))
         include(dependency("io.papermc:paperlib"))
         include(dependency("it.unimi.dsi:fastutil"))
         include(dependency("com.sk89q.lib:jlibnoise"))

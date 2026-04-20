@@ -46,7 +46,7 @@ public class SelectionCylinderEvent implements CUIEvent {
             String.valueOf(pos.y()),
             String.valueOf(pos.z()),
             String.valueOf(radius.x()),
-            String.valueOf(radius.z())
+            String.valueOf(radius.z()),
         };
     }
 }

@@ -37,10 +37,12 @@ import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.RegenOptions;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -48,6 +50,7 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.generation.StructureType;
+import com.sk89q.worldedit.world.generation.WorldEditTreeGeneration;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
 import io.papermc.lib.PaperLib;
@@ -134,6 +137,10 @@ public class BukkitWorld extends AbstractWorld {
     @Nullable
     @Override
     public com.sk89q.worldedit.entity.Entity createEntity(com.sk89q.worldedit.util.Location location, BaseEntity entity) {
+        if (WorldEditPlugin.getInstance().isFolia()) {
+            throw new RuntimeException(new RegionOperationException(TranslatableComponent.of("worldedit.bukkit.unsupported-on-folia")));
+        }
+
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         if (adapter != null) {
             try {
@@ -191,6 +198,10 @@ public class BukkitWorld extends AbstractWorld {
 
     @Override
     public boolean regenerate(Region region, Extent extent, RegenOptions options) {
+        if (WorldEditPlugin.getInstance().isFolia()) {
+            throw new RuntimeException(new RegionOperationException(TranslatableComponent.of("worldedit.bukkit.unsupported-on-folia")));
+        }
+
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         try {
             if (adapter != null) {
@@ -237,6 +248,7 @@ public class BukkitWorld extends AbstractWorld {
 
     /**
      * An EnumMap that stores which WorldEdit TreeTypes apply to which Bukkit TreeTypes.
+     * @deprecated because {@link com.sk89q.worldedit.util.TreeGenerator.TreeType} is
      */
     @Deprecated
     private static final EnumMap<TreeGenerator.TreeType, TreeType> treeTypeMapping =
@@ -307,6 +319,10 @@ public class BukkitWorld extends AbstractWorld {
 
     @Override
     public boolean generateTree(com.sk89q.worldedit.world.generation.TreeType type, EditSession editSession, BlockVector3 position) throws MaxChangedBlocksException {
+        Boolean customResult = WorldEditTreeGeneration.handleWorldEditTrees(this, type, editSession, position);
+        if (customResult != null) {
+            return customResult;
+        }
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         if (adapter != null) {
             return adapter.generateTree(type, getWorld(), editSession, position);

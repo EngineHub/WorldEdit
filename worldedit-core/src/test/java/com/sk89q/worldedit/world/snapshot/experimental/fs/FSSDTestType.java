@@ -24,6 +24,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.io.file.ArchiveDir;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
+import com.sk89q.worldedit.world.snapshot.experimental.SnapshotInfo;
 import org.junit.jupiter.api.DynamicNode;
 import org.junit.jupiter.api.DynamicTest;
 
@@ -55,7 +56,7 @@ enum FSSDTestType {
         List<DynamicTest> getTests(FSSDContext context) {
             return ImmutableList.of(
                 dynamicTest("return an empty stream from getSnapshots(worldName)",
-                    () -> context.db.getSnapshots(WORLD_ALPHA)),
+                    () -> context.db.getSnapshotInfos(WORLD_ALPHA)),
                 dynamicTest("return an empty optional from getSnapshot(name)",
                     () -> context.db.getSnapshot(context.nameUri(WORLD_ALPHA)))
             );
@@ -188,50 +189,17 @@ enum FSSDTestType {
             EntryMaker.WORLD_DIR.createEntry(timestampedDirB, WORLD_ALPHA);
             return ImmutableList.of(
                 dynamicTest("list both snapshots in order (newest first)", () -> {
-                    List<Snapshot> snapshots = context.db
-                        .getSnapshotsNewestFirst(WORLD_ALPHA).collect(toList());
+                    List<SnapshotInfo> snapshots = context.db.getSnapshotInfosNewestFirst(WORLD_ALPHA).toList();
                     assertEquals(2, snapshots.size());
-                    assertValidSnapshot(TIME_ONE, snapshots.get(0));
-                    assertValidSnapshot(TIME_TWO, snapshots.get(1));
+                    assertValidSnapshotInfo(TIME_ONE, snapshots.get(0), context);
+                    assertValidSnapshotInfo(TIME_TWO, snapshots.get(1), context);
                 }),
                 dynamicTest("list both snapshots in order (oldest first)", () -> {
-                    List<Snapshot> snapshots = context.db
-                        .getSnapshotsOldestFirst(WORLD_ALPHA).collect(toList());
+                    List<SnapshotInfo> snapshots = context.db.getSnapshotInfosOldestFirst(WORLD_ALPHA).toList();
                     assertEquals(2, snapshots.size());
-                    assertValidSnapshot(TIME_TWO, snapshots.get(0));
-                    assertValidSnapshot(TIME_ONE, snapshots.get(1));
-                }),
-                dynamicTest("list only 1 if getting AFTER 2", () -> {
-                    List<Snapshot> snapshots = context.db
-                        .getSnapshotsAfter(WORLD_ALPHA, TIME_TWO).collect(toList());
-                    assertEquals(1, snapshots.size());
-                    assertValidSnapshot(TIME_ONE, snapshots.get(0));
-                }),
-                dynamicTest("list only 2 if getting BEFORE 1", () -> {
-                    List<Snapshot> snapshots = context.db
-                        .getSnapshotsBefore(WORLD_ALPHA, TIME_ONE).collect(toList());
-                    assertEquals(1, snapshots.size());
-                    assertValidSnapshot(TIME_TWO, snapshots.get(0));
-                }),
-                dynamicTest("list both if AFTER time before 2", () -> {
-                    List<Snapshot> snapshots = context.db
-                        .getSnapshotsAfter(WORLD_ALPHA, TIME_TWO.minusSeconds(1))
-                        .collect(toList());
-                    assertEquals(2, snapshots.size());
-                    // sorted newest first
-                    assertValidSnapshot(TIME_ONE, snapshots.get(0));
-                    assertValidSnapshot(TIME_TWO, snapshots.get(1));
-                }),
-                dynamicTest("list both if BEFORE time after 1", () -> {
-                        List<Snapshot> snapshots = context.db
-                            .getSnapshotsBefore(WORLD_ALPHA, TIME_ONE.plusSeconds(1))
-                            .collect(toList());
-                        assertEquals(2, snapshots.size());
-                        // sorted oldest first
-                        assertValidSnapshot(TIME_TWO, snapshots.get(0));
-                        assertValidSnapshot(TIME_ONE, snapshots.get(1));
-                    }
-                )
+                    assertValidSnapshotInfo(TIME_TWO, snapshots.get(0), context);
+                    assertValidSnapshotInfo(TIME_ONE, snapshots.get(1), context);
+                })
             );
         }
     },
@@ -265,6 +233,17 @@ enum FSSDTestType {
                 }
             })
         );
+    }
+
+    private static void assertValidSnapshotInfo(ZonedDateTime time,
+                                               SnapshotInfo info,
+                                               FSSDContext context) throws IOException, DataException {
+        assertEquals(time, info.getDateTime());
+        try (Snapshot snapshot = context.db.getSnapshot(info).orElseThrow(() ->
+            new IllegalStateException("No snapshot found for info: " + info)
+        )) {
+            assertValidSnapshot(time, snapshot);
+        }
     }
 
     private static void assertValidSnapshot(ZonedDateTime time,

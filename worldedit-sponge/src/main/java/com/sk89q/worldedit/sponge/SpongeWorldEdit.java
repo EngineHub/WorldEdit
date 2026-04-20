@@ -35,7 +35,7 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.internal.command.CommandUtil;
-import com.sk89q.worldedit.registry.Registries;
+import com.sk89q.worldedit.registry.CommonRegistries;
 import com.sk89q.worldedit.sponge.config.SpongeConfiguration;
 import com.sk89q.worldedit.world.biome.BiomeCategory;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -83,7 +83,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAME;
-import static java.util.stream.Collectors.toList;
 
 /**
  * The Sponge implementation of WorldEdit.
@@ -215,10 +214,10 @@ public class SpongeWorldEdit {
         //            }
         //        });
 
-        event.game().registry(RegistryTypes.PLACED_FEATURE).streamEntries().forEach(feature -> {
+        RegistryTypes.PLACED_FEATURE.get().streamEntries().forEach(feature -> {
             String id = feature.key().asString();
             var underlyingFeatureType = feature.value().feature().type();
-            if (underlyingFeatureType.equals(FeatureTypes.TREE) || underlyingFeatureType.equals(FeatureTypes.FALLEN_TREE) || underlyingFeatureType.equals(FeatureTypes.CORAL_TREE)) {
+            if (underlyingFeatureType.equals(FeatureTypes.TREE.get()) || underlyingFeatureType.equals(FeatureTypes.FALLEN_TREE.get()) || underlyingFeatureType.equals(FeatureTypes.CORAL_TREE.get())) {
                 if (!TreeType.REGISTRY.keySet().contains(id)) {
                     TreeType.REGISTRY.register(id, new TreeType(id));
                 }
@@ -236,14 +235,15 @@ public class SpongeWorldEdit {
                 ItemCategory.REGISTRY.register(id, new ItemCategory(id));
             }
         });
-        event.game().registry(RegistryTypes.BIOME).tags().forEach(biomeTag -> {
+        RegistryTypes.BIOME.get().tags().forEach(biomeTag -> {
             String id = biomeTag.key().asString();
             if (!BiomeCategory.REGISTRY.keySet().contains(id)) {
                 BiomeCategory.REGISTRY.register(id, new BiomeCategory(id, () -> event.game().registry(RegistryTypes.BIOME).taggedValues(biomeTag).map(SpongeAdapter::adapt).collect(Collectors.toSet())));
             }
         });
 
-        Registries.get("");
+        // Common registries
+        CommonRegistries.init();
 
         config.load();
         WorldEdit.getInstance().getEventBus().post(new ConfigurationLoadEvent(config));
@@ -310,8 +310,7 @@ public class SpongeWorldEdit {
                 String args = rebuildArguments(command.getName(), arguments.remaining());
                 CommandSuggestionEvent weEvent = new CommandSuggestionEvent(SpongeWorldEdit.inst().wrapCommandCause(cause), args);
                 WorldEdit.getInstance().getEventBus().post(weEvent);
-                return CommandUtil.fixSuggestions(args, weEvent.getSuggestions())
-                    .stream().map(CommandCompletion::of).collect(toList());
+                return CommandUtil.fixSuggestions(args, weEvent.getSuggestions()).stream().map(CommandCompletion::of).toList();
             }
         };
         event.register(

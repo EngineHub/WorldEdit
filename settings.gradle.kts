@@ -8,8 +8,8 @@ pluginManagement {
             url = uri("https://maven.fabricmc.net/")
         }
         maven {
-            name = "SpongePowered Snapshots"
-            url = uri("https://repo.spongepowered.org/repository/maven-snapshots/")
+            name = "SpongePowered"
+            url = uri("https://repo.spongepowered.org/repository/maven-releases/")
         }
         maven {
             name = "NeoForged"
@@ -25,14 +25,9 @@ pluginManagement {
 }
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
-    id("fabric-loom") version "1.14.7"
 }
 dependencyResolutionManagement {
     repositories {
-        maven {
-            name = "ParchmentMC"
-            url = uri("https://maven.parchmentmc.org/")
-        }
         maven {
             name = "PaperMC"
             url = uri("https://repo.papermc.io/repository/maven-public/")
@@ -41,6 +36,7 @@ dependencyResolutionManagement {
             name = "EngineHub (Non-Mirrored)"
             url = URI.create("https://repo.enginehub.org/libs-release/")
             metadataSources {
+                gradleMetadata()
                 mavenPom()
                 artifact()
             }
@@ -58,6 +54,11 @@ dependencyResolutionManagement {
             content {
                 includeModuleByRegex(".*", "worldedit-lang")
             }
+        }
+        mavenCentral()
+        maven {
+            name = "Minecraft Libraries"
+            url = uri("https://libraries.minecraft.net/")
         }
     }
 }
@@ -82,7 +83,7 @@ includeBuild("build-logic")
 
 include("worldedit-libs")
 
-listOf("1.21.4", "1.21.5", "1.21.6", "1.21.9", "1.21.11").forEach {
+listOf("1.21.4", "1.21.5", "1.21.6", "1.21.9", "1.21.11", "26.1").forEach {
     include("worldedit-bukkit:adapters:adapter-$it")
 }
 

@@ -124,9 +124,8 @@ public class Deform implements Contextual<Operation> {
 
         Region region = firstNonNull(context.getRegion(), this.region);
 
-        final Transform transform;
-        switch (mode) {
-            case UNIT_CUBE:
+        final Transform transform = switch (mode) {
+            case UNIT_CUBE -> {
                 final Vector3 min = region.getMinimumPoint().toVector3();
                 final Vector3 max = region.getMaximumPoint().toVector3();
                 final Vector3 zero = max.add(min).multiply(0.5);
@@ -142,18 +141,11 @@ public class Deform implements Contextual<Operation> {
                     unit = unit.withZ(1.0);
                 }
 
-                transform = new ScaleAndTranslateTransform(zero, unit);
-                break;
-
-            case RAW_COORD:
-                transform = new Identity();
-                break;
-
-            case OFFSET:
-            default:
-                transform = new ScaleAndTranslateTransform(offset, Vector3.ONE);
-                break;
-        }
+                yield new ScaleAndTranslateTransform(zero, unit);
+            }
+            case RAW_COORD -> new Identity();
+            default -> new ScaleAndTranslateTransform(offset, Vector3.ONE);
+        };
         LocalSession session = context.getSession();
         return new DeformOperation(context.getDestination(), region, transform, expression,
                 session == null ? WorldEdit.getInstance().getConfiguration().calculationTimeout : session.getTimeout());

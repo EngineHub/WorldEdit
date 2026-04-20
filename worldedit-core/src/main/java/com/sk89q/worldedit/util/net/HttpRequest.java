@@ -39,6 +39,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -465,7 +466,7 @@ public class HttpRequest implements Closeable {
          * @throws java.io.IOException on I/O error
          */
         public String asString(String encoding) throws IOException {
-            return new String(data, encoding);
+            return new String(data, Charset.forName(encoding));
         }
 
         /**

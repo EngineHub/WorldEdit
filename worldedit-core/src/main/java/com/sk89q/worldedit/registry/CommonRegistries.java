@@ -17,14 +17,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.fabric.internal;
+package com.sk89q.worldedit.registry;
 
-import net.minecraft.world.level.Level;
+import com.sk89q.worldedit.world.gamemode.GameModes;
+import com.sk89q.worldedit.world.generation.WorldEditTreeTypes;
+import com.sk89q.worldedit.world.weather.WeatherTypes;
 
-import java.nio.file.Path;
+public final class CommonRegistries {
 
-public interface ExtendedMinecraftServer {
+    private CommonRegistries() {
+    }
 
-    Path getStoragePath(Level world);
+    /**
+     * Initializes registries that do not require any platform code.
+     */
+    public static void init() {
+        WorldEditTreeTypes.init();
 
+        // ... :|
+        GameModes.get("");
+        WeatherTypes.get("");
+        com.sk89q.worldedit.registry.Registries.get("");
+    }
 }

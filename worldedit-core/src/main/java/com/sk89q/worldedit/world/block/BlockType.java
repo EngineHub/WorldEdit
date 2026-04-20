@@ -238,6 +238,7 @@ public class BlockType implements Keyed {
      * </p>
      *
      * @return legacy id or 0, if unknown
+     * @deprecated Legacy only, do not use.
      */
     @Deprecated
     public int getLegacyId() {
@@ -252,6 +253,7 @@ public class BlockType implements Keyed {
      * </p>
      *
      * @return legacy data or 0, if unknown
+     * @deprecated Legacy only, do not use.
      */
     @Deprecated
     public int getLegacyData() {

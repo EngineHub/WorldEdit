@@ -60,7 +60,7 @@ public class WorldEditExpressionEnvironment implements ExpressionEnvironment {
 
     private int getLegacy(BlockVector3 position, int index) {
         final int[] legacy = LegacyMapper.getInstance().getLegacyFromBlock(extent.getBlock(position).toImmutableState());
-        return legacy == null ? 0 : legacy[index];
+        return legacy == null ? -1 : legacy[index];
     }
 
     @Override

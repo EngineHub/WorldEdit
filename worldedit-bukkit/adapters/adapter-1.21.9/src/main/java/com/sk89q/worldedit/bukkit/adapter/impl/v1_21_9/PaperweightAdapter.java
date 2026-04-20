@@ -105,7 +105,6 @@ import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.level.ChunkResult;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.util.thread.BlockableEventLoop;
@@ -217,14 +216,6 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
     private static final RandomSource random = RandomSource.create();
 
-    private static final String WRONG_VERSION =
-        """
-        This version of WorldEdit has not been tested with the current Minecraft version.
-        While it may work, there might be unexpected issues.
-        It is recommended to use a version of WorldEdit that supports your Minecraft version.
-        For more information, see https://worldedit.enginehub.org/en/latest/faq/#bukkit-adapters
-        """.stripIndent();
-
     // ------------------------------------------------------------------------
     // Code that may break between versions of Minecraft
     // ------------------------------------------------------------------------
@@ -236,7 +227,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
         int dataVersion = SharedConstants.getCurrentVersion().dataVersion().version();
         if (dataVersion != Constants.DATA_VERSION_MC_1_21_9 && dataVersion != Constants.DATA_VERSION_MC_1_21_10) {
-            logger.warning(WRONG_VERSION);
+            throw new RuntimeException("Force prevent this loading on >=1.21.11 or <=1.21.8");
         }
 
         serverWorldsField = CraftServer.class.getDeclaredField("worlds");
@@ -288,8 +279,11 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
      * @param tag the tag
      */
     static void readTagIntoTileEntity(net.minecraft.nbt.CompoundTag tag, BlockEntity tileEntity) {
-        tileEntity.loadWithComponents(TagValueInput.create(ProblemReporter.DISCARDING, MinecraftServer.getServer().registryAccess(), tag));
-        tileEntity.setChanged();
+        PaperweightLoggingProblemReporter.with(() -> "loading tile entity at " + tileEntity.getBlockPos(), reporter -> {
+            tileEntity.loadWithComponents(TagValueInput.create(reporter, MinecraftServer.getServer().registryAccess(), tag));
+            tileEntity.setChanged();
+            return null;
+        });
     }
 
     /**
@@ -392,9 +386,14 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         // Read the NBT data
         BlockEntity te = chunk.getBlockEntity(blockPos);
         if (te != null) {
-            var tagValueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, MinecraftServer.getServer().registryAccess());
-            te.saveWithId(tagValueOutput);
-            net.minecraft.nbt.CompoundTag tag = tagValueOutput.buildResult();
+            net.minecraft.nbt.CompoundTag tag = PaperweightLoggingProblemReporter.with(
+                () -> "serializing block entity at " + blockPos,
+                reporter -> {
+                    var tagValueOutput = TagValueOutput.createWithContext(reporter, MinecraftServer.getServer().registryAccess());
+                    te.saveWithId(tagValueOutput);
+                    return tagValueOutput.buildResult();
+                }
+            );
             return state.toBaseBlock(LazyReference.from(() -> (LinCompoundTag) toNative(tag)));
         }
 
@@ -493,13 +492,22 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
         String id = getEntityId(mcEntity);
 
-        var tagValueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, mcEntity.registryAccess());
-        if (!readEntityIntoTag(mcEntity, tagValueOutput)) {
+        net.minecraft.nbt.CompoundTag tag = PaperweightLoggingProblemReporter.with(
+            () -> "serializing entity " + mcEntity.getStringUUID(),
+            reporter -> {
+                var tagValueOutput = TagValueOutput.createWithContext(reporter, mcEntity.registryAccess());
+                if (!readEntityIntoTag(mcEntity, tagValueOutput)) {
+                    return null;
+                }
+                return tagValueOutput.buildResult();
+            }
+        );
+        if (tag == null) {
             return null;
         }
         return new BaseEntity(
             EntityTypes.get(id),
-            LazyReference.from(() -> (LinCompoundTag) toNative(tagValueOutput.buildResult()))
+            LazyReference.from(() -> (LinCompoundTag) toNative(tag))
         );
     }
 
@@ -848,9 +856,14 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             Objects.requireNonNull(state);
             BlockEntity blockEntity = chunk.getBlockEntity(pos);
             if (blockEntity != null) {
-                var tagValueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, serverWorld.registryAccess());
-                blockEntity.saveWithId(tagValueOutput);
-                net.minecraft.nbt.CompoundTag tag = tagValueOutput.buildResult();
+                net.minecraft.nbt.CompoundTag tag = PaperweightLoggingProblemReporter.with(
+                    () -> "serializing block entity at " + pos,
+                    reporter -> {
+                        var tagValueOutput = TagValueOutput.createWithContext(reporter, serverWorld.registryAccess());
+                        blockEntity.saveWithId(tagValueOutput);
+                        return tagValueOutput.buildResult();
+                    }
+                );
                 state = state.toBaseBlock(LazyReference.from(() -> (LinCompoundTag) toNative(tag)));
             }
             extent.setBlock(vec, state.toBaseBlock());

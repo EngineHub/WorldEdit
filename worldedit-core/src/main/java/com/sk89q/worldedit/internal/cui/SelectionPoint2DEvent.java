@@ -70,7 +70,7 @@ public class SelectionPoint2DEvent implements CUIEvent {
             String.valueOf(id),
             String.valueOf(blockX),
             String.valueOf(blockZ),
-            String.valueOf(area)
+            String.valueOf(area),
         };
     }
 
