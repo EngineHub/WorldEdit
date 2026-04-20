@@ -65,6 +65,7 @@ public abstract class BreadthFirstSearch implements Operation {
      *
      * @param function the function to apply to visited blocks
      */
+    @SuppressWarnings("this-escape")
     protected BreadthFirstSearch(RegionFunction function) {
         checkNotNull(function);
         this.function = function;

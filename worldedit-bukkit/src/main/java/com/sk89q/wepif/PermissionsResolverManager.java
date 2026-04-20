@@ -100,6 +100,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
         FlatFilePermissionsResolver.class,
     };
 
+    @SuppressWarnings("this-escape")
     protected PermissionsResolverManager(Plugin plugin) {
         this.server = plugin.getServer();
         new ServerListener().register(plugin); // Register the events

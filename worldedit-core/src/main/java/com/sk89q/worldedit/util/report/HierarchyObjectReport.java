@@ -21,6 +21,7 @@ package com.sk89q.worldedit.util.report;
 
 public class HierarchyObjectReport extends ShallowObjectReport {
 
+    @SuppressWarnings("this-escape")
     public HierarchyObjectReport(String title, Object object) {
         super(title, object);
 

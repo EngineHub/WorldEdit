@@ -45,6 +45,7 @@ public class DownwardVisitor extends RecursiveVisitor {
      * @param function the function
      * @param baseY the base Y
      */
+    @SuppressWarnings("this-escape")
     public DownwardVisitor(Mask mask, RegionFunction function, int baseY) {
         super(mask, function);
         checkNotNull(mask);

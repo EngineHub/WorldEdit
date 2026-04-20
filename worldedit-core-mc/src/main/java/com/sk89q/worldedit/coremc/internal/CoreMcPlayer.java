@@ -66,11 +66,7 @@ public class CoreMcPlayer extends AbstractPlayerActor {
         this.platform = platform;
         this.player = player;
 
-        if (getUniqueId() == null) {
-            throw new AssertionError("Player UUID cannot be null");
-        }
-
-        ThreadSafeCache.getInstance().getOnlineIds().add(getUniqueId());
+        ThreadSafeCache.getInstance().getOnlineIds().add(player.getUUID());
     }
 
     @Override

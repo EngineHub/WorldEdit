@@ -79,6 +79,7 @@ public abstract class CoreMcPlatform extends AbstractPlatform implements MultiUs
     private boolean hookingEvents = false;
     private CoreMcPermissionsProvider permissionsProvider;
 
+    @SuppressWarnings("this-escape")
     protected CoreMcPlatform(CoreMcMod mod, Lifecycled<MinecraftServer> server) {
         this.mod = mod;
         this.dataFixer = new CoreMcDataFixer(this, getDataVersion());

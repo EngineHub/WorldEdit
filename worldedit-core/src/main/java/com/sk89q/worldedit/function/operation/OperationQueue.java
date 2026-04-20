@@ -20,11 +20,12 @@
 package com.sk89q.worldedit.function.operation;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.util.formatting.text.Component;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
@@ -36,7 +37,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class OperationQueue implements Operation {
 
-    private final List<Operation> operations = Lists.newArrayList();
+    private final List<Operation> operations;
     private final Deque<Operation> queue = new ArrayDeque<>();
     private Operation current;
 
@@ -44,6 +45,7 @@ public class OperationQueue implements Operation {
      * Create a new queue containing no operations.
      */
     public OperationQueue() {
+        this.operations = new ArrayList<>();
     }
 
     /**
@@ -53,22 +55,17 @@ public class OperationQueue implements Operation {
      */
     public OperationQueue(Collection<Operation> operations) {
         checkNotNull(operations);
-        for (Operation operation : operations) {
-            offer(operation);
-        }
-        this.operations.addAll(operations);
+        this.queue.addAll(operations);
+        this.operations = new ArrayList<>(operations);
     }
 
     /**
      * Create a new queue with operations from the given array.
      *
-     * @param operation an array of operations
+     * @param operations an array of operations
      */
-    public OperationQueue(Operation... operation) {
-        checkNotNull(operation);
-        for (Operation o : operation) {
-            offer(o);
-        }
+    public OperationQueue(Operation... operations) {
+        this(Arrays.asList(operations));
     }
 
     /**
@@ -79,6 +76,7 @@ public class OperationQueue implements Operation {
     public void offer(Operation operation) {
         checkNotNull(operation);
         queue.offer(operation);
+        operations.add(operation);
     }
 
     @Override

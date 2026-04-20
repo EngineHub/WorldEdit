@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 public class SystemInfoReport extends DataReport {
 
+    @SuppressWarnings("this-escape")
     public SystemInfoReport() {
         super("System Information");
 

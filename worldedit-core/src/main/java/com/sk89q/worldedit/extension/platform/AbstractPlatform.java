@@ -39,6 +39,7 @@ import java.util.List;
 public abstract class AbstractPlatform implements Platform {
 
     private final ResourceLoader resourceLoader = new WorldEditResourceLoader(WorldEdit.getInstance());
+    @SuppressWarnings("this-escape")
     private final LazyReference<ArchiveUnpacker> archiveUnpacker = LazyReference.from(() -> {
         try {
             return new ArchiveUnpacker(getConfiguration().getWorkingDirectoryPath().resolve(".archive-unpack"));
@@ -46,6 +47,7 @@ public abstract class AbstractPlatform implements Platform {
             throw new UncheckedIOException(e);
         }
     });
+    @SuppressWarnings("this-escape")
     private final LazyReference<TranslationManager> translationManager = LazyReference.from(() -> {
         try {
             return new TranslationManager(archiveUnpacker.getValue(), getResourceLoader());

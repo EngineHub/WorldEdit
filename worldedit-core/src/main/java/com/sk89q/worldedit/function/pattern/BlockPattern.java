@@ -41,7 +41,7 @@ public class BlockPattern extends AbstractPattern {
      * @param block the block
      */
     public BlockPattern(BlockStateHolder<?> block) {
-        setBlock(block);
+        this.block = block.toBaseBlock();
     }
 
     /**

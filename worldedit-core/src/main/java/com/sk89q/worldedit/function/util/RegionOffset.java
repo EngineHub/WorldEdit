@@ -41,7 +41,7 @@ public class RegionOffset implements RegionFunction {
      */
     public RegionOffset(BlockVector3 offset, RegionFunction function) {
         checkNotNull(function);
-        setOffset(offset);
+        this.offset = offset;
         this.function = function;
     }
 

@@ -38,6 +38,7 @@ public class FlatRegionIterator implements Iterator<BlockVector2>  {
     private int nextX;
     private int nextZ;
 
+    @SuppressWarnings("this-escape")
     public FlatRegionIterator(Region region) {
         checkNotNull(region);
 

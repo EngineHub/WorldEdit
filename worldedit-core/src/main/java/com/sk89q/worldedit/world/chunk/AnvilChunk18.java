@@ -68,6 +68,7 @@ public class AnvilChunk18 implements Chunk {
      * @param tag the tag to read
      * @throws DataException on a data error
      */
+    @SuppressWarnings("this-escape")
     public AnvilChunk18(LinCompoundTag tag) throws DataException {
         rootTag = tag;
 

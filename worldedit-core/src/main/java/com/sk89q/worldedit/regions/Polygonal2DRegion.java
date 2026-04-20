@@ -69,6 +69,7 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
      * @param minY minimum Y
      * @param maxY maximum Y
      */
+    @SuppressWarnings("this-escape")
     public Polygonal2DRegion(World world, List<BlockVector2> points, int minY, int maxY) {
         super(world);
         this.points = new ArrayList<>(points);

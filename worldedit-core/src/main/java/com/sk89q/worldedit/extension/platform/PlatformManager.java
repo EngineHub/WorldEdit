@@ -94,6 +94,7 @@ public class PlatformManager {
      *
      * @param worldEdit the WorldEdit instance
      */
+    @SuppressWarnings("this-escape")
     public PlatformManager(WorldEdit worldEdit) {
         checkNotNull(worldEdit);
         this.worldEdit = worldEdit;

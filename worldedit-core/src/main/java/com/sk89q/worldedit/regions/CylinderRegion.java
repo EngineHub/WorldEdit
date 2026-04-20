@@ -74,6 +74,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
      * @param minY the minimum Y, inclusive
      * @param maxY the maximum Y, inclusive
      */
+    @SuppressWarnings("this-escape")
     public CylinderRegion(World world, BlockVector3 center, Vector2 radius, int minY, int maxY) {
         super(world);
         setCenter(center.toBlockVector2());
@@ -91,6 +92,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
      * @param minY the minimum Y, inclusive
      * @param maxY the maximum Y, inclusive
      */
+    @SuppressWarnings("this-escape")
     public CylinderRegion(BlockVector3 center, Vector2 radius, int minY, int maxY) {
         super(null);
         setCenter(center.toBlockVector2());
