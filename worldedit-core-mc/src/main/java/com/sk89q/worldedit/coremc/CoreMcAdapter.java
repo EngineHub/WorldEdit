@@ -20,13 +20,11 @@
 package com.sk89q.worldedit.coremc;
 
 import com.mojang.serialization.Codec;
-import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.coremc.internal.CoreMcBlockCommandSender;
 import com.sk89q.worldedit.coremc.internal.CoreMcCommandSender;
 import com.sk89q.worldedit.coremc.internal.CoreMcPlatform;
 import com.sk89q.worldedit.coremc.internal.CoreMcPlayer;
-import com.sk89q.worldedit.coremc.internal.CoreMcTransmogrifier;
 import com.sk89q.worldedit.coremc.internal.CoreMcWorld;
 import com.sk89q.worldedit.coremc.internal.NBTConverter;
 import com.sk89q.worldedit.coremc.mixin.AccessorCommandSourceStack;
@@ -68,18 +66,25 @@ import javax.annotation.Nullable;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Common adapter methods for platforms sharing native Minecraft code.
+ * Adapter for platforms sharing native Minecraft code.
+ *
+ * @implNote This is not intended to be implemented by non-platforms. Only extend this in platform-specific code.
  */
-public final class CoreMcAdapter {
+public abstract class CoreMcAdapter {
 
-    private CoreMcAdapter() {
+    protected CoreMcAdapter() {
     }
 
-    public static World fromNativeWorld(Level level) {
-        return new CoreMcWorld((ServerLevel) level);
+    /**
+     * {@return the platform that owns this adapter}
+     */
+    protected abstract CoreMcPlatform getPlatform();
+
+    public World fromNativeWorld(Level level) {
+        return new CoreMcWorld(getPlatform(), (ServerLevel) level);
     }
 
-    public static ServerLevel toNativeWorld(World world) {
+    public ServerLevel toNativeWorld(World world) {
         checkNotNull(world);
         if (world instanceof CoreMcWorld coreMcWorld) {
             return coreMcWorld.getWorld();
@@ -90,31 +95,31 @@ public final class CoreMcAdapter {
 
     // Available as API, but not used by WorldEdit itself.
     @SuppressWarnings("unused")
-    public static Biome toNativeBiome(BiomeType biomeType) {
-        return CoreMcPlatform.getRegistryAccess().lookupOrThrow(Registries.BIOME)
+    public Biome toNativeBiome(BiomeType biomeType) {
+        return getPlatform().serverRegistryAccess().lookupOrThrow(Registries.BIOME)
             .getOptional(Identifier.parse(biomeType.id()))
             .orElseThrow(() -> new IllegalStateException("No biome for " + biomeType.id()));
     }
 
-    public static BiomeType fromNativeBiome(Biome biome) {
-        Identifier id = CoreMcPlatform.getRegistryAccess().lookupOrThrow(Registries.BIOME).getKey(biome);
+    public BiomeType fromNativeBiome(Biome biome) {
+        Identifier id = getPlatform().serverRegistryAccess().lookupOrThrow(Registries.BIOME).getKey(biome);
         Objects.requireNonNull(id, "biome is not registered");
         return BiomeTypes.get(id.toString());
     }
 
-    public static Vector3 adapt(Vec3 vector) {
+    public Vector3 adapt(Vec3 vector) {
         return Vector3.at(vector.x, vector.y, vector.z);
     }
 
-    public static BlockVector3 adapt(BlockPos pos) {
+    public BlockVector3 adapt(BlockPos pos) {
         return BlockVector3.at(pos.getX(), pos.getY(), pos.getZ());
     }
 
-    public static Vec3 toVec3(BlockVector3 vector) {
+    public Vec3 toVec3(BlockVector3 vector) {
         return new Vec3(vector.x(), vector.y(), vector.z());
     }
 
-    public static net.minecraft.core.Direction adapt(Direction face) {
+    public net.minecraft.core.Direction adapt(Direction face) {
         return switch (face) {
             case NORTH -> net.minecraft.core.Direction.NORTH;
             case SOUTH -> net.minecraft.core.Direction.SOUTH;
@@ -125,7 +130,7 @@ public final class CoreMcAdapter {
         };
     }
 
-    public static Direction adaptEnumFacing(@Nullable net.minecraft.core.Direction face) {
+    public Direction adaptEnumFacing(@Nullable net.minecraft.core.Direction face) {
         if (face == null) {
             return null;
         }
@@ -139,46 +144,46 @@ public final class CoreMcAdapter {
         };
     }
 
-    public static BlockPos toBlockPos(BlockVector3 vector) {
+    public BlockPos toBlockPos(BlockVector3 vector) {
         return new BlockPos(vector.x(), vector.y(), vector.z());
     }
 
-    public static net.minecraft.world.level.block.state.BlockState toNativeBlockState(BlockState blockState) {
+    public net.minecraft.world.level.block.state.BlockState toNativeBlockState(BlockState blockState) {
         int blockStateId = BlockStateIdAccess.getBlockStateId(blockState);
         if (!BlockStateIdAccess.isValidInternalId(blockStateId)) {
-            return CoreMcTransmogrifier.transmogToMinecraft(blockState);
+            return getPlatform().getTransmogrifier().transmogToMinecraft(blockState);
         }
         return Block.stateById(blockStateId);
     }
 
-    public static BlockState fromNativeBlockState(net.minecraft.world.level.block.state.BlockState blockState) {
+    public BlockState fromNativeBlockState(net.minecraft.world.level.block.state.BlockState blockState) {
         int blockStateId = Block.getId(blockState);
         BlockState worldEdit = BlockStateIdAccess.getBlockStateById(blockStateId);
         if (worldEdit == null) {
-            return CoreMcTransmogrifier.transmogToWorldEdit(blockState);
+            return getPlatform().getTransmogrifier().transmogToWorldEdit(blockState);
         }
         return worldEdit;
     }
 
-    public static Block toNativeBlock(BlockType blockType) {
-        return CoreMcPlatform.getRegistryAccess().lookupOrThrow(Registries.BLOCK)
+    public Block toNativeBlock(BlockType blockType) {
+        return getPlatform().serverRegistryAccess().lookupOrThrow(Registries.BLOCK)
             .getValue(Identifier.parse(blockType.id()));
     }
 
-    public static BlockType fromNativeBlock(Block block) {
+    public BlockType fromNativeBlock(Block block) {
         return BlockTypes.get(
-            CoreMcPlatform.getRegistryAccess().lookupOrThrow(Registries.BLOCK).getKey(block).toString()
+            getPlatform().serverRegistryAccess().lookupOrThrow(Registries.BLOCK).getKey(block).toString()
         );
     }
 
-    public static Item toNativeItem(ItemType itemType) {
-        return CoreMcPlatform.getRegistryAccess().lookupOrThrow(Registries.ITEM)
+    public Item toNativeItem(ItemType itemType) {
+        return getPlatform().serverRegistryAccess().lookupOrThrow(Registries.ITEM)
             .getValue(Identifier.parse(itemType.id()));
     }
 
-    public static ItemType fromNativeItem(Item item) {
+    public ItemType fromNativeItem(Item item) {
         return ItemTypes.get(
-            CoreMcPlatform.getRegistryAccess().lookupOrThrow(Registries.ITEM).getKey(item).toString()
+            getPlatform().serverRegistryAccess().lookupOrThrow(Registries.ITEM).getKey(item).toString()
         );
     }
 
@@ -189,7 +194,7 @@ public final class CoreMcAdapter {
         "components", DataComponentPatch.EMPTY
     ).codec();
 
-    public static ItemStack toNativeItemStack(BaseItemStack baseItemStack) {
+    public ItemStack toNativeItemStack(BaseItemStack baseItemStack) {
         final ItemStack itemStack = new ItemStack(
             toNativeItem(baseItemStack.getType()),
             baseItemStack.getAmount()
@@ -197,7 +202,7 @@ public final class CoreMcAdapter {
         LinCompoundTag nbt = baseItemStack.getNbt();
         if (nbt != null) {
             DataComponentPatch componentPatch = COMPONENTS_CODEC.parse(
-                CoreMcPlatform.getRegistryAccess().createSerializationContext(NbtOps.INSTANCE),
+                getPlatform().serverRegistryAccess().createSerializationContext(NbtOps.INSTANCE),
                 NBTConverter.toNative(nbt)
             ).getOrThrow();
             itemStack.applyComponents(componentPatch);
@@ -205,9 +210,9 @@ public final class CoreMcAdapter {
         return itemStack;
     }
 
-    public static BaseItemStack fromNativeItemStack(ItemStack itemStack) {
+    public BaseItemStack fromNativeItemStack(ItemStack itemStack) {
         CompoundTag tag = (CompoundTag) COMPONENTS_CODEC.encodeStart(
-            CoreMcPlatform.getRegistryAccess().createSerializationContext(NbtOps.INSTANCE),
+            getPlatform().serverRegistryAccess().createSerializationContext(NbtOps.INSTANCE),
             itemStack.getComponentsPatch()
         ).getOrThrow();
         return new BaseItemStack(
@@ -223,9 +228,9 @@ public final class CoreMcAdapter {
      * @param player the player
      * @return the WorldEdit player
      */
-    public static CoreMcPlayer fromNativePlayer(ServerPlayer player) {
+    public CoreMcPlayer fromNativePlayer(ServerPlayer player) {
         checkNotNull(player);
-        return new CoreMcPlayer(player);
+        return new CoreMcPlayer(getPlatform(), player);
     }
 
     /**
@@ -234,15 +239,15 @@ public final class CoreMcAdapter {
      * @param commandSourceStack the command source
      * @return the WorldEdit actor
      */
-    public static Actor adaptCommandSource(CommandSourceStack commandSourceStack) {
+    public Actor adaptCommandSource(CommandSourceStack commandSourceStack) {
         checkNotNull(commandSourceStack);
         if (commandSourceStack.isPlayer()) {
             return fromNativePlayer(commandSourceStack.getPlayer());
         }
-        if (WorldEdit.getInstance().getPlatformManager().getConfiguration().commandBlockSupport
+        if (getPlatform().getConfiguration().commandBlockSupport
             && ((AccessorCommandSourceStack) commandSourceStack).getSource() instanceof BaseCommandBlock commandBlock) {
             return new CoreMcBlockCommandSender(
-                commandBlock, commandSourceStack.getLevel(), commandSourceStack.getPosition()
+                getPlatform(), commandBlock, commandSourceStack.getLevel(), commandSourceStack.getPosition()
             );
         }
         return new CoreMcCommandSender(commandSourceStack);

@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.coremc.internal;
 
-import com.sk89q.worldedit.coremc.CoreMcAdapter;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
 import com.sk89q.worldedit.util.SideEffect;
@@ -40,10 +39,12 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 
 public final class CoreMcWorldNativeAccess implements WorldNativeAccess<LevelChunk, BlockState, BlockPos> {
+    private final CoreMcPlatform platform;
     private final WeakReference<ServerLevel> world;
     private SideEffectSet sideEffectSet;
 
-    public CoreMcWorldNativeAccess(WeakReference<ServerLevel> world) {
+    public CoreMcWorldNativeAccess(CoreMcPlatform platform, WeakReference<ServerLevel> world) {
+        this.platform = platform;
         this.world = world;
     }
 
@@ -66,7 +67,7 @@ public final class CoreMcWorldNativeAccess implements WorldNativeAccess<LevelChu
         int stateId = BlockStateIdAccess.getBlockStateId(state);
         return BlockStateIdAccess.isValidInternalId(stateId)
             ? Block.stateById(stateId)
-            : CoreMcAdapter.toNativeBlockState(state);
+            : platform.getAdapter().toNativeBlockState(state);
     }
 
     @Override
@@ -174,6 +175,6 @@ public final class CoreMcWorldNativeAccess implements WorldNativeAccess<LevelChu
     @Override
     public void onBlockStateChange(BlockPos pos, BlockState oldState, BlockState newState) {
         getWorld().updatePOIOnBlockStateChange(pos, oldState, newState);
-        CoreMcPlatform.forWorldEditing().extraOnBlockStateChange(getWorld(), pos, oldState, newState);
+        platform.extraOnBlockStateChange(getWorld(), pos, oldState, newState);
     }
 }

@@ -41,11 +41,21 @@ public interface CoreMcPermissionsProvider {
         return coreMcPlatform;
     }
 
+    /**
+     * Public API for other mods to get the current permissions provider.
+     *
+     * @return the current permissions provider
+     */
+    @SuppressWarnings("unused")
     static CoreMcPermissionsProvider current() {
         return getCoreMcPlatform().getPermissionsProvider();
     }
 
-    // API for other mods to set a custom permissions provider.
+    /**
+     * Public API for other mods to set the current permissions provider.
+     *
+     * @param provider the provider to set
+     */
     @SuppressWarnings("unused")
     static void setCurrent(CoreMcPermissionsProvider provider) {
         getCoreMcPlatform().setPermissionsProvider(provider);

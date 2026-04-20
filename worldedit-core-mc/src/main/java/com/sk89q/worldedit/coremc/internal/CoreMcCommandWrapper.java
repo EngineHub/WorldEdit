@@ -30,7 +30,6 @@ import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.coremc.CoreMcAdapter;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -50,11 +49,13 @@ import static net.minecraft.commands.Commands.literal;
 
 /**
  * Shared command wrapper logic for registering WorldEdit commands with Brigadier.
- * Platform modules only need to provide the {@code adaptCommandSource} function.
  */
 public final class CoreMcCommandWrapper {
 
-    private CoreMcCommandWrapper() {
+    private final CoreMcPlatform platform;
+
+    public CoreMcCommandWrapper(CoreMcPlatform platform) {
+        this.platform = platform;
     }
 
     /**
@@ -63,14 +64,14 @@ public final class CoreMcCommandWrapper {
      * @param dispatcher the Brigadier dispatcher
      * @param command    the WorldEdit command to register
      */
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher,
-                                org.enginehub.piston.Command command) {
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher,
+                         org.enginehub.piston.Command command) {
         Command<CommandSourceStack> commandRunner = ctx -> {
             if (ctx.getSource().getLevel().isClientSide()) {
                 return 0;
             }
             WorldEdit.getInstance().getEventBus().post(new CommandEvent(
-                CoreMcAdapter.adaptCommandSource(ctx.getSource()),
+                platform.getAdapter().adaptCommandSource(ctx.getSource()),
                 "/" + ctx.getInput()
             ));
             return 0;
@@ -82,7 +83,7 @@ public final class CoreMcCommandWrapper {
         for (String alias : aliases.build()) {
             LiteralArgumentBuilder<CommandSourceStack> base = literal(alias).executes(commandRunner)
                 .then(argument("args", StringArgumentType.greedyString())
-                    .suggests(CoreMcCommandWrapper::suggest)
+                    .suggests(this::suggest)
                     .executes(commandRunner));
             if (command.getCondition() != org.enginehub.piston.Command.Condition.TRUE) {
                 base.requires(requirementsFor(command));
@@ -91,19 +92,19 @@ public final class CoreMcCommandWrapper {
         }
     }
 
-    private static Predicate<CommandSourceStack> requirementsFor(org.enginehub.piston.Command mapping) {
+    private Predicate<CommandSourceStack> requirementsFor(org.enginehub.piston.Command mapping) {
         return ctx -> {
             InjectedValueStore store = MapBackedValueStore.create();
-            final Actor actor = CoreMcAdapter.adaptCommandSource(ctx);
+            final Actor actor = platform.getAdapter().adaptCommandSource(ctx);
             store.injectValue(Key.of(Actor.class), _ -> Optional.of(actor));
             return mapping.getCondition().satisfied(store);
         };
     }
 
-    private static CompletableFuture<Suggestions> suggest(CommandContext<CommandSourceStack> context,
-                                                           SuggestionsBuilder builder) {
+    private CompletableFuture<Suggestions> suggest(CommandContext<CommandSourceStack> context,
+                                                   SuggestionsBuilder builder) {
         CommandSuggestionEvent event = new CommandSuggestionEvent(
-            CoreMcAdapter.adaptCommandSource(context.getSource()),
+            platform.getAdapter().adaptCommandSource(context.getSource()),
             builder.getInput()
         );
         WorldEdit.getInstance().getEventBus().post(event);

@@ -20,7 +20,12 @@
 package com.sk89q.worldedit.coremc.mixin;
 
 import com.google.errorprone.annotations.Keep;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.coremc.internal.CoreMcPlatform;
+import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.util.lifecycle.ConstantLifecycled;
+import com.sk89q.worldedit.util.lifecycle.Lifecycled;
+import com.sk89q.worldedit.util.lifecycle.SimpleLifecycled;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.protocol.game.ServerboundSwingPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -34,6 +39,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerGamePacketListenerImpl.class)
 public class MixinServerGamePacketListenerImpl {
+
+    @Unique
+    private static final Lifecycled<CoreMcPlatform> WORLD_EDITING_PLATFORM = WorldEdit.getInstance().getPlatformManager()
+        .getPreferred(Capability.WORLD_EDITING)
+        .flatMap(platform -> {
+            if (platform instanceof CoreMcPlatform coreMcPlatform) {
+                return new ConstantLifecycled<>(coreMcPlatform);
+            } else {
+                return SimpleLifecycled.invalid();
+            }
+        });
+
     @Shadow
     public ServerPlayer player;
 
@@ -50,7 +67,7 @@ public class MixinServerGamePacketListenerImpl {
             if (this.ignoreSwingPackets > 0) {
                 this.ignoreSwingPackets--;
             } else {
-                CoreMcPlatform.optionallyForWorldEditing().ifPresent(platform ->
+                WORLD_EDITING_PLATFORM.value().ifPresent(platform ->
                     platform.getMod().onLeftClickAir(this.player, packet.getHand())
                 );
             }

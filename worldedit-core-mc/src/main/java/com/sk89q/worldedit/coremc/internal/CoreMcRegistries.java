@@ -31,11 +31,18 @@ import com.sk89q.worldedit.world.registry.ItemRegistry;
  */
 public final class CoreMcRegistries extends BundledRegistries {
 
-    private final BlockRegistry blockRegistry = new CoreMcBlockRegistry();
+    private final BlockRegistry blockRegistry;
     private final BiomeRegistry biomeRegistry = new CoreMcBiomeRegistry();
-    private final ItemRegistry itemRegistry = new CoreMcItemRegistry();
-    private final BlockCategoryRegistry blockCategoryRegistry = new CoreMcBlockCategoryRegistry();
-    private final ItemCategoryRegistry itemCategoryRegistry = new CoreMcItemCategoryRegistry();
+    private final ItemRegistry itemRegistry;
+    private final BlockCategoryRegistry blockCategoryRegistry;
+    private final ItemCategoryRegistry itemCategoryRegistry;
+
+    public CoreMcRegistries(CoreMcPlatform platform) {
+        this.blockRegistry = new CoreMcBlockRegistry(platform);
+        this.itemRegistry = new CoreMcItemRegistry(platform);
+        this.blockCategoryRegistry = new CoreMcBlockCategoryRegistry(platform);
+        this.itemCategoryRegistry = new CoreMcItemCategoryRegistry(platform);
+    }
 
     @Override
     public BlockRegistry getBlockRegistry() {

@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.coremc.internal;
 
 import com.google.common.collect.Sets;
-import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.coremc.CoreMcAdapter;
 import com.sk89q.worldedit.coremc.CoreMcPermissionsProvider;
 import com.sk89q.worldedit.entity.Player;
@@ -58,52 +57,12 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
 
 public abstract class CoreMcPlatform extends AbstractPlatform implements MultiUserPlatform {
 
-    private static final Lifecycled<CoreMcPlatform> WORLD_EDITING_PLATFORM = WorldEdit.getInstance().getPlatformManager()
-        .getPreferred(Capability.WORLD_EDITING)
-        .flatMap(platform -> {
-            if (platform instanceof CoreMcPlatform coreMcPlatform) {
-                return new ConstantLifecycled<>(coreMcPlatform);
-            } else {
-                return SimpleLifecycled.invalid();
-            }
-        });
-
-    public static CoreMcPlatform forWorldEditing() {
-        return WORLD_EDITING_PLATFORM.valueOrThrow();
-    }
-
-    public static Optional<CoreMcPlatform> optionallyForWorldEditing() {
-        return WORLD_EDITING_PLATFORM.value();
-    }
-
-    private static final Lifecycled<RegistryAccess> REGISTRY_ACCESS = WORLD_EDITING_PLATFORM
-        .flatMap(platform -> platform.server.map(MinecraftServer::registryAccess));
-
-    public static RegistryAccess getRegistryAccess() {
-        return REGISTRY_ACCESS.valueOrThrow();
-    }
-
-    private static final Lifecycled<CoreMcPlatform> CUI_PLATFORM = WorldEdit.getInstance().getPlatformManager()
-        .getPreferred(Capability.WORLDEDIT_CUI)
-        .flatMap(platform -> {
-            if (platform instanceof CoreMcPlatform coreMcPlatform) {
-                return new ConstantLifecycled<>(coreMcPlatform);
-            } else {
-                return SimpleLifecycled.invalid();
-            }
-        });
-
-    public static CoreMcPlatform forCui() {
-        return CUI_PLATFORM.valueOrThrow();
-    }
-
-    protected static final Set<SideEffect> SUPPORTED_SIDE_EFFECTS = Sets.immutableEnumSet(
+    private static final Set<SideEffect> SUPPORTED_SIDE_EFFECTS = Sets.immutableEnumSet(
         SideEffect.VALIDATION,
         SideEffect.ENTITY_AI,
         SideEffect.LIGHTING,
@@ -114,6 +73,7 @@ public abstract class CoreMcPlatform extends AbstractPlatform implements MultiUs
     private final CoreMcMod mod;
     private final CoreMcDataFixer dataFixer;
     private final CoreMcRegistries registries;
+    private final CoreMcTransmogrifier transmogrifier;
     private final Lifecycled<MinecraftServer> server;
     private final Lifecycled<Watchdog> watchdog;
     private boolean hookingEvents = false;
@@ -121,8 +81,9 @@ public abstract class CoreMcPlatform extends AbstractPlatform implements MultiUs
 
     protected CoreMcPlatform(CoreMcMod mod, Lifecycled<MinecraftServer> server) {
         this.mod = mod;
-        this.dataFixer = new CoreMcDataFixer(getDataVersion());
-        this.registries = new CoreMcRegistries();
+        this.dataFixer = new CoreMcDataFixer(this, getDataVersion());
+        this.registries = new CoreMcRegistries(this);
+        this.transmogrifier = new CoreMcTransmogrifier(this);
         this.server = server;
         this.watchdog = server.flatMap(s -> {
             if (s instanceof DedicatedServer dedicatedServer) {
@@ -141,6 +102,18 @@ public abstract class CoreMcPlatform extends AbstractPlatform implements MultiUs
     }
 
     // endregion
+
+    /**
+     * {@return the platform-specific {@link CoreMcAdapter}}
+     */
+    public abstract CoreMcAdapter getAdapter();
+
+    /**
+     * {@return the registry access of this platform's server}
+     */
+    public RegistryAccess serverRegistryAccess() {
+        return server.valueOrThrow().registryAccess();
+    }
 
     public CoreMcMod getMod() {
         return mod;
@@ -171,6 +144,10 @@ public abstract class CoreMcPlatform extends AbstractPlatform implements MultiUs
     @Override
     public Registries getRegistries() {
         return registries;
+    }
+
+    public CoreMcTransmogrifier getTransmogrifier() {
+        return transmogrifier;
     }
 
     @Override
@@ -205,7 +182,7 @@ public abstract class CoreMcPlatform extends AbstractPlatform implements MultiUs
         Iterable<ServerLevel> worlds = server.valueOrThrow().getAllLevels();
         List<World> ret = new ArrayList<>();
         for (ServerLevel world : worlds) {
-            ret.add(new CoreMcWorld(world));
+            ret.add(new CoreMcWorld(this, world));
         }
         return ret;
     }
@@ -217,7 +194,7 @@ public abstract class CoreMcPlatform extends AbstractPlatform implements MultiUs
             return player;
         } else {
             ServerPlayer entity = server.valueOrThrow().getPlayerList().getPlayerByName(player.getName());
-            return entity != null ? CoreMcAdapter.fromNativePlayer(entity) : null;
+            return entity != null ? getAdapter().fromNativePlayer(entity) : null;
         }
     }
 
@@ -229,7 +206,7 @@ public abstract class CoreMcPlatform extends AbstractPlatform implements MultiUs
         } else {
             for (ServerLevel ws : server.valueOrThrow().getAllLevels()) {
                 if (((ServerLevelData) ws.getLevelData()).getLevelName().equals(world.getName())) {
-                    return new CoreMcWorld(ws);
+                    return new CoreMcWorld(this, ws);
                 }
             }
 
@@ -289,7 +266,7 @@ public abstract class CoreMcPlatform extends AbstractPlatform implements MultiUs
         List<Actor> users = new ArrayList<>();
         PlayerList scm = server.valueOrThrow().getPlayerList();
         for (ServerPlayer entity : scm.getPlayers()) {
-            users.add(CoreMcAdapter.fromNativePlayer(entity));
+            users.add(getAdapter().fromNativePlayer(entity));
         }
         return users;
     }

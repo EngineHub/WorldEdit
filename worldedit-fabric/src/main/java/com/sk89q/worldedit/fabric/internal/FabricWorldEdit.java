@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.fabric;
+package com.sk89q.worldedit.fabric.internal;
 
 import com.sk89q.worldedit.coremc.CoreMcPermissionsProvider;
 import com.sk89q.worldedit.coremc.internal.CoreMcMod;
@@ -52,6 +52,16 @@ public class FabricWorldEdit extends CoreMcMod implements ModInitializer {
 
     public static FabricWorldEdit inst;
 
+    private static volatile CoreMcPlatform PLATFORM;
+
+    public static CoreMcPlatform getPlatform() {
+        CoreMcPlatform platform = PLATFORM;
+        if (platform == null) {
+            throw new IllegalStateException("FabricWorldEdit is not initialized");
+        }
+        return platform;
+    }
+
     private ModContainer container;
 
     public FabricWorldEdit() {
@@ -64,7 +74,8 @@ public class FabricWorldEdit extends CoreMcMod implements ModInitializer {
             () -> new IllegalStateException("WorldEdit mod missing in Fabric")
         );
 
-        init(new FabricPlatform(this), FabricLoader.getInstance().getConfigDir());
+        PLATFORM = new FabricPlatform(this);
+        init(PLATFORM, FabricLoader.getInstance().getConfigDir());
 
         CUIPacketHandler.instance().registerServerboundHandler(this::onCuiPacket);
 

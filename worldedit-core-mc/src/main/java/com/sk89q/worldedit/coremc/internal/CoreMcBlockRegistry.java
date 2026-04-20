@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.coremc.internal;
 
-import com.sk89q.worldedit.coremc.CoreMcAdapter;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
@@ -40,16 +39,21 @@ import java.util.TreeMap;
  */
 public final class CoreMcBlockRegistry implements BlockRegistry {
 
+    private final CoreMcPlatform platform;
     private final Map<net.minecraft.world.level.block.state.BlockState, CoreMcBlockMaterial> materialMap = new HashMap<>();
+
+    public CoreMcBlockRegistry(CoreMcPlatform platform) {
+        this.platform = platform;
+    }
 
     @Override
     public Component getRichName(BlockType blockType) {
-        return TranslatableComponent.of(CoreMcAdapter.toNativeBlock(blockType).getDescriptionId());
+        return TranslatableComponent.of(platform.getAdapter().toNativeBlock(blockType).getDescriptionId());
     }
 
     @Override
     public BlockMaterial getMaterial(BlockType blockType) {
-        Block block = CoreMcAdapter.toNativeBlock(blockType);
+        Block block = platform.getAdapter().toNativeBlock(blockType);
         return materialMap.computeIfAbsent(
             block.defaultBlockState(),
             CoreMcBlockMaterial::new
@@ -58,20 +62,20 @@ public final class CoreMcBlockRegistry implements BlockRegistry {
 
     @Override
     public Map<String, ? extends Property<?>> getProperties(BlockType blockType) {
-        Block block = CoreMcAdapter.toNativeBlock(blockType);
+        Block block = platform.getAdapter().toNativeBlock(blockType);
         Map<String, Property<?>> map = new TreeMap<>();
         Collection<net.minecraft.world.level.block.state.properties.Property<?>> propertyKeys = block
             .defaultBlockState()
             .getProperties();
         for (net.minecraft.world.level.block.state.properties.Property<?> key : propertyKeys) {
-            map.put(key.getName(), CoreMcTransmogrifier.transmogToWorldEditProperty(key));
+            map.put(key.getName(), platform.getTransmogrifier().transmogToWorldEditProperty(key));
         }
         return map;
     }
 
     @Override
     public OptionalInt getInternalBlockStateId(BlockState state) {
-        net.minecraft.world.level.block.state.BlockState equivalent = CoreMcAdapter.toNativeBlockState(state);
+        net.minecraft.world.level.block.state.BlockState equivalent = platform.getAdapter().toNativeBlockState(state);
         return OptionalInt.of(Block.getId(equivalent));
     }
 }

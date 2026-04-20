@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.coremc.internal;
 
-import com.sk89q.worldedit.coremc.CoreMcAdapter;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
 import net.minecraft.core.Holder;
@@ -33,14 +32,20 @@ import java.util.stream.Collectors;
 
 public final class CoreMcBlockCategoryRegistry implements BlockCategoryRegistry {
 
+    private final CoreMcPlatform platform;
+
+    public CoreMcBlockCategoryRegistry(CoreMcPlatform platform) {
+        this.platform = platform;
+    }
+
     @Override
     public Set<BlockType> getCategorisedByName(String category) {
-        return CoreMcPlatform.getRegistryAccess().lookupOrThrow(Registries.BLOCK)
+        return platform.serverRegistryAccess().lookupOrThrow(Registries.BLOCK)
             .get(TagKey.create(Registries.BLOCK, Identifier.parse(category)))
             .stream()
             .flatMap(HolderSet.Named::stream)
             .map(Holder::value)
-            .map(CoreMcAdapter::fromNativeBlock)
+            .map(platform.getAdapter()::fromNativeBlock)
             .collect(Collectors.toSet());
     }
 }

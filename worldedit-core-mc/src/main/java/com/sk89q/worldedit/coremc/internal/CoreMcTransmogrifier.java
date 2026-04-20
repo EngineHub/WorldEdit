@@ -23,7 +23,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
-import com.sk89q.worldedit.coremc.CoreMcAdapter;
 import com.sk89q.worldedit.registry.state.BooleanProperty;
 import com.sk89q.worldedit.registry.state.DirectionalProperty;
 import com.sk89q.worldedit.registry.state.EnumProperty;
@@ -44,7 +43,8 @@ import java.util.TreeMap;
  * Raw, un-cached transformations.
  */
 public final class CoreMcTransmogrifier {
-    private static final LoadingCache<net.minecraft.world.level.block.state.properties.Property<?>, Property<?>> PROPERTY_CACHE = CacheBuilder.newBuilder().build(new CacheLoader<>() {
+    private final CoreMcPlatform platform;
+    private final LoadingCache<net.minecraft.world.level.block.state.properties.Property<?>, Property<?>> propertyCache = CacheBuilder.newBuilder().build(new CacheLoader<>() {
         @Override
         public Property<?> load(net.minecraft.world.level.block.state.properties.Property<?> property) {
             return switch (property) {
@@ -55,7 +55,7 @@ public final class CoreMcTransmogrifier {
                 case net.minecraft.world.level.block.state.properties.EnumProperty<?> enumProperty -> {
                     if (property.getValueClass() == net.minecraft.core.Direction.class) {
                         yield new DirectionalProperty(property.getName(), property.getPossibleValues().stream()
-                            .map(v -> CoreMcAdapter.adaptEnumFacing((net.minecraft.core.Direction) v))
+                            .map(v -> CoreMcTransmogrifier.this.platform.getAdapter().adaptEnumFacing((net.minecraft.core.Direction) v))
                             .collect(ImmutableList.toImmutableList()));
                     }
                     yield new EnumProperty(property.getName(), enumProperty.getPossibleValues().stream()
@@ -67,17 +67,21 @@ public final class CoreMcTransmogrifier {
         }
     });
 
-    public static Property<?> transmogToWorldEditProperty(net.minecraft.world.level.block.state.properties.Property<?> property) {
-        return PROPERTY_CACHE.getUnchecked(property);
+    public CoreMcTransmogrifier(CoreMcPlatform platform) {
+        this.platform = platform;
     }
 
-    public static Map<Property<?>, Object> transmogToWorldEditProperties(BlockType block, net.minecraft.world.level.block.state.BlockState blockState) {
+    public Property<?> transmogToWorldEditProperty(net.minecraft.world.level.block.state.properties.Property<?> property) {
+        return propertyCache.getUnchecked(property);
+    }
+
+    public Map<Property<?>, Object> transmogToWorldEditProperties(BlockType block, net.minecraft.world.level.block.state.BlockState blockState) {
         Map<Property<?>, Object> props = new TreeMap<>(Comparator.comparing(Property::name));
         for (net.minecraft.world.level.block.state.properties.Property<?> property : blockState.getProperties()) {
             Object value = blockState.getValue(property);
             if (property instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
                 if (property.getValueClass() == net.minecraft.core.Direction.class) {
-                    value = CoreMcAdapter.adaptEnumFacing((net.minecraft.core.Direction) value);
+                    value = platform.getAdapter().adaptEnumFacing((net.minecraft.core.Direction) value);
                 } else {
                     value = ((StringRepresentable) value).getSerializedName();
                 }
@@ -88,7 +92,7 @@ public final class CoreMcTransmogrifier {
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private static net.minecraft.world.level.block.state.BlockState transmogToMinecraftProperties(
+    private net.minecraft.world.level.block.state.BlockState transmogToMinecraftProperties(
         StateDefinition<Block, net.minecraft.world.level.block.state.BlockState> stateContainer,
         net.minecraft.world.level.block.state.BlockState newState,
         Map<Property<?>, Object> states
@@ -100,7 +104,7 @@ public final class CoreMcTransmogrifier {
             if (property instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
                 if (property.getValueClass() == net.minecraft.core.Direction.class) {
                     Direction dir = (Direction) value;
-                    value = CoreMcAdapter.adapt(dir);
+                    value = platform.getAdapter().adapt(dir);
                 } else {
                     String enumName = (String) value;
                     value = ((net.minecraft.world.level.block.state.properties.EnumProperty<?>) property).getValue((String) value).orElseThrow(() ->
@@ -114,19 +118,15 @@ public final class CoreMcTransmogrifier {
         return newState;
     }
 
-    public static net.minecraft.world.level.block.state.BlockState transmogToMinecraft(BlockState blockState) {
-        Block mcBlock = CoreMcAdapter.toNativeBlock(blockState.getBlockType());
+    public net.minecraft.world.level.block.state.BlockState transmogToMinecraft(BlockState blockState) {
+        Block mcBlock = platform.getAdapter().toNativeBlock(blockState.getBlockType());
         net.minecraft.world.level.block.state.BlockState newState = mcBlock.defaultBlockState();
         Map<Property<?>, Object> states = blockState.getStates();
         return transmogToMinecraftProperties(mcBlock.getStateDefinition(), newState, states);
     }
 
-    public static BlockState transmogToWorldEdit(net.minecraft.world.level.block.state.BlockState blockState) {
-        BlockType blockType = CoreMcAdapter.fromNativeBlock(blockState.getBlock());
+    public BlockState transmogToWorldEdit(net.minecraft.world.level.block.state.BlockState blockState) {
+        BlockType blockType = platform.getAdapter().fromNativeBlock(blockState.getBlock());
         return blockType.getState(transmogToWorldEditProperties(blockType, blockState));
-    }
-
-    private CoreMcTransmogrifier() {
-        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 }

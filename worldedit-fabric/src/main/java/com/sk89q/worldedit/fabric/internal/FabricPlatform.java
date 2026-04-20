@@ -17,9 +17,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.fabric;
+package com.sk89q.worldedit.fabric.internal;
 
 import com.sk89q.worldedit.coremc.internal.CoreMcPlatform;
+import com.sk89q.worldedit.fabric.FabricAdapter;
 import com.sk89q.worldedit.util.lifecycle.Lifecycled;
 import com.sk89q.worldedit.util.lifecycle.SimpleLifecycled;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -39,6 +40,11 @@ class FabricPlatform extends CoreMcPlatform {
 
     FabricPlatform(FabricWorldEdit mod) {
         super(mod, createMinecraftServerLifecycled());
+    }
+
+    @Override
+    public FabricAdapter getAdapter() {
+        return FabricAdapter.get();
     }
 
     @Override

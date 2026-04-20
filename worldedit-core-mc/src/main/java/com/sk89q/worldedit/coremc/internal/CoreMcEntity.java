@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.coremc.internal;
 
-import com.sk89q.worldedit.coremc.CoreMcAdapter;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.metadata.EntityProperties;
@@ -40,10 +39,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class CoreMcEntity implements Entity {
 
+    private final CoreMcPlatform platform;
     private final WeakReference<net.minecraft.world.entity.Entity> entityRef;
 
-    public CoreMcEntity(net.minecraft.world.entity.Entity entity) {
+    public CoreMcEntity(CoreMcPlatform platform, net.minecraft.world.entity.Entity entity) {
         checkNotNull(entity);
+        this.platform = platform;
         this.entityRef = new WeakReference<>(entity);
     }
 
@@ -87,7 +88,7 @@ public final class CoreMcEntity implements Entity {
             float yaw = entity.getYRot();
             float pitch = entity.getXRot();
 
-            return new Location(CoreMcAdapter.fromNativeWorld(entity.level()), position, yaw, pitch);
+            return new Location(platform.getAdapter().fromNativeWorld(entity.level()), position, yaw, pitch);
         } else {
             return new Location(NullWorld.getInstance());
         }
@@ -103,7 +104,7 @@ public final class CoreMcEntity implements Entity {
     public Extent getExtent() {
         net.minecraft.world.entity.Entity entity = entityRef.get();
         if (entity != null) {
-            return CoreMcAdapter.fromNativeWorld(entity.level());
+            return platform.getAdapter().fromNativeWorld(entity.level());
         } else {
             return NullWorld.getInstance();
         }

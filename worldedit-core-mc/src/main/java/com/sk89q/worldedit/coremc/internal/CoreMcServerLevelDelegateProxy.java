@@ -21,7 +21,6 @@ package com.sk89q.worldedit.coremc.internal;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.coremc.CoreMcAdapter;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -47,11 +46,13 @@ import java.util.function.Predicate;
 
 public final class CoreMcServerLevelDelegateProxy implements InvocationHandler, AutoCloseable {
 
+    private final CoreMcPlatform platform;
     private final EditSession editSession;
     private final ServerLevel serverLevel;
     private final Map<BlockVector3, BlockEntity> createdBlockEntities = new HashMap<>();
 
-    private CoreMcServerLevelDelegateProxy(EditSession editSession, ServerLevel serverLevel) {
+    private CoreMcServerLevelDelegateProxy(CoreMcPlatform platform, EditSession editSession, ServerLevel serverLevel) {
+        this.platform = platform;
         this.editSession = editSession;
         this.serverLevel = serverLevel;
     }
@@ -63,8 +64,8 @@ public final class CoreMcServerLevelDelegateProxy implements InvocationHandler, 
         }
     }
 
-    public static LevelAndProxy newInstance(EditSession editSession, ServerLevel serverLevel) {
-        CoreMcServerLevelDelegateProxy proxy = new CoreMcServerLevelDelegateProxy(editSession, serverLevel);
+    public static LevelAndProxy newInstance(CoreMcPlatform platform, EditSession editSession, ServerLevel serverLevel) {
+        CoreMcServerLevelDelegateProxy proxy = new CoreMcServerLevelDelegateProxy(platform, editSession, serverLevel);
         return new LevelAndProxy(
             (WorldGenLevel) Proxy.newProxyInstance(
                 serverLevel.getClass().getClassLoader(),
@@ -79,18 +80,18 @@ public final class CoreMcServerLevelDelegateProxy implements InvocationHandler, 
     private BlockEntity getBlockEntity(BlockPos blockPos) {
         // This doesn't synthesize or load from world. I think editing existing block entities without setting the block
         // (in the context of features) should not be supported in the first place.
-        BlockVector3 pos = CoreMcAdapter.adapt(blockPos);
+        BlockVector3 pos = platform.getAdapter().adapt(blockPos);
         return createdBlockEntities.get(pos);
     }
 
     private BlockState getBlockState(BlockPos blockPos) {
-        return CoreMcAdapter.toNativeBlockState(this.editSession.getBlockWithBuffer(CoreMcAdapter.adapt(blockPos)));
+        return platform.getAdapter().toNativeBlockState(this.editSession.getBlockWithBuffer(platform.getAdapter().adapt(blockPos)));
     }
 
     private boolean setBlock(BlockPos blockPos, BlockState blockState) {
         try {
             handleBlockEntity(blockPos, blockState);
-            return editSession.setBlock(CoreMcAdapter.adapt(blockPos), CoreMcAdapter.fromNativeBlockState(blockState));
+            return editSession.setBlock(platform.getAdapter().adapt(blockPos), platform.getAdapter().fromNativeBlockState(blockState));
         } catch (MaxChangedBlocksException e) {
             throw new RuntimeException(e);
         }
@@ -99,7 +100,7 @@ public final class CoreMcServerLevelDelegateProxy implements InvocationHandler, 
     // For BlockEntity#setBlockState, not sure why it's deprecated
     @SuppressWarnings("deprecation")
     private void handleBlockEntity(BlockPos blockPos, BlockState blockState) {
-        BlockVector3 pos = CoreMcAdapter.adapt(blockPos);
+        BlockVector3 pos = platform.getAdapter().adapt(blockPos);
         if (blockState.hasBlockEntity()) {
             if (!(blockState.getBlock() instanceof EntityBlock entityBlock)) {
                 // This will probably never happen, as Mojang's own code assumes that
@@ -124,9 +125,9 @@ public final class CoreMcServerLevelDelegateProxy implements InvocationHandler, 
     }
 
     private boolean addEntity(Entity entity) {
-        Vector3 pos = CoreMcAdapter.adapt(entity.getPosition(0.0f));
-        Location location = new Location(CoreMcAdapter.fromNativeWorld(serverLevel), pos.x(), pos.y(), pos.z());
-        BaseEntity baseEntity = new CoreMcEntity(entity).getState();
+        Vector3 pos = platform.getAdapter().adapt(entity.getPosition(0.0f));
+        Location location = new Location(platform.getAdapter().fromNativeWorld(serverLevel), pos.x(), pos.y(), pos.z());
+        BaseEntity baseEntity = new CoreMcEntity(platform, entity).getState();
         return editSession.createEntity(location, baseEntity) != null;
     }
 
@@ -146,7 +147,7 @@ public final class CoreMcServerLevelDelegateProxy implements InvocationHandler, 
             );
             editSession.setBlock(
                 blockPos,
-                CoreMcAdapter.fromNativeBlockState(blockEntity.getBlockState())
+                platform.getAdapter().fromNativeBlockState(blockEntity.getBlockState())
                     .toBaseBlock(LazyReference.from(() -> NBTConverter.fromNative(tag)))
             );
         }

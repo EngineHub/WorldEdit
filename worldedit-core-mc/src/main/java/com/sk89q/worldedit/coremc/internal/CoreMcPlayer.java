@@ -20,8 +20,6 @@
 package com.sk89q.worldedit.coremc.internal;
 
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.coremc.CoreMcAdapter;
-import com.sk89q.worldedit.coremc.CoreMcPermissionsProvider;
 import com.sk89q.worldedit.coremc.mixin.AccessorClientboundBlockEntityDataPacket;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
@@ -61,9 +59,11 @@ import javax.annotation.Nullable;
  */
 public class CoreMcPlayer extends AbstractPlayerActor {
 
+    private final CoreMcPlatform platform;
     private final ServerPlayer player;
 
-    public CoreMcPlayer(ServerPlayer player) {
+    public CoreMcPlayer(CoreMcPlatform platform, ServerPlayer player) {
+        this.platform = platform;
         this.player = player;
 
         if (getUniqueId() == null) {
@@ -85,7 +85,7 @@ public class CoreMcPlayer extends AbstractPlayerActor {
                 ? InteractionHand.MAIN_HAND
                 : InteractionHand.OFF_HAND
         );
-        return CoreMcAdapter.fromNativeItemStack(is);
+        return platform.getAdapter().fromNativeItemStack(is);
     }
 
     @Override
@@ -102,7 +102,7 @@ public class CoreMcPlayer extends AbstractPlayerActor {
     public Location getLocation() {
         Vector3 position = Vector3.at(this.player.getX(), this.player.getY(), this.player.getZ());
         return new Location(
-            CoreMcAdapter.fromNativeWorld(this.player.level()),
+            platform.getAdapter().fromNativeWorld(this.player.level()),
             position,
             this.player.getYRot(),
             this.player.getXRot()
@@ -111,7 +111,7 @@ public class CoreMcPlayer extends AbstractPlayerActor {
 
     @Override
     public boolean setLocation(Location location) {
-        ServerLevel level = CoreMcAdapter.toNativeWorld((World) location.getExtent());
+        ServerLevel level = platform.getAdapter().toNativeWorld((World) location.getExtent());
         this.player.teleportTo(
             level,
             location.getX(), location.getY(), location.getZ(),
@@ -125,17 +125,17 @@ public class CoreMcPlayer extends AbstractPlayerActor {
 
     @Override
     public World getWorld() {
-        return CoreMcAdapter.fromNativeWorld(this.player.level());
+        return platform.getAdapter().fromNativeWorld(this.player.level());
     }
 
     @Override
     public void giveItem(BaseItemStack itemStack) {
-        this.player.getInventory().add(CoreMcAdapter.toNativeItemStack(itemStack));
+        this.player.getInventory().add(platform.getAdapter().toNativeItemStack(itemStack));
     }
 
     @Override
     public void dispatchCUIEvent(CUIEvent event) {
-        CoreMcPlatform.forCui().sendCUIPacket(this.player, new CUIPacket(event.getTypeId(), event.getParameters()));
+        platform.sendCUIPacket(this.player, new CUIPacket(event.getTypeId(), event.getParameters()));
     }
 
     public ServerPlayer getPlayer() {
@@ -210,7 +210,7 @@ public class CoreMcPlayer extends AbstractPlayerActor {
 
     @Override
     public boolean hasPermission(String perm) {
-        return CoreMcPermissionsProvider.current().hasPermission(player, perm);
+        return platform.getPermissionsProvider().hasPermission(player, perm);
     }
 
     @Nullable
@@ -238,7 +238,7 @@ public class CoreMcPlayer extends AbstractPlayerActor {
         if (!(world instanceof CoreMcWorld coreMcWorld)) {
             return;
         }
-        BlockPos loc = CoreMcAdapter.toBlockPos(pos);
+        BlockPos loc = platform.getAdapter().toBlockPos(pos);
         if (block == null) {
             final ClientboundBlockUpdatePacket packetOut = new ClientboundBlockUpdatePacket(
                 coreMcWorld.getWorld(), loc
@@ -247,7 +247,7 @@ public class CoreMcPlayer extends AbstractPlayerActor {
         } else {
             final ClientboundBlockUpdatePacket packetOut = new ClientboundBlockUpdatePacket(
                 loc,
-                CoreMcAdapter.toNativeBlockState(block.toImmutableState())
+                platform.getAdapter().toNativeBlockState(block.toImmutableState())
             );
             player.connection.send(packetOut);
             if (block instanceof BaseBlock baseBlock && block.getBlockType().equals(BlockTypes.STRUCTURE_BLOCK)) {

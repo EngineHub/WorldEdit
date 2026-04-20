@@ -17,9 +17,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.neoforge;
+package com.sk89q.worldedit.neoforge.internal;
 
 import com.sk89q.worldedit.coremc.internal.CoreMcMod;
+import com.sk89q.worldedit.coremc.internal.CoreMcPlatform;
 import com.sk89q.worldedit.coremc.internal.ThreadSafeCache;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import net.neoforged.bus.api.IEventBus;
@@ -52,13 +53,19 @@ public class NeoForgeWorldEdit extends CoreMcMod {
     private static final Logger LOGGER = LogManagerCompat.getLogger();
     public static final String MOD_ID = "worldedit";
 
-    public static NeoForgeWorldEdit inst;
+    private static volatile CoreMcPlatform PLATFORM;
+
+    public static CoreMcPlatform getPlatform() {
+        CoreMcPlatform platform = PLATFORM;
+        if (platform == null) {
+            throw new IllegalStateException("NeoForgeWorldEdit is not initialized");
+        }
+        return platform;
+    }
 
     private ModContainer container;
 
     public NeoForgeWorldEdit(IEventBus modBus) {
-        inst = this;
-
         modBus.addListener(this::onFMLCommonSetup);
 
         NeoForge.EVENT_BUS.register(new EventHandler(this));
@@ -67,7 +74,8 @@ public class NeoForgeWorldEdit extends CoreMcMod {
     private void onFMLCommonSetup(FMLCommonSetupEvent event) {
         this.container = ModLoadingContext.get().getActiveContainer();
 
-        init(new NeoForgePlatform(this), FMLPaths.CONFIGDIR.get());
+        PLATFORM = new NeoForgePlatform(this);
+        init(PLATFORM, FMLPaths.CONFIGDIR.get());
 
         CUIPacketHandler.instance().registerServerboundHandler(this::onCuiPacket);
 

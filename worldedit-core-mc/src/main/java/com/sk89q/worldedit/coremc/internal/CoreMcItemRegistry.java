@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.coremc.internal;
 
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.coremc.CoreMcAdapter;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
@@ -29,10 +28,17 @@ import com.sk89q.worldedit.world.registry.BundledItemRegistry;
 
 @SuppressWarnings("removal")
 public final class CoreMcItemRegistry extends BundledItemRegistry {
+
+    private final CoreMcPlatform platform;
+
+    public CoreMcItemRegistry(CoreMcPlatform platform) {
+        this.platform = platform;
+    }
+
     @Override
     public Component getRichName(ItemType itemType) {
         return TranslatableComponent.of(
-            CoreMcAdapter.toNativeItem(itemType).getDescriptionId()
+            platform.getAdapter().toNativeItem(itemType).getDescriptionId()
         );
     }
 
@@ -40,8 +46,8 @@ public final class CoreMcItemRegistry extends BundledItemRegistry {
     public Component getRichName(BaseItemStack itemStack) {
         return GsonComponentSerializer.INSTANCE.deserialize(
             ComponentConverter.Serializer.toJson(
-                CoreMcAdapter.toNativeItemStack(itemStack).getItemName(),
-                CoreMcPlatform.getRegistryAccess()
+                platform.getAdapter().toNativeItemStack(itemStack).getItemName(),
+                platform.serverRegistryAccess()
             )
         );
     }

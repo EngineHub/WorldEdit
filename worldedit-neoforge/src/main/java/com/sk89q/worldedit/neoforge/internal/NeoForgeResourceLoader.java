@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.neoforge;
+package com.sk89q.worldedit.neoforge.internal;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.util.io.WorldEditResourceLoader;

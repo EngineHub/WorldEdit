@@ -86,11 +86,9 @@ import javax.annotation.Nullable;
  * </p>
  */
 @SuppressWarnings({
-    "UnnecessarilyQualifiedStaticUsage",
     "StringSplitter",
     "ImmutableEnumChecker",
     "MissingOverride",
-    "StaticAssignmentInConstructor",
     "EffectivelyPrivate",
     "FallThrough",
     "MutablePublicArray",
@@ -139,7 +137,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
     private String fixBlockState(String blockState, int srcVer) {
         net.minecraft.nbt.CompoundTag stateNBT = stateToNBT(blockState);
         Dynamic<Tag> dynamic = new Dynamic<>(OPS_NBT, stateNBT);
-        net.minecraft.nbt.CompoundTag fixed = (net.minecraft.nbt.CompoundTag) INSTANCE.fixer.update(References.BLOCK_STATE, dynamic, srcVer, DATA_VERSION).getValue();
+        net.minecraft.nbt.CompoundTag fixed = (net.minecraft.nbt.CompoundTag) fixer.update(References.BLOCK_STATE, dynamic, srcVer, dataVersion).getValue();
         return nbtToState(fixed);
     }
 
@@ -181,16 +179,15 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
         return fixName(key, srcVer, References.ITEM_NAME);
     }
 
-    private static String fixName(String key, int srcVer, TypeReference type) {
-        return INSTANCE.fixer.update(type, new Dynamic<>(OPS_NBT, StringTag.valueOf(key)), srcVer, DATA_VERSION)
+    private String fixName(String key, int srcVer, TypeReference type) {
+        return fixer.update(type, new Dynamic<>(OPS_NBT, StringTag.valueOf(key)), srcVer, dataVersion)
             .asString().result().orElse(key);
     }
 
     private static final NbtOps OPS_NBT = NbtOps.INSTANCE;
     private static final int LEGACY_VERSION = 1343;
-    private static int DATA_VERSION;
-    private static CoreMcDataFixer INSTANCE;
 
+    private final int dataVersion;
     private final Map<LegacyType, List<DataConverter>> converters = new EnumMap<>(LegacyType.class);
     private final Map<LegacyType, List<DataInspector>> inspectors = new EnumMap<>(LegacyType.class);
 
@@ -220,9 +217,11 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
         }
     }
 
-    public CoreMcDataFixer(int dataVersion) {
-        DATA_VERSION = dataVersion;
-        INSTANCE = this;
+    private final CoreMcPlatform platform;
+
+    public CoreMcDataFixer(CoreMcPlatform platform, int dataVersion) {
+        this.platform = platform;
+        this.dataVersion = dataVersion;
         registerConverters();
         registerInspectors();
         this.fixer = new WrappedDataFixer(DataFixers.getDataFixer());
@@ -276,32 +275,32 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
         }
     }
 
-    public static net.minecraft.nbt.CompoundTag convert(LegacyType type, net.minecraft.nbt.CompoundTag cmp) {
+    public net.minecraft.nbt.CompoundTag convert(LegacyType type, net.minecraft.nbt.CompoundTag cmp) {
         return convert(type.getDFUType(), cmp);
     }
 
-    public static net.minecraft.nbt.CompoundTag convert(LegacyType type, net.minecraft.nbt.CompoundTag cmp, int sourceVer) {
+    public net.minecraft.nbt.CompoundTag convert(LegacyType type, net.minecraft.nbt.CompoundTag cmp, int sourceVer) {
         return convert(type.getDFUType(), cmp, sourceVer);
     }
 
-    public static net.minecraft.nbt.CompoundTag convert(LegacyType type, net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
+    public net.minecraft.nbt.CompoundTag convert(LegacyType type, net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
         return convert(type.getDFUType(), cmp, sourceVer, targetVer);
     }
 
-    public static net.minecraft.nbt.CompoundTag convert(TypeReference type, net.minecraft.nbt.CompoundTag cmp) {
+    public net.minecraft.nbt.CompoundTag convert(TypeReference type, net.minecraft.nbt.CompoundTag cmp) {
         int i = cmp.getIntOr("DataVersion", -1);
         return convert(type, cmp, i);
     }
 
-    public static net.minecraft.nbt.CompoundTag convert(TypeReference type, net.minecraft.nbt.CompoundTag cmp, int sourceVer) {
-        return convert(type, cmp, sourceVer, DATA_VERSION);
+    public net.minecraft.nbt.CompoundTag convert(TypeReference type, net.minecraft.nbt.CompoundTag cmp, int sourceVer) {
+        return convert(type, cmp, sourceVer, dataVersion);
     }
 
-    public static net.minecraft.nbt.CompoundTag convert(TypeReference type, net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
+    public net.minecraft.nbt.CompoundTag convert(TypeReference type, net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
         if (sourceVer >= targetVer) {
             return cmp;
         }
-        return (net.minecraft.nbt.CompoundTag) INSTANCE.fixer.update(type, new Dynamic<>(OPS_NBT, cmp), sourceVer, targetVer).getValue();
+        return (net.minecraft.nbt.CompoundTag) fixer.update(type, new Dynamic<>(OPS_NBT, cmp), sourceVer, targetVer).getValue();
     }
 
 
@@ -591,17 +590,17 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
         return key;
     }
 
-    private static void convertCompound(LegacyType type, net.minecraft.nbt.CompoundTag cmp, String key, int sourceVer, int targetVer) {
+    private void convertCompound(LegacyType type, net.minecraft.nbt.CompoundTag cmp, String key, int sourceVer, int targetVer) {
         cmp.put(key, convert(type, cmp.getCompoundOrEmpty(key), sourceVer, targetVer));
     }
 
-    private static void convertItem(net.minecraft.nbt.CompoundTag nbttagcompound, String key, int sourceVer, int targetVer) {
+    private void convertItem(net.minecraft.nbt.CompoundTag nbttagcompound, String key, int sourceVer, int targetVer) {
         if (nbttagcompound.getCompound(key).isPresent()) {
             convertCompound(LegacyType.ITEM_INSTANCE, nbttagcompound, key, sourceVer, targetVer);
         }
     }
 
-    private static void convertItems(net.minecraft.nbt.CompoundTag nbttagcompound, String key, int sourceVer, int targetVer) {
+    private void convertItems(net.minecraft.nbt.CompoundTag nbttagcompound, String key, int sourceVer, int targetVer) {
         nbttagcompound.getList(key).ifPresent(nbttaglist -> {
             for (int j = 0; j < nbttaglist.size(); ++j) {
                 nbttaglist.set(j, convert(LegacyType.ITEM_INSTANCE, nbttaglist.getCompoundOrEmpty(j), sourceVer, targetVer));
@@ -666,7 +665,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
         }
     }
 
-    private static class DataInspectorBlockEntity implements DataInspector {
+    private class DataInspectorBlockEntity implements DataInspector {
 
         private static final Map<String, String> b = Maps.newHashMap();
         private static final Map<String, String> c = Maps.newHashMap();
@@ -808,7 +807,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
         }
     }
 
-    private static class DataInspectorEntity implements DataInspector {
+    private class DataInspectorEntity implements DataInspector {
 
         private static final Logger a = LogManager.getLogger(CoreMcDataFixer.class);
 
@@ -871,7 +870,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
         abstract net.minecraft.nbt.CompoundTag inspectChecked(net.minecraft.nbt.CompoundTag nbttagcompound, int sourceVer, int targetVer);
     }
 
-    private static class DataInspectorItemList extends DataInspectorTagged {
+    private class DataInspectorItemList extends DataInspectorTagged {
 
         private final String[] keys;
 
@@ -882,14 +881,14 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
 
         net.minecraft.nbt.CompoundTag inspectChecked(net.minecraft.nbt.CompoundTag nbttagcompound, int sourceVer, int targetVer) {
             for (String s : this.keys) {
-                CoreMcDataFixer.convertItems(nbttagcompound, s, sourceVer, targetVer);
+                convertItems(nbttagcompound, s, sourceVer, targetVer);
             }
 
             return nbttagcompound;
         }
     }
 
-    private static class DataInspectorItem extends DataInspectorTagged {
+    private class DataInspectorItem extends DataInspectorTagged {
 
         private final String[] keys;
 
@@ -900,7 +899,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
 
         net.minecraft.nbt.CompoundTag inspectChecked(net.minecraft.nbt.CompoundTag nbttagcompound, int sourceVer, int targetVer) {
             for (String key : this.keys) {
-                CoreMcDataFixer.convertItem(nbttagcompound, key, sourceVer, targetVer);
+                convertItem(nbttagcompound, key, sourceVer, targetVer);
             }
 
             return nbttagcompound;
@@ -1822,7 +1821,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
         }
     }
 
-    private static class DataConverterBook implements DataConverter {
+    private class DataConverterBook implements DataConverter {
 
         DataConverterBook() {
         }
@@ -1855,7 +1854,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
 
                                 if (object == null) {
                                     try {
-                                        object = ComponentConverter.Serializer.fromJson(s, CoreMcPlatform.getRegistryAccess());
+                                        object = ComponentConverter.Serializer.fromJson(s, platform.serverRegistryAccess());
                                     } catch (JsonParseException jsonparseexception1) {
                                         ;
                                     }
@@ -1863,7 +1862,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
 
                                 if (object == null) {
                                     try {
-                                        object = ComponentConverter.Serializer.fromJsonLenient(s, CoreMcPlatform.getRegistryAccess());
+                                        object = ComponentConverter.Serializer.fromJsonLenient(s, platform.serverRegistryAccess());
                                     } catch (JsonParseException jsonparseexception2) {
                                         ;
                                     }
@@ -1877,7 +1876,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
                             object = Component.literal("");
                         }
 
-                        nbttaglist.set(i, StringTag.valueOf(ComponentConverter.Serializer.toJson((Component) object, CoreMcPlatform.getRegistryAccess())));
+                        nbttaglist.set(i, StringTag.valueOf(ComponentConverter.Serializer.toJson((Component) object, platform.serverRegistryAccess())));
                     }
 
                     nbttagcompound1.put("pages", nbttaglist);
@@ -2448,7 +2447,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
         }
     }
 
-    private static class DataConverterSignText implements DataConverter {
+    private class DataConverterSignText implements DataConverter {
 
         public static final Gson a = new GsonBuilder().registerTypeAdapter(Component.class, new JsonDeserializer() {
             MutableComponent a(JsonElement jsonelement, Type type, JsonDeserializationContext jsondeserializationcontext) throws JsonParseException {
@@ -2518,7 +2517,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
 
                     if (object == null) {
                         try {
-                            object = ComponentConverter.Serializer.fromJson(s1, CoreMcPlatform.getRegistryAccess());
+                            object = ComponentConverter.Serializer.fromJson(s1, platform.serverRegistryAccess());
                         } catch (JsonParseException jsonparseexception1) {
                             ;
                         }
@@ -2526,7 +2525,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
 
                     if (object == null) {
                         try {
-                            object = ComponentConverter.Serializer.fromJsonLenient(s1, CoreMcPlatform.getRegistryAccess());
+                            object = ComponentConverter.Serializer.fromJsonLenient(s1, platform.serverRegistryAccess());
                         } catch (JsonParseException jsonparseexception2) {
                             ;
                         }
@@ -2540,11 +2539,11 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
                 object = Component.literal("");
             }
 
-            nbttagcompound.putString(s, ComponentConverter.Serializer.toJson((Component) object, CoreMcPlatform.getRegistryAccess()));
+            nbttagcompound.putString(s, ComponentConverter.Serializer.toJson((Component) object, platform.serverRegistryAccess()));
         }
     }
 
-    private static class DataInspectorPlayerVehicle implements DataInspector {
+    private class DataInspectorPlayerVehicle implements DataInspector {
         @Override
         public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
             cmp.getCompound("RootVehicle").ifPresent(nbttagcompound1 -> {
@@ -2557,7 +2556,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
         }
     }
 
-    private static class DataInspectorLevelPlayer implements DataInspector {
+    private class DataInspectorLevelPlayer implements DataInspector {
         @Override
         public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
             if (cmp.getCompound("Player").isPresent()) {
@@ -2568,7 +2567,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
         }
     }
 
-    private static class DataInspectorStructure implements DataInspector {
+    private class DataInspectorStructure implements DataInspector {
         @Override
         public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
             cmp.getList("entities").ifPresent(nbttaglist -> {
@@ -2593,7 +2592,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
         }
     }
 
-    private static class DataInspectorChunks implements DataInspector {
+    private class DataInspectorChunks implements DataInspector {
         @Override
         public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
             cmp.getCompound("Level").ifPresent(nbttagcompound1 -> {
@@ -2614,7 +2613,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
         }
     }
 
-    private static class DataInspectorEntityPassengers implements DataInspector {
+    private class DataInspectorEntityPassengers implements DataInspector {
         @Override
         public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
             cmp.getList("Passengers").ifPresent(nbttaglist -> {
@@ -2627,7 +2626,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
         }
     }
 
-    private static class DataInspectorPlayer implements DataInspector {
+    private class DataInspectorPlayer implements DataInspector {
         @Override
         public net.minecraft.nbt.CompoundTag inspect(net.minecraft.nbt.CompoundTag cmp, int sourceVer, int targetVer) {
             convertItems(cmp, "Inventory", sourceVer, targetVer);
@@ -2644,7 +2643,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
         }
     }
 
-    private static class DataInspectorVillagers implements DataInspector {
+    private class DataInspectorVillagers implements DataInspector {
         Identifier entityVillager = getKey("EntityVillager");
 
         @Override
@@ -2666,7 +2665,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
         }
     }
 
-    private static class DataInspectorMobSpawnerMinecart implements DataInspector {
+    private class DataInspectorMobSpawnerMinecart implements DataInspector {
         Identifier entityMinecartMobSpawner = getKey("EntityMinecartMobSpawner");
         Identifier tileEntityMobSpawner = getKey("TileEntityMobSpawner");
 
@@ -2683,7 +2682,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
         }
     }
 
-    private static class DataInspectorMobSpawnerMobs implements DataInspector {
+    private class DataInspectorMobSpawnerMobs implements DataInspector {
         Identifier tileEntityMobSpawner = getKey("TileEntityMobSpawner");
 
         @Override
@@ -2704,7 +2703,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
         }
     }
 
-    private static class DataInspectorCommandBlock implements DataInspector {
+    private class DataInspectorCommandBlock implements DataInspector {
         Identifier tileEntityCommand = getKey("TileEntityCommand");
 
         @Override

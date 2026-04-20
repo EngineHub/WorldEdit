@@ -33,7 +33,6 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.coremc.CoreMcAdapter;
 import com.sk89q.worldedit.coremc.mixin.AccessorChunkMap;
 import com.sk89q.worldedit.coremc.mixin.AccessorMinecraftServer;
 import com.sk89q.worldedit.entity.BaseEntity;
@@ -145,18 +144,21 @@ public final class CoreMcWorld extends AbstractWorld {
             .getKey(world.dimensionType());
     }
 
+    private final CoreMcPlatform platform;
     private final WeakReference<ServerLevel> worldRef;
     private final CoreMcWorldNativeAccess worldNativeAccess;
 
     /**
      * Construct a new world.
      *
+     * @param platform the owning platform
      * @param world the world
      */
-    public CoreMcWorld(ServerLevel world) {
+    public CoreMcWorld(CoreMcPlatform platform, ServerLevel world) {
         checkNotNull(world);
+        this.platform = platform;
         this.worldRef = new WeakReference<>(world);
-        this.worldNativeAccess = new CoreMcWorldNativeAccess(worldRef);
+        this.worldNativeAccess = new CoreMcWorldNativeAccess(platform, worldRef);
     }
 
     /**
@@ -199,19 +201,19 @@ public final class CoreMcWorld extends AbstractWorld {
     @Override
     public Set<SideEffect> applySideEffects(BlockVector3 position, BlockState previousType, SideEffectSet sideEffectSet) {
         worldNativeAccess.applySideEffects(position, previousType, sideEffectSet);
-        return Sets.intersection(CoreMcPlatform.SUPPORTED_SIDE_EFFECTS, sideEffectSet.getSideEffectsToApply());
+        return Sets.intersection(platform.getSupportedSideEffects(), sideEffectSet.getSideEffectsToApply());
     }
 
     @Override
     public int getBlockLightLevel(BlockVector3 position) {
         checkNotNull(position);
-        return getWorld().getMaxLocalRawBrightness(CoreMcAdapter.toBlockPos(position));
+        return getWorld().getMaxLocalRawBrightness(platform.getAdapter().toBlockPos(position));
     }
 
     @Override
     public boolean clearContainerBlockContents(BlockVector3 position) {
         checkNotNull(position);
-        BlockEntity tile = getWorld().getBlockEntity(CoreMcAdapter.toBlockPos(position));
+        BlockEntity tile = getWorld().getBlockEntity(platform.getAdapter().toBlockPos(position));
         if (tile instanceof Clearable clearable) {
             clearable.clearContent();
             return true;
@@ -227,7 +229,7 @@ public final class CoreMcWorld extends AbstractWorld {
     }
 
     private BiomeType getBiomeInChunk(BlockVector3 position, ChunkAccess chunk) {
-        return CoreMcAdapter.fromNativeBiome(
+        return platform.getAdapter().fromNativeBiome(
             chunk.getNoiseBiome(position.x() >> 2, position.y() >> 2, position.z() >> 2).value()
         );
     }
@@ -254,7 +256,7 @@ public final class CoreMcWorld extends AbstractWorld {
 
     @Override
     public boolean useItem(BlockVector3 position, BaseItem item, Direction face) {
-        ItemStack stack = CoreMcAdapter.toNativeItemStack(new BaseItemStack(item.getType(), item.getNbtReference(), 1));
+        ItemStack stack = platform.getAdapter().toNativeItemStack(new BaseItemStack(item.getType(), item.getNbtReference(), 1));
         ServerLevel world = getWorld();
         final CoreMcFakePlayer fakePlayer;
         try {
@@ -265,9 +267,9 @@ public final class CoreMcWorld extends AbstractWorld {
         fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, stack);
         fakePlayer.absSnapTo(position.x(), position.y(), position.z(),
             (float) face.toVector().toYaw(), (float) face.toVector().toPitch());
-        final BlockPos blockPos = CoreMcAdapter.toBlockPos(position);
-        final BlockHitResult rayTraceResult = new BlockHitResult(CoreMcAdapter.toVec3(position),
-            CoreMcAdapter.adapt(face), blockPos, false);
+        final BlockPos blockPos = platform.getAdapter().toBlockPos(position);
+        final BlockHitResult rayTraceResult = new BlockHitResult(platform.getAdapter().toVec3(position),
+            platform.getAdapter().adapt(face), blockPos, false);
         UseOnContext itemUseContext = new UseOnContext(fakePlayer, InteractionHand.MAIN_HAND, rayTraceResult);
         InteractionResult used = stack.useOn(itemUseContext);
         if (!used.consumesAction()) {
@@ -288,20 +290,20 @@ public final class CoreMcWorld extends AbstractWorld {
             return;
         }
 
-        ItemEntity entity = new ItemEntity(getWorld(), position.x(), position.y(), position.z(), CoreMcAdapter.toNativeItemStack(item));
+        ItemEntity entity = new ItemEntity(getWorld(), position.x(), position.y(), position.z(), platform.getAdapter().toNativeItemStack(item));
         entity.setPickUpDelay(10);
         getWorld().addFreshEntity(entity);
     }
 
     @Override
     public void simulateBlockMine(BlockVector3 position) {
-        BlockPos pos = CoreMcAdapter.toBlockPos(position);
+        BlockPos pos = platform.getAdapter().toBlockPos(position);
         getWorld().destroyBlock(pos, true);
     }
 
     @Override
     public boolean canPlaceAt(BlockVector3 position, BlockState blockState) {
-        return CoreMcAdapter.toNativeBlockState(blockState).canSurvive(getWorld(), CoreMcAdapter.toBlockPos(position));
+        return platform.getAdapter().toNativeBlockState(blockState).canSurvive(getWorld(), platform.getAdapter().toBlockPos(position));
     }
 
     @Override
@@ -376,9 +378,9 @@ public final class CoreMcWorld extends AbstractWorld {
         }
 
         for (BlockVector3 vec : region) {
-            BlockPos pos = CoreMcAdapter.toBlockPos(vec);
+            BlockPos pos = platform.getAdapter().toBlockPos(vec);
             ChunkAccess chunk = chunks.get(ChunkPos.containing(pos));
-            BlockStateHolder<?> state = CoreMcAdapter.fromNativeBlockState(chunk.getBlockState(pos));
+            BlockStateHolder<?> state = platform.getAdapter().fromNativeBlockState(chunk.getBlockState(pos));
             BlockEntity blockEntity = chunk.getBlockEntity(pos);
             if (blockEntity != null) {
                 CompoundTag tag = CoreMcLoggingProblemReporter.with(
@@ -460,10 +462,10 @@ public final class CoreMcWorld extends AbstractWorld {
         if (type == TreeGenerator.TreeType.CHORUS_PLANT) {
             position = position.add(0, 1, 0);
         }
-        try (CoreMcServerLevelDelegateProxy.LevelAndProxy proxyLevel = CoreMcServerLevelDelegateProxy.newInstance(editSession, world)) {
+        try (CoreMcServerLevelDelegateProxy.LevelAndProxy proxyLevel = CoreMcServerLevelDelegateProxy.newInstance(platform, editSession, world)) {
             return generator != null && generator.place(
                 proxyLevel.level(), chunkManager.getGenerator(), random,
-                CoreMcAdapter.toBlockPos(position)
+                platform.getAdapter().toBlockPos(position)
             );
         }
     }
@@ -477,10 +479,10 @@ public final class CoreMcWorld extends AbstractWorld {
         ServerLevel world = getWorld();
         PlacedFeature generator = world.registryAccess().lookupOrThrow(Registries.PLACED_FEATURE).getValue(Identifier.tryParse(type.id()));
         ServerChunkCache chunkManager = world.getChunkSource();
-        try (CoreMcServerLevelDelegateProxy.LevelAndProxy proxyLevel = CoreMcServerLevelDelegateProxy.newInstance(editSession, world)) {
+        try (CoreMcServerLevelDelegateProxy.LevelAndProxy proxyLevel = CoreMcServerLevelDelegateProxy.newInstance(platform, editSession, world)) {
             return generator != null && generator.place(
                 proxyLevel.level(), chunkManager.getGenerator(), random,
-                CoreMcAdapter.toBlockPos(position)
+                platform.getAdapter().toBlockPos(position)
             );
         }
     }
@@ -490,10 +492,10 @@ public final class CoreMcWorld extends AbstractWorld {
         ServerLevel world = getWorld();
         ConfiguredFeature<?, ?> feature = world.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).getValue(Identifier.tryParse(type.id()));
         ServerChunkCache chunkManager = world.getChunkSource();
-        try (CoreMcServerLevelDelegateProxy.LevelAndProxy proxyLevel = CoreMcServerLevelDelegateProxy.newInstance(editSession, world)) {
+        try (CoreMcServerLevelDelegateProxy.LevelAndProxy proxyLevel = CoreMcServerLevelDelegateProxy.newInstance(platform, editSession, world)) {
             return feature != null && feature.place(
                 proxyLevel.level(), chunkManager.getGenerator(), random,
-                CoreMcAdapter.toBlockPos(position)
+                platform.getAdapter().toBlockPos(position)
             );
         } catch (MaxChangedBlocksException e) {
             throw new RuntimeException(e);
@@ -510,7 +512,7 @@ public final class CoreMcWorld extends AbstractWorld {
         }
 
         ServerChunkCache chunkManager = world.getChunkSource();
-        try (CoreMcServerLevelDelegateProxy.LevelAndProxy proxyLevel = CoreMcServerLevelDelegateProxy.newInstance(editSession, world)) {
+        try (CoreMcServerLevelDelegateProxy.LevelAndProxy proxyLevel = CoreMcServerLevelDelegateProxy.newInstance(platform, editSession, world)) {
             ChunkPos chunkPos = ChunkPos.containing(new BlockPos(position.x(), position.y(), position.z()));
             StructureStart structureStart = structure.generate(
                 structureRegistry.wrapAsHolder(structure), world.dimension(), world.registryAccess(),
@@ -542,7 +544,7 @@ public final class CoreMcWorld extends AbstractWorld {
 
     @Override
     public void checkLoadedChunk(BlockVector3 pt) {
-        getWorld().getChunk(CoreMcAdapter.toBlockPos(pt));
+        getWorld().getChunk(platform.getAdapter().toBlockPos(pt));
     }
 
     @Override
@@ -633,15 +635,15 @@ public final class CoreMcWorld extends AbstractWorld {
 
     @Override
     public BlockVector3 getSpawnPosition() {
-        return CoreMcAdapter.adapt(getWorld().getLevelData().getRespawnData().pos());
+        return platform.getAdapter().adapt(getWorld().getLevelData().getRespawnData().pos());
     }
 
     @Override
     public BlockState getBlock(BlockVector3 position) {
         net.minecraft.world.level.block.state.BlockState mcState = getWorld()
             .getChunk(position.x() >> 4, position.z() >> 4)
-            .getBlockState(CoreMcAdapter.toBlockPos(position));
-        return CoreMcAdapter.fromNativeBlockState(mcState);
+            .getBlockState(platform.getAdapter().toBlockPos(position));
+        return platform.getAdapter().fromNativeBlockState(mcState);
     }
 
     @Override
@@ -687,16 +689,16 @@ public final class CoreMcWorld extends AbstractWorld {
     public List<? extends Entity> getEntities(Region region) {
         final ServerLevel world = getWorld();
         AABB box = new AABB(
-            CoreMcAdapter.toVec3(region.getMinimumPoint()),
-            CoreMcAdapter.toVec3(region.getMaximumPoint().add(BlockVector3.ONE))
+            platform.getAdapter().toVec3(region.getMinimumPoint()),
+            platform.getAdapter().toVec3(region.getMaximumPoint().add(BlockVector3.ONE))
         );
         List<net.minecraft.world.entity.Entity> nmsEntities = world.getEntities(
             (net.minecraft.world.entity.Entity) null,
             box,
-            e -> region.contains(CoreMcAdapter.adapt(e.blockPosition()))
+            e -> region.contains(platform.getAdapter().adapt(e.blockPosition()))
         );
         return nmsEntities.stream()
-            .map(CoreMcEntity::new)
+            .map(e -> new CoreMcEntity(platform, e))
             .collect(ImmutableList.toImmutableList());
     }
 
@@ -704,7 +706,7 @@ public final class CoreMcWorld extends AbstractWorld {
     public List<? extends Entity> getEntities() {
         final ServerLevel world = getWorld();
         return Streams.stream(world.getAllEntities())
-            .map(entity -> new CoreMcEntity(entity))
+            .map(entity -> new CoreMcEntity(platform, entity))
             .collect(ImmutableList.toImmutableList());
     }
 
@@ -733,7 +735,7 @@ public final class CoreMcWorld extends AbstractWorld {
         });
         if (createdEntity != null) {
             world.addFreshEntityWithPassengers(createdEntity);
-            return new CoreMcEntity(createdEntity);
+            return new CoreMcEntity(platform, createdEntity);
         }
         return null;
     }
@@ -756,7 +758,7 @@ public final class CoreMcWorld extends AbstractWorld {
         return new AbstractExtentMask(this) {
             @Override
             public boolean test(BlockVector3 vector) {
-                return CoreMcAdapter.toNativeBlockState(getExtent().getBlock(vector)).getBlock() instanceof LiquidBlock;
+                return platform.getAdapter().toNativeBlockState(getExtent().getBlock(vector)).getBlock() instanceof LiquidBlock;
             }
         };
     }

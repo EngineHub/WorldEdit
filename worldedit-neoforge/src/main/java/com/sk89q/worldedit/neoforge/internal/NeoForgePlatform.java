@@ -17,10 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.neoforge;
+package com.sk89q.worldedit.neoforge.internal;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.coremc.internal.CoreMcPlatform;
+import com.sk89q.worldedit.neoforge.NeoForgeAdapter;
 import com.sk89q.worldedit.util.io.ResourceLoader;
 import com.sk89q.worldedit.util.lifecycle.Lifecycled;
 import com.sk89q.worldedit.util.lifecycle.SimpleLifecycled;
@@ -50,6 +51,11 @@ class NeoForgePlatform extends CoreMcPlatform {
 
     NeoForgePlatform(NeoForgeWorldEdit mod) {
         super(mod, createMinecraftServerLifecycled());
+    }
+
+    @Override
+    public NeoForgeAdapter getAdapter() {
+        return NeoForgeAdapter.get();
     }
 
     @Override

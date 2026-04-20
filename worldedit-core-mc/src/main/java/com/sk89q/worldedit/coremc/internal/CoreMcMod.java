@@ -23,7 +23,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.util.PermissionCondition;
-import com.sk89q.worldedit.coremc.CoreMcAdapter;
 import com.sk89q.worldedit.coremc.CoreMcPermissionsProvider;
 import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
@@ -123,7 +122,7 @@ public abstract class CoreMcMod {
             String key = name.toString();
             if (BlockType.REGISTRY.get(key) == null) {
                 BlockType.REGISTRY.register(key, new BlockType(key,
-                    input -> CoreMcAdapter.fromNativeBlockState(CoreMcAdapter.toNativeBlock(input.getBlockType()).defaultBlockState())));
+                    input -> platform.getAdapter().fromNativeBlockState(platform.getAdapter().toNativeBlock(input.getBlockType()).defaultBlockState())));
             }
         }
         // Items
@@ -170,7 +169,7 @@ public abstract class CoreMcMod {
                         .stream()
                         .flatMap(HolderSet.Named::stream)
                         .map(Holder::value)
-                        .map(CoreMcAdapter::fromNativeBiome)
+                        .map(platform.getAdapter()::fromNativeBiome)
                         .collect(Collectors.toSet()))
                 );
             }
@@ -218,8 +217,9 @@ public abstract class CoreMcMod {
 
         List<Command> commands = manager.getPlatformCommandManager().getCommandManager()
             .getAllCommands().toList();
+        CoreMcCommandWrapper commandWrapper = new CoreMcCommandWrapper(platform);
         for (Command command : commands) {
-            CoreMcCommandWrapper.register(dispatcher, command);
+            commandWrapper.register(dispatcher, command);
             Set<String> perms = command.getCondition().as(PermissionCondition.class)
                 .map(PermissionCondition::getPermissions)
                 .orElseGet(Collections::emptySet);
@@ -264,7 +264,7 @@ public abstract class CoreMcMod {
         }
 
         WorldEdit we = WorldEdit.getInstance();
-        CoreMcPlayer player = CoreMcAdapter.fromNativePlayer(playerEntity);
+        CoreMcPlayer player = platform.getAdapter().fromNativePlayer(playerEntity);
 
         Optional<Boolean> previousResult = debouncer.getDuplicateInteractionResult(player);
         if (previousResult.isPresent()) {
@@ -282,9 +282,9 @@ public abstract class CoreMcMod {
 
         ServerPlayer serverPlayer = (ServerPlayer) playerEntity;
         WorldEdit we = WorldEdit.getInstance();
-        CoreMcPlayer player = CoreMcAdapter.fromNativePlayer(serverPlayer);
-        CoreMcWorld world = (CoreMcWorld) CoreMcAdapter.fromNativeWorld(serverPlayer.level());
-        Direction direction = CoreMcAdapter.adaptEnumFacing(face);
+        CoreMcPlayer player = platform.getAdapter().fromNativePlayer(serverPlayer);
+        CoreMcWorld world = (CoreMcWorld) platform.getAdapter().fromNativeWorld(serverPlayer.level());
+        Direction direction = platform.getAdapter().adaptEnumFacing(face);
 
         Location pos = new Location(world, blockPos.getX(), blockPos.getY(), blockPos.getZ());
 
@@ -301,9 +301,9 @@ public abstract class CoreMcMod {
 
         ServerPlayer serverPlayer = (ServerPlayer) playerEntity;
         WorldEdit we = WorldEdit.getInstance();
-        CoreMcPlayer player = CoreMcAdapter.fromNativePlayer(serverPlayer);
-        CoreMcWorld world = (CoreMcWorld) CoreMcAdapter.fromNativeWorld(serverPlayer.level());
-        Direction direction = CoreMcAdapter.adaptEnumFacing(face);
+        CoreMcPlayer player = platform.getAdapter().fromNativePlayer(serverPlayer);
+        CoreMcWorld world = (CoreMcWorld) platform.getAdapter().fromNativeWorld(serverPlayer.level());
+        Direction direction = platform.getAdapter().adaptEnumFacing(face);
 
         Location pos = new Location(world, blockPos.getX(), blockPos.getY(), blockPos.getZ());
 
@@ -320,7 +320,7 @@ public abstract class CoreMcMod {
 
         ServerPlayer serverPlayer = (ServerPlayer) playerEntity;
         WorldEdit we = WorldEdit.getInstance();
-        CoreMcPlayer player = CoreMcAdapter.fromNativePlayer(serverPlayer);
+        CoreMcPlayer player = platform.getAdapter().fromNativePlayer(serverPlayer);
 
         Optional<Boolean> previousResult = debouncer.getDuplicateInteractionResult(player);
         if (previousResult.isPresent()) {
@@ -337,7 +337,7 @@ public abstract class CoreMcMod {
         if (!(playerEntity instanceof ServerPlayer player)) {
             return;
         }
-        debouncer.clearInteraction(CoreMcAdapter.fromNativePlayer(player));
+        debouncer.clearInteraction(platform.getAdapter().fromNativePlayer(player));
 
         WorldEdit.getInstance().getEventBus()
             .post(new SessionIdleEvent(new CoreMcPlayer.SessionKeyImpl(player)));
@@ -347,7 +347,7 @@ public abstract class CoreMcMod {
         if (!(context.player() instanceof ServerPlayer player)) {
             return;
         }
-        CoreMcPlayer actor = CoreMcAdapter.fromNativePlayer(player);
+        CoreMcPlayer actor = platform.getAdapter().fromNativePlayer(player);
         LocalSession session = WorldEdit.getInstance().getSessionManager().get(actor);
         session.handleCUIInitializationMessage(payload.eventType(), payload.args(), actor);
     }

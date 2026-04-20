@@ -44,13 +44,19 @@ import java.util.UUID;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class CoreMcBlockCommandSender extends AbstractCommandBlockActor {
+
+    private static Location createLocation(CoreMcPlatform platform, ServerLevel level, Vec3 pos) {
+        CoreMcAdapter adapter = platform.getAdapter();
+        return new Location(adapter.fromNativeWorld(checkNotNull(level)), adapter.adapt(pos));
+    }
+
     private final BaseCommandBlock sender;
     private final UUID uuid;
     private final ServerLevel level;
     private final Vec3 pos;
 
-    public CoreMcBlockCommandSender(BaseCommandBlock sender, ServerLevel level, Vec3 pos) {
-        super(new Location(CoreMcAdapter.fromNativeWorld(checkNotNull(level)), CoreMcAdapter.adapt(pos)));
+    public CoreMcBlockCommandSender(CoreMcPlatform platform, BaseCommandBlock sender, ServerLevel level, Vec3 pos) {
+        super(createLocation(platform, level, pos));
 
         this.sender = sender;
         this.level = level;
