@@ -17,31 +17,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.neoforge;
+package com.sk89q.worldedit.coremc.mixin;
 
-import com.sk89q.worldedit.coremc.CoreMcAdapter;
-import com.sk89q.worldedit.coremc.internal.CoreMcPlatform;
-import com.sk89q.worldedit.neoforge.internal.NeoForgeWorldEdit;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.level.storage.LevelStorageSource;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-/**
- * Public API to adapt between WorldEdit and NeoForge.
- */
-public final class NeoForgeAdapter extends CoreMcAdapter {
+@Mixin(MinecraftServer.class)
+public interface AccessorMinecraftServer {
+    @Accessor
+    void setNextTickTimeNanos(long nextTickTimeNanos);
 
-    private static final NeoForgeAdapter INSTANCE = new NeoForgeAdapter();
-
-    /**
-     * {@return the NeoForge adapter}
-     */
-    public static NeoForgeAdapter get() {
-        return INSTANCE;
-    }
-
-    private NeoForgeAdapter() {
-    }
-
-    @Override
-    protected CoreMcPlatform getPlatform() {
-        return NeoForgeWorldEdit.getPlatform();
-    }
+    @Accessor
+    LevelStorageSource.LevelStorageAccess getStorageSource();
 }

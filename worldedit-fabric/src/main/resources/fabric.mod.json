@@ -26,7 +26,7 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-            "com.sk89q.worldedit.fabric.FabricWorldEdit"
+            "com.sk89q.worldedit.fabric.internal.FabricWorldEdit"
         ]
     },
 
@@ -43,7 +43,6 @@
         "fabric-permissions-api-v0": "*"
     },
     "mixins": [
-        "worldedit-fabric.mixins.json"
-    ],
-    "accessWidener" : "worldedit.accesswidener"
+        "worldedit-coremc.mixins.json"
+    ]
 }

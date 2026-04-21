@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.extension.platform;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -46,18 +47,19 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.concurrency.EvenMoreExecutors;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
+import com.sk89q.worldedit.util.lifecycle.Lifecycled;
 import com.sk89q.worldedit.util.lifecycle.SimpleLifecycled;
 import com.sk89q.worldedit.world.World;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -78,7 +80,11 @@ public class PlatformManager {
     private final PlatformCommandManager platformCommandManager;
     private final SimpleLifecycled<ListeningExecutorService> executorService;
     private final Map<Platform, Boolean> platforms = Maps.newHashMap();
-    private final Map<Capability, Platform> preferences = new EnumMap<>(Capability.class);
+    private final ImmutableMap<Capability, SimpleLifecycled<Platform>> preferences = Stream.of(Capability.values())
+        .collect(Maps.toImmutableEnumMap(
+            c -> c,
+            _ -> SimpleLifecycled.invalid()
+        ));
     private @Nullable String firstSeenVersion;
     private final AtomicBoolean initialized = new AtomicBoolean();
     private final AtomicBoolean configured = new AtomicBoolean();
@@ -144,12 +150,14 @@ public class PlatformManager {
 
             // Check whether this platform was chosen to be the preferred one
             // for any capability and be sure to remove it
-            Iterator<Entry<Capability, Platform>> it = preferences.entrySet().iterator();
-            while (it.hasNext()) {
-                Entry<Capability, Platform> entry = it.next();
-                if (entry.getValue().equals(platform)) {
-                    entry.getKey().uninitialize(this, entry.getValue());
-                    it.remove();
+            for (Entry<Capability, SimpleLifecycled<Platform>> entry : preferences.entrySet()) {
+                Capability cap = entry.getKey();
+                SimpleLifecycled<Platform> lifecycled = entry.getValue();
+
+                Platform value = lifecycled.value().orElse(null);
+                if (platform.equals(value)) {
+                    cap.uninitialize(this, platform);
+                    lifecycled.invalidate();
                     choosePreferred = true; // Have to choose new favorites
                 }
             }
@@ -162,6 +170,28 @@ public class PlatformManager {
         return removed;
     }
 
+    private SimpleLifecycled<Platform> getPreferredUnsynchronized(Capability capability) {
+        SimpleLifecycled<Platform> prefLifecycled = preferences.get(capability);
+        assert prefLifecycled != null : "All capabilities should have a lifecycled in the map";
+        return prefLifecycled;
+    }
+
+    /**
+     * Get the preferred platform for handling a certain capability.
+     *
+     * <p>
+     * The lifecycled will be valid if a platform is currently preferred for the capability, and invalid otherwise.
+     * If preferences are updated, then the lifecycled will be invalidated and a new value will be set if a new
+     * preferred platform is found.
+     * </p>
+     *
+     * @param capability the capability
+     * @return the lifecycled preferred platform
+     */
+    public synchronized Lifecycled<Platform> getPreferred(Capability capability) {
+        return getPreferredUnsynchronized(capability);
+    }
+
     /**
      * Get the preferred platform for handling a certain capability. Throws if none are available.
      *
@@ -170,9 +200,9 @@ public class PlatformManager {
      * @throws NoCapablePlatformException thrown if no platform is capable
      */
     public synchronized Platform queryCapability(Capability capability) throws NoCapablePlatformException {
-        Platform platform = preferences.get(checkNotNull(capability));
-        if (platform != null) {
-            return platform;
+        Optional<Platform> platform = getPreferredUnsynchronized(checkNotNull(capability)).value();
+        if (platform.isPresent()) {
+            return platform.get();
         } else {
             if (preferences.isEmpty()) {
                 // Not all platforms registered, this is being called too early!
@@ -192,7 +222,10 @@ public class PlatformManager {
         for (Capability capability : Capability.values()) {
             Platform preferred = findMostPreferred(capability);
             if (preferred != null) {
-                Platform oldPreferred = preferences.put(capability, preferred);
+                SimpleLifecycled<Platform> prefLifecycled = getPreferredUnsynchronized(capability);
+
+                Platform oldPreferred = prefLifecycled.value().orElse(null);
+                prefLifecycled.newValue(preferred);
                 // only (re)initialize if it changed
                 if (preferred != oldPreferred) {
                     // uninitialize if needed
@@ -205,7 +238,7 @@ public class PlatformManager {
         }
 
         // Fire configuration event
-        if (preferences.containsKey(Capability.CONFIGURATION) && configured.compareAndSet(false, true)) {
+        if (getPreferredUnsynchronized(Capability.CONFIGURATION).isValid() && configured.compareAndSet(false, true)) {
             worldEdit.getEventBus().post(new ConfigurationLoadEvent(queryCapability(Capability.CONFIGURATION).getConfiguration()));
         }
     }
@@ -365,7 +398,9 @@ public class PlatformManager {
      */
     @Subscribe
     public void handleNewPlatformReady(PlatformReadyEvent event) {
-        preferences.forEach((cap, platform) -> cap.ready(this, platform));
+        preferences.forEach((cap, platform) ->
+            platform.value().ifPresent(p -> cap.ready(this, p))
+        );
         platforms.put(event.getPlatform(), true);
         if (!executorService.isValid()) {
             executorService.newValue(createExecutor());
@@ -377,7 +412,9 @@ public class PlatformManager {
      */
     @Subscribe
     public void handleNewPlatformUnready(PlatformUnreadyEvent event) {
-        preferences.forEach((cap, platform) -> cap.unready(this, platform));
+        preferences.forEach((cap, platform) ->
+            platform.value().ifPresent(p -> cap.unready(this, p))
+        );
         platforms.put(event.getPlatform(), false);
         if (!platforms.containsValue(true)) {
             executorService.value().ifPresent(ListeningExecutorService::shutdownNow);

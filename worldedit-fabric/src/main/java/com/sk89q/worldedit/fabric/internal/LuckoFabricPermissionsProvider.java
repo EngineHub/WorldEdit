@@ -17,31 +17,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.neoforge;
+package com.sk89q.worldedit.fabric.internal;
 
-import com.sk89q.worldedit.coremc.CoreMcAdapter;
-import com.sk89q.worldedit.coremc.internal.CoreMcPlatform;
-import com.sk89q.worldedit.neoforge.internal.NeoForgeWorldEdit;
+import com.sk89q.worldedit.coremc.CoreMcPermissionsProvider;
+import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.minecraft.server.level.ServerPlayer;
 
-/**
- * Public API to adapt between WorldEdit and NeoForge.
- */
-public final class NeoForgeAdapter extends CoreMcAdapter {
+final class LuckoFabricPermissionsProvider implements CoreMcPermissionsProvider {
+    private final CoreMcPermissionsProvider fallback;
 
-    private static final NeoForgeAdapter INSTANCE = new NeoForgeAdapter();
-
-    /**
-     * {@return the NeoForge adapter}
-     */
-    public static NeoForgeAdapter get() {
-        return INSTANCE;
-    }
-
-    private NeoForgeAdapter() {
+    LuckoFabricPermissionsProvider(CoreMcPermissionsProvider fallback) {
+        this.fallback = fallback;
     }
 
     @Override
-    protected CoreMcPlatform getPlatform() {
-        return NeoForgeWorldEdit.getPlatform();
+    public boolean hasPermission(ServerPlayer player, String permission) {
+        return Permissions.getPermissionValue(player, permission)
+            .orElseGet(() -> fallback.hasPermission(player, permission));
+    }
+
+    @Override
+    public void registerPermission(String permission) {
     }
 }

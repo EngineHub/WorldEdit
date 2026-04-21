@@ -35,11 +35,6 @@ dependencyResolutionManagement {
         maven {
             name = "EngineHub (Non-Mirrored)"
             url = URI.create("https://repo.enginehub.org/libs-release/")
-            metadataSources {
-                gradleMetadata()
-                mavenPom()
-                artifact()
-            }
         }
         ivy {
             url = uri("https://repo.enginehub.org/language-files/")
@@ -87,7 +82,7 @@ listOf("1.21.4", "1.21.5", "1.21.6", "1.21.9", "1.21.11", "26.1").forEach {
     include("worldedit-bukkit:adapters:adapter-$it")
 }
 
-listOf("bukkit", "core", "fabric", "neoforge", "sponge", "cli").forEach {
+listOf("bukkit", "core", "core-mc", "fabric", "neoforge", "sponge", "cli").forEach {
     include("worldedit-libs:$it")
     include("worldedit-$it")
 }

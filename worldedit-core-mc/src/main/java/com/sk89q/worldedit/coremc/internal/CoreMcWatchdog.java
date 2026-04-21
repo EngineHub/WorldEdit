@@ -17,31 +17,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.neoforge;
+package com.sk89q.worldedit.coremc.internal;
 
-import com.sk89q.worldedit.coremc.CoreMcAdapter;
-import com.sk89q.worldedit.coremc.internal.CoreMcPlatform;
-import com.sk89q.worldedit.neoforge.internal.NeoForgeWorldEdit;
+import com.sk89q.worldedit.coremc.mixin.AccessorMinecraftServer;
+import com.sk89q.worldedit.extension.platform.Watchdog;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Util;
 
-/**
- * Public API to adapt between WorldEdit and NeoForge.
- */
-public final class NeoForgeAdapter extends CoreMcAdapter {
+public final class CoreMcWatchdog implements Watchdog {
+    private final MinecraftServer server;
 
-    private static final NeoForgeAdapter INSTANCE = new NeoForgeAdapter();
-
-    /**
-     * {@return the NeoForge adapter}
-     */
-    public static NeoForgeAdapter get() {
-        return INSTANCE;
-    }
-
-    private NeoForgeAdapter() {
+    public CoreMcWatchdog(MinecraftServer server) {
+        this.server = server;
     }
 
     @Override
-    protected CoreMcPlatform getPlatform() {
-        return NeoForgeWorldEdit.getPlatform();
+    public void tick() {
+        ((AccessorMinecraftServer) server).setNextTickTimeNanos(Util.getNanos());
     }
 }

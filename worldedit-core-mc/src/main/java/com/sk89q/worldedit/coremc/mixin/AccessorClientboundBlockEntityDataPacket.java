@@ -17,31 +17,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.neoforge;
+package com.sk89q.worldedit.coremc.mixin;
 
-import com.sk89q.worldedit.coremc.CoreMcAdapter;
-import com.sk89q.worldedit.coremc.internal.CoreMcPlatform;
-import com.sk89q.worldedit.neoforge.internal.NeoForgeWorldEdit;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
-/**
- * Public API to adapt between WorldEdit and NeoForge.
- */
-public final class NeoForgeAdapter extends CoreMcAdapter {
-
-    private static final NeoForgeAdapter INSTANCE = new NeoForgeAdapter();
-
-    /**
-     * {@return the NeoForge adapter}
-     */
-    public static NeoForgeAdapter get() {
-        return INSTANCE;
-    }
-
-    private NeoForgeAdapter() {
-    }
-
-    @Override
-    protected CoreMcPlatform getPlatform() {
-        return NeoForgeWorldEdit.getPlatform();
+@Mixin(ClientboundBlockEntityDataPacket.class)
+public interface AccessorClientboundBlockEntityDataPacket {
+    // We want to call this as it will be replaced at runtime
+    @SuppressWarnings("DoNotCallSuggester")
+    @Invoker("<init>")
+    static ClientboundBlockEntityDataPacket create(
+        final BlockPos pos,
+        final BlockEntityType<?> type,
+        final CompoundTag tag
+    ) {
+        throw new AssertionError("Should be replaced by Mixin");
     }
 }

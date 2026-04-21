@@ -17,31 +17,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.neoforge;
+package com.sk89q.worldedit.coremc.mixin;
 
-import com.sk89q.worldedit.coremc.CoreMcAdapter;
-import com.sk89q.worldedit.coremc.internal.CoreMcPlatform;
-import com.sk89q.worldedit.neoforge.internal.NeoForgeWorldEdit;
+import net.minecraft.server.level.ChunkMap;
+import net.minecraft.util.thread.BlockableEventLoop;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-/**
- * Public API to adapt between WorldEdit and NeoForge.
- */
-public final class NeoForgeAdapter extends CoreMcAdapter {
-
-    private static final NeoForgeAdapter INSTANCE = new NeoForgeAdapter();
-
-    /**
-     * {@return the NeoForge adapter}
-     */
-    public static NeoForgeAdapter get() {
-        return INSTANCE;
-    }
-
-    private NeoForgeAdapter() {
-    }
-
-    @Override
-    protected CoreMcPlatform getPlatform() {
-        return NeoForgeWorldEdit.getPlatform();
-    }
+@Mixin(ChunkMap.class)
+public interface AccessorChunkMap {
+    @Accessor
+    BlockableEventLoop<Runnable> getMainThreadExecutor();
 }

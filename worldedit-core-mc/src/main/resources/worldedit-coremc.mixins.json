@@ -1,0 +1,18 @@
+{
+    "required": true,
+    "package": "com.sk89q.worldedit.coremc.mixin",
+    "compatibilityLevel": "JAVA_8",
+    "mixins": [
+        "AccessorChunkMap",
+        "AccessorClientboundBlockEntityDataPacket",
+        "AccessorCommandSourceStack",
+        "AccessorMinecraftServer",
+        "AccessorServerPlayerGameMode",
+        "MixinServerGamePacketListenerImpl"
+    ],
+    "server": [
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

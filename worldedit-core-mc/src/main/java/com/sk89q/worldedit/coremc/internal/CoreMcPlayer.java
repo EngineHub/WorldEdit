@@ -1,0 +1,307 @@
+/*
+ * WorldEdit, a Minecraft world manipulation toolkit
+ * Copyright (C) sk89q <http://www.sk89q.com>
+ * Copyright (C) WorldEdit team and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package com.sk89q.worldedit.coremc.internal;
+
+import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.coremc.mixin.AccessorClientboundBlockEntityDataPacket;
+import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
+import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.internal.cui.CUIEvent;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector3;
+import com.sk89q.worldedit.session.SessionKey;
+import com.sk89q.worldedit.util.HandSide;
+import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.formatting.WorldEditText;
+import com.sk89q.worldedit.util.formatting.component.TextUtils;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
+import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BaseBlock;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockTypes;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.worldeditcui.protocol.CUIPacket;
+
+import java.util.Locale;
+import java.util.Set;
+import java.util.UUID;
+import javax.annotation.Nullable;
+
+/**
+ * Common player implementation for platforms sharing native Minecraft code.
+ */
+public class CoreMcPlayer extends AbstractPlayerActor {
+
+    private final CoreMcPlatform platform;
+    private final ServerPlayer player;
+
+    public CoreMcPlayer(CoreMcPlatform platform, ServerPlayer player) {
+        this.platform = platform;
+        this.player = player;
+
+        if (getUniqueId() == null) {
+            throw new AssertionError("Player UUID cannot be null");
+        }
+
+        ThreadSafeCache.getInstance().getOnlineIds().add(getUniqueId());
+    }
+
+    @Override
+    public UUID getUniqueId() {
+        return player.getUUID();
+    }
+
+    @Override
+    public BaseItemStack getItemInHand(HandSide handSide) {
+        ItemStack is = this.player.getItemInHand(
+            handSide == HandSide.MAIN_HAND
+                ? InteractionHand.MAIN_HAND
+                : InteractionHand.OFF_HAND
+        );
+        return platform.getAdapter().fromNativeItemStack(is);
+    }
+
+    @Override
+    public String getName() {
+        return this.player.getName().getString();
+    }
+
+    @Override
+    public BaseEntity getState() {
+        throw new UnsupportedOperationException("Cannot create a state from this object");
+    }
+
+    @Override
+    public Location getLocation() {
+        Vector3 position = Vector3.at(this.player.getX(), this.player.getY(), this.player.getZ());
+        return new Location(
+            platform.getAdapter().fromNativeWorld(this.player.level()),
+            position,
+            this.player.getYRot(),
+            this.player.getXRot()
+        );
+    }
+
+    @Override
+    public boolean setLocation(Location location) {
+        ServerLevel level = platform.getAdapter().toNativeWorld((World) location.getExtent());
+        this.player.teleportTo(
+            level,
+            location.getX(), location.getY(), location.getZ(),
+            Set.of(),
+            location.getYaw(), location.getPitch(),
+            true
+        );
+        // This may be false if the teleport was cancelled by a mod
+        return this.player.level() == level;
+    }
+
+    @Override
+    public World getWorld() {
+        return platform.getAdapter().fromNativeWorld(this.player.level());
+    }
+
+    @Override
+    public void giveItem(BaseItemStack itemStack) {
+        this.player.getInventory().add(platform.getAdapter().toNativeItemStack(itemStack));
+    }
+
+    @Override
+    public void dispatchCUIEvent(CUIEvent event) {
+        platform.sendCUIPacket(this.player, new CUIPacket(event.getTypeId(), event.getParameters()));
+    }
+
+    public ServerPlayer getPlayer() {
+        return this.player;
+    }
+
+    @Override
+    public Locale getLocale() {
+        return TextUtils.getLocaleByMinecraftTag(this.player.clientInformation().language());
+    }
+
+    @Override
+    @Deprecated
+    public void printRaw(String msg) {
+        for (String part : msg.split("\n", 0)) {
+            this.player.sendSystemMessage(
+                net.minecraft.network.chat.Component.literal(part)
+            );
+        }
+    }
+
+    @Override
+    @Deprecated
+    public void printDebug(String msg) {
+        sendColorized(msg, ChatFormatting.GRAY);
+    }
+
+    @Override
+    @Deprecated
+    public void print(String msg) {
+        sendColorized(msg, ChatFormatting.LIGHT_PURPLE);
+    }
+
+    @Override
+    @Deprecated
+    public void printError(String msg) {
+        sendColorized(msg, ChatFormatting.RED);
+    }
+
+    @Override
+    public void print(Component component) {
+        this.player.sendSystemMessage(ComponentConverter.Serializer.fromJson(
+            GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale())),
+            player.registryAccess()
+        ));
+    }
+
+    private void sendColorized(String msg, ChatFormatting formatting) {
+        for (String part : msg.split("\n", 0)) {
+            this.player.sendSystemMessage(
+                net.minecraft.network.chat.Component.literal(part)
+                    .withStyle(style -> style.withColor(formatting))
+            );
+        }
+    }
+
+    @Override
+    public boolean trySetPosition(Vector3 pos, float pitch, float yaw) {
+        this.player.connection.teleport(pos.x(), pos.y(), pos.z(), yaw, pitch);
+        return true;
+    }
+
+    @Override
+    public String[] getGroups() {
+        return new String[]{};
+    }
+
+    @Override
+    public BlockBag getInventoryBlockBag() {
+        return null;
+    }
+
+    @Override
+    public boolean hasPermission(String perm) {
+        return platform.getPermissionsProvider().hasPermission(player, perm);
+    }
+
+    @Nullable
+    @Override
+    public <T> T getFacet(Class<? extends T> cls) {
+        return null;
+    }
+
+    @Override
+    public boolean isAllowedToFly() {
+        return player.getAbilities().mayfly;
+    }
+
+    @Override
+    public void setFlying(boolean flying) {
+        if (player.getAbilities().flying != flying) {
+            player.getAbilities().flying = flying;
+            player.onUpdateAbilities();
+        }
+    }
+
+    @Override
+    public <B extends BlockStateHolder<B>> void sendFakeBlock(BlockVector3 pos, B block) {
+        World world = getWorld();
+        if (!(world instanceof CoreMcWorld coreMcWorld)) {
+            return;
+        }
+        BlockPos loc = platform.getAdapter().toBlockPos(pos);
+        if (block == null) {
+            final ClientboundBlockUpdatePacket packetOut = new ClientboundBlockUpdatePacket(
+                coreMcWorld.getWorld(), loc
+            );
+            player.connection.send(packetOut);
+        } else {
+            final ClientboundBlockUpdatePacket packetOut = new ClientboundBlockUpdatePacket(
+                loc,
+                platform.getAdapter().toNativeBlockState(block.toImmutableState())
+            );
+            player.connection.send(packetOut);
+            if (block instanceof BaseBlock baseBlock && block.getBlockType().equals(BlockTypes.STRUCTURE_BLOCK)) {
+                final LinCompoundTag nbtData = baseBlock.getNbt();
+                if (nbtData != null) {
+                    player.connection.send(AccessorClientboundBlockEntityDataPacket.create(
+                        new BlockPos(pos.x(), pos.y(), pos.z()),
+                        BlockEntityType.STRUCTURE_BLOCK,
+                        NBTConverter.toNative(nbtData)
+                    ));
+                }
+            }
+        }
+    }
+
+    @Override
+    public SessionKey getSessionKey() {
+        return new SessionKeyImpl(player);
+    }
+
+    // If not static, this will leak a reference
+    public static final class SessionKeyImpl implements SessionKey {
+
+        private final UUID uuid;
+        private final String name;
+
+        public SessionKeyImpl(ServerPlayer player) {
+            this.uuid = player.getUUID();
+            this.name = player.getName().getString();
+        }
+
+        @Override
+        public UUID getUniqueId() {
+            return uuid;
+        }
+
+        @Nullable
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public boolean isActive() {
+            // We can't directly check if the player is online because
+            // the list of players is not thread safe
+            return ThreadSafeCache.getInstance().getOnlineIds().contains(uuid);
+        }
+
+        @Override
+        public boolean isPersistent() {
+            return true;
+        }
+
+    }
+
+}

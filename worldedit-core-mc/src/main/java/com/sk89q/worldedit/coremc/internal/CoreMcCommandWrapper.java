@@ -1,0 +1,136 @@
+/*
+ * WorldEdit, a Minecraft world manipulation toolkit
+ * Copyright (C) sk89q <http://www.sk89q.com>
+ * Copyright (C) WorldEdit team and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package com.sk89q.worldedit.coremc.internal;
+
+import com.google.common.collect.ImmutableList;
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.context.StringRange;
+import com.mojang.brigadier.suggestion.Suggestion;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.event.platform.CommandEvent;
+import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.internal.util.Substring;
+import net.minecraft.commands.CommandSourceStack;
+import org.enginehub.piston.inject.InjectedValueStore;
+import org.enginehub.piston.inject.Key;
+import org.enginehub.piston.inject.MapBackedValueStore;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Predicate;
+
+import static net.minecraft.commands.Commands.argument;
+import static net.minecraft.commands.Commands.literal;
+
+/**
+ * Shared command wrapper logic for registering WorldEdit commands with Brigadier.
+ */
+public final class CoreMcCommandWrapper {
+
+    private final CoreMcPlatform platform;
+
+    public CoreMcCommandWrapper(CoreMcPlatform platform) {
+        this.platform = platform;
+    }
+
+    /**
+     * Register a command with the given dispatcher.
+     *
+     * @param dispatcher the Brigadier dispatcher
+     * @param command    the WorldEdit command to register
+     */
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher,
+                         org.enginehub.piston.Command command) {
+        Command<CommandSourceStack> commandRunner = ctx -> {
+            if (ctx.getSource().getLevel().isClientSide()) {
+                return 0;
+            }
+            WorldEdit.getInstance().getEventBus().post(new CommandEvent(
+                platform.getAdapter().adaptCommandSource(ctx.getSource()),
+                "/" + ctx.getInput()
+            ));
+            return 0;
+        };
+
+        ImmutableList.Builder<String> aliases = ImmutableList.builder();
+        aliases.add(command.getName()).addAll(command.getAliases());
+
+        for (String alias : aliases.build()) {
+            LiteralArgumentBuilder<CommandSourceStack> base = literal(alias).executes(commandRunner)
+                .then(argument("args", StringArgumentType.greedyString())
+                    .suggests(this::suggest)
+                    .executes(commandRunner));
+            if (command.getCondition() != org.enginehub.piston.Command.Condition.TRUE) {
+                base.requires(requirementsFor(command));
+            }
+            dispatcher.register(base);
+        }
+    }
+
+    private Predicate<CommandSourceStack> requirementsFor(org.enginehub.piston.Command mapping) {
+        return ctx -> {
+            InjectedValueStore store = MapBackedValueStore.create();
+            final Actor actor = platform.getAdapter().adaptCommandSource(ctx);
+            store.injectValue(Key.of(Actor.class), _ -> Optional.of(actor));
+            return mapping.getCondition().satisfied(store);
+        };
+    }
+
+    private CompletableFuture<Suggestions> suggest(CommandContext<CommandSourceStack> context,
+                                                   SuggestionsBuilder builder) {
+        CommandSuggestionEvent event = new CommandSuggestionEvent(
+            platform.getAdapter().adaptCommandSource(context.getSource()),
+            builder.getInput()
+        );
+        WorldEdit.getInstance().getEventBus().post(event);
+        List<Substring> suggestions = event.getSuggestions();
+
+        ImmutableList.Builder<Suggestion> result = ImmutableList.builder();
+
+        for (Substring suggestion : suggestions) {
+            String suggestionText = suggestion.getSubstring();
+            // If at end, we are actually suggesting the next argument
+            // Ensure there is a space!
+            if (suggestion.getStart() == suggestion.getEnd()
+                && suggestion.getEnd() == builder.getInput().length()
+                && !builder.getInput().endsWith(" ")
+                && !builder.getInput().endsWith("\"")) {
+                suggestionText = " " + suggestionText;
+            }
+            result.add(new Suggestion(
+                StringRange.between(suggestion.getStart(), suggestion.getEnd()),
+                suggestionText
+            ));
+        }
+
+        return CompletableFuture.completedFuture(
+            Suggestions.create(builder.getInput(), result.build())
+        );
+    }
+
+}

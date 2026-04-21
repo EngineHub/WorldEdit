@@ -17,31 +17,32 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.neoforge;
+package com.sk89q.worldedit.coremc.internal;
 
-import com.sk89q.worldedit.coremc.CoreMcAdapter;
-import com.sk89q.worldedit.coremc.internal.CoreMcPlatform;
-import com.sk89q.worldedit.neoforge.internal.NeoForgeWorldEdit;
+import com.sk89q.worldedit.util.PropertiesConfiguration;
 
-/**
- * Public API to adapt between WorldEdit and NeoForge.
- */
-public final class NeoForgeAdapter extends CoreMcAdapter {
+import java.nio.file.Path;
 
-    private static final NeoForgeAdapter INSTANCE = new NeoForgeAdapter();
+public final class CoreMcConfiguration extends PropertiesConfiguration {
 
-    /**
-     * {@return the NeoForge adapter}
-     */
-    public static NeoForgeAdapter get() {
-        return INSTANCE;
-    }
+    public boolean creativeEnable = false;
+    public boolean cheatMode = false;
 
-    private NeoForgeAdapter() {
+    private final Path workingDir;
+
+    public CoreMcConfiguration(Path workingDir) {
+        super(workingDir.resolve("worldedit.properties"));
+        this.workingDir = workingDir;
     }
 
     @Override
-    protected CoreMcPlatform getPlatform() {
-        return NeoForgeWorldEdit.getPlatform();
+    protected void loadExtra() {
+        creativeEnable = getBool("use-in-creative", false);
+        cheatMode = getBool("cheat-mode", false);
+    }
+
+    @Override
+    public Path getWorkingDirectoryPath() {
+        return workingDir;
     }
 }
