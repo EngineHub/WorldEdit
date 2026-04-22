@@ -36,6 +36,7 @@ public class NonRisingVisitor extends RecursiveVisitor {
      * @param mask the mask
      * @param function the function
      */
+    @SuppressWarnings("this-escape")
     public NonRisingVisitor(Mask mask, RegionFunction function) {
         super(mask, function);
         Collection<BlockVector3> directions = getDirections();

@@ -86,6 +86,7 @@ public class BlockType implements Keyed {
         this(id, null);
     }
 
+    @SuppressWarnings("this-escape")
     public BlockType(String id, Function<BlockState, BlockState> applyDefaultValues) {
         // If it has no namespace, assume minecraft.
         if (!id.contains(":")) {

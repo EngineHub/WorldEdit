@@ -63,6 +63,7 @@ public class EllipsoidRegion extends AbstractRegion {
      * @param center the center
      * @param radius the radius
      */
+    @SuppressWarnings("this-escape")
     public EllipsoidRegion(World world, BlockVector3 center, Vector3 radius) {
         super(world);
         this.center = center;

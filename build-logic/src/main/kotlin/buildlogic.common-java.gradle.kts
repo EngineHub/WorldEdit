@@ -14,9 +14,8 @@ tasks
     .withType<JavaCompile>()
     .matching { it.name == "compileJava" || it.name == "compileTestJava" }
     .configureEach {
-        // TODO: re-enable this-escape when ANTLR suppresses it properly
         val disabledLint = listOf(
-            "processing", "path", "fallthrough", "serial", "overloads", "this-escape",
+            "processing", "path", "fallthrough", "serial", "overloads",
         )
         options.release.set(25)
         options.compilerArgs.addAll(listOf("-Xlint:all") + disabledLint.map { "-Xlint:-$it" })

@@ -43,6 +43,7 @@ public class KochanekBartelsInterpolation implements Interpolation {
     private Vector3[] coeffD;
     private double scaling;
 
+    @SuppressWarnings("this-escape")
     public KochanekBartelsInterpolation() {
         setNodes(Collections.emptyList());
     }

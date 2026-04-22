@@ -51,7 +51,7 @@ public class ItemType implements Keyed {
         WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
             .getRegistries().getItemRegistry().getRichName(this)
     );
-    @SuppressWarnings("removal")
+    @SuppressWarnings({"this-escape", "removal"})
     private final LazyReference<ItemMaterial> itemMaterial = LazyReference.from(() ->
         WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
             .getRegistries().getItemRegistry().getMaterial(this)

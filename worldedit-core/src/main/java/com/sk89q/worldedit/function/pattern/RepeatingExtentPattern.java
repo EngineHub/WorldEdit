@@ -42,8 +42,8 @@ public class RepeatingExtentPattern extends AbstractExtentPattern {
      */
     public RepeatingExtentPattern(Extent extent, BlockVector3 origin, BlockVector3 offset) {
         super(extent);
-        setOrigin(origin);
-        setOffset(offset);
+        this.origin = origin;
+        this.offset = offset;
         size = extent.getMaximumPoint().subtract(extent.getMinimumPoint()).add(1, 1, 1);
     }
 

@@ -56,13 +56,13 @@ public class ParserContext {
      * @param other the other instance
      */
     public ParserContext(ParserContext other) {
-        setExtent(other.getExtent());
-        setSession(other.getSession());
-        setWorld(other.getWorld());
-        setActor(other.getActor());
-        setRestricted(other.isRestricted());
-        setPreferringWildcard(other.isPreferringWildcard());
-        setTryLegacy(other.isTryingLegacy());
+        this.extent = other.extent;
+        this.session = other.session;
+        this.world = other.world;
+        this.actor = other.actor;
+        this.restricted = other.restricted;
+        this.tryLegacy = other.tryLegacy;
+        this.preferringWildcard = other.preferringWildcard;
     }
 
     /**

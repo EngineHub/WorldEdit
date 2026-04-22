@@ -65,6 +65,7 @@ public class NeoForgeWorldEdit extends CoreMcMod {
 
     private ModContainer container;
 
+    @SuppressWarnings("this-escape")
     public NeoForgeWorldEdit(IEventBus modBus) {
         modBus.addListener(this::onFMLCommonSetup);
 

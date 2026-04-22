@@ -37,7 +37,7 @@ public class RegionMask extends AbstractMask {
      * @param region the region
      */
     public RegionMask(Region region) {
-        setRegion(region);
+        this.region = region;
     }
 
     /**

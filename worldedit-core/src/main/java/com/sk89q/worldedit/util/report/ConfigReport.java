@@ -23,6 +23,7 @@ import com.sk89q.worldedit.WorldEdit;
 
 public class ConfigReport extends DataReport {
 
+    @SuppressWarnings("this-escape")
     public ConfigReport() {
         super("WorldEdit Configuration");
 

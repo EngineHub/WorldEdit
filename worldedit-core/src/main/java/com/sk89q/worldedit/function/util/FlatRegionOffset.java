@@ -41,7 +41,7 @@ public class FlatRegionOffset implements FlatRegionFunction {
      */
     public FlatRegionOffset(BlockVector2 offset, FlatRegionFunction function) {
         checkNotNull(function);
-        setOffset(offset);
+        this.offset = offset;
         this.function = function;
     }
 

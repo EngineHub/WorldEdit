@@ -77,6 +77,7 @@ public class ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion
      *
      * @param oldSelector the old selector
      */
+    @SuppressWarnings("this-escape")
     public ConvexPolyhedralRegionSelector(RegionSelector oldSelector) {
         checkNotNull(oldSelector);
 

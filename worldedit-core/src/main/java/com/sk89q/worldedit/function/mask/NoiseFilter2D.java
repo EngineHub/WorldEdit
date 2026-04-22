@@ -31,6 +31,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class NoiseFilter2D extends AbstractMask2D {
 
+    private static void checkDensity(double density) {
+        checkArgument(density >= 0, "density must be >= 0");
+        checkArgument(density <= 1, "density must be <= 1");
+    }
+
     private NoiseGenerator noiseGenerator;
     private double density;
 
@@ -41,8 +46,9 @@ public class NoiseFilter2D extends AbstractMask2D {
      * @param density the density
      */
     public NoiseFilter2D(NoiseGenerator noiseGenerator, double density) {
-        setNoiseGenerator(noiseGenerator);
-        setDensity(density);
+        checkDensity(density);
+        this.noiseGenerator = noiseGenerator;
+        this.density = density;
     }
 
     /**
@@ -77,8 +83,7 @@ public class NoiseFilter2D extends AbstractMask2D {
      * Set the probability of passing as a number between 0 and 1 (inclusive).
      */
     public void setDensity(double density) {
-        checkArgument(density >= 0, "density must be >= 0");
-        checkArgument(density <= 1, "density must be <= 1");
+        checkDensity(density);
         this.density = density;
     }
 
