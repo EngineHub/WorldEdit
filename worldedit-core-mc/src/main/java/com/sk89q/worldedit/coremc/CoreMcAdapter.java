@@ -25,6 +25,7 @@ import com.sk89q.worldedit.coremc.internal.CoreMcBlockCommandSender;
 import com.sk89q.worldedit.coremc.internal.CoreMcCommandSender;
 import com.sk89q.worldedit.coremc.internal.CoreMcPlatform;
 import com.sk89q.worldedit.coremc.internal.CoreMcPlayer;
+import com.sk89q.worldedit.coremc.internal.CoreMcTransmogrifier;
 import com.sk89q.worldedit.coremc.internal.CoreMcWorld;
 import com.sk89q.worldedit.coremc.internal.NBTConverter;
 import com.sk89q.worldedit.coremc.mixin.AccessorCommandSourceStack;
@@ -121,14 +122,7 @@ public abstract class CoreMcAdapter {
     }
 
     public net.minecraft.core.Direction adapt(Direction face) {
-        return switch (face) {
-            case NORTH -> net.minecraft.core.Direction.NORTH;
-            case SOUTH -> net.minecraft.core.Direction.SOUTH;
-            case WEST -> net.minecraft.core.Direction.WEST;
-            case EAST -> net.minecraft.core.Direction.EAST;
-            case DOWN -> net.minecraft.core.Direction.DOWN;
-            default -> net.minecraft.core.Direction.UP;
-        };
+        return CoreMcTransmogrifier.transmogToMinecraft(face);
     }
 
     public Direction adaptEnumFacing(@Nullable net.minecraft.core.Direction face) {

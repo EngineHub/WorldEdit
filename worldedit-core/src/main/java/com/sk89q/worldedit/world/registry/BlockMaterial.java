@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.world.registry;
 
 import com.sk89q.worldedit.blocks.ShapeType;
+import com.sk89q.worldedit.util.Direction;
 
 /**
  * Describes the material for a block.
@@ -49,6 +50,17 @@ public interface BlockMaterial {
      * @return the value of the test
      */
     boolean isFullCube(ShapeType shapeType);
+
+    /**
+     * Get whether this face is a full sized face.
+     *
+     * @param shapeType which shape of the block to test
+     * @param face      the face to test
+     * @return the value of the test
+     */
+    default boolean isFullFace(ShapeType shapeType, Direction face) {
+        return isFullCube(shapeType);
+    }
 
     /**
      * Get whether this block is opaque.

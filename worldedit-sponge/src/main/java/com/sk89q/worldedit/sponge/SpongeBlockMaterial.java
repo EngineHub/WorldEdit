@@ -21,6 +21,7 @@ package com.sk89q.worldedit.sponge;
 
 import com.sk89q.worldedit.blocks.ShapeType;
 import com.sk89q.worldedit.internal.block.AbstractBlockMaterial;
+import com.sk89q.worldedit.util.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Clearable;
 import net.minecraft.world.level.EmptyBlockGetter;
@@ -60,6 +61,11 @@ public class SpongeBlockMaterial extends AbstractBlockMaterial<VoxelShape> {
     @Override
     protected boolean isShapeFullBlock(VoxelShape shape) {
         return Block.isShapeFullBlock(shape);
+    }
+
+    @Override
+    protected boolean isFaceFull(VoxelShape shape, Direction face) {
+        return Block.isFaceFull(shape, SpongeAdapter.adapt(face));
     }
 
     @Override

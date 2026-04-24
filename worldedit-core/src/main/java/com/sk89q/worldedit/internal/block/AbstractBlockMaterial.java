@@ -20,9 +20,11 @@
 package com.sk89q.worldedit.internal.block;
 
 import com.sk89q.worldedit.blocks.ShapeType;
+import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 
+import java.util.EnumMap;
 import java.util.EnumSet;
 
 public abstract class AbstractBlockMaterial<VS> implements BlockMaterial {
@@ -38,12 +40,38 @@ public abstract class AbstractBlockMaterial<VS> implements BlockMaterial {
         return enumSet;
     });
 
+    @SuppressWarnings("this-escape")
+    public LazyReference<EnumMap<Direction, EnumSet<ShapeType>>> isFullFace = LazyReference.from(() -> {
+        EnumMap<Direction, EnumSet<ShapeType>> enumMap = new EnumMap<>(Direction.class);
+        for (Direction face : Direction.values()) {
+            if (!face.isUpright() && !face.isCardinal()) {
+                continue;
+            }
+
+            EnumSet<ShapeType> enumSet = EnumSet.noneOf(ShapeType.class);
+            for (ShapeType shapeType : ShapeType.values()) {
+                if (isFaceFull(getShape(shapeType), face)) {
+                    enumSet.add(shapeType);
+                }
+            }
+            enumMap.put(face, enumSet);
+        }
+        return enumMap;
+    });
+
     @Override
     public boolean isFullCube(ShapeType shapeType) {
         return isFullCube.getValue().contains(shapeType);
     }
 
+    @Override
+    public boolean isFullFace(ShapeType shapeType, Direction face) {
+        return isFullFace.getValue().get(face).contains(shapeType);
+    }
+
     protected abstract VS getShape(ShapeType shapeType);
 
     protected abstract boolean isShapeFullBlock(VS shape);
+
+    protected abstract boolean isFaceFull(VS shape, Direction face);
 }

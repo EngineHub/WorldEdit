@@ -456,7 +456,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         return new PaperweightWorldNativeAccess(this, new WeakReference<>(((CraftWorld) world).getHandle()));
     }
 
-    private static net.minecraft.core.Direction adapt(Direction face) {
+    public static net.minecraft.core.Direction adapt(Direction face) {
         return switch (face) {
             case NORTH -> net.minecraft.core.Direction.NORTH;
             case SOUTH -> net.minecraft.core.Direction.SOUTH;

@@ -21,6 +21,7 @@ package com.sk89q.worldedit.coremc.internal;
 
 import com.sk89q.worldedit.blocks.ShapeType;
 import com.sk89q.worldedit.internal.block.AbstractBlockMaterial;
+import com.sk89q.worldedit.util.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Clearable;
 import net.minecraft.world.level.EmptyBlockGetter;
@@ -59,6 +60,11 @@ public final class CoreMcBlockMaterial extends AbstractBlockMaterial<VoxelShape>
     @Override
     protected boolean isShapeFullBlock(VoxelShape shape) {
         return Block.isShapeFullBlock(shape);
+    }
+
+    @Override
+    protected boolean isFaceFull(VoxelShape shape, Direction face) {
+        return Block.isFaceFull(shape, CoreMcTransmogrifier.transmogToMinecraft(face));
     }
 
     @Override
