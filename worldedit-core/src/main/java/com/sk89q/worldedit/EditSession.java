@@ -2668,6 +2668,8 @@ public class EditSession implements Extent, AutoCloseable {
     public int hollowOutRegion(Region region, int thickness, Pattern pattern) throws MaxChangedBlocksException {
         int affected = 0;
 
+        // Initialize BFS with selection bounding box
+        var queue = new ArrayDeque<BlockVector3>();
         final Set<BlockVector3> outside = new HashSet<>();
 
         final BlockVector3 min = region.getMinimumPoint();
@@ -2682,25 +2684,47 @@ public class EditSession implements Extent, AutoCloseable {
 
         for (int x = minX; x <= maxX; ++x) {
             for (int y = minY; y <= maxY; ++y) {
-                recurseHollow(region, BlockVector3.at(x, y, minZ), outside);
-                recurseHollow(region, BlockVector3.at(x, y, maxZ), outside);
+                queue.addLast(BlockVector3.at(x, y, minZ));
+                queue.addLast(BlockVector3.at(x, y, maxZ));
             }
         }
 
         for (int y = minY; y <= maxY; ++y) {
             for (int z = minZ; z <= maxZ; ++z) {
-                recurseHollow(region, BlockVector3.at(minX, y, z), outside);
-                recurseHollow(region, BlockVector3.at(maxX, y, z), outside);
+                queue.addLast(BlockVector3.at(minX, y, z));
+                queue.addLast(BlockVector3.at(maxX, y, z));
             }
         }
 
         for (int z = minZ; z <= maxZ; ++z) {
             for (int x = minX; x <= maxX; ++x) {
-                recurseHollow(region, BlockVector3.at(x, minY, z), outside);
-                recurseHollow(region, BlockVector3.at(x, maxY, z), outside);
+                queue.addLast(BlockVector3.at(x, minY, z));
+                queue.addLast(BlockVector3.at(x, maxY, z));
             }
         }
 
+        // Do BFS to find visible blocks
+        while (!queue.isEmpty()) {
+            final BlockVector3 current = queue.poll();
+            final BlockState block = getBlock(current);
+            if (block.getBlockType().getMaterial().isMovementBlocker()) {
+                continue;
+            }
+
+            if (!outside.add(current)) {
+                continue;
+            }
+
+            if (!region.contains(current)) {
+                continue;
+            }
+
+            for (BlockVector3 recurseDirection : recurseDirections) {
+                queue.add(current.add(recurseDirection));
+            }
+        }
+
+        // Expand by $thickness blocks
         final Set<BlockVector3> newOutside = new HashSet<>();
         for (int i = 1; i < thickness; ++i) {
             outer: for (BlockVector3 position : region) {
@@ -2718,6 +2742,7 @@ public class EditSession implements Extent, AutoCloseable {
             newOutside.clear();
         }
 
+        // Remove everything else in the selection
         outer: for (BlockVector3 position : region) {
             for (BlockVector3 recurseDirection : recurseDirections) {
                 BlockVector3 neighbor = position.add(recurseDirection);
@@ -2913,31 +2938,6 @@ public class EditSession implements Extent, AutoCloseable {
             }
         }
         return returnset;
-    }
-
-    private void recurseHollow(Region region, BlockVector3 origin, Set<BlockVector3> outside) {
-        var queue = new ArrayDeque<BlockVector3>();
-        queue.addLast(origin);
-
-        while (!queue.isEmpty()) {
-            final BlockVector3 current = queue.removeFirst();
-            final BlockState block = getBlock(current);
-            if (block.getBlockType().getMaterial().isMovementBlocker()) {
-                continue;
-            }
-
-            if (!outside.add(current)) {
-                continue;
-            }
-
-            if (!region.contains(current)) {
-                continue;
-            }
-
-            for (BlockVector3 recurseDirection : recurseDirections) {
-                queue.addLast(current.add(recurseDirection));
-            }
-        }
     }
 
     /**
