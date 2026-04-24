@@ -148,5 +148,15 @@
                 "METHOD_REMOVED"
             ]
         }
+    ],
+    "//hollow overhaul": [
+        {
+            "type": "com.sk89q.worldedit.EditSession",
+            "member": "Method com.sk89q.worldedit.EditSession.hollowOutRegion(com.sk89q.worldedit.regions.Region,int,com.sk89q.worldedit.function.pattern.Pattern)",
+            "changes": [
+                "METHOD_NOW_FINAL",
+                "ANNOTATION_DEPRECATED_ADDED"
+            ]
+        }
     ]
 }
