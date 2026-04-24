@@ -21,6 +21,7 @@ package com.sk89q.worldedit;
 
 import com.google.common.collect.ImmutableList;
 import com.google.errorprone.annotations.InlineMe;
+import com.sk89q.worldedit.blocks.ShapeType;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
@@ -129,6 +130,7 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.generation.TreeType;
+import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 import org.apache.logging.log4j.Logger;
 
@@ -2658,6 +2660,46 @@ public class EditSession implements Extent, AutoCloseable {
         return affected;
     }
 
+    private Direction[] getBlockedDirections(BlockVector3 position) {
+        BlockState blockState = getBlock(position);
+        BlockType blockType = blockState.getBlockType();
+        BlockMaterial material = blockState.getMaterial();
+
+        if (material.isAir()) {
+            return NO_DIRECTIONS;
+        }
+
+        if (material.isLiquid()) {
+            return NO_DIRECTIONS;
+        }
+
+        Direction[] blockedDirections = BLOCKED_DIRECTIONS_OVERRIDE.get(blockType);
+        if (blockedDirections != null) {
+            return blockedDirections;
+        }
+
+        if (material.isFullCube(ShapeType.VISUAL_SHAPE)) {
+            return CARDINAL_UPRIGHT_DIRECTIONS;
+        }
+
+        Direction[] result = new Direction[CARDINAL_UPRIGHT_DIRECTIONS.length];
+        int count = 0;
+
+        for (Direction direction : CARDINAL_UPRIGHT_DIRECTIONS) {
+            if (material.isFullFace(ShapeType.VISUAL_SHAPE, direction)) {
+                result[count++] = direction;
+            }
+        }
+
+        // Short-cut for blocks that are blocked in all directions but for some reason not isFullCube
+        // This enables == comparison later
+        if (count == 6) {
+            return CARDINAL_UPRIGHT_DIRECTIONS;
+        }
+
+        return Arrays.copyOf(result, count);
+    }
+
     /**
      * Hollows out the region (Semi-well-defined for non-cuboid selections).
      *
@@ -2667,45 +2709,69 @@ public class EditSession implements Extent, AutoCloseable {
      *
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     * @deprecated Use {@link EditSession#hollowOutRegion(Region, int, Pattern, boolean, Collection, boolean)} instead.
      */
-    public int hollowOutRegion(Region region, int thickness, Pattern pattern) throws MaxChangedBlocksException {
-        // Positions to consider as 'outside'
-        Collection<BlockVector3> startingPositions = new ArrayList<>();
+    @InlineMe(replacement = "this.hollowOutRegion(region, thickness, pattern, true, null, false)")
+    @Deprecated
+    public final int hollowOutRegion(Region region, int thickness, Pattern pattern) throws MaxChangedBlocksException {
+        return hollowOutRegion(region, thickness, pattern, true, null, false);
+    }
 
-        // Initialize BFS with selection bounding box
-        final BlockVector3 min = region.getMinimumPoint();
-        final BlockVector3 max = region.getMaximumPoint();
+    /**
+     * Hollows out the region (bounding-box mode is semi-well-defined for non-cuboid selections).
+     * The startingPositions parameter takes precedence over usePlacementPosition.
+     *
+     * @param region            the region to hollow out.
+     * @param thickness         the thickness of the shell to leave (manhattan distance)
+     * @param pattern           The block pattern to use
+     * @param openSides         Open up faces touching the bounding box. This matches the legacy behaviour.
+     * @param startingPositions Positions to consider as 'outside'. If null, use the selection bounding box
+     * @param useBlockGeometry  Consider block geometry for visibility calculation
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    public int hollowOutRegion(Region region, int thickness, Pattern pattern, boolean openSides, Collection<BlockVector3> startingPositions, boolean useBlockGeometry) throws MaxChangedBlocksException {
+        if (startingPositions == null) {
+            // If no startingPositions are specified, use the selection bounding box
+            startingPositions = new ArrayList<>();
 
-        final int minX = min.x();
-        final int minY = min.y();
-        final int minZ = min.z();
-        final int maxX = max.x();
-        final int maxY = max.y();
-        final int maxZ = max.z();
+            // Initialize BFS with selection bounding box
+            final BlockVector3 min = region.getMinimumPoint();
+            final BlockVector3 max = region.getMaximumPoint();
 
-        for (int x = minX; x <= maxX; ++x) {
-            for (int y = minY; y <= maxY; ++y) {
-                startingPositions.add(BlockVector3.at(x, y, minZ));
-                startingPositions.add(BlockVector3.at(x, y, maxZ));
-            }
-        }
+            final int minX = min.x();
+            final int minY = min.y();
+            final int minZ = min.z();
+            final int maxX = max.x();
+            final int maxY = max.y();
+            final int maxZ = max.z();
 
-        for (int y = minY; y <= maxY; ++y) {
-            for (int z = minZ; z <= maxZ; ++z) {
-                startingPositions.add(BlockVector3.at(minX, y, z));
-                startingPositions.add(BlockVector3.at(maxX, y, z));
-            }
-        }
-
-        for (int z = minZ; z <= maxZ; ++z) {
             for (int x = minX; x <= maxX; ++x) {
-                startingPositions.add(BlockVector3.at(x, minY, z));
-                startingPositions.add(BlockVector3.at(x, maxY, z));
+                for (int y = minY; y <= maxY; ++y) {
+                    startingPositions.add(BlockVector3.at(x, y, minZ));
+                    startingPositions.add(BlockVector3.at(x, y, maxZ));
+                }
+            }
+
+            for (int y = minY; y <= maxY; ++y) {
+                for (int z = minZ; z <= maxZ; ++z) {
+                    startingPositions.add(BlockVector3.at(minX, y, z));
+                    startingPositions.add(BlockVector3.at(maxX, y, z));
+                }
+            }
+
+            for (int z = minZ; z <= maxZ; ++z) {
+                for (int x = minX; x <= maxX; ++x) {
+                    startingPositions.add(BlockVector3.at(x, minY, z));
+                    startingPositions.add(BlockVector3.at(x, maxY, z));
+                }
+            }
+
+            if (openSides) {
+                // Remove movement blockers from visible list
+                startingPositions.removeIf(blockVector3 -> getBlock(blockVector3).getBlockType().getMaterial().isMovementBlocker());
             }
         }
-
-        // Remove movement blockers from visible list
-        startingPositions.removeIf(blockVector3 -> getBlock(blockVector3).getBlockType().getMaterial().isMovementBlocker());
 
         // The set of blocks that were seen
         final Set<BlockVector3> visible = new HashSet<>(startingPositions);
@@ -2715,13 +2781,36 @@ public class EditSession implements Extent, AutoCloseable {
         while (!queue.isEmpty()) {
             final BlockVector3 current = queue.poll();
 
-            final BlockState block = getBlock(current);
-            if (block.getBlockType().getMaterial().isMovementBlocker()) {
-                continue;
+            Direction[] blockedDirections;
+            if (useBlockGeometry) {
+                // Get blocked directions for this block
+                blockedDirections = getBlockedDirections(current);
+
+                // Short-cut if blocked in all directions
+                if (blockedDirections == CARDINAL_UPRIGHT_DIRECTIONS) {
+                    continue;
+                }
+            } else {
+                final BlockState block = getBlock(current);
+                if (block.getBlockType().getMaterial().isMovementBlocker()) {
+                    // In non-geometry mode, all movement blockers are assumed to be blocked in all directions, so short-cut here
+                    continue;
+                }
+
+                // All other blocks are assumed to have no blocked directions
+                blockedDirections = NO_DIRECTIONS;
             }
 
-            for (BlockVector3 recurseDirection : CARDINAL_UPRIGHT_OFFSETS) {
-                final BlockVector3 neighbor = current.add(recurseDirection);
+            outer:
+            for (Direction direction : CARDINAL_UPRIGHT_DIRECTIONS) {
+                // Check if this direction is blocked
+                for (Direction blockedDirection : blockedDirections) {
+                    if (blockedDirection == direction) {
+                        continue outer; // skip this direction
+                    }
+                }
+
+                final BlockVector3 neighbor = current.add(direction.toBlockVector());
 
                 // Abort if we're outside the region
                 if (!region.contains(neighbor)) {
@@ -3181,6 +3270,10 @@ public class EditSession implements Extent, AutoCloseable {
     }
 
     /**
+     * Contains no directions.
+     */
+    private static final Direction[] NO_DIRECTIONS = {};
+    /**
      * Contains all cardinal and upright directions.
      */
     private static final Direction[] CARDINAL_UPRIGHT_DIRECTIONS = Arrays.stream(Direction.values())
@@ -3192,6 +3285,64 @@ public class EditSession implements Extent, AutoCloseable {
     private static final BlockVector3[] CARDINAL_UPRIGHT_OFFSETS = Arrays.stream(CARDINAL_UPRIGHT_DIRECTIONS)
         .map(Direction::toBlockVector)
         .toArray(BlockVector3[]::new);
+
+    /**
+     * Some blocks need a special case for one reason or another.
+     */
+    private static final Map<BlockType, Direction[]> BLOCKED_DIRECTIONS_OVERRIDE = new HashMap<>();
+
+    static {
+        Arrays.asList(
+            // fullcubes that you can see through on all 6 sides
+            BlockTypes.SPAWNER,
+            BlockTypes.BEACON,
+            BlockTypes.MANGROVE_ROOTS,
+            BlockTypes.ICE,
+
+            // You can see through some of the doors/trapdoors, which is not reflected in their visual shape
+            // Commented lines are opaque and kept for reference
+            BlockTypes.OAK_DOOR,
+            BlockTypes.OAK_TRAPDOOR,
+            // BlockTypes.SPRUCE_DOOR,
+            // BlockTypes.SPRUCE_TRAPDOOR,
+            // BlockTypes.BIRCH_DOOR,
+            // BlockTypes.BIRCH_TRAPDOOR,
+            BlockTypes.JUNGLE_DOOR,
+            BlockTypes.JUNGLE_TRAPDOOR,
+            BlockTypes.ACACIA_DOOR,
+            BlockTypes.ACACIA_TRAPDOOR,
+            // BlockTypes.DARK_OAK_DOOR,
+            // BlockTypes.DARK_OAK_TRAPDOOR,
+            // BlockTypes.MANGROVE_DOOR,
+            BlockTypes.MANGROVE_TRAPDOOR,
+            BlockTypes.CHERRY_DOOR,
+            BlockTypes.CHERRY_TRAPDOOR,
+            // BlockTypes.PALE_OAK_DOOR,
+            // BlockTypes.PALE_OAK_TRAPDOOR,
+            BlockTypes.BAMBOO_DOOR,
+            BlockTypes.BAMBOO_TRAPDOOR,
+            BlockTypes.CRIMSON_DOOR,
+            BlockTypes.CRIMSON_TRAPDOOR,
+            BlockTypes.WARPED_DOOR,
+            BlockTypes.WARPED_TRAPDOOR,
+            BlockTypes.IRON_DOOR,
+            BlockTypes.IRON_TRAPDOOR
+        ).forEach(blockType -> {
+            BLOCKED_DIRECTIONS_OVERRIDE.put(blockType, NO_DIRECTIONS);
+        });
+
+        // The copper doors/trapdoors are too many to list individually
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("^.*:(?:.*_)?(?:copper_door|copper_trapdoor)(?:_.*)?$");
+        for (BlockType blockType : BlockType.REGISTRY) {
+            if (pattern.matcher(blockType.id()).matches()) {
+                BLOCKED_DIRECTIONS_OVERRIDE.put(blockType, NO_DIRECTIONS);
+            }
+        }
+
+        // These are visual fullcubes, but they're mostly open:
+        BLOCKED_DIRECTIONS_OVERRIDE.put(BlockTypes.TRIAL_SPAWNER, new Direction[] { Direction.UP });
+        BLOCKED_DIRECTIONS_OVERRIDE.put(BlockTypes.VAULT, new Direction[] { Direction.UP, Direction.DOWN });
+    }
 
     private static double lengthSq(double x, double y, double z) {
         return (x * x) + (y * y) + (z * z);
