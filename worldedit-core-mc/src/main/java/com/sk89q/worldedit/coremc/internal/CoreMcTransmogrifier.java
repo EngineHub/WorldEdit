@@ -71,6 +71,17 @@ public final class CoreMcTransmogrifier {
         this.platform = platform;
     }
 
+    public static net.minecraft.core.Direction transmogToMinecraft(Direction face) {
+        return switch (face) {
+            case NORTH -> net.minecraft.core.Direction.NORTH;
+            case SOUTH -> net.minecraft.core.Direction.SOUTH;
+            case WEST -> net.minecraft.core.Direction.WEST;
+            case EAST -> net.minecraft.core.Direction.EAST;
+            case DOWN -> net.minecraft.core.Direction.DOWN;
+            default -> net.minecraft.core.Direction.UP;
+        };
+    }
+
     public Property<?> transmogToWorldEditProperty(net.minecraft.world.level.block.state.properties.Property<?> property) {
         return propertyCache.getUnchecked(property);
     }
@@ -104,7 +115,7 @@ public final class CoreMcTransmogrifier {
             if (property instanceof net.minecraft.world.level.block.state.properties.EnumProperty) {
                 if (property.getValueClass() == net.minecraft.core.Direction.class) {
                     Direction dir = (Direction) value;
-                    value = platform.getAdapter().adapt(dir);
+                    value = transmogToMinecraft(dir);
                 } else {
                     String enumName = (String) value;
                     value = ((net.minecraft.world.level.block.state.properties.EnumProperty<?>) property).getValue((String) value).orElseThrow(() ->
