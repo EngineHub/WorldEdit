@@ -134,6 +134,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -2716,7 +2717,7 @@ public class EditSession implements Extent, AutoCloseable {
                 continue;
             }
 
-            for (BlockVector3 recurseDirection : recurseDirections) {
+            for (BlockVector3 recurseDirection : CARDINAL_UPRIGHT_OFFSETS) {
                 final BlockVector3 neighbor = current.add(recurseDirection);
 
                 if (!region.contains(neighbor)) {
@@ -2735,7 +2736,7 @@ public class EditSession implements Extent, AutoCloseable {
         final Set<BlockVector3> newVisible = new HashSet<>();
         for (int i = 1; i < thickness; ++i) {
             outer: for (BlockVector3 position : region) {
-                for (BlockVector3 recurseDirection : recurseDirections) {
+                for (BlockVector3 recurseDirection : CARDINAL_UPRIGHT_OFFSETS) {
                     BlockVector3 neighbor = position.add(recurseDirection);
 
                     if (visible.contains(neighbor)) {
@@ -3074,7 +3075,7 @@ public class EditSession implements Extent, AutoCloseable {
                         totalFaces = 0;
                         highestFreq = 0;
                         highestState = blockState;
-                        for (BlockVector3 vec3 : recurseDirections) {
+                        for (BlockVector3 vec3 : CARDINAL_UPRIGHT_OFFSETS) {
                             BlockState adj = currentBuffer[x + 1 + vec3.x()][y + 1 + vec3.y()][z + 1 + vec3.z()];
 
                             if (!adj.getBlockType().getMaterial().isLiquid() && !adj.getBlockType().getMaterial().isAir()) {
@@ -3127,7 +3128,7 @@ public class EditSession implements Extent, AutoCloseable {
                         totalFaces = 0;
                         highestFreq = 0;
                         highestState = blockState;
-                        for (BlockVector3 vec3 : recurseDirections) {
+                        for (BlockVector3 vec3 : CARDINAL_UPRIGHT_OFFSETS) {
                             BlockState adj = currentBuffer[x + 1 + vec3.x()][y + 1 + vec3.y()][z + 1 + vec3.z()];
                             if (adj.getBlockType().getMaterial().isLiquid() || adj.getBlockType().getMaterial().isAir()) {
                                 continue;
@@ -3170,14 +3171,18 @@ public class EditSession implements Extent, AutoCloseable {
         return changed;
     }
 
-    private static final BlockVector3[] recurseDirections = {
-            Direction.NORTH.toBlockVector(),
-            Direction.EAST.toBlockVector(),
-            Direction.SOUTH.toBlockVector(),
-            Direction.WEST.toBlockVector(),
-            Direction.UP.toBlockVector(),
-            Direction.DOWN.toBlockVector(),
-    };
+    /**
+     * Contains all cardinal and upright directions.
+     */
+    private static final Direction[] CARDINAL_UPRIGHT_DIRECTIONS = Arrays.stream(Direction.values())
+        .filter(direction -> direction.isCardinal() || direction.isUpright())
+        .toArray(Direction[]::new);
+    /**
+     * Contains the offset vectors for all cardinal and upright directions.
+     */
+    private static final BlockVector3[] CARDINAL_UPRIGHT_OFFSETS = Arrays.stream(CARDINAL_UPRIGHT_DIRECTIONS)
+        .map(Direction::toBlockVector)
+        .toArray(BlockVector3[]::new);
 
     private static double lengthSq(double x, double y, double z) {
         return (x * x) + (y * y) + (z * z);
