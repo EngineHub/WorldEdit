@@ -550,11 +550,11 @@ public class RegionCommands {
     @Logging(REGION)
     public int hollow(Actor actor, EditSession editSession,
                       @Selection Region region,
-                      @Arg(desc = "Thickness of the shell to leave", def = "0")
+                      @Arg(desc = "Thickness of the shell to leave", def = "1")
                           int thickness,
                       @Arg(desc = "The pattern of blocks to replace the hollowed area with", def = "air")
                           Pattern pattern) throws WorldEditException {
-        checkCommandArgument(thickness >= 0, "Thickness must be >= 0");
+        checkCommandArgument(thickness >= 1, "Thickness must be >= 1");
 
         int affected = editSession.hollowOutRegion(region, thickness, pattern);
         actor.printInfo(TranslatableComponent.of("worldedit.hollow.changed", TextComponent.of(affected)));
