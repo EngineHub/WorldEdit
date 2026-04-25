@@ -2669,10 +2669,9 @@ public class EditSession implements Extent, AutoCloseable {
     public int hollowOutRegion(Region region, int thickness, Pattern pattern) throws MaxChangedBlocksException {
         int affected = 0;
 
-        // Initialize BFS with selection bounding box
-        final Queue<BlockVector3> queue = new ArrayDeque<>();
-        final Set<BlockVector3> outside = new HashSet<>();
+        final Set<BlockVector3> visible = new HashSet<>();
 
+        // Initialize BFS with selection bounding box
         final BlockVector3 min = region.getMinimumPoint();
         final BlockVector3 max = region.getMaximumPoint();
 
@@ -2685,72 +2684,75 @@ public class EditSession implements Extent, AutoCloseable {
 
         for (int x = minX; x <= maxX; ++x) {
             for (int y = minY; y <= maxY; ++y) {
-                queue.add(BlockVector3.at(x, y, minZ));
-                queue.add(BlockVector3.at(x, y, maxZ));
+                visible.add(BlockVector3.at(x, y, minZ));
+                visible.add(BlockVector3.at(x, y, maxZ));
             }
         }
 
         for (int y = minY; y <= maxY; ++y) {
             for (int z = minZ; z <= maxZ; ++z) {
-                queue.add(BlockVector3.at(minX, y, z));
-                queue.add(BlockVector3.at(maxX, y, z));
+                visible.add(BlockVector3.at(minX, y, z));
+                visible.add(BlockVector3.at(maxX, y, z));
             }
         }
 
         for (int z = minZ; z <= maxZ; ++z) {
             for (int x = minX; x <= maxX; ++x) {
-                queue.add(BlockVector3.at(x, minY, z));
-                queue.add(BlockVector3.at(x, maxY, z));
+                visible.add(BlockVector3.at(x, minY, z));
+                visible.add(BlockVector3.at(x, maxY, z));
             }
         }
 
-        // Do BFS to find visible blocks
+        // Remove movement blockers from visible list
+        visible.removeIf(blockVector3 -> getBlock(blockVector3).getBlockType().getMaterial().isMovementBlocker());
+
+        // Do BFS to find more visible blocks
+        final Queue<BlockVector3> queue = new ArrayDeque<>(visible);
         while (!queue.isEmpty()) {
             final BlockVector3 current = queue.poll();
+
             final BlockState block = getBlock(current);
             if (block.getBlockType().getMaterial().isMovementBlocker()) {
                 continue;
             }
 
-            if (!outside.add(current)) {
-                continue;
-            }
-
-            if (!region.contains(current)) {
-                continue;
-            }
-
             for (BlockVector3 recurseDirection : recurseDirections) {
-                queue.add(current.add(recurseDirection));
+                final BlockVector3 neighbor = current.add(recurseDirection);
+
+                if (!region.contains(neighbor)) {
+                    continue;
+                }
+
+                if (!visible.add(neighbor)) {
+                    continue;
+                }
+
+                queue.add(neighbor);
             }
         }
 
         // Expand by $thickness blocks
-        final Set<BlockVector3> newOutside = new HashSet<>();
+        final Set<BlockVector3> newVisible = new HashSet<>();
         for (int i = 1; i < thickness; ++i) {
             outer: for (BlockVector3 position : region) {
                 for (BlockVector3 recurseDirection : recurseDirections) {
                     BlockVector3 neighbor = position.add(recurseDirection);
 
-                    if (outside.contains(neighbor)) {
-                        newOutside.add(position);
+                    if (visible.contains(neighbor)) {
+                        newVisible.add(position);
                         continue outer;
                     }
                 }
             }
 
-            outside.addAll(newOutside);
-            newOutside.clear();
+            visible.addAll(newVisible);
+            newVisible.clear();
         }
 
         // Remove everything else in the selection
-        outer: for (BlockVector3 position : region) {
-            for (BlockVector3 recurseDirection : recurseDirections) {
-                BlockVector3 neighbor = position.add(recurseDirection);
-
-                if (outside.contains(neighbor)) {
-                    continue outer;
-                }
+        for (BlockVector3 position : region) {
+            if (visible.contains(position)) {
+                continue;
             }
 
             if (setBlock(position, pattern.applyBlock(position))) {
