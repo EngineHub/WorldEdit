@@ -140,6 +140,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
@@ -2669,7 +2670,7 @@ public class EditSession implements Extent, AutoCloseable {
         int affected = 0;
 
         // Initialize BFS with selection bounding box
-        var queue = new ArrayDeque<BlockVector3>();
+        final Queue<BlockVector3> queue = new ArrayDeque<>();
         final Set<BlockVector3> outside = new HashSet<>();
 
         final BlockVector3 min = region.getMinimumPoint();
@@ -2684,22 +2685,22 @@ public class EditSession implements Extent, AutoCloseable {
 
         for (int x = minX; x <= maxX; ++x) {
             for (int y = minY; y <= maxY; ++y) {
-                queue.addLast(BlockVector3.at(x, y, minZ));
-                queue.addLast(BlockVector3.at(x, y, maxZ));
+                queue.add(BlockVector3.at(x, y, minZ));
+                queue.add(BlockVector3.at(x, y, maxZ));
             }
         }
 
         for (int y = minY; y <= maxY; ++y) {
             for (int z = minZ; z <= maxZ; ++z) {
-                queue.addLast(BlockVector3.at(minX, y, z));
-                queue.addLast(BlockVector3.at(maxX, y, z));
+                queue.add(BlockVector3.at(minX, y, z));
+                queue.add(BlockVector3.at(maxX, y, z));
             }
         }
 
         for (int z = minZ; z <= maxZ; ++z) {
             for (int x = minX; x <= maxX; ++x) {
-                queue.addLast(BlockVector3.at(x, minY, z));
-                queue.addLast(BlockVector3.at(x, maxY, z));
+                queue.add(BlockVector3.at(x, minY, z));
+                queue.add(BlockVector3.at(x, maxY, z));
             }
         }
 
