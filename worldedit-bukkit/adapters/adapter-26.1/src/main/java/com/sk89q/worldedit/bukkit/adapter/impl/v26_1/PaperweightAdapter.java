@@ -231,8 +231,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
     public PaperweightAdapter() throws NoSuchFieldException, NoSuchMethodException {
         // A simple test
-        @SuppressWarnings({"ReturnValueIgnored", "unused"})
-        var unused = CraftServer.class.cast(Bukkit.getServer());
+        var _ = CraftServer.class.cast(Bukkit.getServer());
 
         int dataVersion = SharedConstants.getCurrentVersion().dataVersion().version();
         if (dataVersion < Constants.DATA_VERSION_MC_26_1 || dataVersion > Constants.DATA_VERSION_MC_26_1_2) {
