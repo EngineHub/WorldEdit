@@ -235,6 +235,7 @@ public class RecursiveDirectoryWatcher implements Closeable {
             LOGGER.debug("RecursiveDirectoryWatcher::EventConsumer exited");
         });
         watchThread.setName("WorldEdit-RecursiveDirectoryWatcher");
+        watchThread.setDaemon(true);
         watchThread.start();
     }
 
