@@ -23,6 +23,7 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.world.World;
 
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
 
 /**
@@ -30,7 +31,7 @@ import javax.annotation.Nullable;
  */
 public final class Request {
 
-    private static final ThreadLocal<Request> threadLocal = ThreadLocal.withInitial(Request::new);
+    private static final ScopedValue<Request> CURRENT_REQUEST = ScopedValue.newInstance();
 
     private @Nullable World world;
     private @Nullable LocalSession session;
@@ -100,15 +101,44 @@ public final class Request {
      * @return the current request
      */
     public static Request request() {
-        return threadLocal.get();
+        return CURRENT_REQUEST.get();
+    }
+
+    /**
+     * Apply a function to the current request if it is present.
+     * If no request is present, the function will not be called.
+     *
+     * @param func the function to apply to the current request
+     */
+    public static void applyIfPresent(Consumer<Request> func) {
+        if (CURRENT_REQUEST.isBound()) {
+            func.accept(request());
+        }
+    }
+
+    /**
+     * Run a task with a new request. The request will be automatically invalidated after the task completes.
+     *
+     * @param runnable the task to run
+     */
+    public static void runWithRequest(Runnable runnable) {
+        Request request = new Request();
+        request.valid = true;
+        try {
+            ScopedValue.where(CURRENT_REQUEST, request).run(runnable);
+        } finally {
+            request.invalidate();
+        }
     }
 
     /**
      * Reset the current request and clear all fields.
+     *
+     * @deprecated This class is now scoped, so resetting at arbitrary points is not supported.
      */
+    @Deprecated(forRemoval = true)
     public static void reset() {
         request().invalidate();
-        threadLocal.remove();
     }
 
     /**

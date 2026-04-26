@@ -169,7 +169,9 @@ public class SessionManager {
                 LOGGER.warn("Failed to load saved session", e);
                 session = new LocalSession();
             }
-            Request.request().setSession(session);
+            // Allow retrieving a session outside a request if needed.
+            LocalSession finalSession = session;
+            Request.applyIfPresent(r -> r.setSession(finalSession));
 
             session.setConfiguration(config);
             session.setBlockChangeLimit(config.defaultChangeLimit);

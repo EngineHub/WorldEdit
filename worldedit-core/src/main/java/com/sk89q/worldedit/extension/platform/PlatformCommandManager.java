@@ -472,18 +472,20 @@ public final class PlatformCommandManager {
 
     @Subscribe
     public void handleCommand(CommandEvent event) {
-        Request.reset();
-
-        Actor actor = platformManager.createProxyActor(event.getActor());
-        String[] split = parseArgs(event.getArguments())
+        String[] splitArgs = parseArgs(event.getArguments())
             .map(Substring::getSubstring)
             .toArray(String[]::new);
 
         // No command found!
-        if (!commandManager.containsCommand(split[0])) {
+        if (!commandManager.containsCommand(splitArgs[0])) {
             return;
         }
 
+        Request.runWithRequest(() -> executeCommand(event, splitArgs));
+    }
+
+    private void executeCommand(CommandEvent event, String[] splitArgs) {
+        Actor actor = platformManager.createProxyActor(event.getActor());
         LocalSession session = worldEdit.getSessionManager().get(actor);
         Request.request().setSession(session);
         if (actor instanceof Entity entity && entity.getExtent() instanceof World world) {
@@ -502,7 +504,7 @@ public final class PlatformCommandManager {
             // exceptions and rethrow their converted form, if their is one.
             try {
                 try {
-                    commandManager.execute(context, ImmutableList.copyOf(split));
+                    commandManager.execute(context, ImmutableList.copyOf(splitArgs));
                 } finally {
                     Optional<EditSession> editSessionOpt =
                         context.snapshotMemory().injectedValue(Key.of(EditSession.class));
@@ -563,8 +565,6 @@ public final class PlatformCommandManager {
             actor.printError(e.getRichMessage());
         } catch (Throwable t) {
             handleUnknownException(actor, t);
-        } finally {
-            Request.reset();
         }
 
         event.setCancelled(true);

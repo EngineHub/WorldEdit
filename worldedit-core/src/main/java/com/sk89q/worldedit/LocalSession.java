@@ -1152,7 +1152,8 @@ public class LocalSession {
             builder.blockBag(getBlockBag(player));
         }
         EditSession editSession = builder.build();
-        Request.request().setEditSession(editSession);
+        // Allow creating EditSessions outside a request if needed.
+        Request.applyIfPresent(r -> r.setEditSession(editSession));
 
         editSession.setMask(mask);
         prepareEditingExtents(editSession, actor);
