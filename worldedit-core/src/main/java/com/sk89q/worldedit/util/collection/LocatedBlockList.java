@@ -45,6 +45,7 @@ public class LocatedBlockList implements Iterable<LocatedBlock> {
     public LocatedBlockList() {
     }
 
+    @SuppressWarnings("this-escape")
     public LocatedBlockList(Collection<? extends LocatedBlock> collection) {
         for (LocatedBlock locatedBlock : collection) {
             add(locatedBlock.location(), locatedBlock.block());

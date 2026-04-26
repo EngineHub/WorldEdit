@@ -12,14 +12,11 @@ description = '''
 WorldEdit is an easy-to-use in-game world editor for Minecraft, supporting both single- and multi-player.
 '''
 authors = "EngineHub"
-logoFile = "worldedit-icon.png"
+logoFile = "assets/worldedit/icon.png"
 displayTest = "IGNORE_SERVER_VERSION"
 
 [[mixins]]
-config = "worldedit-neoforge.mixins.json"
-
-[[accessTransformers]]
-file = "META-INF/accesstransformer.cfg"
+config = "worldedit-coremc.mixins.json"
 
 [[dependencies.worldedit]]
 modId = "minecraft"

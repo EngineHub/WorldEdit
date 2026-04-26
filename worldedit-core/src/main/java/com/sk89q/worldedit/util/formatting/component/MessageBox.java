@@ -47,6 +47,7 @@ public class MessageBox extends TextComponentProducer {
     /**
      * Create a new box.
      */
+    @SuppressWarnings("this-escape")
     public MessageBox(String title, TextComponentProducer contents, TextColor borderColor) {
         checkNotNull(title);
 

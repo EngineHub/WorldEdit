@@ -54,6 +54,7 @@ public class SkullBlock extends LegacyBaseBlockWrapper {
      * @param blockState BlockState to set
      * @param owner name of player
      */
+    @SuppressWarnings("this-escape")
     public SkullBlock(BlockState blockState, String owner) {
         super(blockState);
         this.setOwner(owner);

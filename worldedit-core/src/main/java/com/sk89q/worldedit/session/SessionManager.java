@@ -87,6 +87,7 @@ public class SessionManager {
      *
      * @param worldEdit a WorldEdit instance
      */
+    @SuppressWarnings("this-escape")
     public SessionManager(WorldEdit worldEdit) {
         checkNotNull(worldEdit);
         this.worldEdit = worldEdit;

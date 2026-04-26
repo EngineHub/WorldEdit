@@ -59,6 +59,7 @@ public class CommandUsageBox extends TextComponentProducer {
      * @param helpRootCommand the command used to get subcommand help
      * @param parameters list of parameters to use
      */
+    @SuppressWarnings("this-escape")
     public CommandUsageBox(List<Command> commands, String commandString, String helpRootCommand,
                            @Nullable CommandParameters parameters) throws InvalidComponentException {
         checkNotNull(commands);

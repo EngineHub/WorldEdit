@@ -36,7 +36,7 @@ public abstract class AbstractExtentMask extends AbstractMask {
      * @param extent the extent
      */
     protected AbstractExtentMask(Extent extent) {
-        setExtent(extent);
+        this.extent = extent;
     }
 
     /**

@@ -108,14 +108,16 @@ tasks.register<Jar>("jar") {
         exclude("org/enginehub/piston/")
         exclude("org/enginehub/linbus/")
         exclude("net/kyori/examination/")
-        // Exclude worldedit-core
+        // Exclude worldedit-core and worldedit-core-mc (already included from fabric side)
         exclude {
             val pathString = it.relativePath.pathString
             pathString.startsWith("com/sk89q/worldedit/") && !pathString.startsWith("com/sk89q/worldedit/neoforge/")
         }
         // Questionable excludes. So far the two files from each jar are the same.
+        exclude("assets/worldedit/icon.png")
         exclude("defaults/worldedit.properties")
         exclude("pack.mcmeta")
+        exclude("worldedit-coremc.mixins.json")
     }
     manifest {
         from(mergeManifests.flatMap { it.outputManifest })

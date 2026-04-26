@@ -37,6 +37,7 @@ public class RegionIterator implements Iterator<BlockVector3> {
     private int nextY;
     private int nextZ;
 
+    @SuppressWarnings("this-escape")
     public RegionIterator(Region region) {
         checkNotNull(region);
 

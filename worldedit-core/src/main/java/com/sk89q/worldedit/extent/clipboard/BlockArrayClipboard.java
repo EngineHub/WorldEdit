@@ -45,6 +45,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class BlockArrayClipboard implements Clipboard {
 
+    private static BlockVector3 getDimensions(Region region) {
+        return region.getMaximumPoint().subtract(region.getMinimumPoint()).add(1, 1, 1);
+    }
+
     private final Region region;
     private BlockVector3 origin;
     /**
@@ -73,7 +77,7 @@ public class BlockArrayClipboard implements Clipboard {
         this.region = region.clone();
         this.origin = region.getMinimumPoint();
 
-        BlockVector3 dimensions = getDimensions();
+        BlockVector3 dimensions = getDimensions(region);
         blocks = new BaseBlock[dimensions.x() * dimensions.y() * dimensions.z()];
         yStride = dimensions.x();
         zStride = yStride * dimensions.y();
@@ -100,7 +104,7 @@ public class BlockArrayClipboard implements Clipboard {
 
     @Override
     public BlockVector3 getDimensions() {
-        return region.getMaximumPoint().subtract(region.getMinimumPoint()).add(1, 1, 1);
+        return getDimensions(region);
     }
 
     @Override

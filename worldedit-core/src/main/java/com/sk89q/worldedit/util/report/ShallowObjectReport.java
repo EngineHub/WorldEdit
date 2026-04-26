@@ -31,6 +31,7 @@ public class ShallowObjectReport extends DataReport {
 
     private static final Logger LOGGER = LogManagerCompat.getLogger();
 
+    @SuppressWarnings("this-escape")
     public ShallowObjectReport(String title, Object object) {
         super(title);
         checkNotNull(object, "object");
