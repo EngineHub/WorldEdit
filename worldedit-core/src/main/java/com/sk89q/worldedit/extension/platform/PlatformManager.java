@@ -437,11 +437,11 @@ public class PlatformManager {
         }
         LocalSession session = worldEdit.getSessionManager().get(actor);
 
-        Request.reset();
-        Request.request().setSession(session);
-        Request.request().setWorld(player.getWorld());
+        Request.runWithRequest(() -> {
+            Request request = Request.request();
+            request.setSession(session);
+            request.setWorld(player.getWorld());
 
-        try {
             if (event.getType() == Interaction.HIT) {
                 // superpickaxe is special because its primary interaction is a left click, not a right click
                 // in addition, it is implicitly bound to all pickaxe items, not just a single tool item
@@ -473,9 +473,7 @@ public class PlatformManager {
                     }
                 }
             }
-        } finally {
-            Request.reset();
-        }
+        });
     }
 
     @Subscribe
@@ -484,11 +482,11 @@ public class PlatformManager {
         // making changes to the world
         Player player = createProxyActor(event.getPlayer());
         LocalSession session = worldEdit.getSessionManager().get(player);
-        Request.reset();
-        Request.request().setSession(session);
-        Request.request().setWorld(player.getWorld());
+        Request.runWithRequest(() -> {
+            Request request = Request.request();
+            request.setSession(session);
+            request.setWorld(player.getWorld());
 
-        try {
             exhaustive(switch (event.getInputType()) {
                 case PRIMARY -> {
                     Tool tool = session.getTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
@@ -513,9 +511,7 @@ public class PlatformManager {
                     yield dummyValue();
                 }
             });
-        } finally {
-            Request.reset();
-        }
+        });
     }
 
 

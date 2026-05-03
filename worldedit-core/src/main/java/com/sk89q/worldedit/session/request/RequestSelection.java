@@ -49,8 +49,9 @@ public class RequestSelection implements Region {
      * @return the delegate region
      */
     protected Region getRegion() {
-        LocalSession session = Request.request().getSession();
-        World world = Request.request().getWorld();
+        Request request = Request.request();
+        LocalSession session = request.getSession();
+        World world = request.getWorld();
 
         if (session != null && world != null) {
             try {
