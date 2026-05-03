@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.function.mask;
 
+import com.google.errorprone.annotations.InlineMe;
 import com.sk89q.worldedit.blocks.ShapeType;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -26,15 +27,24 @@ import com.sk89q.worldedit.world.block.BlockState;
 
 public final class FullCubeMask extends AbstractExtentMask {
 
+    private final ShapeType shapeType;
+
+    @Deprecated
+    @InlineMe(replacement = "this(extent, ShapeType.SHAPE)", imports = "com.sk89q.worldedit.blocks.ShapeType")
     public FullCubeMask(Extent extent) {
+        this(extent, ShapeType.SHAPE);
+    }
+
+    public FullCubeMask(Extent extent, ShapeType shapeType) {
         super(extent);
+        this.shapeType = shapeType;
     }
 
     @Override
     public boolean test(BlockVector3 vector) {
         Extent extent = getExtent();
         BlockState block = extent.getBlock(vector);
-        return block.getMaterial().isFullCube(ShapeType.SHAPE);
+        return block.getMaterial().isFullCube(shapeType);
     }
 
 }
