@@ -26,15 +26,18 @@ import com.sk89q.worldedit.world.block.BlockState;
 
 public final class FullCubeMask extends AbstractExtentMask {
 
-    public FullCubeMask(Extent extent) {
+    private final ShapeType shapeType;
+
+    public FullCubeMask(Extent extent, ShapeType shapeType) {
         super(extent);
+        this.shapeType = shapeType;
     }
 
     @Override
     public boolean test(BlockVector3 vector) {
         Extent extent = getExtent();
         BlockState block = extent.getBlock(vector);
-        return block.getMaterial().isFullCube(ShapeType.SHAPE);
+        return block.getMaterial().isFullCube(shapeType);
     }
 
 }
