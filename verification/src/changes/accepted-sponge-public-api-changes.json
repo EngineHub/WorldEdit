@@ -6,6 +6,13 @@
             "changes": [
                 "METHOD_REMOVED"
             ]
+        },
+        {
+            "type": "com.sk89q.worldedit.sponge.SpongeBlockMaterial",
+            "member": "Method com.sk89q.worldedit.sponge.SpongeBlockMaterial.isFullCube()",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
         }
     ]
 }

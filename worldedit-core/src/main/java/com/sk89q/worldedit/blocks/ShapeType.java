@@ -17,24 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.function.mask;
+package com.sk89q.worldedit.blocks;
 
-import com.sk89q.worldedit.blocks.ShapeType;
-import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.world.block.BlockState;
-
-public final class FullCubeMask extends AbstractExtentMask {
-
-    public FullCubeMask(Extent extent) {
-        super(extent);
-    }
-
-    @Override
-    public boolean test(BlockVector3 vector) {
-        Extent extent = getExtent();
-        BlockState block = extent.getBlock(vector);
-        return block.getBlockType().getMaterial().isFullCube(ShapeType.SHAPE);
-    }
-
+public enum ShapeType {
+    SHAPE,
+    VISUAL_SHAPE,
 }
