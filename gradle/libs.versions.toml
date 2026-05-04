@@ -31,8 +31,8 @@ minimumJdependency = "2.10"
 minimumTinyRemapper = "0.8.11"
 
 # https://repo.enginehub.org/language-files/com/sk89q/worldedit/worldedit-lang/
-lang-worldeditBase = "7.3.20"
-lang-version = "2119"
+lang-worldeditBase = "7.4.3"
+lang-version = "2173"
 
 [libraries]
 neogradle-neoform = { module = "net.neoforged.gradle:neoform", version.ref = "neogradle" }

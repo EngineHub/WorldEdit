@@ -6,6 +6,8 @@
 - Fixed a few issues where odd permissions setups would not show friendly permissions error messages
 - Fixed some incompatible selection commands not showing friendly error messages when used with convex selections
 - Fixed some potential issues when creating `extend` region selectors via the API
+- Improved accuracy of area calculations for poly2d selections in certain complex situations
+- Made the directory watcher thread a daemon to resolve rare shutdown issues on specific hardware/software configurations
 - [Bukkit] Improved incompatible version warnings from adapters to reduce chance of false positives in certain contexts
 
 7.4.2
