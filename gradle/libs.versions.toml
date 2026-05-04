@@ -2,7 +2,7 @@
 neogradle-userdev = { id = "net.neoforged.gradle.userdev", version.ref = "neogradle" }
 sponge-spongegradle = "org.spongepowered.gradle.plugin:2.3.0"
 sponge-vanillagradle = { id = "org.spongepowered.gradle.vanilla", version.ref = "sponge-vanillagradle" }
-fabric-loom = "net.fabricmc.fabric-loom:1.15.5"
+fabric-loom = "net.fabricmc.fabric-loom:1.16.1"
 
 [versions]
 kyoriText = "3.0.4"
@@ -13,14 +13,14 @@ cuiProtocol = "4.0.3"
 
 errorprone = "2.48.0"
 
-fabric-api = "0.144.3+26.1"
+fabric-api = "0.148.0+26.1.2"
 
-neogradle = "7.1.21"
-neoforge-minecraft = "26.1"
+neogradle = "7.1.26"
+neoforge-minecraft = "26.1.2"
 
-sponge-minecraft = "26.1"
+sponge-minecraft = "26.1.2"
 # https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/spongeapi/
-sponge-api = "19.0.0-20260328.013918-1"
+sponge-api = "19.0.0-20260501.142639-2"
 sponge-api-major = "19"
 
 sponge-vanillagradle = "0.3.2"
@@ -31,8 +31,8 @@ minimumJdependency = "2.10"
 minimumTinyRemapper = "0.8.11"
 
 # https://repo.enginehub.org/language-files/com/sk89q/worldedit/worldedit-lang/
-lang-worldeditBase = "7.3.19"
-lang-version = "2062"
+lang-worldeditBase = "7.3.20"
+lang-version = "2119"
 
 [libraries]
 neogradle-neoform = { module = "net.neoforged.gradle:neoform", version.ref = "neogradle" }
@@ -90,11 +90,11 @@ rhino = "org.mozilla:rhino-runtime:1.7.13"
 jchronic = "com.sk89q:jchronic:0.2.4a"
 jlibnoise = "com.sk89q.lib:jlibnoise:1.0.0"
 
-fabric-minecraft = "com.mojang:minecraft:26.1"
-fabric-loader = "net.fabricmc:fabric-loader:0.18.5"
+fabric-minecraft = "com.mojang:minecraft:26.1.2"
+fabric-loader = "net.fabricmc:fabric-loader:0.19.2"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.7.0"
 
-neoforge = "net.neoforged:neoforge:26.1.0.15-beta"
+neoforge = "net.neoforged:neoforge:26.1.2.36-beta"
 
 # Mojang-provided libraries, CHECK AGAINST MINECRAFT for versions
 guava = "com.google.guava:guava:33.5.0-jre!!"
