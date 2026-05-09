@@ -266,12 +266,10 @@ public final class Functions {
         return ThreadLocalRandom.current().nextInt((int) Math.floor(max));
     }
 
-    private static final ThreadLocal<PerlinNoise> localPerlin = ThreadLocal.withInitial(PerlinNoise::new);
-
     @ExpressionFunction
     private static double perlin(double seed, double x, double y, double z,
                                  double frequency, double octaves, double persistence) {
-        PerlinNoise perlin = localPerlin.get();
+        PerlinNoise perlin = new PerlinNoise();
         try {
             perlin.setSeed((int) seed);
             perlin.setFrequency(frequency);
@@ -283,11 +281,9 @@ public final class Functions {
         return perlin.noise(Vector3.at(x, y, z));
     }
 
-    private static final ThreadLocal<VoronoiNoise> localVoronoi = ThreadLocal.withInitial(VoronoiNoise::new);
-
     @ExpressionFunction
     private static double voronoi(double seed, double x, double y, double z, double frequency) {
-        VoronoiNoise voronoi = localVoronoi.get();
+        VoronoiNoise voronoi = new VoronoiNoise();
         try {
             voronoi.setSeed((int) seed);
             voronoi.setFrequency(frequency);
@@ -297,12 +293,10 @@ public final class Functions {
         return voronoi.noise(Vector3.at(x, y, z));
     }
 
-    private static final ThreadLocal<RidgedMultiFractalNoise> localRidgedMulti = ThreadLocal.withInitial(RidgedMultiFractalNoise::new);
-
     @ExpressionFunction
     private static double ridgedmulti(double seed, double x, double y, double z,
                                       double frequency, double octaves) {
-        RidgedMultiFractalNoise ridgedMulti = localRidgedMulti.get();
+        RidgedMultiFractalNoise ridgedMulti = new RidgedMultiFractalNoise();
         try {
             ridgedMulti.setSeed((int) seed);
             ridgedMulti.setFrequency(frequency);

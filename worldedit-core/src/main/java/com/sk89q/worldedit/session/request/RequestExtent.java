@@ -38,12 +38,8 @@ import javax.annotation.Nullable;
 
 public class RequestExtent implements Extent {
 
-    private Request request;
-
     protected Extent getExtent() {
-        if (request == null || !request.isValid()) {
-            request = Request.request();
-        }
+        Request request = Request.request();
         final EditSession editSession = request.getEditSession();
         return editSession == null ? request.getWorld() : editSession;
     }
@@ -102,8 +98,6 @@ public class RequestExtent implements Extent {
     @Override
     @Nullable
     public Operation commit() {
-        Operation commit = getExtent().commit();
-        request = null;
-        return commit;
+        return getExtent().commit();
     }
 }
