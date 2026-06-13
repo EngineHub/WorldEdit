@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.bukkit.adapter.impl.v26_1;
+package com.sk89q.worldedit.bukkit.adapter.impl.v26_2;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -191,6 +191,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
 import java.util.TreeMap;
@@ -234,9 +235,9 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         var _ = CraftServer.class.cast(Bukkit.getServer());
 
         int dataVersion = SharedConstants.getCurrentVersion().dataVersion().version();
-        if (dataVersion < Constants.DATA_VERSION_MC_26_1 || dataVersion > Constants.DATA_VERSION_MC_26_1_2) {
-            if (dataVersion <= Constants.DATA_VERSION_MC_1_21_11 || dataVersion > Constants.DATA_VERSION_MC_26_1_2) {
-                throw new RuntimeException("Force prevent this loading on <=1.21.11 or >26.1.2");
+        if (dataVersion != Constants.DATA_VERSION_MC_26_2) {
+            if (dataVersion <= Constants.DATA_VERSION_MC_26_1_2) {
+                throw new RuntimeException("Force prevent this loading on <=26.1.2");
             }
             logger.warning(WRONG_VERSION);
         }
@@ -538,6 +539,10 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         ServerLevel worldServer = craftWorld.getHandle();
 
         String entityId = state.getType().id();
+        final Optional<EntityType<?>> entityType = worldServer.registryAccess().lookupOrThrow(Registries.ENTITY_TYPE).getOptional(Identifier.parse(entityId));
+        if (entityType.isEmpty()) {
+            return null;
+        }
 
         LinCompoundTag nativeTag = state.getNbt();
         net.minecraft.nbt.CompoundTag tag;
@@ -550,7 +555,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
         tag.putString("id", entityId);
 
-        Entity createdEntity = EntityType.loadEntityRecursive(tag, craftWorld.getHandle(), EntitySpawnReason.COMMAND, (loadedEntity) -> {
+        Entity createdEntity = EntityType.loadEntityRecursive(entityType.get(), tag, craftWorld.getHandle(), EntitySpawnReason.COMMAND, (loadedEntity) -> {
             loadedEntity.absSnapTo(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
             return loadedEntity;
         });
