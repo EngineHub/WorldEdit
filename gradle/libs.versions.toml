@@ -13,7 +13,7 @@ cuiProtocol = "4.0.3"
 
 errorprone = "2.48.0"
 
-fabric-api = "0.148.0+26.1.2"
+fabric-api = "0.152.0+26.2"
 
 neogradle = "7.1.37"
 neoforge-minecraft = "26.1.2"
@@ -90,18 +90,18 @@ rhino = "org.mozilla:rhino-runtime:1.7.13"
 jchronic = "com.sk89q:jchronic:0.2.4a"
 jlibnoise = "com.sk89q.lib:jlibnoise:1.0.0"
 
-fabric-minecraft = "com.mojang:minecraft:26.1.2"
+fabric-minecraft = "com.mojang:minecraft:26.2-rc-2"
 fabric-loader = "net.fabricmc:fabric-loader:0.19.3"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.7.0"
 
 neoforge = "net.neoforged:neoforge:26.1.2.36-beta"
 
 # Mojang-provided libraries, CHECK AGAINST MINECRAFT for versions
-guava = "com.google.guava:guava:33.5.0-jre!!"
+guava = "com.google.guava:guava:33.6.0-jre!!"
 log4j-bom = "org.apache.logging.log4j:log4j-bom:2.25.2!!"
 log4j-api.module = "org.apache.logging.log4j:log4j-api"
 log4j-core.module = "org.apache.logging.log4j:log4j-core"
-gson = "com.google.code.gson:gson:2.13.2!!"
+gson = "com.google.code.gson:gson:2.14.0!!"
 fastutil = "it.unimi.dsi:fastutil:8.5.18!!"
 
 # Bukkit-provided libraries, CHECK AGAINST SPIGOT for versions

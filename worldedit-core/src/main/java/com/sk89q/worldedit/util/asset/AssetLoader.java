@@ -27,15 +27,15 @@ import com.sk89q.worldedit.util.io.file.FilenameException;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
 @Beta
 public abstract class AssetLoader<T> {
 
     private final Cache<String, T> assets = CacheBuilder.newBuilder()
-        .expireAfterAccess(5, TimeUnit.MINUTES)
+        .expireAfterAccess(Duration.ofMinutes(5))
         .build();
 
     private final WorldEdit worldEdit;
