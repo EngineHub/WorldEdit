@@ -39,27 +39,10 @@ public class BundledRegistries implements Registries {
 
     private static final BundledRegistries INSTANCE = new BundledRegistries();
 
-    private static final RangeMap<Integer, String> VERSION_MAP;
-
-    static {
-        TreeRangeMap<Integer, String> versionMap = TreeRangeMap.create();
-        versionMap.put(Range.atLeast(Constants.DATA_VERSION_MC_1_20), "120");
-        versionMap.put(Range.atLeast(Constants.DATA_VERSION_MC_1_21), "121");
-        versionMap.put(Range.atLeast(Constants.DATA_VERSION_MC_1_21_3), "1213");
-        versionMap.put(Range.atLeast(Constants.DATA_VERSION_MC_1_21_4), "1214");
-        VERSION_MAP = ImmutableRangeMap.copyOf(versionMap);
-    }
-
     static URL loadRegistry(String name) throws IOException {
         ResourceLoader resourceLoader = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.CONFIGURATION)
             .getResourceLoader();
-        int dataVersion = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING)
-            .getDataVersion();
-        String version = VERSION_MAP.get(dataVersion);
-        URL url = resourceLoader.getResource(BundledRegistries.class, name + "." + version + ".json");
-        if (url == null) {
-            url = resourceLoader.getResource(BundledRegistries.class, name + ".json");
-        }
+        URL url = resourceLoader.getResource(BundledRegistries.class, name + ".json");
         if (url == null) {
             throw new IOException("Could not find " + name + ".json");
         }
