@@ -112,6 +112,7 @@ public final class BiomeTypes {
     @Deprecated @Nullable public static final BiomeType STONE_SHORE = get("minecraft:stone_shore");
     @Nullable public static final BiomeType STONY_PEAKS = get("minecraft:stony_peaks");
     @Nullable public static final BiomeType STONY_SHORE = get("minecraft:stony_shore");
+    @Nullable public static final BiomeType SULFUR_CAVES = get("minecraft:sulfur_caves");
     @Nullable public static final BiomeType SUNFLOWER_PLAINS = get("minecraft:sunflower_plains");
     @Nullable public static final BiomeType SWAMP = get("minecraft:swamp");
     @Deprecated @Nullable public static final BiomeType SWAMP_HILLS = get("minecraft:swamp_hills");

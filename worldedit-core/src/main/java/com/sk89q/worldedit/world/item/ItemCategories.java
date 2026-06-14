@@ -64,6 +64,8 @@ public final class ItemCategories {
     public static final ItemCategory COALS = get("minecraft:coals");
     public static final ItemCategory COMPASSES = get("minecraft:compasses");
     public static final ItemCategory COMPLETES_FIND_TREE_TUTORIAL = get("minecraft:completes_find_tree_tutorial");
+    public static final ItemCategory CONCRETE = get("minecraft:concrete");
+    public static final ItemCategory CONCRETE_POWDERS = get("minecraft:concrete_powders");
     public static final ItemCategory COPPER = get("minecraft:copper");
     public static final ItemCategory COPPER_CHESTS = get("minecraft:copper_chests");
     public static final ItemCategory COPPER_GOLEM_STATUES = get("minecraft:copper_golem_statues");
@@ -120,6 +122,7 @@ public final class ItemCategories {
     @Deprecated public static final ItemCategory FURNACE_MATERIALS = get("minecraft:furnace_materials");
     public static final ItemCategory FURNACE_MINECART_FUEL = get("minecraft:furnace_minecart_fuel");
     public static final ItemCategory GAZE_DISGUISE_EQUIPMENT = get("minecraft:gaze_disguise_equipment");
+    public static final ItemCategory GLAZED_TERRACOTTA = get("minecraft:glazed_terracotta");
     public static final ItemCategory GOAT_FOOD = get("minecraft:goat_food");
     public static final ItemCategory GOLD_ORES = get("minecraft:gold_ores");
     public static final ItemCategory GOLD_TOOL_MATERIALS = get("minecraft:gold_tool_materials");
@@ -215,6 +218,20 @@ public final class ItemCategories {
     public static final ItemCategory STONE_TOOL_MATERIALS = get("minecraft:stone_tool_materials");
     public static final ItemCategory STRIDER_FOOD = get("minecraft:strider_food");
     public static final ItemCategory STRIDER_TEMPT_ITEMS = get("minecraft:strider_tempt_items");
+    public static final ItemCategory SULFUR_CUBE_ARCHETYPE_BOUNCY = get("minecraft:sulfur_cube_archetype/bouncy");
+    public static final ItemCategory SULFUR_CUBE_ARCHETYPE_EXPLOSIVE = get("minecraft:sulfur_cube_archetype/explosive");
+    public static final ItemCategory SULFUR_CUBE_ARCHETYPE_FAST_FLAT = get("minecraft:sulfur_cube_archetype/fast_flat");
+    public static final ItemCategory SULFUR_CUBE_ARCHETYPE_FAST_SLIDING = get("minecraft:sulfur_cube_archetype/fast_sliding");
+    public static final ItemCategory SULFUR_CUBE_ARCHETYPE_HIGH_RESISTANCE = get("minecraft:sulfur_cube_archetype/high_resistance");
+    public static final ItemCategory SULFUR_CUBE_ARCHETYPE_HOT = get("minecraft:sulfur_cube_archetype/hot");
+    public static final ItemCategory SULFUR_CUBE_ARCHETYPE_LIGHT = get("minecraft:sulfur_cube_archetype/light");
+    public static final ItemCategory SULFUR_CUBE_ARCHETYPE_REGULAR = get("minecraft:sulfur_cube_archetype/regular");
+    public static final ItemCategory SULFUR_CUBE_ARCHETYPE_SLOW_BOUNCY = get("minecraft:sulfur_cube_archetype/slow_bouncy");
+    public static final ItemCategory SULFUR_CUBE_ARCHETYPE_SLOW_FLAT = get("minecraft:sulfur_cube_archetype/slow_flat");
+    public static final ItemCategory SULFUR_CUBE_ARCHETYPE_SLOW_SLIDING = get("minecraft:sulfur_cube_archetype/slow_sliding");
+    public static final ItemCategory SULFUR_CUBE_ARCHETYPE_STICKY = get("minecraft:sulfur_cube_archetype/sticky");
+    public static final ItemCategory SULFUR_CUBE_FOOD = get("minecraft:sulfur_cube_food");
+    public static final ItemCategory SULFUR_CUBE_SWALLOWABLE = get("minecraft:sulfur_cube_swallowable");
     public static final ItemCategory SWORDS = get("minecraft:swords");
     @Deprecated public static final ItemCategory TALL_FLOWERS = get("minecraft:tall_flowers");
     public static final ItemCategory TERRACOTTA = get("minecraft:terracotta");
