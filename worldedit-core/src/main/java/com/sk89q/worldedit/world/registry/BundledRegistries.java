@@ -19,13 +19,8 @@
 
 package com.sk89q.worldedit.world.registry;
 
-import com.google.common.collect.ImmutableRangeMap;
-import com.google.common.collect.Range;
-import com.google.common.collect.RangeMap;
-import com.google.common.collect.TreeRangeMap;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
-import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.util.io.ResourceLoader;
 
 import java.io.IOException;
