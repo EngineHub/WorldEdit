@@ -65,60 +65,60 @@ val fabricZipTree = zipTree(
 
 val mergeManifests = tasks.register<MergeManifests>("mergeManifests") {
     // TODO Extract forgeZipTree outside of this task when possible
-//    val forgeZipTree = zipTree(
-//        project(":worldedit-neoforge").tasks.named("jarJar").map { it.outputs.files.singleFile }
-//    )
+    val forgeZipTree = zipTree(
+        project(":worldedit-neoforge").tasks.named("jarJar").map { it.outputs.files.singleFile }
+    )
 
     dependsOn(
         project(":worldedit-fabric").tasks.named<ShadowJar>("shadowJar"),
-//        project(":worldedit-neoforge").tasks.named("jarJar")
+        project(":worldedit-neoforge").tasks.named("jarJar")
     )
     inputManifests.from(
         fabricZipTree.matching { include("META-INF/MANIFEST.MF") },
-//        forgeZipTree.matching { include("META-INF/MANIFEST.MF") }
+        forgeZipTree.matching { include("META-INF/MANIFEST.MF") }
     )
     outputManifest.set(project.layout.buildDirectory.file("mergeManifests/MANIFEST.MF"))
 }
 
 tasks.register<Jar>("jar") {
-//    val forgeZipTree = zipTree(
-//        project(":worldedit-neoforge").tasks.named("jarJar").map { it.outputs.files.singleFile }
-//    )
+    val forgeZipTree = zipTree(
+        project(":worldedit-neoforge").tasks.named("jarJar").map { it.outputs.files.singleFile }
+    )
 
     dependsOn(
         project(":worldedit-fabric").tasks.named<ShadowJar>("shadowJar"),
-//        project(":worldedit-neoforge").tasks.named("jarJar"),
+        project(":worldedit-neoforge").tasks.named("jarJar"),
         mergeManifests
     )
     from(fabricZipTree) {
         exclude("META-INF/MANIFEST.MF")
     }
-//    from(forgeZipTree) {
-//        exclude("META-INF/MANIFEST.MF")
-//        // Duplicated first-party files
-//        exclude("META-INF/services/org.enginehub.piston.CommandManagerService")
-//        exclude("lang/")
-//        // No-brainer library excludes
-//        exclude("com/sk89q/jchronic/")
-//        exclude("com/sk89q/jnbt/")
-//        exclude("com/sk89q/minecraft/")
-//        exclude("com/sk89q/util/")
-//        exclude("com/thoughtworks/")
-//        exclude("net/royawesome/")
-//        exclude("org/enginehub/piston/")
-//        exclude("org/enginehub/linbus/")
-//        exclude("net/kyori/examination/")
-//        // Exclude worldedit-core and worldedit-core-mc (already included from fabric side)
-//        exclude {
-//            val pathString = it.relativePath.pathString
-//            pathString.startsWith("com/sk89q/worldedit/") && !pathString.startsWith("com/sk89q/worldedit/neoforge/")
-//        }
-//        // Questionable excludes. So far the two files from each jar are the same.
-//        exclude("assets/worldedit/icon.png")
-//        exclude("defaults/worldedit.properties")
-//        exclude("pack.mcmeta")
-//        exclude("worldedit-coremc.mixins.json")
-//    }
+    from(forgeZipTree) {
+        exclude("META-INF/MANIFEST.MF")
+        // Duplicated first-party files
+        exclude("META-INF/services/org.enginehub.piston.CommandManagerService")
+        exclude("lang/")
+        // No-brainer library excludes
+        exclude("com/sk89q/jchronic/")
+        exclude("com/sk89q/jnbt/")
+        exclude("com/sk89q/minecraft/")
+        exclude("com/sk89q/util/")
+        exclude("com/thoughtworks/")
+        exclude("net/royawesome/")
+        exclude("org/enginehub/piston/")
+        exclude("org/enginehub/linbus/")
+        exclude("net/kyori/examination/")
+        // Exclude worldedit-core and worldedit-core-mc (already included from fabric side)
+        exclude {
+            val pathString = it.relativePath.pathString
+            pathString.startsWith("com/sk89q/worldedit/") && !pathString.startsWith("com/sk89q/worldedit/neoforge/")
+        }
+        // Questionable excludes. So far the two files from each jar are the same.
+        exclude("assets/worldedit/icon.png")
+        exclude("defaults/worldedit.properties")
+        exclude("pack.mcmeta")
+        exclude("worldedit-coremc.mixins.json")
+    }
     manifest {
         from(mergeManifests.flatMap { it.outputManifest })
     }
