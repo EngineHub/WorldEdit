@@ -785,7 +785,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
             ServerLevel freshWorld = new ServerLevel(
                     originalWorld.getServer(),
-                    originalWorld.getServer().executor,
+                    Util.backgroundExecutor(),
                     session,
                     originalWorld.worldGenSettings,
                     originalWorld.dimension(),
