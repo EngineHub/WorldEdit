@@ -715,7 +715,7 @@ public final class CoreMcWorld extends AbstractWorld {
     public Entity createEntity(Location location, BaseEntity entity) {
         ServerLevel world = getWorld();
         String entityId = entity.getType().id();
-        final Optional<EntityType<?>> entityType = EntityType.byString(entityId);
+        final Optional<EntityType<?>> entityType = world.registryAccess().lookupOrThrow(Registries.ENTITY_TYPE).getOptional(Identifier.parse(entityId));
         if (entityType.isEmpty()) {
             return null;
         }
@@ -729,7 +729,7 @@ public final class CoreMcWorld extends AbstractWorld {
         }
         tag.putString("id", entityId);
 
-        net.minecraft.world.entity.Entity createdEntity = EntityType.loadEntityRecursive(tag, world, EntitySpawnReason.COMMAND, (loadedEntity) -> {
+        net.minecraft.world.entity.Entity createdEntity = EntityType.loadEntityRecursive(entityType.get(), tag, world, EntitySpawnReason.COMMAND, loadedEntity -> {
             loadedEntity.absSnapTo(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
             return loadedEntity;
         });
