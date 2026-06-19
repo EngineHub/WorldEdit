@@ -6,7 +6,7 @@ fabric-loom = "net.fabricmc.fabric-loom:1.17.11"
 
 [versions]
 kyoriText = "3.0.4"
-piston = "0.5.11"
+piston = "0.6.0"
 autoValue = "1.10.4"
 antlr = "4.13.2"
 cuiProtocol = "4.0.3"
