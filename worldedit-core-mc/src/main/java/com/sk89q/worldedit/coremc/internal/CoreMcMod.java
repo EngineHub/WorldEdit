@@ -245,8 +245,6 @@ public abstract class CoreMcMod {
     }
 
     protected void serverStopping() {
-        WorldEdit worldEdit = WorldEdit.getInstance();
-        worldEdit.getSessionManager().unload();
         WorldEdit.getInstance().getEventBus().post(new PlatformUnreadyEvent(platform));
     }
 

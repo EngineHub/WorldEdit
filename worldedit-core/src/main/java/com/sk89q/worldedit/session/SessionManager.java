@@ -36,7 +36,6 @@ import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.session.storage.JsonFileSessionStore;
 import com.sk89q.worldedit.session.storage.SessionStore;
 import com.sk89q.worldedit.session.storage.VoidStore;
-import com.sk89q.worldedit.util.concurrency.EvenMoreExecutors;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
 import com.sk89q.worldedit.world.gamemode.GameModes;
 import com.sk89q.worldedit.world.item.ItemType;
@@ -50,12 +49,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -71,13 +71,13 @@ public class SessionManager {
 
     public static int EXPIRATION_GRACE = 10 * 60 * 1000;
     private static final int FLUSH_PERIOD = 1000 * 30;
-    private static final ExecutorService executorService = EvenMoreExecutors.newBoundedCachedThreadPool(
-        0, 1, 5, "WorldEdit Session Saver - %s"
-    );
     private static final Logger LOGGER = LogManagerCompat.getLogger();
     private static final Set<String> warnedInvalidTool = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-    private final Timer timer = new Timer("WorldEdit Session Manager");
+    private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(
+            1,
+            Thread.ofVirtual().name("WorldEdit Session Manager").factory()
+    );
     private final WorldEdit worldEdit;
     private final Map<UUID, SessionHolder> sessions = new HashMap<>();
     private SessionStore store = new VoidStore();
@@ -93,7 +93,7 @@ public class SessionManager {
         this.worldEdit = worldEdit;
 
         worldEdit.getEventBus().register(this);
-        timer.schedule(new SessionTracker(), FLUSH_PERIOD, FLUSH_PERIOD);
+        var _ = executorService.scheduleAtFixedRate(new SessionTracker(), FLUSH_PERIOD, FLUSH_PERIOD, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -307,11 +307,21 @@ public class SessionManager {
     }
 
     /**
-     * Called to unload this session manager.
+     * Called to unload this session manager permanently.
      */
-    public synchronized void unload() {
+    public void unload() {
         clear();
-        timer.cancel();
+        executorService.shutdown();
+        try {
+            if (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
+                var tasks = executorService.shutdownNow();
+                WorldEdit.logger.error("Session manager is taking too long to exit. List of active tasks: ({})\n{}",
+                        tasks.size(),
+                        tasks.stream().map(run -> run.getClass() + ": " + run + "\n"));
+            }
+        } catch (InterruptedException e) {
+            WorldEdit.logger.error("Interrupted while waiting for session manager to shutdown", e);
+        }
     }
 
     /**

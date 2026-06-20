@@ -37,6 +37,7 @@ import com.sk89q.worldedit.command.ToolUtilCommands
 import com.sk89q.worldedit.command.UtilityCommands
 import com.sk89q.worldedit.command.util.PermissionCondition
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent
+import com.sk89q.worldedit.event.platform.PlatformUnreadyEvent
 import com.sk89q.worldedit.event.platform.PlatformsRegisteredEvent
 import com.sk89q.worldedit.internal.command.CommandUtil
 import com.sk89q.worldedit.util.formatting.text.TextComponent
@@ -337,9 +338,9 @@ Other Permissions
          */
         @JvmStatic
         fun main(args: Array<String>) {
+            val plat = DocumentationPlatform()
+            WorldEdit.getInstance().platformManager.register(plat)
             try {
-                val plat = DocumentationPlatform()
-                WorldEdit.getInstance().platformManager.register(plat)
                 WorldEdit.getInstance().eventBus.post(PlatformReadyEvent(plat))
                 WorldEdit.getInstance().eventBus.post(PlatformsRegisteredEvent())
                 val printer = DocumentationPrinter()
@@ -348,7 +349,7 @@ Other Permissions
                 writeOutput("commands.rst", printer.cmdOutput.toString())
                 writeOutput("permissions.rst", printer.permsOutput.toString())
             } finally {
-                WorldEdit.getInstance().sessionManager.unload()
+                WorldEdit.getInstance().eventBus.post(PlatformUnreadyEvent(plat))
             }
         }
 

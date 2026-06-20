@@ -27,6 +27,7 @@ import com.sk89q.worldedit.cli.schematic.ClipboardWorld;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
+import com.sk89q.worldedit.event.platform.PlatformUnreadyEvent;
 import com.sk89q.worldedit.event.platform.PlatformsRegisteredEvent;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
@@ -212,7 +213,7 @@ public class CLIWorldEdit {
 
     public void onStopped() {
         WorldEdit worldEdit = WorldEdit.getInstance();
-        worldEdit.getSessionManager().unload();
+        worldEdit.getEventBus().post(new PlatformUnreadyEvent(platform));
         worldEdit.getPlatformManager().unregister(platform);
     }
 

@@ -41,6 +41,7 @@ import com.sk89q.worldedit.event.platform.PlatformUnreadyEvent;
 import com.sk89q.worldedit.event.platform.PlatformsRegisteredEvent;
 import com.sk89q.worldedit.event.platform.PlayerInputEvent;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
+import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
@@ -79,6 +80,7 @@ public class PlatformManager {
     private final WorldEdit worldEdit;
     private final PlatformCommandManager platformCommandManager;
     private final SimpleLifecycled<ListeningExecutorService> executorService;
+    private final SimpleLifecycled<SessionManager> sessionManager;
     private final Map<Platform, Boolean> platforms = Maps.newHashMap();
     private final ImmutableMap<Capability, SimpleLifecycled<Platform>> preferences = Stream.of(Capability.values())
         .collect(Maps.toImmutableEnumMap(
@@ -100,6 +102,7 @@ public class PlatformManager {
         this.worldEdit = worldEdit;
         this.platformCommandManager = new PlatformCommandManager(worldEdit, this);
         this.executorService = SimpleLifecycled.invalid();
+        this.sessionManager = SimpleLifecycled.invalid();
 
         // Register this instance for events
         worldEdit.getEventBus().register(this);
@@ -343,6 +346,19 @@ public class PlatformManager {
     }
 
     /**
+     * Get the session manager.
+     *
+     * @return the session manager
+     */
+    public SessionManager getSessionManager() {
+        return sessionManager.valueOrThrow();
+    }
+
+    private static SessionManager createSessionManager() {
+        return new SessionManager(WorldEdit.getInstance());
+    }
+
+    /**
      * Get the current configuration.
      *
      * <p>If no platform has been registered yet, then a default configuration
@@ -406,6 +422,9 @@ public class PlatformManager {
         if (!executorService.isValid()) {
             executorService.newValue(createExecutor());
         }
+        if (!sessionManager.isValid()) {
+            sessionManager.newValue(createSessionManager());
+        }
     }
 
     /**
@@ -420,6 +439,8 @@ public class PlatformManager {
         if (!platforms.containsValue(true)) {
             executorService.value().ifPresent(ListeningExecutorService::shutdownNow);
             executorService.invalidate();
+            sessionManager.value().ifPresent(SessionManager::unload);
+            sessionManager.invalidate();
         }
     }
 

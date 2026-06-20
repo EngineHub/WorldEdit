@@ -253,7 +253,6 @@ public class SpongeWorldEdit {
     @Listener
     public void serverStopping(StoppingEngineEvent<Server> event) {
         WorldEdit worldEdit = WorldEdit.getInstance();
-        worldEdit.getSessionManager().unload();
         WorldEdit.getInstance().getEventBus().post(new PlatformUnreadyEvent(platform));
     }
 
