@@ -120,7 +120,6 @@ public final class WorldEdit {
     private final PlatformManager platformManager = new PlatformManager(this);
     @Deprecated
     private final EditSessionFactory editSessionFactory = new EditSessionFactory.EditSessionFactoryImpl();
-    private final SessionManager sessions = new SessionManager(this);
     private final Supervisor supervisor = new SimpleSupervisor();
     private final AssetLoaders assetLoaders = new AssetLoaders(this);
     private final SchematicsManager schematicsManager = new SchematicsManager(this);
@@ -237,7 +236,7 @@ public final class WorldEdit {
      * @return the session manager
      */
     public SessionManager getSessionManager() {
-        return sessions;
+        return platformManager.getSessionManager();
     }
 
     /**
