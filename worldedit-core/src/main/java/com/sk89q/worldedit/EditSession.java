@@ -2668,8 +2668,10 @@ public class EditSession implements Extent, AutoCloseable {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int hollowOutRegion(Region region, int thickness, Pattern pattern) throws MaxChangedBlocksException {
+        // Number of affected blocks, based on what setBlock returns
         int affected = 0;
 
+        // The set of blocks that were seen
         final Set<BlockVector3> visible = new HashSet<>();
 
         // Initialize BFS with selection bounding box
@@ -2720,14 +2722,17 @@ public class EditSession implements Extent, AutoCloseable {
             for (BlockVector3 recurseDirection : CARDINAL_UPRIGHT_OFFSETS) {
                 final BlockVector3 neighbor = current.add(recurseDirection);
 
+                // Abort if we're outside the region
                 if (!region.contains(neighbor)) {
                     continue;
                 }
 
+                // Mark the block as visible, abort if it already was
                 if (!visible.add(neighbor)) {
                     continue;
                 }
 
+                // And queue it
                 queue.add(neighbor);
             }
         }
