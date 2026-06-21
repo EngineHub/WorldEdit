@@ -2770,6 +2770,9 @@ public class EditSession implements Extent, AutoCloseable {
         // The set of blocks that were seen
         final Set<BlockVector3> visible = new HashSet<>(startingPositions);
 
+        // The set of blocks that were not only seen, but entered
+        final Set<BlockVector3> entered = new HashSet<>(startingPositions);
+
         // Do BFS to find more visible blocks
         final Queue<BlockVector3> queue = new ArrayDeque<>(startingPositions);
         while (!queue.isEmpty()) {
@@ -2811,9 +2814,30 @@ public class EditSession implements Extent, AutoCloseable {
                     continue;
                 }
 
-                // Mark the block as visible, abort if it already was
-                if (!visible.add(neighbor)) {
-                    continue;
+                if (useBlockGeometry) {
+                    // Mark neighbor as visible
+                    visible.add(neighbor);
+
+                    // If the neighbor was already entered, we can skip the expensive blocked calculation
+                    if (entered.contains(neighbor)) {
+                        continue;
+                    }
+
+                    // Check if we can actually enter the block from here
+                    Direction oppositeDirection = Direction.findClosest(direction.toVector().multiply(-1), Direction.Flag.ALL);
+                    for (Direction blockedDirection : getBlockedDirections(neighbor)) {
+                        if (blockedDirection == oppositeDirection) {
+                            continue outer; // skip this direction
+                        }
+                    }
+
+                    // Mark neighbor as entered
+                    entered.add(neighbor);
+                } else {
+                    // Mark the block as visible, abort if it already was
+                    if (!visible.add(neighbor)) {
+                        continue;
+                    }
                 }
 
                 // And queue it
