@@ -135,6 +135,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -2668,11 +2669,8 @@ public class EditSession implements Extent, AutoCloseable {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int hollowOutRegion(Region region, int thickness, Pattern pattern) throws MaxChangedBlocksException {
-        // Number of affected blocks, based on what setBlock returns
-        int affected = 0;
-
-        // The set of blocks that were seen
-        final Set<BlockVector3> visible = new HashSet<>();
+        // Positions to consider as 'outside'
+        Collection<BlockVector3> startingPositions = new ArrayList<>();
 
         // Initialize BFS with selection bounding box
         final BlockVector3 min = region.getMinimumPoint();
@@ -2687,30 +2685,33 @@ public class EditSession implements Extent, AutoCloseable {
 
         for (int x = minX; x <= maxX; ++x) {
             for (int y = minY; y <= maxY; ++y) {
-                visible.add(BlockVector3.at(x, y, minZ));
-                visible.add(BlockVector3.at(x, y, maxZ));
+                startingPositions.add(BlockVector3.at(x, y, minZ));
+                startingPositions.add(BlockVector3.at(x, y, maxZ));
             }
         }
 
         for (int y = minY; y <= maxY; ++y) {
             for (int z = minZ; z <= maxZ; ++z) {
-                visible.add(BlockVector3.at(minX, y, z));
-                visible.add(BlockVector3.at(maxX, y, z));
+                startingPositions.add(BlockVector3.at(minX, y, z));
+                startingPositions.add(BlockVector3.at(maxX, y, z));
             }
         }
 
         for (int z = minZ; z <= maxZ; ++z) {
             for (int x = minX; x <= maxX; ++x) {
-                visible.add(BlockVector3.at(x, minY, z));
-                visible.add(BlockVector3.at(x, maxY, z));
+                startingPositions.add(BlockVector3.at(x, minY, z));
+                startingPositions.add(BlockVector3.at(x, maxY, z));
             }
         }
 
         // Remove movement blockers from visible list
-        visible.removeIf(blockVector3 -> getBlock(blockVector3).getBlockType().getMaterial().isMovementBlocker());
+        startingPositions.removeIf(blockVector3 -> getBlock(blockVector3).getBlockType().getMaterial().isMovementBlocker());
+
+        // The set of blocks that were seen
+        final Set<BlockVector3> visible = new HashSet<>(startingPositions);
 
         // Do BFS to find more visible blocks
-        final Queue<BlockVector3> queue = new ArrayDeque<>(visible);
+        final Queue<BlockVector3> queue = new ArrayDeque<>(startingPositions);
         while (!queue.isEmpty()) {
             final BlockVector3 current = queue.poll();
 
@@ -2754,6 +2755,9 @@ public class EditSession implements Extent, AutoCloseable {
             visible.addAll(newVisible);
             newVisible.clear();
         }
+
+        // Number of affected blocks, based on what setBlock returns
+        int affected = 0;
 
         // Remove everything else in the selection
         for (BlockVector3 position : region) {
