@@ -73,7 +73,10 @@ public class PollingSchematicsBackend implements SchematicsBackend {
                     pathList.add(path);
                 }
             }
-        } catch (IOException | FilenameException e) {
+        } catch (FilenameException e) {
+            LOGGER.warn("Illegal file detected: {} - {}", e.getMessage(), e.getFilename());
+            LOGGER.debug("Illegal file details", e);
+        } catch (IOException e) {
             LOGGER.error(e);
         }
         return pathList;

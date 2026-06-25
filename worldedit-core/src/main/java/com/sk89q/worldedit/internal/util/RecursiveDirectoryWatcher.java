@@ -127,7 +127,8 @@ public class RecursiveDirectoryWatcher implements Closeable {
                         eventConsumer.accept(new FileCreatedEvent(path));
                     } catch (FilenameException e) {
                         // Invalid filename, warn but don't fail.
-                        LOGGER.warn("Illegal file detected", e);
+                        LOGGER.warn("Illegal file detected: {} - {}", e.getMessage(), e.getFilename());
+                        LOGGER.debug("Illegal file details", e);
                     }
                 }
             }
@@ -191,7 +192,8 @@ public class RecursiveDirectoryWatcher implements Closeable {
                                 path = WorldEdit.getInstance().getSafeOpenFile(null, schematicRoot.toFile(), schematicRoot.relativize(path).toString(), null).toPath();
                             } catch (FilenameException e) {
                                 // Invalid filename, warn but don't fail.
-                                LOGGER.warn("Illegal file detected", e);
+                                LOGGER.warn("Illegal file detected: {} - {}", e.getMessage(), e.getFilename());
+                                LOGGER.debug("Illegal file details", e);
                                 continue;
                             }
 
