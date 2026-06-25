@@ -74,8 +74,8 @@ public class PollingSchematicsBackend implements SchematicsBackend {
                 }
             }
         } catch (FilenameException e) {
-            LOGGER.warn("Illegal file detected: {} - {}", e.getMessage(), e.getFilename());
-            LOGGER.debug("Illegal file details", e);
+            LOGGER.warn("Invalid file name detected: {} - {}", e.getMessage(), e.getFilename());
+            LOGGER.debug("Invalid file name details", e);
         } catch (IOException e) {
             LOGGER.error(e);
         }
