@@ -1,25 +1,14 @@
 import buildlogic.getLibrary
 import buildlogic.stringyLibs
-import org.gradle.plugins.ide.idea.model.IdeaModel
 
 plugins {
-    id("net.octyl.level-headered")
+    id("org.enginehub.crankcase.common")
+    id("org.enginehub.crankcase.licensing")
+    id("org.enginehub.crankcase.git")
 }
 
 group = rootProject.group
 version = rootProject.version
-
-configurations.all {
-    resolutionStrategy {
-        cacheChangingModulesFor(1, TimeUnit.DAYS)
-    }
-}
-
-plugins.withId("java") {
-    the<JavaPluginExtension>().toolchain {
-        languageVersion.set(JavaLanguageVersion.of(25))
-    }
-}
 
 dependencies {
     for (conf in listOf("implementation", "api")) {
@@ -46,19 +35,8 @@ dependencies {
 }
 
 levelHeadered {
-    headerTemplate(rootProject.file("HEADER.txt"))
-
     sourceMatchPatterns {
         // Exclude overrides for text formatting
         exclude("com/sk89q/worldedit/util/formatting/text/")
-    }
-}
-
-plugins.withId("idea") {
-    configure<IdeaModel> {
-        module {
-            isDownloadSources = true
-            isDownloadJavadoc = true
-        }
     }
 }

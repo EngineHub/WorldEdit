@@ -1,30 +1,72 @@
 import java.net.URI
 
-apply(from = "gradle/shared-scripts/repo-reconfiguration.settings.gradle.kts")
 pluginManagement {
+    // pluginManagement repositories resolve plugins before the repo-reconfiguration plugin can
+    // apply, so they must point at EngineHub mirrors directly rather than upstream URLs.
     repositories {
         maven {
-            name = "FabricMC"
-            url = uri("https://maven.fabricmc.net/")
+            name = "EngineHub"
+            url = uri("https://repo.enginehub.org/libs-release/")
+            mavenContent {
+                releasesOnly()
+                includeGroupAndSubgroups("com.sk89q")
+                includeGroupAndSubgroups("org.enginehub")
+            }
         }
         maven {
-            name = "SpongePowered"
-            url = uri("https://repo.spongepowered.org/repository/maven-releases/")
+            name = "EngineHub FabricMC Mirror"
+            url = uri("https://repo.enginehub.org/internal/fabricmc/")
+            mavenContent {
+                releasesOnly()
+                includeGroupAndSubgroups("fabric-loom")
+                includeGroupAndSubgroups("net.fabricmc")
+                excludeModule("net.fabricmc", "yarn")
+            }
         }
         maven {
-            name = "NeoForged"
-            url = uri("https://maven.neoforged.net/releases/")
+            name = "EngineHub SpongePowered Mirror"
+            url = uri("https://repo.enginehub.org/internal/spongepowered-releases/")
+            mavenContent {
+                releasesOnly()
+                includeGroupAndSubgroups("org.spongepowered")
+            }
         }
         maven {
-            name = "MinecraftForge"
-            url = uri("https://maven.minecraftforge.net/")
+            name = "EngineHub NeoForged Mirror"
+            url = uri("https://repo.enginehub.org/internal/neoforged/")
+            mavenContent {
+                releasesOnly()
+                includeGroupAndSubgroups("net.minecraftforge")
+                includeGroupAndSubgroups("net.neoforged")
+            }
         }
-        mavenCentral()
-        gradlePluginPortal()
+        maven {
+            name = "EngineHub MinecraftForge Mirror"
+            url = uri("https://repo.enginehub.org/internal/forge/")
+            mavenContent {
+                releasesOnly()
+                includeGroupAndSubgroups("net.minecraftforge")
+            }
+        }
+        maven {
+            name = "EngineHub Maven Central Mirror"
+            url = uri("https://repo.enginehub.org/internal/maven-central-proxy/")
+            mavenContent {
+                releasesOnly()
+            }
+        }
+        maven {
+            name = "EngineHub Gradle Plugin Portal Mirror"
+            url = uri("https://repo.enginehub.org/internal/plugin-portal-proxy/")
+            mavenContent {
+                releasesOnly()
+            }
+        }
     }
 }
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+    id("org.enginehub.crankcase.repo-reconfiguration") version "0.1.0"
 }
 dependencyResolutionManagement {
     repositories {

@@ -13,6 +13,8 @@ cuiProtocol = "4.0.3"
 
 errorprone = "2.48.0"
 
+crankcase = "0.1.0"
+
 fabric-api = "0.154.0+26.2"
 
 neogradle = "7.1.38"
@@ -37,6 +39,15 @@ lang-version = "2233"
 [libraries]
 neogradle-neoform = { module = "net.neoforged.gradle:neoform", version.ref = "neogradle" }
 sponge-vanillagradle = { module = "org.spongepowered:vanillagradle", version.ref = "sponge-vanillagradle" }
+
+crankcase-java = { module = "org.enginehub.crankcase:java", version.ref = "crankcase" }
+crankcase-javaLibrary = { module = "org.enginehub.crankcase:java-library", version.ref = "crankcase" }
+crankcase-checkstyle = { module = "org.enginehub.crankcase:checkstyle", version.ref = "crankcase" }
+crankcase-common = { module = "org.enginehub.crankcase:common", version.ref = "crankcase" }
+crankcase-licensing = { module = "org.enginehub.crankcase:licensing", version.ref = "crankcase" }
+crankcase-git = { module = "org.enginehub.crankcase:git", version.ref = "crankcase" }
+crankcase-japicmp = { module = "org.enginehub.crankcase:japicmp", version.ref = "crankcase" }
+crankcase-publishing = { module = "org.enginehub.crankcase:publishing", version.ref = "crankcase" }
 
 levelHeadered = "net.octyl.level-headered:plugin:0.1.1"
 japicmp = "me.champeau.gradle:japicmp-gradle-plugin:0.4.6"

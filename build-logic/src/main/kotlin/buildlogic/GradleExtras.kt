@@ -7,9 +7,10 @@ import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.artifacts.VersionConstraint
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.plugins.ExtraPropertiesExtension
+import org.enginehub.crankcase.git.GitExtension
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.registerIfAbsent
+import org.gradle.kotlin.dsl.the
 import java.net.URI
 
 val Project.ext: ExtraPropertiesExtension
@@ -19,8 +20,10 @@ val Project.stringyLibs: VersionCatalog
     get() = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
 val Project.internalVersion: Provider<String>
-    get() = gradle.sharedServices.registerIfAbsent("git", GitBuildService::class) {}
-        .flatMap { service -> service.computeInternalVersion(project.version as String) }
+    get() {
+        val version = version.toString()
+        return the<GitExtension>().commitHash.map { "$version+$it" }
+    }
 
 fun VersionCatalog.getLibrary(name: String): Provider<MinimalExternalModuleDependency> = findLibrary(name).orElseThrow {
     error("Library $name not found in version catalog")

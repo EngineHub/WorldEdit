@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm") version "2.3.10"
     application
-    id("buildlogic.common")
+    id("buildlogic.common-java")
 }
 
 application.mainClass.set("com.sk89q.worldedit.internal.util.DocumentationPrinter")

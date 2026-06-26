@@ -1,12 +1,2 @@
 {
-    "Not API": [
-        {
-            "type": "com.sk89q.worldedit.bukkit.WorldEditListener",
-            "member": "Method com.sk89q.worldedit.bukkit.WorldEditListener.onPlayerCommandSend(org.bukkit.event.player.PlayerCommandSendEvent)",
-            "changes": [
-                "METHOD_REMOVED",
-                "ANNOTATION_REMOVED"
-            ]
-        }
-    ]
 }
