@@ -2695,23 +2695,6 @@ public class EditSession implements Extent, AutoCloseable {
     }
 
     /**
-     * Hollows out the region (Semi-well-defined for non-cuboid selections).
-     *
-     * @param region the region to hollow out.
-     * @param thickness the thickness of the shell to leave (manhattan distance)
-     * @param pattern The block pattern to use
-     *
-     * @return number of blocks affected
-     * @throws MaxChangedBlocksException thrown if too many blocks are changed
-     * @deprecated Use {@link EditSession#hollowOutRegion(Region, int, Pattern, boolean, Collection, boolean)} instead.
-     */
-    @InlineMe(replacement = "this.hollowOutRegion(region, thickness, pattern, true, null, false)")
-    @Deprecated
-    public final int hollowOutRegion(Region region, int thickness, Pattern pattern) throws MaxChangedBlocksException {
-        return hollowOutRegion(region, thickness, pattern, true, null, false);
-    }
-
-    /**
      * Hollows out the region (bounding-box mode is semi-well-defined for non-cuboid selections).
      * The startingPositions parameter takes precedence over usePlacementPosition.
      *
@@ -2721,10 +2704,11 @@ public class EditSession implements Extent, AutoCloseable {
      * @param openSides         Open up faces touching the region bounding box
      * @param startingPositions Positions to consider as 'outside'. If null, use the selection bounding box
      * @param useBlockGeometry  Consider block geometry when detecting object shell
+     * @param includeMask       Mask of blocks eligible for shell detection
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int hollowOutRegion(Region region, int thickness, Pattern pattern, boolean openSides, Collection<BlockVector3> startingPositions, boolean useBlockGeometry) throws MaxChangedBlocksException {
+    public int hollowOutRegion(Region region, int thickness, Pattern pattern, boolean openSides, Collection<BlockVector3> startingPositions, boolean useBlockGeometry, Mask includeMask) throws MaxChangedBlocksException {
         if (startingPositions == null) {
             // If no startingPositions are specified, use the selection bounding box
             startingPositions = new ArrayList<>();
@@ -2779,7 +2763,9 @@ public class EditSession implements Extent, AutoCloseable {
             final BlockVector3 current = queue.poll();
 
             Direction[] blockedDirections;
-            if (useBlockGeometry) {
+            if (!includeMask.test(current)) {
+                blockedDirections = NO_DIRECTIONS;
+            } else if (useBlockGeometry) {
                 // Get blocked directions for this block
                 blockedDirections = getBlockedDirections(current);
 
@@ -2823,11 +2809,13 @@ public class EditSession implements Extent, AutoCloseable {
                         continue;
                     }
 
-                    // Check if we can actually enter the block from here
-                    Direction oppositeDirection = Direction.findClosest(direction.toVector().multiply(-1), Direction.Flag.ALL);
-                    for (Direction blockedDirection : getBlockedDirections(neighbor)) {
-                        if (blockedDirection == oppositeDirection) {
-                            continue outer; // skip this direction
+                    if (includeMask.test(neighbor)) {
+                        // Check if we can actually enter the block from here
+                        Direction oppositeDirection = Direction.findClosest(direction.toVector().multiply(-1), Direction.Flag.ALL);
+                        for (Direction blockedDirection : getBlockedDirections(neighbor)) {
+                            if (blockedDirection == oppositeDirection) {
+                                continue outer; // skip this direction
+                            }
                         }
                     }
 
