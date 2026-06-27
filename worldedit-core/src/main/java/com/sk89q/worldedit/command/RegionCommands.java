@@ -43,6 +43,7 @@ import com.sk89q.worldedit.function.generator.FloraGenerator;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.MaskIntersection;
+import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.function.mask.NoiseFilter2D;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
@@ -561,7 +562,9 @@ public class RegionCommands {
                       @Switch(name = 'p', desc = "Consider placement position as 'outside' instead of the selection bounding box. Overrides -o.")
                           boolean usePlacementPosition,
                       @Switch(name = 'g', desc = "Consider block geometry for visibility calculation")
-                          boolean useBlockGeometry) throws WorldEditException {
+                          boolean useBlockGeometry,
+                      @ArgFlag(name = 'm', desc = "Set the mask of blocks eligible for shell detection")
+                          Mask includeMask) throws WorldEditException {
         checkCommandArgument(thickness >= 1, "Thickness must be >= 1");
 
         final Collection<BlockVector3> startingPositions;
@@ -579,7 +582,10 @@ public class RegionCommands {
         } else {
             startingPositions = null;
         }
-        int affected = editSession.hollowOutRegion(region, thickness, pattern, openSides, startingPositions, useBlockGeometry);
+        if (includeMask == null) {
+            includeMask = Masks.alwaysTrue();
+        }
+        int affected = editSession.hollowOutRegion(region, thickness, pattern, openSides, startingPositions, useBlockGeometry, includeMask);
         actor.printInfo(TranslatableComponent.of("worldedit.hollow.changed", TextComponent.of(affected)));
         return affected;
     }
