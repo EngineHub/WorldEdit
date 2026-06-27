@@ -21,6 +21,7 @@ package com.sk89q.worldedit.internal.schematic.backends;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
+import com.sk89q.worldedit.internal.util.RecursiveDirectoryWatcher;
 import com.sk89q.worldedit.util.io.file.FilenameException;
 import org.apache.logging.log4j.Logger;
 
@@ -74,8 +75,7 @@ public class PollingSchematicsBackend implements SchematicsBackend {
                 }
             }
         } catch (FilenameException e) {
-            LOGGER.warn("Invalid file name detected: {} - {}", e.getMessage(), e.getFilename());
-            LOGGER.debug("Invalid file name details", e);
+            RecursiveDirectoryWatcher.logInvalidFileName(LOGGER, e);
         } catch (IOException e) {
             LOGGER.error(e);
         }
