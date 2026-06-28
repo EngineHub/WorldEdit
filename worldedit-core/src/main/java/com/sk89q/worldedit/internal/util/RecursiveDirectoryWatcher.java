@@ -108,6 +108,11 @@ public class RecursiveDirectoryWatcher implements Closeable {
         return new RecursiveDirectoryWatcher(root, watchService);
     }
 
+    public static void logInvalidFileName(Logger logger, FilenameException e) {
+        logger.warn("Invalid file name detected: {} - {}", e.getMessage(), e.getFilename());
+        logger.debug("Invalid file name details", e);
+    }
+
     private void registerFolderWatcher(Path root) throws IOException {
         WatchKey watchKey = root.register(watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
         LOGGER.debug("Watch registered: " + root);
@@ -127,7 +132,7 @@ public class RecursiveDirectoryWatcher implements Closeable {
                         eventConsumer.accept(new FileCreatedEvent(path));
                     } catch (FilenameException e) {
                         // Invalid filename, warn but don't fail.
-                        LOGGER.warn("Illegal file detected", e);
+                        logInvalidFileName(LOGGER, e);
                     }
                 }
             }
@@ -191,7 +196,7 @@ public class RecursiveDirectoryWatcher implements Closeable {
                                 path = WorldEdit.getInstance().getSafeOpenFile(null, schematicRoot.toFile(), schematicRoot.relativize(path).toString(), null).toPath();
                             } catch (FilenameException e) {
                                 // Invalid filename, warn but don't fail.
-                                LOGGER.warn("Illegal file detected", e);
+                                logInvalidFileName(LOGGER, e);
                                 continue;
                             }
 
