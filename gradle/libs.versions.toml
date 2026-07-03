@@ -13,7 +13,7 @@ cuiProtocol = "4.0.3"
 
 errorprone = "2.48.0"
 
-fabric-api = "0.152.0+26.2"
+fabric-api = "0.154.0+26.2"
 
 neogradle = "7.1.38"
 neoforge-minecraft = "26.2"
@@ -32,7 +32,7 @@ minimumTinyRemapper = "0.8.11"
 
 # https://repo.enginehub.org/language-files/com/sk89q/worldedit/worldedit-lang/
 lang-worldeditBase = "7.4.4"
-lang-version = "2208"
+lang-version = "2233"
 
 [libraries]
 neogradle-neoform = { module = "net.neoforged.gradle:neoform", version.ref = "neogradle" }
@@ -94,7 +94,7 @@ fabric-minecraft = "com.mojang:minecraft:26.2"
 fabric-loader = "net.fabricmc:fabric-loader:0.19.3"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.7.0"
 
-neoforge = "net.neoforged:neoforge:26.2.0.1-beta"
+neoforge = "net.neoforged:neoforge:26.2.0.7-beta"
 
 # Mojang-provided libraries, CHECK AGAINST MINECRAFT for versions
 guava = "com.google.guava:guava:33.6.0-jre!!"
