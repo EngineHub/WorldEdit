@@ -23,5 +23,49 @@
                 "METHOD_REMOVED"
             ]
         }
+    ],
+    "RegionIntersection renamed to RegionUnion": [
+        {
+            "type": "com.sk89q.worldedit.regions.RegionIntersection",
+            "member": "Class com.sk89q.worldedit.regions.RegionIntersection",
+            "changes": [
+                "CLASS_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.regions.RegionIntersection",
+            "member": "Method com.sk89q.worldedit.regions.RegionIntersection.iterator()",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.regions.RegionIntersection",
+            "member": "Constructor com.sk89q.worldedit.regions.RegionIntersection(com.sk89q.worldedit.world.World,java.util.List)",
+            "changes": [
+                "CONSTRUCTOR_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.regions.RegionIntersection",
+            "member": "Constructor com.sk89q.worldedit.regions.RegionIntersection(java.util.List)",
+            "changes": [
+                "CONSTRUCTOR_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.regions.RegionIntersection",
+            "member": "Constructor com.sk89q.worldedit.regions.RegionIntersection(com.sk89q.worldedit.regions.Region[])",
+            "changes": [
+                "CONSTRUCTOR_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.regions.RegionIntersection",
+            "member": "Constructor com.sk89q.worldedit.regions.RegionIntersection(com.sk89q.worldedit.world.World,com.sk89q.worldedit.regions.Region[])",
+            "changes": [
+                "CONSTRUCTOR_REMOVED"
+            ]
+        }
     ]
 }

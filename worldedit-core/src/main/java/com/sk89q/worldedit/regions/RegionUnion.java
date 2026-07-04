@@ -33,15 +33,15 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * An intersection of several other regions. Any location that is contained in one
- * of the child regions is considered as contained by this region.
+ * A union of several other regions. Any location that is contained in one of the
+ * child regions is considered as contained by this region.
  *
  * <p>{@link #iterator()} returns a special iterator that will iterate through
  * the iterators of each region in an undefined sequence. Some positions may
  * be repeated if the position is contained in more than one region, but this cannot
  * be guaranteed to occur.</p>
  */
-public class RegionIntersection extends AbstractRegion {
+public class RegionUnion extends AbstractRegion {
 
     private final List<Region> regions = new ArrayList<>();
 
@@ -50,7 +50,7 @@ public class RegionIntersection extends AbstractRegion {
      *
      * @param regions a list of regions, which is copied
      */
-    public RegionIntersection(List<Region> regions) {
+    public RegionUnion(List<Region> regions) {
         this(null, regions);
     }
 
@@ -59,7 +59,7 @@ public class RegionIntersection extends AbstractRegion {
      *
      * @param regions a list of regions, which is copied
      */
-    public RegionIntersection(Region... regions) {
+    public RegionUnion(Region... regions) {
         this(null, regions);
     }
 
@@ -69,7 +69,7 @@ public class RegionIntersection extends AbstractRegion {
      * @param world   the world
      * @param regions a list of regions, which is copied
      */
-    public RegionIntersection(World world, List<Region> regions) {
+    public RegionUnion(World world, List<Region> regions) {
         super(world);
         checkNotNull(regions);
         checkArgument(!regions.isEmpty(), "empty region list is not supported");
@@ -82,7 +82,7 @@ public class RegionIntersection extends AbstractRegion {
      * @param world   the world
      * @param regions an array of regions, which is copied
      */
-    public RegionIntersection(World world, Region... regions) {
+    public RegionUnion(World world, Region... regions) {
         super(world);
         checkNotNull(regions);
         checkArgument(regions.length > 0, "empty region list is not supported");
@@ -91,7 +91,7 @@ public class RegionIntersection extends AbstractRegion {
 
     @Override
     public BlockVector3 getMinimumPoint() {
-        BlockVector3 minimum = regions.get(0).getMinimumPoint();
+        BlockVector3 minimum = regions.getFirst().getMinimumPoint();
         for (int i = 1; i < regions.size(); i++) {
             minimum = regions.get(i).getMinimumPoint().getMinimum(minimum);
         }
@@ -100,7 +100,7 @@ public class RegionIntersection extends AbstractRegion {
 
     @Override
     public BlockVector3 getMaximumPoint() {
-        BlockVector3 maximum = regions.get(0).getMaximumPoint();
+        BlockVector3 maximum = regions.getFirst().getMaximumPoint();
         for (int i = 1; i < regions.size(); i++) {
             maximum = regions.get(i).getMaximumPoint().getMaximum(maximum);
         }
@@ -110,13 +110,13 @@ public class RegionIntersection extends AbstractRegion {
     @Override
     public void expand(BlockVector3... changes) throws RegionOperationException {
         checkNotNull(changes);
-        throw new RegionOperationException(TranslatableComponent.of("worldedit.selection.intersection.error.cannot-expand"));
+        throw new RegionOperationException(TranslatableComponent.of("worldedit.selection.union.error.cannot-expand"));
     }
 
     @Override
     public void contract(BlockVector3... changes) throws RegionOperationException {
         checkNotNull(changes);
-        throw new RegionOperationException(TranslatableComponent.of("worldedit.selection.intersection.error.cannot-contract"));
+        throw new RegionOperationException(TranslatableComponent.of("worldedit.selection.union.error.cannot-contract"));
     }
 
     @Override
