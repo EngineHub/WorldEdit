@@ -1,5 +1,10 @@
+7.4.4
+- Updated to 26.2
+- Fixed an error that can occur when generating schematic suggestions in some cases
+- Improved error messages when invalid schematic files are present to include the file path
+
 7.4.3
-- Updated to 26.1(.1/.2)
+- Updated to 26.1(.1/.2) and Java 25
 - Added a `worldedit:random` tree type to replicate legacy random tree functionality
 - Improved error handling of invalid schematic paths
 - Fixed //generatebiome not being possible to undo

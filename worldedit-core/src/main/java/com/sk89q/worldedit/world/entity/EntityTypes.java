@@ -164,6 +164,7 @@ public final class EntityTypes {
     @Nullable public static final EntityType SQUID = get("minecraft:squid");
     @Nullable public static final EntityType STRAY = get("minecraft:stray");
     @Nullable public static final EntityType STRIDER = get("minecraft:strider");
+    @Nullable public static final EntityType SULFUR_CUBE = get("minecraft:sulfur_cube");
     @Nullable public static final EntityType TADPOLE = get("minecraft:tadpole");
     @Nullable public static final EntityType TEXT_DISPLAY = get("minecraft:text_display");
     @Nullable public static final EntityType TNT = get("minecraft:tnt");

@@ -45,7 +45,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.BlockEntityTypes;
 import org.enginehub.linbus.tree.LinCompoundTag;
 import org.enginehub.worldeditcui.protocol.CUIPacket;
 
@@ -251,7 +251,7 @@ public class CoreMcPlayer extends AbstractPlayerActor {
                 if (nbtData != null) {
                     player.connection.send(AccessorClientboundBlockEntityDataPacket.create(
                         new BlockPos(pos.x(), pos.y(), pos.z()),
-                        BlockEntityType.STRUCTURE_BLOCK,
+                        BlockEntityTypes.STRUCTURE_BLOCK,
                         NBTConverter.toNative(nbtData)
                     ));
                 }

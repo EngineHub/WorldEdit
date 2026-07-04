@@ -2,26 +2,26 @@
 neogradle-userdev = { id = "net.neoforged.gradle.userdev", version.ref = "neogradle" }
 sponge-spongegradle = "org.spongepowered.gradle.plugin:2.3.0"
 sponge-vanillagradle = { id = "org.spongepowered.gradle.vanilla", version.ref = "sponge-vanillagradle" }
-fabric-loom = "net.fabricmc.fabric-loom:1.16.1"
+fabric-loom = "net.fabricmc.fabric-loom:1.17.11"
 
 [versions]
 kyoriText = "3.0.4"
-piston = "0.5.11"
+piston = "0.6.0"
 autoValue = "1.10.4"
 antlr = "4.13.2"
 cuiProtocol = "4.0.3"
 
 errorprone = "2.48.0"
 
-fabric-api = "0.148.0+26.1.2"
+fabric-api = "0.154.0+26.2"
 
-neogradle = "7.1.26"
-neoforge-minecraft = "26.1.2"
+neogradle = "7.1.38"
+neoforge-minecraft = "26.2"
 
-sponge-minecraft = "26.1.2"
+sponge-minecraft = "26.2"
 # https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/spongeapi/
 sponge-api = "19.0.0-20260501.142639-2"
-sponge-api-major = "19"
+sponge-api-major = "20"
 
 sponge-vanillagradle = "0.3.2"
 
@@ -31,8 +31,8 @@ minimumJdependency = "2.10"
 minimumTinyRemapper = "0.8.11"
 
 # https://repo.enginehub.org/language-files/com/sk89q/worldedit/worldedit-lang/
-lang-worldeditBase = "7.4.3"
-lang-version = "2173"
+lang-worldeditBase = "7.4.4"
+lang-version = "2233"
 
 [libraries]
 neogradle-neoform = { module = "net.neoforged.gradle:neoform", version.ref = "neogradle" }
@@ -48,7 +48,7 @@ errorprone-core = { module = "com.google.errorprone:error_prone_core", version.r
 errorprone-annotations = { module = "com.google.errorprone:error_prone_annotations", version.ref = "errorprone" }
 
 # https://maven.fabricmc.net/net/fabricmc/sponge-mixin/
-fabric-mixin = "net.fabricmc:sponge-mixin:0.17.1+mixin.0.8.7"
+fabric-mixin = "net.fabricmc:sponge-mixin:0.17.3+mixin.0.8.7"
 
 paperweight = "io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:2.0.0-beta.21"
 
@@ -90,18 +90,18 @@ rhino = "org.mozilla:rhino-runtime:1.7.13"
 jchronic = "com.sk89q:jchronic:0.2.4a"
 jlibnoise = "com.sk89q.lib:jlibnoise:1.0.0"
 
-fabric-minecraft = "com.mojang:minecraft:26.1.2"
-fabric-loader = "net.fabricmc:fabric-loader:0.19.2"
+fabric-minecraft = "com.mojang:minecraft:26.2"
+fabric-loader = "net.fabricmc:fabric-loader:0.19.3"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.7.0"
 
-neoforge = "net.neoforged:neoforge:26.1.2.36-beta"
+neoforge = "net.neoforged:neoforge:26.2.0.7-beta"
 
 # Mojang-provided libraries, CHECK AGAINST MINECRAFT for versions
-guava = "com.google.guava:guava:33.5.0-jre!!"
+guava = "com.google.guava:guava:33.6.0-jre!!"
 log4j-bom = "org.apache.logging.log4j:log4j-bom:2.25.2!!"
 log4j-api.module = "org.apache.logging.log4j:log4j-api"
 log4j-core.module = "org.apache.logging.log4j:log4j-core"
-gson = "com.google.code.gson:gson:2.13.2!!"
+gson = "com.google.code.gson:gson:2.14.0!!"
 fastutil = "it.unimi.dsi:fastutil:8.5.18!!"
 
 # Bukkit-provided libraries, CHECK AGAINST SPIGOT for versions
@@ -165,13 +165,13 @@ version.ref = "antlr"
 module = "org.antlr:antlr4-runtime"
 
 [libraries.cuiProtocol-common]
-module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-common-mc26.1"
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-common-mc26.2"
 version.ref = "cuiProtocol"
 
 [libraries.cuiProtocol-fabric]
-module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-fabric-mc26.1"
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-fabric-mc26.2"
 version.ref = "cuiProtocol"
 
 [libraries.cuiProtocol-neoforge]
-module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-neoforge-mc26.1"
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-neoforge-mc26.2"
 version.ref = "cuiProtocol"

@@ -45,6 +45,8 @@ tasks.register<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("jar"
         exclude(dependency("org.jetbrains:annotations"))
         exclude(dependency("org.apache.logging.log4j:log4j-api"))
         exclude(dependency("com.google.code.findbugs:jsr305"))
+        exclude(dependency("org.jspecify:jspecify"))
+        exclude(dependency("com.google.j2objc:j2objc-annotations"))
         exclude {
             it.moduleGroup == "org.jetbrains.kotlin"
         }
