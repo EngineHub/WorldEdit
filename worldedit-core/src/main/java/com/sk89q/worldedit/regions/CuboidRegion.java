@@ -120,7 +120,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         BlockVector3 min = getMinimumPoint();
         BlockVector3 max = getMaximumPoint();
 
-        return new RegionIntersection(
+        return new RegionUnion(
                 // Project to Z-Y plane
                 new CuboidRegion(pos1.withX(min.x()), pos2.withX(min.x())),
                 new CuboidRegion(pos1.withX(max.x()), pos2.withX(max.x())),
@@ -144,7 +144,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         BlockVector3 min = getMinimumPoint();
         BlockVector3 max = getMaximumPoint();
 
-        return new RegionIntersection(
+        return new RegionUnion(
                 // Project to Z-Y plane
                 new CuboidRegion(pos1.withX(min.x()), pos2.withX(min.x())),
                 new CuboidRegion(pos1.withX(max.x()), pos2.withX(max.x())),
