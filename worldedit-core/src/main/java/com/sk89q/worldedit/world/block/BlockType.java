@@ -74,10 +74,6 @@ public class BlockType implements Keyed {
         = LazyReference.from(() -> WorldEdit.getInstance().getPlatformManager()
         .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getMaterial(this));
     @SuppressWarnings("this-escape")
-    @Deprecated
-    private final LazyReference<String> name = LazyReference.from(() -> WorldEdit.getInstance().getPlatformManager()
-        .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getName(this));
-    @SuppressWarnings("this-escape")
     private final LazyReference<Integer> legacyId = LazyReference.from(() -> computeLegacy(0));
     @SuppressWarnings("this-escape")
     private final LazyReference<Integer> legacyData = LazyReference.from(() -> computeLegacy(1));
@@ -121,21 +117,6 @@ public class BlockType implements Keyed {
     public Component getRichName() {
         return WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
             .getRegistries().getBlockRegistry().getRichName(this);
-    }
-
-    /**
-     * Gets the name of this block, or the ID if the name cannot be found.
-     *
-     * @return The name, or ID
-     * @deprecated The name is now translatable, use {@link #getRichName()}.
-     */
-    @Deprecated
-    public String getName() {
-        String name = this.name.getValue();
-        if (name == null || name.isEmpty()) {
-            return id();
-        }
-        return name;
     }
 
     /**
