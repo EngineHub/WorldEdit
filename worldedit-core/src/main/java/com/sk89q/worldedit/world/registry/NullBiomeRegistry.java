@@ -22,10 +22,7 @@ package com.sk89q.worldedit.world.registry;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.translation.TranslationManager;
-import com.sk89q.worldedit.world.biome.BiomeData;
 import com.sk89q.worldedit.world.biome.BiomeType;
-
-import javax.annotation.Nullable;
 
 /**
  * A biome registry that knows nothing.
@@ -44,14 +41,4 @@ public class NullBiomeRegistry implements BiomeRegistry {
             TranslationManager.makeTranslationKey("biome", biomeType.id())
         );
     }
-
-    // Suppress InlineMeSuggester: This method cannot be made final due to backwards compatibility
-    @SuppressWarnings("InlineMeSuggester")
-    @Deprecated
-    @Nullable
-    @Override
-    public BiomeData getData(BiomeType biome) {
-        return null;
-    }
-
 }

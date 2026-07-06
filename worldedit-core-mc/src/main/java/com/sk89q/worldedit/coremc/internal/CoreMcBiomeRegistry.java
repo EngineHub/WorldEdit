@@ -21,7 +21,6 @@ package com.sk89q.worldedit.coremc.internal;
 
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.world.biome.BiomeData;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
 import net.minecraft.resources.Identifier;
@@ -36,31 +35,4 @@ public final class CoreMcBiomeRegistry implements BiomeRegistry {
     public Component getRichName(BiomeType biomeType) {
         return TranslatableComponent.of(Util.makeDescriptionId("biome", Identifier.parse(biomeType.id())));
     }
-
-    @Deprecated
-    @Override
-    public BiomeData getData(BiomeType biome) {
-        return new CoreMcBiomeData(biome);
-    }
-
-    @Deprecated
-    private static final class CoreMcBiomeData implements BiomeData {
-        private final BiomeType biome;
-
-        /**
-         * Create a new instance.
-         *
-         * @param biome the base biome
-         */
-        private CoreMcBiomeData(BiomeType biome) {
-            this.biome = biome;
-        }
-
-        @SuppressWarnings("deprecation")
-        @Override
-        public String getName() {
-            return biome.id();
-        }
-    }
-
 }

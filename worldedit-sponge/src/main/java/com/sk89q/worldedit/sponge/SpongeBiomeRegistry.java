@@ -22,12 +22,7 @@ package com.sk89q.worldedit.sponge;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.translation.TranslationManager;
-import com.sk89q.worldedit.world.biome.BiomeData;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
-import org.spongepowered.api.registry.RegistryReference;
-import org.spongepowered.api.world.biome.Biome;
-
-import javax.annotation.Nullable;
 
 /**
  * Provides access to biome data in Sponge.
@@ -40,32 +35,4 @@ class SpongeBiomeRegistry implements BiomeRegistry {
             TranslationManager.makeTranslationKey("biome", biomeType.id())
         );
     }
-
-    @Deprecated
-    @Nullable
-    @Override
-    public BiomeData getData(com.sk89q.worldedit.world.biome.BiomeType biome) {
-        return new SpongeBiomeData(SpongeAdapter.adapt(biome));
-    }
-
-    @Deprecated
-    private static class SpongeBiomeData implements BiomeData {
-        private final RegistryReference<Biome> biome;
-
-        /**
-         * Create a new instance.
-         *
-         * @param biome the base biome
-         */
-        private SpongeBiomeData(RegistryReference<Biome> biome) {
-            this.biome = biome;
-        }
-
-        @SuppressWarnings("deprecation")
-        @Override
-        public String getName() {
-            return biome.location().asString();
-        }
-    }
-
 }

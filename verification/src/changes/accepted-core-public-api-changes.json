@@ -67,5 +67,47 @@
                 "CONSTRUCTOR_REMOVED"
             ]
         }
+    ],
+    "Removal of deprecated API for WorldEdit 8": [
+        {
+            "type": "com.sk89q.worldedit.world.biome.BiomeData",
+            "member": "Class com.sk89q.worldedit.world.biome.BiomeData",
+            "changes": [
+                "CLASS_REMOVED",
+                "ANNOTATION_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.biome.BiomeData",
+            "member": "Method com.sk89q.worldedit.world.biome.BiomeData.getName()",
+            "changes": [
+                "METHOD_REMOVED",
+                "ANNOTATION_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.biome.Biomes",
+            "member": "Class com.sk89q.worldedit.world.biome.Biomes",
+            "changes": [
+                "CLASS_REMOVED",
+                "ANNOTATION_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.biome.Biomes",
+            "member": "Method com.sk89q.worldedit.world.biome.Biomes.findBiomeByName(java.util.Collection,java.lang.String,com.sk89q.worldedit.world.registry.BiomeRegistry)",
+            "changes": [
+                "METHOD_REMOVED",
+                "ANNOTATION_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.registry.BiomeRegistry",
+            "member": "Method com.sk89q.worldedit.world.registry.BiomeRegistry.getData(com.sk89q.worldedit.world.biome.BiomeType)",
+            "changes": [
+                "METHOD_REMOVED",
+                "ANNOTATION_REMOVED"
+            ]
+        }
     ]
 }
