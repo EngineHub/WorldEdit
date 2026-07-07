@@ -3,9 +3,7 @@ import buildlogic.stringyLibs
 import buildlogic.getVersion
 
 plugins {
-    `java-library`
-    id("buildlogic.common")
-    id("buildlogic.common-java")
+    id("buildlogic.common-java-library")
     id("io.papermc.paperweight.userdev")
 }
 

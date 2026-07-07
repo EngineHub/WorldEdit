@@ -1,7 +1,6 @@
 plugins {
     jacoco
     id("buildlogic.common")
-    id("buildlogic.artifactory-root")
 }
 
 val totalReport = tasks.register<JacocoReport>("jacocoTotalReport") {

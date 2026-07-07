@@ -2,9 +2,8 @@ plugins {
     id("java-base")
     id("maven-publish")
     id("com.gradleup.shadow")
-    id("com.jfrog.artifactory")
     id("buildlogic.common")
-    id("buildlogic.artifactory-sub")
+    id("org.enginehub.crankcase.publishing")
 }
 
 // A horrible hack because `softwareComponentFactory` has to be gotten via plugin

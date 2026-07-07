@@ -6,7 +6,6 @@ import org.spongepowered.plugin.metadata.model.PluginDependency
 plugins {
     alias(libs.plugins.sponge.spongegradle)
     id("org.spongepowered.gradle.vanilla")
-    `java-library`
     id("buildlogic.platform")
 }
 

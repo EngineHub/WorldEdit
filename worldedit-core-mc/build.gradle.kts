@@ -3,7 +3,6 @@ import buildlogic.addEngineHubRepository
 
 plugins {
     alias(libs.plugins.fabric.loom)
-    `java-library`
     id("buildlogic.core-and-platform")
     id("buildlogic.expose-resources")
 }

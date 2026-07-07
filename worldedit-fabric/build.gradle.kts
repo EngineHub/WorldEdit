@@ -8,7 +8,6 @@ import java.net.URI
 
 plugins {
     alias(libs.plugins.fabric.loom)
-    `java-library`
     id("buildlogic.platform")
 }
 

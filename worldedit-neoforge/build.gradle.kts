@@ -6,7 +6,6 @@ import net.neoforged.gradle.dsl.common.runs.run.Run
 
 plugins {
     alias(libs.plugins.neogradle.userdev)
-    `java-library`
     id("buildlogic.platform")
 }
 
