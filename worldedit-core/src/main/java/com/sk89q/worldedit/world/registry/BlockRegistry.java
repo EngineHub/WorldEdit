@@ -42,19 +42,6 @@ public interface BlockRegistry {
     Component getRichName(BlockType blockType);
 
     /**
-     * Gets the name for the given block.
-     *
-     * @param blockType the block
-     * @return The name, or null if it's unknown
-     * @deprecated Names are now translatable, use {@link #getRichName(BlockType)}.
-     */
-    @Deprecated
-    @Nullable
-    default String getName(BlockType blockType) {
-        return getRichName(blockType).toString();
-    }
-
-    /**
      * Get the material for the given block.
      *
      * @param blockType the block

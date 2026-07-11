@@ -108,6 +108,38 @@
                 "METHOD_REMOVED",
                 "ANNOTATION_REMOVED"
             ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.block.BlockType",
+            "member": "Method com.sk89q.worldedit.world.block.BlockType.getName()",
+            "changes": [
+                "METHOD_REMOVED",
+                "ANNOTATION_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.item.ItemType",
+            "member": "Method com.sk89q.worldedit.world.item.ItemType.getName()",
+            "changes": [
+                "METHOD_REMOVED",
+                "ANNOTATION_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.registry.BlockRegistry",
+            "member": "Method com.sk89q.worldedit.world.registry.BlockRegistry.getName(com.sk89q.worldedit.world.block.BlockType)",
+            "changes": [
+                "METHOD_REMOVED",
+                "ANNOTATION_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.registry.ItemRegistry",
+            "member": "Method com.sk89q.worldedit.world.registry.ItemRegistry.getName(com.sk89q.worldedit.world.item.ItemType)",
+            "changes": [
+                "METHOD_REMOVED",
+                "ANNOTATION_REMOVED"
+            ]
         }
     ]
 }

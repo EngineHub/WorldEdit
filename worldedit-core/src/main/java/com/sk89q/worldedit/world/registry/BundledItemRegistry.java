@@ -59,25 +59,6 @@ public class BundledItemRegistry implements ItemRegistry {
 
     @Nullable
     @Override
-    @Deprecated
-    // dumb_intellij.jpg
-    @SuppressWarnings({"deprecation", "removal"})
-    public String getName(ItemType itemType) {
-        BundledItemData.ItemEntry itemEntry = getEntryById(itemType);
-        if (itemEntry != null) {
-            String localized = itemEntry.localizedName;
-            if (localized.equals("Air")) {
-                String id = itemType.id();
-                int c = id.indexOf(':');
-                return c < 0 ? id : id.substring(c + 1);
-            }
-            return localized;
-        }
-        return null;
-    }
-
-    @Nullable
-    @Override
     @Deprecated(forRemoval = true)
     @SuppressWarnings("removal")
     public ItemMaterial getMaterial(ItemType itemType) {

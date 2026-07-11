@@ -23,7 +23,6 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
-import com.sk89q.worldedit.util.GuavaUtil;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -37,15 +36,6 @@ public class ItemType implements Keyed {
     public static final NamespacedRegistry<ItemType> REGISTRY = new NamespacedRegistry<>("item type", "item_type", "minecraft", true);
 
     private final String id;
-    @SuppressWarnings({"deprecation", "this-escape"})
-    private final LazyReference<String> name = LazyReference.from(() -> {
-        String name = GuavaUtil.firstNonNull(
-            WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
-                .getRegistries().getItemRegistry().getName(this),
-            ""
-        );
-        return name.isEmpty() ? id() : name;
-    });
     @SuppressWarnings("this-escape")
     private final LazyReference<Component> richName = LazyReference.from(() ->
         WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
@@ -73,18 +63,6 @@ public class ItemType implements Keyed {
     public Component getRichName() {
         return richName.getValue();
     }
-
-    /**
-     * Gets the name of this item, or the ID if the name cannot be found.
-     *
-     * @return The name, or ID
-     * @deprecated Names are translatable now, use {@link #getRichName()}.
-     */
-    @Deprecated
-    public String getName() {
-        return name.getValue();
-    }
-
 
     /**
      * Gets whether this item type has a block representation.

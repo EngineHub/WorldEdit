@@ -46,19 +46,6 @@ public interface ItemRegistry {
     }
 
     /**
-     * Gets the name for the given item.
-     *
-     * @param itemType the item
-     * @return The name, or null if it's unknown
-     * @deprecated Names are now translatable, use {@link #getRichName(ItemType)}.
-     */
-    @Deprecated
-    @Nullable
-    default String getName(ItemType itemType) {
-        return getRichName(itemType).toString();
-    }
-
-    /**
      * Get the material for the given item.
      *
      * @param itemType the item
