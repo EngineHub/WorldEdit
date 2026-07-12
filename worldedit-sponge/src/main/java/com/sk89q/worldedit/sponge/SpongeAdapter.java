@@ -235,6 +235,17 @@ public class SpongeAdapter {
         return Direction.valueOf(direction.name());
     }
 
+    public static net.minecraft.core.Direction adapt(Direction face) {
+        return switch (face) {
+            case NORTH -> net.minecraft.core.Direction.NORTH;
+            case SOUTH -> net.minecraft.core.Direction.SOUTH;
+            case WEST -> net.minecraft.core.Direction.WEST;
+            case EAST -> net.minecraft.core.Direction.EAST;
+            case DOWN -> net.minecraft.core.Direction.DOWN;
+            default -> net.minecraft.core.Direction.UP;
+        };
+    }
+
     public static Vector3i adaptVector3i(BlockVector3 bv3) {
         return new Vector3i(bv3.x(), bv3.y(), bv3.z());
     }

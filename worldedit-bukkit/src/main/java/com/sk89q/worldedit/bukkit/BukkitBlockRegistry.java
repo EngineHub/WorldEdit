@@ -35,7 +35,7 @@ import java.util.OptionalInt;
 import javax.annotation.Nullable;
 
 public class BukkitBlockRegistry implements BlockRegistry {
-    private final Map<Material, BukkitBlockMaterial> materialMap = new HashMap<>();
+    private final Map<BlockState, BukkitBlockMaterial> materialMap = new HashMap<>();
 
     @Override
     public Component getRichName(BlockType blockType) {
@@ -47,15 +47,16 @@ public class BukkitBlockRegistry implements BlockRegistry {
 
     @Nullable
     @Override
-    public BlockMaterial getMaterial(BlockType blockType) {
-        Material mat = BukkitAdapter.adapt(blockType);
-        if (mat == null) {
-            return null;
-        }
-        return materialMap.computeIfAbsent(mat, material -> {
+    public BlockMaterial getMaterial(BlockState blockState) {
+        return materialMap.computeIfAbsent(blockState, _ -> {
+            Material material = BukkitAdapter.adapt(blockState.getBlockType());
+            if (material == null) {
+                // return null means create no mapping
+                return null;
+            }
             BlockMaterial platformMaterial = null;
             if (WorldEditPlugin.getInstance().getBukkitImplAdapter() != null) {
-                platformMaterial = WorldEditPlugin.getInstance().getBukkitImplAdapter().getBlockMaterial(blockType);
+                platformMaterial = WorldEditPlugin.getInstance().getBukkitImplAdapter().getBlockMaterial(blockState);
             }
             return new BukkitBlockMaterial(platformMaterial, material);
         });

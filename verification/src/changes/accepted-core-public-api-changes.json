@@ -22,6 +22,13 @@
             "changes": [
                 "METHOD_REMOVED"
             ]
+        },
+        {
+            "type": "com.sk89q.worldedit.EditSession",
+            "member": "Method com.sk89q.worldedit.EditSession.makeCuboidFaces(com.sk89q.worldedit.regions.Region,int,com.sk89q.worldedit.function.pattern.Pattern)",
+            "changes": [
+                "METHOD_NOW_FINAL"
+            ]
         }
     ],
     "RegionIntersection renamed to RegionUnion": [
@@ -139,6 +146,15 @@
             "changes": [
                 "METHOD_REMOVED",
                 "ANNOTATION_REMOVED"
+            ]
+        }
+    ],
+    "Why on earth is this even an issue?": [
+        {
+            "type": "com.sk89q.worldedit.world.registry.BlockMaterial",
+            "member": "Method com.sk89q.worldedit.world.registry.BlockMaterial.isFullCube()",
+            "changes": [
+                "METHOD_ABSTRACT_NOW_DEFAULT"
             ]
         }
     ]

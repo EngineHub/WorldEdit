@@ -162,6 +162,17 @@ public interface BukkitImplAdapter {
     BlockMaterial getBlockMaterial(BlockType blockType);
 
     /**
+     * Gets the block material for the given block state.
+     *
+     * @param blockState the block state
+     * @return the material
+     */
+    @Nullable
+    default BlockMaterial getBlockMaterial(BlockState blockState) {
+        return getBlockMaterial(blockState.getBlockType());
+    }
+
+    /**
      * Get a map of {@code string -> property}.
      *
      * @param blockType The block type
