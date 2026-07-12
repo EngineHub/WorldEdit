@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.world.registry;
 
+import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -46,9 +47,30 @@ public interface BlockRegistry {
      *
      * @param blockType the block
      * @return the material, or null if the material information is not known
+     * @deprecated Use {@link BlockRegistry#getMaterial(BlockState)} instead.
      */
+    @Deprecated
     @Nullable
-    BlockMaterial getMaterial(BlockType blockType);
+    default BlockMaterial getMaterial(BlockType blockType) {
+        return getMaterial(blockType.getDefaultState());
+    }
+
+    /**
+     * Get the material for the given block state.
+     *
+     * @param blockState the block state
+     * @return the material, or null if the material information is not known
+     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
+     *          for details
+     */
+    @NonAbstractForCompatibility(
+        delegateName = "getMaterial",
+        delegateParams = { BlockType.class }
+    )
+    @Nullable
+    default BlockMaterial getMaterial(BlockState blockState) {
+        return getMaterial(blockState.getBlockType());
+    }
 
     /**
      * Get an unmodifiable map of states for this block.

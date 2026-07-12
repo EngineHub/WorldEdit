@@ -50,19 +50,16 @@ public class SpongeBlockRegistry implements BlockRegistry {
     }
 
     @Override
-    public BlockMaterial getMaterial(BlockType blockType) {
-        org.spongepowered.api.block.BlockType spongeBlockType =
-            Sponge.game().registry(RegistryTypes.BLOCK_TYPE)
-                .value(ResourceKey.resolve(blockType.id()));
+    public BlockMaterial getMaterial(BlockState blockState) {
         return materialMap.computeIfAbsent(
-            spongeBlockType.defaultState(),
-            m -> {
-                net.minecraft.world.level.block.state.BlockState blockState =
-                    (net.minecraft.world.level.block.state.BlockState) m;
-                return new SpongeBlockMaterial(
-                    blockState
-                );
-            }
+                SpongeAdapter.adapt(blockState),
+                m -> {
+                    net.minecraft.world.level.block.state.BlockState mcBlockState =
+                            (net.minecraft.world.level.block.state.BlockState) m;
+                    return new SpongeBlockMaterial(
+                            mcBlockState
+                    );
+                }
         );
     }
 
