@@ -25,6 +25,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import org.jspecify.annotations.Nullable;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -44,7 +46,7 @@ final class FabricPermissionsProvider implements CoreMcPermissionsProvider {
         }
 
         if (node == null) {
-            // This permission node doesn't meet the stricter requirements of the official Fabric perms API
+            // This permission node doesn't have the namespace/path format expected by the official Fabric perms API,
             // so delegate to the fallback in the hopes it can handle it.
             return fallback.hasPermission(player, permission);
         }
@@ -63,18 +65,44 @@ final class FabricPermissionsProvider implements CoreMcPermissionsProvider {
     }
 
     private static @Nullable PermissionNode<Boolean> createNode(String permission) {
-        // Our permission nodes are in a.b.c.d format, Fabric expects modid:b.c.d, so we convert it here.
+        Identifier identifier = identifierFor(permission);
+        // It's theoretically possible some of our permission nodes don't have a namespace and path,
+        // so return null here and allow a fallback later on.
+        return identifier != null ? PermissionNode.of(identifier) : null;
+    }
+
+    static @Nullable Identifier identifierFor(String permission) {
         int namespaceSeparator = permission.indexOf('.');
         if (namespaceSeparator < 1 || namespaceSeparator == permission.length() - 1) {
             return null;
         }
 
-        Identifier identifier = Identifier.tryBuild(
-            permission.substring(0, namespaceSeparator),
-            permission.substring(namespaceSeparator + 1)
+        // Our permission nodes are in a.b.c.d format, Fabric expects modid:b.c.d, so we convert it here.
+        return Identifier.fromNamespaceAndPath(
+            encodeIdentifierPart(permission.substring(0, namespaceSeparator), false),
+            encodeIdentifierPart(permission.substring(namespaceSeparator + 1), true)
         );
-        // It's theoretically possible some of our perm nodes are _not_ valid Identifier instances,
-        // if so we return null here and allow a fallback later on.
-        return identifier != null ? PermissionNode.of(identifier) : null;
+    }
+
+    private static String encodeIdentifierPart(String value, boolean allowSlash) {
+        // Fabric uses Identifier which has a stricter character set, so escape anything they cannot represent directly.
+        byte[] bytes = value.toLowerCase(Locale.ROOT).getBytes(StandardCharsets.UTF_8);
+        StringBuilder encoded = new StringBuilder(bytes.length);
+        for (byte rawByte : bytes) {
+            int valueByte = Byte.toUnsignedInt(rawByte);
+            if ((valueByte >= 'a' && valueByte <= 'z')
+                    || (valueByte >= '0' && valueByte <= '9')
+                    || valueByte == '.' || valueByte == '-'
+                    || (allowSlash && valueByte == '/')) {
+                encoded.append((char) valueByte);
+            } else if (valueByte == '_') {
+                encoded.append("__");
+            } else {
+                encoded.append('_');
+                encoded.append(Character.forDigit(valueByte >>> 4, 16));
+                encoded.append(Character.forDigit(valueByte & 0x0F, 16));
+            }
+        }
+        return encoded.toString();
     }
 }
