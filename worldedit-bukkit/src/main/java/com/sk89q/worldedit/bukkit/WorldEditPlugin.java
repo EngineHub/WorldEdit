@@ -551,7 +551,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         }
 
         if (hiddenFoliaCheckPassed) {
-            LOGGER.warn("Server platform not marked as Folia-based, but appears to have Folia-specific code. Assuming this server is running Folia.");
+            LOGGER.warn("Server platform not marked as Folia-based, but appears to have Folia-specific code. Assuming this server is running Folia. This check is fragile, please tell the author of your server software to report that it is compatible with the `papermc:folia` brand.");
             return true;
         }
 
