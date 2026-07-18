@@ -528,29 +528,31 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
                 if (ServerBuildInfo.buildInfo().isBrandCompatible(Key.key("papermc", "folia"))) {
                     return true;
                 }
-
-                boolean hiddenFoliaCheck = false;
-
-                try {
-                    Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
-                    hiddenFoliaCheck = true;
-                } catch (ClassNotFoundException ignored) {
-                }
-
-                try {
-                    Bukkit.class.getMethod("getRegionScheduler");
-                    hiddenFoliaCheck = true;
-                } catch (NoSuchMethodException ignored) {
-                }
-
-                if (hiddenFoliaCheck) {
-                    LOGGER.warn("Server platform not marked as Folia-based, but appears to have Folia-specific code. Assuming this server is running Folia.");
-                    return true;
-                }
             }
         } catch (Throwable t) {
             // Ignore, this likely means an outdated version.
             LOGGER.warn("Failed to check if server is running Folia", t);
+        }
+
+        boolean hiddenFoliaCheckPassed = false;
+
+        try {
+            Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+            hiddenFoliaCheckPassed = true;
+        } catch (ClassNotFoundException ignored) {
+            // This is a class existence check, it's fine if not present.
+        }
+
+        try {
+            Bukkit.class.getMethod("getRegionScheduler");
+            hiddenFoliaCheckPassed = true;
+        } catch (NoSuchMethodException ignored) {
+            // This is a method existence check, it's fine if not present.
+        }
+
+        if (hiddenFoliaCheckPassed) {
+            LOGGER.warn("Server platform not marked as Folia-based, but appears to have Folia-specific code. Assuming this server is running Folia.");
+            return true;
         }
 
         return false;
