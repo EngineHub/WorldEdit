@@ -525,8 +525,28 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             if (PaperLib.isPaper()) {
                 // Then we can check against the `papermc:folia` key, as per the `isBrandCompatible` javadoc.
                 // This API is experimental so might randomly break on us (hence the try/catch)
-                // TODO if we drop Spigot support in the future, remove this check and purely use Folia-compatible APIs.
-                return ServerBuildInfo.buildInfo().isBrandCompatible(Key.key("papermc", "folia"));
+                if (ServerBuildInfo.buildInfo().isBrandCompatible(Key.key("papermc", "folia"))) {
+                    return true;
+                }
+
+                boolean hiddenFoliaCheck = false;
+
+                try {
+                    Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+                    hiddenFoliaCheck = true;
+                } catch (ClassNotFoundException ignored) {
+                }
+
+                try {
+                    Bukkit.class.getMethod("getRegionScheduler");
+                    hiddenFoliaCheck = true;
+                } catch (NoSuchMethodException ignored) {
+                }
+
+                if (hiddenFoliaCheck) {
+                    LOGGER.warn("Server platform not marked as Folia-based, but appears to have Folia-specific code. Assuming this server is running Folia.");
+                    return true;
+                }
             }
         } catch (Throwable t) {
             // Ignore, this likely means an outdated version.
