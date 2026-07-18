@@ -558,7 +558,12 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         return false;
     });
 
-    protected boolean isFolia() {
+    /**
+     * Returns if this plugin is enabling Folia-specific code.
+     *
+     * @return whether to enable Folia-specific code
+     */
+    public boolean isFolia() {
         return folia.getValue();
     }
 
