@@ -525,18 +525,45 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             if (PaperLib.isPaper()) {
                 // Then we can check against the `papermc:folia` key, as per the `isBrandCompatible` javadoc.
                 // This API is experimental so might randomly break on us (hence the try/catch)
-                // TODO if we drop Spigot support in the future, remove this check and purely use Folia-compatible APIs.
-                return ServerBuildInfo.buildInfo().isBrandCompatible(Key.key("papermc", "folia"));
+                if (ServerBuildInfo.buildInfo().isBrandCompatible(Key.key("papermc", "folia"))) {
+                    return true;
+                }
             }
         } catch (Throwable t) {
             // Ignore, this likely means an outdated version.
             LOGGER.warn("Failed to check if server is running Folia", t);
         }
 
+        boolean hiddenFoliaCheckPassed = false;
+
+        try {
+            Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+            hiddenFoliaCheckPassed = true;
+        } catch (ClassNotFoundException ignored) {
+            // This is a class existence check, it's fine if not present.
+        }
+
+        try {
+            Bukkit.class.getMethod("getRegionScheduler");
+            hiddenFoliaCheckPassed = true;
+        } catch (NoSuchMethodException ignored) {
+            // This is a method existence check, it's fine if not present.
+        }
+
+        if (hiddenFoliaCheckPassed) {
+            LOGGER.warn("Server platform not marked as Folia-based, but appears to have Folia-specific code. Assuming this server is running Folia. This check is fragile, please tell the author of your server software to report that it is compatible with the `papermc:folia` brand.");
+            return true;
+        }
+
         return false;
     });
 
-    protected boolean isFolia() {
+    /**
+     * Returns if this plugin is enabling Folia-specific code.
+     *
+     * @return whether to enable Folia-specific code
+     */
+    public boolean isFolia() {
         return folia.getValue();
     }
 
