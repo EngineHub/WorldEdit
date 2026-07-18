@@ -26,6 +26,7 @@ import net.minecraft.server.level.ServerPlayer;
 import org.jspecify.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HexFormat;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -57,6 +58,11 @@ final class FabricPermissionsProvider implements CoreMcPermissionsProvider {
 
     @Override
     public void registerPermission(String permission) {
+        if (registeredPermissions.containsKey(permission)) {
+            // Short-circuit if already registered.
+            return;
+        }
+
         PermissionNode<Boolean> node = createNode(permission);
         if (node != null) {
             registeredPermissions.putIfAbsent(permission, node);
@@ -95,12 +101,9 @@ final class FabricPermissionsProvider implements CoreMcPermissionsProvider {
                     || valueByte == '.' || valueByte == '-'
                     || (allowSlash && valueByte == '/')) {
                 encoded.append((char) valueByte);
-            } else if (valueByte == '_') {
-                encoded.append("__");
             } else {
                 encoded.append('_');
-                encoded.append(Character.forDigit(valueByte >>> 4, 16));
-                encoded.append(Character.forDigit(valueByte & 0x0F, 16));
+                encoded.append(HexFormat.of().toHexDigits(rawByte));
             }
         }
         return encoded.toString();

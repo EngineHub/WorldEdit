@@ -45,7 +45,7 @@ class FabricPermissionsProviderTest {
     @Test
     void escapesInvalidCharactersAndUnderscores() {
         assertEquals(
-            "worldedit:scripting.execute.my_20script__v1_21",
+            "worldedit:scripting.execute.my_20script_5fv1_21",
             FabricPermissionsProvider.identifierFor("worldedit.scripting.execute.my script_v1!").toString()
         );
     }
