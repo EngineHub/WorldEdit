@@ -108,12 +108,12 @@ fabric-permissions-api = "me.lucko:fabric-permissions-api:0.7.0"
 neoforge = "net.neoforged:neoforge:26.2.0.7-beta"
 
 # Mojang-provided libraries, CHECK AGAINST MINECRAFT for versions
-guava = "com.google.guava:guava:33.6.0-jre!!"
-log4j-bom = "org.apache.logging.log4j:log4j-bom:2.25.2!!"
+guava = "com.google.guava:guava:33.6.0-jre"
+log4j-bom = "org.apache.logging.log4j:log4j-bom:2.25.2"
 log4j-api.module = "org.apache.logging.log4j:log4j-api"
 log4j-core.module = "org.apache.logging.log4j:log4j-core"
-gson = "com.google.code.gson:gson:2.14.0!!"
-fastutil = "it.unimi.dsi:fastutil:8.5.18!!"
+gson = "com.google.code.gson:gson:2.14.0"
+fastutil = "it.unimi.dsi:fastutil:8.5.18"
 
 # Bukkit-provided libraries, CHECK AGAINST SPIGOT for versions
 # Note that we need to balance support for older MC versus working at all on newer ones, so the exact versions here
