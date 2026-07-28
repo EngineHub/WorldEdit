@@ -107,9 +107,9 @@ fabric-permissions-api = "me.lucko:fabric-permissions-api:0.7.0"
 
 neoforge = "net.neoforged:neoforge:26.2.0.7-beta"
 
-# Mojang-provided libraries, CHECK AGAINST MINECRAFT for versions
+# Mojang-provided libraries, validated by `:worldedit-fabric:verifyMinecraftLibraries`
 guava = "com.google.guava:guava:33.6.0-jre"
-log4j-bom = "org.apache.logging.log4j:log4j-bom:2.25.2"
+log4j-bom = "org.apache.logging.log4j:log4j-bom:2.26.0"
 log4j-api.module = "org.apache.logging.log4j:log4j-api"
 log4j-core.module = "org.apache.logging.log4j:log4j-core"
 gson = "com.google.code.gson:gson:2.14.0"
