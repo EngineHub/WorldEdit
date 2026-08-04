@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.function.pattern;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -50,4 +51,10 @@ public class StateApplyingPattern extends AbstractExtentPattern {
         }
         return block;
     }
+
+    @VisibleForTesting
+    public Map<String, String> getStates() {
+        return states;
+    }
+
 }

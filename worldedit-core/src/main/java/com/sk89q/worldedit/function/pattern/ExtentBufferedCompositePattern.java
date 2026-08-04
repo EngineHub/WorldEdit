@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.function.pattern;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.buffer.ExtentBuffer;
@@ -62,5 +63,10 @@ public class ExtentBufferedCompositePattern extends AbstractExtentPattern {
             }
         }
         return lastBlock;
+    }
+
+    @VisibleForTesting
+    public Pattern[] getPatterns() {
+        return patterns;
     }
 }

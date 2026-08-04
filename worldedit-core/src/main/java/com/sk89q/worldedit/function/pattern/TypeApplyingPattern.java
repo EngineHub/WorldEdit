@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.function.pattern;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
@@ -70,5 +71,10 @@ public class TypeApplyingPattern extends AbstractExtentPattern {
             newBlock = newBlock.with(prop, entry.getValue());
         }
         return newBlock.toBaseBlock(oldBlock.getNbtReference());
+    }
+
+    @VisibleForTesting
+    public Pattern getTypeProvidingPattern() {
+        return pattern;
     }
 }

@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.function.pattern;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.block.BaseBlock;
@@ -46,5 +47,10 @@ public class NBTMergingPattern extends AbstractExtentPattern {
         }
         nbtBuilder.putAll(nbtToMerge);
         return baseBlock.toBaseBlock(nbtBuilder.build());
+    }
+
+    @VisibleForTesting
+    public Map<String, ? extends LinTag<?>> getNbtToMerge() {
+        return nbtToMerge;
     }
 }
