@@ -19,28 +19,31 @@
 
 package com.sk89q.worldedit.world.fluid;
 
-import javax.annotation.Nullable;
-
 /**
- * Stores a list of categories of Block Types.
+ * Stores a list of common {@link FluidCategory FluidCategories}.
+ *
+ * @see FluidCategory
  */
+@SuppressWarnings("unused")
 public final class FluidCategories {
-
-    public static final FluidCategory LAVA = register("minecraft:lava");
-    public static final FluidCategory WATER = register("minecraft:water");
+    public static final FluidCategory BUBBLE_COLUMN_CAN_OCCUPY = get("minecraft:bubble_column_can_occupy");
+    public static final FluidCategory LAVA = get("minecraft:lava");
+    public static final FluidCategory SUPPORTS_FROGSPAWN = get("minecraft:supports_frogspawn");
+    public static final FluidCategory SUPPORTS_LILY_PAD = get("minecraft:supports_lily_pad");
+    public static final FluidCategory SUPPORTS_SUGAR_CANE_ADJACENTLY = get("minecraft:supports_sugar_cane_adjacently");
+    public static final FluidCategory WATER = get("minecraft:water");
 
     private FluidCategories() {
     }
 
-    private static FluidCategory register(final String id) {
-        return register(new FluidCategory(id));
-    }
-
-    public static FluidCategory register(final FluidCategory tag) {
-        return FluidCategory.REGISTRY.register(tag.id(), tag);
-    }
-
-    public static @Nullable FluidCategory get(final String id) {
-        return FluidCategory.REGISTRY.get(id);
+    /**
+     * Gets the {@link FluidCategory} associated with the given id.
+     */
+    public static FluidCategory get(String id) {
+        FluidCategory entry = FluidCategory.REGISTRY.get(id);
+        if (entry == null) {
+            return new FluidCategory(id);
+        }
+        return entry;
     }
 }

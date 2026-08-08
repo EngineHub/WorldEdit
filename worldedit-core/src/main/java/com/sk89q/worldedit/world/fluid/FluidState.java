@@ -19,28 +19,32 @@
 
 package com.sk89q.worldedit.world.fluid;
 
-import javax.annotation.Nullable;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Stores a list of common {@link FluidType FluidTypes}.
+ * The fluid supplied by a block state.
  *
- * @see FluidType
+ * <p>A fluid state is derived from a block state by the active platform. This
+ * allows blocks such as kelp and waterlogged blocks to supply fluid without
+ * being fluid blocks themselves.</p>
+ *
+ * @param type the type of fluid supplied
  */
-@SuppressWarnings("unused")
-public final class FluidTypes {
-    @Nullable public static final FluidType EMPTY = get("minecraft:empty");
-    @Nullable public static final FluidType FLOWING_LAVA = get("minecraft:flowing_lava");
-    @Nullable public static final FluidType FLOWING_WATER = get("minecraft:flowing_water");
-    @Nullable public static final FluidType LAVA = get("minecraft:lava");
-    @Nullable public static final FluidType WATER = get("minecraft:water");
+public record FluidState(FluidType type) {
 
-    private FluidTypes() {
+    public static final FluidState EMPTY = new FluidState(FluidTypes.EMPTY);
+
+    public FluidState {
+        checkNotNull(type);
     }
 
     /**
-     * Gets the {@link FluidType} associated with the given id.
+     * Returns whether this state supplies no fluid.
+     *
+     * @return whether this state is empty
      */
-    public static @Nullable FluidType get(String id) {
-        return FluidType.REGISTRY.get(id);
+    public boolean isEmpty() {
+        return type == FluidTypes.EMPTY;
     }
+
 }

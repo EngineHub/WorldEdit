@@ -23,6 +23,7 @@ import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.fluid.FluidState;
 
 import java.util.Map;
 import java.util.OptionalInt;
@@ -57,6 +58,19 @@ public interface BlockRegistry {
      * @return a map of states where the key is the state's ID
      */
     Map<String, ? extends Property<?>> getProperties(BlockType blockType);
+
+    /**
+     * Get the fluid state supplied by a block state.
+     *
+     * <p>Implementations that cannot obtain this information should return
+     * {@link FluidState#EMPTY}.</p>
+     *
+     * @param state the block state
+     * @return the fluid state supplied by the block state
+     */
+    default FluidState getFluidState(BlockState state) {
+        return FluidState.EMPTY;
+    }
 
     /**
      * Retrieve the internal ID for a given state, if possible.

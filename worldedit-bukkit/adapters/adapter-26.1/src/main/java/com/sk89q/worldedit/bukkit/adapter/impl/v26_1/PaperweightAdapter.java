@@ -64,6 +64,8 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.fluid.FluidState;
+import com.sk89q.worldedit.world.fluid.FluidTypes;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.entity.EntityTypes;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
@@ -363,6 +365,17 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     public net.minecraft.world.level.block.state.BlockState adapt(BlockState blockState) {
         int internalId = BlockStateIdAccess.getBlockStateId(blockState);
         return Block.stateById(internalId);
+    }
+
+    @Override
+    public FluidState getFluidState(BlockState state) {
+        net.minecraft.world.level.material.FluidState fluidState = adapt(state).getFluidState();
+        if (fluidState.isEmpty()) {
+            return FluidState.EMPTY;
+        }
+        String id = DedicatedServer.getServer().registryAccess().lookupOrThrow(Registries.FLUID)
+            .getKey(fluidState.getType()).toString();
+        return new FluidState(FluidTypes.get(id));
     }
 
     @Override

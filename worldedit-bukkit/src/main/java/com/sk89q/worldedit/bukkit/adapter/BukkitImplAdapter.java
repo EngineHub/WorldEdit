@@ -39,6 +39,7 @@ import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.fluid.FluidState;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.generation.StructureType;
 import com.sk89q.worldedit.world.generation.TreeType;
@@ -231,6 +232,16 @@ public interface BukkitImplAdapter {
      * @return The side effects that are supported
      */
     Set<SideEffect> getSupportedSideEffects();
+
+    /**
+     * Gets the fluid state supplied by a block state.
+     *
+     * @param state the block state
+     * @return the fluid state, or {@link FluidState#EMPTY} if unavailable
+     */
+    default FluidState getFluidState(BlockState state) {
+        return FluidState.EMPTY;
+    }
 
     default OptionalInt getInternalBlockStateId(BlockData data) {
         return OptionalInt.empty();

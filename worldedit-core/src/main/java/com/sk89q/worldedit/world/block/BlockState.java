@@ -19,9 +19,12 @@
 
 package com.sk89q.worldedit.world.block;
 
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
+import com.sk89q.worldedit.world.fluid.FluidState;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.util.HashSet;
@@ -55,6 +58,9 @@ public class BlockState implements BlockStateHolder<BlockState> {
 
     private final BaseBlock emptyBaseBlock;
     private final LazyReference<String> lazyStringRepresentation;
+    private final LazyReference<FluidState> fluidState = LazyReference.from(() -> WorldEdit.getInstance()
+        .getPlatformManager().queryCapability(Capability.GAME_HOOKS).getRegistries()
+        .getBlockRegistry().getFluidState(this));
 
     /**
      * The internal ID of the block state.
@@ -101,6 +107,15 @@ public class BlockState implements BlockStateHolder<BlockState> {
     @Override
     public Map<Property<?>, Object> getStates() {
         return this.values;
+    }
+
+    /**
+     * Gets the fluid state supplied by this block state.
+     *
+     * @return the fluid state
+     */
+    public FluidState getFluidState() {
+        return fluidState.getValue();
     }
 
     @Override

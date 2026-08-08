@@ -43,6 +43,8 @@ import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.entity.EntityType;
+import com.sk89q.worldedit.world.fluid.FluidCategory;
+import com.sk89q.worldedit.world.fluid.FluidType;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.generation.StructureType;
 import com.sk89q.worldedit.world.generation.TreeType;
@@ -159,6 +161,12 @@ public abstract class CoreMcMod {
                 ItemCategory.REGISTRY.register(key, new ItemCategory(key));
             }
         });
+        server.registryAccess().lookupOrThrow(Registries.FLUID).getTags().map(t -> t.key().location()).forEach(name -> {
+            String key = name.toString();
+            if (FluidCategory.REGISTRY.get(key) == null) {
+                FluidCategory.REGISTRY.register(key, new FluidCategory(key));
+            }
+        });
         Registry<Biome> biomeRegistry = server.registryAccess().lookupOrThrow(Registries.BIOME);
         biomeRegistry.getTags().forEach(tag -> {
             String key = tag.key().location().toString();
@@ -198,6 +206,13 @@ public abstract class CoreMcMod {
                 if (TreeType.REGISTRY.get(key) == null) {
                     TreeType.REGISTRY.register(key, new TreeType(key));
                 }
+            }
+        }
+        // Fluid
+        for (Identifier name : server.registryAccess().lookupOrThrow(Registries.FLUID).keySet()) {
+            String key = name.toString();
+            if (FluidType.REGISTRY.get(key) == null) {
+                FluidType.REGISTRY.register(key, new FluidType(key));
             }
         }
 

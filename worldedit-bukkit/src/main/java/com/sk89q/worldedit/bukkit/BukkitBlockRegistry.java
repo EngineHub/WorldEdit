@@ -24,6 +24,7 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.fluid.FluidState;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.BlockRegistry;
 import com.sk89q.worldedit.world.registry.PassthroughBlockMaterial;
@@ -68,6 +69,14 @@ public class BukkitBlockRegistry implements BlockRegistry {
             return WorldEditPlugin.getInstance().getBukkitImplAdapter().getProperties(blockType);
         }
         return null;
+    }
+
+    @Override
+    public FluidState getFluidState(BlockState state) {
+        if (WorldEditPlugin.getInstance().getBukkitImplAdapter() != null) {
+            return WorldEditPlugin.getInstance().getBukkitImplAdapter().getFluidState(state);
+        }
+        return FluidState.EMPTY;
     }
 
     @Override

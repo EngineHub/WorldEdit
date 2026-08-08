@@ -40,6 +40,8 @@ import com.sk89q.worldedit.sponge.config.SpongeConfiguration;
 import com.sk89q.worldedit.world.biome.BiomeCategory;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
+import com.sk89q.worldedit.world.fluid.FluidCategory;
+import com.sk89q.worldedit.world.fluid.FluidType;
 import com.sk89q.worldedit.world.generation.TreeType;
 import com.sk89q.worldedit.world.item.ItemCategory;
 import net.kyori.adventure.audience.Audience;
@@ -223,6 +225,7 @@ public class SpongeWorldEdit {
                 }
             }
         });
+        // Tags
         event.game().registry(RegistryTypes.BLOCK_TYPE).tags().forEach(blockTypeTag -> {
             String id = blockTypeTag.key().asString();
             if (!BlockCategory.REGISTRY.keySet().contains(id)) {
@@ -235,10 +238,24 @@ public class SpongeWorldEdit {
                 ItemCategory.REGISTRY.register(id, new ItemCategory(id));
             }
         });
+        event.game().registry(RegistryTypes.FLUID_TYPE).tags().forEach(fluidTypeTag -> {
+            String id = fluidTypeTag.key().asString();
+            if (!FluidCategory.REGISTRY.keySet().contains(id)) {
+                FluidCategory.REGISTRY.register(id, new FluidCategory(id));
+            }
+        });
+        // Biome
         RegistryTypes.BIOME.get().tags().forEach(biomeTag -> {
             String id = biomeTag.key().asString();
             if (!BiomeCategory.REGISTRY.keySet().contains(id)) {
                 BiomeCategory.REGISTRY.register(id, new BiomeCategory(id, () -> event.game().registry(RegistryTypes.BIOME).taggedValues(biomeTag).map(SpongeAdapter::adapt).collect(Collectors.toSet())));
+            }
+        });
+        // Fluid
+        event.game().registry(RegistryTypes.FLUID_TYPE).tags().forEach(fluidTag -> {
+            String id = fluidTag.key().asString();
+            if (!FluidType.REGISTRY.keySet().contains(id)) {
+                FluidType.REGISTRY.register(id, new FluidType(id));
             }
         });
 

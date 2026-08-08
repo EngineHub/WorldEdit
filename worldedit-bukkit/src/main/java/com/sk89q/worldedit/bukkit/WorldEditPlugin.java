@@ -58,6 +58,8 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.FuzzyBlockState;
 import com.sk89q.worldedit.world.entity.EntityType;
+import com.sk89q.worldedit.world.fluid.FluidCategory;
+import com.sk89q.worldedit.world.fluid.FluidType;
 import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
 import io.papermc.lib.PaperLib;
@@ -239,6 +241,11 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             String key = entityType.getKey().toString();
             EntityType.REGISTRY.register(key, new EntityType(key));
         });
+        // Fluid
+        Registry.FLUID.forEach(fluid -> {
+            String key =  fluid.getKey().toString();
+            FluidType.REGISTRY.register(key, new FluidType(key));
+        });
 
         // Registries only available via NMS
         BukkitImplAdapter adapter = getBukkitImplAdapter();
@@ -259,6 +266,10 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         for (Tag<Material> itemTag : Bukkit.getTags(Tag.REGISTRY_ITEMS, Material.class)) {
             String key = itemTag.getKey().toString();
             ItemCategory.REGISTRY.register(key, new ItemCategory(key));
+        }
+        for (Tag<Material> fluidTag : Bukkit.getTags(Tag.REGISTRY_FLUIDS, Material.class)) {
+            String key = fluidTag.getKey().toString();
+            FluidCategory.REGISTRY.register(key, new FluidCategory(key));
         }
     }
 
