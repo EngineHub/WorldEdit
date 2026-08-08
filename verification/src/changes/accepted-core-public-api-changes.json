@@ -116,5 +116,21 @@
                 "ANNOTATION_REMOVED"
             ]
         }
+    ],
+    "Fluid overhaul": [
+        {
+            "type": "com.sk89q.worldedit.world.fluid.FluidCategories",
+            "member": "Method com.sk89q.worldedit.world.fluid.FluidCategories.register(com.sk89q.worldedit.world.fluid.FluidCategory)",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.fluid.FluidTypes",
+            "member": "Method com.sk89q.worldedit.world.fluid.FluidTypes.register(com.sk89q.worldedit.world.fluid.FluidType)",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        }
     ]
 }
