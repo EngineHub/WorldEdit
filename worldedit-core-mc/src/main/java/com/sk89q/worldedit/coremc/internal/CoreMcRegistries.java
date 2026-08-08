@@ -23,6 +23,7 @@ import com.sk89q.worldedit.world.registry.BiomeRegistry;
 import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
 import com.sk89q.worldedit.world.registry.BlockRegistry;
 import com.sk89q.worldedit.world.registry.BundledRegistries;
+import com.sk89q.worldedit.world.registry.FluidRegistry;
 import com.sk89q.worldedit.world.registry.ItemCategoryRegistry;
 import com.sk89q.worldedit.world.registry.ItemRegistry;
 
@@ -32,6 +33,7 @@ import com.sk89q.worldedit.world.registry.ItemRegistry;
 public final class CoreMcRegistries extends BundledRegistries {
 
     private final BlockRegistry blockRegistry;
+    private final FluidRegistry fluidRegistry;
     private final BiomeRegistry biomeRegistry = new CoreMcBiomeRegistry();
     private final ItemRegistry itemRegistry;
     private final BlockCategoryRegistry blockCategoryRegistry;
@@ -39,6 +41,7 @@ public final class CoreMcRegistries extends BundledRegistries {
 
     public CoreMcRegistries(CoreMcPlatform platform) {
         this.blockRegistry = new CoreMcBlockRegistry(platform);
+        this.fluidRegistry = new CoreMcFluidRegistry(platform);
         this.itemRegistry = new CoreMcItemRegistry(platform);
         this.blockCategoryRegistry = new CoreMcBlockCategoryRegistry(platform);
         this.itemCategoryRegistry = new CoreMcItemCategoryRegistry(platform);
@@ -47,6 +50,11 @@ public final class CoreMcRegistries extends BundledRegistries {
     @Override
     public BlockRegistry getBlockRegistry() {
         return blockRegistry;
+    }
+
+    @Override
+    public FluidRegistry getFluidRegistry() {
+        return fluidRegistry;
     }
 
     @Override

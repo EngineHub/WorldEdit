@@ -40,6 +40,8 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.fluid.FluidState;
+import com.sk89q.worldedit.world.fluid.FluidType;
+import com.sk89q.worldedit.world.fluid.FluidTypes;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.generation.StructureType;
 import com.sk89q.worldedit.world.generation.TreeType;
@@ -171,6 +173,16 @@ public interface BukkitImplAdapter {
     Map<String, ? extends Property<?>> getProperties(BlockType blockType);
 
     /**
+     * Gets the state properties for a fluid type.
+     *
+     * @param fluidType the fluid type
+     * @return the properties map
+     */
+    default Map<String, ? extends Property<?>> getFluidProperties(FluidType fluidType) {
+        return Map.of();
+    }
+
+    /**
      * Send the given NBT data to the player.
      *
      * @param player The player
@@ -237,10 +249,10 @@ public interface BukkitImplAdapter {
      * Gets the fluid state supplied by a block state.
      *
      * @param state the block state
-     * @return the fluid state, or {@link FluidState#EMPTY} if unavailable
+     * @return the fluid state
      */
     default FluidState getFluidState(BlockState state) {
-        return FluidState.EMPTY;
+        return FluidTypes.EMPTY.getDefaultState();
     }
 
     default OptionalInt getInternalBlockStateId(BlockData data) {

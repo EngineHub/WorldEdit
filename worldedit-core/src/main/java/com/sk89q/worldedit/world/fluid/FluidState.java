@@ -19,6 +19,11 @@
 
 package com.sk89q.worldedit.world.fluid;
 
+import com.sk89q.worldedit.registry.state.Property;
+
+import java.util.Map;
+import java.util.Objects;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -27,15 +32,26 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * <p>A fluid state is derived from a block state by the active platform. This
  * allows blocks such as kelp and waterlogged blocks to supply fluid without
  * being fluid blocks themselves.</p>
- *
- * @param type the type of fluid supplied
  */
-public record FluidState(FluidType type) {
+public class FluidState {
 
-    public static final FluidState EMPTY = new FluidState(FluidTypes.EMPTY);
+    private final FluidType type;
+    private final Map<Property<?>, Object> values;
+    private final int stateListIndex;
 
-    public FluidState {
-        checkNotNull(type);
+    protected FluidState(FluidType type, Map<Property<?>, Object> values, int stateListIndex) {
+        this.type = checkNotNull(type);
+        this.values = values;
+        this.stateListIndex = stateListIndex;
+    }
+
+    /**
+     * Gets the type of fluid supplied.
+     *
+     * @return the fluid type
+     */
+    public FluidType getType() {
+        return type;
     }
 
     /**
@@ -45,6 +61,38 @@ public record FluidState(FluidType type) {
      */
     public boolean isEmpty() {
         return type == FluidTypes.EMPTY;
+    }
+
+    public <V> FluidState with(Property<V> property, V value) {
+        Object currentValue = values.get(property);
+        if (Objects.equals(currentValue, value)) {
+            return this;
+        }
+        int newIndex = type.getInternalStateList().updateIndexOrInvalid(
+            stateListIndex, property, currentValue, value);
+        return newIndex == -1 ? this : type.getInternalStateList().get(newIndex);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <V> V getState(Property<V> property) {
+        return (V) values.get(property);
+    }
+
+    public Map<Property<?>, Object> getStates() {
+        return values;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof FluidState fluidState)) {
+            return false;
+        }
+        return type.equals(fluidState.type) && values.equals(fluidState.values);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, values);
     }
 
 }

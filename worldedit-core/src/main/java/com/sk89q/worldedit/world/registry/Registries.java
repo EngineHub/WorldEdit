@@ -32,6 +32,15 @@ public interface Registries {
     BlockRegistry getBlockRegistry();
 
     /**
+     * Get the fluid registry.
+     *
+     * @return the fluid registry
+     */
+    default FluidRegistry getFluidRegistry() {
+        return NullFluidRegistry.INSTANCE;
+    }
+
+    /**
      * Get the item registry.
      *
      * @return the item registry

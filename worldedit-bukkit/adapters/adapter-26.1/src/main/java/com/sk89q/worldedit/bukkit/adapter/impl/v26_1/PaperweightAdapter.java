@@ -67,6 +67,7 @@ import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.entity.EntityTypes;
 import com.sk89q.worldedit.world.fluid.FluidState;
+import com.sk89q.worldedit.world.fluid.FluidType;
 import com.sk89q.worldedit.world.fluid.FluidTypes;
 import com.sk89q.worldedit.world.generation.ConfiguredFeatureType;
 import com.sk89q.worldedit.world.generation.StructureType;
@@ -367,15 +368,21 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         return Block.stateById(internalId);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public FluidState getFluidState(BlockState state) {
         net.minecraft.world.level.material.FluidState fluidState = adapt(state).getFluidState();
         if (fluidState.isEmpty()) {
-            return FluidState.EMPTY;
+            return FluidTypes.EMPTY.getDefaultState();
         }
         String id = DedicatedServer.getServer().registryAccess().lookupOrThrow(Registries.FLUID)
             .getKey(fluidState.getType()).toString();
-        return new FluidState(FluidTypes.get(id));
+        FluidType type = FluidTypes.get(id);
+        Map<Property<?>, Object> properties = new HashMap<>();
+        for (net.minecraft.world.level.block.state.properties.Property property : fluidState.getProperties()) {
+            properties.put(PROPERTY_CACHE.getUnchecked(property), fluidState.getValue(property));
+        }
+        return type.getState(properties);
     }
 
     @Override
@@ -647,6 +654,20 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         StateDefinition<Block, net.minecraft.world.level.block.state.BlockState> blockStateList =
                 block.getStateDefinition();
         for (net.minecraft.world.level.block.state.properties.Property state : blockStateList.getProperties()) {
+            Property<?> property = PROPERTY_CACHE.getUnchecked(state);
+            properties.put(property.name(), property);
+        }
+        return properties;
+    }
+
+    @SuppressWarnings({ "rawtypes" })
+    @Override
+    public Map<String, ? extends Property<?>> getFluidProperties(FluidType fluidType) {
+        Map<String, Property<?>> properties = new TreeMap<>();
+        var fluid = DedicatedServer.getServer().registryAccess().lookupOrThrow(Registries.FLUID)
+            .listElements().filter(reference -> reference.key().identifier().toString().equals(fluidType.id()))
+            .findFirst().orElseThrow();
+        for (net.minecraft.world.level.block.state.properties.Property state : fluid.value().defaultFluidState().getProperties()) {
             Property<?> property = PROPERTY_CACHE.getUnchecked(state);
             properties.put(property.name(), property);
         }

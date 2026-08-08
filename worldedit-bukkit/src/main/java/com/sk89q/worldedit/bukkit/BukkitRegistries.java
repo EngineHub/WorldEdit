@@ -23,6 +23,7 @@ import com.sk89q.worldedit.world.registry.BiomeRegistry;
 import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
 import com.sk89q.worldedit.world.registry.BlockRegistry;
 import com.sk89q.worldedit.world.registry.BundledRegistries;
+import com.sk89q.worldedit.world.registry.FluidRegistry;
 import com.sk89q.worldedit.world.registry.ItemCategoryRegistry;
 import com.sk89q.worldedit.world.registry.ItemRegistry;
 
@@ -33,6 +34,7 @@ class BukkitRegistries extends BundledRegistries {
 
     private static final BukkitRegistries INSTANCE = new BukkitRegistries();
     private final BlockRegistry blockRegistry = new BukkitBlockRegistry();
+    private final FluidRegistry fluidRegistry = new BukkitFluidRegistry();
     private final BiomeRegistry biomeRegistry = new BukkitBiomeRegistry();
     private final ItemRegistry itemRegistry = new BukkitItemRegistry();
     private final BlockCategoryRegistry blockCategoryRegistry = new BukkitBlockCategoryRegistry();
@@ -47,6 +49,11 @@ class BukkitRegistries extends BundledRegistries {
     @Override
     public BlockRegistry getBlockRegistry() {
         return blockRegistry;
+    }
+
+    @Override
+    public FluidRegistry getFluidRegistry() {
+        return fluidRegistry;
     }
 
     @Override

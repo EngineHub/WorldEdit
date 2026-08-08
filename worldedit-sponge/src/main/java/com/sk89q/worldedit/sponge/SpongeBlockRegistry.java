@@ -25,6 +25,7 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.fluid.FluidState;
+import com.sk89q.worldedit.world.fluid.FluidType;
 import com.sk89q.worldedit.world.fluid.FluidTypes;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.BlockRegistry;
@@ -89,10 +90,16 @@ public class SpongeBlockRegistry implements BlockRegistry {
             SpongeAdapter.adapt(state);
         net.minecraft.world.level.material.FluidState fluidState = equivalent.getFluidState();
         if (fluidState.isEmpty()) {
-            return FluidState.EMPTY;
+            return FluidTypes.EMPTY.getDefaultState();
         }
         String id = BuiltInRegistries.FLUID.getKey(fluidState.getType()).toString();
-        return new FluidState(FluidTypes.get(id));
+        FluidType type = FluidTypes.get(id);
+        Map<Property<?>, Object> properties = new HashMap<>();
+        for (var property : fluidState.getProperties()) {
+            properties.put(SpongeTransmogrifier.transmogToWorldEditProperty((StateProperty<?>) property),
+                fluidState.getValue(property));
+        }
+        return type.getState(properties);
     }
 
     @Override

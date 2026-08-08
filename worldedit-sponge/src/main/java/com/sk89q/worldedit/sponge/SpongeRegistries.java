@@ -23,6 +23,7 @@ import com.sk89q.worldedit.world.registry.BiomeRegistry;
 import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
 import com.sk89q.worldedit.world.registry.BlockRegistry;
 import com.sk89q.worldedit.world.registry.BundledRegistries;
+import com.sk89q.worldedit.world.registry.FluidRegistry;
 import com.sk89q.worldedit.world.registry.ItemCategoryRegistry;
 import com.sk89q.worldedit.world.registry.ItemRegistry;
 
@@ -39,6 +40,7 @@ class SpongeRegistries extends BundledRegistries {
 
     private final BiomeRegistry biomeRegistry = new SpongeBiomeRegistry();
     private final BlockRegistry blockRegistry = new SpongeBlockRegistry();
+    private final FluidRegistry fluidRegistry = new SpongeFluidRegistry();
     private final BlockCategoryRegistry blockCategoryRegistry = new SpongeBlockCategoryRegistry();
     private final ItemRegistry itemRegistry = new SpongeItemRegistry();
     private final ItemCategoryRegistry itemCategoryRegistry = new SpongeItemCategoryRegistry();
@@ -51,6 +53,11 @@ class SpongeRegistries extends BundledRegistries {
     @Override
     public BlockRegistry getBlockRegistry() {
         return blockRegistry;
+    }
+
+    @Override
+    public FluidRegistry getFluidRegistry() {
+        return fluidRegistry;
     }
 
     @Override
