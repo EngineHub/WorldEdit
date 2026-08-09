@@ -17,18 +17,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.command.tool.brush;
+package com.sk89q.worldedit.command.factory;
 
-import com.google.errorprone.annotations.InlineMe;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.function.ClipboardPaste;
+import com.sk89q.worldedit.function.Contextual;
+import com.sk89q.worldedit.function.EditContext;
+import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.mask.Mask;
-import com.sk89q.worldedit.function.pattern.Pattern;
-import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
 
-public class ClipboardBrush implements Brush {
+public final class ClipboardPasteFactory implements Contextual<RegionFunction> {
 
     private final ClipboardHolder holder;
     private final boolean ignoreAirBlocks;
@@ -38,20 +36,11 @@ public class ClipboardBrush implements Brush {
     private final boolean pasteBiomes;
     private final Mask sourceMask;
 
-    public ClipboardBrush(ClipboardHolder holder, boolean ignoreAirBlocks, boolean usingOrigin) {
-        this(holder, ignoreAirBlocks, false, usingOrigin, false, false, null);
-    }
-
-    @InlineMe(replacement = "this(holder, ignoreAirBlocks, false, usingOrigin, pasteEntities, pasteBiomes, sourceMask)")
-    @Deprecated
-    public ClipboardBrush(ClipboardHolder holder, boolean ignoreAirBlocks, boolean usingOrigin, boolean pasteEntities,
-                          boolean pasteBiomes, Mask sourceMask) {
-        this(holder, ignoreAirBlocks, false, usingOrigin, pasteEntities, pasteBiomes, sourceMask);
-    }
-
-    public ClipboardBrush(ClipboardHolder holder, boolean ignoreAirBlocks, boolean ignoreStructureVoidBlocks,
-                          boolean usingOrigin, boolean pasteEntities, boolean pasteBiomes, Mask sourceMask) {
-        this.holder = holder;
+    public ClipboardPasteFactory(ClipboardHolder holder, boolean ignoreAirBlocks,
+                                 boolean ignoreStructureVoidBlocks, boolean usingOrigin,
+                                 boolean pasteEntities, boolean pasteBiomes, Mask sourceMask) {
+        this.holder = new ClipboardHolder(holder.getClipboard());
+        this.holder.setTransform(holder.getTransform());
         this.ignoreAirBlocks = ignoreAirBlocks;
         this.ignoreStructureVoidBlocks = ignoreStructureVoidBlocks;
         this.usingOrigin = usingOrigin;
@@ -61,9 +50,9 @@ public class ClipboardBrush implements Brush {
     }
 
     @Override
-    public void build(EditSession editSession, BlockVector3 position, Pattern pattern, double size) throws MaxChangedBlocksException {
-        new ClipboardPaste(
-            editSession,
+    public RegionFunction createFromContext(EditContext context) {
+        return new ClipboardPaste(
+            context.getDestination(),
             holder,
             ignoreAirBlocks,
             ignoreStructureVoidBlocks,
@@ -71,7 +60,11 @@ public class ClipboardBrush implements Brush {
             pasteEntities,
             pasteBiomes,
             sourceMask
-        ).apply(position);
+        );
     }
 
+    @Override
+    public String toString() {
+        return "paste clipboard";
+    }
 }
