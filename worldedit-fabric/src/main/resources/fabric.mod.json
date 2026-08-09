@@ -6,21 +6,35 @@
     "name": "WorldEdit",
     "description": "WorldEdit is an easy-to-use in-game world editor for Minecraft, supporting both single- and multi-player.",
     "authors": [
-        "EngineHub"
+        {
+            "name": "EngineHub",
+            "contact": {
+                "homepage": "https://enginehub.org/",
+                "discord": "https://discord.gg/enginehub"
+            }
+        }
     ],
     "contact": {
         "homepage": "https://enginehub.org/worldedit/",
-        "sources": "https://github.com/EngineHub/WorldEdit"
+        "sources": "https://github.com/EngineHub/WorldEdit",
+        "issues": "https://github.com/EngineHub/WorldEdit/issues",
+        "discord": "https://discord.gg/enginehub"
     },
     "custom": {
-      "modmenu": {
-        "links": {
-          "modmenu.discord": "https://discord.gg/enginehub"
+        "modmenu": {
+            "links": {
+                "modmenu.discord": "https://discord.gg/enginehub",
+                "modmenu.crowdin": "https://crowdin.com/project/worldedit-core",
+                "modmenu.wiki": "https://worldedit.enginehub.org/en/latest/",
+                "modmenu.modrinth": "https://modrinth.com/plugin/worldedit",
+                "modmenu.curseforge": "https://www.curseforge.com/minecraft/mc-mods/worldedit",
+                "modmenu.github_sponsors": "https://github.com/sponsors/EngineHub",
+                "modmenu.opencollective": "https://opencollective.com/enginehub"
+            }
         }
-      }
     },
 
-    "license": "GPL3",
+    "license": "GPL-3.0-only",
     "icon": "assets/worldedit/icon.png",
 
     "environment": "*",

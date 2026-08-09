@@ -115,6 +115,7 @@ tasks.register<Jar>("jar") {
         }
         // Questionable excludes. So far the two files from each jar are the same.
         exclude("assets/worldedit/icon.png")
+        exclude("assets/worldedit/banner.png")
         exclude("defaults/worldedit.properties")
         exclude("pack.mcmeta")
         exclude("worldedit-coremc.mixins.json")
