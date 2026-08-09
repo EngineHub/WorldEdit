@@ -38,7 +38,6 @@ import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.annotation.Direction;
 import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.regions.factory.RegionFactory;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.util.formatting.text.format.TextDecoration;
@@ -124,8 +123,12 @@ public class ApplyBrushCommands {
                      @Arg(desc = "The direction in which the item will be applied", def = "up")
                      @Direction(includeDiagonals = true)
                          com.sk89q.worldedit.util.Direction direction) throws WorldEditException {
-        player.print(TextComponent.builder().append("WARNING: ", TextColor.RED, TextDecoration.BOLD)
-                .append(TranslatableComponent.of("worldedit.brush.apply.item.warning")).build());
+        player.print(TranslatableComponent.of(
+            "worldedit.warning",
+            TranslatableComponent.of("worldedit.brush.apply.item.warning")
+                .color(TextColor.WHITE)
+                .decoration(TextDecoration.BOLD, false)
+        ).color(TextColor.RED).decoration(TextDecoration.BOLD, true));
         setApplyBrush(parameters, player, localSession, new ItemUseFactory(item, direction));
     }
 

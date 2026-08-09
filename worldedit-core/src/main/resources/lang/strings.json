@@ -1,4 +1,6 @@
 {
+    "worldedit.warning": "WARNING: {0}",
+
     "worldedit.expand.description.vert": "Vertically expand the selection to world limits.",
     "worldedit.expand.expanded": "Region expanded {0} blocks",
     "worldedit.expand.expanded.vert": "Region expanded {0} blocks (top-to-bottom).",
@@ -14,6 +16,11 @@
     "worldedit.brush.apply.shape": "The shape of the region",
     "worldedit.brush.apply.type": "Type of brush to use",
     "worldedit.brush.apply.item.warning": "This brush simulates item usages. Its effects may not work on all platforms, may not be undo-able, and may cause strange interactions with other mods/plugins. Use at your own risk.",
+    "worldedit.apply.description": "Apply a function to every block in the selection",
+    "worldedit.apply.type": "Type of function to apply",
+    "worldedit.apply.mask": "The mask to filter which blocks the function applies to",
+    "worldedit.apply.item.warning": "This command simulates item usages. Its effects may not work on all platforms, may not be undo-able, and may cause strange interactions with other mods/plugins. Use at your own risk.",
+    "worldedit.apply.done": "Applied the function to {0} blocks.",
     "worldedit.brush.paint.description": "Paint brush, apply a function to a surface",
     "worldedit.brush.paint.size": "The size of the brush",
     "worldedit.brush.paint.shape": "The shape of the region",
