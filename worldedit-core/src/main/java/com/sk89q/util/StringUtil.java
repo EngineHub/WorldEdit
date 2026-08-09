@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 /**
@@ -340,30 +341,36 @@ public final class StringUtil {
         if (quotes != quoteClose.length) {
             throw new Error("Mismatched quoteOpen and quoteClose lengths");
         }
+
+        int[] nestingDepths = new int[quotes];
         for (String split : input) {
-            boolean quoteHandled = false;
-            for (int i = 0; i < quotes; i++) {
-                if (split.indexOf(quoteOpen[i]) != -1 && split.indexOf(quoteClose[i]) == -1) {
-                    buffer.append(split).append(delimiter);
-                    quoteHandled = true;
-                    break;
-                } else if (split.indexOf(quoteClose[i]) != -1 && split.indexOf(quoteOpen[i]) == -1) {
-                    buffer.append(split);
-                    parsableBlocks.add(buffer.toString());
-                    buffer = new StringBuilder();
-                    quoteHandled = true;
-                    break;
-                }
-            }
-            if (!quoteHandled) {
-                if (buffer.length() == 0) {
-                    parsableBlocks.add(split);
-                } else {
-                    buffer.append(split).append(delimiter);
-                }
+            split.chars()
+                    .forEach(ch -> {
+                        for (int i = 0; i < quoteOpen.length; i++) {
+                            char openQuote = quoteOpen[i];
+                            if (openQuote == ch) {
+                                nestingDepths[i]++;
+                            }
+                        }
+                        for (int i = 0; i < quoteClose.length; i++) {
+                            char closeQuote = quoteClose[i];
+                            if (closeQuote == ch) {
+                                nestingDepths[i]--;
+                            }
+                        }
+                    });
+
+            if (Arrays.stream(nestingDepths).allMatch(i -> i == 0)) {
+                //all quotes closed after this split
+                buffer.append(split);
+                parsableBlocks.add(buffer.toString());
+                buffer = new StringBuilder();
+            } else {
+                //ongoing quoting
+                buffer.append(split).append(delimiter);
             }
         }
-        if (appendLeftover && buffer.length() != 0) {
+        if (appendLeftover && !buffer.isEmpty()) {
             parsableBlocks.add(buffer.delete(buffer.length() - 1, buffer.length()).toString());
         }
 

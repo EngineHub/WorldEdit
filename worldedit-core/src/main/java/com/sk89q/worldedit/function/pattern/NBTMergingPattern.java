@@ -20,41 +20,37 @@
 package com.sk89q.worldedit.function.pattern;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Maps;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.block.BaseBlock;
-import com.sk89q.worldedit.world.block.BlockType;
+import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinTag;
 
 import java.util.Map;
-import java.util.Map.Entry;
 
-import static com.sk89q.worldedit.blocks.Blocks.resolveProperties;
+public class NBTMergingPattern extends AbstractExtentPattern {
+    private final Map<String, ? extends LinTag<?>> nbtToMerge;
 
-public class StateApplyingPattern extends AbstractExtentPattern {
-
-    private final Map<String, String> states;
-    private final Map<BlockType, Map<Property<Object>, Object>> cache = Maps.newHashMap();
-
-    public StateApplyingPattern(Extent extent, Map<String, String> statesToSet) {
+    public NBTMergingPattern(Extent extent, Map<String, ? extends LinTag<?>> nbtToMerge) {
         super(extent);
-        this.states = statesToSet;
+        this.nbtToMerge = nbtToMerge;
     }
 
     @Override
     public BaseBlock applyBlock(BlockVector3 position) {
-        BaseBlock block = getExtent().getFullBlock(position);
-        for (Entry<Property<Object>, Object> entry : cache
-                .computeIfAbsent(block.getBlockType(), b -> resolveProperties(states, b)).entrySet()) {
-            block = block.with(entry.getKey(), entry.getValue());
+        BaseBlock baseBlock = getExtent().getFullBlock(position);
+        LinCompoundTag.Builder nbtBuilder;
+        if (baseBlock.getNbt() != null) {
+            nbtBuilder = baseBlock.getNbt().toBuilder();
+        } else {
+            nbtBuilder = LinCompoundTag.builder();
         }
-        return block;
+        nbtBuilder.putAll(nbtToMerge);
+        return baseBlock.toBaseBlock(nbtBuilder.build());
     }
 
     @VisibleForTesting
-    public Map<String, String> getStates() {
-        return states;
+    public Map<String, ? extends LinTag<?>> getNbtToMerge() {
+        return nbtToMerge;
     }
-
 }

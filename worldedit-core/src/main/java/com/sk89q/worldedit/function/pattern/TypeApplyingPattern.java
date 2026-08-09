@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.function.pattern;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
@@ -62,13 +63,18 @@ public class TypeApplyingPattern extends AbstractExtentPattern {
 
     @Override
     public BaseBlock applyBlock(BlockVector3 position) {
-        BlockState oldBlock = getExtent().getBlock(position);
+        BaseBlock oldBlock = getExtent().getFullBlock(position);
         BlockState newBlock = pattern.applyBlock(position).toImmutableState();
         for (Entry<Property<?>, Object> entry : oldBlock.getStates().entrySet()) {
             @SuppressWarnings("unchecked")
             Property<Object> prop = (Property<Object>) entry.getKey();
             newBlock = newBlock.with(prop, entry.getValue());
         }
-        return newBlock.toBaseBlock();
+        return newBlock.toBaseBlock(oldBlock.getNbtReference());
+    }
+
+    @VisibleForTesting
+    public Pattern getTypeProvidingPattern() {
+        return pattern;
     }
 }

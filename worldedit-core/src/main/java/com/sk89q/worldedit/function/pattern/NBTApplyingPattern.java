@@ -20,41 +20,28 @@
 package com.sk89q.worldedit.function.pattern;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Maps;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.block.BaseBlock;
-import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.block.BlockState;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
-import java.util.Map;
-import java.util.Map.Entry;
+public class NBTApplyingPattern extends AbstractExtentPattern {
+    private final LinCompoundTag nbtToApply;
 
-import static com.sk89q.worldedit.blocks.Blocks.resolveProperties;
-
-public class StateApplyingPattern extends AbstractExtentPattern {
-
-    private final Map<String, String> states;
-    private final Map<BlockType, Map<Property<Object>, Object>> cache = Maps.newHashMap();
-
-    public StateApplyingPattern(Extent extent, Map<String, String> statesToSet) {
+    public NBTApplyingPattern(Extent extent, LinCompoundTag nbtToApply) {
         super(extent);
-        this.states = statesToSet;
+        this.nbtToApply = nbtToApply;
     }
 
     @Override
     public BaseBlock applyBlock(BlockVector3 position) {
-        BaseBlock block = getExtent().getFullBlock(position);
-        for (Entry<Property<Object>, Object> entry : cache
-                .computeIfAbsent(block.getBlockType(), b -> resolveProperties(states, b)).entrySet()) {
-            block = block.with(entry.getKey(), entry.getValue());
-        }
-        return block;
+        BlockState block = getExtent().getBlock(position);
+        return block.toBaseBlock(nbtToApply);
     }
 
     @VisibleForTesting
-    public Map<String, String> getStates() {
-        return states;
+    public LinCompoundTag getNbtToApply() {
+        return nbtToApply;
     }
-
 }
