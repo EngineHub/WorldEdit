@@ -32,6 +32,7 @@ import com.sk89q.worldedit.world.NullWorld;
 import io.papermc.lib.PaperLib;
 
 import java.lang.ref.WeakReference;
+import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -78,13 +79,27 @@ class BukkitEntity implements Entity {
         org.bukkit.entity.Entity entity = entityRef.get();
         if (entity != null) {
             if (WorldEditPlugin.getInstance().isFolia()) {
-                var _  = PaperLib.teleportAsync(entity, BukkitAdapter.adapt(location));
+                var _ = setLocationAsync(location);
                 return true;
             } else {
                 return entity.teleport(BukkitAdapter.adapt(location));
             }
         } else {
             return false;
+        }
+    }
+
+    @Override
+    public CompletableFuture<Boolean> setLocationAsync(Location location) {
+        org.bukkit.entity.Entity entity = entityRef.get();
+        if (entity != null) {
+            if (PaperLib.isPaper()) {
+                return entity.teleportAsync(BukkitAdapter.adapt(location));
+            } else {
+                return CompletableFuture.completedFuture(entity.teleport(BukkitAdapter.adapt(location)));
+            }
+        } else {
+            return CompletableFuture.completedFuture(false);
         }
     }
 

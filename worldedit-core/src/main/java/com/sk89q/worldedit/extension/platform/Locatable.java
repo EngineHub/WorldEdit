@@ -23,6 +23,8 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.Location;
 
+import java.util.concurrent.CompletableFuture;
+
 public interface Locatable {
 
     /**
@@ -51,6 +53,22 @@ public interface Locatable {
     boolean setLocation(Location location);
 
     /**
+     * Sets the location of this actor, asynchronously when supported.
+     *
+     * <p>
+     * The returned future completes with whether the teleport succeeded.
+     * Platforms without asynchronous teleport support may perform the
+     * teleport synchronously and return an already-completed future.
+     * </p>
+     *
+     * @param location the new location of the actor
+     * @return a future that completes with whether the teleport succeeded
+     */
+    default CompletableFuture<Boolean> setLocationAsync(Location location) {
+        return CompletableFuture.completedFuture(setLocation(location));
+    }
+
+    /**
      * Sets the position of this actor.
      *
      * @param pos where to move them
@@ -75,6 +93,21 @@ public interface Locatable {
      */
     default boolean trySetPosition(Vector3 pos) {
         return setLocation(new Location(getExtent(), pos));
+    }
+
+    /**
+     * Attempts to set the position of this actor, asynchronously when supported.
+     *
+     * <p>
+     * This action may fail, due to other mods cancelling the move.
+     * If so, the returned future will complete with {@code false}.
+     * </p>
+     *
+     * @param pos the position to set
+     * @return a future that completes with whether the position was able to be set
+     */
+    default CompletableFuture<Boolean> trySetPositionAsync(Vector3 pos) {
+        return setLocationAsync(new Location(getExtent(), pos));
     }
 
     /**

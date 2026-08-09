@@ -43,8 +43,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.TicketType;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntityTypes;
 import org.enginehub.linbus.tree.LinCompoundTag;
 import org.enginehub.worldeditcui.protocol.CUIPacket;
@@ -52,6 +54,7 @@ import org.enginehub.worldeditcui.protocol.CUIPacket;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 
 /**
@@ -108,15 +111,48 @@ public class CoreMcPlayer extends AbstractPlayerActor {
     @Override
     public boolean setLocation(Location location) {
         ServerLevel level = platform.getAdapter().toNativeWorld((World) location.getExtent());
-        this.player.teleportTo(
+        return this.player.teleportTo(
             level,
             location.getX(), location.getY(), location.getZ(),
             Set.of(),
             location.getYaw(), location.getPitch(),
             true
         );
-        // This may be false if the teleport was cancelled by a mod
-        return this.player.level() == level;
+    }
+
+    @Override
+    public CompletableFuture<Boolean> setLocationAsync(Location location) {
+        ServerLevel level = platform.getAdapter().toNativeWorld((World) location.getExtent());
+        ChunkPos chunkPosition = new ChunkPos(location.getBlockX() >> 4, location.getBlockZ() >> 4);
+        CompletableFuture<Void> chunkLoaded = new CompletableFuture<>();
+
+        return level.getServer()
+            .submit(() -> {
+                var _ = level.getChunkSource().addTicketAndLoadWithRadius(
+                    TicketType.PORTAL,
+                    chunkPosition,
+                    0
+                ).whenComplete((ignored, throwable) -> {
+                    if (throwable == null) {
+                        chunkLoaded.complete(null);
+                    } else {
+                        chunkLoaded.completeExceptionally(throwable);
+                    }
+                });
+            })
+            .thenCompose(ignored -> chunkLoaded)
+            .thenCompose(ignored -> level.getServer().submit(() -> this.player.teleportTo(
+                level,
+                location.getX(), location.getY(), location.getZ(),
+                Set.of(),
+                location.getYaw(), location.getPitch(),
+                true
+            )));
+    }
+
+    @Override
+    public CompletableFuture<Boolean> trySetPositionAsync(Vector3 pos, float pitch, float yaw) {
+        return setLocationAsync(new Location(getWorld(), pos, yaw, pitch));
     }
 
     @Override

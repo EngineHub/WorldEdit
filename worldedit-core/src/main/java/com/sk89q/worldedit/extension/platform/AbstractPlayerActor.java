@@ -49,6 +49,7 @@ import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 
 import java.io.File;
+import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 
 /**
@@ -495,6 +496,12 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
     public boolean trySetPosition(Vector3 pos) {
         final Location location = getLocation();
         return trySetPosition(pos, location.getPitch(), location.getYaw());
+    }
+
+    @Override
+    public CompletableFuture<Boolean> trySetPositionAsync(Vector3 pos) {
+        final Location location = getLocation();
+        return trySetPositionAsync(pos, location.getPitch(), location.getYaw());
     }
 
     @Override

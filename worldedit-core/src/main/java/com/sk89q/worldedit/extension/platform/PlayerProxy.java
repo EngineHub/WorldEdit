@@ -37,6 +37,7 @@ import com.sk89q.worldedit.world.gamemode.GameMode;
 
 import java.util.Locale;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -105,8 +106,18 @@ class PlayerProxy extends AbstractPlayerActor {
     }
 
     @Override
+    public CompletableFuture<Boolean> setLocationAsync(Location location) {
+        return basePlayer.setLocationAsync(location);
+    }
+
+    @Override
     public boolean trySetPosition(Vector3 pos, float pitch, float yaw) {
         return basePlayer.trySetPosition(pos, pitch, yaw);
+    }
+
+    @Override
+    public CompletableFuture<Boolean> trySetPositionAsync(Vector3 pos, float pitch, float yaw) {
+        return basePlayer.trySetPositionAsync(pos, pitch, yaw);
     }
 
     @Override

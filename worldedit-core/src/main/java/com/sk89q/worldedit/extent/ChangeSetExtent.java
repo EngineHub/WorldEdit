@@ -36,6 +36,7 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -161,6 +162,12 @@ public class ChangeSetExtent extends AbstractDelegateExtent {
         public boolean setLocation(Location location) {
             // TODO Add a changeset for this.
             return entity.setLocation(location);
+        }
+
+        @Override
+        public CompletableFuture<Boolean> setLocationAsync(Location location) {
+            // TODO Add a changeset for this.
+            return entity.setLocationAsync(location);
         }
 
         @Override

@@ -36,6 +36,7 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.gamemode.GameMode;
 
+import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 
 /**
@@ -316,6 +317,25 @@ public interface Player extends Entity, Actor {
         setPosition(pos, pitch, yaw);
 
         return true;
+    }
+
+    /**
+     * Attempt to move the player, asynchronously when supported.
+     *
+     * <p>
+     * This action may fail, due to other mods cancelling the move.
+     * If so, the returned future will complete with {@code false}.
+     * Platforms without asynchronous teleport support may perform the move
+     * synchronously and return an already-completed future.
+     * </p>
+     *
+     * @param pos where to move them
+     * @param pitch the pitch (up/down) of the player's view in degrees
+     * @param yaw the yaw (left/right) of the player's view in degrees
+     * @return a future that completes with whether the move was able to occur
+     */
+    default CompletableFuture<Boolean> trySetPositionAsync(Vector3 pos, float pitch, float yaw) {
+        return CompletableFuture.completedFuture(trySetPosition(pos, pitch, yaw));
     }
 
     /**

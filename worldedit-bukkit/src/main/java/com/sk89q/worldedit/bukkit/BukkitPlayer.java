@@ -55,6 +55,7 @@ import org.enginehub.linbus.tree.LinCompoundTag;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 
 public class BukkitPlayer extends AbstractPlayerActor {
@@ -150,10 +151,20 @@ public class BukkitPlayer extends AbstractPlayerActor {
         Location location = new Location(player.getWorld(), pos.x(), pos.y(),
                 pos.z(), yaw, pitch);
         if (WorldEditPlugin.getInstance().isFolia()) {
-            var _  = PaperLib.teleportAsync(player, location);
+            var _ = trySetPositionAsync(pos, pitch, yaw);
             return true;
         } else {
             return player.teleport(location);
+        }
+    }
+
+    @Override
+    public CompletableFuture<Boolean> trySetPositionAsync(Vector3 pos, float pitch, float yaw) {
+        Location location = new Location(player.getWorld(), pos.x(), pos.y(), pos.z(), yaw, pitch);
+        if (PaperLib.isPaper()) {
+            return player.teleportAsync(location);
+        } else {
+            return CompletableFuture.completedFuture(player.teleport(location));
         }
     }
 
@@ -232,10 +243,19 @@ public class BukkitPlayer extends AbstractPlayerActor {
     @Override
     public boolean setLocation(com.sk89q.worldedit.util.Location location) {
         if (WorldEditPlugin.getInstance().isFolia()) {
-            var _  = PaperLib.teleportAsync(player, BukkitAdapter.adapt(location));
+            var _ = setLocationAsync(location);
             return true;
         } else {
             return player.teleport(BukkitAdapter.adapt(location));
+        }
+    }
+
+    @Override
+    public CompletableFuture<Boolean> setLocationAsync(com.sk89q.worldedit.util.Location location) {
+        if (PaperLib.isPaper()) {
+            return player.teleportAsync(BukkitAdapter.adapt(location));
+        } else {
+            return CompletableFuture.completedFuture(player.teleport(BukkitAdapter.adapt(location)));
         }
     }
 
