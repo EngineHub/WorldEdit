@@ -185,8 +185,13 @@ class PlayerProxy extends AbstractPlayerActor {
     }
 
     @Override
-    public <B extends BlockStateHolder<B>> void sendFakeBlock(BlockVector3 pos, B block) {
+    public <B extends BlockStateHolder<B>> void sendFakeBlock(BlockVector3 pos, @Nullable B block) {
         basePlayer.sendFakeBlock(pos, block);
+    }
+
+    @Override
+    public void sendFakeOP() {
+        basePlayer.sendFakeOP();
     }
 
     @Override

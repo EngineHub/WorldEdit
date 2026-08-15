@@ -149,9 +149,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
+import org.bukkit.block.TileState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.block.CraftBlockEntityState;
 import org.bukkit.craftbukkit.block.data.CraftBlockData;
 import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
@@ -636,6 +638,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         return properties;
     }
 
+    @SuppressWarnings("deprecation") // -Werror
     @Override
     public void sendFakeNBT(Player player, BlockVector3 pos, LinCompoundTag nbtData) {
         var structureBlock = new StructureBlockEntity(
@@ -646,6 +649,18 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         ((CraftPlayer) player).getHandle().connection.send(ClientboundBlockEntityDataPacket.create(
             structureBlock,
             (blockEntity, registryAccess) -> (net.minecraft.nbt.CompoundTag) fromNative(nbtData)
+        ));
+    }
+
+    @Override
+    public void sendFakeNBT(Player player, BlockVector3 pos, TileState tileState, LinCompoundTag nbtData) {
+        CraftBlockEntityState<?> craftState = (CraftBlockEntityState<?>) tileState;
+        CompoundTag vanillaNBT = (net.minecraft.nbt.CompoundTag) fromNative(nbtData);
+
+        ((CraftPlayer) player).getHandle().connection.send(new ClientboundBlockEntityDataPacket(
+            new BlockPos(pos.x(), pos.y(), pos.z()),
+            craftState.getBlockEntity().getType(),
+            vanillaNBT
         ));
     }
 
