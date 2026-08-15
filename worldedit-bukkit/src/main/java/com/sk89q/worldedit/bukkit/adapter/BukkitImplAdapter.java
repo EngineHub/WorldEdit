@@ -192,7 +192,7 @@ public interface BukkitImplAdapter {
      *
      * @deprecated Only works for structure blocks
      */
-    @Deprecated(since = "2.15.1")
+    @Deprecated
     void sendFakeNBT(Player player, BlockVector3 pos, LinCompoundTag nbtData);
 
     /**

@@ -329,15 +329,4 @@ public interface Player extends Entity, Actor {
      * @param block The block to send, null to reset
      */
     <B extends BlockStateHolder<B>> void sendFakeBlock(BlockVector3 pos, @Nullable B block);
-
-    /**
-     * Make the client think it has operator status.
-     *
-     * <p>
-     * This change is client-side only and will not actually grant the player operator status.
-     * </p>
-     *
-     * @since TODO
-     */
-    void sendFakeOP();
 }

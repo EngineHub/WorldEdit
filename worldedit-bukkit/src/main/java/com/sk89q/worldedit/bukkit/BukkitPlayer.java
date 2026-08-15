@@ -42,6 +42,7 @@ import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.gamemode.GameMode;
 import com.sk89q.worldedit.world.gamemode.GameModes;
 import org.bukkit.Bukkit;
@@ -328,12 +329,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
             return;
         }
         adapter.sendFakeNBT(player, pos, tileState, nbtData);
-    }
-
-    @Override
-    public void sendFakeOP() {
-        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
-        if (adapter != null) {
+        if (block != null && block.getBlockType() == BlockTypes.STRUCTURE_BLOCK) {
             adapter.sendFakeOP(player);
         }
     }

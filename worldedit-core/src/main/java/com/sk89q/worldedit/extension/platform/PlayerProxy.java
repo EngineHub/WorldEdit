@@ -190,11 +190,6 @@ class PlayerProxy extends AbstractPlayerActor {
     }
 
     @Override
-    public void sendFakeOP() {
-        basePlayer.sendFakeOP();
-    }
-
-    @Override
     public void floatAt(int x, int y, int z, boolean alwaysGlass) {
         basePlayer.floatAt(x, y, z, alwaysGlass);
     }

@@ -568,8 +568,4 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
 
     }
 
-    @Override
-    public void sendFakeOP() {
-
-    }
 }
