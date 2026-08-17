@@ -97,10 +97,17 @@ tasks.named<ShadowJar>("shadowJar") {
     from(zipTree(shadeReobfAdapters.map { it.archiveFile }))
     configurations.add(project.configurations.named("runtimeClasspath"))
     configurations.add(adapters.get())
+
+    // In tandem with not bundling log4j, we shouldn't relocate base package here.
+    // relocate("org.apache.logging", "com.sk89q.worldedit.log4j")
+    relocate("org.antlr.v4", "com.sk89q.worldedit.antlr4")
+    relocate("org.bstats", "com.sk89q.worldedit.bstats")
+    relocate("io.papermc.lib", "com.sk89q.worldedit.bukkit.paperlib")
+    relocate("it.unimi.dsi.fastutil", "com.sk89q.worldedit.bukkit.fastutil")
+    relocate("net.royawesome.jlibnoise", "com.sk89q.worldedit.jlibnoise")
+
+    val ownArtifact = "$group:$name"
     dependencies {
-        // In tandem with not bundling log4j, we shouldn't relocate base package here.
-        // relocate("org.apache.logging", "com.sk89q.worldedit.log4j")
-        relocate("org.antlr.v4", "com.sk89q.worldedit.antlr4")
         // Purposefully not included, we assume (even though no API exposes it) that Log4J will be present at runtime
         // If it turns out not to be true for Spigot/Paper, our only two official platforms, this can be uncommented.
         // include(dependency("org.apache.logging.log4j:log4j-api"))
@@ -110,12 +117,7 @@ tasks.named<ShadowJar>("shadowJar") {
         include(dependency("it.unimi.dsi:fastutil"))
         include(dependency("com.sk89q.lib:jlibnoise"))
 
-        exclude(dependency("$group:$name"))
-
-        relocate("org.bstats", "com.sk89q.worldedit.bstats")
-        relocate("io.papermc.lib", "com.sk89q.worldedit.bukkit.paperlib")
-        relocate("it.unimi.dsi.fastutil", "com.sk89q.worldedit.bukkit.fastutil")
-        relocate("net.royawesome.jlibnoise", "com.sk89q.worldedit.jlibnoise")
+        exclude(dependency(ownArtifact))
     }
     project.project(":worldedit-bukkit:adapters").subprojects.forEach {
         dependencies {

@@ -1,4 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import java.util.jar.Attributes
 import java.util.jar.Manifest
 
@@ -59,20 +58,40 @@ open class MergeManifests : DefaultTask() {
     }
 }
 
-val fabricZipTree = zipTree(
-    project(":worldedit-fabric").tasks.named<ShadowJar>("shadowJar").flatMap { it.archiveFile }
-)
+val fabricDistribution = configurations.dependencyScope("fabricDistribution")
+val fabricDistributionClasspath = configurations.resolvable("fabricDistributionClasspath") {
+    extendsFrom(fabricDistribution.get())
+    isTransitive = false
+    attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
+        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.JAR))
+        attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling.SHADOWED))
+    }
+}
+
+val neoforgeDistribution = configurations.dependencyScope("neoforgeDistribution")
+val neoforgeDistributionClasspath = configurations.resolvable("neoforgeDistributionClasspath") {
+    extendsFrom(neoforgeDistribution.get())
+    isTransitive = false
+    attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
+        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.JAR))
+        attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling.EXTERNAL))
+    }
+}
+
+dependencies {
+    "fabricDistribution"(project(":worldedit-fabric"))
+    "neoforgeDistribution"(project(":worldedit-neoforge"))
+}
+
+val fabricZipTree = zipTree(fabricDistributionClasspath.map { it.singleFile })
+val forgeZipTree = zipTree(neoforgeDistributionClasspath.map { it.singleFile })
 
 val mergeManifests = tasks.register<MergeManifests>("mergeManifests") {
-    // TODO Extract forgeZipTree outside of this task when possible
-    val forgeZipTree = zipTree(
-        project(":worldedit-neoforge").tasks.named("jarJar").map { it.outputs.files.singleFile }
-    )
-
-    dependsOn(
-        project(":worldedit-fabric").tasks.named<ShadowJar>("shadowJar"),
-        project(":worldedit-neoforge").tasks.named("jarJar")
-    )
+    dependsOn(fabricDistributionClasspath, neoforgeDistributionClasspath)
     inputManifests.from(
         fabricZipTree.matching { include("META-INF/MANIFEST.MF") },
         forgeZipTree.matching { include("META-INF/MANIFEST.MF") }
@@ -81,15 +100,7 @@ val mergeManifests = tasks.register<MergeManifests>("mergeManifests") {
 }
 
 tasks.register<Jar>("jar") {
-    val forgeZipTree = zipTree(
-        project(":worldedit-neoforge").tasks.named("jarJar").map { it.outputs.files.singleFile }
-    )
-
-    dependsOn(
-        project(":worldedit-fabric").tasks.named<ShadowJar>("shadowJar"),
-        project(":worldedit-neoforge").tasks.named("jarJar"),
-        mergeManifests
-    )
+    dependsOn(fabricDistributionClasspath, neoforgeDistributionClasspath, mergeManifests)
     from(fabricZipTree) {
         exclude("META-INF/MANIFEST.MF")
     }
