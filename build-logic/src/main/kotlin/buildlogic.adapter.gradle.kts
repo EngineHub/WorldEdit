@@ -1,5 +1,6 @@
 import buildlogic.addEngineHubRepository
 import buildlogic.stringyLibs
+import buildlogic.getLibrary
 import buildlogic.getVersion
 
 plugins {
@@ -33,6 +34,7 @@ repositories {
 
 dependencies {
     "implementation"(project(":worldedit-bukkit"))
+    "implementation"(stringyLibs.getLibrary("linBus-dfu").get())
     constraints {
         "remapper"("net.fabricmc:tiny-remapper:[${stringyLibs.getVersion("minimumTinyRemapper")},)") {
             because("Need remapper to support Java 21")

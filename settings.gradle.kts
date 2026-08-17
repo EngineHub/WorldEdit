@@ -78,6 +78,10 @@ dependencyResolutionManagement {
             name = "EngineHub (Non-Mirrored)"
             url = URI.create("https://repo.enginehub.org/libs-release/")
         }
+        maven {
+            name = "EngineHub Snapshots (Non-Mirrored)"
+            url = URI.create("https://repo.enginehub.org/libs-snapshot/")
+        }
         ivy {
             url = uri("https://repo.enginehub.org/language-files/")
             name = "EngineHub Language Files"

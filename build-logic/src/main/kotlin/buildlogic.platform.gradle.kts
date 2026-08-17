@@ -22,6 +22,7 @@ tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJ
         "common",
         "stream",
         "tree",
+        "dfu",
         "format-snbt"
     ).map { stringyLibs.getLibrary("linBus-$it").get() }
     dependencies {

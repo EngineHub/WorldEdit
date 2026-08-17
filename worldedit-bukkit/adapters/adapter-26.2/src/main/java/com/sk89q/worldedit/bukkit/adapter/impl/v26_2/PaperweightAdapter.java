@@ -95,7 +95,6 @@ import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.LongArrayTag;
 import net.minecraft.nbt.LongTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.ShortTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
@@ -163,6 +162,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.generator.ChunkGenerator;
 import org.enginehub.linbus.common.LinTagId;
+import org.enginehub.linbus.dfu.LinOps;
 import org.enginehub.linbus.tree.LinByteArrayTag;
 import org.enginehub.linbus.tree.LinByteTag;
 import org.enginehub.linbus.tree.LinCompoundTag;
@@ -719,8 +719,8 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         LinCompoundTag nbt = baseItemStack.getNbt();
         if (nbt != null) {
             DataComponentPatch componentPatch = COMPONENTS_CODEC.parse(
-                    registryAccess.createSerializationContext(NbtOps.INSTANCE),
-                    fromNative(nbt)
+                    registryAccess.createSerializationContext(LinOps.getInstance()),
+                    nbt
             ).getOrThrow();
             stack.applyComponents(componentPatch);
         }
@@ -731,11 +731,11 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     public BaseItemStack adapt(org.bukkit.inventory.ItemStack itemStack) {
         var registryAccess = DedicatedServer.getServer().registryAccess();
         final ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-        CompoundTag tag = (CompoundTag) COMPONENTS_CODEC.encodeStart(
-                registryAccess.createSerializationContext(NbtOps.INSTANCE),
+        LinCompoundTag tag = (LinCompoundTag) COMPONENTS_CODEC.encodeStart(
+                registryAccess.createSerializationContext(LinOps.getInstance()),
                 nmsStack.getComponentsPatch()
         ).getOrThrow();
-        return new BaseItemStack(BukkitAdapter.asItemType(itemStack.getType()), LazyReference.from(() -> (LinCompoundTag) toNative(tag)), itemStack.getAmount());
+        return new BaseItemStack(BukkitAdapter.asItemType(itemStack.getType()), LazyReference.computed(tag), itemStack.getAmount());
     }
 
     private final LoadingCache<ServerLevel, PaperweightFakePlayer> fakePlayers

@@ -38,4 +38,8 @@ fun RepositoryHandler.addEngineHubRepository() {
         name = "EngineHub (Non-Mirrored)"
         url = URI.create("https://repo.enginehub.org/libs-release/")
     }
+    maven {
+        name = "EngineHub Snapshots (Non-Mirrored)"
+        url = URI.create("https://repo.enginehub.org/libs-snapshot/")
+    }
 }

@@ -17,6 +17,7 @@ repositories {
 dependencies {
     api(project(":worldedit-core"))
     api(project(":worldedit-libs:core-mc"))
+    api(libs.linBus.dfu)
 
     minecraft(libs.fabric.minecraft)
 

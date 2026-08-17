@@ -26,7 +26,6 @@ import com.sk89q.worldedit.coremc.internal.CoreMcCommandSender;
 import com.sk89q.worldedit.coremc.internal.CoreMcPlatform;
 import com.sk89q.worldedit.coremc.internal.CoreMcPlayer;
 import com.sk89q.worldedit.coremc.internal.CoreMcWorld;
-import com.sk89q.worldedit.coremc.internal.NBTConverter;
 import com.sk89q.worldedit.coremc.mixin.AccessorCommandSourceStack;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -47,8 +46,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -59,6 +56,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.Vec3;
+import org.enginehub.linbus.dfu.LinOps;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.util.Objects;
@@ -203,8 +201,8 @@ public abstract class CoreMcAdapter {
         LinCompoundTag nbt = baseItemStack.getNbt();
         if (nbt != null) {
             DataComponentPatch componentPatch = COMPONENTS_CODEC.parse(
-                getPlatform().serverRegistryAccess().createSerializationContext(NbtOps.INSTANCE),
-                NBTConverter.toNative(nbt)
+                getPlatform().serverRegistryAccess().createSerializationContext(LinOps.getInstance()),
+                nbt
             ).getOrThrow();
             itemStack.applyComponents(componentPatch);
         }
@@ -212,13 +210,13 @@ public abstract class CoreMcAdapter {
     }
 
     public BaseItemStack fromNativeItemStack(ItemStack itemStack) {
-        CompoundTag tag = (CompoundTag) COMPONENTS_CODEC.encodeStart(
-            getPlatform().serverRegistryAccess().createSerializationContext(NbtOps.INSTANCE),
+        LinCompoundTag tag = (LinCompoundTag) COMPONENTS_CODEC.encodeStart(
+            getPlatform().serverRegistryAccess().createSerializationContext(LinOps.getInstance()),
             itemStack.getComponentsPatch()
         ).getOrThrow();
         return new BaseItemStack(
             fromNativeItem(itemStack.getItem()),
-            LazyReference.from(() -> NBTConverter.fromNative(tag)),
+            LazyReference.computed(tag),
             itemStack.getCount()
         );
     }

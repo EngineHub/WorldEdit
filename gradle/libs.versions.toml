@@ -63,10 +63,11 @@ fabric-mixin = "net.fabricmc:sponge-mixin:0.17.3+mixin.0.8.7"
 
 paperweight = "io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:2.0.0-beta.21"
 
-linBus-bom = "org.enginehub.lin-bus:lin-bus-bom:0.2.0"
+linBus-bom = "org.enginehub.lin-bus:lin-bus-bom:0.3.0-SNAPSHOT"
 linBus-common.module = "org.enginehub.lin-bus:lin-bus-common"
 linBus-stream.module = "org.enginehub.lin-bus:lin-bus-stream"
 linBus-tree.module = "org.enginehub.lin-bus:lin-bus-tree"
+linBus-dfu.module = "org.enginehub.lin-bus:lin-bus-dfu"
 linBus-format-snbt.module = "org.enginehub.lin-bus.format:lin-bus-format-snbt"
 
 autoService = "com.google.auto.service:auto-service:1.1.1"
