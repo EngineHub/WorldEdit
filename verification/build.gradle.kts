@@ -7,7 +7,7 @@ plugins {
 }
 
 // Pull the version before our current version.
-val baseVersion = "(,${rootProject.version.toString().substringBefore("-SNAPSHOT")}["
+val baseVersion = "(,${version.toString().substringBefore("-SNAPSHOT")}["
 
 // TODO Re-add neoforge when it's fixed
 for (projectFragment in listOf("bukkit", "core", "fabric", "sponge")) {

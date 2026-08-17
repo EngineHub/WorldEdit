@@ -21,7 +21,7 @@ configurations {
     create("shade")
 }
 
-group = "${rootProject.group}.worldedit-libs"
+group = "${group}.worldedit-libs"
 
 val relocations = mapOf(
     "net.kyori.text" to "com.sk89q.worldedit.util.formatting.text",

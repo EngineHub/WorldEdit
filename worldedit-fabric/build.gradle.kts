@@ -97,10 +97,9 @@ tasks.named<ShadowJar>("shadowJar") {
         }
     }
     from(zipTree(tasks.jar.flatMap { it.archiveFile }))
+    relocate("org.antlr.v4", "com.sk89q.worldedit.antlr4")
+    relocate("net.royawesome.jlibnoise", "com.sk89q.worldedit.jlibnoise")
     dependencies {
-        relocate("org.antlr.v4", "com.sk89q.worldedit.antlr4")
-        relocate("net.royawesome.jlibnoise", "com.sk89q.worldedit.jlibnoise")
-
         include(dependency("org.antlr:antlr4-runtime"))
         include(dependency("com.sk89q.lib:jlibnoise"))
     }

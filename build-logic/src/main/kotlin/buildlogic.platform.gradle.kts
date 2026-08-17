@@ -24,9 +24,10 @@ tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJ
         "tree",
         "format-snbt"
     ).map { stringyLibs.getLibrary("linBus-$it").get() }
+    val platformLibName = project.name.replace("worldedit-", "")
     dependencies {
         include(project(":worldedit-libs:core"))
-        include(project(":worldedit-libs:${project.name.replace("worldedit-", "")}"))
+        include(project(":worldedit-libs:$platformLibName"))
         include(project(":worldedit-core"))
         include(project(":worldedit-core-mc"))
         include(dependency(jchronic))
