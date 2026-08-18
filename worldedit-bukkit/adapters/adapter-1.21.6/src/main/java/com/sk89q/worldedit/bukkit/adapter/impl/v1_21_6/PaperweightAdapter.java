@@ -401,40 +401,6 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         return state.toBaseBlock();
     }
 
-    private static final HashMap<BiomeType, Holder<Biome>> biomeTypeToNMSCache = new HashMap<>();
-    private static final HashMap<Holder<Biome>, BiomeType> biomeTypeFromNMSCache = new HashMap<>();
-
-    @Override
-    public BiomeType getBiome(Location location) {
-        checkNotNull(location);
-
-        CraftWorld craftWorld = ((CraftWorld) location.getWorld());
-        int x = location.getBlockX();
-        int y = location.getBlockY();
-        int z = location.getBlockZ();
-
-        final ServerLevel handle = craftWorld.getHandle();
-        LevelChunk chunk = handle.getChunk(x >> 4, z >> 4);
-
-        return biomeTypeFromNMSCache.computeIfAbsent(chunk.getNoiseBiome(x >> 2, y >> 2, z >> 2), b -> BiomeType.REGISTRY.get(b.unwrapKey().orElseThrow().location().toString()));
-    }
-
-    @Override
-    public void setBiome(Location location, BiomeType biome) {
-        checkNotNull(location);
-        checkNotNull(biome);
-
-        CraftWorld craftWorld = ((CraftWorld) location.getWorld());
-        int x = location.getBlockX();
-        int y = location.getBlockY();
-        int z = location.getBlockZ();
-
-        final ServerLevel handle = craftWorld.getHandle();
-        LevelChunk chunk = handle.getChunk(x >> 4, z >> 4);
-        chunk.setBiome(x >> 2, y >> 2, z >> 2, biomeTypeToNMSCache.computeIfAbsent(biome, b -> ((CraftServer) Bukkit.getServer()).getServer().registryAccess().lookupOrThrow(Registries.BIOME).getOrThrow(ResourceKey.create(Registries.BIOME, ResourceLocation.parse(b.id())))));
-        chunk.markUnsaved();
-    }
-
     @Override
     public WorldNativeAccess<?, ?, ?> createWorldNativeAccess(World world) {
         return new PaperweightWorldNativeAccess(this, new WeakReference<>(((CraftWorld) world).getHandle()));

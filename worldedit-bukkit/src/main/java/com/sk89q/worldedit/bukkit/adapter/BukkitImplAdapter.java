@@ -270,24 +270,6 @@ public interface BukkitImplAdapter {
     }
 
     /**
-     * Set the biome at a location.
-     * @param location the location
-     * @param biome the new biome
-     */
-    default void setBiome(Location location, BiomeType biome) {
-        throw new UnsupportedOperationException("This adapter does not support custom biomes.");
-    }
-
-    /**
-     * Gets the current biome at a location.
-     * @param location the location
-     * @return the biome
-     */
-    default BiomeType getBiome(Location location) {
-        throw new UnsupportedOperationException("This adapter does not support custom biomes.");
-    }
-
-    /**
      * Generates a Minecraft tree at the given location.
      *
      * @param treeType The tree
