@@ -19,7 +19,9 @@
 
 package com.sk89q.worldedit.bukkit.adapter.impl.v1_21_6;
 
-import com.sk89q.worldedit.world.registry.BlockMaterial;
+import com.sk89q.worldedit.blocks.ShapeType;
+import com.sk89q.worldedit.internal.block.AbstractBlockMaterial;
+import com.sk89q.worldedit.util.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Clearable;
 import net.minecraft.world.level.EmptyBlockGetter;
@@ -27,8 +29,10 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class PaperweightBlockMaterial implements BlockMaterial {
+public class PaperweightBlockMaterial extends AbstractBlockMaterial<VoxelShape> {
 
     private final BlockState block;
 
@@ -41,9 +45,21 @@ public class PaperweightBlockMaterial implements BlockMaterial {
         return block.isAir();
     }
 
+    private VoxelShape getShape(ShapeType shapeType) {
+        return switch (shapeType) {
+            case SHAPE -> block.getShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO, CollisionContext.empty());
+            case VISUAL_SHAPE -> block.getVisualShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO, CollisionContext.empty());
+        };
+    }
+
     @Override
-    public boolean isFullCube() {
-        return Block.isShapeFullBlock(block.getShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO));
+    protected boolean isFullCubeUncached(ShapeType shapeType) {
+        return Block.isShapeFullBlock(getShape(shapeType));
+    }
+
+    @Override
+    protected boolean isFullFaceUncached(ShapeType shapeType, Direction face) {
+        return Block.isFaceFull(getShape(shapeType), PaperweightAdapter.adapt(face));
     }
 
     @Override

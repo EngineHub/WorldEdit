@@ -19,7 +19,9 @@
 
 package com.sk89q.worldedit.coremc.internal;
 
-import com.sk89q.worldedit.world.registry.BlockMaterial;
+import com.sk89q.worldedit.blocks.ShapeType;
+import com.sk89q.worldedit.internal.block.AbstractBlockMaterial;
+import com.sk89q.worldedit.util.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Clearable;
 import net.minecraft.world.level.EmptyBlockGetter;
@@ -27,12 +29,14 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
  * Minecraft block material implementation for platforms sharing native code.
  * Pulls as much info as possible from the Minecraft BlockState.
  */
-public final class CoreMcBlockMaterial implements BlockMaterial {
+public final class CoreMcBlockMaterial extends AbstractBlockMaterial<VoxelShape> {
 
     private final BlockState block;
 
@@ -45,9 +49,21 @@ public final class CoreMcBlockMaterial implements BlockMaterial {
         return block.isAir();
     }
 
+    private VoxelShape getShape(ShapeType shapeType) {
+        return switch (shapeType) {
+            case SHAPE -> block.getShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO, CollisionContext.empty());
+            case VISUAL_SHAPE -> block.getVisualShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO, CollisionContext.empty());
+        };
+    }
+
     @Override
-    public boolean isFullCube() {
-        return Block.isShapeFullBlock(block.getShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO));
+    protected boolean isFullCubeUncached(ShapeType shapeType) {
+        return Block.isShapeFullBlock(getShape(shapeType));
+    }
+
+    @Override
+    protected boolean isFullFaceUncached(ShapeType shapeType, Direction face) {
+        return Block.isFaceFull(getShape(shapeType), CoreMcTransmogrifier.transmogToMinecraft(face));
     }
 
     @Override
