@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.world.registry;
 
+import com.sk89q.worldedit.blocks.ShapeType;
+
 /**
  * Describes the material for a block.
  */
@@ -35,8 +37,20 @@ public interface BlockMaterial {
      * Get whether this block is a full sized cube.
      *
      * @return the value of the test
+     * @deprecated Use {@link BlockMaterial#isFullCube(ShapeType)} instead.
      */
-    boolean isFullCube();
+    @Deprecated
+    default boolean isFullCube() {
+        return isFullCube(ShapeType.SHAPE);
+    }
+
+    /**
+     * Get whether this block is a full sized cube.
+     *
+     * @param shapeType which shape of the block to test
+     * @return the value of the test
+     */
+    boolean isFullCube(ShapeType shapeType);
 
     /**
      * Get whether this block is opaque.

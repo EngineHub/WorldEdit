@@ -17,34 +17,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.function.mask;
+package com.sk89q.worldedit.internal.block;
 
-import com.google.errorprone.annotations.InlineMe;
 import com.sk89q.worldedit.blocks.ShapeType;
-import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
+import com.sk89q.worldedit.world.registry.BlockMaterial;
 
-public final class FullCubeMask extends AbstractExtentMask {
+import java.util.EnumSet;
 
-    private final ShapeType shapeType;
+public abstract class AbstractBlockMaterial<VS> implements BlockMaterial {
+    @SuppressWarnings("this-escape")
+    public LazyReference<EnumSet<ShapeType>> isFullCube = LazyReference.from(() -> {
+        EnumSet<ShapeType> enumSet = EnumSet.noneOf(ShapeType.class);
+        for (ShapeType shapeType : ShapeType.values()) {
+            if (isFullCubeUncached(shapeType)) {
+                enumSet.add(shapeType);
+            }
+        }
 
-    @Deprecated
-    @InlineMe(replacement = "this(extent, ShapeType.SHAPE)", imports = "com.sk89q.worldedit.blocks.ShapeType")
-    public FullCubeMask(Extent extent) {
-        this(extent, ShapeType.SHAPE);
-    }
-
-    public FullCubeMask(Extent extent, ShapeType shapeType) {
-        super(extent);
-        this.shapeType = shapeType;
-    }
+        return enumSet;
+    });
 
     @Override
-    public boolean test(BlockVector3 vector) {
-        Extent extent = getExtent();
-        BlockState block = extent.getBlock(vector);
-        return block.getMaterial().isFullCube(shapeType);
+    public boolean isFullCube(ShapeType shapeType) {
+        return isFullCube.getValue().contains(shapeType);
     }
 
+    protected abstract boolean isFullCubeUncached(ShapeType shapeType);
 }
