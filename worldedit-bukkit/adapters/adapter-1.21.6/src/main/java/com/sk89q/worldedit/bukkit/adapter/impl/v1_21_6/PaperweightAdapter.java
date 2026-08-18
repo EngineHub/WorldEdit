@@ -33,6 +33,7 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.blocks.TileEntityBlock;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.entity.BaseEntity;
@@ -83,6 +84,7 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.ByteArrayTag;
 import net.minecraft.nbt.ByteTag;
@@ -127,6 +129,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.StructureBlockEntity;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -152,11 +155,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
-import org.bukkit.block.TileState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
-import org.bukkit.craftbukkit.block.CraftBlockEntityState;
 import org.bukkit.craftbukkit.block.data.CraftBlockData;
 import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
@@ -675,14 +676,17 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     }
 
     @Override
-    public void sendFakeNBT(Player player, BlockVector3 pos, TileState tileState, LinCompoundTag nbtData) {
-        CraftBlockEntityState<?> craftState = (CraftBlockEntityState<?>) tileState;
-        CompoundTag vanillaNBT = (net.minecraft.nbt.CompoundTag) fromNative(nbtData);
+    public void sendFakeNBT(Player player, BlockVector3 pos, TileEntityBlock tileEntityBlock, LinCompoundTag nbtData) {
+        BlockEntityType<?> nativeBlockEntityType = BuiltInRegistries.BLOCK_ENTITY_TYPE
+            .getValue(ResourceLocation.parse(tileEntityBlock.getNbtId()));
+        if (nativeBlockEntityType == null) {
+            return;
+        }
 
         ((CraftPlayer) player).getHandle().connection.send(new ClientboundBlockEntityDataPacket(
             new BlockPos(pos.x(), pos.y(), pos.z()),
-            craftState.getBlockEntity().getType(),
-            vanillaNBT
+            nativeBlockEntityType,
+            (net.minecraft.nbt.CompoundTag) fromNative(nbtData)
         ));
     }
 
