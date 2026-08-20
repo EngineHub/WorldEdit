@@ -47,7 +47,6 @@ import com.sk89q.worldedit.world.gamemode.GameMode;
 import com.sk89q.worldedit.world.gamemode.GameModes;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.enginehub.linbus.tree.LinCompoundTag;
@@ -315,9 +314,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
             baseBlock = getExtent().getFullBlock(pos);
         }
 
-        BlockData data = BukkitAdapter.adapt(baseBlock);
-
-        player.sendBlockChange(loc, data);
+        player.sendBlockChange(loc, BukkitAdapter.adapt(baseBlock));
 
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         if (adapter == null) {
