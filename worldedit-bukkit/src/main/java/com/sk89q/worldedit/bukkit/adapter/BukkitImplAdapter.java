@@ -203,8 +203,7 @@ public interface BukkitImplAdapter {
      * @param tileEntityBlock The block-entity block
      * @param nbtData         The NBT Data
      */
-    default void sendFakeNBT(Player player, BlockVector3 pos, TileEntityBlock tileEntityBlock, LinCompoundTag nbtData) {
-    }
+    void sendFakeNBT(Player player, BlockVector3 pos, TileEntityBlock tileEntityBlock, LinCompoundTag nbtData);
 
     /**
      * Make the client think it has operator status.
