@@ -166,7 +166,10 @@ public final class CoreMcWorldNativeAccess implements WorldNativeAccess<LevelChu
     @Override
     public void updateNeighbors(BlockPos pos, BlockState oldState, BlockState newState, int recursionLimit) {
         ServerLevel world = getWorld();
-        oldState.affectNeighborsAfterRemoval(world, pos, false);
+        boolean blockChanged = !oldState.is(newState.getBlock());
+        if (blockChanged) {
+            oldState.affectNeighborsAfterRemoval(world, pos, false);
+        }
         oldState.updateIndirectNeighbourShapes(world, pos, Block.UPDATE_CLIENTS, recursionLimit);
         newState.updateNeighbourShapes(world, pos, Block.UPDATE_CLIENTS, recursionLimit);
         newState.updateIndirectNeighbourShapes(world, pos, Block.UPDATE_CLIENTS, recursionLimit);
