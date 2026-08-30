@@ -186,10 +186,10 @@ public interface BukkitImplAdapter {
     /**
      * Send the given NBT data to the player.
      *
-     * @param player          The player
-     * @param pos             The position
+     * @param player The player
+     * @param pos The position
      * @param tileEntityBlock The block-entity block
-     * @param nbtData         The NBT Data
+     * @param nbtData The NBT Data
      */
     void sendFakeNBT(Player player, BlockVector3 pos, TileEntityBlock tileEntityBlock, LinCompoundTag nbtData);
 
