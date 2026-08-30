@@ -130,7 +130,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.StructureBlockEntity;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -639,20 +638,6 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             properties.put(property.name(), property);
         }
         return properties;
-    }
-
-    @SuppressWarnings("deprecation") // -Werror
-    @Override
-    public void sendFakeNBT(Player player, BlockVector3 pos, LinCompoundTag nbtData) {
-        var structureBlock = new StructureBlockEntity(
-            new BlockPos(pos.x(), pos.y(), pos.z()),
-            Blocks.STRUCTURE_BLOCK.defaultBlockState()
-        );
-        structureBlock.setLevel(((CraftPlayer) player).getHandle().level());
-        ((CraftPlayer) player).getHandle().connection.send(ClientboundBlockEntityDataPacket.create(
-            structureBlock,
-            (blockEntity, registryAccess) -> (net.minecraft.nbt.CompoundTag) fromNative(nbtData)
-        ));
     }
 
     @Override

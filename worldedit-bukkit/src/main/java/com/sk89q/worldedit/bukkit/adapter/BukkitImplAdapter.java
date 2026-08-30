@@ -186,18 +186,6 @@ public interface BukkitImplAdapter {
     /**
      * Send the given NBT data to the player.
      *
-     * @param player The player
-     * @param pos The position
-     * @param nbtData The NBT Data
-     *
-     * @deprecated Only works for structure blocks
-     */
-    @Deprecated
-    void sendFakeNBT(Player player, BlockVector3 pos, LinCompoundTag nbtData);
-
-    /**
-     * Send the given NBT data to the player.
-     *
      * @param player          The player
      * @param pos             The position
      * @param tileEntityBlock The block-entity block
