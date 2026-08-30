@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.coremc.internal;
 
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.blocks.TileEntityBlock;
 import com.sk89q.worldedit.coremc.mixin.AccessorClientboundBlockEntityDataPacket;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
@@ -35,17 +36,18 @@ import com.sk89q.worldedit.util.formatting.component.TextUtils;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
 import com.sk89q.worldedit.world.World;
-import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.world.block.BlockTypes;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntityTypes;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import org.enginehub.linbus.tree.LinCompoundTag;
 import org.enginehub.worldeditcui.protocol.CUIPacket;
 
@@ -229,33 +231,39 @@ public class CoreMcPlayer extends AbstractPlayerActor {
     }
 
     @Override
-    public <B extends BlockStateHolder<B>> void sendFakeBlock(BlockVector3 pos, B block) {
+    public <B extends BlockStateHolder<B>> void sendFakeBlock(BlockVector3 pos, @Nullable B block) {
         World world = getWorld();
         if (!(world instanceof CoreMcWorld coreMcWorld)) {
             return;
         }
         BlockPos loc = platform.getAdapter().toBlockPos(pos);
         if (block == null) {
-            final ClientboundBlockUpdatePacket packetOut = new ClientboundBlockUpdatePacket(
-                coreMcWorld.getWorld(), loc
-            );
-            player.connection.send(packetOut);
+            player.connection.send(new ClientboundBlockUpdatePacket(
+                coreMcWorld.getWorld(),
+                loc
+            ));
         } else {
-            final ClientboundBlockUpdatePacket packetOut = new ClientboundBlockUpdatePacket(
-                loc,
-                platform.getAdapter().toNativeBlockState(block.toImmutableState())
-            );
-            player.connection.send(packetOut);
-            if (block instanceof BaseBlock baseBlock && block.getBlockType().equals(BlockTypes.STRUCTURE_BLOCK)) {
-                final LinCompoundTag nbtData = baseBlock.getNbt();
-                if (nbtData != null) {
-                    player.connection.send(AccessorClientboundBlockEntityDataPacket.create(
-                        new BlockPos(pos.x(), pos.y(), pos.z()),
-                        BlockEntityTypes.STRUCTURE_BLOCK,
-                        NBTConverter.toNative(nbtData)
-                    ));
-                }
+            final BlockState nativeState = platform.getAdapter().toNativeBlockState(block.toImmutableState());
+
+            player.connection.send(new ClientboundBlockUpdatePacket(loc, nativeState));
+
+            if (!(block instanceof final TileEntityBlock tileBlock)) {
+                return;
             }
+            final LinCompoundTag nbtData = tileBlock.getNbt();
+            if (nbtData == null) {
+                return;
+            }
+            final BlockEntityType<?> nativeBlockEntityType = BuiltInRegistries.BLOCK_ENTITY_TYPE
+                .getValue(Identifier.parse(tileBlock.getNbtId()));
+            if (nativeBlockEntityType == null) {
+                return;
+            }
+            player.connection.send(AccessorClientboundBlockEntityDataPacket.create(
+                loc,
+                nativeBlockEntityType,
+                NBTConverter.toNative(nbtData)
+            ));
         }
     }
 

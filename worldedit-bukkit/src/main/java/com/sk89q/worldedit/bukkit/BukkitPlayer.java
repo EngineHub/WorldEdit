@@ -305,22 +305,29 @@ public class BukkitPlayer extends AbstractPlayerActor {
     }
 
     @Override
-    public <B extends BlockStateHolder<B>> void sendFakeBlock(BlockVector3 pos, B block) {
+    public <B extends BlockStateHolder<B>> void sendFakeBlock(BlockVector3 pos, @Nullable B block) {
         Location loc = new Location(player.getWorld(), pos.x(), pos.y(), pos.z());
-        if (block == null) {
-            player.sendBlockChange(loc, player.getWorld().getBlockAt(loc).getBlockData());
+
+        BaseBlock baseBlock;
+        if (block != null) {
+            baseBlock = block.toBaseBlock();
         } else {
-            player.sendBlockChange(loc, BukkitAdapter.adapt(block));
-            BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
-            if (adapter != null) {
-                if (block.getBlockType() == BlockTypes.STRUCTURE_BLOCK && block instanceof BaseBlock baseBlock) {
-                    LinCompoundTag nbt = baseBlock.getNbt();
-                    if (nbt != null) {
-                        adapter.sendFakeNBT(player, pos, nbt);
-                        adapter.sendFakeOP(player);
-                    }
-                }
-            }
+            baseBlock = getExtent().getFullBlock(pos);
+        }
+
+        player.sendBlockChange(loc, BukkitAdapter.adapt(baseBlock));
+
+        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+        if (adapter == null) {
+            return;
+        }
+        LinCompoundTag nbtData = baseBlock.getNbt();
+        if (nbtData == null) {
+            return;
+        }
+        adapter.sendFakeNBT(player, pos, baseBlock, nbtData);
+        if (block != null && block.getBlockType() == BlockTypes.STRUCTURE_BLOCK) {
+            adapter.sendFakeOP(player);
         }
     }
 }
