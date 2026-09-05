@@ -77,8 +77,8 @@ public class SnowSimulator implements LayerFunction {
             return true;
         }
 
-        // Stop searching when we hit a movement blocker
-        return block.getBlockType().getMaterial().isMovementBlocker();
+        // Stop searching when we hit a solid block
+        return block.getBlockType().getMaterial().isSolid();
     }
 
     @Override

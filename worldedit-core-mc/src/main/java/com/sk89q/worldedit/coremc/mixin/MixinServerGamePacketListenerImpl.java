@@ -27,9 +27,10 @@ import com.sk89q.worldedit.util.lifecycle.ConstantLifecycled;
 import com.sk89q.worldedit.util.lifecycle.Lifecycled;
 import com.sk89q.worldedit.util.lifecycle.SimpleLifecycled;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
-import net.minecraft.network.protocol.game.ServerboundSwingPacket;
+import net.minecraft.network.protocol.game.ServerboundPunchPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.world.InteractionHand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -59,16 +60,16 @@ public class MixinServerGamePacketListenerImpl {
 
     @Keep
     @Inject(
-        method = "handleAnimate",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;swing(Lnet/minecraft/world/InteractionHand;)V")
+        method = "handlePunch",
+        at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;swing(Lnet/minecraft/world/InteractionHand;Lnet/minecraft/world/item/component/SwingAnimation;Z)Z")
     )
-    private void onAnimate(ServerboundSwingPacket packet, @SuppressWarnings("UnusedVariable") CallbackInfo ci) {
+    private void handlePunch(@SuppressWarnings("UnusedVariable") ServerboundPunchPacket packet, @SuppressWarnings("UnusedVariable") CallbackInfo ci) {
         if (!((AccessorServerPlayerGameMode) this.player.gameMode).isDestroyingBlock()) {
             if (this.ignoreSwingPackets > 0) {
                 this.ignoreSwingPackets--;
             } else {
                 WORLD_EDITING_PLATFORM.value().ifPresent(platform ->
-                    platform.getMod().onLeftClickAir(this.player, packet.getHand())
+                    platform.getMod().onLeftClickAir(this.player, InteractionHand.MAIN_HAND)
                 );
             }
         }

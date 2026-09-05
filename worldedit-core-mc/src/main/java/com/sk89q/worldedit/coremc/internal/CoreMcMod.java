@@ -175,7 +175,7 @@ public abstract class CoreMcMod {
             }
         });
         // Features
-        for (Identifier name : server.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).keySet()) {
+        for (Identifier name : server.registryAccess().lookupOrThrow(Registries.FEATURE).keySet()) {
             String key = name.toString();
             if (ConfiguredFeatureType.REGISTRY.get(key) == null) {
                 ConfiguredFeatureType.REGISTRY.register(key, new ConfiguredFeatureType(key));
@@ -192,7 +192,7 @@ public abstract class CoreMcMod {
         Registry<PlacedFeature> placedFeatureRegistry = server.registryAccess().lookupOrThrow(Registries.PLACED_FEATURE);
         for (Identifier name : placedFeatureRegistry.keySet()) {
             // Do some hackery to make sure this is a tree
-            var underlyingFeature = placedFeatureRegistry.get(name).get().value().feature().value().feature();
+            var underlyingFeature = placedFeatureRegistry.get(name).get().value().feature().value();
             if (underlyingFeature instanceof TreeFeature || underlyingFeature instanceof FallenTreeFeature || underlyingFeature instanceof CoralTreeFeature) {
                 String key = name.toString();
                 if (TreeType.REGISTRY.get(key) == null) {
