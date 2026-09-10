@@ -15,7 +15,7 @@ errorprone = "2.48.0"
 
 crankcase = "0.1.0"
 
-fabric-api = "0.156.0+26.2"
+fabric-api = "0.160.2+26.3"
 
 neogradle = "7.1.38"
 neoforge-minecraft = "26.2"
@@ -101,8 +101,8 @@ rhino = "org.mozilla:rhino-runtime:1.7.13"
 jchronic = "com.sk89q:jchronic:0.2.4a"
 jlibnoise = "com.sk89q.lib:jlibnoise:1.0.0"
 
-fabric-minecraft = "com.mojang:minecraft:26.2"
-fabric-loader = "net.fabricmc:fabric-loader:0.19.3"
+fabric-minecraft = "com.mojang:minecraft:26.3-pre-3"
+fabric-loader = "net.fabricmc:fabric-loader:0.19.5"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.7.0"
 
 neoforge = "net.neoforged:neoforge:26.2.0.53-beta"

@@ -33,7 +33,7 @@ public class SolidBlockMask extends AbstractExtentMask {
     public boolean test(BlockVector3 vector) {
         Extent extent = getExtent();
         BlockState block = extent.getBlock(vector);
-        return block.getBlockType().getMaterial().isMovementBlocker();
+        return block.getBlockType().getMaterial().isSolid();
     }
 
 }
