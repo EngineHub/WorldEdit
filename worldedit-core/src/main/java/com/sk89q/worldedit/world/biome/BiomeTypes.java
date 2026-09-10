@@ -39,6 +39,7 @@ public final class BiomeTypes {
     @Nullable public static final BiomeType CHERRY_GROVE = get("minecraft:cherry_grove");
     @Nullable public static final BiomeType COLD_OCEAN = get("minecraft:cold_ocean");
     @Nullable public static final BiomeType CRIMSON_FOREST = get("minecraft:crimson_forest");
+    @Nullable public static final BiomeType DAPPLED_FOREST = get("minecraft:dappled_forest");
     @Nullable public static final BiomeType DARK_FOREST = get("minecraft:dark_forest");
     @Deprecated @Nullable public static final BiomeType DARK_FOREST_HILLS = get("minecraft:dark_forest_hills");
     @Nullable public static final BiomeType DEEP_COLD_OCEAN = get("minecraft:deep_cold_ocean");
