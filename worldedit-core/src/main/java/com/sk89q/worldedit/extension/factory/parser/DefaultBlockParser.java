@@ -19,7 +19,9 @@
 
 package com.sk89q.worldedit.extension.factory.parser;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableMap;
+import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.NotABlockException;
@@ -58,6 +60,7 @@ import org.enginehub.linbus.stream.exception.NbtParseException;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -93,28 +96,20 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
     @Override
     public BaseBlock parseFromInput(String input, ParserContext context)
             throws InputParseException {
-        String originalInput = input;
-        input = input.replace(";", "|");
-        Exception suppressed = null;
-        try {
-            BaseBlock modified = parseLogic(input, context);
-            if (modified != null) {
-                return modified;
-            }
-        } catch (Exception e) {
-            suppressed = e;
-        }
-        try {
-            return parseLogic(originalInput, context);
-        } catch (Exception e) {
-            if (suppressed != null) {
-                e.addSuppressed(suppressed);
-            }
-            throw e;
-        }
+        return parseLogic(input, context);
     }
 
     private static final String[] EMPTY_STRING_ARRAY = {};
+    private static final CharMatcher EXTRA_DATA_DELIMITERS = CharMatcher.anyOf("|;");
+
+    private static String[] splitExtraData(String input) {
+        List<String> parts = StringUtil.splitOutsideBrackets(input, EXTRA_DATA_DELIMITERS);
+        int end = parts.size();
+        while (end > 1 && parts.get(end - 1).isEmpty()) {
+            end--;
+        }
+        return parts.subList(0, end).toArray(EMPTY_STRING_ARRAY);
+    }
 
     /**
      * Backwards compatibility for wool colours in block syntax.
@@ -264,7 +259,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
     private BaseBlock parseLogic(String input, ParserContext context) throws InputParseException {
         BlockType blockType = null;
         Map<Property<?>, Object> blockStates = new HashMap<>();
-        String[] blockAndExtraData = input.trim().split("\\|", 0);
+        String[] blockAndExtraData = splitExtraData(input.trim());
         if (blockAndExtraData.length == 0) {
             throw new NoMatchException(TranslatableComponent.of("worldedit.error.unknown-block", TextComponent.of(input)));
         }
@@ -299,46 +294,68 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
         }
 
         if (state == null) {
-            String typeString;
-
-            int stateStart = blockAndExtraData[0].indexOf('[');
-            int nbtStart = blockAndExtraData[0].indexOf('{');
-            int typeEnd = stateStart == -1 ? nbtStart : nbtStart == -1 ? stateStart : Math.min(nbtStart, stateStart);
-
-            if (typeEnd == -1) {
-                typeString = blockAndExtraData[0];
-            } else {
-                typeString = blockAndExtraData[0].substring(0, typeEnd);
+            String blockString = blockAndExtraData[0];
+            int cursor = 0;
+            // Advance cursor until we hit a state or NBT data, or the end of the string
+            while (cursor < blockString.length() && blockString.charAt(cursor) != '[' && blockString.charAt(cursor) != '{') {
+                cursor++;
             }
+            String typeString = blockString.substring(0, cursor);
 
+            // Parse state string first
             String stateString = null;
-            if (stateStart != -1 && (nbtStart == -1 || stateStart < nbtStart)) {
-                if (stateStart + 1 >= blockAndExtraData[0].length()) {
-                    throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.hanging-lbracket", TextComponent.of(stateStart)));
+            if (cursor < blockString.length() && blockString.charAt(cursor) == '[') {
+                if (cursor + 1 >= blockString.length()) {
+                    throw new InputParseException(TranslatableComponent.of(
+                        "worldedit.error.parser.hanging-lbracket", TextComponent.of(cursor)
+                    ));
                 }
-                int stateEnd = blockAndExtraData[0].indexOf(']');
+                int stateEnd = StringUtil.findMatchingCloseBracket(blockString, cursor);
                 if (stateEnd < 0) {
                     throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.missing-rbracket"));
                 }
-                stateString = blockAndExtraData[0].substring(stateStart + 1, stateEnd);
+                stateString = blockString.substring(cursor + 1, stateEnd);
+                cursor = stateEnd + 1;
             }
 
+            // Parse NBT data next
             String nbtString = null;
-            if (nbtStart != -1) {
-                if (nbtStart + 1 >= blockAndExtraData[0].length()) {
-                    throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.hanging-lbrace", TextComponent.of(nbtStart)));
+            if (cursor < blockString.length() && blockString.charAt(cursor) == '{') {
+                if (cursor + 1 >= blockString.length()) {
+                    throw new InputParseException(TranslatableComponent.of(
+                        "worldedit.error.parser.hanging-lbrace", TextComponent.of(cursor)
+                    ));
                 }
-                int nbtEnd = blockAndExtraData[0].lastIndexOf('}');
+                int nbtEnd = StringUtil.findMatchingCloseBracket(blockString, cursor);
                 if (nbtEnd < 0) {
                     throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.missing-rbrace"));
                 }
-                nbtString = blockAndExtraData[0].substring(nbtStart, nbtEnd + 1);
+                nbtString = blockString.substring(cursor, nbtEnd + 1);
+                cursor = nbtEnd + 1;
+            }
+
+            // Validate that there is no more input after sections we found
+            if (cursor < blockString.length()) {
+                char next = blockString.charAt(cursor);
+                String key;
+                if (next == '[') {
+                    key = stateString == null
+                        ? "worldedit.error.parser.state-after-nbt"
+                        : "worldedit.error.parser.duplicate-state";
+                } else if (next == '{') {
+                    key = "worldedit.error.parser.duplicate-nbt";
+                } else {
+                    key = "worldedit.error.parser.trailing-input";
+                }
+                throw new NoMatchException(TranslatableComponent.of(
+                    key, TextComponent.of(blockString.substring(cursor))
+                ));
             }
 
             if (typeString.isEmpty()) {
                 throw new InputParseException(TranslatableComponent.of(
-                        "worldedit.error.parser.bad-state-format",
-                        TextComponent.of(blockAndExtraData[0])
+                    "worldedit.error.parser.missing-type",
+                    TextComponent.of(blockString)
                 ));
             }
             String[] stateProperties = EMPTY_STRING_ARRAY;
@@ -444,7 +461,14 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
 
         BaseBlock baseBlock = state.toBaseBlock(blockNbtData == null ? null : LazyReference.computed(blockNbtData));
 
-        if (!context.isTryingLegacy()) {
+        if (blockNbtData != null && blockAndExtraData.length > 1) {
+            throw new InputParseException(TranslatableComponent.of(
+                "worldedit.error.parser.nbt-with-extra-data",
+                TextComponent.of(blockAndExtraData[1])
+            ));
+        }
+
+        if (!context.isTryingLegacy() || blockNbtData != null) {
             return baseBlock;
         }
 
@@ -458,7 +482,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
             @SuppressWarnings("deprecation")
             SignBlock signBlock = new SignBlock(state, text);
             return signBlock;
-        } else if (blockType == BlockTypes.SPAWNER && (blockAndExtraData.length > 1 || blockNbtData != null)) {
+        } else if (blockType == BlockTypes.SPAWNER) {
             // Allow setting mob spawn type
             String mobName;
             if (blockAndExtraData.length > 1) {
@@ -477,7 +501,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
             @SuppressWarnings("deprecation")
             MobSpawnerBlock mobSpawnerBlock = new MobSpawnerBlock(state, mobName);
             return mobSpawnerBlock;
-        } else if ((blockType == BlockTypes.PLAYER_HEAD || blockType == BlockTypes.PLAYER_WALL_HEAD) && (blockAndExtraData.length > 1 || blockNbtData != null)) {
+        } else if (blockType == BlockTypes.PLAYER_HEAD || blockType == BlockTypes.PLAYER_WALL_HEAD) {
             // allow setting type/player/rotation
             if (blockAndExtraData.length == 1) {
                 @SuppressWarnings("deprecation")

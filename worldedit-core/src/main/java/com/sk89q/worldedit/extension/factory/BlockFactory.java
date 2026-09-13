@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.extension.factory;
 
+import com.google.common.base.CharMatcher;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.factory.parser.DefaultBlockParser;
@@ -39,6 +40,8 @@ import java.util.Set;
  */
 public class BlockFactory extends AbstractFactory<BaseBlock> {
 
+    private static final CharMatcher LIST_DELIMITER = CharMatcher.is(',');
+
     /**
      * Create a new instance.
      *
@@ -58,8 +61,7 @@ public class BlockFactory extends AbstractFactory<BaseBlock> {
      */
     public Set<BaseBlock> parseFromListInput(String input, ParserContext context) throws InputParseException {
         Set<BaseBlock> blocks = new HashSet<>();
-        String[] splits = input.split(",");
-        for (String token : StringUtil.parseListInQuotes(splits, ',', new char[] {'[', '{' }, new char[] {']', '}'}, true)) {
+        for (String token : StringUtil.splitOutsideBrackets(input, LIST_DELIMITER)) {
             blocks.add(parseFromInput(token, context));
         }
         return blocks;
