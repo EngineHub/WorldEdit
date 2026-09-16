@@ -17,8 +17,8 @@ crankcase = "0.1.0"
 
 fabric-api = "0.160.5+26.3"
 
-neogradle = "7.1.38"
-neoforge-minecraft = "26.2"
+neogradle = "7.1.39"
+neoforge-minecraft = "26.3"
 
 sponge-minecraft = "26.2"
 # https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/spongeapi/
@@ -33,8 +33,8 @@ minimumJdependency = "2.10"
 minimumTinyRemapper = "0.8.11"
 
 # https://repo.enginehub.org/language-files/com/sk89q/worldedit/worldedit-lang/
-lang-worldeditBase = "7.4.5"
-lang-version = "2246"
+lang-worldeditBase = "7.4.6"
+lang-version = "2279"
 
 [libraries]
 neogradle-neoform = { module = "net.neoforged.gradle:neoform", version.ref = "neogradle" }
@@ -101,11 +101,11 @@ rhino = "org.mozilla:rhino-runtime:1.7.13"
 jchronic = "com.sk89q:jchronic:0.2.4a"
 jlibnoise = "com.sk89q.lib:jlibnoise:1.0.0"
 
-fabric-minecraft = "com.mojang:minecraft:26.3-rc-3"
+fabric-minecraft = "com.mojang:minecraft:26.3"
 fabric-loader = "net.fabricmc:fabric-loader:0.19.5"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.7.0"
 
-neoforge = "net.neoforged:neoforge:26.2.0.53-beta"
+neoforge = "net.neoforged:neoforge:26.3.0.1-beta"
 
 # Mojang-provided libraries, validated by `:worldedit-fabric:verifyMinecraftLibraries`
 guava = "com.google.guava:guava:33.6.0-jre"
@@ -176,13 +176,13 @@ version.ref = "antlr"
 module = "org.antlr:antlr4-runtime"
 
 [libraries.cuiProtocol-common]
-module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-common-mc26.2"
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-common-mc26.3"
 version.ref = "cuiProtocol"
 
 [libraries.cuiProtocol-fabric]
-module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-fabric-mc26.2"
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-fabric-mc26.3"
 version.ref = "cuiProtocol"
 
 [libraries.cuiProtocol-neoforge]
-module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-neoforge-mc26.2"
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-neoforge-mc26.3"
 version.ref = "cuiProtocol"
