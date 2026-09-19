@@ -94,12 +94,12 @@ public final class CoreMcBlockMaterial implements BlockMaterial {
 
     @Override
     public boolean isFragileWhenPushed() {
-        return block.getPistonPushReaction() == PushReaction.DESTROY;
+        return block.getPistonPushReaction() == PushReaction.POPPED;
     }
 
     @Override
     public boolean isUnpushable() {
-        return block.getPistonPushReaction() == PushReaction.BLOCK;
+        return block.getPistonPushReaction() == PushReaction.IMMOVEABLE;
     }
 
     @Override
@@ -110,7 +110,7 @@ public final class CoreMcBlockMaterial implements BlockMaterial {
     @Override
     @SuppressWarnings("deprecation")
     public boolean isMovementBlocker() {
-        return block.blocksMotion();
+        return block.isSolid();
     }
 
     @Override

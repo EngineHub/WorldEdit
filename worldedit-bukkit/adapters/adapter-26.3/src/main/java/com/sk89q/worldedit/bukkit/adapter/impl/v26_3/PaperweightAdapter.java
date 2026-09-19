@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.bukkit.adapter.impl.v26_2;
+package com.sk89q.worldedit.bukkit.adapter.impl.v26_3;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -120,6 +120,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Climate;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -130,9 +131,10 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.dimension.LevelStem;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.densityfunction.SamplerContext;
 import net.minecraft.world.level.levelgen.feature.CoralTreeFeature;
 import net.minecraft.world.level.levelgen.feature.FallenTreeFeature;
+import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.TreeFeature;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -212,6 +214,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
     private final Field serverWorldsField;
     private final Method getChunkFutureMethod;
+    private Method asCraftMirror;
     private final Field chunkProviderExecutorField;
     private final PaperweightDataConverters dataFixer;
     private final Watchdog watchdog;
@@ -235,9 +238,9 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         var _ = CraftServer.class.cast(Bukkit.getServer());
 
         int dataVersion = SharedConstants.getCurrentVersion().dataVersion().version();
-        if (dataVersion != Constants.DATA_VERSION_MC_26_2) {
-            if (dataVersion <= Constants.DATA_VERSION_MC_26_1_2 || dataVersion > Constants.DATA_VERSION_MC_26_2) {
-                throw new RuntimeException("Force prevent this loading on <=26.1.2 or >26.2");
+        if (dataVersion != Constants.DATA_VERSION_MC_26_3) {
+            if (dataVersion <= Constants.DATA_VERSION_MC_26_2) {
+                throw new RuntimeException("Force prevent this loading on <=26.2");
             }
             logger.warning(WRONG_VERSION);
         }
@@ -276,6 +279,13 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             SpigotConfig.config.set("world-settings.worldeditregentempworld.verbose", false);
         } catch (ClassNotFoundException ignored) {
             // It's fine if we couldn't set it
+        }
+
+        try {
+            asCraftMirror = CraftItemStack.class.getMethod("asCraftMirror", ItemStack.class);
+        } catch (NoSuchMethodException ignored) {
+            // This is purely for Spigot compatibility. It'll fail on Paper.
+            asCraftMirror = null;
         }
     }
 
@@ -690,7 +700,17 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             ).getOrThrow();
             stack.applyComponents(componentPatch);
         }
-        return CraftItemStack.asCraftMirror(stack);
+        if (asCraftMirror != null) {
+            // Probably Spigot
+            try {
+                return (org.bukkit.inventory.ItemStack) asCraftMirror.invoke(null, stack);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                // An issue occurred trying to convert this.
+                throw new RuntimeException(e);
+            }
+        } else {
+            return CraftItemStack.asBukkitMirror(stack);
+        }
     }
 
     @Override
@@ -950,7 +970,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         }
 
         // Features
-        for (Identifier name: server.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).keySet()) {
+        for (Identifier name: server.registryAccess().lookupOrThrow(Registries.FEATURE).keySet()) {
             if (ConfiguredFeatureType.REGISTRY.get(name.toString()) == null) {
                 ConfiguredFeatureType.REGISTRY.register(name.toString(), new ConfiguredFeatureType(name.toString()));
             }
@@ -967,7 +987,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         Registry<PlacedFeature> placedFeatureRegistry = server.registryAccess().lookupOrThrow(Registries.PLACED_FEATURE);
         for (Identifier name : placedFeatureRegistry.keySet()) {
             // Do some hackery to make sure this is a tree
-            var underlyingFeature = placedFeatureRegistry.get(name).get().value().feature().value().feature();
+            var underlyingFeature = placedFeatureRegistry.get(name).get().value().feature().value();
             if (underlyingFeature instanceof TreeFeature || underlyingFeature instanceof FallenTreeFeature || underlyingFeature instanceof CoralTreeFeature) {
                 String key = name.toString();
                 if (TreeType.REGISTRY.get(key) == null) {
@@ -1008,7 +1028,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     @Override
     public boolean generateFeature(ConfiguredFeatureType type, World world, EditSession session, BlockVector3 pt) {
         ServerLevel originalWorld = ((CraftWorld) world).getHandle();
-        ConfiguredFeature<?, ?> feature = originalWorld.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).getValue(Identifier.tryParse(type.id()));
+        Feature feature = originalWorld.registryAccess().lookupOrThrow(Registries.FEATURE).getValue(Identifier.tryParse(type.id()));
         ServerChunkCache chunkManager = originalWorld.getChunkSource();
         try (PaperweightServerLevelDelegateProxy.LevelAndProxy proxyLevel =
                      PaperweightServerLevelDelegateProxy.newInstance(session, originalWorld, this)) {
@@ -1028,14 +1048,17 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         }
 
         ServerChunkCache chunkManager = originalWorld.getChunkSource();
+        Climate.Sampler climateSampler = chunkManager.randomState().createClimateSampler(
+                SamplerContext.builder().enableCaches().build()
+        );
         try (PaperweightServerLevelDelegateProxy.LevelAndProxy proxyLevel =
                      PaperweightServerLevelDelegateProxy.newInstance(session, originalWorld, this)) {
             ChunkPos chunkPos = ChunkPos.containing(new BlockPos(pt.x(), pt.y(), pt.z()));
             StructureStart structureStart = structure.generate(
                     structureRegistry.wrapAsHolder(structure), originalWorld.dimension(), originalWorld.registryAccess(),
-                    chunkManager.getGenerator(), chunkManager.getGenerator().getBiomeSource(), chunkManager.randomState(),
-                    originalWorld.getStructureManager(), originalWorld.getSeed(), chunkPos, 0,
-                    proxyLevel.level(), biome -> true
+                    chunkManager.getGenerator(), chunkManager.getGenerator().getBiomeSource(), climateSampler, chunkManager.randomState(),
+                    originalWorld.getStructureTemplateManager(), originalWorld.getSeed(), chunkPos, 0,
+                    proxyLevel.level(), _ -> true
             );
 
             if (!structureStart.isValid()) {

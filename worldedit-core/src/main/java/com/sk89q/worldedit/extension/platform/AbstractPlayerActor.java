@@ -121,7 +121,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         byte free = 0;
 
         while (y <= maxY) {
-            if (!world.getBlock(BlockVector3.at(x, y, z)).getBlockType().getMaterial().isMovementBlocker()) {
+            if (!world.getBlock(BlockVector3.at(x, y, z)).getBlockType().getMaterial().isSolid()) {
                 ++free;
             } else {
                 free = 0;
@@ -158,7 +158,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         while (y >= minY) {
             final BlockVector3 pos = BlockVector3.at(x, y, z);
             final BlockState id = world.getBlock(pos);
-            if (id.getBlockType().getMaterial().isMovementBlocker()
+            if (id.getBlockType().getMaterial().isSolid()
                 && trySetPosition(Vector3.at(x + 0.5, y + 1, z + 0.5))) {
                 return;
             }
@@ -178,7 +178,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
      */
     private boolean isPlayerHarmingBlock(BlockVector3 location) {
         BlockType type = getWorld().getBlock(location).getBlockType();
-        return type.getMaterial().isMovementBlocker() || type == BlockTypes.LAVA
+        return type.getMaterial().isSolid() || type == BlockTypes.LAVA
             || BlockCategories.FIRE.contains(type);
     }
 
@@ -196,7 +196,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
             return false;
         }
         return getWorld().getBlock(location.add(0, -1, 0)).getBlockType().getMaterial()
-            .isMovementBlocker();
+            .isSolid();
     }
 
     @Override
@@ -267,7 +267,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
 
         while (y <= maxY) {
             // Found a ceiling!
-            if (world.getBlock(BlockVector3.at(x, y, z)).getBlockType().getMaterial().isMovementBlocker()) {
+            if (world.getBlock(BlockVector3.at(x, y, z)).getBlockType().getMaterial().isSolid()) {
                 int platformY = Math.max(initialY, y - 3 - clearance);
                 if (platformY < initialY) { // if ==, they already have the given clearance, if <, clearance is too large
                     return false;
@@ -300,7 +300,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         final int maxY = Math.min(world.getMaxY() + 1, initialY + distance);
 
         while (y <= world.getMaxY() + 2) {
-            if (world.getBlock(BlockVector3.at(x, y, z)).getBlockType().getMaterial().isMovementBlocker()) {
+            if (world.getBlock(BlockVector3.at(x, y, z)).getBlockType().getMaterial().isSolid()) {
                 break; // Hit something
             } else if (y > maxY + 1) {
                 break;
@@ -320,7 +320,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         if (alwaysGlass || !isAllowedToFly()) {
             BlockVector3 spot = BlockVector3.at(x, y - 1, z);
             final World world = getWorld();
-            if (!world.getBlock(spot).getBlockType().getMaterial().isMovementBlocker()) {
+            if (!world.getBlock(spot).getBlockType().getMaterial().isSolid()) {
                 try (EditSession session = WorldEdit.getInstance().newEditSession(this)) {
                     session.setBlock(spot, BlockTypes.GLASS.getDefaultState());
                 } catch (MaxChangedBlocksException ignored) {
@@ -431,7 +431,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
     private boolean canPassThroughBlock(Location curBlock) {
         BlockVector3 blockPos = curBlock.toVector().toBlockPoint();
         BlockState block = curBlock.getExtent().getBlock(blockPos);
-        return !block.getBlockType().getMaterial().isMovementBlocker();
+        return !block.getBlockType().getMaterial().isSolid();
     }
 
     /**

@@ -91,6 +91,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Climate;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -98,7 +99,8 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.dimension.LevelStem;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.densityfunction.SamplerContext;
+import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.Structure;
@@ -490,7 +492,7 @@ public final class CoreMcWorld extends AbstractWorld {
     @Override
     public boolean generateFeature(ConfiguredFeatureType type, EditSession editSession, BlockVector3 position) {
         ServerLevel world = getWorld();
-        ConfiguredFeature<?, ?> feature = world.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).getValue(Identifier.tryParse(type.id()));
+        Feature feature = world.registryAccess().lookupOrThrow(Registries.FEATURE).getValue(Identifier.tryParse(type.id()));
         ServerChunkCache chunkManager = world.getChunkSource();
         try (CoreMcServerLevelDelegateProxy.LevelAndProxy proxyLevel = CoreMcServerLevelDelegateProxy.newInstance(platform, editSession, world)) {
             return feature != null && feature.place(
@@ -512,13 +514,16 @@ public final class CoreMcWorld extends AbstractWorld {
         }
 
         ServerChunkCache chunkManager = world.getChunkSource();
+        Climate.Sampler climateSampler = chunkManager.randomState().createClimateSampler(
+            SamplerContext.builder().enableCaches().build()
+        );
         try (CoreMcServerLevelDelegateProxy.LevelAndProxy proxyLevel = CoreMcServerLevelDelegateProxy.newInstance(platform, editSession, world)) {
             ChunkPos chunkPos = ChunkPos.containing(new BlockPos(position.x(), position.y(), position.z()));
             StructureStart structureStart = structure.generate(
                 structureRegistry.wrapAsHolder(structure), world.dimension(), world.registryAccess(),
-                chunkManager.getGenerator(), chunkManager.getGenerator().getBiomeSource(), chunkManager.randomState(),
-                world.getStructureManager(), world.getSeed(), chunkPos, 0, proxyLevel.level(),
-                biome -> true
+                chunkManager.getGenerator(), chunkManager.getGenerator().getBiomeSource(), climateSampler, chunkManager.randomState(),
+                world.getStructureTemplateManager(), world.getSeed(), chunkPos, 0, proxyLevel.level(),
+                _ -> true
             );
 
             if (!structureStart.isValid()) {
