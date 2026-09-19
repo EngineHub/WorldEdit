@@ -20,10 +20,10 @@ fabric-api = "0.160.5+26.3"
 neogradle = "7.1.39"
 neoforge-minecraft = "26.3"
 
-sponge-minecraft = "26.2"
+sponge-minecraft = "26.3"
 # https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/spongeapi/
 sponge-api = "20.0.0-20260726.033647-1"
-sponge-api-major = "20"
+sponge-api-major = "21"
 
 sponge-vanillagradle = "0.3.2"
 
