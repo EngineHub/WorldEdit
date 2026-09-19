@@ -19,7 +19,9 @@
 
 package com.sk89q.util;
 
-import java.util.ArrayList;
+import com.google.common.base.CharMatcher;
+import com.google.common.collect.ImmutableList;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -306,68 +308,74 @@ public final class StringUtil {
         return type;
     }
 
-    public static List<String> parseListInQuotes(String[] input, char delimiter, char quoteOpen, char quoteClose) {
-        return parseListInQuotes(input, delimiter, quoteOpen, quoteClose, false);
+    /**
+     * Find the index of the matching close bracket for the open bracket at {@code openBracketIndex} in {@code input},
+     * accounting for nested brackets and ignoring brackets inside quoted strings.
+     *
+     * @param input the input string
+     * @param openBracketIndex the index of the open bracket
+     * @return the index of the matching close bracket, or {@code -1} if not found
+     */
+    // TODO: This is kind of fragile, we should consider redesigning the parsers to instead handle this generically
+    public static int findMatchingCloseBracket(String input, int openBracketIndex) {
+        StringBuilder expectedCloses = new StringBuilder();
+        char quote = 0;
+        for (int i = openBracketIndex; i < input.length(); i++) {
+            char c = input.charAt(i);
+            if (quote != 0) {
+                if (c == '\\') {
+                    i++;
+                } else if (c == quote) {
+                    quote = 0;
+                }
+            } else if (c == '"' || c == '\'') {
+                quote = c;
+            } else if (c == '{') {
+                expectedCloses.append('}');
+            } else if (c == '[') {
+                expectedCloses.append(']');
+            } else if (c == '}' || c == ']') {
+                int last = expectedCloses.length() - 1;
+                if (last < 0 || expectedCloses.charAt(last) != c) {
+                    // Unbalanced or mismatched bracket
+                    return -1;
+                }
+                if (last == 0) {
+                    return i;
+                }
+                // Pop the last expected close bracket
+                expectedCloses.setLength(last);
+            }
+        }
+        return -1;
     }
 
-    public static List<String> parseListInQuotes(String[] input, char delimiter, char quoteOpen, char quoteClose, boolean appendLeftover) {
-        List<String> parsableBlocks = new ArrayList<>();
-        StringBuilder buffer = new StringBuilder();
-        for (String split : input) {
-            if (split.indexOf(quoteOpen) != -1 && split.indexOf(quoteClose) == -1) {
-                buffer.append(split).append(delimiter);
-            } else if (split.indexOf(quoteClose) != -1 && split.indexOf(quoteOpen) == -1) {
-                buffer.append(split);
-                parsableBlocks.add(buffer.toString());
-                buffer = new StringBuilder();
-            } else if (buffer.length() == 0) {
-                parsableBlocks.add(split);
-            } else {
-                buffer.append(split).append(delimiter);
-            }
-        }
-        if (appendLeftover && buffer.length() != 0) {
-            parsableBlocks.add(buffer.delete(buffer.length() - 1, buffer.length()).toString());
-        }
-
-        return parsableBlocks;
-    }
-
-    public static List<String> parseListInQuotes(String[] input, char delimiter, char[] quoteOpen, char[] quoteClose, boolean appendLeftover) {
-        List<String> parsableBlocks = new ArrayList<>();
-        StringBuilder buffer = new StringBuilder();
-        int quotes = quoteOpen.length;
-        if (quotes != quoteClose.length) {
-            throw new Error("Mismatched quoteOpen and quoteClose lengths");
-        }
-        for (String split : input) {
-            boolean quoteHandled = false;
-            for (int i = 0; i < quotes; i++) {
-                if (split.indexOf(quoteOpen[i]) != -1 && split.indexOf(quoteClose[i]) == -1) {
-                    buffer.append(split).append(delimiter);
-                    quoteHandled = true;
-                    break;
-                } else if (split.indexOf(quoteClose[i]) != -1 && split.indexOf(quoteOpen[i]) == -1) {
-                    buffer.append(split);
-                    parsableBlocks.add(buffer.toString());
-                    buffer = new StringBuilder();
-                    quoteHandled = true;
+    /**
+     * Split {@code input} on {@code delimiters}, but ignore any delimiters that are inside brackets ({@code []} or
+     * {@code {}}).
+     *
+     * @param input the input string
+     * @param delimiters the delimiters to split on
+     * @return a list of parts
+     */
+    public static List<String> splitOutsideBrackets(String input, CharMatcher delimiters) {
+        ImmutableList.Builder<String> parts = ImmutableList.builder();
+        int start = 0;
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            if (c == '{' || c == '[') {
+                int close = findMatchingCloseBracket(input, i);
+                if (close == -1) {
                     break;
                 }
-            }
-            if (!quoteHandled) {
-                if (buffer.length() == 0) {
-                    parsableBlocks.add(split);
-                } else {
-                    buffer.append(split).append(delimiter);
-                }
+                i = close;
+            } else if (delimiters.matches(c)) {
+                parts.add(input.substring(start, i));
+                start = i + 1;
             }
         }
-        if (appendLeftover && buffer.length() != 0) {
-            parsableBlocks.add(buffer.delete(buffer.length() - 1, buffer.length()).toString());
-        }
-
-        return parsableBlocks;
+        parts.add(input.substring(start));
+        return parts.build();
     }
 
     /**

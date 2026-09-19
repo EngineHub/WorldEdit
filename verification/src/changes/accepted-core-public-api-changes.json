@@ -1,2 +1,25 @@
 {
+    "Remove StringUtil.parseListInQuotes": [
+        {
+            "type": "com.sk89q.util.StringUtil",
+            "member": "Method com.sk89q.util.StringUtil.parseListInQuotes(java.lang.String[],char,char,char)",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.util.StringUtil",
+            "member": "Method com.sk89q.util.StringUtil.parseListInQuotes(java.lang.String[],char,char,char,boolean)",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        },
+        {
+            "type": "com.sk89q.util.StringUtil",
+            "member": "Method com.sk89q.util.StringUtil.parseListInQuotes(java.lang.String[],char,char[],char[],boolean)",
+            "changes": [
+                "METHOD_REMOVED"
+            ]
+        }
+    ]
 }
