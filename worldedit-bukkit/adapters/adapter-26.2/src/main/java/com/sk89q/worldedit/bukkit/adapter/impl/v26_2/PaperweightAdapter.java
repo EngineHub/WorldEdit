@@ -412,46 +412,6 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         return state.toBaseBlock();
     }
 
-    private static final HashMap<BiomeType, Holder<Biome>> biomeTypeToNMSCache = new HashMap<>();
-    private static final HashMap<Holder<Biome>, BiomeType> biomeTypeFromNMSCache = new HashMap<>();
-
-    @Override
-    public BiomeType getBiome(Location location) {
-        checkNotNull(location);
-
-        CraftWorld craftWorld = ((CraftWorld) location.getWorld());
-        int x = location.getBlockX();
-        int y = location.getBlockY();
-        int z = location.getBlockZ();
-
-        final ServerLevel handle = craftWorld.getHandle();
-        LevelChunk chunk = handle.getChunk(x >> 4, z >> 4);
-
-        return biomeTypeFromNMSCache.computeIfAbsent(chunk.getNoiseBiome(x >> 2, y >> 2, z >> 2), b -> BiomeType.REGISTRY.get(b.unwrapKey().orElseThrow().identifier().toString()));
-    }
-
-    @Override
-    public void setBiome(Location location, BiomeType biome) {
-        checkNotNull(location);
-        checkNotNull(biome);
-
-        CraftWorld craftWorld = ((CraftWorld) location.getWorld());
-        int x = location.getBlockX();
-        int y = location.getBlockY();
-        int z = location.getBlockZ();
-
-        final ServerLevel handle = craftWorld.getHandle();
-        LevelChunk chunk = handle.getChunk(x >> 4, z >> 4);
-        var biomeArray = (PalettedContainer<Holder<Biome>>) chunk.getSection(chunk.getSectionIndex(y)).getBiomes();
-        biomeArray.getAndSetUnchecked(
-                (x >> 2) & 3, (y >> 2) & 3, (z >> 2) & 3,
-                biomeTypeToNMSCache.computeIfAbsent(biome, b -> craftWorld.getHandle().registryAccess().lookup(Registries.BIOME)
-                        .orElseThrow()
-                        .getOrThrow(ResourceKey.create(Registries.BIOME, Identifier.parse(b.id()))))
-        );
-        chunk.markUnsaved();
-    }
-
     @Override
     public WorldNativeAccess<?, ?, ?> createWorldNativeAccess(World world) {
         return new PaperweightWorldNativeAccess(this, new WeakReference<>(((CraftWorld) world).getHandle()));
