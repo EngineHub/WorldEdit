@@ -81,10 +81,8 @@ public class MixinServerGamePacketListenerImpl {
         at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;resetLastActionTime()V")
     )
     private void onAction(ServerboundPlayerActionPacket packet, @SuppressWarnings("UnusedVariable") CallbackInfo ci) {
-        switch (packet.getAction()) {
-            case DROP_ITEM, DROP_ALL_ITEMS, START_DESTROY_BLOCK -> this.ignoreSwingPackets++;
-            default -> {
-            }
+        if (packet.getAction() == ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK) {
+            this.ignoreSwingPackets++;
         }
     }
 }
