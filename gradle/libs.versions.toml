@@ -15,7 +15,7 @@ errorprone = "2.48.0"
 
 crankcase = "0.1.0"
 
-fabric-api = "0.160.5+26.3"
+fabric-api = "0.161.0+26.3"
 
 neogradle = "7.1.39"
 neoforge-minecraft = "26.3"
@@ -105,7 +105,7 @@ fabric-minecraft = "com.mojang:minecraft:26.3"
 fabric-loader = "net.fabricmc:fabric-loader:0.19.5"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.7.0"
 
-neoforge = "net.neoforged:neoforge:26.3.0.1-beta"
+neoforge = "net.neoforged:neoforge:26.3.0.7-beta"
 
 # Mojang-provided libraries, validated by `:worldedit-fabric:verifyMinecraftLibraries`
 guava = "com.google.guava:guava:33.6.0-jre"

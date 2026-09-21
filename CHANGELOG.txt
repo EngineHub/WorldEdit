@@ -1,3 +1,8 @@
+7.4.6
+- Update to Minecraft 26.3
+- Improve parsing of complex NBT in certain situations
+- [Bukkit] Fixed teleportation on recent Folia versions
+
 7.4.5
 - [Bukkit] Improve Folia detection for forks which obfuscate that they're Folia
 - [Bukkit] Replace PaperLib to improve compatibility with newer Minecraft versions
