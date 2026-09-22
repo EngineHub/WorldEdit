@@ -31,6 +31,7 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinStringTag;
 import org.enginehub.linbus.tree.LinTagType;
 
 import java.util.HashMap;
@@ -99,13 +100,20 @@ public class AnvilChunk18 implements Chunk {
             BlockState[] palette = new BlockState[paletteSize];
             for (int paletteEntryId = 0; paletteEntryId < paletteSize; paletteEntryId++) {
                 LinCompoundTag paletteEntry = paletteEntries.get(paletteEntryId);
-                String typeString = paletteEntry.getTag("Name", LinTagType.stringTag()).value();
+                LinStringTag typeTag = paletteEntry.findTag("id", LinTagType.stringTag());
+                if (typeTag == null) {
+                    typeTag = paletteEntry.getTag("Name", LinTagType.stringTag());
+                }
+                String typeString = typeTag.value();
                 BlockType type = BlockTypes.get(typeString);
                 if (type == null) {
                     throw new InvalidFormatException("Invalid block type: " + typeString);
                 }
                 BlockState blockState = type.getDefaultState();
-                var properties = paletteEntry.findTag("Properties", LinTagType.compoundTag());
+                var properties = paletteEntry.findTag("properties", LinTagType.compoundTag());
+                if (properties == null) {
+                    properties = paletteEntry.findTag("Properties", LinTagType.compoundTag());
+                }
                 if (properties != null) {
                     for (Property<?> property : blockState.getStates().keySet()) {
                         var name = properties.findTag(property.name(), LinTagType.stringTag());

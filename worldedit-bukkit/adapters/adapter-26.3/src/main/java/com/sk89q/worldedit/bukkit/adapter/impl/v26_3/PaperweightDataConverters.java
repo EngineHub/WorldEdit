@@ -39,6 +39,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.FloatTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -49,6 +50,7 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.util.datafix.DataFixers;
 import net.minecraft.util.datafix.fixes.References;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.block.state.StateHolder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.enginehub.linbus.tree.LinCompoundTag;
@@ -138,7 +140,7 @@ class PaperweightDataConverters implements com.sk89q.worldedit.world.DataFixer {
     }
 
     private String fixBlockState(String blockState, int srcVer) {
-        CompoundTag stateNBT = stateToNBT(blockState);
+        CompoundTag stateNBT = stateToNBT(blockState, srcVer);
         Dynamic<Tag> dynamic = new Dynamic<>(OPS_NBT, stateNBT);
         CompoundTag fixed = (CompoundTag) INSTANCE.fixer.update(References.BLOCK_STATE, dynamic, srcVer, DATA_VERSION).getValue();
         return nbtToState(fixed);
@@ -146,8 +148,8 @@ class PaperweightDataConverters implements com.sk89q.worldedit.world.DataFixer {
 
     private String nbtToState(net.minecraft.nbt.CompoundTag tagCompound) {
         StringBuilder sb = new StringBuilder();
-        sb.append(tagCompound.getString("Name").get());
-        tagCompound.getCompound("Properties").ifPresent(props -> {
+        sb.append(tagCompound.getString(StateHolder.ID_TAG).orElseThrow());
+        tagCompound.getCompound(StateHolder.PROPERTIES_TAG).ifPresent(props -> {
             sb.append('[');
             sb.append(props.keySet().stream().map(k -> k + "=" + props.getString(k).get().replace("\"", "")).collect(Collectors.joining(",")));
             sb.append(']');
@@ -155,13 +157,16 @@ class PaperweightDataConverters implements com.sk89q.worldedit.world.DataFixer {
         return sb.toString();
     }
 
-    private static CompoundTag stateToNBT(String blockState) {
+    private static CompoundTag stateToNBT(String blockState, int srcVer) {
+        boolean legacyFieldNames = srcVer < BLOCK_STATE_FIELD_RENAME_VERSION;
+        String idKey = legacyFieldNames ? NbtUtils.LEGACY_BLOCK_STATE_ID_TAG : StateHolder.ID_TAG;
+        String propertiesKey = legacyFieldNames ? NbtUtils.LEGACY_BLOCKSTATE_PROPERTY_TAG : StateHolder.PROPERTIES_TAG;
         int propIdx = blockState.indexOf('[');
         CompoundTag tag = new CompoundTag();
         if (propIdx < 0) {
-            tag.putString("Name", blockState);
+            tag.putString(idKey, blockState);
         } else {
-            tag.putString("Name", blockState.substring(0, propIdx));
+            tag.putString(idKey, blockState.substring(0, propIdx));
             CompoundTag propTag = new CompoundTag();
             String props = blockState.substring(propIdx + 1, blockState.length() - 1);
             String[] propArr = props.split(",");
@@ -169,7 +174,7 @@ class PaperweightDataConverters implements com.sk89q.worldedit.world.DataFixer {
                 final String[] split = pair.split("=");
                 propTag.putString(split[0], split[1]);
             }
-            tag.put("Properties", propTag);
+            tag.put(propertiesKey, propTag);
         }
         return tag;
     }
@@ -191,6 +196,7 @@ class PaperweightDataConverters implements com.sk89q.worldedit.world.DataFixer {
 
     private static final NbtOps OPS_NBT = NbtOps.INSTANCE;
     private static final int LEGACY_VERSION = 1343;
+    private static final int BLOCK_STATE_FIELD_RENAME_VERSION = 5006;
     private static int DATA_VERSION;
     static PaperweightDataConverters INSTANCE;
 
