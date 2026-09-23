@@ -144,6 +144,9 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
     }
 
     private String nbtToState(net.minecraft.nbt.CompoundTag tagCompound) {
+        if (tagCompound.isEmpty()) {
+            return "";
+        }
         StringBuilder sb = new StringBuilder();
         sb.append(tagCompound.getString(StateHolder.ID_TAG).orElseThrow());
         tagCompound.getCompound(StateHolder.PROPERTIES_TAG).ifPresent(props -> {
