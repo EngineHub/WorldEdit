@@ -2,7 +2,7 @@
 neogradle-userdev = { id = "net.neoforged.gradle.userdev", version.ref = "neogradle" }
 sponge-spongegradle = "org.spongepowered.gradle.plugin:2.3.0"
 sponge-vanillagradle = { id = "org.spongepowered.gradle.vanilla", version.ref = "sponge-vanillagradle" }
-fabric-loom = "net.fabricmc.fabric-loom:1.17.19"
+fabric-loom = "net.fabricmc.fabric-loom:1.18.2"
 
 [versions]
 kyoriText = "3.0.4"
@@ -34,7 +34,7 @@ minimumTinyRemapper = "0.8.11"
 
 # https://repo.enginehub.org/language-files/com/sk89q/worldedit/worldedit-lang/
 lang-worldeditBase = "7.4.6"
-lang-version = "2279"
+lang-version = "2313"
 
 [libraries]
 neogradle-neoform = { module = "net.neoforged.gradle:neoform", version.ref = "neogradle" }
@@ -59,7 +59,7 @@ errorprone-core = { module = "com.google.errorprone:error_prone_core", version.r
 errorprone-annotations = { module = "com.google.errorprone:error_prone_annotations", version.ref = "errorprone" }
 
 # https://maven.fabricmc.net/net/fabricmc/sponge-mixin/
-fabric-mixin = "net.fabricmc:sponge-mixin:0.17.3+mixin.0.8.7"
+fabric-mixin = "net.fabricmc:sponge-mixin:0.17.4+mixin.0.8.7"
 
 paperweight = "io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:2.0.0-beta.21"
 
@@ -105,7 +105,7 @@ fabric-minecraft = "com.mojang:minecraft:26.3"
 fabric-loader = "net.fabricmc:fabric-loader:0.19.5"
 fabric-permissions-api = "me.lucko:fabric-permissions-api:0.7.0"
 
-neoforge = "net.neoforged:neoforge:26.3.0.7-beta"
+neoforge = "net.neoforged:neoforge:26.3.0.16-beta"
 
 # Mojang-provided libraries, validated by `:worldedit-fabric:verifyMinecraftLibraries`
 guava = "com.google.guava:guava:33.6.0-jre"
