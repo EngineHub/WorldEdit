@@ -2438,8 +2438,6 @@ class PaperweightDataConverters implements com.sk89q.worldedit.world.DataFixer {
         }
 
         public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
-            boolean flag = true;
-
             try {
                 net.minecraft.nbt.CompoundTag nbttagcompound1 = cmp.getCompoundOrEmpty("Level");
                 int i = nbttagcompound1.getIntOr("xPos", 0);

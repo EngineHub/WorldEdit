@@ -1,5 +1,6 @@
 import buildlogic.stringyLibs
 import buildlogic.getLibrary
+import buildlogic.primaryJavaReleaseVersion
 
 plugins {
     id("eclipse")
@@ -10,7 +11,7 @@ plugins {
 }
 
 crankcaseJava {
-    javaRelease = 25
+    javaRelease = primaryJavaReleaseVersion
     disabledLints = listOf("processing", "path", "fallthrough", "serial", "overloads")
     disabledErrorprone = listOf(
         // We use reference equality intentionally in several places

@@ -5,6 +5,8 @@ sponge-vanillagradle = { id = "org.spongepowered.gradle.vanilla", version.ref = 
 fabric-loom = "net.fabricmc.fabric-loom:1.18.2"
 
 [versions]
+primaryJavaRelease = "25"
+
 kyoriText = "3.0.4"
 piston = "0.6.0"
 autoValue = "1.10.4"

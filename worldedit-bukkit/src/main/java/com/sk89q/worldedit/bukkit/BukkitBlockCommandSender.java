@@ -173,11 +173,7 @@ public class BukkitBlockCommandSender extends AbstractCommandBlockActor {
                     updateActive();
                 } else {
                     // we should update it eventually
-                    // We don't need the future as we handle exceptions in `updateActive`
-                    var _  = Bukkit.getScheduler().callSyncMethod(plugin, () -> {
-                        updateActive();
-                        return null;
-                    });
+                    Bukkit.getScheduler().runTask(plugin, this::updateActive);
                 }
                 return active;
             }
