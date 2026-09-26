@@ -13,7 +13,7 @@ cuiProtocol = "4.0.3"
 
 errorprone = "2.48.0"
 
-crankcase = "0.1.0"
+crankcase = "0.1.3"
 
 fabric-api = "0.161.0+26.3"
 
@@ -54,14 +54,13 @@ japicmp = "me.champeau.gradle:japicmp-gradle-plugin:0.4.6"
 shadow = "com.gradleup.shadow:com.gradleup.shadow.gradle.plugin:9.6.1"
 jfrog-buildinfo = "org.jfrog.buildinfo:build-info-extractor-gradle:6.0.4"
 
-errorprone-gradle-plugin = "net.ltgt.errorprone:net.ltgt.errorprone.gradle.plugin:5.1.0"
 errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone" }
 errorprone-annotations = { module = "com.google.errorprone:error_prone_annotations", version.ref = "errorprone" }
 
 # https://maven.fabricmc.net/net/fabricmc/sponge-mixin/
 fabric-mixin = "net.fabricmc:sponge-mixin:0.17.4+mixin.0.8.7"
 
-paperweight = "io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:2.0.0-beta.21"
+paperweight = "io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:2.0.0-beta.24"
 
 linBus-bom = "org.enginehub.lin-bus:lin-bus-bom:0.2.0"
 linBus-common.module = "org.enginehub.lin-bus:lin-bus-common"

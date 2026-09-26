@@ -54,7 +54,7 @@ public final class ChunkDeleter {
     public static final String DELCHUNKS_FILE_NAME = "delete_chunks.json";
     private static final Logger LOGGER = LogManagerCompat.getLogger();
 
-    private static final Comparator<BlockVector2> chunkSorter = Comparator.comparing(
+    private static final Comparator<BlockVector2> chunkSorter = Comparator.comparingInt(
         pos -> (pos.x() & 31) + (pos.z() & 31) * 32
     );
 
