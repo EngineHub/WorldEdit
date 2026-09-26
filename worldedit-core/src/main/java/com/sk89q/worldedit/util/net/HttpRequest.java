@@ -360,7 +360,7 @@ public class HttpRequest implements Closeable {
     private static URL reformat(URL existing) {
         try {
             return existing.toURI().toURL();
-        } catch (MalformedURLException | URISyntaxException e) {
+        } catch (MalformedURLException | URISyntaxException _) {
             return existing;
         }
     }

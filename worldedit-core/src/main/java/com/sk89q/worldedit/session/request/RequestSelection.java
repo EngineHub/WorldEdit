@@ -56,7 +56,7 @@ public class RequestSelection implements Region {
         if (session != null && world != null) {
             try {
                 return session.getSelection(world);
-            } catch (IncompleteRegionException ignored) {
+            } catch (IncompleteRegionException _) {
                 // Use NullRegion if incomplete
             }
         }

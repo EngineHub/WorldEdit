@@ -260,7 +260,7 @@ public class SpongePlayer extends AbstractPlayerActor {
                         }
                     );
                     nativePlayer.connection.send(
-                        ClientboundBlockEntityDataPacket.create(structureBlockEntity, (be, ra) -> nativeNbtData));
+                        ClientboundBlockEntityDataPacket.create(structureBlockEntity, (_, _) -> nativeNbtData));
                 }
             }
         }

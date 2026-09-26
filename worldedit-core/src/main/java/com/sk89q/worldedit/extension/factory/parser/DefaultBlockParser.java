@@ -177,7 +177,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                 Object value;
                 try {
                     value = propertyKey.getValueFor(parts[1]);
-                } catch (IllegalArgumentException e) {
+                } catch (IllegalArgumentException _) {
                     throw new NoMatchException(TranslatableComponent.of(
                             "worldedit.error.parser.unknown-value",
                             TextComponent.of(parts[1]),
@@ -188,7 +188,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                 blockStates.put(propertyKey, value);
             } catch (InputParseException e) {
                 throw e; // Pass-through
-            } catch (Exception e) {
+            } catch (Exception _) {
                 throw new InputParseException(TranslatableComponent.of(
                         "worldedit.error.parser.bad-state-format",
                         TextComponent.of(parseableData)
@@ -234,7 +234,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                         try {
                             BlockVector3 primaryPosition = session.getRegionSelector(world).getPrimaryPosition();
                             type = world.getBlock(primaryPosition).getBlockType();
-                        } catch (IncompleteRegionException ignored) {
+                        } catch (IncompleteRegionException _) {
                             // We don't care if the region is incomplete here, we'll just not provide suggestions
                         }
                     }
@@ -288,7 +288,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                 if (state != null) {
                     blockType = state.getBlockType();
                 }
-            } catch (NumberFormatException ignored) {
+            } catch (NumberFormatException _) {
                 // If it doesn't match legacy, just parse it normally
             }
         }
@@ -389,7 +389,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                 final BlockVector3 primaryPosition;
                 try {
                     primaryPosition = context.requireSession().getRegionSelector(world).getPrimaryPosition();
-                } catch (IncompleteRegionException e) {
+                } catch (IncompleteRegionException _) {
                     throw new InputParseException(TranslatableComponent.of("worldedit.error.incomplete-region"));
                 }
                 final BaseBlock blockInHand = world.getFullBlock(primaryPosition);

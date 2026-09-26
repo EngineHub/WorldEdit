@@ -172,7 +172,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
                 setupPreWorldData();
                 // since worlds are loaded already, we can do this now
                 setupWorldData();
-            } catch (Throwable ignored) {
+            } catch (Throwable _) {
                 // If we bork during reload, oh well
             }
         }
@@ -270,7 +270,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
         try {
             adapterLoader.addFromPath(getClass().getClassLoader());
-        } catch (IOException e) {
+        } catch (IOException _) {
             LOGGER.warn("Failed to search path for Bukkit adapters");
         }
 
@@ -289,7 +289,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
                 LOGGER.warn(e.getMessage());
                 try {
                     Class.forName("org.spigotmc.SpigotConfig");
-                } catch (ClassNotFoundException e1) {
+                } catch (ClassNotFoundException _) {
                     LOGGER.warn("CraftBukkit is not a supported Bukkit platform. Please use a supported platform, such as Paper.");
                 }
             } else {
@@ -348,7 +348,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
                     throw new FileNotFoundException();
                 }
                 copyDefaultConfig(stream, actual, name);
-            } catch (IOException e) {
+            } catch (IOException _) {
                 getLogger().severe("Unable to read default configuration: " + name);
             }
         }
@@ -539,7 +539,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         try {
             Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
             hiddenFoliaCheckPassed = true;
-        } catch (ClassNotFoundException ignored) {
+        } catch (ClassNotFoundException _) {
             // This is a class existence check, it's fine if not present.
         }
 

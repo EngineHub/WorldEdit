@@ -85,7 +85,7 @@ public interface ClipboardFormat {
     default boolean isFormat(Path path) {
         try (InputStream stream = Files.newInputStream(path)) {
             return isFormat(stream);
-        } catch (IOException e) {
+        } catch (IOException _) {
             return false;
         }
     }

@@ -128,7 +128,7 @@ public class BlockMap<V> extends AbstractMap<BlockVector3, V> {
     }
 
     private Int2ObjectMap<V> getOrCreateMap(long groupKey) {
-        return maps.computeIfAbsent(groupKey, k -> subMapSupplier.get());
+        return maps.computeIfAbsent(groupKey, _ -> subMapSupplier.get());
     }
 
     private Int2ObjectMap<V> getOrEmptyMap(long groupKey) {
@@ -212,19 +212,19 @@ public class BlockMap<V> extends AbstractMap<BlockVector3, V> {
     @Override
     public V computeIfAbsent(BlockVector3 key, Function<? super BlockVector3, ? extends V> mappingFunction) {
         return cleanlyModifyMap(toGroupKey(key),
-            map -> map.computeIfAbsent(toInnerKey(key), ik -> mappingFunction.apply(key)));
+            map -> map.computeIfAbsent(toInnerKey(key), _ -> mappingFunction.apply(key)));
     }
 
     @Override
     public V computeIfPresent(BlockVector3 key, BiFunction<? super BlockVector3, ? super V, ? extends V> remappingFunction) {
         return cleanlyModifyMap(toGroupKey(key),
-            map -> map.computeIfPresent(toInnerKey(key), (ik, block) -> remappingFunction.apply(key, block)));
+            map -> map.computeIfPresent(toInnerKey(key), (_, block) -> remappingFunction.apply(key, block)));
     }
 
     @Override
     public V compute(BlockVector3 key, BiFunction<? super BlockVector3, ? super V, ? extends V> remappingFunction) {
         return cleanlyModifyMap(toGroupKey(key),
-            map -> map.compute(toInnerKey(key), (ik, block) -> remappingFunction.apply(key, block)));
+            map -> map.compute(toInnerKey(key), (_, block) -> remappingFunction.apply(key, block)));
     }
 
     @Override

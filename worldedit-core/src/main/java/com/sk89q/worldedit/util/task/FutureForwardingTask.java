@@ -91,9 +91,9 @@ public class FutureForwardingTask<V> extends AbstractTask<V> {
             try {
                 get();
                 return Task.State.SUCCEEDED;
-            } catch (InterruptedException e) {
+            } catch (InterruptedException _) {
                 return Task.State.CANCELLED;
-            } catch (ExecutionException e) {
+            } catch (ExecutionException _) {
                 return Task.State.FAILED;
             }
         } else {

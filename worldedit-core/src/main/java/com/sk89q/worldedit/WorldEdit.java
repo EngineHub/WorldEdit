@@ -354,7 +354,7 @@ public final class WorldEdit {
             }
 
             return filePath.toFile();
-        } catch (IOException | InvalidPathException e) {
+        } catch (IOException | InvalidPathException _) {
             throw new FilenameResolutionException(filename, TranslatableComponent.of("worldedit.error.file-resolution.resolve-failed"));
         }
     }
@@ -750,7 +750,7 @@ public final class WorldEdit {
 
         try {
             engine = new RhinoCraftScriptEngine();
-        } catch (NoClassDefFoundError ignored) {
+        } catch (NoClassDefFoundError _) {
             player.printError(TranslatableComponent.of("worldedit.script.missing-script-engine")
                 .append(TextComponent.newline())
                 .append(TranslatableComponent.of("worldedit.script.please-see",

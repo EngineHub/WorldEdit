@@ -263,7 +263,7 @@ public final class CoreMcWorld extends AbstractWorld {
         final CoreMcFakePlayer fakePlayer;
         try {
             fakePlayer = fakePlayers.get(world);
-        } catch (ExecutionException ignored) {
+        } catch (ExecutionException _) {
             return false;
         }
         fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, stack);

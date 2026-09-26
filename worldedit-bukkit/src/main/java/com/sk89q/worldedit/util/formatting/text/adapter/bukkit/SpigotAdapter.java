@@ -70,7 +70,7 @@ final class SpigotAdapter implements Adapter {
             try {
                 final Field gsonField = field(ComponentSerializer.class, "gson");
                 tmpGson = (Gson) gsonField.get(null);
-            } catch (NoSuchFieldException ignored) {
+            } catch (NoSuchFieldException _) {
                 tmpGson = VersionedComponentSerializer.forVersion(ChatVersion.V1_21_5).getGson();
             }
             gson = tmpGson;

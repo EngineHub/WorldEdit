@@ -48,7 +48,7 @@ public class RegionMaskParser extends SimpleInputParser<Mask> {
     public Mask parseFromSimpleInput(String input, ParserContext context) throws InputParseException {
         try {
             return new RegionMask(context.requireSession().getSelection(context.requireWorld()).clone());
-        } catch (IncompleteRegionException e) {
+        } catch (IncompleteRegionException _) {
             throw new InputParseException(TranslatableComponent.of("worldedit.error.incomplete-region"));
         }
     }

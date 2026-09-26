@@ -288,7 +288,7 @@ public final class PlatformCommandManager {
      */
     public <CI> void registerSubCommands(String name, List<String> aliases, String desc,
                                          CommandRegistration<CI> registration, CI instance) {
-        registerSubCommands(name, aliases, desc, registration, instance, m -> {
+        registerSubCommands(name, aliases, desc, registration, instance, _ -> {
         });
     }
 
@@ -577,13 +577,13 @@ public final class PlatformCommandManager {
             store.injectValue(Key.of(Player.class), ValueProvider.constant(player));
             store.injectValue(Key.of(Player.class, OptionalArg.class), ValueProvider.constant(player));
         } else {
-            store.injectValue(Key.of(Player.class), context -> {
+            store.injectValue(Key.of(Player.class), _ -> {
                 throw new CommandException(TranslatableComponent.of("worldedit.command.player-only"), ImmutableList.of());
             });
         }
         store.injectValue(Key.of(Arguments.class), ValueProvider.constant(arguments));
         store.injectValue(Key.of(LocalSession.class),
-            context -> {
+            _ -> {
                 LocalSession localSession = worldEdit.getSessionManager().get(actor);
                 localSession.tellVersion(actor);
                 return Optional.of(localSession);

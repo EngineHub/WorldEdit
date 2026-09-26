@@ -61,7 +61,7 @@ public class BlockReplacer implements DoubleActionBlockTool {
                 editSession.disableBuffering();
                 BlockVector3 position = clicked.toVector().toBlockPoint();
                 editSession.setBlock(position, pattern);
-            } catch (MaxChangedBlocksException ignored) {
+            } catch (MaxChangedBlocksException _) {
                 // Just finish up if we hit max blocks
             } finally {
                 session.remember(editSession);

@@ -326,13 +326,13 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
 
 
     private void registerInspector(LegacyType type, DataInspector inspector) {
-        this.inspectors.computeIfAbsent(type, k -> new ArrayList<>()).add(inspector);
+        this.inspectors.computeIfAbsent(type, _ -> new ArrayList<>()).add(inspector);
     }
 
     private void registerConverter(LegacyType type, DataConverter converter) {
         int version = converter.getDataVersion();
 
-        List<DataConverter> list = this.converters.computeIfAbsent(type, k -> new ArrayList<>());
+        List<DataConverter> list = this.converters.computeIfAbsent(type, _ -> new ArrayList<>());
         if (!list.isEmpty() && list.getLast().getDataVersion() > version) {
             for (int j = 0; j < list.size(); ++j) {
                 if (list.get(j).getDataVersion() > version) {
@@ -1857,14 +1857,14 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
                                     if (object == null) {
                                         object = Component.literal("");
                                     }
-                                } catch (JsonParseException jsonparseexception) {
+                                } catch (JsonParseException _) {
                                     ;
                                 }
 
                                 if (object == null) {
                                     try {
                                         object = ComponentConverter.Serializer.fromJson(s, platform.serverRegistryAccess());
-                                    } catch (JsonParseException jsonparseexception1) {
+                                    } catch (JsonParseException _) {
                                         ;
                                     }
                                 }
@@ -1872,7 +1872,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
                                 if (object == null) {
                                     try {
                                         object = ComponentConverter.Serializer.fromJsonLenient(s, platform.serverRegistryAccess());
-                                    } catch (JsonParseException jsonparseexception2) {
+                                    } catch (JsonParseException _) {
                                         ;
                                     }
                                 }
@@ -1935,7 +1935,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
                     i = cmp.getInt("VillagerProfession").flatMap(profession -> {
                         try {
                             return Optional.of(this.convert(profession));
-                        } catch (RuntimeException runtimeexception) {
+                        } catch (RuntimeException _) {
                             return Optional.empty();
                         }
                     }).orElse(i);
@@ -2428,7 +2428,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
                         }
                     }
                 }
-            } catch (Exception exception) {
+            } catch (Exception _) {
                 DataConverterBedBlock.a.warn("Unable to datafix Bed blocks, level format may be missing tags.");
             }
 
@@ -2518,14 +2518,14 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
                         if (object == null) {
                             object = Component.literal("");
                         }
-                    } catch (JsonParseException jsonparseexception) {
+                    } catch (JsonParseException _) {
                         ;
                     }
 
                     if (object == null) {
                         try {
                             object = ComponentConverter.Serializer.fromJson(s1, platform.serverRegistryAccess());
-                        } catch (JsonParseException jsonparseexception1) {
+                        } catch (JsonParseException _) {
                             ;
                         }
                     }
@@ -2533,7 +2533,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
                     if (object == null) {
                         try {
                             object = ComponentConverter.Serializer.fromJsonLenient(s1, platform.serverRegistryAccess());
-                        } catch (JsonParseException jsonparseexception2) {
+                        } catch (JsonParseException _) {
                             ;
                         }
                     }

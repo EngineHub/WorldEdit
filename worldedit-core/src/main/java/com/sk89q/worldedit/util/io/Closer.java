@@ -261,7 +261,7 @@ public final class Closer implements Closeable {
         private static Method getAddSuppressed() {
             try {
                 return Throwable.class.getMethod("addSuppressed", Throwable.class);
-            } catch (Throwable e) {
+            } catch (Throwable _) {
                 return null;
             }
         }
@@ -274,7 +274,7 @@ public final class Closer implements Closeable {
             }
             try {
                 addSuppressed.invoke(thrown, suppressed);
-            } catch (Throwable e) {
+            } catch (Throwable _) {
                 // if, somehow, IllegalAccessException or another exception is thrown, fall back to logging
                 LoggingSuppressor.INSTANCE.suppress(closeable, thrown, suppressed);
             }

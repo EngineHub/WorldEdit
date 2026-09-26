@@ -46,7 +46,7 @@ public class LogFormat extends Formatter {
             // Validate format:
             @SuppressWarnings("unused")
             var _  = String.format(format, currentDateTime, "", "", "", "", "");
-        } catch (IllegalArgumentException var3) {
+        } catch (IllegalArgumentException _) {
             format = DEFAULT_FORMAT;
         }
         this.format = format;

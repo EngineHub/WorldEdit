@@ -148,11 +148,11 @@ public class SnapshotRestore {
                 for (BlockVector3 pos : entry.getValue()) {
                     try {
                         editSession.setBlock(pos, chunk.getBlock(pos));
-                    } catch (DataException e) {
+                    } catch (DataException _) {
                         // this is a workaround: just ignore for now
                     }
                 }
-            } catch (MissingChunkException me) {
+            } catch (MissingChunkException _) {
                 missingChunks.add(chunkPos);
             } catch (IOException | DataException me) {
                 errorChunks.add(chunkPos);

@@ -122,7 +122,7 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
         }
         try {
             return zip.getInputStream(entry);
-        } catch (ZipException e) {
+        } catch (ZipException _) {
             throw new IOException("Failed to read " + name + " in ZIP");
         }
     }
