@@ -375,8 +375,8 @@ public class BukkitAdapter {
             throw new IllegalArgumentException("Biome key '" + biomeType.id() + "' does not map to Bukkit");
         }
         try {
-            return biomeTypeBiomeCache.computeIfAbsent(biomeType, type -> Registry.BIOME.get(biomeKey));
-        } catch (IllegalArgumentException e) {
+            return biomeTypeBiomeCache.computeIfAbsent(biomeType, _ -> Registry.BIOME.get(biomeKey));
+        } catch (IllegalArgumentException _) {
             return null;
         }
     }
@@ -412,7 +412,7 @@ public class BukkitAdapter {
     @Nullable
     public static BlockType asBlockType(Material material) {
         checkNotNull(material);
-        return materialBlockTypeCache.computeIfAbsent(material, input -> BlockTypes.get(material.getKey().toString()));
+        return materialBlockTypeCache.computeIfAbsent(material, _ -> BlockTypes.get(material.getKey().toString()));
     }
 
     /**
@@ -424,7 +424,7 @@ public class BukkitAdapter {
     @Nullable
     public static ItemType asItemType(Material material) {
         checkNotNull(material);
-        return materialItemTypeCache.computeIfAbsent(material, input -> ItemTypes.get(material.getKey().toString()));
+        return materialItemTypeCache.computeIfAbsent(material, _ -> ItemTypes.get(material.getKey().toString()));
     }
 
     private static final Int2ObjectMap<BlockState> blockStateCache = Int2ObjectMaps.synchronize(
@@ -456,7 +456,7 @@ public class BukkitAdapter {
                 adapter.getInternalBlockStateId(blockData).orElseGet(
                     () -> blockData.getAsString().hashCode()
                 ),
-                input -> {
+                _ -> {
                     try {
                         return WorldEdit.getInstance().getBlockFactory().parseFromInput(blockData.getAsString(), TO_BLOCK_CONTEXT).toImmutableState();
                     } catch (InputParseException e) {
@@ -482,7 +482,7 @@ public class BukkitAdapter {
         if (cacheKey == BlockStateIdAccess.invalidId()) {
             cacheKey = block.hashCode();
         }
-        return blockDataCache.computeIfAbsent(cacheKey, input -> Bukkit.createBlockData(block.toImmutableState().getAsString())).clone();
+        return blockDataCache.computeIfAbsent(cacheKey, _ -> Bukkit.createBlockData(block.toImmutableState().getAsString())).clone();
     }
 
     /**

@@ -83,7 +83,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
             final Region oldRegion;
             try {
                 oldRegion = oldSelector.getRegion();
-            } catch (IncompleteRegionException e) {
+            } catch (IncompleteRegionException _) {
                 return;
             }
 

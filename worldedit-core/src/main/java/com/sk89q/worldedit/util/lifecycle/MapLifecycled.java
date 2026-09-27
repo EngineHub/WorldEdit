@@ -35,7 +35,7 @@ class MapLifecycled<T, U> implements Lifecycled<U> {
     MapLifecycled(Lifecycled<T> upstream, Function<T, U> mapper) {
         this.upstream = upstream;
         this.mapper = mapper;
-        upstream.events().onInvalidated(this, (this$, __) -> {
+        upstream.events().onInvalidated(this, (this$, _) -> {
             boolean fire = this$.computable;
             this$.cache = null;
             this$.computable = false;
@@ -43,7 +43,7 @@ class MapLifecycled<T, U> implements Lifecycled<U> {
                 this$.events.fireInvalidated();
             }
         });
-        upstream.events().onNewValue(this,  (this$, __) -> {
+        upstream.events().onNewValue(this,  (this$, _) -> {
             boolean fire = !this$.computable;
             this$.computable = true;
             if (fire) {

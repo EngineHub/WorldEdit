@@ -56,7 +56,7 @@ public class SideEffectExtent extends AbstractDelegateExtent {
 
     private static final SideEffectSet INTERNAL_NONE = new SideEffectSet(
         Arrays.stream(SideEffect.values())
-            .collect(Collectors.toMap(Function.identity(), state -> SideEffect.State.OFF))
+            .collect(Collectors.toMap(Function.identity(), _ -> SideEffect.State.OFF))
     );
 
     /**

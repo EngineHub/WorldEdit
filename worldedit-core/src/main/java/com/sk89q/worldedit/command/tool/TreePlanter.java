@@ -61,9 +61,9 @@ public class TreePlanter implements BlockTool {
                 if (!successful) {
                     player.printError(TranslatableComponent.of("worldedit.tool.tree.obstructed"));
                 }
-            } catch (MaxChangedBlocksException e) {
+            } catch (MaxChangedBlocksException _) {
                 player.printError(TranslatableComponent.of("worldedit.tool.max-block-changes"));
-            } catch (WorldEditException ignored) {
+            } catch (WorldEditException _) {
                 // This should never happen
             } finally {
                 session.remember(editSession);

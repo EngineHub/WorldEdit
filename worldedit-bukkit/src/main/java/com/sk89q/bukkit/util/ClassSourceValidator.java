@@ -51,7 +51,7 @@ public class ClassSourceValidator {
             tmp = pluginClassLoaderClass.getDeclaredMethod("loadClass0",
                     String.class, boolean.class, boolean.class, boolean.class);
             tmp.setAccessible(true);
-        } catch (NoSuchMethodException | ClassNotFoundException e) {
+        } catch (NoSuchMethodException | ClassNotFoundException _) {
             tmp = null;
         }
         loadClass = tmp;
@@ -102,7 +102,7 @@ public class ClassSourceValidator {
                 Class<?> targetClass;
                 try {
                     targetClass = (Class<?>) loadClass.invoke(targetLoader, testClass.getName(), false, false, false);
-                } catch (IllegalAccessException | InvocationTargetException ignored) {
+                } catch (IllegalAccessException | InvocationTargetException _) {
                     continue;
                 }
                 if (targetClass.getClassLoader() != expectedClassLoader) {

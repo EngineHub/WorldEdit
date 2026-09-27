@@ -121,7 +121,7 @@ public class AnvilChunk18 implements Chunk {
                             String value = name.value();
                             try {
                                 blockState = getBlockStateWith(blockState, property, value);
-                            } catch (IllegalArgumentException e) {
+                            } catch (IllegalArgumentException _) {
                                 throw new InvalidFormatException("Invalid block state for " + blockState.getBlockType().id() + ", " + property.name() + ": " + value);
                             }
                         }

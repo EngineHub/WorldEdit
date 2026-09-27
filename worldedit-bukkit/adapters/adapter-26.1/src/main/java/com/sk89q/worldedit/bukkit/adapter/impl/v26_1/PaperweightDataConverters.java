@@ -323,13 +323,13 @@ class PaperweightDataConverters implements com.sk89q.worldedit.world.DataFixer {
 
 
     private void registerInspector(LegacyType type, DataInspector inspector) {
-        this.inspectors.computeIfAbsent(type, k -> new ArrayList<>()).add(inspector);
+        this.inspectors.computeIfAbsent(type, _ -> new ArrayList<>()).add(inspector);
     }
 
     private void registerConverter(LegacyType type, DataConverter converter) {
         int version = converter.getDataVersion();
 
-        List<DataConverter> list = this.converters.computeIfAbsent(type, k -> new ArrayList<>());
+        List<DataConverter> list = this.converters.computeIfAbsent(type, _ -> new ArrayList<>());
         if (!list.isEmpty() && list.get(list.size() - 1).getDataVersion() > version) {
             for (int j = 0; j < list.size(); ++j) {
                 if (list.get(j).getDataVersion() > version) {
@@ -1894,14 +1894,14 @@ class PaperweightDataConverters implements com.sk89q.worldedit.world.DataFixer {
                                     if (object == null) {
                                         object = Component.literal("");
                                     }
-                                } catch (JsonParseException jsonparseexception) {
+                                } catch (JsonParseException _) {
                                     ;
                                 }
 
                                 if (object == null) {
                                     try {
                                         object = ComponentConverter.Serializer.fromJson(s, MinecraftServer.getServer().registryAccess());
-                                    } catch (JsonParseException jsonparseexception1) {
+                                    } catch (JsonParseException _) {
                                         ;
                                     }
                                 }
@@ -1909,7 +1909,7 @@ class PaperweightDataConverters implements com.sk89q.worldedit.world.DataFixer {
                                 if (object == null) {
                                     try {
                                         object = ComponentConverter.Serializer.fromJsonLenient(s, MinecraftServer.getServer().registryAccess());
-                                    } catch (JsonParseException jsonparseexception2) {
+                                    } catch (JsonParseException _) {
                                         ;
                                     }
                                 }
@@ -1972,7 +1972,7 @@ class PaperweightDataConverters implements com.sk89q.worldedit.world.DataFixer {
                     i = cmp.getInt("VillagerProfession").flatMap(profession -> {
                         try {
                             return Optional.of(this.convert(profession));
-                        } catch (RuntimeException runtimeexception) {
+                        } catch (RuntimeException _) {
                             return Optional.empty();
                         }
                     }).orElse(i);
@@ -2438,8 +2438,6 @@ class PaperweightDataConverters implements com.sk89q.worldedit.world.DataFixer {
         }
 
         public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
-            boolean flag = true;
-
             try {
                 net.minecraft.nbt.CompoundTag nbttagcompound1 = cmp.getCompoundOrEmpty("Level");
                 int i = nbttagcompound1.getIntOr("xPos", 0);
@@ -2467,7 +2465,7 @@ class PaperweightDataConverters implements com.sk89q.worldedit.world.DataFixer {
                         }
                     }
                 }
-            } catch (Exception exception) {
+            } catch (Exception _) {
                 DataConverterBedBlock.a.warn("Unable to datafix Bed blocks, level format may be missing tags.");
             }
 
@@ -2557,14 +2555,14 @@ class PaperweightDataConverters implements com.sk89q.worldedit.world.DataFixer {
                         if (object == null) {
                             object = Component.literal("");
                         }
-                    } catch (JsonParseException jsonparseexception) {
+                    } catch (JsonParseException _) {
                         ;
                     }
 
                     if (object == null) {
                         try {
                             object = ComponentConverter.Serializer.fromJson(s1, MinecraftServer.getServer().registryAccess());
-                        } catch (JsonParseException jsonparseexception1) {
+                        } catch (JsonParseException _) {
                             ;
                         }
                     }
@@ -2572,7 +2570,7 @@ class PaperweightDataConverters implements com.sk89q.worldedit.world.DataFixer {
                     if (object == null) {
                         try {
                             object = ComponentConverter.Serializer.fromJsonLenient(s1, MinecraftServer.getServer().registryAccess());
-                        } catch (JsonParseException jsonparseexception2) {
+                        } catch (JsonParseException _) {
                             ;
                         }
                     }

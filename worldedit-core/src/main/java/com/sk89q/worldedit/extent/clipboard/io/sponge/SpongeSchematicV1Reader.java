@@ -79,7 +79,7 @@ public class SpongeSchematicV1Reader implements ClipboardReader {
             // Validate schematic version to be sure
             ReaderUtil.checkSchematicVersion(1, getBaseTag());
             return OptionalInt.of(Constants.DATA_VERSION_MC_1_13_2);
-        } catch (IOException e) {
+        } catch (IOException _) {
             return OptionalInt.empty();
         }
     }

@@ -41,7 +41,7 @@ public class MorePaths {
         return Comparator.comparing(x -> {
             try {
                 return Files.getLastModifiedTime(x);
-            } catch (IOException e) {
+            } catch (IOException _) {
                 return FileTime.from(Instant.EPOCH);
             }
         });

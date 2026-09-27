@@ -116,7 +116,7 @@ class BukkitEntity implements Entity {
         if (entity != null) {
             try {
                 entity.remove();
-            } catch (UnsupportedOperationException e) {
+            } catch (UnsupportedOperationException _) {
                 return false;
             }
             return entity.isDead();

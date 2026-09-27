@@ -53,7 +53,7 @@ public class SignCompatibilityHandler implements NBTCompatibilityHandler {
             if (storedString.startsWith("{")) {
                 try {
                     jsonElement = JsonParser.parseString(storedString);
-                } catch (JsonSyntaxException ex) {
+                } catch (JsonSyntaxException _) {
                     // ignore: jsonElement will be null in the next check
                 }
             }

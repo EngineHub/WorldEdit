@@ -60,7 +60,7 @@ class RealExpressionTest extends BaseExpressionTest {
     }
 
     private static TestCase testCase(Vector3 loc, double result) {
-        return testCase(loc, result, e -> {
+        return testCase(loc, result, _ -> {
         });
     }
 

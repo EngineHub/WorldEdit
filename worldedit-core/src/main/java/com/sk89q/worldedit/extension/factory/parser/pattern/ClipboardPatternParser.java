@@ -97,7 +97,7 @@ public class ClipboardPatternParser extends InputParser<Pattern> {
                 ClipboardHolder holder = session.getClipboard();
                 Clipboard clipboard = holder.getClipboard();
                 return new ClipboardPattern(clipboard, offset);
-            } catch (EmptyClipboardException e) {
+            } catch (EmptyClipboardException _) {
                 throw new InputParseException(TranslatableComponent.of("worldedit.error.empty-clipboard"));
             }
         } else {

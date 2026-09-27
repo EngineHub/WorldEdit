@@ -34,7 +34,7 @@ public class Refraction {
         try {
             Class.forName(MOJANG_MAPPED_CLASS_NAME, false, Refraction.class.getClassLoader());
             isMojangMapped = true;
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException _) {
             isMojangMapped = false;
         }
         IS_MOJANG_MAPPED = isMojangMapped;

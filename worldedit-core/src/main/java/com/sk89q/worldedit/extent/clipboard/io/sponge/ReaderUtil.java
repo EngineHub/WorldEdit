@@ -130,7 +130,7 @@ public class ReaderUtil {
             BlockState state;
             try {
                 state = WorldEdit.getInstance().getBlockFactory().parseFromInput(paletteName, parserContext).toImmutableState();
-            } catch (InputParseException e) {
+            } catch (InputParseException _) {
                 LOGGER.warn("Invalid BlockState in palette: " + palettePart + ". Block will be replaced with air.");
                 state = BlockTypes.AIR.getDefaultState();
             }

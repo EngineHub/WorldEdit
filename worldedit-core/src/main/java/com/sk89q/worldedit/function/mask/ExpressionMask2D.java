@@ -67,7 +67,7 @@ public class ExpressionMask2D extends AbstractMask2D {
             } else {
                 return expression.evaluate(new double[]{ vector.x(), 0, vector.z() }, timeout.getAsInt()) > 0;
             }
-        } catch (EvaluationException e) {
+        } catch (EvaluationException _) {
             return false;
         }
     }

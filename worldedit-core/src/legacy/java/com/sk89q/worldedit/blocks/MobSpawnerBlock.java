@@ -173,13 +173,13 @@ public class MobSpawnerBlock extends LegacyBaseBlockWrapper {
             }
             this.mobType = mobType;
             this.spawnData = spawnDataTag;
-        } catch (InvalidFormatException ignored) {
+        } catch (InvalidFormatException _) {
             throw new RuntimeException("Invalid mob spawner data: no SpawnData and/or no Delay");
         }
         try {
             delayTag = NBTUtils.getChildTag(values, "Delay", ShortTag.class);
             this.delay = delayTag.getValue();
-        } catch (InvalidFormatException ignored) {
+        } catch (InvalidFormatException _) {
             this.delay = -1;
         }
 
@@ -192,37 +192,37 @@ public class MobSpawnerBlock extends LegacyBaseBlockWrapper {
         ListTag spawnPotentialsTag = null;
         try {
             spawnCountTag = NBTUtils.getChildTag(values, "SpawnCount", ShortTag.class);
-        } catch (InvalidFormatException ignored) {
+        } catch (InvalidFormatException _) {
             // We're just trying to get as much data as possible
         }
         try {
             spawnRangeTag = NBTUtils.getChildTag(values, "SpawnRange", ShortTag.class);
-        } catch (InvalidFormatException ignored) {
+        } catch (InvalidFormatException _) {
             // We're just trying to get as much data as possible
         }
         try {
             minSpawnDelayTag = NBTUtils.getChildTag(values, "MinSpawnDelay", ShortTag.class);
-        } catch (InvalidFormatException ignored) {
+        } catch (InvalidFormatException _) {
             // We're just trying to get as much data as possible
         }
         try {
             maxSpawnDelayTag = NBTUtils.getChildTag(values, "MaxSpawnDelay", ShortTag.class);
-        } catch (InvalidFormatException ignored) {
+        } catch (InvalidFormatException _) {
             // We're just trying to get as much data as possible
         }
         try {
             maxNearbyEntitiesTag = NBTUtils.getChildTag(values, "MaxNearbyEntities", ShortTag.class);
-        } catch (InvalidFormatException ignored) {
+        } catch (InvalidFormatException _) {
             // We're just trying to get as much data as possible
         }
         try {
             requiredPlayerRangeTag = NBTUtils.getChildTag(values, "RequiredPlayerRange", ShortTag.class);
-        } catch (InvalidFormatException ignored) {
+        } catch (InvalidFormatException _) {
             // We're just trying to get as much data as possible
         }
         try {
             spawnPotentialsTag = NBTUtils.getChildTag(values, "SpawnPotentials", ListTag.class);
-        } catch (InvalidFormatException ignored) {
+        } catch (InvalidFormatException _) {
             // We're just trying to get as much data as possible
         }
 

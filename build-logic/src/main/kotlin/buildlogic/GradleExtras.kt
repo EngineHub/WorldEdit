@@ -19,6 +19,9 @@ val Project.ext: ExtraPropertiesExtension
 val Project.stringyLibs: VersionCatalog
     get() = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
+val Project.primaryJavaReleaseVersion: Int
+    get() = stringyLibs.getVersion("primaryJavaRelease").requiredVersion.toInt()
+
 val Project.internalVersion: Provider<String>
     get() {
         val version = version.toString()

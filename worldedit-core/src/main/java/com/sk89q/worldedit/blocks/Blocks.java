@@ -71,7 +71,7 @@ public final class Blocks {
             Object val = null;
             try {
                 val = prop.getValueFor(value);
-            } catch (IllegalArgumentException ignored) {
+            } catch (IllegalArgumentException _) {
                 // Skip any unknown values
             }
             if (val == null) {

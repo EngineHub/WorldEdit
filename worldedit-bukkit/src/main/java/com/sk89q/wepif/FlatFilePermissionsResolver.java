@@ -106,7 +106,7 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
                 if (buff != null) {
                     buff.close();
                 }
-            } catch (IOException ignored) {
+            } catch (IOException _) {
                 // If we can't close the stream, oh well
             }
         }
@@ -173,7 +173,7 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
                 if (buff != null) {
                     buff.close();
                 }
-            } catch (IOException ignored) {
+            } catch (IOException _) {
                 // If we can't close the stream, oh well
             }
         }

@@ -70,7 +70,7 @@ final class SpigotAdapter implements Adapter {
             try {
                 final Field gsonField = field(ComponentSerializer.class, "gson");
                 tmpGson = (Gson) gsonField.get(null);
-            } catch (NoSuchFieldException ignored) {
+            } catch (NoSuchFieldException _) {
                 tmpGson = VersionedComponentSerializer.forVersion(ChatVersion.V1_21_5).getGson();
             }
             gson = tmpGson;
@@ -97,7 +97,7 @@ final class SpigotAdapter implements Adapter {
             try {
                 // newer gson releases
                 treeTypeAdapterClass = Class.forName("com.google.gson.internal.bind.TreeTypeAdapter");
-            } catch (final ClassNotFoundException e) {
+            } catch (ClassNotFoundException _) {
                 // old gson releases
                 treeTypeAdapterClass = Class.forName("com.google.gson.TreeTypeAdapter");
             }
@@ -108,7 +108,7 @@ final class SpigotAdapter implements Adapter {
 
             factoriesField.set(gson, modifiedFactories);
             return true;
-        } catch (final Throwable e) {
+        } catch (Throwable _) {
             return false;
         }
     }
@@ -156,7 +156,7 @@ final class SpigotAdapter implements Adapter {
                 try {
                     consumer.accept(player, components);
                     it.remove();
-                } catch (final Throwable ignored) {
+                } catch (Throwable _) {
                     // If we can't send, don't worry about it
                 }
             }

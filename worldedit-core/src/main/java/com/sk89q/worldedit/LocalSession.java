@@ -1037,7 +1037,7 @@ public class LocalSession {
             int version;
             try {
                 version = Integer.parseInt(args.getFirst());
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException _) {
                 WorldEdit.logger.warn("Error while reading CUI init message");
                 this.failedCuiAttempts++;
                 return;

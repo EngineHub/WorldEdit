@@ -74,7 +74,7 @@ public abstract class AssetLoader<T> {
                 extensions[0],
                 extensions
             ).toPath();
-        } catch (FilenameException e) {
+        } catch (FilenameException _) {
             return null;
         }
 

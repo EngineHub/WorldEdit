@@ -47,7 +47,7 @@ public class ClipboardMaskParser extends SimpleInputParser<Mask> {
     public Mask parseFromSimpleInput(String input, ParserContext context) throws InputParseException {
         try {
             return new MatchMask(context.requireExtent(), context.requireSession().getClipboard().getClipboard());
-        } catch (EmptyClipboardException e) {
+        } catch (EmptyClipboardException _) {
             throw new InputParseException(TranslatableComponent.of("worldedit.error.empty-clipboard"));
         }
     }

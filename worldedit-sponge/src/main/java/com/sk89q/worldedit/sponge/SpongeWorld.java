@@ -319,7 +319,7 @@ public final class SpongeWorld extends AbstractWorld {
         } finally {
             // Remove temp world
             server.worldManager().unloadWorld(key)
-                .thenCompose(b -> server.worldManager().deleteWorld(key))
+                .thenCompose(_ -> server.worldManager().deleteWorld(key))
                 .exceptionally(t -> {
                     LOGGER.warn("Failed to delete temp world", t);
                     return null;

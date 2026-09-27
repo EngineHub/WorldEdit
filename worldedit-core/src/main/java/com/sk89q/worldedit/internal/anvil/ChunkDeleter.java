@@ -205,12 +205,12 @@ public final class ChunkDeleter {
 
     private BiPredicate<RegionAccess, BlockVector2> createPredicates(List<ChunkDeletionInfo.DeletionPredicate> deletionPredicates) {
         if (deletionPredicates == null) {
-            return (r, p) -> true;
+            return (_, _) -> true;
         }
         return deletionPredicates.stream()
                 .map(this::createPredicate)
                 .reduce(BiPredicate::and)
-                .orElse((r, p) -> true);
+                .orElse((_, _) -> true);
     }
 
     private BiPredicate<RegionAccess, BlockVector2> createPredicate(ChunkDeletionInfo.DeletionPredicate deletionPredicate) {
@@ -218,21 +218,21 @@ public final class ChunkDeleter {
             int time;
             try {
                 time = Integer.parseInt(deletionPredicate.value);
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException _) {
                 throw new IllegalStateException("Modification time predicate specified invalid time: " + deletionPredicate.value);
             }
             return switch (deletionPredicate.comparison) {
                 case "<" -> (r, p) -> {
                     try {
                         return r.getModificationTime(p) < time;
-                    } catch (IOException e) {
+                    } catch (IOException _) {
                         return false;
                     }
                 };
                 case ">" -> (r, p) -> {
                     try {
                         return r.getModificationTime(p) > time;
-                    } catch (IOException e) {
+                    } catch (IOException _) {
                         return false;
                     }
                 };

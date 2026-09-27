@@ -75,7 +75,7 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
             try {
                 DataInputStream stream = new DataInputStream(new GZIPInputStream(inputStream));
                 rootEntry = LinBinaryIO.readUsing(stream, LEGACY_OPTIONS, LinRootEntry::readFrom);
-            } catch (Exception e) {
+            } catch (Exception _) {
                 return false;
             }
             if (!rootEntry.name().equals("Schematic")) {
@@ -157,7 +157,7 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
             try {
                 DataInputStream stream = new DataInputStream(new GZIPInputStream(inputStream));
                 root = LinBinaryIO.readUsing(stream, LinRootEntry::readFrom).value();
-            } catch (Exception e) {
+            } catch (Exception _) {
                 return false;
             }
             LinCompoundTag schematicTag = root.findTag("Schematic", LinTagType.compoundTag());
@@ -178,7 +178,7 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
         try {
             DataInputStream stream = new DataInputStream(new GZIPInputStream(inputStream));
             rootEntry = LinBinaryIO.readUsing(stream, LEGACY_OPTIONS, LinRootEntry::readFrom);
-        } catch (Exception e) {
+        } catch (Exception _) {
             return false;
         }
         if (!rootEntry.name().equals("Schematic")) {
