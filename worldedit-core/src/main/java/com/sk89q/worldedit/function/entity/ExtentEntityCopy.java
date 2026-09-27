@@ -100,35 +100,40 @@ public class ExtentEntityCopy implements EntityFunction {
         if (state != null) {
             Location newLocation;
             Location location = entity.getLocation();
-            // If the entity has stored the location in the NBT data, we use that location
             LinCompoundTag tag = state.getNbt();
-            boolean hasTilePosition = false;
+            Vector3 tilePosition = null;
             if (tag != null) {
                 if (tag.value().get("block_pos") instanceof LinIntArrayTag blockPos && blockPos.value().length == 3) {
                     // New block_pos value
-                    location = location.setPosition(Vector3.at(
+                    tilePosition = Vector3.at(
                             blockPos.value()[0],
                             blockPos.value()[1],
                             blockPos.value()[2]
-                    ).add(0.5, 0.5, 0.5));
-                    hasTilePosition = true;
+                    );
                 } else if (tag.value().get("TileX") instanceof LinNumberTag<?> tagX
                         && tag.value().get("TileY") instanceof LinNumberTag<?> tagY
                         && tag.value().get("TileZ") instanceof LinNumberTag<?> tagZ
                 ) {
                     // Legacy TileX/Y/Z values
-                    location = location.setPosition(Vector3.at(
+                    tilePosition = Vector3.at(
                             tagX.value().intValue(),
                             tagY.value().intValue(),
                             tagZ.value().intValue()
-                    ).add(0.5, 0.5, 0.5));
-                    hasTilePosition = true;
+                    );
                 }
+            }
+            // Apply transform to tile position if we have one and either:
+            // 1. It's a painting, which might have snapping issues if it's an even size
+            // 2. We previously stored it at its tile position, not its entity position
+            boolean useTilePosition = tilePosition != null
+                && (state.getType() == EntityTypes.PAINTING || location.toVector().equals(tilePosition));
+            if (useTilePosition) {
+                location = location.setPosition(tilePosition.add(0.5, 0.5, 0.5));
             }
 
             Vector3 pivot = from.round().add(0.5, 0.5, 0.5);
             Vector3 newPosition = transform.apply(location.toVector().subtract(pivot));
-            if (hasTilePosition) {
+            if (useTilePosition) {
                 newPosition = newPosition.subtract(0.5, 0.5, 0.5);
             }
             Vector3 newDirection;
