@@ -3,6 +3,8 @@
         "https://checkstyle.org/dtds/suppressions_1_2.dtd">
 
 <suppressions>
+    <!-- TODO: Apply these Checkstyle rules -->
+    <suppress files=".*" checks="UnusedLocalVariable|UnusedCatchParameterShouldBeUnnamed|UnusedLambdaParameterShouldBeUnnamed|UnusedTryResourceShouldBeUnnamed"/>
     <suppress files=".*DataFixer\.java" checks="MethodName|FallThrough|EmptyStatement|UseEnhancedSwitch"/>
     <suppress files=".*DataConverters\.java"
               checks="MethodName|FallThrough|EmptyStatement|UseEnhancedSwitch|DefaultComesLast|JavadocParagraph"/>
