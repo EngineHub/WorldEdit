@@ -72,7 +72,7 @@ public class BlockType implements Keyed {
     @SuppressWarnings("this-escape")
     private final LazyReference<BlockMaterial> blockMaterial
         = LazyReference.from(() -> WorldEdit.getInstance().getPlatformManager()
-        .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getMaterial(this));
+        .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getMaterial(getDefaultState()));
     @SuppressWarnings("this-escape")
     private final LazyReference<Integer> legacyId = LazyReference.from(() -> computeLegacy(0));
     @SuppressWarnings("this-escape")

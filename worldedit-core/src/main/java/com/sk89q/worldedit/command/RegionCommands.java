@@ -43,6 +43,7 @@ import com.sk89q.worldedit.function.generator.FloraGenerator;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.MaskIntersection;
+import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.function.mask.NoiseFilter2D;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
@@ -79,8 +80,11 @@ import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
 import org.enginehub.piston.annotation.param.ArgFlag;
 import org.enginehub.piston.annotation.param.Switch;
+import org.enginehub.piston.exception.CommandException;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static com.sk89q.worldedit.command.util.Logging.LogMode.ALL;
@@ -543,20 +547,45 @@ public class RegionCommands {
 
     @Command(
         name = "/hollow",
-        desc = "Hollows out the object contained in this selection",
-        descFooter = "Thickness is measured in manhattan distance."
+        desc = "Hollows out the object contained in this selection"
     )
     @CommandPermissions("worldedit.region.hollow")
     @Logging(REGION)
-    public int hollow(Actor actor, EditSession editSession,
+    public int hollow(Actor actor, EditSession editSession, LocalSession session,
                       @Selection Region region,
-                      @Arg(desc = "Thickness of the shell to leave", def = "0")
+                      @Arg(desc = "Thickness of the shell to leave, measured in manhattan distance", def = "1")
                           int thickness,
                       @Arg(desc = "The pattern of blocks to replace the hollowed area with", def = "air")
-                          Pattern pattern) throws WorldEditException {
-        checkCommandArgument(thickness >= 0, "Thickness must be >= 0");
+                          Pattern pattern,
+                      @Switch(name = 'o', desc = "Open up faces touching the bounding box. This matches the legacy behaviour.")
+                          boolean openSides,
+                      @Switch(name = 'p', desc = "Consider placement position as 'outside' instead of the selection bounding box. Overrides -o.")
+                          boolean usePlacementPosition,
+                      @Switch(name = 'g', desc = "Consider block geometry for visibility calculation")
+                          boolean useBlockGeometry,
+                      @ArgFlag(name = 'm', desc = "Set the mask of blocks eligible for shell detection")
+                          Mask includeMask) throws WorldEditException {
+        checkCommandArgument(thickness >= 1, "Thickness must be >= 1");
 
-        int affected = editSession.hollowOutRegion(region, thickness, pattern);
+        final Collection<BlockVector3> startingPositions;
+        if (usePlacementPosition) {
+            BlockVector3 placementPosition = session.getPlacementPosition(actor);
+            if (!region.contains(placementPosition)) {
+                throw new CommandException(
+                    TextComponent.of("Placement position must be inside selection (")
+                        .append(session.getPlacement().getInfo())
+                        .append(TextComponent.of(")")),
+                    ImmutableList.of()
+                );
+            }
+            startingPositions = Collections.singletonList(placementPosition);
+        } else {
+            startingPositions = null;
+        }
+        if (includeMask == null) {
+            includeMask = Masks.alwaysTrue();
+        }
+        int affected = editSession.hollowOutRegion(region, thickness, pattern, openSides, startingPositions, useBlockGeometry, includeMask);
         actor.printInfo(TranslatableComponent.of("worldedit.hollow.changed", TextComponent.of(affected)));
         return affected;
     }

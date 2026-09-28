@@ -19,6 +19,9 @@
 
 package com.sk89q.worldedit.world.registry;
 
+import com.sk89q.worldedit.blocks.ShapeType;
+import com.sk89q.worldedit.util.Direction;
+
 import javax.annotation.Nullable;
 
 import static com.sk89q.worldedit.util.GuavaUtil.firstNonNull;
@@ -49,8 +52,13 @@ public class PassthroughBlockMaterial implements BlockMaterial {
     }
 
     @Override
-    public boolean isFullCube() {
-        return blockMaterial.isFullCube();
+    public boolean isFullCube(ShapeType shapeType) {
+        return blockMaterial.isFullCube(shapeType);
+    }
+
+    @Override
+    public boolean isFullFace(ShapeType shapeType, Direction face) {
+        return blockMaterial.isFullFace(shapeType, face);
     }
 
     @Override
