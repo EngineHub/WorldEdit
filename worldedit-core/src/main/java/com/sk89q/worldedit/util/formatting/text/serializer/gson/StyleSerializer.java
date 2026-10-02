@@ -35,12 +35,14 @@ import com.google.gson.JsonSerializer;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.internal.Constants;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.util.formatting.text.format.Style;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.util.formatting.text.format.TextDecoration;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Type;
 
@@ -48,6 +50,8 @@ import java.lang.reflect.Type;
 @SuppressWarnings("unused")
 public class StyleSerializer implements JsonDeserializer<Style>, JsonSerializer<Style> {
     public static final StyleSerializer INSTANCE = new StyleSerializer();
+
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     private static final TextDecoration[] DECORATIONS = TextDecoration.values();
 
@@ -87,12 +91,21 @@ public class StyleSerializer implements JsonDeserializer<Style>, JsonSerializer<
         final Style.Builder style = Style.builder();
 
         if (json.has(COLOR)) {
-            final TextColorWrapper color = context.deserialize(json.get(COLOR), TextColorWrapper.class);
-            if (color.color != null) {
-                style.color(color.color);
-            } else if (color.decoration != null) {
-                // I know. Setting a decoration from the color is weird. This is, unfortunately, something we need to support.
-                style.decoration(color.decoration, true);
+            TextColorWrapper color = null;
+            try {
+                color = context.deserialize(json.get(COLOR), TextColorWrapper.class);
+            } catch (JsonParseException e) {
+                // Vanilla text components may carry hex colors (#RRGGBB) since 1.16, text3 cannot represent them.
+                // Drop the color instead of failing to parse the whole component.
+                LOGGER.debug("Failed to parse component color, dropping it", e);
+            }
+            if (color != null) {
+                if (color.color != null) {
+                    style.color(color.color);
+                } else if (color.decoration != null) {
+                    // I know. Setting a decoration from the color is weird. This is, unfortunately, something we need to support.
+                    style.decoration(color.decoration, true);
+                }
             }
         }
 
