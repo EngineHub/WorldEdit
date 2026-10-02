@@ -87,12 +87,20 @@ public class StyleSerializer implements JsonDeserializer<Style>, JsonSerializer<
         final Style.Builder style = Style.builder();
 
         if (json.has(COLOR)) {
-            final TextColorWrapper color = context.deserialize(json.get(COLOR), TextColorWrapper.class);
-            if (color.color != null) {
-                style.color(color.color);
-            } else if (color.decoration != null) {
-                // I know. Setting a decoration from the color is weird. This is, unfortunately, something we need to support.
-                style.decoration(color.decoration, true);
+            TextColorWrapper color = null;
+            try {
+                color = context.deserialize(json.get(COLOR), TextColorWrapper.class);
+            } catch (JsonParseException _) {
+                // Vanilla text components may carry hex colors (#RRGGBB) since 1.16, text3 cannot represent them.
+                // Drop the color instead of failing to parse the whole component.
+            }
+            if (color != null) {
+                if (color.color != null) {
+                    style.color(color.color);
+                } else if (color.decoration != null) {
+                    // I know. Setting a decoration from the color is weird. This is, unfortunately, something we need to support.
+                    style.decoration(color.decoration, true);
+                }
             }
         }
 
