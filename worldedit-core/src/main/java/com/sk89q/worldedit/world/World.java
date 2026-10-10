@@ -275,16 +275,18 @@ public interface World extends Extent, Keyed {
      *
      * <p>The default implementation simply calls {@link #regenerate(Region, Extent, RegenOptions)}.
      * Platforms that cannot generate terrain on the calling thread override it instead. An override
-     * must write and flush the extent on a thread that is allowed to edit the region, and must
-     * complete the returned future on the thread that the actor's commands run on.</p>
+     * must write and flush the extent on a thread that is allowed to edit the region, loading the
+     * region's chunks if necessary, and must complete the returned future on the thread that the
+     * actor's commands run on, or on the writing thread when the actor has no thread of its own.</p>
      *
      * @param region the region
      * @param extent the {@link Extent} to write the regenerated blocks and biomes to
      * @param options the regeneration options
-     * @param actor the actor that requested the regeneration
+     * @param actor the actor that requested the regeneration, or null for an API call without one
      * @return a future completing with whether regeneration was successful
      */
-    default CompletionStage<Boolean> regenerateAsync(Region region, Extent extent, RegenOptions options, Actor actor) {
+    default CompletionStage<Boolean> regenerateAsync(Region region, Extent extent, RegenOptions options,
+                                                     @Nullable Actor actor) {
         return CompletableFuture.completedFuture(regenerate(region, extent, options));
     }
 

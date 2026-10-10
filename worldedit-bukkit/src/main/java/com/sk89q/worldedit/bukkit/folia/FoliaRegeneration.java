@@ -28,6 +28,7 @@ import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -39,20 +40,29 @@ import com.sk89q.worldedit.world.RegenOptions;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nullable;
 
 /**
  * Runs {@code //regen} on Folia, where terrain generation cannot be awaited on a region thread.
  *
- * <p>The selection must belong to the caller's region when the command runs, and to a single region
- * when the result is applied. The adapter generates the terrain into a detached snapshot, the snapshot
- * is written to the extent on the thread owning the selection, and the returned future completes on
- * the actor's own scheduler.</p>
+ * <p>The adapter generates the terrain into a detached snapshot. The chunks of the selection are then
+ * loaded and held with plugin tickets, the snapshot is written to the extent on the thread owning them,
+ * and the returned future completes on the actor's own scheduler. A clipboard is written directly by
+ * the adapter, since it never touches the world.</p>
  */
 public final class FoliaRegeneration {
+
+    /**
+     * Freshly loaded chunks can take a few ticks to merge into the region applying the result.
+     */
+    private static final int OWNERSHIP_ATTEMPTS = 40;
 
     private FoliaRegeneration() {
     }
@@ -66,33 +76,34 @@ public final class FoliaRegeneration {
      * @param region the region to regenerate
      * @param extent the extent to write the result to
      * @param options the regeneration options
-     * @param actor the actor that requested the regeneration
+     * @param actor the actor that requested the regeneration, or null for an API call without one
      * @return a future completing with {@code true} on the actor's scheduler, or exceptionally on failure
      */
     public static CompletionStage<Boolean> regenerate(WorldEditPlugin plugin, BukkitImplAdapter adapter,
                                                       BukkitWorld world, Region region, Extent extent,
-                                                      RegenOptions options, Actor actor) {
+                                                      RegenOptions options, @Nullable Actor actor) {
         CompletableFuture<Boolean> result = new CompletableFuture<>();
-        World bukkitWorld = world.getWorld();
         try {
             if (extent instanceof EditSession editSession && editSession.getBlockBag() != null) {
                 // The block bag reads the player's inventory, which may be in another region by then.
                 throw new RegionOperationException(TranslatableComponent.of("worldedit.regen.inventory-unsupported"));
             }
-            checkOwned(bukkitWorld, region);
-            BlockArrayClipboard snapshot = new BlockArrayClipboard(region);
-            adapter.regenerateAsync(bukkitWorld, region, snapshot, options).whenComplete((_, error) -> {
-                BlockVector3 anchor = region.getMinimumPoint();
-                Bukkit.getRegionScheduler().execute(plugin, bukkitWorld, anchor.x() >> 4, anchor.z() >> 4, () -> {
-                    Throwable failure = error;
-                    if (failure == null) {
-                        try {
-                            apply(world, region, snapshot, extent, options);
-                        } catch (Exception e) {
-                            failure = e;
-                        }
+            boolean direct = extent instanceof Clipboard;
+            BlockArrayClipboard snapshot = direct ? null : new BlockArrayClipboard(region);
+            Extent generated = direct ? extent : snapshot;
+            adapter.regenerateAsync(world.getWorld(), region, generated, options).whenComplete((_, error) -> {
+                if (error != null || direct) {
+                    complete(plugin, actor, result, error);
+                    return;
+                }
+                Job job = new Job(plugin, world, region, snapshot, extent, options, actor, result,
+                    ConcurrentHashMap.newKeySet());
+                loadChunks(job).whenComplete((_, loadError) -> {
+                    if (loadError != null) {
+                        finish(job, loadError);
+                    } else {
+                        applyWhenOwned(job, 0);
                     }
-                    complete(plugin, actor, result, failure);
                 });
             });
         } catch (Exception e) {
@@ -101,29 +112,77 @@ public final class FoliaRegeneration {
         return result;
     }
 
-    private static void checkOwned(World world, Region region) throws RegionOperationException {
-        for (BlockVector2 chunk : region.getChunks()) {
-            if (!Bukkit.isOwnedByCurrentRegion(world, chunk.x(), chunk.z())) {
-                throw new RegionOperationException(TranslatableComponent.of("worldedit.regen.folia-region"));
-            }
+    private static CompletionStage<Void> loadChunks(Job job) {
+        World world = job.world().getWorld();
+        List<CompletableFuture<Void>> loads = new ArrayList<>();
+        for (BlockVector2 chunk : job.region().getChunks()) {
+            loads.add(world.getChunkAtAsync(chunk.x(), chunk.z()).thenCompose(_ -> holdChunk(job, chunk)));
         }
+        return CompletableFuture.allOf(loads.toArray(CompletableFuture[]::new));
     }
 
-    private static void apply(BukkitWorld world, Region region, BlockArrayClipboard snapshot, Extent extent,
-                              RegenOptions options) throws WorldEditException {
-        checkOwned(world.getWorld(), region);
+    private static CompletableFuture<Void> holdChunk(Job job, BlockVector2 chunk) {
+        World world = job.world().getWorld();
+        CompletableFuture<Void> held = new CompletableFuture<>();
+        // A plugin ticket loads the chunk synchronously if needed, so it is added on the thread owning the chunk.
+        Bukkit.getRegionScheduler().execute(job.plugin(), world, chunk.x(), chunk.z(), () -> {
+            try {
+                if (world.addPluginChunkTicket(chunk.x(), chunk.z(), job.plugin())) {
+                    job.tickets().add(chunk);
+                }
+                held.complete(null);
+            } catch (Throwable t) {
+                held.completeExceptionally(t);
+            }
+        });
+        return held;
+    }
+
+    private static void applyWhenOwned(Job job, int attempt) {
+        World world = job.world().getWorld();
+        BlockVector3 anchor = job.region().getMinimumPoint();
+        Bukkit.getRegionScheduler().runDelayed(job.plugin(), world, anchor.x() >> 4, anchor.z() >> 4, _ -> {
+            if (!isOwned(world, job.region())) {
+                if (attempt < OWNERSHIP_ATTEMPTS) {
+                    applyWhenOwned(job, attempt + 1);
+                } else {
+                    finish(job, new RegionOperationException(TranslatableComponent.of("worldedit.regen.folia-region")));
+                }
+                return;
+            }
+            Throwable failure = null;
+            try {
+                apply(job);
+            } catch (Exception e) {
+                failure = e;
+            }
+            finish(job, failure);
+        }, 1);
+    }
+
+    private static boolean isOwned(World world, Region region) {
+        for (BlockVector2 chunk : region.getChunks()) {
+            if (!Bukkit.isOwnedByCurrentRegion(world, chunk.x(), chunk.z())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static void apply(Job job) throws WorldEditException {
+        Extent extent = job.extent();
         try {
             // Masks parsed without an extent, such as the global mask, read it from the current request.
             Request.runWithRequest(() -> {
-                Request.request().setWorld(world);
+                Request.request().setWorld(job.world());
                 if (extent instanceof EditSession editSession) {
                     Request.request().setEditSession(editSession);
                 }
                 try {
-                    for (BlockVector3 position : region) {
-                        extent.setBlock(position, snapshot.getFullBlock(position));
-                        if (options.shouldRegenBiomes()) {
-                            extent.setBiome(position, snapshot.getBiome(position));
+                    for (BlockVector3 position : job.region()) {
+                        extent.setBlock(position, job.snapshot().getFullBlock(position));
+                        if (job.options().shouldRegenBiomes()) {
+                            extent.setBiome(position, job.snapshot().getBiome(position));
                         }
                     }
                 } catch (WorldEditException e) {
@@ -141,7 +200,15 @@ public final class FoliaRegeneration {
         }
     }
 
-    private static void complete(WorldEditPlugin plugin, Actor actor, CompletableFuture<Boolean> result,
+    private static void finish(Job job, @Nullable Throwable failure) {
+        World world = job.world().getWorld();
+        for (BlockVector2 chunk : job.tickets()) {
+            world.removePluginChunkTicket(chunk.x(), chunk.z(), job.plugin());
+        }
+        complete(job.plugin(), job.actor(), job.result(), failure);
+    }
+
+    private static void complete(WorldEditPlugin plugin, @Nullable Actor actor, CompletableFuture<Boolean> result,
                                  @Nullable Throwable failure) {
         Runnable completion = () -> {
             if (failure == null) {
@@ -156,7 +223,13 @@ public final class FoliaRegeneration {
                 completion.run();
             }
         } else {
-            Bukkit.getGlobalRegionScheduler().execute(plugin, completion);
+            // Other actors and API callers continue on the thread that finished the job.
+            completion.run();
         }
+    }
+
+    private record Job(WorldEditPlugin plugin, BukkitWorld world, Region region, BlockArrayClipboard snapshot,
+                       Extent extent, RegenOptions options, @Nullable Actor actor,
+                       CompletableFuture<Boolean> result, Set<BlockVector2> tickets) {
     }
 }

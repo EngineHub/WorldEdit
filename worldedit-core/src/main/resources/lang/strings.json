@@ -227,7 +227,7 @@
     "worldedit.replace.replaced": "{0} blocks have been replaced.",
     "worldedit.stack.changed": "{0} blocks changed. Undo with //undo",
     "worldedit.stack.intersecting-region": "Stack offset must not collide with the region when using block units",
-    "worldedit.regen.folia-region": "On Folia, the whole selection must be within your current region, both when the command runs and when the result is applied.",
+    "worldedit.regen.folia-region": "On Folia, the whole selection must end up in a single region. Try again, or use a smaller selection.",
     "worldedit.regen.inventory-unsupported": "Regeneration on Folia does not support inventory usage. Disable inventory usage or regenerate to the clipboard with -c.",
     "worldedit.regen.generating": "Generating terrain...",
     "worldedit.regen.regenerated": "Region regenerated.",

@@ -219,7 +219,8 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     @Override
-    public CompletionStage<Boolean> regenerateAsync(Region region, Extent extent, RegenOptions options, Actor actor) {
+    public CompletionStage<Boolean> regenerateAsync(Region region, Extent extent, RegenOptions options,
+                                                    @Nullable Actor actor) {
         WorldEditPlugin plugin = WorldEditPlugin.getInstance();
         BukkitImplAdapter adapter = plugin.getBukkitImplAdapter();
         if (!plugin.isFolia() || adapter == null) {
