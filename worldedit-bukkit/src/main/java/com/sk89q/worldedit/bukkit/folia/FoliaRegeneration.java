@@ -25,6 +25,7 @@ import com.sk89q.worldedit.bukkit.adapter.BukkitRegeneration;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
@@ -34,15 +35,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import javax.annotation.Nullable;
 
 /** Coordinates generation and cleanup globally, then returns the snapshot to the caller. */
+@SuppressWarnings("CollectionUndefinedEquality") // Pending futures are compared by identity.
 public final class FoliaRegeneration implements AutoCloseable {
     private static final long TIMEOUT_TICKS = 20 * 300;
 
@@ -65,20 +69,22 @@ public final class FoliaRegeneration implements AutoCloseable {
     }
 
     /**
-     * Generate a snapshot and return it on the caller's owning thread after checking ownership again.
+     * Generate and apply a snapshot in the region owning pos1, then return to the caller's owning thread.
      *
      * @param world the source world
      * @param selection the selection owned by the caller's current region
      * @param options the regeneration options
+     * @param pos1 the primary selection position captured before generation
      * @param actor the actor receiving the result
+     * @param output the callback applying the snapshot in the selection's region
      * @param adapter the adapter that creates the temporary generation world
      * @return the detached snapshot, or a failed result if regeneration or ownership checks fail
      */
-    @SuppressWarnings("CollectionUndefinedEquality") // CompletableFuture uses object identity in the pending set.
     public CompletionStage<Clipboard> regenerate(World world, Region selection,
-                                                 RegenOptions options,
-                                                 Actor actor, BukkitImplAdapter adapter) {
+                                                 RegenOptions options, BlockVector3 pos1,
+                                                 Actor actor, Consumer<Clipboard> output, BukkitImplAdapter adapter) {
         Region region = selection.clone();
+        BlockVector2 anchor = BlockVector2.at(pos1.x() >> 4, pos1.z() >> 4);
         CompletableFuture<Clipboard> result = new CompletableFuture<>();
         pending.add(result);
         var _ = result.whenComplete((_, _) -> pending.remove(result));
@@ -96,15 +102,16 @@ public final class FoliaRegeneration implements AutoCloseable {
             }
             Bukkit.getGlobalRegionScheduler().execute(plugin, () -> {
                 if (closed) {
-                    complete(world, region, player, result, null, failure("worldedit.regen.cancelled"));
+                    complete(world, region, anchor, player, output, result, null, failure("worldedit.regen.cancelled"));
                     return;
                 }
                 if (active != null) {
-                    complete(world, region, player, result, null, failure("worldedit.regen.busy"));
+                    complete(world, region, anchor, player, output, result, null, failure("worldedit.regen.busy"));
                     return;
                 }
                 try {
-                    Job job = new Job(adapter.beginRegeneration(world, region, options), result, world, region, player);
+                    Job job = new Job(adapter.beginRegeneration(world, region, options),
+                        result, world, region, anchor, player, output);
                     active = job;
                     timeout = Bukkit.getGlobalRegionScheduler().runDelayed(plugin,
                         _ -> finish(job, null, failure("worldedit.regen.timed-out")), TIMEOUT_TICKS);
@@ -117,7 +124,7 @@ public final class FoliaRegeneration implements AutoCloseable {
                     if (active != null) {
                         finish(active, null, e);
                     } else {
-                        complete(world, region, player, result, null, e);
+                        complete(world, region, anchor, player, output, result, null, e);
                     }
                 }
             });
@@ -155,25 +162,54 @@ public final class FoliaRegeneration implements AutoCloseable {
                 error.addSuppressed(e);
             }
         }
-        complete(job.world, job.region, job.player, job.result, snapshot, error);
+        complete(job.world, job.region, job.anchor, job.player, job.output, job.result, snapshot, error);
     }
 
-    private void complete(World world, Region region, @Nullable Player player, CompletableFuture<Clipboard> result,
+    private void complete(World world, Region region, BlockVector2 anchor, @Nullable Player player,
+                          Consumer<Clipboard> output, CompletableFuture<Clipboard> result,
                           @Nullable Clipboard snapshot, @Nullable Throwable error) {
         Runnable completion = () -> {
+            // Once application starts, shutdown must not complete the result while the callback is still editing.
+            if (!pending.remove(result)) {
+                return;
+            }
             try {
                 if (error != null) {
-                    result.completeExceptionally(error);
-                } else if (closed || (player != null && player.getWorld() != world)) {
-                    result.completeExceptionally(failure("worldedit.regen.cancelled"));
+                    returnToCaller(player, result, snapshot, error);
+                } else if (closed) {
+                    returnToCaller(player, result, null, failure("worldedit.regen.cancelled"));
                 } else {
                     requireOwned(world, region);
-                    result.complete(snapshot);
+                    output.accept(Objects.requireNonNull(snapshot));
+                    returnToCaller(player, result, snapshot, null);
                 }
             } catch (Exception e) {
-                result.completeExceptionally(e);
+                returnToCaller(player, result, null, e);
             }
         };
+        try {
+            Bukkit.getRegionScheduler().execute(plugin, world, anchor.x(), anchor.z(), completion);
+        } catch (Exception e) {
+            result.completeExceptionally(e);
+        }
+    }
+
+    private void returnToCaller(@Nullable Player player, CompletableFuture<Clipboard> result,
+                                @Nullable Clipboard snapshot, @Nullable Throwable error) {
+        pending.add(result);
+        Runnable completion = () -> {
+            if (pending.remove(result)) {
+                if (error != null) {
+                    result.completeExceptionally(error);
+                } else {
+                    result.complete(snapshot);
+                }
+            }
+        };
+        if (closed) {
+            result.completeExceptionally(failure("worldedit.regen.cancelled"));
+            return;
+        }
         try {
             if (player != null) {
                 Runnable retired = () -> result.completeExceptionally(failure("worldedit.regen.cancelled"));
@@ -181,8 +217,7 @@ public final class FoliaRegeneration implements AutoCloseable {
                     retired.run();
                 }
             } else {
-                BlockVector2 anchor = region.getChunks().iterator().next();
-                Bukkit.getRegionScheduler().execute(plugin, world, anchor.x(), anchor.z(), completion);
+                completion.run();
             }
         } catch (Exception e) {
             result.completeExceptionally(e);
@@ -211,16 +246,19 @@ public final class FoliaRegeneration implements AutoCloseable {
                 job.result.completeExceptionally(failure("worldedit.regen.cancelled"));
             }
         }
-        // Generation may be closed already while its result is waiting on an entity scheduler.
+        // Generation may be closed already while its result is waiting on a region or entity scheduler.
         if (!pending.isEmpty()) {
             RegionOperationException cancelled = failure("worldedit.regen.cancelled");
-            for (CompletableFuture<Clipboard> result : pending) {
-                result.completeExceptionally(cancelled);
-            }
+            pending.forEach(result -> {
+                if (pending.remove(result)) {
+                    result.completeExceptionally(cancelled);
+                }
+            });
         }
     }
 
     private record Job(BukkitRegeneration<?> generation, CompletableFuture<Clipboard> result,
-                       World world, Region region, @Nullable Player player) {
+                       World world, Region region, BlockVector2 anchor, @Nullable Player player,
+                       Consumer<Clipboard> output) {
     }
 }

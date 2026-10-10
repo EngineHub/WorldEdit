@@ -78,6 +78,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -227,12 +228,13 @@ public class BukkitWorld extends AbstractWorld {
 
     @Override
     public CompletionStage<Clipboard> regenerateAsync(
-            Region region, RegenOptions options, Actor actor) {
+            Region region, RegenOptions options, BlockVector3 anchor, Actor actor, Consumer<Clipboard> output) {
         WorldEditPlugin plugin = WorldEditPlugin.getInstance();
         if (!supportsAsyncRegeneration()) {
-            return super.regenerateAsync(region, options, actor);
+            return super.regenerateAsync(region, options, anchor, actor, output);
         }
-        return plugin.getRegeneration().regenerate(getWorld(), region, options, actor, plugin.getBukkitImplAdapter());
+        return plugin.getRegeneration().regenerate(
+            getWorld(), region, options, anchor, actor, output, plugin.getBukkitImplAdapter());
     }
 
     @Override

@@ -86,6 +86,7 @@ import org.enginehub.piston.annotation.param.Switch;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.sk89q.worldedit.command.util.Logging.LogMode.ALL;
 import static com.sk89q.worldedit.command.util.Logging.LogMode.ORIENTATION_REGION;
@@ -465,7 +466,7 @@ public class RegionCommands {
                     @Switch(name = 'c', desc = "Regenerate to the clipboard")
                         boolean toClipboard) throws WorldEditException {
         if (world.supportsAsyncRegeneration()) {
-            regenerateAsync(actor, world, session, region, seed, regenBiomes, toClipboard);
+            regenerateAsync(actor, world, session, editSession, region, seed, regenBiomes, toClipboard);
             return;
         }
         Mask mask = session.getMask();
@@ -497,32 +498,28 @@ public class RegionCommands {
         }
     }
 
-    private void regenerateAsync(Actor actor, World world, LocalSession session, Region region,
+    private void regenerateAsync(Actor actor, World world, LocalSession session, EditSession injected, Region region,
                                  Long seed, boolean regenBiomes, boolean toClipboard) throws WorldEditException {
-        Region selection = region.clone();
-        Mask mask = session.getMask();
-        BlockVector3 origin = toClipboard ? session.getPlacementPosition(actor) : null;
-        RegenOptions options = RegenOptions.builder().seed(seed).regenBiomes(regenBiomes).build();
-        var result = world.regenerateAsync(selection, options, actor);
-        if (!result.toCompletableFuture().isDone()) {
-            actor.printInfo(TranslatableComponent.of("worldedit.regen.generating"));
+        if (!toClipboard && session.isUsingInventory()) {
+            throw new RegionOperationException(TranslatableComponent.of("worldedit.regen.inventory-unsupported"));
         }
-        result.whenComplete((clipboard, failure) -> {
-            if (failure != null) {
-                reportRegenerationFailure(actor, failure);
-                return;
-            }
-            Request.runWithRequest(() -> {
-                Request.request().setWorld(world);
-                Request.request().setSession(session);
-                try {
-                    if (toClipboard) {
-                        clipboard.setOrigin(origin);
-                        session.setClipboard(new ClipboardHolder(clipboard));
-                    } else {
-                        EditSession edit = session.createEditSession(actor, world);
+        Region selection = region.clone();
+        BlockVector3 anchor = session.getRegionSelector(world).getPrimaryPosition();
+        BlockVector3 origin = toClipboard ? session.getPlacementPosition(actor) : null;
+        // Prepare actor-dependent settings before leaving the command's execution context.
+        EditSession edit = toClipboard ? null : session.createEditSession(actor, world);
+        Request.applyIfPresent(request -> request.setEditSession(injected));
+        AtomicBoolean applied = new AtomicBoolean();
+        RegenOptions options = RegenOptions.builder().seed(seed).regenBiomes(regenBiomes).build();
+        try {
+            var result = world.regenerateAsync(selection, options, anchor, actor, clipboard -> {
+                if (edit != null) {
+                    Request.runWithRequest(() -> {
+                        Request.request().setWorld(world);
+                        Request.request().setSession(session);
+                        Request.request().setEditSession(edit);
+                        applied.set(true);
                         try (edit) {
-                            edit.setMask(mask);
                             edit.enableStandardMode();
                             for (BlockVector3 position : selection) {
                                 edit.setBlock(position, clipboard.getFullBlock(position));
@@ -530,18 +527,44 @@ public class RegionCommands {
                                     edit.setBiome(position, clipboard.getBiome(position));
                                 }
                             }
-                        } finally {
-                            // Keep partial edits undoable if a block limit or another extent fails.
-                            session.remember(edit);
-                            WorldEdit.getInstance().flushBlockBag(actor, edit);
+                        } catch (WorldEditException e) {
+                            throw new CompletionException(e);
                         }
+                    });
+                }
+            });
+            if (!result.toCompletableFuture().isDone()) {
+                actor.printInfo(TranslatableComponent.of("worldedit.regen.generating"));
+            }
+            result.whenComplete((clipboard, failure) -> {
+                try {
+                    if (edit != null) {
+                        if (!applied.get()) {
+                            edit.close();
+                        }
+                        // Update history on the actor's context, including partial changes after a failed edit.
+                        session.remember(edit);
+                        WorldEdit.getInstance().flushBlockBag(actor, edit);
                     }
-                    actor.printInfo(TranslatableComponent.of("worldedit.regen.regenerated"));
+                    if (failure != null) {
+                        reportRegenerationFailure(actor, failure);
+                    } else {
+                        if (toClipboard) {
+                            clipboard.setOrigin(origin);
+                            session.setClipboard(new ClipboardHolder(clipboard));
+                        }
+                        actor.printInfo(TranslatableComponent.of("worldedit.regen.regenerated"));
+                    }
                 } catch (Exception e) {
                     reportRegenerationFailure(actor, e);
                 }
             });
-        });
+        } catch (RuntimeException e) {
+            if (edit != null) {
+                edit.close();
+            }
+            throw e;
+        }
     }
 
     private static void reportRegenerationFailure(Actor actor, Throwable failure) {

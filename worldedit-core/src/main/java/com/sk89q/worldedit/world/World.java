@@ -51,6 +51,7 @@ import com.sk89q.worldedit.world.weather.WeatherType;
 import java.nio.file.Path;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
 
 /**
@@ -273,25 +274,28 @@ public interface World extends Extent, Keyed {
     /**
      * Whether this world supports asynchronous regeneration into a detached snapshot.
      *
-     * @return whether {@link #regenerateAsync(Region, RegenOptions, Actor)} is supported
+     * @return whether {@link #regenerateAsync(Region, RegenOptions, BlockVector3, Actor, Consumer)} is supported
      */
     default boolean supportsAsyncRegeneration() {
         return false;
     }
 
     /**
-     * Generate a detached snapshot without modifying the original world.
+     * Generate a detached snapshot and invoke the output callback.
      *
-     * <p>Successful completion must run on the actor's execution context, after
-     * verifying that the entire region can still be edited in that context.
-     * Temporary generation resources must be released before returning the snapshot.</p>
+     * <p>The output callback runs in the region owning the anchor, after verifying ownership of the entire selection.
+     * Completion returns to the actor's execution context. Temporary generation resources must be released before
+     * invoking the output callback.</p>
      *
      * @param region the region to regenerate
      * @param options the regeneration options
+     * @param anchor the original primary selection position
      * @param actor the actor whose execution context will receive the result
+     * @param output the callback applying the snapshot without accessing the actor's inventory or session
      * @return the generated blocks and, if requested, biomes
      */
-    default CompletionStage<Clipboard> regenerateAsync(Region region, RegenOptions options, Actor actor) {
+    default CompletionStage<Clipboard> regenerateAsync(Region region, RegenOptions options, BlockVector3 anchor,
+                                                       Actor actor, Consumer<Clipboard> output) {
         throw new UnsupportedOperationException("This world does not support asynchronous regeneration.");
     }
 

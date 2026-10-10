@@ -38,11 +38,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -166,13 +169,16 @@ class FoliaRegenerationTest {
             harness.global.remove().run();
             assertFalse(result.isDone());
             harness.caller.remove().run();
+            assertEquals(List.of(harness.snapshot), harness.applied);
+            assertFalse(result.isDone(), "Session completion must wait for the player's scheduler");
+            harness.entity.remove().run();
             assertSame(harness.snapshot, result.join());
             verify(harness.generation).close();
         }
     }
 
     @Test
-    void rejectsPlayersWhoChangedWorlds() throws Exception {
+    void appliesInTheOriginalPos1RegionAfterThePlayerChangesWorlds() throws Exception {
         try (Harness harness = new Harness()) {
             var result = harness.startAsPlayer();
             harness.global.remove().run();
@@ -180,7 +186,12 @@ class FoliaRegenerationTest {
             harness.global.remove().run();
             when(harness.player.getWorld()).thenReturn(mock(org.bukkit.World.class));
             harness.caller.remove().run();
-            assertTrue(result.isCompletedExceptionally());
+            assertEquals(List.of(harness.snapshot), harness.applied);
+            verify(harness.regionScheduler).execute(eq(harness.plugin), eq(harness.world), eq(1), eq(-2), any());
+            assertFalse(result.isDone());
+            harness.entity.remove().run();
+            assertSame(harness.snapshot, result.join());
+            verify(harness.player, never()).getWorld();
             verify(harness.generation).close();
         }
     }
@@ -194,6 +205,8 @@ class FoliaRegenerationTest {
             harness.global.remove().run();
             harness.owned = false;
             harness.caller.remove().run();
+            assertTrue(harness.applied.isEmpty());
+            harness.entity.remove().run();
             assertTrue(result.isCompletedExceptionally());
             verify(harness.generation).close();
         }
@@ -206,6 +219,7 @@ class FoliaRegenerationTest {
             harness.global.remove().run();
             harness.generated.complete(harness.snapshot);
             harness.global.remove().run();
+            harness.caller.remove().run();
             harness.retired.run();
             assertTrue(result.isCompletedExceptionally());
             verify(harness.generation).close();
@@ -220,9 +234,43 @@ class FoliaRegenerationTest {
             harness.global.remove().run();
             harness.generated.complete(harness.snapshot);
             harness.global.remove().run();
+            harness.caller.remove().run();
             assertTrue(result.isCompletedExceptionally());
             assertTrue(harness.caller.isEmpty());
             verify(harness.generation).close();
+        }
+    }
+
+    @Test
+    void shutdownDoesNotCompleteTheResultWhileApplicationIsRunning() throws Exception {
+        try (Harness harness = new Harness()) {
+            AtomicReference<CompletableFuture<Clipboard>> result = new AtomicReference<>();
+            harness.output = snapshot -> {
+                harness.service.close();
+                assertFalse(result.get().isDone());
+                harness.applied.add(snapshot);
+            };
+            result.set(harness.start());
+            harness.global.remove().run();
+            harness.generated.complete(harness.snapshot);
+            harness.global.remove().run();
+            harness.caller.remove().run();
+            assertTrue(result.get().isCompletedExceptionally());
+            assertEquals(List.of(harness.snapshot), harness.applied);
+        }
+    }
+
+    @Test
+    void shutdownBeforeRegionApplicationDoesNotApplyTheSnapshot() throws Exception {
+        try (Harness harness = new Harness()) {
+            var result = harness.start();
+            harness.global.remove().run();
+            harness.generated.complete(harness.snapshot);
+            harness.global.remove().run();
+            harness.service.close();
+            harness.caller.remove().run();
+            assertTrue(result.isCompletedExceptionally());
+            assertTrue(harness.applied.isEmpty());
         }
     }
 
@@ -258,10 +306,14 @@ class FoliaRegenerationTest {
             mockStatic(WorldEditText.class);
         private final Queue<Runnable> global = new ArrayDeque<>();
         private final Queue<Runnable> caller = new ArrayDeque<>();
+        private final Queue<Runnable> entity = new ArrayDeque<>();
         private final org.bukkit.World world = mock(org.bukkit.World.class);
         private final WorldEditPlugin plugin = mock(WorldEditPlugin.class);
         private final Actor actor = mock(Actor.class);
         private final BukkitImplAdapter adapter = mock(BukkitImplAdapter.class);
+        private final RegionScheduler regionScheduler = mock(RegionScheduler.class);
+        private final List<Clipboard> applied = new ArrayList<>();
+        private Consumer<Clipboard> output = applied::add;
         private org.bukkit.entity.Player player;
         private Runnable retired;
         private boolean acceptsScheduling = true;
@@ -275,7 +327,6 @@ class FoliaRegenerationTest {
         private Harness() {
             when(generation.result()).thenReturn(generated);
             var globalScheduler = mock(GlobalRegionScheduler.class);
-            var regionScheduler = mock(RegionScheduler.class);
             bukkit.when(Bukkit::getGlobalRegionScheduler).thenReturn(globalScheduler);
             bukkit.when(Bukkit::getRegionScheduler).thenReturn(regionScheduler);
             bukkit.when(() -> Bukkit.isOwnedByCurrentRegion(eq(world),
@@ -308,8 +359,9 @@ class FoliaRegenerationTest {
 
         private CompletableFuture<Clipboard> start(RegenOptions options) throws Exception {
             doReturn(generation).when(adapter).beginRegeneration(eq(world), any(), any());
-            return service.regenerate(world, new CuboidRegion(BlockVector3.ZERO, BlockVector3.ZERO),
-                options, actor, adapter).toCompletableFuture();
+            BlockVector3 pos1 = BlockVector3.at(31, 64, -17);
+            return service.regenerate(world, new CuboidRegion(pos1, BlockVector3.at(0, 64, -1)),
+                options, pos1, actor, output, adapter).toCompletableFuture();
         }
 
         private CompletableFuture<Clipboard> startAsPlayer() throws Exception {
@@ -324,7 +376,7 @@ class FoliaRegenerationTest {
             when(scheduler.execute(eq(plugin), any(), any(), anyLong())).thenAnswer(invocation -> {
                 retired = invocation.getArgument(2);
                 if (acceptsScheduling) {
-                    caller.add(invocation.getArgument(1));
+                    entity.add(invocation.getArgument(1));
                 }
                 return acceptsScheduling;
             });

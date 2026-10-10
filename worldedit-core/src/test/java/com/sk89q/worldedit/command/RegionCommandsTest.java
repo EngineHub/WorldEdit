@@ -53,12 +53,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -141,6 +143,20 @@ class RegionCommandsTest extends BaseWorldEditTest {
         try (EditSession undo = session.undo(null, actor)) {
             assertNotNull(undo, "The asynchronous edit must be in history");
         }
+        assertEquals(BlockType.REGISTRY.get("minecraft:oak_wood"), world.getBlock(POSITION).getBlockType());
+        assertTrue(errors.isEmpty());
+    }
+
+    @Test
+    void recordsUndoOnlyAfterApplicationReturnsToTheActor() throws WorldEditException {
+        world.deferDelivery = true;
+        regenerate(false);
+        Clipboard snapshot = generated();
+        world.result.complete(snapshot);
+        assertEquals(BlockType.REGISTRY.get("minecraft:chest"), world.getBlock(POSITION).getBlockType());
+        assertNull(session.undo(null, actor), "The region callback must not modify the actor's history");
+        world.delivered.complete(snapshot);
+        assertNotNull(session.undo(null, actor));
         assertEquals(BlockType.REGISTRY.get("minecraft:oak_wood"), world.getBlock(POSITION).getBlockType());
         assertTrue(errors.isEmpty());
     }
@@ -239,6 +255,37 @@ class RegionCommandsTest extends BaseWorldEditTest {
     }
 
     @Test
+    void keepsTheOriginalPos1WhenTheSelectorChanges() throws WorldEditException {
+        BlockVector3 pos1 = POSITION.add(1, 0, 0);
+        session.getRegionSelector(world).selectPrimary(pos1, ActorSelectorLimits.forActor(actor));
+        region.setPos1(pos1);
+        BlockArrayClipboard snapshot = generated();
+        regenerate(false);
+        session.getRegionSelector(world).selectPrimary(POSITION, ActorSelectorLimits.forActor(actor));
+        assertEquals(pos1, world.anchor);
+        world.result.complete(snapshot);
+        assertEquals(BlockType.REGISTRY.get("minecraft:chest"), world.getBlock(POSITION).getBlockType());
+    }
+
+    @Test
+    void rejectsInventoryUsageBeforeGeneratingOrChangingBlocks() {
+        session.setUseInventory(true);
+        assertThrows(WorldEditException.class, () -> regenerate(false));
+        assertNull(world.anchor);
+        assertEquals(BlockType.REGISTRY.get("minecraft:oak_wood"), world.getBlock(POSITION).getBlockType());
+    }
+
+    @Test
+    void permitsClipboardGenerationWithInventoryUsageEnabled() throws WorldEditException {
+        session.setUseInventory(true);
+        regenerate(true);
+        Clipboard snapshot = generated();
+        world.result.complete(snapshot);
+        assertSame(snapshot, session.getClipboard().getClipboard());
+        assertTrue(errors.isEmpty());
+    }
+
+    @Test
     void keepsTheOriginalSelectionWhenTheSelectionChanges() throws WorldEditException {
         BlockArrayClipboard snapshot = generated();
         regenerate(false);
@@ -280,6 +327,9 @@ class RegionCommandsTest extends BaseWorldEditTest {
     private static final class DeferredWorld extends NullWorld {
         private final BlockArrayClipboard blocks = new BlockArrayClipboard(new CuboidRegion(POSITION, POSITION.add(1, 0, 0)));
         private final CompletableFuture<Clipboard> result = new CompletableFuture<>();
+        private final CompletableFuture<Clipboard> delivered = new CompletableFuture<>();
+        private boolean deferDelivery;
+        private BlockVector3 anchor;
 
         @Override
         public boolean supportsAsyncRegeneration() {
@@ -287,8 +337,14 @@ class RegionCommandsTest extends BaseWorldEditTest {
         }
 
         @Override
-        public CompletionStage<Clipboard> regenerateAsync(Region region, RegenOptions options, Actor actor) {
-            return result;
+        public CompletionStage<Clipboard> regenerateAsync(Region region, RegenOptions options, BlockVector3 anchor,
+                                                          Actor actor, Consumer<Clipboard> output) {
+            this.anchor = anchor;
+            var applied = result.thenApply(snapshot -> {
+                output.accept(snapshot);
+                return snapshot;
+            });
+            return deferDelivery ? applied.thenCompose(_ -> delivered) : applied;
         }
 
         @Override
