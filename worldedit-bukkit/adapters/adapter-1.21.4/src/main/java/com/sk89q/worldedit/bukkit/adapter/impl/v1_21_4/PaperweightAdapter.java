@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.bukkit.adapter.impl.v1_21_4;
 
+import ca.spottedleaf.concurrentutil.util.Priority;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -35,6 +36,7 @@ import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
+import com.sk89q.worldedit.bukkit.adapter.BukkitRegeneration;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.Watchdog;
 import com.sk89q.worldedit.extent.Extent;
@@ -55,7 +57,6 @@ import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
-import com.sk89q.worldedit.util.io.file.SafeFiles;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.RegenOptions;
 import com.sk89q.worldedit.world.biome.BiomeCategory;
@@ -80,6 +81,7 @@ import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.QuartPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.component.DataComponentPatch;
@@ -182,7 +184,6 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -754,14 +755,32 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         return true;
     }
 
-    private void doRegen(World bukkitWorld, Region region, Extent extent, RegenOptions options) throws Exception {
+    @Override
+    public boolean supportsAsyncRegeneration() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsRegenerationSeedOverride() {
+        return true;
+    }
+
+    @Override
+    public BukkitRegeneration<?> beginRegeneration(World world, Region region, RegenOptions options) throws Exception {
+        return doRegen(world, region, null, options);
+    }
+
+    /** A null output extent requests an asynchronous snapshot instead of synchronous writes. */
+    private BukkitRegeneration<ChunkAccess> doRegen(World bukkitWorld, Region region, @Nullable Extent extent,
+                                 RegenOptions options) throws Exception {
         Environment env = bukkitWorld.getEnvironment();
         ChunkGenerator gen = bukkitWorld.getGenerator();
-
-        Path tempDir = Files.createTempDirectory("WorldEditWorldGen");
-        LevelStorageSource levelStorage = LevelStorageSource.createDefault(tempDir);
-        ResourceKey<LevelStem> worldDimKey = getWorldDimKey(env);
-        try (LevelStorageSource.LevelStorageAccess session = levelStorage.createAccess("worldeditregentempworld", worldDimKey)) {
+        BukkitRegeneration<ChunkAccess> generation = new BukkitRegeneration<>(serverWorldsField);
+        try {
+            Path tempDir = generation.directory();
+            LevelStorageSource levelStorage = LevelStorageSource.createDefault(tempDir);
+            ResourceKey<LevelStem> worldDimKey = getWorldDimKey(env);
+            LevelStorageSource.LevelStorageAccess session = generation.registerResource(levelStorage.createAccess(generation.name(), worldDimKey));
             ServerLevel originalWorld = ((CraftWorld) bukkitWorld).getHandle();
             PrimaryLevelData levelProperties = (PrimaryLevelData) originalWorld.getServer()
                 .getWorldData().overworldData();
@@ -773,7 +792,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
                 : originalOpts;
 
             LevelSettings newWorldSettings = new LevelSettings(
-                "worldeditregentempworld",
+                generation.name(),
                 levelProperties.settings.gameType(),
                 levelProperties.settings.hardcore(),
                 levelProperties.settings.difficulty(),
@@ -791,6 +810,8 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
                     : PrimaryLevelData.SpecialWorldProperty.NONE;
 
             PrimaryLevelData newWorldData = new PrimaryLevelData(newWorldSettings, newOpts, specialWorldProperty, Lifecycle.stable());
+            // Folia must not initialize spawn in the temporary generation world.
+            newWorldData.setInitialized(true);
 
             ServerLevel freshWorld = new ServerLevel(
                 originalWorld.getServer(),
@@ -811,20 +832,21 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
                 gen,
                 bukkitWorld.getBiomeProvider()
             );
-            try {
-                regenForWorld(region, extent, freshWorld, options);
-            } finally {
-                freshWorld.getChunkSource().close(false);
+            generation.registerResource(() -> freshWorld.getChunkSource().close(false));
+            if (extent != null) {
+                try (generation) {
+                    regenForWorld(region, extent, freshWorld, options);
+                }
+            } else {
+                generation.generate(region, (position, callback) ->
+                    freshWorld.moonrise$getChunkTaskScheduler().scheduleChunkLoad(position.x(), position.z(),
+                        ChunkStatus.FEATURES, true, Priority.NORMAL, callback),
+                    (selection, clipboard, chunks) ->
+                        copyGeneratedBlocks(selection, clipboard, freshWorld, options, chunks, generation::checkOpen));
             }
-        } finally {
-            try {
-                @SuppressWarnings("unchecked")
-                Map<String, World> map = (Map<String, World>) serverWorldsField.get(Bukkit.getServer());
-                map.remove("worldeditregentempworld");
-            } catch (IllegalAccessException ignored) {
-                // It's fine if we couldn't remove it
-            }
-            SafeFiles.tryHardToDeleteDir(tempDir);
+            return generation;
+        } catch (Exception e) {
+            throw generation.rethrowAndClose(e);
         }
     }
 
@@ -854,6 +876,11 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             }
             return chunkLoadings.stream().allMatch(CompletableFuture::isDone);
         });
+        copyGeneratedBlocks(region, extent, serverWorld, options, chunkLoadings, () -> { });
+    }
+
+    private void copyGeneratedBlocks(Region region, Extent extent, ServerLevel serverWorld, RegenOptions options,
+                                     List<CompletableFuture<ChunkAccess>> chunkLoadings, Runnable checkOpen) throws WorldEditException {
         Map<ChunkPos, ChunkAccess> chunks = new HashMap<>();
         for (CompletableFuture<ChunkAccess> future : chunkLoadings) {
             @Nullable
@@ -863,6 +890,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         }
 
         for (BlockVector3 vec : region) {
+            checkOpen.run();
             BlockPos pos = new BlockPos(vec.x(), vec.y(), vec.z());
             ChunkAccess chunk = chunks.get(new ChunkPos(pos));
             final net.minecraft.world.level.block.state.BlockState blockData = chunk.getBlockState(pos);
@@ -872,11 +900,13 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             BlockEntity blockEntity = chunk.getBlockEntity(pos);
             if (blockEntity != null) {
                 net.minecraft.nbt.CompoundTag tag = blockEntity.saveWithId(serverWorld.registryAccess());
-                state = state.toBaseBlock(LazyReference.from(() -> (LinCompoundTag) toNative(tag)));
+                // Detach NBT before releasing the temporary generation world.
+                state = state.toBaseBlock((LinCompoundTag) toNative(tag));
             }
             extent.setBlock(vec, state.toBaseBlock());
             if (options.shouldRegenBiomes()) {
-                Biome origBiome = chunk.getNoiseBiome(vec.x(), vec.y(), vec.z()).value();
+                Biome origBiome = chunk.getNoiseBiome(QuartPos.fromBlock(vec.x()), QuartPos.fromBlock(vec.y()),
+                    QuartPos.fromBlock(vec.z())).value();
                 BiomeType adaptedBiome = adapt(serverWorld, origBiome);
                 if (adaptedBiome != null) {
                     extent.setBiome(vec, adaptedBiome);

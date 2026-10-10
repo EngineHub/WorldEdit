@@ -45,6 +45,7 @@ dependencies {
     "implementation"(libs.antlr4.runtime)
 
     "compileOnly"(project(":worldedit-libs:core:ap"))
+    "testCompileOnly"(project(":worldedit-libs:core:ap"))
     "annotationProcessor"(project(":worldedit-libs:core:ap"))
     // ensure this is on the classpath for the AP
     "annotationProcessor"(libs.guava)

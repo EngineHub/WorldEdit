@@ -282,6 +282,36 @@ public interface BukkitImplAdapter {
     }
 
     /**
+     * Whether this adapter can generate detached snapshots without blocking a region thread.
+     *
+     * @return whether {@link #beginRegeneration(World, Region, RegenOptions)} is supported
+     */
+    default boolean supportsAsyncRegeneration() {
+        return false;
+    }
+
+    /**
+     * Whether asynchronous regeneration can use a seed other than the source world's seed.
+     *
+     * @return true if a seed override is supported
+     */
+    default boolean supportsRegenerationSeedOverride() {
+        return false;
+    }
+
+    /**
+     * Begin generation in a temporary world. Must be called on the global region thread.
+     *
+     * @param world the source world
+     * @param region the region to generate
+     * @param options the regeneration options
+     * @return the generation job, which the caller must close on the global region thread
+     */
+    default BukkitRegeneration<?> beginRegeneration(World world, Region region, RegenOptions options) throws Exception {
+        throw new UnsupportedOperationException("This adapter does not support asynchronous regeneration.");
+    }
+
+    /**
      * Clears the contents of a Clearable block.
      *
      * @param world The world

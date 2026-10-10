@@ -24,8 +24,10 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.util.DeprecationUtil;
 import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
@@ -48,6 +50,7 @@ import com.sk89q.worldedit.world.weather.WeatherType;
 
 import java.nio.file.Path;
 import java.util.Set;
+import java.util.concurrent.CompletionStage;
 import javax.annotation.Nullable;
 
 /**
@@ -265,6 +268,31 @@ public interface World extends Extent, Keyed {
         throw new UnsupportedOperationException("This World class ("
             + getClass().getName()
             + ") does not implement the general Extent variant of this method");
+    }
+
+    /**
+     * Whether this world supports asynchronous regeneration into a detached snapshot.
+     *
+     * @return whether {@link #regenerateAsync(Region, RegenOptions, Actor)} is supported
+     */
+    default boolean supportsAsyncRegeneration() {
+        return false;
+    }
+
+    /**
+     * Generate a detached snapshot without modifying the original world.
+     *
+     * <p>Successful completion must run on the actor's execution context, after
+     * verifying that the entire region can still be edited in that context.
+     * Temporary generation resources must be released before returning the snapshot.</p>
+     *
+     * @param region the region to regenerate
+     * @param options the regeneration options
+     * @param actor the actor whose execution context will receive the result
+     * @return the generated blocks and, if requested, biomes
+     */
+    default CompletionStage<Clipboard> regenerateAsync(Region region, RegenOptions options, Actor actor) {
+        throw new UnsupportedOperationException("This world does not support asynchronous regeneration.");
     }
 
     /**
