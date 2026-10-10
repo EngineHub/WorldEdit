@@ -32,7 +32,6 @@ import com.sk89q.worldedit.bukkit.adapter.AdapterLoadException;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplLoader;
 import com.sk89q.worldedit.bukkit.folia.FoliaExtentListener;
-import com.sk89q.worldedit.bukkit.folia.FoliaRegeneration;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
@@ -115,18 +114,10 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         SimpleLifecycled.invalid();
     private BukkitServerInterface platform;
     private BukkitConfiguration config;
-    private FoliaRegeneration regeneration;
-
-    FoliaRegeneration getRegeneration() {
-        return checkNotNull(regeneration);
-    }
 
     @Override
     public void onLoad() {
         INSTANCE = this;
-        if (isFolia()) {
-            regeneration = new FoliaRegeneration(this);
-        }
 
         //noinspection ResultOfMethodCallIgnored
         getDataFolder().mkdirs();
@@ -326,9 +317,6 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
      */
     @Override
     public void onDisable() {
-        if (regeneration != null) {
-            regeneration.close();
-        }
         WorldEdit worldEdit = WorldEdit.getInstance();
         worldEdit.getSessionManager().unload();
         if (platform != null) {

@@ -58,6 +58,7 @@ import org.enginehub.linbus.tree.LinCompoundTag;
 import java.util.Map;
 import java.util.OptionalInt;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 
 /**
@@ -282,32 +283,20 @@ public interface BukkitImplAdapter {
     }
 
     /**
-     * Whether this adapter can generate detached snapshots without blocking a region thread.
+     * Regenerate a region into the given extent without blocking the calling thread.
      *
-     * @return whether {@link #beginRegeneration(World, Region, RegenOptions)} is supported
-     */
-    default boolean supportsAsyncRegeneration() {
-        return false;
-    }
-
-    /**
-     * Whether asynchronous regeneration can use a seed other than the source world's seed.
+     * <p>Used on Folia, where chunk generation cannot be awaited on a region thread. The extent is
+     * written on an arbitrary tick thread once every chunk has generated, so it must not depend on
+     * a particular thread. Temporary generation resources are released before the returned future
+     * completes.</p>
      *
-     * @return true if a seed override is supported
-     */
-    default boolean supportsRegenerationSeedOverride() {
-        return false;
-    }
-
-    /**
-     * Begin generation in a temporary world. Must be called on the global region thread.
-     *
-     * @param world the source world
-     * @param region the region to generate
+     * @param world the world to regen in
+     * @param region the region to regen
+     * @param extent the extent to use for setting blocks
      * @param options the regeneration options
-     * @return the generation job, which the caller must close on the global region thread
+     * @return a future that completes once the extent has been written
      */
-    default BukkitRegeneration<?> beginRegeneration(World world, Region region, RegenOptions options) throws Exception {
+    default CompletableFuture<Void> regenerateAsync(World world, Region region, Extent extent, RegenOptions options) {
         throw new UnsupportedOperationException("This adapter does not support asynchronous regeneration.");
     }
 

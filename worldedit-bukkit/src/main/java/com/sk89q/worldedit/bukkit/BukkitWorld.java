@@ -28,10 +28,10 @@ import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.bukkit.adapter.UnsupportedVersionEditException;
+import com.sk89q.worldedit.bukkit.folia.FoliaRegeneration;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
@@ -76,9 +76,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletionStage;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Consumer;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -220,21 +219,13 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean supportsAsyncRegeneration() {
+    public CompletableFuture<Boolean> regenerateAsync(Region region, Extent extent, RegenOptions options, Actor actor) {
         WorldEditPlugin plugin = WorldEditPlugin.getInstance();
         BukkitImplAdapter adapter = plugin.getBukkitImplAdapter();
-        return plugin.isFolia() && adapter != null && adapter.supportsAsyncRegeneration();
-    }
-
-    @Override
-    public CompletionStage<Clipboard> regenerateAsync(
-            Region region, RegenOptions options, BlockVector3 anchor, Actor actor, Consumer<Clipboard> output) {
-        WorldEditPlugin plugin = WorldEditPlugin.getInstance();
-        if (!supportsAsyncRegeneration()) {
-            return super.regenerateAsync(region, options, anchor, actor, output);
+        if (!plugin.isFolia() || adapter == null) {
+            return super.regenerateAsync(region, extent, options, actor);
         }
-        return plugin.getRegeneration().regenerate(
-            getWorld(), region, options, anchor, actor, output, plugin.getBukkitImplAdapter());
+        return FoliaRegeneration.regenerate(plugin, adapter, this, region, extent, options, actor);
     }
 
     @Override

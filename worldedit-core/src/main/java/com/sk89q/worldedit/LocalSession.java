@@ -1142,19 +1142,6 @@ public class LocalSession {
             world = actorWorld;
         }
 
-        return createEditSession(actor, world);
-    }
-
-    /**
-     * Construct an edit session for an explicitly selected world.
-     *
-     * @param actor the actor
-     * @param world the world to edit
-     * @return an edit session
-     */
-    public EditSession createEditSession(Actor actor, @Nullable World world) {
-        checkNotNull(actor);
-
         // Create an edit session
         EditSessionBuilder builder = WorldEdit.getInstance().newEditSessionBuilder()
             .world(world)

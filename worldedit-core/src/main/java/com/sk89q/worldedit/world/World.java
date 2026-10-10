@@ -27,7 +27,6 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.util.DeprecationUtil;
 import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
@@ -50,8 +49,7 @@ import com.sk89q.worldedit.world.weather.WeatherType;
 
 import java.nio.file.Path;
 import java.util.Set;
-import java.util.concurrent.CompletionStage;
-import java.util.function.Consumer;
+import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 
 /**
@@ -272,31 +270,21 @@ public interface World extends Extent, Keyed {
     }
 
     /**
-     * Whether this world supports asynchronous regeneration into a detached snapshot.
+     * Regenerate the given region into the given extent, possibly without blocking the calling thread.
      *
-     * @return whether {@link #regenerateAsync(Region, RegenOptions, BlockVector3, Actor, Consumer)} is supported
-     */
-    default boolean supportsAsyncRegeneration() {
-        return false;
-    }
-
-    /**
-     * Generate a detached snapshot and invoke the output callback.
+     * <p>The default implementation simply calls {@link #regenerate(Region, Extent, RegenOptions)}.
+     * Platforms that cannot generate terrain on the calling thread override it instead. An override
+     * must write and flush the extent on a thread that is allowed to edit the region, and must
+     * complete the returned future on the thread that the actor's commands run on.</p>
      *
-     * <p>The output callback runs in the region owning the anchor, after verifying ownership of the entire selection.
-     * Completion returns to the actor's execution context. Temporary generation resources must be released before
-     * invoking the output callback.</p>
-     *
-     * @param region the region to regenerate
+     * @param region the region
+     * @param extent the {@link Extent} to write the regenerated blocks and biomes to
      * @param options the regeneration options
-     * @param anchor the original primary selection position
-     * @param actor the actor whose execution context will receive the result
-     * @param output the callback applying the snapshot without accessing the actor's inventory or session
-     * @return the generated blocks and, if requested, biomes
+     * @param actor the actor that requested the regeneration
+     * @return a future completing with whether regeneration was successful
      */
-    default CompletionStage<Clipboard> regenerateAsync(Region region, RegenOptions options, BlockVector3 anchor,
-                                                       Actor actor, Consumer<Clipboard> output) {
-        throw new UnsupportedOperationException("This world does not support asynchronous regeneration.");
+    default CompletableFuture<Boolean> regenerateAsync(Region region, Extent extent, RegenOptions options, Actor actor) {
+        return CompletableFuture.completedFuture(regenerate(region, extent, options));
     }
 
     /**
