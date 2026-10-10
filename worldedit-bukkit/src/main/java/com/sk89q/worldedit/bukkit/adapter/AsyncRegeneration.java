@@ -86,7 +86,7 @@ public final class AsyncRegeneration {
             }
         }
         return CompletableFuture.allOf(chunks.toArray(CompletableFuture[]::new))
-            .handle((unused, error) -> {
+            .handle((_, error) -> {
                 if (error != null) {
                     return error;
                 }

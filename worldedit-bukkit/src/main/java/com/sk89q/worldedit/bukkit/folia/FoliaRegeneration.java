@@ -81,7 +81,7 @@ public final class FoliaRegeneration {
             }
             checkOwned(bukkitWorld, region);
             BlockArrayClipboard snapshot = new BlockArrayClipboard(region);
-            adapter.regenerateAsync(bukkitWorld, region, snapshot, options).whenComplete((unused, error) -> {
+            adapter.regenerateAsync(bukkitWorld, region, snapshot, options).whenComplete((_, error) -> {
                 BlockVector3 anchor = region.getMinimumPoint();
                 Bukkit.getRegionScheduler().execute(plugin, bukkitWorld, anchor.x() >> 4, anchor.z() >> 4, () -> {
                     Throwable failure = error;
