@@ -786,10 +786,6 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
     @Override
     public boolean regenerate(World bukkitWorld, Region region, Extent extent, RegenOptions options) {
-        if (options.getSeed().isPresent()) {
-            throw new UnsupportedOperationException("26.1+ worldgen does not support overriding the seed for regen");
-        }
-
         try {
             doRegen(bukkitWorld, region, extent, options);
         } catch (Exception e) {
@@ -825,6 +821,10 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     }
 
     private TemporaryWorld createTemporaryWorld(World bukkitWorld, RegenOptions options) throws Exception {
+        if (options.getSeed().isPresent()) {
+            throw new UnsupportedOperationException("26.1+ worldgen does not support overriding the seed for regen");
+        }
+
         Environment env = bukkitWorld.getEnvironment();
         ChunkGenerator gen = bukkitWorld.getGenerator();
 
