@@ -41,6 +41,7 @@ import org.bukkit.World;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.CompletionStage;
 import javax.annotation.Nullable;
 
 /**
@@ -68,9 +69,9 @@ public final class FoliaRegeneration {
      * @param actor the actor that requested the regeneration
      * @return a future completing with {@code true} on the actor's scheduler, or exceptionally on failure
      */
-    public static CompletableFuture<Boolean> regenerate(WorldEditPlugin plugin, BukkitImplAdapter adapter,
-                                                        BukkitWorld world, Region region, Extent extent,
-                                                        RegenOptions options, Actor actor) {
+    public static CompletionStage<Boolean> regenerate(WorldEditPlugin plugin, BukkitImplAdapter adapter,
+                                                      BukkitWorld world, Region region, Extent extent,
+                                                      RegenOptions options, Actor actor) {
         CompletableFuture<Boolean> result = new CompletableFuture<>();
         World bukkitWorld = world.getWorld();
         try {

@@ -202,6 +202,7 @@ import java.util.OptionalLong;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -784,7 +785,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     }
 
     @Override
-    public CompletableFuture<Void> regenerateAsync(World bukkitWorld, Region region, Extent extent, RegenOptions options) {
+    public CompletionStage<Void> regenerateAsync(World bukkitWorld, Region region, Extent extent, RegenOptions options) {
         TemporaryWorld temporaryWorld;
         try {
             temporaryWorld = createTemporaryWorld(bukkitWorld, options);

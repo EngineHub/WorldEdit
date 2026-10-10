@@ -58,7 +58,7 @@ import org.enginehub.linbus.tree.LinCompoundTag;
 import java.util.Map;
 import java.util.OptionalInt;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import javax.annotation.Nullable;
 
 /**
@@ -296,7 +296,7 @@ public interface BukkitImplAdapter {
      * @param options the regeneration options
      * @return a future that completes once the extent has been written
      */
-    default CompletableFuture<Void> regenerateAsync(World world, Region region, Extent extent, RegenOptions options) {
+    default CompletionStage<Void> regenerateAsync(World world, Region region, Extent extent, RegenOptions options) {
         throw new UnsupportedOperationException("This adapter does not support asynchronous regeneration.");
     }
 

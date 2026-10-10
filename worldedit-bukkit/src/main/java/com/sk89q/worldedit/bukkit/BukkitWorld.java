@@ -76,7 +76,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ThreadLocalRandom;
 import javax.annotation.Nullable;
 
@@ -219,7 +219,7 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     @Override
-    public CompletableFuture<Boolean> regenerateAsync(Region region, Extent extent, RegenOptions options, Actor actor) {
+    public CompletionStage<Boolean> regenerateAsync(Region region, Extent extent, RegenOptions options, Actor actor) {
         WorldEditPlugin plugin = WorldEditPlugin.getInstance();
         BukkitImplAdapter adapter = plugin.getBukkitImplAdapter();
         if (!plugin.isFolia() || adapter == null) {

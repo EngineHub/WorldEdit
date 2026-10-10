@@ -24,11 +24,13 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.regions.Region;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+import javax.annotation.Nullable;
 
 /**
  * Drives {@link BukkitImplAdapter#regenerateAsync} for adapters that generate in a temporary world.
@@ -83,34 +85,40 @@ public final class AsyncRegeneration {
                 break;
             }
         }
-        CompletableFuture<Void> result = new CompletableFuture<>();
-        CompletableFuture.allOf(chunks.toArray(CompletableFuture[]::new)).whenComplete((unused, error) -> {
-            Throwable failure = error;
-            if (failure == null) {
+        return CompletableFuture.allOf(chunks.toArray(CompletableFuture[]::new))
+            .handle((unused, error) -> {
+                if (error != null) {
+                    return error;
+                }
                 try {
                     copier.copy(chunks);
+                    return null;
                 } catch (Throwable t) {
-                    failure = t;
+                    return t;
+                }
+            })
+            .thenCompose(failure -> release(temporaryWorld, failure));
+    }
+
+    private static CompletableFuture<Void> release(AutoCloseable temporaryWorld, @Nullable Throwable failure) {
+        CompletableFuture<Void> result = new CompletableFuture<>();
+        // Closing a world requires a tick thread; the global one is also never inside this world's chunk tasks.
+        Bukkit.getGlobalRegionScheduler().execute(JavaPlugin.getPlugin(WorldEditPlugin.class), () -> {
+            Throwable finalFailure = failure;
+            try {
+                temporaryWorld.close();
+            } catch (Exception e) {
+                if (finalFailure == null) {
+                    finalFailure = e;
+                } else {
+                    finalFailure.addSuppressed(e);
                 }
             }
-            Throwable copyFailure = failure;
-            Bukkit.getGlobalRegionScheduler().execute(WorldEditPlugin.getInstance(), () -> {
-                Throwable finalFailure = copyFailure;
-                try {
-                    temporaryWorld.close();
-                } catch (Exception e) {
-                    if (finalFailure == null) {
-                        finalFailure = e;
-                    } else {
-                        finalFailure.addSuppressed(e);
-                    }
-                }
-                if (finalFailure == null) {
-                    result.complete(null);
-                } else {
-                    result.completeExceptionally(finalFailure);
-                }
-            });
+            if (finalFailure == null) {
+                result.complete(null);
+            } else {
+                result.completeExceptionally(finalFailure);
+            }
         });
         return result;
     }

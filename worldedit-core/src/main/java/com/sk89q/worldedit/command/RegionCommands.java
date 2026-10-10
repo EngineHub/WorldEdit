@@ -86,6 +86,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.CompletionStage;
 
 import static com.sk89q.worldedit.command.util.Logging.LogMode.ALL;
 import static com.sk89q.worldedit.command.util.Logging.LogMode.ORIENTATION_REGION;
@@ -483,7 +484,7 @@ public class RegionCommands {
             outputExtent = editSession;
         }
         Mask mask = session.getMask();
-        CompletableFuture<Boolean> result;
+        CompletionStage<Boolean> result;
         try {
             session.setMask(null);
             result = world.regenerateAsync(region, outputExtent, options, actor);
@@ -492,7 +493,7 @@ public class RegionCommands {
         } finally {
             session.setMask(mask);
         }
-        if (!result.isDone()) {
+        if (!result.toCompletableFuture().isDone()) {
             actor.printInfo(TranslatableComponent.of("worldedit.regen.generating"));
         }
         BlockArrayClipboard finalClipboard = clipboard;

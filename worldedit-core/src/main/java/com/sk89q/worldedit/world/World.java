@@ -50,6 +50,7 @@ import com.sk89q.worldedit.world.weather.WeatherType;
 import java.nio.file.Path;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import javax.annotation.Nullable;
 
 /**
@@ -283,7 +284,7 @@ public interface World extends Extent, Keyed {
      * @param actor the actor that requested the regeneration
      * @return a future completing with whether regeneration was successful
      */
-    default CompletableFuture<Boolean> regenerateAsync(Region region, Extent extent, RegenOptions options, Actor actor) {
+    default CompletionStage<Boolean> regenerateAsync(Region region, Extent extent, RegenOptions options, Actor actor) {
         return CompletableFuture.completedFuture(regenerate(region, extent, options));
     }
 
