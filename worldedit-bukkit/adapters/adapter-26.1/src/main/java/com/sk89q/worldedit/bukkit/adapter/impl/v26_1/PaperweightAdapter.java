@@ -153,6 +153,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.craftbukkit.CraftChunk;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.block.data.CraftBlockData;
@@ -809,12 +810,12 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             return CompletableFuture.failedFuture(e);
         }
         ServerLevel freshWorld = temporaryWorld.level;
-        // Off the thread owning the chunk, Paper's chunk system answers this without blocking the caller.
+        // Folia disables the vanilla chunk futures, so the temporary world is loaded through the Bukkit API.
+        World freshBukkitWorld = freshWorld.getWorld();
         return AsyncRegeneration.run(
             region,
-            chunk -> freshWorld.getChunkSource()
-                .getChunkFuture(chunk.x(), chunk.z(), ChunkStatus.FEATURES, true)
-                .thenApply(result -> result.orElse(null)),
+            chunk -> freshBukkitWorld.getChunkAtAsync(chunk.x(), chunk.z(), true)
+                .thenApply(loaded -> loaded == null ? null : ((CraftChunk) loaded).getHandle(ChunkStatus.FULL)),
             chunks -> copyChunks(region, extent, freshWorld, options, chunks),
             temporaryWorld
         );
