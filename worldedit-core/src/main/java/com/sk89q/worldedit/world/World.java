@@ -24,6 +24,7 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.Mask;
@@ -48,6 +49,8 @@ import com.sk89q.worldedit.world.weather.WeatherType;
 
 import java.nio.file.Path;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import javax.annotation.Nullable;
 
 /**
@@ -265,6 +268,26 @@ public interface World extends Extent, Keyed {
         throw new UnsupportedOperationException("This World class ("
             + getClass().getName()
             + ") does not implement the general Extent variant of this method");
+    }
+
+    /**
+     * Regenerate the given region into the given extent, possibly without blocking the calling thread.
+     *
+     * <p>The default implementation simply calls {@link #regenerate(Region, Extent, RegenOptions)}.
+     * Platforms that cannot generate terrain on the calling thread override it instead. An override
+     * must write and flush the extent on a thread that is allowed to edit the region, loading the
+     * region's chunks if necessary, and must complete the returned future on the thread that the
+     * actor's commands run on, or on the writing thread when the actor has no thread of its own.</p>
+     *
+     * @param region the region
+     * @param extent the {@link Extent} to write the regenerated blocks and biomes to
+     * @param options the regeneration options
+     * @param actor the actor that requested the regeneration, or null for an API call without one
+     * @return a future completing with whether regeneration was successful
+     */
+    default CompletionStage<Boolean> regenerateAsync(Region region, Extent extent, RegenOptions options,
+                                                     @Nullable Actor actor) {
+        return CompletableFuture.completedFuture(regenerate(region, extent, options));
     }
 
     /**

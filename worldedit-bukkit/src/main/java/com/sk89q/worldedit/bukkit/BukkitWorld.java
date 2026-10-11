@@ -28,7 +28,9 @@ import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.bukkit.adapter.UnsupportedVersionEditException;
+import com.sk89q.worldedit.bukkit.folia.FoliaRegeneration;
 import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
@@ -74,6 +76,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ThreadLocalRandom;
 import javax.annotation.Nullable;
 
@@ -213,6 +216,17 @@ public class BukkitWorld extends AbstractWorld {
             LOGGER.warn("Regeneration via adapter failed.", e);
             return false;
         }
+    }
+
+    @Override
+    public CompletionStage<Boolean> regenerateAsync(Region region, Extent extent, RegenOptions options,
+                                                    @Nullable Actor actor) {
+        WorldEditPlugin plugin = WorldEditPlugin.getInstance();
+        BukkitImplAdapter adapter = plugin.getBukkitImplAdapter();
+        if (!plugin.isFolia() || adapter == null) {
+            return super.regenerateAsync(region, extent, options, actor);
+        }
+        return FoliaRegeneration.regenerate(plugin, adapter, this, region, extent, options, actor);
     }
 
     @Override

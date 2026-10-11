@@ -58,6 +58,7 @@ import org.enginehub.linbus.tree.LinCompoundTag;
 import java.util.Map;
 import java.util.OptionalInt;
 import java.util.Set;
+import java.util.concurrent.CompletionStage;
 import javax.annotation.Nullable;
 
 /**
@@ -279,6 +280,24 @@ public interface BukkitImplAdapter {
      */
     default boolean regenerate(World world, Region region, Extent extent, RegenOptions options) {
         throw new UnsupportedOperationException("This adapter does not support regeneration.");
+    }
+
+    /**
+     * Regenerate a region into the given extent without blocking the calling thread.
+     *
+     * <p>Used on Folia, where chunk generation cannot be awaited on a region thread. The extent is
+     * written on an arbitrary tick thread once every chunk has generated, so it must not depend on
+     * a particular thread. Temporary generation resources are released before the returned future
+     * completes.</p>
+     *
+     * @param world the world to regen in
+     * @param region the region to regen
+     * @param extent the extent to use for setting blocks
+     * @param options the regeneration options
+     * @return a future that completes once the extent has been written
+     */
+    default CompletionStage<Void> regenerateAsync(World world, Region region, Extent extent, RegenOptions options) {
+        throw new UnsupportedOperationException("This adapter does not support asynchronous regeneration.");
     }
 
     /**
