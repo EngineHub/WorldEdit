@@ -34,6 +34,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.bukkit.adapter.AsyncRegeneration;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.Watchdog;
@@ -150,6 +151,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.craftbukkit.CraftChunk;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.block.data.CraftBlockData;
@@ -178,6 +180,7 @@ import org.enginehub.linbus.tree.LinTagType;
 import org.spigotmc.SpigotConfig;
 import org.spigotmc.WatchdogThread;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -196,6 +199,7 @@ import java.util.OptionalLong;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -755,13 +759,40 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
     }
 
     private void doRegen(World bukkitWorld, Region region, Extent extent, RegenOptions options) throws Exception {
+        try (TemporaryWorld temporaryWorld = createTemporaryWorld(bukkitWorld, options)) {
+            regenForWorld(region, extent, temporaryWorld.level, options);
+        }
+    }
+
+    @Override
+    public CompletionStage<Void> regenerateAsync(World bukkitWorld, Region region, Extent extent, RegenOptions options) {
+        TemporaryWorld temporaryWorld;
+        try {
+            temporaryWorld = createTemporaryWorld(bukkitWorld, options);
+        } catch (Exception e) {
+            return CompletableFuture.failedFuture(e);
+        }
+        ServerLevel freshWorld = temporaryWorld.level;
+        // Folia disables the vanilla chunk futures, so the temporary world is loaded through the Bukkit API.
+        World freshBukkitWorld = freshWorld.getWorld();
+        return AsyncRegeneration.run(
+            region,
+            chunk -> freshBukkitWorld.getChunkAtAsync(chunk.x(), chunk.z(), true)
+                .thenApply(loaded -> loaded == null ? null : ((CraftChunk) loaded).getHandle(ChunkStatus.FULL)),
+            chunks -> copyChunks(region, extent, freshWorld, options, chunks),
+            temporaryWorld
+        );
+    }
+
+    private TemporaryWorld createTemporaryWorld(World bukkitWorld, RegenOptions options) throws Exception {
         Environment env = bukkitWorld.getEnvironment();
         ChunkGenerator gen = bukkitWorld.getGenerator();
 
         Path tempDir = Files.createTempDirectory("WorldEditWorldGen");
         LevelStorageSource levelStorage = LevelStorageSource.createDefault(tempDir);
         ResourceKey<LevelStem> worldDimKey = getWorldDimKey(env);
-        try (LevelStorageSource.LevelStorageAccess session = levelStorage.createAccess("worldeditregentempworld", worldDimKey)) {
+        LevelStorageSource.LevelStorageAccess session = levelStorage.createAccess("worldeditregentempworld", worldDimKey);
+        try {
             ServerLevel originalWorld = ((CraftWorld) bukkitWorld).getHandle();
             PrimaryLevelData levelProperties = (PrimaryLevelData) originalWorld.getServer()
                 .getWorldData().overworldData();
@@ -811,20 +842,14 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
                 gen,
                 bukkitWorld.getBiomeProvider()
             );
+            return new TemporaryWorld(freshWorld, session, tempDir);
+        } catch (Exception e) {
             try {
-                regenForWorld(region, extent, freshWorld, options);
-            } finally {
-                freshWorld.getChunkSource().close(false);
+                new TemporaryWorld(null, session, tempDir).close();
+            } catch (Exception suppressed) {
+                e.addSuppressed(suppressed);
             }
-        } finally {
-            try {
-                @SuppressWarnings("unchecked")
-                Map<String, World> map = (Map<String, World>) serverWorldsField.get(Bukkit.getServer());
-                map.remove("worldeditregentempworld");
-            } catch (IllegalAccessException ignored) {
-                // It's fine if we couldn't remove it
-            }
-            SafeFiles.tryHardToDeleteDir(tempDir);
+            throw e;
         }
     }
 
@@ -854,6 +879,11 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             }
             return chunkLoadings.stream().allMatch(CompletableFuture::isDone);
         });
+        copyChunks(region, extent, serverWorld, options, chunkLoadings);
+    }
+
+    private void copyChunks(Region region, Extent extent, ServerLevel serverWorld, RegenOptions options,
+                            List<CompletableFuture<ChunkAccess>> chunkLoadings) throws WorldEditException {
         Map<ChunkPos, ChunkAccess> chunks = new HashMap<>();
         for (CompletableFuture<ChunkAccess> future : chunkLoadings) {
             @Nullable
@@ -876,7 +906,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             }
             extent.setBlock(vec, state.toBaseBlock());
             if (options.shouldRegenBiomes()) {
-                Biome origBiome = chunk.getNoiseBiome(vec.x(), vec.y(), vec.z()).value();
+                Biome origBiome = chunk.getNoiseBiome(vec.x() >> 2, vec.y() >> 2, vec.z() >> 2).value();
                 BiomeType adaptedBiome = adapt(serverWorld, origBiome);
                 if (adaptedBiome != null) {
                     extent.setBiome(vec, adaptedBiome);
@@ -1274,5 +1304,39 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         public void stop() {
         }
 
+    }
+
+    /**
+     * A world that exists only to generate chunks in; closing it releases everything it uses.
+     */
+    private final class TemporaryWorld implements AutoCloseable {
+        @Nullable
+        private final ServerLevel level;
+        private final LevelStorageSource.LevelStorageAccess session;
+        private final Path tempDir;
+
+        private TemporaryWorld(@Nullable ServerLevel level, LevelStorageSource.LevelStorageAccess session, Path tempDir) {
+            this.level = level;
+            this.session = session;
+            this.tempDir = tempDir;
+        }
+
+        @Override
+        public void close() throws IOException {
+            try (session) {
+                if (level != null) {
+                    level.getChunkSource().close(false);
+                }
+            } finally {
+                try {
+                    @SuppressWarnings("unchecked")
+                    Map<String, World> map = (Map<String, World>) serverWorldsField.get(Bukkit.getServer());
+                    map.remove("worldeditregentempworld");
+                } catch (IllegalAccessException ignored) {
+                    // It's fine if we couldn't remove it
+                }
+                SafeFiles.tryHardToDeleteDir(tempDir);
+            }
+        }
     }
 }

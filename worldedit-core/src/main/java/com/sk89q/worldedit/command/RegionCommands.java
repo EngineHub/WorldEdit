@@ -52,6 +52,7 @@ import com.sk89q.worldedit.function.visitor.RegionVisitor;
 import com.sk89q.worldedit.internal.annotation.Offset;
 import com.sk89q.worldedit.internal.annotation.Selection;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
+import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.internal.util.TransformUtil;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -74,6 +75,7 @@ import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.RegenOptions;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.generation.TreeType;
+import org.apache.logging.log4j.Logger;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
@@ -82,6 +84,9 @@ import org.enginehub.piston.annotation.param.Switch;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.CompletionStage;
 
 import static com.sk89q.worldedit.command.util.Logging.LogMode.ALL;
 import static com.sk89q.worldedit.command.util.Logging.LogMode.ORIENTATION_REGION;
@@ -96,6 +101,8 @@ import static com.sk89q.worldedit.regions.Regions.minimumBlockY;
  */
 @CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class RegionCommands {
+
+    private static final Logger LOGGER = LogManagerCompat.getLogger();
 
     /**
      * Create a new instance.
@@ -450,39 +457,69 @@ public class RegionCommands {
     )
     @CommandPermissions("worldedit.regen")
     @Logging(REGION)
-    void regenerate(Actor actor, World world, LocalSession session, EditSession editSession,
-                    @Selection Region region,
+    void regenerate(Actor actor, World world, LocalSession session,
+                    @Selection Region selection,
                     @Arg(desc = "The seed to regenerate with, otherwise uses world seed", def = "")
                         Long seed,
                     @Switch(name = 'b', desc = "Regenerate biomes as well")
                         boolean regenBiomes,
                     @Switch(name = 'c', desc = "Regenerate to the clipboard")
                         boolean toClipboard) throws WorldEditException {
+        // Regeneration may complete after this command has returned, so it gets its own edit session.
+        Region region = selection.clone();
+        RegenOptions options = RegenOptions.builder()
+            .seed(seed)
+            .regenBiomes(regenBiomes)
+            .build();
+        BlockArrayClipboard clipboard = toClipboard ? new BlockArrayClipboard(region) : null;
+        EditSession editSession = toClipboard ? null : session.createEditSession(actor);
+        if (clipboard != null) {
+            clipboard.setOrigin(session.getPlacementPosition(actor));
+        } else {
+            editSession.enableStandardMode();
+        }
+        Extent outputExtent = clipboard != null ? clipboard : editSession;
         Mask mask = session.getMask();
-        boolean success;
+        CompletionStage<Boolean> result;
         try {
             session.setMask(null);
-            RegenOptions options = RegenOptions.builder()
-                .seed(seed)
-                .regenBiomes(regenBiomes)
-                .build();
-            Extent outputExtent = editSession;
-            BlockArrayClipboard clipboard = null;
-            if (toClipboard) {
-                clipboard = new BlockArrayClipboard(region);
-                clipboard.setOrigin(session.getPlacementPosition(actor));
-                outputExtent = clipboard;
-            }
-            success = world.regenerate(region, outputExtent, options);
-            if (success && toClipboard) {
-                session.setClipboard(new ClipboardHolder(clipboard));
-            }
+            result = world.regenerateAsync(region, outputExtent, options, actor);
+        } catch (RuntimeException e) {
+            result = CompletableFuture.failedFuture(e);
         } finally {
             session.setMask(mask);
         }
-        if (success) {
-            actor.printInfo(TranslatableComponent.of("worldedit.regen.regenerated"));
+        if (!result.toCompletableFuture().isDone()) {
+            actor.printInfo(TranslatableComponent.of("worldedit.regen.generating"));
+        }
+        result.whenComplete((success, failure) -> {
+            if (editSession != null) {
+                session.remember(editSession);
+                editSession.close();
+                WorldEdit.getInstance().flushBlockBag(actor, editSession);
+            }
+            if (failure != null) {
+                reportRegenerationFailure(actor, failure);
+            } else if (success) {
+                if (clipboard != null) {
+                    session.setClipboard(new ClipboardHolder(clipboard));
+                }
+                actor.printInfo(TranslatableComponent.of("worldedit.regen.regenerated"));
+            } else {
+                actor.printError(TranslatableComponent.of("worldedit.regen.failed"));
+            }
+        });
+    }
+
+    private static void reportRegenerationFailure(Actor actor, Throwable failure) {
+        Throwable cause = failure;
+        while (cause instanceof CompletionException && cause.getCause() != null) {
+            cause = cause.getCause();
+        }
+        if (cause instanceof WorldEditException exception && exception.getRichMessage() != null) {
+            actor.printError(exception.getRichMessage());
         } else {
+            LOGGER.warn("Regeneration failed.", cause);
             actor.printError(TranslatableComponent.of("worldedit.regen.failed"));
         }
     }
