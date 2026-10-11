@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.bukkit.adapter.impl.v1_21_5;
 
-import ca.spottedleaf.concurrentutil.util.Priority;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -771,14 +770,15 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             return CompletableFuture.failedFuture(e);
         }
         ServerLevel freshWorld = temporaryWorld.level;
-        return AsyncRegeneration.run(region, chunk -> {
-            CompletableFuture<ChunkAccess> future = new CompletableFuture<>();
-            // Reschedules itself onto the temporary world's region thread when called from elsewhere.
-            freshWorld.moonrise$getChunkTaskScheduler().scheduleChunkLoad(
-                chunk.x(), chunk.z(), ChunkStatus.FEATURES, true, Priority.NORMAL, future::complete
-            );
-            return future;
-        }, chunks -> copyChunks(region, extent, freshWorld, options, chunks), temporaryWorld);
+        // Off the thread owning the chunk, Paper's chunk system answers this without blocking the caller.
+        return AsyncRegeneration.run(
+            region,
+            chunk -> freshWorld.getChunkSource()
+                .getChunkFuture(chunk.x(), chunk.z(), ChunkStatus.FEATURES, true)
+                .thenApply(result -> result.orElse(null)),
+            chunks -> copyChunks(region, extent, freshWorld, options, chunks),
+            temporaryWorld
+        );
     }
 
     private TemporaryWorld createTemporaryWorld(World bukkitWorld, RegenOptions options) throws Exception {

@@ -56,6 +56,10 @@ import javax.annotation.Nullable;
  * loaded and held with plugin tickets, the snapshot is written to the extent on the thread owning them,
  * and the returned future completes on the actor's own scheduler. A clipboard is written directly by
  * the adapter, since it never touches the world.</p>
+ *
+ * <p>Temporary worlds are created and released on the global region thread, which also serialises
+ * the changes they make to the server's world map, and only one of them exists at a time. Applying a
+ * finished result may overlap with the next generation.</p>
  */
 public final class FoliaRegeneration {
 
@@ -63,6 +67,11 @@ public final class FoliaRegeneration {
      * Freshly loaded chunks can take a few ticks to merge into the region applying the result.
      */
     private static final int OWNERSHIP_ATTEMPTS = 40;
+
+    /**
+     * Whether a temporary world currently exists. Only changed on the global region thread.
+     */
+    private static volatile boolean generating;
 
     private FoliaRegeneration() {
     }
@@ -83,15 +92,31 @@ public final class FoliaRegeneration {
                                                       BukkitWorld world, Region region, Extent extent,
                                                       RegenOptions options, @Nullable Actor actor) {
         CompletableFuture<Boolean> result = new CompletableFuture<>();
-        try {
-            if (extent instanceof EditSession editSession && editSession.getBlockBag() != null) {
-                // The block bag reads the player's inventory, which may be in another region by then.
-                throw new RegionOperationException(TranslatableComponent.of("worldedit.regen.inventory-unsupported"));
+        if (extent instanceof EditSession editSession && editSession.getBlockBag() != null) {
+            // The block bag reads the player's inventory, which may be in another region by then.
+            result.completeExceptionally(
+                new RegionOperationException(TranslatableComponent.of("worldedit.regen.inventory-unsupported")));
+            return result;
+        }
+        boolean direct = extent instanceof Clipboard;
+        BlockArrayClipboard snapshot = direct ? null : new BlockArrayClipboard(region);
+        Extent generated = direct ? extent : snapshot;
+        Bukkit.getGlobalRegionScheduler().execute(plugin, () -> {
+            if (generating) {
+                complete(plugin, actor, result,
+                    new RegionOperationException(TranslatableComponent.of("worldedit.regen.busy")));
+                return;
             }
-            boolean direct = extent instanceof Clipboard;
-            BlockArrayClipboard snapshot = direct ? null : new BlockArrayClipboard(region);
-            Extent generated = direct ? extent : snapshot;
-            adapter.regenerateAsync(world.getWorld(), region, generated, options).whenComplete((_, error) -> {
+            generating = true;
+            CompletionStage<Void> generation;
+            try {
+                generation = adapter.regenerateAsync(world.getWorld(), region, generated, options);
+            } catch (Exception e) {
+                generation = CompletableFuture.failedFuture(e);
+            }
+            generation.whenComplete((_, error) -> {
+                // The adapter completes this on the global region thread, after releasing its temporary world.
+                generating = false;
                 if (error != null || direct) {
                     complete(plugin, actor, result, error);
                     return;
@@ -106,9 +131,7 @@ public final class FoliaRegeneration {
                     }
                 });
             });
-        } catch (Exception e) {
-            result.completeExceptionally(e);
-        }
+        });
         return result;
     }
 
