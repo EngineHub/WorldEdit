@@ -471,18 +471,14 @@ public class RegionCommands {
             .seed(seed)
             .regenBiomes(regenBiomes)
             .build();
-        BlockArrayClipboard clipboard = null;
-        EditSession editSession = null;
-        Extent outputExtent;
-        if (toClipboard) {
-            clipboard = new BlockArrayClipboard(region);
+        BlockArrayClipboard clipboard = toClipboard ? new BlockArrayClipboard(region) : null;
+        EditSession editSession = toClipboard ? null : session.createEditSession(actor);
+        if (clipboard != null) {
             clipboard.setOrigin(session.getPlacementPosition(actor));
-            outputExtent = clipboard;
         } else {
-            editSession = session.createEditSession(actor);
             editSession.enableStandardMode();
-            outputExtent = editSession;
         }
+        Extent outputExtent = clipboard != null ? clipboard : editSession;
         Mask mask = session.getMask();
         CompletionStage<Boolean> result;
         try {
@@ -496,19 +492,17 @@ public class RegionCommands {
         if (!result.toCompletableFuture().isDone()) {
             actor.printInfo(TranslatableComponent.of("worldedit.regen.generating"));
         }
-        BlockArrayClipboard finalClipboard = clipboard;
-        EditSession finalEditSession = editSession;
         result.whenComplete((success, failure) -> {
-            if (finalEditSession != null) {
-                session.remember(finalEditSession);
-                finalEditSession.close();
-                WorldEdit.getInstance().flushBlockBag(actor, finalEditSession);
+            if (editSession != null) {
+                session.remember(editSession);
+                editSession.close();
+                WorldEdit.getInstance().flushBlockBag(actor, editSession);
             }
             if (failure != null) {
                 reportRegenerationFailure(actor, failure);
             } else if (success) {
-                if (finalClipboard != null) {
-                    session.setClipboard(new ClipboardHolder(finalClipboard));
+                if (clipboard != null) {
+                    session.setClipboard(new ClipboardHolder(clipboard));
                 }
                 actor.printInfo(TranslatableComponent.of("worldedit.regen.regenerated"));
             } else {

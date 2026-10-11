@@ -864,53 +864,11 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             return new TemporaryWorld(freshWorld, session, tempDir);
         } catch (Exception e) {
             try {
-                releaseTemporaryWorld(null, session, tempDir);
+                new TemporaryWorld(null, session, tempDir).close();
             } catch (Exception suppressed) {
                 e.addSuppressed(suppressed);
             }
             throw e;
-        }
-    }
-
-    private void releaseTemporaryWorld(@Nullable ServerLevel level, LevelStorageSource.LevelStorageAccess session,
-                                       Path tempDir) throws IOException {
-        try {
-            if (level != null) {
-                level.getChunkSource().close(false);
-            }
-        } finally {
-            try {
-                session.close();
-            } finally {
-                try {
-                    @SuppressWarnings("unchecked")
-                    Map<String, World> map = (Map<String, World>) serverWorldsField.get(Bukkit.getServer());
-                    map.remove("worldeditregentempworld");
-                } catch (IllegalAccessException ignored) {
-                    // It's fine if we couldn't remove it
-                }
-                SafeFiles.tryHardToDeleteDir(tempDir);
-            }
-        }
-    }
-
-    /**
-     * A world that exists only to generate chunks in; closing it releases everything it uses.
-     */
-    private final class TemporaryWorld implements AutoCloseable {
-        private final ServerLevel level;
-        private final LevelStorageSource.LevelStorageAccess session;
-        private final Path tempDir;
-
-        private TemporaryWorld(ServerLevel level, LevelStorageSource.LevelStorageAccess session, Path tempDir) {
-            this.level = level;
-            this.session = session;
-            this.tempDir = tempDir;
-        }
-
-        @Override
-        public void close() throws IOException {
-            releaseTemporaryWorld(level, session, tempDir);
         }
     }
 
@@ -1378,6 +1336,40 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
                 tickField.set(server, Util.getMillis());
             } catch (IllegalAccessException ignored) {
                 // It's fine if we couldn't set it
+            }
+        }
+    }
+
+    /**
+     * A world that exists only to generate chunks in; closing it releases everything it uses.
+     */
+    private final class TemporaryWorld implements AutoCloseable {
+        @Nullable
+        private final ServerLevel level;
+        private final LevelStorageSource.LevelStorageAccess session;
+        private final Path tempDir;
+
+        private TemporaryWorld(@Nullable ServerLevel level, LevelStorageSource.LevelStorageAccess session, Path tempDir) {
+            this.level = level;
+            this.session = session;
+            this.tempDir = tempDir;
+        }
+
+        @Override
+        public void close() throws IOException {
+            try (session) {
+                if (level != null) {
+                    level.getChunkSource().close(false);
+                }
+            } finally {
+                try {
+                    @SuppressWarnings("unchecked")
+                    Map<String, World> map = (Map<String, World>) serverWorldsField.get(Bukkit.getServer());
+                    map.remove("worldeditregentempworld");
+                } catch (IllegalAccessException ignored) {
+                    // It's fine if we couldn't remove it
+                }
+                SafeFiles.tryHardToDeleteDir(tempDir);
             }
         }
     }
