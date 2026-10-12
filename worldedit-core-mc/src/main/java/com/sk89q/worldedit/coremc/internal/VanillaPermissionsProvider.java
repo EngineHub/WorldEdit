@@ -21,6 +21,7 @@ package com.sk89q.worldedit.coremc.internal;
 
 import com.sk89q.worldedit.coremc.CoreMcPermissionsProvider;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.level.GameType;
 
 final class VanillaPermissionsProvider implements CoreMcPermissionsProvider {
@@ -34,7 +35,7 @@ final class VanillaPermissionsProvider implements CoreMcPermissionsProvider {
     public boolean hasPermission(ServerPlayer player, String permission) {
         CoreMcConfiguration configuration = platform.getConfiguration();
         return configuration.cheatMode
-            || player.level().getServer().getPlayerList().isOp(player.nameAndId())
+            || player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)
             || (configuration.creativeEnable && player.gameMode.getGameModeForPlayer() == GameType.CREATIVE);
     }
 
