@@ -1,7 +1,9 @@
 7.4.6
 - Update to Minecraft 26.3
 - Improve parsing of complex NBT in certain situations
+- Fixed parsing of item names containing hex colors throwing errors
 - [Bukkit] Fixed teleportation on recent Folia versions
+- [Fabric & NeoForge] Use "Gamemaster" permission (Level 2) instead of "OP" to better handle LAN in 26.3+.
 
 7.4.5
 - [Bukkit] Improve Folia detection for forks which obfuscate that they're Folia
