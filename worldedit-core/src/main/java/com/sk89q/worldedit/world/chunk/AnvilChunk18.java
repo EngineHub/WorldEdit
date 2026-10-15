@@ -31,11 +31,14 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinListTag;
 import org.enginehub.linbus.tree.LinStringTag;
+import org.enginehub.linbus.tree.LinTag;
 import org.enginehub.linbus.tree.LinTagType;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import javax.annotation.Nullable;
 
 /**
@@ -92,42 +95,64 @@ public class AnvilChunk18 implements Chunk {
                 continue;
             }
             // parse palette
-            var paletteEntries = blockStatesTag.getListTag("palette", LinTagType.compoundTag()).value();
+            if (!(blockStatesTag.value().get("palette") instanceof LinListTag<?> paletteTag)) {
+                throw new InvalidFormatException("Invalid block palette in section " + y + ": expected a list");
+            }
+            var paletteEntries = paletteTag.value();
             int paletteSize = paletteEntries.size();
             if (paletteSize == 0) {
                 continue;
             }
             BlockState[] palette = new BlockState[paletteSize];
             for (int paletteEntryId = 0; paletteEntryId < paletteSize; paletteEntryId++) {
-                LinCompoundTag paletteEntry = paletteEntries.get(paletteEntryId);
-                LinStringTag typeTag = paletteEntry.findTag("id", LinTagType.stringTag());
-                if (typeTag == null) {
-                    typeTag = paletteEntry.getTag("Name", LinTagType.stringTag());
-                }
-                String typeString = typeTag.value();
-                BlockType type = BlockTypes.get(typeString);
-                if (type == null) {
-                    throw new InvalidFormatException("Invalid block type: " + typeString);
-                }
-                BlockState blockState = type.getDefaultState();
-                var properties = paletteEntry.findTag("properties", LinTagType.compoundTag());
-                if (properties == null) {
-                    properties = paletteEntry.findTag("Properties", LinTagType.compoundTag());
-                }
-                if (properties != null) {
-                    for (Property<?> property : blockState.getStates().keySet()) {
-                        var name = properties.findTag(property.name(), LinTagType.stringTag());
-                        if (name != null) {
-                            String value = name.value();
-                            try {
-                                blockState = getBlockStateWith(blockState, property, value);
-                            } catch (IllegalArgumentException _) {
-                                throw new InvalidFormatException("Invalid block state for " + blockState.getBlockType().id() + ", " + property.name() + ": " + value);
+                try {
+                    LinTag<?> entry = paletteEntries.get(paletteEntryId);
+                    // Minecraft wraps non-compound entries in mixed NBT lists under the empty key.
+                    if (entry instanceof LinCompoundTag compound && compound.value().size() == 1
+                        && compound.value().containsKey("")) {
+                        entry = compound.value().get("");
+                    }
+                    String typeString;
+                    LinCompoundTag properties = null;
+                    if (entry instanceof LinStringTag string) {
+                        typeString = string.value();
+                    } else if (entry instanceof LinCompoundTag paletteEntry) {
+                        LinStringTag typeTag = paletteEntry.findTag("id", LinTagType.stringTag());
+                        if (typeTag == null) {
+                            typeTag = paletteEntry.getTag("Name", LinTagType.stringTag());
+                        }
+                        typeString = typeTag.value();
+                        properties = paletteEntry.findTag("properties", LinTagType.compoundTag());
+                        if (properties == null) {
+                            properties = paletteEntry.findTag("Properties", LinTagType.compoundTag());
+                        }
+                    } else {
+                        throw new InvalidFormatException("Expected a block ID string or a block state compound, got " + entry.type());
+                    }
+
+                    BlockType type = BlockTypes.get(typeString);
+                    if (type == null) {
+                        throw new InvalidFormatException("Invalid block type: " + typeString);
+                    }
+                    BlockState blockState = type.getDefaultState();
+                    if (properties != null) {
+                        for (Property<?> property : blockState.getStates().keySet()) {
+                            var name = properties.findTag(property.name(), LinTagType.stringTag());
+                            if (name != null) {
+                                String value = name.value();
+                                try {
+                                    blockState = getBlockStateWith(blockState, property, value);
+                                } catch (IllegalArgumentException _) {
+                                    throw new InvalidFormatException("Invalid block state for " + blockState.getBlockType().id() + ", " + property.name() + ": " + value);
+                                }
                             }
                         }
                     }
+                    palette[paletteEntryId] = blockState;
+                } catch (InvalidFormatException | IllegalArgumentException | IllegalStateException | NoSuchElementException e) {
+                    throw new InvalidFormatException("Invalid block palette entry in section " + y
+                        + " at index " + paletteEntryId + ": " + e.getMessage());
                 }
-                palette[paletteEntryId] = blockState;
             }
             if (paletteSize == 1) {
                 // the same block everywhere
