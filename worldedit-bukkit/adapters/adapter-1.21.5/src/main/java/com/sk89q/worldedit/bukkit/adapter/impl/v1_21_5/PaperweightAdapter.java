@@ -345,7 +345,9 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
     public net.minecraft.world.level.block.state.BlockState adapt(BlockState blockState) {
         int internalId = BlockStateIdAccess.getBlockStateId(blockState);
-        return Block.stateById(internalId);
+        return BlockStateIdAccess.isValidInternalId(internalId)
+            ? Block.stateById(internalId)
+            : ((CraftBlockData) BukkitAdapter.adapt(blockState)).getState();
     }
 
     @Override
@@ -702,8 +704,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
     @Override
     public boolean canPlaceAt(World world, BlockVector3 position, BlockState blockState) {
-        int internalId = BlockStateIdAccess.getBlockStateId(blockState);
-        net.minecraft.world.level.block.state.BlockState blockData = Block.stateById(internalId);
+        net.minecraft.world.level.block.state.BlockState blockData = adapt(blockState);
         return blockData.canSurvive(((CraftWorld) world).getHandle(), new BlockPos(position.x(), position.y(), position.z()));
     }
 
