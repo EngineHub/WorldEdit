@@ -61,6 +61,7 @@ import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.mask.BlockStateMask;
 import com.sk89q.worldedit.function.mask.BlockTypeMask;
 import com.sk89q.worldedit.function.mask.BoundedHeightMask;
+import com.sk89q.worldedit.function.mask.WaterSupplyingBlockMask;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.MaskIntersection;
@@ -1654,20 +1655,38 @@ public class EditSession implements Extent, AutoCloseable {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int drainArea(BlockVector3 origin, double radius, boolean waterlogged) throws MaxChangedBlocksException {
+        return drainArea(origin, radius, waterlogged, false);
+    }
+
+    /**
+     * Drain nearby pools of water or lava with optional removal of waterlogged and water-supplying blocks.
+     *
+     * @param origin the origin to drain from, which will search a 3x3 area
+     * @param radius the radius of the removal, where a value should be 0 or greater
+     * @param waterlogged true to make waterlogged blocks non-waterlogged as well
+     * @param waterSupplyingBlocks true to also remove water-supplying blocks such as kelp and bubble columns
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    public int drainArea(BlockVector3 origin, double radius, boolean waterlogged, boolean waterSupplyingBlocks)
+            throws MaxChangedBlocksException {
         checkNotNull(origin);
         checkArgument(radius >= 0, "radius >= 0 required");
 
-        Mask waterloggedMask = null;
+        Mask drainMask = getWorld().createLiquidMask();
+        if (waterSupplyingBlocks) {
+            drainMask = new MaskUnion(drainMask, new WaterSupplyingBlockMask(this));
+        }
         if (waterlogged) {
             Map<String, String> stateMap = new HashMap<>();
             stateMap.put("waterlogged", "true");
-            waterloggedMask = new BlockStateMask(this, stateMap, true);
+            drainMask = new MaskUnion(drainMask, new BlockStateMask(this, stateMap, true));
         }
+
         MaskIntersection mask = new MaskIntersection(
                 new BoundedHeightMask(getWorld().getMinY(), getWorld().getMaxY()),
                 new RegionMask(new EllipsoidRegion(null, origin, Vector3.at(radius, radius, radius))),
-                waterlogged ? new MaskUnion(getWorld().createLiquidMask(), waterloggedMask)
-                            : getWorld().createLiquidMask());
+                drainMask);
 
         BlockReplace replace;
         if (waterlogged) {
