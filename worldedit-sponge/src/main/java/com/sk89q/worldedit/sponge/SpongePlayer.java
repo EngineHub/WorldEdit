@@ -43,6 +43,8 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -236,9 +238,19 @@ public class SpongePlayer extends AbstractPlayerActor {
     }
 
     @Override
-    public <B extends BlockStateHolder<B>> void sendFakeBlock(BlockVector3 pos, B block) {
+    public <B extends BlockStateHolder<B>> void sendFakeBlock(BlockVector3 pos, @Nullable B block) {
         if (block == null) {
             player.resetBlockChange(pos.x(), pos.y(), pos.z());
+
+            net.minecraft.server.level.ServerPlayer nativePlayer = (net.minecraft.server.level.ServerPlayer) player;
+            BlockEntity nativeBlockEntity = nativePlayer.level().getBlockEntity(new BlockPos(pos.x(), pos.y(), pos.z()));
+            if (nativeBlockEntity == null) {
+                return;
+            }
+            Packet<ClientGamePacketListener> updatePacket = nativeBlockEntity.getUpdatePacket();
+            if (updatePacket != null) {
+                nativePlayer.connection.send(updatePacket);
+            }
         } else {
             BlockState spongeBlock = SpongeAdapter.adapt(block.toImmutableState());
             player.sendBlockChange(pos.x(), pos.y(), pos.z(), spongeBlock);

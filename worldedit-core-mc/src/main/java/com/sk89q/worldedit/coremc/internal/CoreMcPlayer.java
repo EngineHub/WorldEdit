@@ -40,12 +40,15 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.enginehub.linbus.tree.LinCompoundTag;
@@ -238,10 +241,17 @@ public class CoreMcPlayer extends AbstractPlayerActor {
         }
         BlockPos loc = platform.getAdapter().toBlockPos(pos);
         if (block == null) {
-            player.connection.send(new ClientboundBlockUpdatePacket(
-                coreMcWorld.getWorld(),
-                loc
-            ));
+            ServerLevel level = coreMcWorld.getWorld();
+            player.connection.send(new ClientboundBlockUpdatePacket(level, loc));
+
+            BlockEntity nativeBlockEntity = level.getBlockEntity(loc);
+            if (nativeBlockEntity == null) {
+                return;
+            }
+            Packet<ClientGamePacketListener> updatePacket = nativeBlockEntity.getUpdatePacket();
+            if (updatePacket != null) {
+                player.connection.send(updatePacket);
+            }
         } else {
             final BlockState nativeState = platform.getAdapter().toNativeBlockState(block.toImmutableState());
 
