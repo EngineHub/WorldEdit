@@ -44,7 +44,8 @@ public final class ItemCategories {
     public static final ItemCategory BOOK_CLONING_TARGET = get("minecraft:book_cloning_target");
     public static final ItemCategory BOOKSHELF_BOOKS = get("minecraft:bookshelf_books");
     public static final ItemCategory BREAKS_DECORATED_POTS = get("minecraft:breaks_decorated_pots");
-    public static final ItemCategory BREWING_FUEL = get("minecraft:brewing_fuel");
+    @Deprecated public static final ItemCategory BREWING_FUEL = get("minecraft:brewing_fuel");
+    public static final ItemCategory BREWING_POTION_INPUTS = get("minecraft:brewing_potion_inputs");
     public static final ItemCategory BUNDLES = get("minecraft:bundles");
     public static final ItemCategory BUTTONS = get("minecraft:buttons");
     public static final ItemCategory CAMEL_FOOD = get("minecraft:camel_food");
@@ -59,6 +60,7 @@ public final class ItemCategories {
     public static final ItemCategory CHEST_ARMOR = get("minecraft:chest_armor");
     public static final ItemCategory CHEST_BOATS = get("minecraft:chest_boats");
     public static final ItemCategory CHICKEN_FOOD = get("minecraft:chicken_food");
+    public static final ItemCategory CLONABLE_MAPS = get("minecraft:clonable_maps");
     public static final ItemCategory CLUSTER_MAX_HARVESTABLES = get("minecraft:cluster_max_harvestables");
     public static final ItemCategory COAL_ORES = get("minecraft:coal_ores");
     public static final ItemCategory COALS = get("minecraft:coals");
@@ -66,6 +68,8 @@ public final class ItemCategories {
     public static final ItemCategory COMPLETES_FIND_TREE_TUTORIAL = get("minecraft:completes_find_tree_tutorial");
     public static final ItemCategory CONCRETE = get("minecraft:concrete");
     public static final ItemCategory CONCRETE_POWDERS = get("minecraft:concrete_powders");
+    public static final ItemCategory CONCRETE_SLABS = get("minecraft:concrete_slabs");
+    public static final ItemCategory CONCRETE_STAIRS = get("minecraft:concrete_stairs");
     public static final ItemCategory COPPER = get("minecraft:copper");
     public static final ItemCategory COPPER_CHESTS = get("minecraft:copper_chests");
     public static final ItemCategory COPPER_GOLEM_STATUES = get("minecraft:copper_golem_statues");
@@ -75,6 +79,7 @@ public final class ItemCategories {
     public static final ItemCategory CREEPER_DROP_MUSIC_DISCS = get("minecraft:creeper_drop_music_discs");
     public static final ItemCategory CREEPER_IGNITERS = get("minecraft:creeper_igniters");
     public static final ItemCategory CRIMSON_STEMS = get("minecraft:crimson_stems");
+    public static final ItemCategory CUSHIONS = get("minecraft:cushions");
     public static final ItemCategory DAMPENS_VIBRATIONS = get("minecraft:dampens_vibrations");
     public static final ItemCategory DARK_OAK_LOGS = get("minecraft:dark_oak_logs");
     public static final ItemCategory DECORATED_POT_INGREDIENTS = get("minecraft:decorated_pot_ingredients");
@@ -83,6 +88,7 @@ public final class ItemCategories {
     public static final ItemCategory DIAMOND_TOOL_MATERIALS = get("minecraft:diamond_tool_materials");
     public static final ItemCategory DIRT = get("minecraft:dirt");
     public static final ItemCategory DOORS = get("minecraft:doors");
+    public static final ItemCategory DOUSES_CAMPFIRES = get("minecraft:douses_campfires");
     public static final ItemCategory DROWNED_PREFERRED_WEAPONS = get("minecraft:drowned_preferred_weapons");
     public static final ItemCategory DUPLICATES_ALLAYS = get("minecraft:duplicates_allays");
     @Deprecated public static final ItemCategory DYEABLE = get("minecraft:dyeable");
@@ -111,6 +117,7 @@ public final class ItemCategories {
     public static final ItemCategory ENCHANTABLE_TRIDENT = get("minecraft:enchantable/trident");
     public static final ItemCategory ENCHANTABLE_VANISHING = get("minecraft:enchantable/vanishing");
     public static final ItemCategory ENCHANTABLE_WEAPON = get("minecraft:enchantable/weapon");
+    public static final ItemCategory EXTENDABLE_MAPS = get("minecraft:extendable_maps");
     public static final ItemCategory FENCE_GATES = get("minecraft:fence_gates");
     public static final ItemCategory FENCES = get("minecraft:fences");
     public static final ItemCategory FISHES = get("minecraft:fishes");
@@ -119,6 +126,7 @@ public final class ItemCategories {
     public static final ItemCategory FOX_FOOD = get("minecraft:fox_food");
     public static final ItemCategory FREEZE_IMMUNE_WEARABLES = get("minecraft:freeze_immune_wearables");
     public static final ItemCategory FROG_FOOD = get("minecraft:frog_food");
+    public static final ItemCategory FURNACE_FUEL_BOTTOM_TAKEABLE = get("minecraft:furnace_fuel_bottom_takeable");
     @Deprecated public static final ItemCategory FURNACE_MATERIALS = get("minecraft:furnace_materials");
     public static final ItemCategory FURNACE_MINECART_FUEL = get("minecraft:furnace_minecart_fuel");
     public static final ItemCategory GAZE_DISGUISE_EQUIPMENT = get("minecraft:gaze_disguise_equipment");
@@ -158,6 +166,7 @@ public final class ItemCategories {
     public static final ItemCategory METAL_NUGGETS = get("minecraft:metal_nuggets");
     public static final ItemCategory MOSS_BLOCKS = get("minecraft:moss_blocks");
     public static final ItemCategory MUD = get("minecraft:mud");
+    public static final ItemCategory MUSHROOMS = get("minecraft:mushrooms");
     @Deprecated public static final ItemCategory MUSIC_DISCS = get("minecraft:music_discs");
     public static final ItemCategory NAUTILUS_BUCKET_FOOD = get("minecraft:nautilus_bucket_food");
     public static final ItemCategory NAUTILUS_FOOD = get("minecraft:nautilus_food");
@@ -168,6 +177,7 @@ public final class ItemCategories {
     public static final ItemCategory OAK_LOGS = get("minecraft:oak_logs");
     @Deprecated public static final ItemCategory OCCLUDES_VIBRATION_SIGNALS = get("minecraft:occludes_vibration_signals");
     public static final ItemCategory OCELOT_FOOD = get("minecraft:ocelot_food");
+    public static final ItemCategory ORES = get("minecraft:ores");
     @Deprecated public static final ItemCategory OVERWORLD_NATURAL_LOGS = get("minecraft:overworld_natural_logs");
     public static final ItemCategory PALE_OAK_LOGS = get("minecraft:pale_oak_logs");
     public static final ItemCategory PANDA_EATS_FROM_GROUND = get("minecraft:panda_eats_from_ground");
@@ -183,6 +193,7 @@ public final class ItemCategories {
     public static final ItemCategory PIGLIN_SAFE_ARMOR = get("minecraft:piglin_safe_armor");
     public static final ItemCategory PILLAGER_PREFERRED_WEAPONS = get("minecraft:pillager_preferred_weapons");
     public static final ItemCategory PLANKS = get("minecraft:planks");
+    public static final ItemCategory POPLAR_LOGS = get("minecraft:poplar_logs");
     public static final ItemCategory RABBIT_FOOD = get("minecraft:rabbit_food");
     public static final ItemCategory RAILS = get("minecraft:rails");
     public static final ItemCategory REDSTONE_ORES = get("minecraft:redstone_ores");
@@ -260,6 +271,8 @@ public final class ItemCategories {
     public static final ItemCategory WOODEN_TRAPDOORS = get("minecraft:wooden_trapdoors");
     public static final ItemCategory WOOL = get("minecraft:wool");
     public static final ItemCategory WOOL_CARPETS = get("minecraft:wool_carpets");
+    public static final ItemCategory WOOL_SLABS = get("minecraft:wool_slabs");
+    public static final ItemCategory WOOL_STAIRS = get("minecraft:wool_stairs");
     public static final ItemCategory ZOMBIE_HORSE_FOOD = get("minecraft:zombie_horse_food");
 
     private ItemCategories() {

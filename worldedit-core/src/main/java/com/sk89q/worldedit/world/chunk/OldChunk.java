@@ -170,7 +170,7 @@ public class OldChunk implements Chunk {
         int index = y + (z * 128 + (x * 128 * 16));
         try {
             id = blocks[index];
-        } catch (IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException _) {
             throw new DataException("Chunk does not contain position " + position);
         }
 
@@ -183,7 +183,7 @@ public class OldChunk implements Chunk {
             } else {
                 dataVal = data[index] & 0xF;
             }
-        } catch (IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException _) {
             throw new DataException("Chunk does not contain position " + position);
         }
 

@@ -153,7 +153,7 @@ public class MCEditSchematicReader implements ClipboardReader {
 
             origin = min.subtract(offset);
             region = new CuboidRegion(min, min.add(width, height, length).subtract(BlockVector3.ONE));
-        } catch (NoSuchElementException e) {
+        } catch (NoSuchElementException _) {
             origin = BlockVector3.ZERO;
             region = new CuboidRegion(origin, origin.add(width, height, length).subtract(BlockVector3.ONE));
         }

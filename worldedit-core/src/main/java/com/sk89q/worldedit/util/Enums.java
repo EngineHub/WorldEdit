@@ -47,7 +47,7 @@ public final class Enums {
         for (String val : values) {
             try {
                 return Enum.valueOf(enumType, val);
-            } catch (IllegalArgumentException ignored) {
+            } catch (IllegalArgumentException _) {
                 // Ignore if invalid
             }
         }

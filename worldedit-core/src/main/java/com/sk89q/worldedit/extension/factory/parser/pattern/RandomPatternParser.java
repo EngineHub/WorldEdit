@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.extension.factory.parser.pattern;
 
+import com.google.common.base.CharMatcher;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.InputParseException;
@@ -34,6 +35,8 @@ import java.util.stream.Stream;
 
 public class RandomPatternParser extends InputParser<Pattern> {
 
+    private static final CharMatcher PATTERN_DELIMITER = CharMatcher.is(',');
+
     private final java.util.regex.Pattern regex = java.util.regex.Pattern.compile("[0-9]+(\\.[0-9]*)?%.*");
 
     public RandomPatternParser(WorldEdit worldEdit) {
@@ -42,8 +45,7 @@ public class RandomPatternParser extends InputParser<Pattern> {
 
     @Override
     public Stream<String> getSuggestions(String input, ParserContext context) {
-        String[] splits = input.split(",", -1);
-        List<String> patterns = StringUtil.parseListInQuotes(splits, ',', new char[] {'[', '{' }, new char[] {']', '}'}, true);
+        List<String> patterns = StringUtil.splitOutsideBrackets(input, PATTERN_DELIMITER);
         // get suggestions for the last token only
         String percent = null;
         String token = patterns.get(patterns.size() - 1);
@@ -64,8 +66,7 @@ public class RandomPatternParser extends InputParser<Pattern> {
     public Pattern parseFromInput(String input, ParserContext context) throws InputParseException {
         RandomPattern randomPattern = new RandomPattern();
 
-        String[] splits = input.split(",", -1);
-        List<String> patterns = StringUtil.parseListInQuotes(splits, ',', new char[] {'[', '{' }, new char[] {']', '}'}, true);
+        List<String> patterns = StringUtil.splitOutsideBrackets(input, PATTERN_DELIMITER);
         if (patterns.size() == 1) {
             return null; // let a 'single'-pattern parser handle it
         }

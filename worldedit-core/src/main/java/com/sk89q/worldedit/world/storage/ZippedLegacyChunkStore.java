@@ -121,7 +121,7 @@ public class ZippedLegacyChunkStore extends LegacyChunkStore {
         }
         try {
             return zip.getInputStream(entry);
-        } catch (ZipException e) {
+        } catch (ZipException _) {
             throw new IOException("Failed to read " + file + " in ZIP");
         }
     }

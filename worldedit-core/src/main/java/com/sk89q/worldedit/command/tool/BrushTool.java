@@ -220,7 +220,7 @@ public class BrushTool implements TraceTool {
 
             try {
                 brush.build(editSession, target.toVector().toBlockPoint(), material, size);
-            } catch (MaxChangedBlocksException e) {
+            } catch (MaxChangedBlocksException _) {
                 player.printError(TranslatableComponent.of("worldedit.tool.max-block-changes"));
             } finally {
                 session.remember(editSession);

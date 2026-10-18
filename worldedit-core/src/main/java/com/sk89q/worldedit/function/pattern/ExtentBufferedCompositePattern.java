@@ -58,7 +58,7 @@ public class ExtentBufferedCompositePattern extends AbstractExtentPattern {
             lastBlock = pattern.applyBlock(position);
             try {
                 getExtent().setBlock(position, lastBlock);
-            } catch (WorldEditException ignored) { // buffer doesn't throw
+            } catch (WorldEditException _) { // buffer doesn't throw
             }
         }
         return lastBlock;

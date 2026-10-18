@@ -149,7 +149,7 @@ public class AnvilChunk implements Chunk {
             int addId = (index & 1) == 0 ? (addByte & 0x0F) << 8 : (addByte & 0xF0) << 4;
 
             return (blocks[section][index] & 0xFF) + addId;
-        } catch (IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException _) {
             throw new DataException("Chunk does not contain position " + position);
         }
     }
@@ -173,7 +173,7 @@ public class AnvilChunk implements Chunk {
         try {
             byte dataByte = data[section][index];
             return shift ? (dataByte & 0xF0) >> 4 : dataByte & 0x0F;
-        } catch (IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException _) {
             throw new DataException("Chunk does not contain position " + position);
         }
     }

@@ -31,7 +31,7 @@ class FlatMapLifecycled<T, U> implements Lifecycled<U> {
     private U value;
 
     FlatMapLifecycled(Lifecycled<T> upstream, Function<T, Lifecycled<U>> mapper) {
-        upstream.events().onInvalidated(this, (this$, up) -> {
+        upstream.events().onInvalidated(this, (this$, _) -> {
             boolean fire = this$.value != null;
             this$.value = null;
             // drop `mapped` hooks if needed
@@ -44,7 +44,7 @@ class FlatMapLifecycled<T, U> implements Lifecycled<U> {
         upstream.events().onNewValue(this, (this$, up) -> {
             this$.mapped = mapper.apply(up.valueOrThrow());
             this$.mappedToken = new Token<>(this$);
-            mapped.events().onInvalidated(this$.mappedToken, (token, mapped$) -> {
+            mapped.events().onInvalidated(this$.mappedToken, (token, _) -> {
                 boolean fire = token.inner.value != null;
                 token.inner.value = null;
                 // note we do not drop the token here, onNewValue may be called again

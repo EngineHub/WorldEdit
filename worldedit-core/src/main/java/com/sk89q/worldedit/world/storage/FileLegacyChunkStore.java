@@ -57,7 +57,7 @@ public class FileLegacyChunkStore extends LegacyChunkStore {
         String file = f1 + File.separator + f2 + File.separator + name;
         try {
             return new FileInputStream(new File(path, file));
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException _) {
             throw new MissingChunkException();
         }
     }

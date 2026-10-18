@@ -119,7 +119,9 @@ public interface BlockMaterial {
      * Get whether this block prevents movement.
      *
      * @return true if this block blocks movement
+     * @deprecated Minecraft no longer uses this concept. Use {@link #isSolid()} instead.
      */
+    @Deprecated
     boolean isMovementBlocker();
 
     /**

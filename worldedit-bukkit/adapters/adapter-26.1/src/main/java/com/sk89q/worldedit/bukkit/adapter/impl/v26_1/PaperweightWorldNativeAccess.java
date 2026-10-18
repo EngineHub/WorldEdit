@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.bukkit.adapter.impl.v26_1;
 
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
@@ -34,7 +32,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.redstone.ExperimentalRedstoneUtils;
 import org.bukkit.craftbukkit.CraftWorld;
-import org.bukkit.craftbukkit.block.data.CraftBlockData;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
@@ -71,10 +68,7 @@ public class PaperweightWorldNativeAccess implements WorldNativeAccess<LevelChun
 
     @Override
     public net.minecraft.world.level.block.state.BlockState toNative(BlockState state) {
-        int stateId = BlockStateIdAccess.getBlockStateId(state);
-        return BlockStateIdAccess.isValidInternalId(stateId)
-                ? Block.stateById(stateId)
-                : ((CraftBlockData) BukkitAdapter.adapt(state)).getState();
+        return adapter.adapt(state);
     }
 
     @Override

@@ -93,7 +93,7 @@ public class FloatingTreeRemover implements BlockTool {
                         editSession.setBlock(blockVector, BlockTypes.AIR.getDefaultState());
                     }
                 }
-            } catch (MaxChangedBlocksException e) {
+            } catch (MaxChangedBlocksException _) {
                 player.printError(TranslatableComponent.of("worldedit.tool.max-block-changes"));
             } finally {
                 session.remember(editSession);

@@ -35,7 +35,7 @@ public final class ReflectionUtil {
                 Field field = checkClass.getDeclaredField(name);
                 field.setAccessible(true);
                 return (T) field.get(from);
-            } catch (NoSuchFieldException | IllegalAccessException ignored) {
+            } catch (NoSuchFieldException | IllegalAccessException _) {
                 // We want to keep searching
             }
         } while (checkClass.getSuperclass() != Object.class && ((checkClass = checkClass.getSuperclass()) != null));

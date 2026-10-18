@@ -78,7 +78,7 @@ public class ExpressionMask extends AbstractMask {
                 return expression.evaluate(new double[]{ vector.x(), vector.y(), vector.z() },
                         timeout.getAsInt()) > 0;
             }
-        } catch (EvaluationException e) {
+        } catch (EvaluationException _) {
             return false;
         }
     }

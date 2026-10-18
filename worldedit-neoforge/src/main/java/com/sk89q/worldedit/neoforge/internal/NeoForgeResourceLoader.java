@@ -37,12 +37,12 @@ public class NeoForgeResourceLoader extends WorldEditResourceLoader  {
             URL url = URI.create("modjar://worldedit/" + location).toURL();
             try {
                 url.openStream().close();
-            } catch (IOException e) {
+            } catch (IOException _) {
                 // doesn't actually exist
                 return null;
             }
             return url;
-        } catch (Exception e) {
+        } catch (Exception _) {
             throw new IOException("Could not find " + location);
         }
     }

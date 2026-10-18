@@ -188,7 +188,7 @@ public final class Functions {
     }
 
     private static double[] getSubBuffer(Int2ObjectMap<double[]> megabuf, int key) {
-        return megabuf.computeIfAbsent(key, k -> new double[1024]);
+        return megabuf.computeIfAbsent(key, _ -> new double[1024]);
     }
 
     private static double getBufferItem(final Int2ObjectMap<double[]> megabuf, final int index) {

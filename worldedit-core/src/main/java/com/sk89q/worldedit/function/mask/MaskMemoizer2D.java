@@ -43,7 +43,7 @@ public class MaskMemoizer2D extends AbstractMask2D implements AutoCloseable {
     @Override
     public boolean test(BlockVector2 vector) {
         // Use a Y=0 BlockVector3 to avoid creating a new BlockMap implementation
-        return this.cache.computeIfAbsent(vector.toBlockVector3(), ignored -> mask.test(vector));
+        return this.cache.computeIfAbsent(vector.toBlockVector3(), _ -> mask.test(vector));
     }
 
     public void clear() {

@@ -122,7 +122,7 @@ public class BukkitServerInterface extends AbstractPlatform implements MultiUser
     @Override
     public int schedule(long delay, long period, Runnable task) {
         if (plugin.isFolia()) {
-            Bukkit.getGlobalRegionScheduler().runAtFixedRate(plugin, scheduledTask -> task.run(), delay, period);
+            Bukkit.getGlobalRegionScheduler().runAtFixedRate(plugin, _ -> task.run(), delay, period);
             // TODO Paper doesn't appear to have a concept of task IDs, so return 1 here for now.
             //  We may want to store these tasks and map them to our own IDs to cancel them later.
             return 1;

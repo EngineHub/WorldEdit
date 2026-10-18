@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
  */
 @SuppressWarnings("unused")
 public final class ItemTypes {
+    @Nullable public static final ItemType ABANDONED_CAMP_MAP = get("minecraft:abandoned_camp_map");
     @Nullable public static final ItemType ACACIA_BOAT = get("minecraft:acacia_boat");
     @Nullable public static final ItemType ACACIA_BUTTON = get("minecraft:acacia_button");
     @Nullable public static final ItemType ACACIA_CHEST_BOAT = get("minecraft:acacia_chest_boat");
@@ -132,6 +133,9 @@ public final class ItemTypes {
     @Nullable public static final ItemType BLACK_CARPET = get("minecraft:black_carpet");
     @Nullable public static final ItemType BLACK_CONCRETE = get("minecraft:black_concrete");
     @Nullable public static final ItemType BLACK_CONCRETE_POWDER = get("minecraft:black_concrete_powder");
+    @Nullable public static final ItemType BLACK_CONCRETE_SLAB = get("minecraft:black_concrete_slab");
+    @Nullable public static final ItemType BLACK_CONCRETE_STAIRS = get("minecraft:black_concrete_stairs");
+    @Nullable public static final ItemType BLACK_CUSHION = get("minecraft:black_cushion");
     @Nullable public static final ItemType BLACK_DYE = get("minecraft:black_dye");
     @Nullable public static final ItemType BLACK_GLAZED_TERRACOTTA = get("minecraft:black_glazed_terracotta");
     @Nullable public static final ItemType BLACK_HARNESS = get("minecraft:black_harness");
@@ -140,6 +144,8 @@ public final class ItemTypes {
     @Nullable public static final ItemType BLACK_STAINED_GLASS_PANE = get("minecraft:black_stained_glass_pane");
     @Nullable public static final ItemType BLACK_TERRACOTTA = get("minecraft:black_terracotta");
     @Nullable public static final ItemType BLACK_WOOL = get("minecraft:black_wool");
+    @Nullable public static final ItemType BLACK_WOOL_SLAB = get("minecraft:black_wool_slab");
+    @Nullable public static final ItemType BLACK_WOOL_STAIRS = get("minecraft:black_wool_stairs");
     @Nullable public static final ItemType BLACKSTONE = get("minecraft:blackstone");
     @Nullable public static final ItemType BLACKSTONE_SLAB = get("minecraft:blackstone_slab");
     @Nullable public static final ItemType BLACKSTONE_STAIRS = get("minecraft:blackstone_stairs");
@@ -156,6 +162,9 @@ public final class ItemTypes {
     @Nullable public static final ItemType BLUE_CARPET = get("minecraft:blue_carpet");
     @Nullable public static final ItemType BLUE_CONCRETE = get("minecraft:blue_concrete");
     @Nullable public static final ItemType BLUE_CONCRETE_POWDER = get("minecraft:blue_concrete_powder");
+    @Nullable public static final ItemType BLUE_CONCRETE_SLAB = get("minecraft:blue_concrete_slab");
+    @Nullable public static final ItemType BLUE_CONCRETE_STAIRS = get("minecraft:blue_concrete_stairs");
+    @Nullable public static final ItemType BLUE_CUSHION = get("minecraft:blue_cushion");
     @Nullable public static final ItemType BLUE_DYE = get("minecraft:blue_dye");
     @Nullable public static final ItemType BLUE_EGG = get("minecraft:blue_egg");
     @Nullable public static final ItemType BLUE_GLAZED_TERRACOTTA = get("minecraft:blue_glazed_terracotta");
@@ -167,6 +176,8 @@ public final class ItemTypes {
     @Nullable public static final ItemType BLUE_STAINED_GLASS_PANE = get("minecraft:blue_stained_glass_pane");
     @Nullable public static final ItemType BLUE_TERRACOTTA = get("minecraft:blue_terracotta");
     @Nullable public static final ItemType BLUE_WOOL = get("minecraft:blue_wool");
+    @Nullable public static final ItemType BLUE_WOOL_SLAB = get("minecraft:blue_wool_slab");
+    @Nullable public static final ItemType BLUE_WOOL_STAIRS = get("minecraft:blue_wool_stairs");
     @Nullable public static final ItemType BOGGED_SPAWN_EGG = get("minecraft:bogged_spawn_egg");
     @Nullable public static final ItemType BOLT_ARMOR_TRIM_SMITHING_TEMPLATE = get("minecraft:bolt_armor_trim_smithing_template");
     @Nullable public static final ItemType BONE = get("minecraft:bone");
@@ -197,6 +208,9 @@ public final class ItemTypes {
     @Nullable public static final ItemType BROWN_CARPET = get("minecraft:brown_carpet");
     @Nullable public static final ItemType BROWN_CONCRETE = get("minecraft:brown_concrete");
     @Nullable public static final ItemType BROWN_CONCRETE_POWDER = get("minecraft:brown_concrete_powder");
+    @Nullable public static final ItemType BROWN_CONCRETE_SLAB = get("minecraft:brown_concrete_slab");
+    @Nullable public static final ItemType BROWN_CONCRETE_STAIRS = get("minecraft:brown_concrete_stairs");
+    @Nullable public static final ItemType BROWN_CUSHION = get("minecraft:brown_cushion");
     @Nullable public static final ItemType BROWN_DYE = get("minecraft:brown_dye");
     @Nullable public static final ItemType BROWN_EGG = get("minecraft:brown_egg");
     @Nullable public static final ItemType BROWN_GLAZED_TERRACOTTA = get("minecraft:brown_glazed_terracotta");
@@ -208,6 +222,8 @@ public final class ItemTypes {
     @Nullable public static final ItemType BROWN_STAINED_GLASS_PANE = get("minecraft:brown_stained_glass_pane");
     @Nullable public static final ItemType BROWN_TERRACOTTA = get("minecraft:brown_terracotta");
     @Nullable public static final ItemType BROWN_WOOL = get("minecraft:brown_wool");
+    @Nullable public static final ItemType BROWN_WOOL_SLAB = get("minecraft:brown_wool_slab");
+    @Nullable public static final ItemType BROWN_WOOL_STAIRS = get("minecraft:brown_wool_stairs");
     @Nullable public static final ItemType BRUSH = get("minecraft:brush");
     @Nullable public static final ItemType BUBBLE_CORAL = get("minecraft:bubble_coral");
     @Nullable public static final ItemType BUBBLE_CORAL_BLOCK = get("minecraft:bubble_coral_block");
@@ -215,6 +231,10 @@ public final class ItemTypes {
     @Nullable public static final ItemType BUCKET = get("minecraft:bucket");
     @Nullable public static final ItemType BUDDING_AMETHYST = get("minecraft:budding_amethyst");
     @Nullable public static final ItemType BUNDLE = get("minecraft:bundle");
+    @Nullable public static final ItemType BURIED_ANCIENT_CITY_MAP = get("minecraft:buried_ancient_city_map");
+    @Nullable public static final ItemType BURIED_MINESHAFT_MAP = get("minecraft:buried_mineshaft_map");
+    @Nullable public static final ItemType BURIED_TREASURE_MAP = get("minecraft:buried_treasure_map");
+    @Nullable public static final ItemType BURIED_TRIAL_CHAMBERS_MAP = get("minecraft:buried_trial_chambers_map");
     @Nullable public static final ItemType BURN_POTTERY_SHERD = get("minecraft:burn_pottery_sherd");
     @Nullable public static final ItemType BUSH = get("minecraft:bush");
     @Nullable public static final ItemType CACTUS = get("minecraft:cactus");
@@ -399,6 +419,9 @@ public final class ItemTypes {
     @Nullable public static final ItemType CYAN_CARPET = get("minecraft:cyan_carpet");
     @Nullable public static final ItemType CYAN_CONCRETE = get("minecraft:cyan_concrete");
     @Nullable public static final ItemType CYAN_CONCRETE_POWDER = get("minecraft:cyan_concrete_powder");
+    @Nullable public static final ItemType CYAN_CONCRETE_SLAB = get("minecraft:cyan_concrete_slab");
+    @Nullable public static final ItemType CYAN_CONCRETE_STAIRS = get("minecraft:cyan_concrete_stairs");
+    @Nullable public static final ItemType CYAN_CUSHION = get("minecraft:cyan_cushion");
     @Nullable public static final ItemType CYAN_DYE = get("minecraft:cyan_dye");
     @Nullable public static final ItemType CYAN_GLAZED_TERRACOTTA = get("minecraft:cyan_glazed_terracotta");
     @Nullable public static final ItemType CYAN_HARNESS = get("minecraft:cyan_harness");
@@ -407,6 +430,8 @@ public final class ItemTypes {
     @Nullable public static final ItemType CYAN_STAINED_GLASS_PANE = get("minecraft:cyan_stained_glass_pane");
     @Nullable public static final ItemType CYAN_TERRACOTTA = get("minecraft:cyan_terracotta");
     @Nullable public static final ItemType CYAN_WOOL = get("minecraft:cyan_wool");
+    @Nullable public static final ItemType CYAN_WOOL_SLAB = get("minecraft:cyan_wool_slab");
+    @Nullable public static final ItemType CYAN_WOOL_STAIRS = get("minecraft:cyan_wool_stairs");
     @Nullable public static final ItemType DAMAGED_ANVIL = get("minecraft:damaged_anvil");
     @Nullable public static final ItemType DANDELION = get("minecraft:dandelion");
     @Deprecated @Nullable public static final ItemType DANDELION_YELLOW = get("minecraft:dandelion_yellow");
@@ -468,6 +493,8 @@ public final class ItemTypes {
     @Nullable public static final ItemType DEEPSLATE_TILE_STAIRS = get("minecraft:deepslate_tile_stairs");
     @Nullable public static final ItemType DEEPSLATE_TILE_WALL = get("minecraft:deepslate_tile_wall");
     @Nullable public static final ItemType DEEPSLATE_TILES = get("minecraft:deepslate_tiles");
+    @Nullable public static final ItemType DESERT_PYRAMID_MAP = get("minecraft:desert_pyramid_map");
+    @Nullable public static final ItemType DESERT_VILLAGE_MAP = get("minecraft:desert_village_map");
     @Nullable public static final ItemType DETECTOR_RAIL = get("minecraft:detector_rail");
     @Nullable public static final ItemType DIAMOND = get("minecraft:diamond");
     @Nullable public static final ItemType DIAMOND_AXE = get("minecraft:diamond_axe");
@@ -628,6 +655,9 @@ public final class ItemTypes {
     @Nullable public static final ItemType GRAY_CARPET = get("minecraft:gray_carpet");
     @Nullable public static final ItemType GRAY_CONCRETE = get("minecraft:gray_concrete");
     @Nullable public static final ItemType GRAY_CONCRETE_POWDER = get("minecraft:gray_concrete_powder");
+    @Nullable public static final ItemType GRAY_CONCRETE_SLAB = get("minecraft:gray_concrete_slab");
+    @Nullable public static final ItemType GRAY_CONCRETE_STAIRS = get("minecraft:gray_concrete_stairs");
+    @Nullable public static final ItemType GRAY_CUSHION = get("minecraft:gray_cushion");
     @Nullable public static final ItemType GRAY_DYE = get("minecraft:gray_dye");
     @Nullable public static final ItemType GRAY_GLAZED_TERRACOTTA = get("minecraft:gray_glazed_terracotta");
     @Nullable public static final ItemType GRAY_HARNESS = get("minecraft:gray_harness");
@@ -636,6 +666,8 @@ public final class ItemTypes {
     @Nullable public static final ItemType GRAY_STAINED_GLASS_PANE = get("minecraft:gray_stained_glass_pane");
     @Nullable public static final ItemType GRAY_TERRACOTTA = get("minecraft:gray_terracotta");
     @Nullable public static final ItemType GRAY_WOOL = get("minecraft:gray_wool");
+    @Nullable public static final ItemType GRAY_WOOL_SLAB = get("minecraft:gray_wool_slab");
+    @Nullable public static final ItemType GRAY_WOOL_STAIRS = get("minecraft:gray_wool_stairs");
     @Nullable public static final ItemType GREEN_BANNER = get("minecraft:green_banner");
     @Nullable public static final ItemType GREEN_BED = get("minecraft:green_bed");
     @Nullable public static final ItemType GREEN_BUNDLE = get("minecraft:green_bundle");
@@ -643,6 +675,9 @@ public final class ItemTypes {
     @Nullable public static final ItemType GREEN_CARPET = get("minecraft:green_carpet");
     @Nullable public static final ItemType GREEN_CONCRETE = get("minecraft:green_concrete");
     @Nullable public static final ItemType GREEN_CONCRETE_POWDER = get("minecraft:green_concrete_powder");
+    @Nullable public static final ItemType GREEN_CONCRETE_SLAB = get("minecraft:green_concrete_slab");
+    @Nullable public static final ItemType GREEN_CONCRETE_STAIRS = get("minecraft:green_concrete_stairs");
+    @Nullable public static final ItemType GREEN_CUSHION = get("minecraft:green_cushion");
     @Nullable public static final ItemType GREEN_DYE = get("minecraft:green_dye");
     @Nullable public static final ItemType GREEN_GLAZED_TERRACOTTA = get("minecraft:green_glazed_terracotta");
     @Nullable public static final ItemType GREEN_HARNESS = get("minecraft:green_harness");
@@ -651,6 +686,8 @@ public final class ItemTypes {
     @Nullable public static final ItemType GREEN_STAINED_GLASS_PANE = get("minecraft:green_stained_glass_pane");
     @Nullable public static final ItemType GREEN_TERRACOTTA = get("minecraft:green_terracotta");
     @Nullable public static final ItemType GREEN_WOOL = get("minecraft:green_wool");
+    @Nullable public static final ItemType GREEN_WOOL_SLAB = get("minecraft:green_wool_slab");
+    @Nullable public static final ItemType GREEN_WOOL_STAIRS = get("minecraft:green_wool_stairs");
     @Nullable public static final ItemType GRINDSTONE = get("minecraft:grindstone");
     @Nullable public static final ItemType GUARDIAN_SPAWN_EGG = get("minecraft:guardian_spawn_egg");
     @Nullable public static final ItemType GUNPOWDER = get("minecraft:gunpowder");
@@ -723,6 +760,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType JUNGLE_LOG = get("minecraft:jungle_log");
     @Nullable public static final ItemType JUNGLE_PLANKS = get("minecraft:jungle_planks");
     @Nullable public static final ItemType JUNGLE_PRESSURE_PLATE = get("minecraft:jungle_pressure_plate");
+    @Nullable public static final ItemType JUNGLE_PYRAMID_MAP = get("minecraft:jungle_pyramid_map");
     @Nullable public static final ItemType JUNGLE_SAPLING = get("minecraft:jungle_sapling");
     @Nullable public static final ItemType JUNGLE_SHELF = get("minecraft:jungle_shelf");
     @Nullable public static final ItemType JUNGLE_SIGN = get("minecraft:jungle_sign");
@@ -758,6 +796,9 @@ public final class ItemTypes {
     @Nullable public static final ItemType LIGHT_BLUE_CARPET = get("minecraft:light_blue_carpet");
     @Nullable public static final ItemType LIGHT_BLUE_CONCRETE = get("minecraft:light_blue_concrete");
     @Nullable public static final ItemType LIGHT_BLUE_CONCRETE_POWDER = get("minecraft:light_blue_concrete_powder");
+    @Nullable public static final ItemType LIGHT_BLUE_CONCRETE_SLAB = get("minecraft:light_blue_concrete_slab");
+    @Nullable public static final ItemType LIGHT_BLUE_CONCRETE_STAIRS = get("minecraft:light_blue_concrete_stairs");
+    @Nullable public static final ItemType LIGHT_BLUE_CUSHION = get("minecraft:light_blue_cushion");
     @Nullable public static final ItemType LIGHT_BLUE_DYE = get("minecraft:light_blue_dye");
     @Nullable public static final ItemType LIGHT_BLUE_GLAZED_TERRACOTTA = get("minecraft:light_blue_glazed_terracotta");
     @Nullable public static final ItemType LIGHT_BLUE_HARNESS = get("minecraft:light_blue_harness");
@@ -766,6 +807,8 @@ public final class ItemTypes {
     @Nullable public static final ItemType LIGHT_BLUE_STAINED_GLASS_PANE = get("minecraft:light_blue_stained_glass_pane");
     @Nullable public static final ItemType LIGHT_BLUE_TERRACOTTA = get("minecraft:light_blue_terracotta");
     @Nullable public static final ItemType LIGHT_BLUE_WOOL = get("minecraft:light_blue_wool");
+    @Nullable public static final ItemType LIGHT_BLUE_WOOL_SLAB = get("minecraft:light_blue_wool_slab");
+    @Nullable public static final ItemType LIGHT_BLUE_WOOL_STAIRS = get("minecraft:light_blue_wool_stairs");
     @Nullable public static final ItemType LIGHT_GRAY_BANNER = get("minecraft:light_gray_banner");
     @Nullable public static final ItemType LIGHT_GRAY_BED = get("minecraft:light_gray_bed");
     @Nullable public static final ItemType LIGHT_GRAY_BUNDLE = get("minecraft:light_gray_bundle");
@@ -773,6 +816,9 @@ public final class ItemTypes {
     @Nullable public static final ItemType LIGHT_GRAY_CARPET = get("minecraft:light_gray_carpet");
     @Nullable public static final ItemType LIGHT_GRAY_CONCRETE = get("minecraft:light_gray_concrete");
     @Nullable public static final ItemType LIGHT_GRAY_CONCRETE_POWDER = get("minecraft:light_gray_concrete_powder");
+    @Nullable public static final ItemType LIGHT_GRAY_CONCRETE_SLAB = get("minecraft:light_gray_concrete_slab");
+    @Nullable public static final ItemType LIGHT_GRAY_CONCRETE_STAIRS = get("minecraft:light_gray_concrete_stairs");
+    @Nullable public static final ItemType LIGHT_GRAY_CUSHION = get("minecraft:light_gray_cushion");
     @Nullable public static final ItemType LIGHT_GRAY_DYE = get("minecraft:light_gray_dye");
     @Nullable public static final ItemType LIGHT_GRAY_GLAZED_TERRACOTTA = get("minecraft:light_gray_glazed_terracotta");
     @Nullable public static final ItemType LIGHT_GRAY_HARNESS = get("minecraft:light_gray_harness");
@@ -781,6 +827,8 @@ public final class ItemTypes {
     @Nullable public static final ItemType LIGHT_GRAY_STAINED_GLASS_PANE = get("minecraft:light_gray_stained_glass_pane");
     @Nullable public static final ItemType LIGHT_GRAY_TERRACOTTA = get("minecraft:light_gray_terracotta");
     @Nullable public static final ItemType LIGHT_GRAY_WOOL = get("minecraft:light_gray_wool");
+    @Nullable public static final ItemType LIGHT_GRAY_WOOL_SLAB = get("minecraft:light_gray_wool_slab");
+    @Nullable public static final ItemType LIGHT_GRAY_WOOL_STAIRS = get("minecraft:light_gray_wool_stairs");
     @Nullable public static final ItemType LIGHT_WEIGHTED_PRESSURE_PLATE = get("minecraft:light_weighted_pressure_plate");
     @Nullable public static final ItemType LIGHTNING_ROD = get("minecraft:lightning_rod");
     @Nullable public static final ItemType LILAC = get("minecraft:lilac");
@@ -793,6 +841,9 @@ public final class ItemTypes {
     @Nullable public static final ItemType LIME_CARPET = get("minecraft:lime_carpet");
     @Nullable public static final ItemType LIME_CONCRETE = get("minecraft:lime_concrete");
     @Nullable public static final ItemType LIME_CONCRETE_POWDER = get("minecraft:lime_concrete_powder");
+    @Nullable public static final ItemType LIME_CONCRETE_SLAB = get("minecraft:lime_concrete_slab");
+    @Nullable public static final ItemType LIME_CONCRETE_STAIRS = get("minecraft:lime_concrete_stairs");
+    @Nullable public static final ItemType LIME_CUSHION = get("minecraft:lime_cushion");
     @Nullable public static final ItemType LIME_DYE = get("minecraft:lime_dye");
     @Nullable public static final ItemType LIME_GLAZED_TERRACOTTA = get("minecraft:lime_glazed_terracotta");
     @Nullable public static final ItemType LIME_HARNESS = get("minecraft:lime_harness");
@@ -801,6 +852,8 @@ public final class ItemTypes {
     @Nullable public static final ItemType LIME_STAINED_GLASS_PANE = get("minecraft:lime_stained_glass_pane");
     @Nullable public static final ItemType LIME_TERRACOTTA = get("minecraft:lime_terracotta");
     @Nullable public static final ItemType LIME_WOOL = get("minecraft:lime_wool");
+    @Nullable public static final ItemType LIME_WOOL_SLAB = get("minecraft:lime_wool_slab");
+    @Nullable public static final ItemType LIME_WOOL_STAIRS = get("minecraft:lime_wool_stairs");
     @Nullable public static final ItemType LINGERING_POTION = get("minecraft:lingering_potion");
     @Nullable public static final ItemType LLAMA_SPAWN_EGG = get("minecraft:llama_spawn_egg");
     @Nullable public static final ItemType LODESTONE = get("minecraft:lodestone");
@@ -813,6 +866,9 @@ public final class ItemTypes {
     @Nullable public static final ItemType MAGENTA_CARPET = get("minecraft:magenta_carpet");
     @Nullable public static final ItemType MAGENTA_CONCRETE = get("minecraft:magenta_concrete");
     @Nullable public static final ItemType MAGENTA_CONCRETE_POWDER = get("minecraft:magenta_concrete_powder");
+    @Nullable public static final ItemType MAGENTA_CONCRETE_SLAB = get("minecraft:magenta_concrete_slab");
+    @Nullable public static final ItemType MAGENTA_CONCRETE_STAIRS = get("minecraft:magenta_concrete_stairs");
+    @Nullable public static final ItemType MAGENTA_CUSHION = get("minecraft:magenta_cushion");
     @Nullable public static final ItemType MAGENTA_DYE = get("minecraft:magenta_dye");
     @Nullable public static final ItemType MAGENTA_GLAZED_TERRACOTTA = get("minecraft:magenta_glazed_terracotta");
     @Nullable public static final ItemType MAGENTA_HARNESS = get("minecraft:magenta_harness");
@@ -821,6 +877,8 @@ public final class ItemTypes {
     @Nullable public static final ItemType MAGENTA_STAINED_GLASS_PANE = get("minecraft:magenta_stained_glass_pane");
     @Nullable public static final ItemType MAGENTA_TERRACOTTA = get("minecraft:magenta_terracotta");
     @Nullable public static final ItemType MAGENTA_WOOL = get("minecraft:magenta_wool");
+    @Nullable public static final ItemType MAGENTA_WOOL_SLAB = get("minecraft:magenta_wool_slab");
+    @Nullable public static final ItemType MAGENTA_WOOL_STAIRS = get("minecraft:magenta_wool_stairs");
     @Nullable public static final ItemType MAGMA_BLOCK = get("minecraft:magma_block");
     @Nullable public static final ItemType MAGMA_CREAM = get("minecraft:magma_cream");
     @Nullable public static final ItemType MAGMA_CUBE_SPAWN_EGG = get("minecraft:magma_cube_spawn_egg");
@@ -950,6 +1008,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType OAK_WOOD = get("minecraft:oak_wood");
     @Nullable public static final ItemType OBSERVER = get("minecraft:observer");
     @Nullable public static final ItemType OBSIDIAN = get("minecraft:obsidian");
+    @Nullable public static final ItemType OCEAN_MONUMENT_MAP = get("minecraft:ocean_monument_map");
     @Nullable public static final ItemType OCELOT_SPAWN_EGG = get("minecraft:ocelot_spawn_egg");
     @Nullable public static final ItemType OCHRE_FROGLIGHT = get("minecraft:ochre_froglight");
     @Nullable public static final ItemType OMINOUS_BOTTLE = get("minecraft:ominous_bottle");
@@ -962,15 +1021,21 @@ public final class ItemTypes {
     @Nullable public static final ItemType ORANGE_CARPET = get("minecraft:orange_carpet");
     @Nullable public static final ItemType ORANGE_CONCRETE = get("minecraft:orange_concrete");
     @Nullable public static final ItemType ORANGE_CONCRETE_POWDER = get("minecraft:orange_concrete_powder");
+    @Nullable public static final ItemType ORANGE_CONCRETE_SLAB = get("minecraft:orange_concrete_slab");
+    @Nullable public static final ItemType ORANGE_CONCRETE_STAIRS = get("minecraft:orange_concrete_stairs");
+    @Nullable public static final ItemType ORANGE_CUSHION = get("minecraft:orange_cushion");
     @Nullable public static final ItemType ORANGE_DYE = get("minecraft:orange_dye");
     @Nullable public static final ItemType ORANGE_GLAZED_TERRACOTTA = get("minecraft:orange_glazed_terracotta");
     @Nullable public static final ItemType ORANGE_HARNESS = get("minecraft:orange_harness");
+    @Nullable public static final ItemType ORANGE_POPLAR_LEAVES = get("minecraft:orange_poplar_leaves");
     @Nullable public static final ItemType ORANGE_SHULKER_BOX = get("minecraft:orange_shulker_box");
     @Nullable public static final ItemType ORANGE_STAINED_GLASS = get("minecraft:orange_stained_glass");
     @Nullable public static final ItemType ORANGE_STAINED_GLASS_PANE = get("minecraft:orange_stained_glass_pane");
     @Nullable public static final ItemType ORANGE_TERRACOTTA = get("minecraft:orange_terracotta");
     @Nullable public static final ItemType ORANGE_TULIP = get("minecraft:orange_tulip");
     @Nullable public static final ItemType ORANGE_WOOL = get("minecraft:orange_wool");
+    @Nullable public static final ItemType ORANGE_WOOL_SLAB = get("minecraft:orange_wool_slab");
+    @Nullable public static final ItemType ORANGE_WOOL_STAIRS = get("minecraft:orange_wool_stairs");
     @Nullable public static final ItemType OXEYE_DAISY = get("minecraft:oxeye_daisy");
     @Nullable public static final ItemType OXIDIZED_CHISELED_COPPER = get("minecraft:oxidized_chiseled_copper");
     @Nullable public static final ItemType OXIDIZED_COPPER = get("minecraft:oxidized_copper");
@@ -1033,6 +1098,9 @@ public final class ItemTypes {
     @Nullable public static final ItemType PINK_CARPET = get("minecraft:pink_carpet");
     @Nullable public static final ItemType PINK_CONCRETE = get("minecraft:pink_concrete");
     @Nullable public static final ItemType PINK_CONCRETE_POWDER = get("minecraft:pink_concrete_powder");
+    @Nullable public static final ItemType PINK_CONCRETE_SLAB = get("minecraft:pink_concrete_slab");
+    @Nullable public static final ItemType PINK_CONCRETE_STAIRS = get("minecraft:pink_concrete_stairs");
+    @Nullable public static final ItemType PINK_CUSHION = get("minecraft:pink_cushion");
     @Nullable public static final ItemType PINK_DYE = get("minecraft:pink_dye");
     @Nullable public static final ItemType PINK_GLAZED_TERRACOTTA = get("minecraft:pink_glazed_terracotta");
     @Nullable public static final ItemType PINK_HARNESS = get("minecraft:pink_harness");
@@ -1043,9 +1111,12 @@ public final class ItemTypes {
     @Nullable public static final ItemType PINK_TERRACOTTA = get("minecraft:pink_terracotta");
     @Nullable public static final ItemType PINK_TULIP = get("minecraft:pink_tulip");
     @Nullable public static final ItemType PINK_WOOL = get("minecraft:pink_wool");
+    @Nullable public static final ItemType PINK_WOOL_SLAB = get("minecraft:pink_wool_slab");
+    @Nullable public static final ItemType PINK_WOOL_STAIRS = get("minecraft:pink_wool_stairs");
     @Nullable public static final ItemType PISTON = get("minecraft:piston");
     @Nullable public static final ItemType PITCHER_PLANT = get("minecraft:pitcher_plant");
     @Nullable public static final ItemType PITCHER_POD = get("minecraft:pitcher_pod");
+    @Nullable public static final ItemType PLAINS_VILLAGE_MAP = get("minecraft:plains_village_map");
     @Nullable public static final ItemType PLAYER_HEAD = get("minecraft:player_head");
     @Nullable public static final ItemType PLENTY_POTTERY_SHERD = get("minecraft:plenty_pottery_sherd");
     @Nullable public static final ItemType PODZOL = get("minecraft:podzol");
@@ -1088,6 +1159,23 @@ public final class ItemTypes {
     @Nullable public static final ItemType POLISHED_TUFF_SLAB = get("minecraft:polished_tuff_slab");
     @Nullable public static final ItemType POLISHED_TUFF_STAIRS = get("minecraft:polished_tuff_stairs");
     @Nullable public static final ItemType POLISHED_TUFF_WALL = get("minecraft:polished_tuff_wall");
+    @Nullable public static final ItemType POPLAR_BOAT = get("minecraft:poplar_boat");
+    @Nullable public static final ItemType POPLAR_BUTTON = get("minecraft:poplar_button");
+    @Nullable public static final ItemType POPLAR_CHEST_BOAT = get("minecraft:poplar_chest_boat");
+    @Nullable public static final ItemType POPLAR_DOOR = get("minecraft:poplar_door");
+    @Nullable public static final ItemType POPLAR_FENCE = get("minecraft:poplar_fence");
+    @Nullable public static final ItemType POPLAR_FENCE_GATE = get("minecraft:poplar_fence_gate");
+    @Nullable public static final ItemType POPLAR_HANGING_SIGN = get("minecraft:poplar_hanging_sign");
+    @Nullable public static final ItemType POPLAR_LOG = get("minecraft:poplar_log");
+    @Nullable public static final ItemType POPLAR_PLANKS = get("minecraft:poplar_planks");
+    @Nullable public static final ItemType POPLAR_PRESSURE_PLATE = get("minecraft:poplar_pressure_plate");
+    @Nullable public static final ItemType POPLAR_SAPLING = get("minecraft:poplar_sapling");
+    @Nullable public static final ItemType POPLAR_SHELF = get("minecraft:poplar_shelf");
+    @Nullable public static final ItemType POPLAR_SIGN = get("minecraft:poplar_sign");
+    @Nullable public static final ItemType POPLAR_SLAB = get("minecraft:poplar_slab");
+    @Nullable public static final ItemType POPLAR_STAIRS = get("minecraft:poplar_stairs");
+    @Nullable public static final ItemType POPLAR_TRAPDOOR = get("minecraft:poplar_trapdoor");
+    @Nullable public static final ItemType POPLAR_WOOD = get("minecraft:poplar_wood");
     @Nullable public static final ItemType POPPED_CHORUS_FRUIT = get("minecraft:popped_chorus_fruit");
     @Nullable public static final ItemType POPPY = get("minecraft:poppy");
     @Nullable public static final ItemType PORKCHOP = get("minecraft:porkchop");
@@ -1119,6 +1207,9 @@ public final class ItemTypes {
     @Nullable public static final ItemType PURPLE_CARPET = get("minecraft:purple_carpet");
     @Nullable public static final ItemType PURPLE_CONCRETE = get("minecraft:purple_concrete");
     @Nullable public static final ItemType PURPLE_CONCRETE_POWDER = get("minecraft:purple_concrete_powder");
+    @Nullable public static final ItemType PURPLE_CONCRETE_SLAB = get("minecraft:purple_concrete_slab");
+    @Nullable public static final ItemType PURPLE_CONCRETE_STAIRS = get("minecraft:purple_concrete_stairs");
+    @Nullable public static final ItemType PURPLE_CUSHION = get("minecraft:purple_cushion");
     @Nullable public static final ItemType PURPLE_DYE = get("minecraft:purple_dye");
     @Nullable public static final ItemType PURPLE_GLAZED_TERRACOTTA = get("minecraft:purple_glazed_terracotta");
     @Nullable public static final ItemType PURPLE_HARNESS = get("minecraft:purple_harness");
@@ -1127,6 +1218,8 @@ public final class ItemTypes {
     @Nullable public static final ItemType PURPLE_STAINED_GLASS_PANE = get("minecraft:purple_stained_glass_pane");
     @Nullable public static final ItemType PURPLE_TERRACOTTA = get("minecraft:purple_terracotta");
     @Nullable public static final ItemType PURPLE_WOOL = get("minecraft:purple_wool");
+    @Nullable public static final ItemType PURPLE_WOOL_SLAB = get("minecraft:purple_wool_slab");
+    @Nullable public static final ItemType PURPLE_WOOL_STAIRS = get("minecraft:purple_wool_stairs");
     @Nullable public static final ItemType PURPUR_BLOCK = get("minecraft:purpur_block");
     @Nullable public static final ItemType PURPUR_PILLAR = get("minecraft:purpur_pillar");
     @Nullable public static final ItemType PURPUR_SLAB = get("minecraft:purpur_slab");
@@ -1159,6 +1252,9 @@ public final class ItemTypes {
     @Nullable public static final ItemType RED_CARPET = get("minecraft:red_carpet");
     @Nullable public static final ItemType RED_CONCRETE = get("minecraft:red_concrete");
     @Nullable public static final ItemType RED_CONCRETE_POWDER = get("minecraft:red_concrete_powder");
+    @Nullable public static final ItemType RED_CONCRETE_SLAB = get("minecraft:red_concrete_slab");
+    @Nullable public static final ItemType RED_CONCRETE_STAIRS = get("minecraft:red_concrete_stairs");
+    @Nullable public static final ItemType RED_CUSHION = get("minecraft:red_cushion");
     @Nullable public static final ItemType RED_DYE = get("minecraft:red_dye");
     @Nullable public static final ItemType RED_GLAZED_TERRACOTTA = get("minecraft:red_glazed_terracotta");
     @Nullable public static final ItemType RED_HARNESS = get("minecraft:red_harness");
@@ -1168,17 +1264,21 @@ public final class ItemTypes {
     @Nullable public static final ItemType RED_NETHER_BRICK_STAIRS = get("minecraft:red_nether_brick_stairs");
     @Nullable public static final ItemType RED_NETHER_BRICK_WALL = get("minecraft:red_nether_brick_wall");
     @Nullable public static final ItemType RED_NETHER_BRICKS = get("minecraft:red_nether_bricks");
+    @Nullable public static final ItemType RED_POPLAR_LEAVES = get("minecraft:red_poplar_leaves");
     @Nullable public static final ItemType RED_SAND = get("minecraft:red_sand");
     @Nullable public static final ItemType RED_SANDSTONE = get("minecraft:red_sandstone");
     @Nullable public static final ItemType RED_SANDSTONE_SLAB = get("minecraft:red_sandstone_slab");
     @Nullable public static final ItemType RED_SANDSTONE_STAIRS = get("minecraft:red_sandstone_stairs");
     @Nullable public static final ItemType RED_SANDSTONE_WALL = get("minecraft:red_sandstone_wall");
+    @Nullable public static final ItemType RED_SHRUB = get("minecraft:red_shrub");
     @Nullable public static final ItemType RED_SHULKER_BOX = get("minecraft:red_shulker_box");
     @Nullable public static final ItemType RED_STAINED_GLASS = get("minecraft:red_stained_glass");
     @Nullable public static final ItemType RED_STAINED_GLASS_PANE = get("minecraft:red_stained_glass_pane");
     @Nullable public static final ItemType RED_TERRACOTTA = get("minecraft:red_terracotta");
     @Nullable public static final ItemType RED_TULIP = get("minecraft:red_tulip");
     @Nullable public static final ItemType RED_WOOL = get("minecraft:red_wool");
+    @Nullable public static final ItemType RED_WOOL_SLAB = get("minecraft:red_wool_slab");
+    @Nullable public static final ItemType RED_WOOL_STAIRS = get("minecraft:red_wool_stairs");
     @Nullable public static final ItemType REDSTONE = get("minecraft:redstone");
     @Nullable public static final ItemType REDSTONE_BLOCK = get("minecraft:redstone_block");
     @Nullable public static final ItemType REDSTONE_LAMP = get("minecraft:redstone_lamp");
@@ -1209,6 +1309,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType SANDSTONE_SLAB = get("minecraft:sandstone_slab");
     @Nullable public static final ItemType SANDSTONE_STAIRS = get("minecraft:sandstone_stairs");
     @Nullable public static final ItemType SANDSTONE_WALL = get("minecraft:sandstone_wall");
+    @Nullable public static final ItemType SAVANNA_VILLAGE_MAP = get("minecraft:savanna_village_map");
     @Nullable public static final ItemType SCAFFOLDING = get("minecraft:scaffolding");
     @Nullable public static final ItemType SCRAPE_POTTERY_SHERD = get("minecraft:scrape_pottery_sherd");
     @Nullable public static final ItemType SCULK = get("minecraft:sculk");
@@ -1225,6 +1326,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType SHEAF_POTTERY_SHERD = get("minecraft:sheaf_pottery_sherd");
     @Nullable public static final ItemType SHEARS = get("minecraft:shears");
     @Nullable public static final ItemType SHEEP_SPAWN_EGG = get("minecraft:sheep_spawn_egg");
+    @Nullable public static final ItemType SHELF_MUSHROOM = get("minecraft:shelf_mushroom");
     @Nullable public static final ItemType SHELTER_POTTERY_SHERD = get("minecraft:shelter_pottery_sherd");
     @Nullable public static final ItemType SHIELD = get("minecraft:shield");
     @Nullable public static final ItemType SHORT_DRY_GRASS = get("minecraft:short_dry_grass");
@@ -1268,6 +1370,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType SNOW_BLOCK = get("minecraft:snow_block");
     @Nullable public static final ItemType SNOW_GOLEM_SPAWN_EGG = get("minecraft:snow_golem_spawn_egg");
     @Nullable public static final ItemType SNOWBALL = get("minecraft:snowball");
+    @Nullable public static final ItemType SNOWY_VILLAGE_MAP = get("minecraft:snowy_village_map");
     @Nullable public static final ItemType SOUL_CAMPFIRE = get("minecraft:soul_campfire");
     @Nullable public static final ItemType SOUL_LANTERN = get("minecraft:soul_lantern");
     @Nullable public static final ItemType SOUL_SAND = get("minecraft:soul_sand");
@@ -1319,6 +1422,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType STONE_STAIRS = get("minecraft:stone_stairs");
     @Nullable public static final ItemType STONE_SWORD = get("minecraft:stone_sword");
     @Nullable public static final ItemType STONECUTTER = get("minecraft:stonecutter");
+    @Nullable public static final ItemType STRAW_BED = get("minecraft:straw_bed");
     @Nullable public static final ItemType STRAY_SPAWN_EGG = get("minecraft:stray_spawn_egg");
     @Nullable public static final ItemType STRIDER_SPAWN_EGG = get("minecraft:strider_spawn_egg");
     @Nullable public static final ItemType STRING = get("minecraft:string");
@@ -1341,6 +1445,8 @@ public final class ItemTypes {
     @Nullable public static final ItemType STRIPPED_OAK_WOOD = get("minecraft:stripped_oak_wood");
     @Nullable public static final ItemType STRIPPED_PALE_OAK_LOG = get("minecraft:stripped_pale_oak_log");
     @Nullable public static final ItemType STRIPPED_PALE_OAK_WOOD = get("minecraft:stripped_pale_oak_wood");
+    @Nullable public static final ItemType STRIPPED_POPLAR_LOG = get("minecraft:stripped_poplar_log");
+    @Nullable public static final ItemType STRIPPED_POPLAR_WOOD = get("minecraft:stripped_poplar_wood");
     @Nullable public static final ItemType STRIPPED_SPRUCE_LOG = get("minecraft:stripped_spruce_log");
     @Nullable public static final ItemType STRIPPED_SPRUCE_WOOD = get("minecraft:stripped_spruce_wood");
     @Nullable public static final ItemType STRIPPED_WARPED_HYPHAE = get("minecraft:stripped_warped_hyphae");
@@ -1364,9 +1470,11 @@ public final class ItemTypes {
     @Nullable public static final ItemType SUSPICIOUS_GRAVEL = get("minecraft:suspicious_gravel");
     @Nullable public static final ItemType SUSPICIOUS_SAND = get("minecraft:suspicious_sand");
     @Nullable public static final ItemType SUSPICIOUS_STEW = get("minecraft:suspicious_stew");
+    @Nullable public static final ItemType SWAMP_HUT_MAP = get("minecraft:swamp_hut_map");
     @Nullable public static final ItemType SWEET_BERRIES = get("minecraft:sweet_berries");
     @Nullable public static final ItemType TADPOLE_BUCKET = get("minecraft:tadpole_bucket");
     @Nullable public static final ItemType TADPOLE_SPAWN_EGG = get("minecraft:tadpole_spawn_egg");
+    @Nullable public static final ItemType TAIGA_VILLAGE_MAP = get("minecraft:taiga_village_map");
     @Nullable public static final ItemType TALL_DRY_GRASS = get("minecraft:tall_dry_grass");
     @Nullable public static final ItemType TALL_GRASS = get("minecraft:tall_grass");
     @Nullable public static final ItemType TARGET = get("minecraft:target");
@@ -1417,6 +1525,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType WANDERING_TRADER_SPAWN_EGG = get("minecraft:wandering_trader_spawn_egg");
     @Nullable public static final ItemType WARD_ARMOR_TRIM_SMITHING_TEMPLATE = get("minecraft:ward_armor_trim_smithing_template");
     @Nullable public static final ItemType WARDEN_SPAWN_EGG = get("minecraft:warden_spawn_egg");
+    @Nullable public static final ItemType WARM_OCEAN_RUINS_MAP = get("minecraft:warm_ocean_ruins_map");
     @Nullable public static final ItemType WARPED_BUTTON = get("minecraft:warped_button");
     @Nullable public static final ItemType WARPED_DOOR = get("minecraft:warped_door");
     @Nullable public static final ItemType WARPED_FENCE = get("minecraft:warped_fence");
@@ -1524,6 +1633,9 @@ public final class ItemTypes {
     @Nullable public static final ItemType WHITE_CARPET = get("minecraft:white_carpet");
     @Nullable public static final ItemType WHITE_CONCRETE = get("minecraft:white_concrete");
     @Nullable public static final ItemType WHITE_CONCRETE_POWDER = get("minecraft:white_concrete_powder");
+    @Nullable public static final ItemType WHITE_CONCRETE_SLAB = get("minecraft:white_concrete_slab");
+    @Nullable public static final ItemType WHITE_CONCRETE_STAIRS = get("minecraft:white_concrete_stairs");
+    @Nullable public static final ItemType WHITE_CUSHION = get("minecraft:white_cushion");
     @Nullable public static final ItemType WHITE_DYE = get("minecraft:white_dye");
     @Nullable public static final ItemType WHITE_GLAZED_TERRACOTTA = get("minecraft:white_glazed_terracotta");
     @Nullable public static final ItemType WHITE_HARNESS = get("minecraft:white_harness");
@@ -1533,6 +1645,8 @@ public final class ItemTypes {
     @Nullable public static final ItemType WHITE_TERRACOTTA = get("minecraft:white_terracotta");
     @Nullable public static final ItemType WHITE_TULIP = get("minecraft:white_tulip");
     @Nullable public static final ItemType WHITE_WOOL = get("minecraft:white_wool");
+    @Nullable public static final ItemType WHITE_WOOL_SLAB = get("minecraft:white_wool_slab");
+    @Nullable public static final ItemType WHITE_WOOL_STAIRS = get("minecraft:white_wool_stairs");
     @Nullable public static final ItemType WILD_ARMOR_TRIM_SMITHING_TEMPLATE = get("minecraft:wild_armor_trim_smithing_template");
     @Nullable public static final ItemType WILDFLOWERS = get("minecraft:wildflowers");
     @Nullable public static final ItemType WIND_CHARGE = get("minecraft:wind_charge");
@@ -1549,6 +1663,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType WOODEN_SHOVEL = get("minecraft:wooden_shovel");
     @Nullable public static final ItemType WOODEN_SPEAR = get("minecraft:wooden_spear");
     @Nullable public static final ItemType WOODEN_SWORD = get("minecraft:wooden_sword");
+    @Nullable public static final ItemType WOODLAND_MANSION_MAP = get("minecraft:woodland_mansion_map");
     @Nullable public static final ItemType WRITABLE_BOOK = get("minecraft:writable_book");
     @Nullable public static final ItemType WRITTEN_BOOK = get("minecraft:written_book");
     @Nullable public static final ItemType YELLOW_BANNER = get("minecraft:yellow_banner");
@@ -1558,14 +1673,20 @@ public final class ItemTypes {
     @Nullable public static final ItemType YELLOW_CARPET = get("minecraft:yellow_carpet");
     @Nullable public static final ItemType YELLOW_CONCRETE = get("minecraft:yellow_concrete");
     @Nullable public static final ItemType YELLOW_CONCRETE_POWDER = get("minecraft:yellow_concrete_powder");
+    @Nullable public static final ItemType YELLOW_CONCRETE_SLAB = get("minecraft:yellow_concrete_slab");
+    @Nullable public static final ItemType YELLOW_CONCRETE_STAIRS = get("minecraft:yellow_concrete_stairs");
+    @Nullable public static final ItemType YELLOW_CUSHION = get("minecraft:yellow_cushion");
     @Nullable public static final ItemType YELLOW_DYE = get("minecraft:yellow_dye");
     @Nullable public static final ItemType YELLOW_GLAZED_TERRACOTTA = get("minecraft:yellow_glazed_terracotta");
     @Nullable public static final ItemType YELLOW_HARNESS = get("minecraft:yellow_harness");
+    @Nullable public static final ItemType YELLOW_POPLAR_LEAVES = get("minecraft:yellow_poplar_leaves");
     @Nullable public static final ItemType YELLOW_SHULKER_BOX = get("minecraft:yellow_shulker_box");
     @Nullable public static final ItemType YELLOW_STAINED_GLASS = get("minecraft:yellow_stained_glass");
     @Nullable public static final ItemType YELLOW_STAINED_GLASS_PANE = get("minecraft:yellow_stained_glass_pane");
     @Nullable public static final ItemType YELLOW_TERRACOTTA = get("minecraft:yellow_terracotta");
     @Nullable public static final ItemType YELLOW_WOOL = get("minecraft:yellow_wool");
+    @Nullable public static final ItemType YELLOW_WOOL_SLAB = get("minecraft:yellow_wool_slab");
+    @Nullable public static final ItemType YELLOW_WOOL_STAIRS = get("minecraft:yellow_wool_stairs");
     @Nullable public static final ItemType ZOGLIN_SPAWN_EGG = get("minecraft:zoglin_spawn_egg");
     @Nullable public static final ItemType ZOMBIE_HEAD = get("minecraft:zombie_head");
     @Nullable public static final ItemType ZOMBIE_HORSE_SPAWN_EGG = get("minecraft:zombie_horse_spawn_egg");
