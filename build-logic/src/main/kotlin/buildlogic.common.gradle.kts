@@ -7,9 +7,6 @@ plugins {
     id("org.enginehub.crankcase.git")
 }
 
-group = rootProject.group
-version = rootProject.version
-
 dependencies {
     for (conf in listOf("implementation", "api")) {
         if (!configurations.names.contains(conf)) {

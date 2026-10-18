@@ -84,7 +84,7 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
             Region oldRegion;
             try {
                 oldRegion = oldSelector.getRegion();
-            } catch (IncompleteRegionException e) {
+            } catch (IncompleteRegionException _) {
                 return;
             }
 

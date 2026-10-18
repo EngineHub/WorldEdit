@@ -35,7 +35,7 @@ public class SkullBlockCompatibilityHandler implements NBTCompatibilityHandler {
         Property<Direction> tempFacing;
         try {
             tempFacing = BlockTypes.SKELETON_WALL_SKULL.getProperty("facing");
-        } catch (NullPointerException | IllegalArgumentException | ClassCastException e) {
+        } catch (NullPointerException | IllegalArgumentException | ClassCastException _) {
             tempFacing = null;
         }
         FACING_PROPERTY = tempFacing;

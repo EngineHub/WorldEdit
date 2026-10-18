@@ -45,7 +45,6 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.gamemode.GameMode;
 import com.sk89q.worldedit.world.gamemode.GameModes;
-import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -150,7 +149,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
         Location location = new Location(player.getWorld(), pos.x(), pos.y(),
                 pos.z(), yaw, pitch);
         if (WorldEditPlugin.getInstance().isFolia()) {
-            var _  = PaperLib.teleportAsync(player, location);
+            var _  = player.teleportAsync(location);
             return true;
         } else {
             return player.teleport(location);
@@ -232,7 +231,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
     @Override
     public boolean setLocation(com.sk89q.worldedit.util.Location location) {
         if (WorldEditPlugin.getInstance().isFolia()) {
-            var _  = PaperLib.teleportAsync(player, BukkitAdapter.adapt(location));
+            var _  = player.teleportAsync(BukkitAdapter.adapt(location));
             return true;
         } else {
             return player.teleport(BukkitAdapter.adapt(location));

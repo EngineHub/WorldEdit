@@ -91,7 +91,7 @@ public class YAMLNode {
 
             try {
                 node = (Map<String, Object>) o;
-            } catch (ClassCastException e) {
+            } catch (ClassCastException _) {
                 return null;
             }
         }

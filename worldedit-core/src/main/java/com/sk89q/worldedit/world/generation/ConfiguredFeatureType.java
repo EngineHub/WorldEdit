@@ -22,6 +22,12 @@ package com.sk89q.worldedit.world.generation;
 import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
 
+/**
+ * A configured feature type.
+ *
+ * @param id The ID
+ * @apiNote Due to Minecraft renaming the underlying registry, this will be renamed with the next major version.
+ */
 public record ConfiguredFeatureType(String id) implements Keyed {
     public static final NamespacedRegistry<ConfiguredFeatureType> REGISTRY = new NamespacedRegistry<>("configured feature type", "configured_feature_type", "minecraft");
 

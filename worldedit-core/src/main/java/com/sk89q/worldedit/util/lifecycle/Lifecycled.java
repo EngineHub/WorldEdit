@@ -135,7 +135,7 @@ public interface Lifecycled<T> {
      */
     default Lifecycled<T> filter(Predicate<T> filterer) {
         SimpleLifecycled<T> downstream = SimpleLifecycled.invalid();
-        events().onInvalidated(downstream, (d, lifecycled) -> d.invalidate());
+        events().onInvalidated(downstream, (d, _) -> d.invalidate());
         events().onNewValue(downstream, (d, lifecycled) -> {
             T value = lifecycled.valueOrThrow();
             if (filterer.test(value)) {

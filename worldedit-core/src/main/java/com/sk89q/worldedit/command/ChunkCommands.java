@@ -126,7 +126,7 @@ public class ChunkCommands {
         if (Files.exists(chunkPath)) {
             try {
                 currentInfo = ChunkDeleter.readInfo(chunkPath);
-            } catch (IOException e) {
+            } catch (IOException _) {
                 throw new StopExecutionException(TextComponent.of("Error reading existing chunk file."));
             }
         }

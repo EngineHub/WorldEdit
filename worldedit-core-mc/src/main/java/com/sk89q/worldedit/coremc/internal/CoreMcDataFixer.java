@@ -39,6 +39,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.FloatTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -48,6 +49,7 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.util.datafix.DataFixers;
 import net.minecraft.util.datafix.fixes.References;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.block.state.StateHolder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.enginehub.linbus.tree.LinCompoundTag;
@@ -135,16 +137,19 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
     }
 
     private String fixBlockState(String blockState, int srcVer) {
-        net.minecraft.nbt.CompoundTag stateNBT = stateToNBT(blockState);
+        net.minecraft.nbt.CompoundTag stateNBT = stateToNBT(blockState, srcVer);
         Dynamic<Tag> dynamic = new Dynamic<>(OPS_NBT, stateNBT);
         net.minecraft.nbt.CompoundTag fixed = (net.minecraft.nbt.CompoundTag) fixer.update(References.BLOCK_STATE, dynamic, srcVer, dataVersion).getValue();
         return nbtToState(fixed);
     }
 
     private String nbtToState(net.minecraft.nbt.CompoundTag tagCompound) {
+        if (tagCompound.isEmpty()) {
+            return "";
+        }
         StringBuilder sb = new StringBuilder();
-        sb.append(tagCompound.getString("Name").get());
-        tagCompound.getCompound("Properties").ifPresent(props -> {
+        sb.append(tagCompound.getString(StateHolder.ID_TAG).orElseThrow());
+        tagCompound.getCompound(StateHolder.PROPERTIES_TAG).ifPresent(props -> {
             sb.append('[');
             sb.append(props.keySet().stream().map(k -> k + "=" + props.getString(k).get().replace("\"", "")).collect(Collectors.joining(",")));
             sb.append(']');
@@ -152,13 +157,16 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
         return sb.toString();
     }
 
-    private static net.minecraft.nbt.CompoundTag stateToNBT(String blockState) {
+    private static net.minecraft.nbt.CompoundTag stateToNBT(String blockState, int srcVer) {
+        boolean legacyFieldNames = srcVer < BLOCK_STATE_FIELD_RENAME_VERSION;
+        String idKey = legacyFieldNames ? NbtUtils.LEGACY_BLOCK_STATE_ID_TAG : StateHolder.ID_TAG;
+        String propertiesKey = legacyFieldNames ? NbtUtils.LEGACY_BLOCKSTATE_PROPERTY_TAG : StateHolder.PROPERTIES_TAG;
         int propIdx = blockState.indexOf('[');
         net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
         if (propIdx < 0) {
-            tag.putString("Name", blockState);
+            tag.putString(idKey, blockState);
         } else {
-            tag.putString("Name", blockState.substring(0, propIdx));
+            tag.putString(idKey, blockState.substring(0, propIdx));
             net.minecraft.nbt.CompoundTag propTag = new net.minecraft.nbt.CompoundTag();
             String props = blockState.substring(propIdx + 1, blockState.length() - 1);
             String[] propArr = props.split(",");
@@ -166,7 +174,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
                 final String[] split = pair.split("=");
                 propTag.putString(split[0], split[1]);
             }
-            tag.put("Properties", propTag);
+            tag.put(propertiesKey, propTag);
         }
         return tag;
     }
@@ -186,6 +194,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
 
     private static final NbtOps OPS_NBT = NbtOps.INSTANCE;
     private static final int LEGACY_VERSION = 1343;
+    private static final int BLOCK_STATE_FIELD_RENAME_VERSION = 5006;
 
     private final int dataVersion;
     private final Map<LegacyType, List<DataConverter>> converters = new EnumMap<>(LegacyType.class);
@@ -317,13 +326,13 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
 
 
     private void registerInspector(LegacyType type, DataInspector inspector) {
-        this.inspectors.computeIfAbsent(type, k -> new ArrayList<>()).add(inspector);
+        this.inspectors.computeIfAbsent(type, _ -> new ArrayList<>()).add(inspector);
     }
 
     private void registerConverter(LegacyType type, DataConverter converter) {
         int version = converter.getDataVersion();
 
-        List<DataConverter> list = this.converters.computeIfAbsent(type, k -> new ArrayList<>());
+        List<DataConverter> list = this.converters.computeIfAbsent(type, _ -> new ArrayList<>());
         if (!list.isEmpty() && list.getLast().getDataVersion() > version) {
             for (int j = 0; j < list.size(); ++j) {
                 if (list.get(j).getDataVersion() > version) {
@@ -1848,14 +1857,14 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
                                     if (object == null) {
                                         object = Component.literal("");
                                     }
-                                } catch (JsonParseException jsonparseexception) {
+                                } catch (JsonParseException _) {
                                     ;
                                 }
 
                                 if (object == null) {
                                     try {
                                         object = ComponentConverter.Serializer.fromJson(s, platform.serverRegistryAccess());
-                                    } catch (JsonParseException jsonparseexception1) {
+                                    } catch (JsonParseException _) {
                                         ;
                                     }
                                 }
@@ -1863,7 +1872,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
                                 if (object == null) {
                                     try {
                                         object = ComponentConverter.Serializer.fromJsonLenient(s, platform.serverRegistryAccess());
-                                    } catch (JsonParseException jsonparseexception2) {
+                                    } catch (JsonParseException _) {
                                         ;
                                     }
                                 }
@@ -1926,7 +1935,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
                     i = cmp.getInt("VillagerProfession").flatMap(profession -> {
                         try {
                             return Optional.of(this.convert(profession));
-                        } catch (RuntimeException runtimeexception) {
+                        } catch (RuntimeException _) {
                             return Optional.empty();
                         }
                     }).orElse(i);
@@ -2392,8 +2401,6 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
         }
 
         public net.minecraft.nbt.CompoundTag convert(net.minecraft.nbt.CompoundTag cmp) {
-            boolean flag = true;
-
             try {
                 net.minecraft.nbt.CompoundTag nbttagcompound1 = cmp.getCompoundOrEmpty("Level");
                 int i = nbttagcompound1.getIntOr("xPos", 0);
@@ -2421,7 +2428,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
                         }
                     }
                 }
-            } catch (Exception exception) {
+            } catch (Exception _) {
                 DataConverterBedBlock.a.warn("Unable to datafix Bed blocks, level format may be missing tags.");
             }
 
@@ -2511,14 +2518,14 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
                         if (object == null) {
                             object = Component.literal("");
                         }
-                    } catch (JsonParseException jsonparseexception) {
+                    } catch (JsonParseException _) {
                         ;
                     }
 
                     if (object == null) {
                         try {
                             object = ComponentConverter.Serializer.fromJson(s1, platform.serverRegistryAccess());
-                        } catch (JsonParseException jsonparseexception1) {
+                        } catch (JsonParseException _) {
                             ;
                         }
                     }
@@ -2526,7 +2533,7 @@ public final class CoreMcDataFixer implements com.sk89q.worldedit.world.DataFixe
                     if (object == null) {
                         try {
                             object = ComponentConverter.Serializer.fromJsonLenient(s1, platform.serverRegistryAccess());
-                        } catch (JsonParseException jsonparseexception2) {
+                        } catch (JsonParseException _) {
                             ;
                         }
                     }

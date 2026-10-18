@@ -53,7 +53,7 @@ public class ShallowObjectReport extends DataReport {
             try {
                 Object value = field.get(object);
                 append(field.getName(), String.valueOf(value));
-            } catch (IllegalAccessException e) {
+            } catch (IllegalAccessException _) {
                 LOGGER.warn("Failed to get value of '" + field.getName() + "' on " + type);
             }
         }

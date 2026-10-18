@@ -81,7 +81,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
     public void load() {
         try (InputStream stream = new FileInputStream(path)) {
             properties.load(stream);
-        } catch (FileNotFoundException ignored) {
+        } catch (FileNotFoundException _) {
             // We expect to not find the file the first time
         } catch (IOException e) {
             LOGGER.warn("Failed to read configuration", e);
@@ -202,7 +202,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         } else {
             try {
                 return Integer.parseInt(val);
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException _) {
                 properties.setProperty(key, String.valueOf(def));
                 return def;
             }
@@ -224,7 +224,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         } else {
             try {
                 return Double.parseDouble(val);
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException _) {
                 properties.setProperty(key, String.valueOf(def));
                 return def;
             }
@@ -254,7 +254,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
                 try {
                     int v = Integer.parseInt(part.trim());
                     set.add(v);
-                } catch (NumberFormatException ignored) {
+                } catch (NumberFormatException _) {
                     // Historically ignored
                 }
             }

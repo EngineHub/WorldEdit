@@ -181,7 +181,7 @@ class BlockMapTest extends BaseWorldEditTest {
         @DisplayName("never calls the forEach action")
         @SuppressWarnings("try")
         void neverCallsForEachAction() throws Exception {
-            try (AutoCloseable ignored = MockitoAnnotations.openMocks(this)) {
+            try (AutoCloseable _ = MockitoAnnotations.openMocks(this)) {
                 BlockMap<BaseBlock> map = BlockMap.createForBaseBlock();
                 map.forEach(biConsumer);
                 verifyNoMoreInteractions(biConsumer);
@@ -192,7 +192,7 @@ class BlockMapTest extends BaseWorldEditTest {
         @DisplayName("never calls the replaceAll function")
         @SuppressWarnings("try")
         void neverCallsReplaceAllFunction() throws Exception {
-            try (AutoCloseable ignored = MockitoAnnotations.openMocks(this)) {
+            try (AutoCloseable _ = MockitoAnnotations.openMocks(this)) {
                 BlockMap<BaseBlock> map = BlockMap.createForBaseBlock();
                 map.replaceAll(biFunction);
                 verifyNoMoreInteractions(biFunction);
@@ -236,7 +236,7 @@ class BlockMapTest extends BaseWorldEditTest {
         @DisplayName("inserts on computeIfAbsent")
         void insertOnComputeIfAbsent() {
             BlockMap<BaseBlock> map = BlockMap.createForBaseBlock();
-            assertEquals(air, map.computeIfAbsent(BlockVector3.ZERO, k -> air));
+            assertEquals(air, map.computeIfAbsent(BlockVector3.ZERO, _ -> air));
             assertEquals(1, map.size());
             assertEquals(air, map.get(BlockVector3.ZERO));
         }
@@ -245,7 +245,7 @@ class BlockMapTest extends BaseWorldEditTest {
         @DisplayName("inserts on compute")
         void insertOnCompute() {
             BlockMap<BaseBlock> map = BlockMap.createForBaseBlock();
-            assertEquals(air, map.compute(BlockVector3.ZERO, (k, v) -> air));
+            assertEquals(air, map.compute(BlockVector3.ZERO, (_, _) -> air));
             assertEquals(1, map.size());
             assertEquals(air, map.get(BlockVector3.ZERO));
         }
@@ -254,7 +254,7 @@ class BlockMapTest extends BaseWorldEditTest {
         @DisplayName("does nothing on computeIfPresent")
         void doesNothingOnComputeIfPresent() {
             BlockMap<BaseBlock> map = BlockMap.createForBaseBlock();
-            assertNull(map.computeIfPresent(BlockVector3.ZERO, (k, v) -> air));
+            assertNull(map.computeIfPresent(BlockVector3.ZERO, (_, _) -> air));
             assertEquals(0, map.size());
         }
 
@@ -262,7 +262,7 @@ class BlockMapTest extends BaseWorldEditTest {
         @DisplayName("inserts on merge, without calling merge function")
         @SuppressWarnings("try")
         void insertsOnMerge() throws Exception {
-            try (AutoCloseable ignored = MockitoAnnotations.openMocks(this)) {
+            try (AutoCloseable _ = MockitoAnnotations.openMocks(this)) {
                 BlockMap<BaseBlock> map = BlockMap.createForBaseBlock();
                 assertEquals(air, map.merge(BlockVector3.ZERO, air, mergeFunction));
                 assertEquals(1, map.size());
@@ -459,7 +459,7 @@ class BlockMapTest extends BaseWorldEditTest {
         @SuppressWarnings("try")
         void neverCallsForEachAction() {
             generator.makeVectorsStream().sequential().forEach(vec -> {
-                try (AutoCloseable ignored = MockitoAnnotations.openMocks(this)) {
+                try (AutoCloseable _ = MockitoAnnotations.openMocks(this)) {
                     BlockMap<BaseBlock> map = BlockMap.createForBaseBlock();
                     map.put(vec, air);
                     map.forEach(biConsumer);
@@ -477,7 +477,7 @@ class BlockMapTest extends BaseWorldEditTest {
             generator.makeVectorsStream().forEach(vec -> {
                 BlockMap<BaseBlock> map = BlockMap.createForBaseBlock();
                 map.put(vec, air);
-                map.replaceAll((v, b) -> oakWood);
+                map.replaceAll((_, _) -> oakWood);
                 assertEquals(oakWood, map.get(vec));
             });
         }
@@ -663,7 +663,7 @@ class BlockMapTest extends BaseWorldEditTest {
                 }));
                 assertEquals(1, map.size());
                 assertEquals(oakWood, map.get(vec));
-                assertNull(map.compute(vec, (k, v) -> null));
+                assertNull(map.compute(vec, (_, _) -> null));
                 assertEquals(0, map.size());
             });
         }
@@ -684,7 +684,7 @@ class BlockMapTest extends BaseWorldEditTest {
                 assertEquals(2, map.size());
                 assertEquals(air, map.get(vec));
                 assertEquals(oakWood, map.get(nonMatch));
-                assertNull(map.compute(nonMatch, (k, v) -> null));
+                assertNull(map.compute(nonMatch, (_, _) -> null));
                 assertEquals(1, map.size());
                 assertEquals(air, map.get(vec));
             });
@@ -703,7 +703,7 @@ class BlockMapTest extends BaseWorldEditTest {
                 }));
                 assertEquals(1, map.size());
                 assertEquals(oakWood, map.get(vec));
-                assertNull(map.computeIfPresent(vec, (k, v) -> null));
+                assertNull(map.computeIfPresent(vec, (_, _) -> null));
                 assertEquals(0, map.size());
             });
         }

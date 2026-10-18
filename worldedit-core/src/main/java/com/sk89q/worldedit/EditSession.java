@@ -776,7 +776,7 @@ public class EditSession implements Extent, AutoCloseable {
         for (int y = maxY; y >= minY; --y) {
             BlockVector3 pt = BlockVector3.at(x, y, z);
             if (filter == null
-                    ? getBlock(pt).getBlockType().getMaterial().isMovementBlocker()
+                    ? getBlock(pt).getBlockType().getMaterial().isSolid()
                     : filter.test(pt)) {
                 return y;
             }
@@ -2214,7 +2214,7 @@ public class EditSession implements Extent, AutoCloseable {
                         break;
                     } else if (block.getBlockType() == BlockTypes.WATER || block.getBlockType() == BlockTypes.LAVA) {
                         break;
-                    } else if (block.getBlockType().getMaterial().isMovementBlocker()) {
+                    } else if (block.getBlockType().getMaterial().isSolid()) {
                         break;
                     }
                 }
@@ -2483,7 +2483,7 @@ public class EditSession implements Extent, AutoCloseable {
                     } else {
                         return defaultMaterial;
                     }
-                } catch (ExpressionTimeoutException e) {
+                } catch (ExpressionTimeoutException _) {
                     timedOut[0] = timedOut[0] + 1;
                     return null;
                 } catch (RuntimeException e) {
@@ -2922,7 +2922,7 @@ public class EditSession implements Extent, AutoCloseable {
         while (!queue.isEmpty()) {
             final BlockVector3 current = queue.removeFirst();
             final BlockState block = getBlock(current);
-            if (block.getBlockType().getMaterial().isMovementBlocker()) {
+            if (block.getBlockType().getMaterial().isSolid()) {
                 continue;
             }
 
@@ -3002,7 +3002,7 @@ public class EditSession implements Extent, AutoCloseable {
 
                     // TODO: Allow biome setting via a script variable (needs BiomeType<->int mapping)
                     return defaultBiomeType;
-                } catch (ExpressionTimeoutException e) {
+                } catch (ExpressionTimeoutException _) {
                     timedOut.getAndIncrement();
                     return null;
                 } catch (Exception e) {

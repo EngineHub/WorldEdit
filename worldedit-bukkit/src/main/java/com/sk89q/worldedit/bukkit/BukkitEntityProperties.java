@@ -55,7 +55,7 @@ class BukkitEntityProperties implements EntityProperties {
         try {
             Class.forName("org.bukkit.entity.AbstractVillager");
             temp = true;
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException _) {
             temp = false;
         }
         HAS_ABSTRACT_VILLAGER = temp;

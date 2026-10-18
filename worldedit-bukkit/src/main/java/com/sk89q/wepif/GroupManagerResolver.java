@@ -39,7 +39,7 @@ public class GroupManagerResolver extends DinnerPermsResolver {
             }
 
             return new GroupManagerResolver(server, worldsHolder);
-        } catch (Throwable t) {
+        } catch (Throwable _) {
             return null;
         }
     }

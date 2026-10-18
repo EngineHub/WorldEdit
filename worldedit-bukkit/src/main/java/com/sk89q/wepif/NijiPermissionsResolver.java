@@ -42,7 +42,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
         PluginManager pluginManager = server.getPluginManager();
         try {
             Class.forName("com.nijikokun.bukkit.Permissions.Permissions");
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException _) {
             return null;
         }
 
@@ -80,7 +80,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
             }
             try {
                 return api.getHandler().has(player, permission);
-            } catch (Throwable t) {
+            } catch (Throwable _) {
                 return Permissions.Security.permission(player, permission);
             }
         } catch (Throwable t) {
@@ -94,7 +94,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
         try {
             try {
                 return api.getHandler().has(worldName, name, permission);
-            } catch (Throwable t) {
+            } catch (Throwable _) {
                 return api.getHandler().has(server.getPlayerExact(name), permission);
             }
         } catch (Throwable t) {
@@ -112,7 +112,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
             }
             try {
                 return api.getHandler().inGroup(player.getWorld().getName(), name, group);
-            } catch (Throwable t) {
+            } catch (Throwable _) {
                 return Permissions.Security.inGroup(name, group);
             }
         } catch (Throwable t) {
@@ -131,7 +131,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
             String[] groups = null;
             try {
                 groups = api.getHandler().getGroups(player.getWorld().getName(), player.getName());
-            } catch (Throwable t) {
+            } catch (Throwable _) {
                 String group = Permissions.Security.getGroup(player.getWorld().getName(), player.getName());
                 if (group != null) {
                     groups = new String[] { group };

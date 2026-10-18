@@ -37,7 +37,7 @@ public final class SideEffectSet {
     private static final SideEffectSet NONE = new SideEffectSet(
         Arrays.stream(SideEffect.values())
             .filter(SideEffect::isExposed)
-            .collect(Collectors.toMap(Function.identity(), state -> SideEffect.State.OFF))
+            .collect(Collectors.toMap(Function.identity(), _ -> SideEffect.State.OFF))
     );
 
     static {

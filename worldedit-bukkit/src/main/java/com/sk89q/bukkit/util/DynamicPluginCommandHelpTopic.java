@@ -104,7 +104,7 @@ public class DynamicPluginCommandHelpTopic extends HelpTopic {
                             return true;
                         }
                     }
-                } catch (Throwable t) {
+                } catch (Throwable _) {
                     // Doesn't take the CommandSender (Hooray for compile-time generics!), we have other methods at our disposal
                 }
             }
@@ -115,7 +115,7 @@ public class DynamicPluginCommandHelpTopic extends HelpTopic {
                             return true;
                         }
                     }
-                } catch (WEPIFRuntimeException e) {
+                } catch (WEPIFRuntimeException _) {
                     // PermissionsResolverManager not initialized, eat it
                 }
             }

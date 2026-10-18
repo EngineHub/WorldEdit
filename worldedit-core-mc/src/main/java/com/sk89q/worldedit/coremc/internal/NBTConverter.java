@@ -75,7 +75,7 @@ public final class NBTConverter {
             case LinFloatTag t -> toNative(t);
             case LinShortTag t -> toNative(t);
             case LinDoubleTag t -> toNative(t);
-            case LinEndTag ignored -> EndTag.INSTANCE;
+            case LinEndTag _ -> EndTag.INSTANCE;
         };
     }
 

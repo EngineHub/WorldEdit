@@ -78,12 +78,9 @@ tasks.compileJava {
 }
 
 tasks.generateGrammarSource {
-    val pkg = "com.sk89q.worldedit.antlr"
-    outputDirectory = file("build/generated-src/antlr/main/${pkg.replace('.', '/')}")
-    arguments = listOf(
-        "-visitor", "-package", pkg,
-        "-Xexact-output-dir"
-    )
+    outputDirectory = file("build/generated-src/antlr/main")
+    packageName = "com.sk89q.worldedit.antlr"
+    arguments = listOf("-visitor", "-Xexact-output-dir")
 }
 
 tasks.withType<Checkstyle>().configureEach {

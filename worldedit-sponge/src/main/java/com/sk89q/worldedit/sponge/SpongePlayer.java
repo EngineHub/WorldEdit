@@ -68,7 +68,7 @@ public class SpongePlayer extends AbstractPlayerActor {
 
     protected SpongePlayer(ServerPlayer player) {
         this.player = player;
-        ThreadSafeCache.getInstance().getOnlineIds().add(getUniqueId());
+        ThreadSafeCache.getInstance().getOnlineIds().add(player.uniqueId());
     }
 
     @Override
@@ -260,7 +260,7 @@ public class SpongePlayer extends AbstractPlayerActor {
                         }
                     );
                     nativePlayer.connection.send(
-                        ClientboundBlockEntityDataPacket.create(structureBlockEntity, (be, ra) -> nativeNbtData));
+                        ClientboundBlockEntityDataPacket.create(structureBlockEntity, (_, _) -> nativeNbtData));
                 }
             }
         }

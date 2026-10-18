@@ -66,7 +66,7 @@ public class ExpressionMaskParser extends InputParser<Mask> {
                 return new ExpressionMask(exp, timeout);
             }
             return new ExpressionMask(exp);
-        } catch (ExpressionException e) {
+        } catch (ExpressionException _) {
             throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.invalid-expression"));
         }
     }

@@ -97,7 +97,7 @@ public class BlockDataCyler implements DoubleActionBlockTool {
                                 TextComponent.of(currentProperty.name()),
                                 TextComponent.of(String.valueOf(currentProperty.values().get(index)))
                         ));
-                    } catch (MaxChangedBlocksException e) {
+                    } catch (MaxChangedBlocksException _) {
                         player.printError(TranslatableComponent.of("worldedit.tool.max-block-changes"));
                     } finally {
                         session.remember(editSession);
