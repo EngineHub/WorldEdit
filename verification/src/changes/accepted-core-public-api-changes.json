@@ -101,6 +101,22 @@
             ]
         },
         {
+            "type": "com.sk89q.worldedit.world.registry.BlockMaterial",
+            "member": "Method com.sk89q.worldedit.world.registry.BlockMaterial.isFullCube()",
+            "changes": [
+                "METHOD_ABSTRACT_NOW_DEFAULT",
+                "ANNOTATION_DEPRECATED_ADDED"
+            ]
+        },
+        {
+            "type": "com.sk89q.worldedit.world.registry.BlockRegistry",
+            "member": "Method com.sk89q.worldedit.world.registry.BlockRegistry.getMaterial(com.sk89q.worldedit.world.block.BlockType)",
+            "changes": [
+                "METHOD_ABSTRACT_NOW_DEFAULT",
+                "ANNOTATION_DEPRECATED_ADDED"
+            ]
+        },
+        {
             "type": "com.sk89q.worldedit.world.registry.BlockRegistry",
             "member": "Method com.sk89q.worldedit.world.registry.BlockRegistry.getName(com.sk89q.worldedit.world.block.BlockType)",
             "changes": [

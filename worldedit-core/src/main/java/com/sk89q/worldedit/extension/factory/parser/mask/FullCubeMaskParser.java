@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.extension.factory.parser.mask;
 
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.blocks.ShapeType;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.function.mask.FullCubeMask;
@@ -30,7 +31,7 @@ import java.util.List;
 
 public class FullCubeMaskParser extends SimpleInputParser<Mask> {
 
-    private static final List<String> aliases = List.of("#fullcube");
+    private static final List<String> aliases = List.of("#fullcube", "#visualfullcube");
 
     public FullCubeMaskParser(WorldEdit worldEdit) {
         super(worldEdit);
@@ -43,6 +44,11 @@ public class FullCubeMaskParser extends SimpleInputParser<Mask> {
 
     @Override
     public Mask parseFromSimpleInput(String input, ParserContext context) throws InputParseException {
-        return new FullCubeMask(context.requireExtent());
+        ShapeType shapeType = switch (input) {
+            case "#fullcube" -> ShapeType.SHAPE;
+            case "#visualfullcube" -> ShapeType.VISUAL_SHAPE;
+            default -> throw new IllegalStateException("Unexpected value: " + input);
+        };
+        return new FullCubeMask(context.requireExtent(), shapeType);
     }
 }
