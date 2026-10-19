@@ -59,8 +59,8 @@ public class BundledBlockRegistry implements BlockRegistry {
 
     @Nullable
     @Override
-    public BlockMaterial getMaterial(BlockType blockType) {
-        return new PassthroughBlockMaterial(BundledBlockData.getInstance().getMaterialById(blockType.id()));
+    public BlockMaterial getMaterial(BlockType blockState) {
+        return new PassthroughBlockMaterial(BundledBlockData.getInstance().getMaterialById(blockState.id()));
     }
 
     @Nullable
