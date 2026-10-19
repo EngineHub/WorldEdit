@@ -25,6 +25,7 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
+import com.sk89q.worldedit.command.factory.ClipboardPasteFactory;
 import com.sk89q.worldedit.command.factory.ItemUseFactory;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
@@ -38,6 +39,7 @@ import com.sk89q.worldedit.function.RegionMaskingFilter;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.visitor.RegionVisitor;
+import com.sk89q.worldedit.internal.annotation.ClipboardMask;
 import com.sk89q.worldedit.internal.annotation.Direction;
 import com.sk89q.worldedit.internal.annotation.Selection;
 import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
@@ -52,6 +54,8 @@ import org.enginehub.piston.CommandParameters;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
+import org.enginehub.piston.annotation.param.ArgFlag;
+import org.enginehub.piston.annotation.param.Switch;
 import org.enginehub.piston.inject.Key;
 import org.enginehub.piston.part.ArgAcceptingCommandFlag;
 import org.enginehub.piston.part.SubCommandPart;
@@ -112,6 +116,38 @@ public class ApplyCommands {
         Operations.completeLegacy(visitor);
         actor.printInfo(TranslatableComponent.of("worldedit.apply.done", TextComponent.of(visitor.getAffected())));
         return visitor.getAffected();
+    }
+
+    @Command(
+        name = "clipboard",
+        desc = "Paste the clipboard at every block"
+    )
+    @CommandPermissions("worldedit.clipboard.paste")
+    @Logging(REGION)
+    public int clipboard(CommandParameters parameters, Actor actor, EditSession editSession,
+                         LocalSession localSession, @Selection Region region,
+                         @Switch(name = 'a', desc = "Don't paste air from the clipboard")
+                             boolean ignoreAir,
+                         @Switch(name = 'v', desc = "Include structure void blocks")
+                             boolean pasteStructureVoid,
+                         @Switch(name = 'o', desc = "Paste starting at each block, instead of centering on it")
+                             boolean usingOrigin,
+                         @Switch(name = 'e', desc = "Paste entities if available")
+                             boolean pasteEntities,
+                         @Switch(name = 'b', desc = "Paste biomes if available")
+                             boolean pasteBiomes,
+                         @ArgFlag(name = 'm', desc = "Only paste clipboard blocks matching this mask")
+                         @ClipboardMask
+                             Mask sourceMask) throws WorldEditException {
+        return apply(parameters, actor, editSession, localSession, region, new ClipboardPasteFactory(
+            localSession.getClipboard(),
+            ignoreAir,
+            !pasteStructureVoid,
+            usingOrigin,
+            pasteEntities,
+            pasteBiomes,
+            sourceMask
+        ));
     }
 
     @Command(

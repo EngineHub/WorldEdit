@@ -22,13 +22,10 @@ package com.sk89q.worldedit.command.tool.brush;
 import com.google.errorprone.annotations.InlineMe;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.function.ClipboardPaste;
 import com.sk89q.worldedit.function.mask.Mask;
-import com.sk89q.worldedit.function.operation.Operation;
-import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
 
 public class ClipboardBrush implements Brush {
@@ -65,21 +62,16 @@ public class ClipboardBrush implements Brush {
 
     @Override
     public void build(EditSession editSession, BlockVector3 position, Pattern pattern, double size) throws MaxChangedBlocksException {
-        Clipboard clipboard = holder.getClipboard();
-        Region region = clipboard.getRegion();
-        BlockVector3 centerOffset = region.getCenter().toBlockPoint().subtract(clipboard.getOrigin());
-
-        Operation operation = holder
-                .createPaste(editSession)
-                .to(usingOrigin ? position : position.subtract(centerOffset))
-                .ignoreAirBlocks(ignoreAirBlocks)
-                .ignoreStructureVoidBlocks(ignoreStructureVoidBlocks)
-                .copyEntities(pasteEntities)
-                .copyBiomes(pasteBiomes)
-                .maskSource(sourceMask)
-                .build();
-
-        Operations.completeLegacy(operation);
+        new ClipboardPaste(
+            editSession,
+            holder,
+            ignoreAirBlocks,
+            ignoreStructureVoidBlocks,
+            usingOrigin,
+            pasteEntities,
+            pasteBiomes,
+            sourceMask
+        ).apply(position);
     }
 
 }
