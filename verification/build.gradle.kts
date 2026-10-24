@@ -6,20 +6,31 @@ plugins {
     id("org.enginehub.crankcase.japicmp")
 }
 
-// Pull the version before our current version.
-val baseVersion = "(,${version.toString().substringBefore("-SNAPSHOT")}["
+// Pull the version before our current version, within the same major version.
+val currentVersion = version.toString().substringBefore("-SNAPSHOT")
+val baseVersion = "[${currentVersion.substringBefore('.')},$currentVersion["
 
-// TODO Re-add neoforge when it's fixed
-for (projectFragment in listOf("bukkit", "core", "fabric", "sponge")) {
+for (projectFragment in listOf("bukkit", "core", "fabric", "neoforge", "sponge")) {
     japicmp.addCheck(projectFragment) {
         // Skip the check when there is no prior published jar to compare against
         skipWhenOldClasspathMissing = true
         dependencies {
-            oldClasspath("com.sk89q.worldedit:worldedit-$projectFragment:$baseVersion") {
+            val artifactId = when (projectFragment) {
+                "fabric" -> "worldedit-fabric-mc${libs.fabric.minecraft.get().version}"
+                "neoforge" -> "worldedit-neoforge-mc${libs.versions.neoforge.minecraft.get()}"
+                else -> "worldedit-$projectFragment"
+            }
+            oldClasspath("com.sk89q.worldedit:$artifactId:$baseVersion") {
                 isTransitive = false
+                attributes {
+                    attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_API))
+                }
             }
             newClasspath(project(":worldedit-$projectFragment")) {
                 isTransitive = false
+                attributes {
+                    attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_API))
+                }
             }
         }
         // Internals are not API
