@@ -17,210 +17,46 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-// $Id$
-
 package com.sk89q.worldedit.world.snapshot;
 
-import com.sk89q.worldedit.internal.util.LogManagerCompat;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.DataException;
-import com.sk89q.worldedit.world.storage.ChunkStore;
-import com.sk89q.worldedit.world.storage.FileLegacyChunkStore;
-import com.sk89q.worldedit.world.storage.FileMcRegionChunkStore;
-import com.sk89q.worldedit.world.storage.TrueZipLegacyChunkStore;
-import com.sk89q.worldedit.world.storage.TrueZipMcRegionChunkStore;
-import com.sk89q.worldedit.world.storage.ZippedLegacyChunkStore;
-import com.sk89q.worldedit.world.storage.ZippedMcRegionChunkStore;
-import org.apache.logging.log4j.Logger;
+import com.sk89q.worldedit.world.chunk.Chunk;
+import com.sk89q.worldedit.world.storage.ChunkStoreHelper;
+import org.enginehub.linbus.tree.LinCompoundTag;
 
-import java.io.File;
+import java.io.Closeable;
 import java.io.IOException;
-import java.time.ZonedDateTime;
-import java.util.Locale;
-import java.util.zip.ZipFile;
 
 /**
- * A snapshot is a backup.
+ * Represents a world snapshot.
  */
-public class Snapshot implements Comparable<Snapshot> {
+public interface Snapshot extends Closeable {
 
-    private static final Logger LOGGER = LogManagerCompat.getLogger();
-
-    protected File file;
-    protected String name;
-    protected ZonedDateTime date;
+    SnapshotInfo getInfo();
 
     /**
-     * Construct a snapshot restoration operation.
+     * Get the chunk information for the given position. Implementations may ignore the Y-chunk
+     * if its chunks are only stored in 2D.
      *
-     * @param repo a repository
-     * @param snapshot a snapshot name
+     * @param position the position of the chunk
+     * @return the tag containing chunk data
      */
-    public Snapshot(SnapshotRepository repo, String snapshot) {
-        file = new File(repo.getDirectory(), snapshot);
-        name = snapshot;
+    LinCompoundTag getChunkTag(BlockVector3 position) throws DataException, IOException;
+
+    /**
+     * Get the chunk information for the given position.
+     *
+     * @see #getChunkTag(BlockVector3)
+     * @see ChunkStoreHelper#getChunk(LinCompoundTag)
+     */
+    default Chunk getChunk(BlockVector3 position) throws DataException, IOException {
+        return ChunkStoreHelper.getChunk(getChunkTag(position));
     }
 
     /**
-     * Get a chunk store.
-     *
-     * @return a chunk store
-     * @throws IOException if there is an error loading the chunk store
-     * @throws DataException  if there is an error loading the chunk store
+     * Close this snapshot. This releases the IO handles used to load chunk information.
      */
-    public ChunkStore getChunkStore() throws IOException, DataException {
-        ChunkStore chunkStore = internalGetChunkStore();
-
-        LOGGER.info("WorldEdit: Using " + chunkStore.getClass().getCanonicalName()
-                + " for loading snapshot '" + file.getAbsolutePath() + "'");
-
-        return chunkStore;
-    }
-
-    /**
-     * Get a chunk store.
-     *
-     * @return a chunk store
-     * @throws IOException if there is an error loading the chunk store
-     * @throws DataException if there is an error loading the chunk store
-     */
-    private ChunkStore internalGetChunkStore() throws IOException, DataException {
-        String lowerCaseFileName = file.getName().toLowerCase(Locale.ROOT);
-        if (lowerCaseFileName.endsWith(".zip")) {
-            try {
-                ChunkStore chunkStore = new TrueZipMcRegionChunkStore(file);
-
-                if (!chunkStore.isValid()) {
-                    return new TrueZipLegacyChunkStore(file);
-                }
-
-                return chunkStore;
-            } catch (NoClassDefFoundError _) {
-                ChunkStore chunkStore = new ZippedMcRegionChunkStore(file);
-
-                if (!chunkStore.isValid()) {
-                    return new ZippedLegacyChunkStore(file);
-                }
-
-                return chunkStore;
-            }
-        } else if (lowerCaseFileName.endsWith(".tar.bz2")
-                || lowerCaseFileName.endsWith(".tar.gz")
-                || lowerCaseFileName.endsWith(".tar")) {
-            try {
-                ChunkStore chunkStore = new TrueZipMcRegionChunkStore(file);
-
-                if (!chunkStore.isValid()) {
-                    return new TrueZipLegacyChunkStore(file);
-                }
-
-                return chunkStore;
-            } catch (NoClassDefFoundError _) {
-                throw new DataException("TrueZIP is required for .tar support");
-            }
-        } else {
-            ChunkStore chunkStore = new FileMcRegionChunkStore(file);
-
-            if (!chunkStore.isValid()) {
-                return new FileLegacyChunkStore(file);
-            }
-
-            return chunkStore;
-        }
-    }
-
-    /**
-     * Check the zip/tar file it contains the given world.
-     *
-     * @return true if the zip/tar file contains the given world
-     */
-    public boolean containsWorld(String worldname) {
-        try {
-            String lowerCaseFileName = file.getName().toLowerCase(Locale.ROOT);
-            if (lowerCaseFileName.endsWith(".zip")) {
-                try (ZipFile entry = new ZipFile(file)) {
-                    return (entry.getEntry(worldname) != null
-                            || entry.getEntry(worldname + "/level.dat") != null);
-                }
-            } else if (lowerCaseFileName.endsWith(".tar.bz2")
-                    || lowerCaseFileName.endsWith(".tar.gz")
-                    || lowerCaseFileName.endsWith(".tar")) {
-                try {
-                    de.schlichtherle.util.zip.ZipFile entry = new de.schlichtherle.util.zip.ZipFile(file);
-
-                    return entry.getEntry(worldname) != null;
-                } catch (NoClassDefFoundError _) {
-                    throw new DataException("TrueZIP is required for .tar support");
-                }
-            } else {
-                return file.getName().equalsIgnoreCase(worldname);
-            }
-        } catch (IOException _) {
-            // Skip the file, but print an error
-            LOGGER.info("Could not load snapshot: "
-                    + file.getPath());
-        } catch (DataException _) {
-            // No truezip, so tar file not supported.
-            // Dont print, just skip the file.
-        }
-        return false;
-    }
-
-    /**
-     * Get the snapshot's name.
-     *
-     * @return the name of the snapshot
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Get the file for the snapshot.
-     *
-     * @return path to the snapshot
-     */
-    public File getFile() {
-        return file;
-    }
-
-    /**
-     * Get the date associated with this snapshot.
-     *
-     * @return date for the snapshot
-     */
-    public ZonedDateTime getDate() {
-        return date;
-    }
-
-    /**
-     * Set the date of the snapshot.
-     *
-     * @param date the date of the snapshot
-     */
-    public void setDate(ZonedDateTime date) {
-        this.date = date;
-    }
-
     @Override
-    public int compareTo(Snapshot o) {
-        if (o.date == null || date == null) {
-            // Remove the folder from the name
-            int ourIndex = name.indexOf('/');
-            int theirIndex = o.name.indexOf('/');
-            return name.substring(Math.min(ourIndex, 0))
-                .compareTo(o.name.substring(Math.min(theirIndex, 0)));
-        } else {
-            return date.compareTo(o.date);
-        }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return o instanceof Snapshot snapshot && file.equals(snapshot.file);
-    }
-
-    @Override
-    public int hashCode() {
-        return file.hashCode();
-    }
+    void close() throws IOException;
 }

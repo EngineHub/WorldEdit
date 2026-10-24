@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.snapshot.experimental;
+package com.sk89q.worldedit.world.snapshot;
 
 import java.io.IOException;
 import java.net.URI;

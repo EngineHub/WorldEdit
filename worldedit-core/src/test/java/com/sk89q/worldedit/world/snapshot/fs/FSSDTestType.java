@@ -17,14 +17,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.snapshot.experimental.fs;
+package com.sk89q.worldedit.world.snapshot.fs;
 
 import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.io.file.ArchiveDir;
 import com.sk89q.worldedit.world.DataException;
-import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
-import com.sk89q.worldedit.world.snapshot.experimental.SnapshotInfo;
+import com.sk89q.worldedit.world.snapshot.Snapshot;
+import com.sk89q.worldedit.world.snapshot.SnapshotInfo;
 import org.junit.jupiter.api.DynamicNode;
 import org.junit.jupiter.api.DynamicTest;
 
@@ -39,12 +39,12 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
-import static com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabaseTest.CHUNK_POS;
-import static com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabaseTest.CHUNK_TAG;
-import static com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabaseTest.TIME_ONE;
-import static com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabaseTest.TIME_TWO;
-import static com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabaseTest.WORLD_ALPHA;
-import static com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabaseTest.WORLD_BETA;
+import static com.sk89q.worldedit.world.snapshot.fs.FileSystemSnapshotDatabaseTest.CHUNK_POS;
+import static com.sk89q.worldedit.world.snapshot.fs.FileSystemSnapshotDatabaseTest.CHUNK_TAG;
+import static com.sk89q.worldedit.world.snapshot.fs.FileSystemSnapshotDatabaseTest.TIME_ONE;
+import static com.sk89q.worldedit.world.snapshot.fs.FileSystemSnapshotDatabaseTest.TIME_TWO;
+import static com.sk89q.worldedit.world.snapshot.fs.FileSystemSnapshotDatabaseTest.WORLD_ALPHA;
+import static com.sk89q.worldedit.world.snapshot.fs.FileSystemSnapshotDatabaseTest.WORLD_BETA;
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.DynamicContainer.dynamicContainer;

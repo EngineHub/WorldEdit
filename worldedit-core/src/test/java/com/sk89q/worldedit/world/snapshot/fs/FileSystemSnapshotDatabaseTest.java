@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.snapshot.experimental.fs;
+package com.sk89q.worldedit.world.snapshot.fs;
 
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Resources;

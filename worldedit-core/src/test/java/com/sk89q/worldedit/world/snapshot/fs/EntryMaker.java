@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.snapshot.experimental.fs;
+package com.sk89q.worldedit.world.snapshot.fs;
 
 import com.google.common.collect.ImmutableMap;
 import com.sk89q.worldedit.world.storage.LegacyChunkStore;
@@ -30,10 +30,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
 
-import static com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabaseTest.CHUNK_DATA;
-import static com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabaseTest.CHUNK_POS;
-import static com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabaseTest.FORMATTER;
-import static com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabaseTest.REGION_DATA;
+import static com.sk89q.worldedit.world.snapshot.fs.FileSystemSnapshotDatabaseTest.CHUNK_DATA;
+import static com.sk89q.worldedit.world.snapshot.fs.FileSystemSnapshotDatabaseTest.CHUNK_POS;
+import static com.sk89q.worldedit.world.snapshot.fs.FileSystemSnapshotDatabaseTest.FORMATTER;
+import static com.sk89q.worldedit.world.snapshot.fs.FileSystemSnapshotDatabaseTest.REGION_DATA;
 
 interface EntryMaker<T> {
     EntryMaker<ZonedDateTime> TIMESTAMPED_DIR = (directory, time) -> {
