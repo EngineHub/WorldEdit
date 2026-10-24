@@ -27,9 +27,8 @@ import com.sk89q.worldedit.util.logging.LogFormat;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
-import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
-import com.sk89q.worldedit.world.snapshot.experimental.SnapshotDatabase;
-import com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabase;
+import com.sk89q.worldedit.world.snapshot.SnapshotDatabase;
+import com.sk89q.worldedit.world.snapshot.fs.FileSystemSnapshotDatabase;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
@@ -61,7 +60,6 @@ public abstract class LocalConfiguration {
     public int maxPolyhedronPoints = 20;
     public String shellSaveType = "";
     public boolean snapshotsConfigured = false;
-    public SnapshotRepository snapshotRepo = null;
     public SnapshotDatabase snapshotDatabase = null;
     public int maxRadius = -1;
     public int maxSuperPickaxeSize = 5;
@@ -192,25 +190,19 @@ public abstract class LocalConfiguration {
         return Paths.get(".");
     }
 
-    public void initializeSnapshotConfiguration(String directory, boolean experimental) {
+    public void initializeSnapshotConfiguration(String directory) {
         // Reset for reload
-        snapshotRepo = null;
         snapshotDatabase = null;
         snapshotsConfigured = false;
         if (!directory.isEmpty()) {
-            if (experimental) {
-                try {
-                    snapshotDatabase = FileSystemSnapshotDatabase.maybeCreate(
-                        Paths.get(directory),
-                        ArchiveNioSupports.combined()
-                    );
-                    snapshotsConfigured = true;
-                } catch (IOException e) {
-                    LOGGER.warn("Failed to open snapshotDatabase", e);
-                }
-            } else {
-                snapshotRepo = new SnapshotRepository(directory);
+            try {
+                snapshotDatabase = FileSystemSnapshotDatabase.maybeCreate(
+                    Paths.get(directory),
+                    ArchiveNioSupports.combined()
+                );
                 snapshotsConfigured = true;
+            } catch (IOException e) {
+                LOGGER.warn("Failed to open snapshotDatabase", e);
             }
         }
     }
