@@ -25,6 +25,7 @@ import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.world.fluid.FluidState;
+import com.sk89q.worldedit.world.registry.BlockMaterial;
 import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.util.HashSet;
@@ -78,6 +79,11 @@ public class BlockState implements BlockStateHolder<BlockState> {
     @Override
     public BlockType getBlockType() {
         return this.blockType;
+    }
+
+    public BlockMaterial getMaterial() {
+        return WorldEdit.getInstance().getPlatformManager()
+                .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getMaterial(this);
     }
 
     @Override

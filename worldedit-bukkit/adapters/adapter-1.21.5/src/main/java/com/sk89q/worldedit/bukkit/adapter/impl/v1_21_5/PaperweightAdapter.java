@@ -586,6 +586,11 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         return new PaperweightBlockMaterial(mcBlockState);
     }
 
+    @Override
+    public BlockMaterial getBlockMaterial(BlockState blockState) {
+        return new PaperweightBlockMaterial(adapt(blockState));
+    }
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private static final LoadingCache<net.minecraft.world.level.block.state.properties.Property, Property<?>> PROPERTY_CACHE = CacheBuilder.newBuilder().build(new CacheLoader<>() {
         @Override
