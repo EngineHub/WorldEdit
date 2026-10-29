@@ -17,14 +17,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.snapshot.experimental.fs;
+package com.sk89q.worldedit.world.snapshot.fs;
 
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.world.DataException;
-import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
-import com.sk89q.worldedit.world.snapshot.experimental.SnapshotInfo;
+import com.sk89q.worldedit.world.snapshot.Snapshot;
+import com.sk89q.worldedit.world.snapshot.SnapshotInfo;
 import com.sk89q.worldedit.world.storage.LegacyChunkStore;
 import com.sk89q.worldedit.world.storage.McRegionChunkStore;
 import com.sk89q.worldedit.world.storage.McRegionReader;
@@ -101,8 +101,6 @@ public class FolderSnapshot implements Snapshot {
 
     public FolderSnapshot(SnapshotInfo info, Path folder, @Nullable Closer closeCallback) {
         this.info = info;
-        // This is required to force TrueVfs to properly resolve parents.
-        // Kinda odd, but whatever works.
         this.folder = folder.toAbsolutePath();
         this.closeCallback = closeCallback;
     }

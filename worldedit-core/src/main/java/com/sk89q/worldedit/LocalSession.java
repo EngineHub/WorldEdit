@@ -58,7 +58,7 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
-import com.sk89q.worldedit.world.snapshot.experimental.SnapshotInfo;
+import com.sk89q.worldedit.world.snapshot.SnapshotInfo;
 import org.enginehub.linbus.tree.LinCompoundTag;
 import org.enginehub.linbus.tree.LinTagType;
 
@@ -108,8 +108,7 @@ public class LocalSession {
     private transient int maxBlocksChanged = -1;
     private transient int maxTimeoutTime;
     private transient boolean useInventory;
-    private transient com.sk89q.worldedit.world.snapshot.Snapshot snapshot;
-    private transient SnapshotInfo snapshotExperimental;
+    private transient SnapshotInfo snapshot;
     private transient SideEffectSet sideEffectSet = SideEffectSet.defaults();
     private transient Mask mask;
     private transient ZoneId timezone = ZoneId.systemDefault();
@@ -657,40 +656,21 @@ public class LocalSession {
     }
 
     /**
-     * Get the legacy snapshot that has been selected.
-     *
-     * @return the legacy snapshot
-     */
-    @Nullable
-    public com.sk89q.worldedit.world.snapshot.Snapshot getSnapshot() {
-        return snapshot;
-    }
-
-    /**
-     * Select a legacy snapshot.
-     *
-     * @param snapshot a legacy snapshot
-     */
-    public void setSnapshot(@Nullable com.sk89q.worldedit.world.snapshot.Snapshot snapshot) {
-        this.snapshot = snapshot;
-    }
-
-    /**
      * Get the snapshot info that has been selected.
      *
      * @return the snapshot info
      */
-    public @Nullable SnapshotInfo getSnapshotExperimental() {
-        return snapshotExperimental;
+    public @Nullable SnapshotInfo getSnapshot() {
+        return snapshot;
     }
 
     /**
      * Select a snapshot by its info.
      *
-     * @param snapshotExperimental a snapshot info
+     * @param snapshot a snapshot info
      */
-    public void setSnapshotExperimental(@Nullable SnapshotInfo snapshotExperimental) {
-        this.snapshotExperimental = snapshotExperimental;
+    public void setSnapshot(@Nullable SnapshotInfo snapshot) {
+        this.snapshot = snapshot;
     }
 
     /**

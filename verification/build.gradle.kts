@@ -37,8 +37,6 @@ for (projectFragment in listOf("bukkit", "core", "fabric", "neoforge", "sponge")
         packageExcludes.add("com.sk89q.worldedit*.internal*")
         // Mixins are not API
         packageExcludes.add("com.sk89q.worldedit*.mixin*")
-        // Experimental is not API
-        packageExcludes.add("com.sk89q.worldedit*.experimental*")
         when (projectFragment) {
             // Commands are not API
             "core" -> packageExcludes.add("com.sk89q.worldedit.command*")

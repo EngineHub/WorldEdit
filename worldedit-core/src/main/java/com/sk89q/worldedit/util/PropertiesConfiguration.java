@@ -132,8 +132,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         LocalSession.MAX_HISTORY_SIZE = Math.max(15, getInt("history-size", 15));
 
         String snapshotsDir = getString("snapshots-dir", "");
-        boolean experimentalSnapshots = getBool("snapshots-experimental", true);
-        initializeSnapshotConfiguration(snapshotsDir, experimentalSnapshots);
+        initializeSnapshotConfiguration(snapshotsDir);
 
         path.getParentFile().mkdirs();
         try (OutputStream output = new FileOutputStream(path)) {

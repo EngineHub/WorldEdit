@@ -36,9 +36,9 @@ import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.World;
-import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
-import com.sk89q.worldedit.world.snapshot.experimental.SnapshotInfo;
-import com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabase;
+import com.sk89q.worldedit.world.snapshot.Snapshot;
+import com.sk89q.worldedit.world.snapshot.SnapshotInfo;
+import com.sk89q.worldedit.world.snapshot.fs.FileSystemSnapshotDatabase;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
@@ -64,11 +64,9 @@ public class SnapshotCommands {
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z");
 
     private final WorldEdit we;
-    private final LegacySnapshotCommands legacy;
 
     public SnapshotCommands(WorldEdit we) {
         this.we = we;
-        this.legacy = new LegacySnapshotCommands(we);
     }
 
     static void checkSnapshotsConfigured(LocalConfiguration localConfiguration) {
@@ -103,11 +101,6 @@ public class SnapshotCommands {
                          int page) throws WorldEditException, IOException {
         LocalConfiguration config = we.getConfiguration();
         checkSnapshotsConfigured(config);
-
-        if (config.snapshotRepo != null) {
-            legacy.list(actor, world, page);
-            return;
-        }
 
         List<SnapshotInfo> snapshots;
         try (Stream<SnapshotInfo> snapshotStream = config.snapshotDatabase.getSnapshotInfosNewestFirst(world.getName())) {
@@ -146,11 +139,6 @@ public class SnapshotCommands {
         LocalConfiguration config = we.getConfiguration();
         checkSnapshotsConfigured(config);
 
-        if (config.snapshotRepo != null) {
-            legacy.use(actor, world, session, name);
-            return;
-        }
-
         // Want the latest snapshot?
         if (name.equalsIgnoreCase("latest")) {
             SnapshotInfo snapshotInfo;
@@ -159,7 +147,6 @@ public class SnapshotCommands {
             }
 
             if (snapshotInfo != null) {
-                session.setSnapshotExperimental(null);
                 session.setSnapshot(null);
                 actor.printInfo(TranslatableComponent.of("worldedit.snapshot.use.newest"));
             } else {
@@ -169,7 +156,7 @@ public class SnapshotCommands {
             URI uri = resolveSnapshotName(config, name);
             Optional<Snapshot> snapshot = config.snapshotDatabase.getSnapshot(uri);
             if (snapshot.isPresent()) {
-                session.setSnapshotExperimental(snapshot.get().getInfo());
+                session.setSnapshot(snapshot.get().getInfo());
                 snapshot.get().close();
                 actor.printInfo(TranslatableComponent.of(
                     "worldedit.snapshot.use", TextComponent.of(name)
@@ -190,11 +177,6 @@ public class SnapshotCommands {
                         int index) throws IOException {
         LocalConfiguration config = we.getConfiguration();
         checkSnapshotsConfigured(config);
-
-        if (config.snapshotRepo != null) {
-            legacy.sel(actor, world, session, index);
-            return;
-        }
 
         if (index < 1) {
             actor.printError(TranslatableComponent.of("worldedit.snapshot.index-above-0"));
@@ -217,7 +199,7 @@ public class SnapshotCommands {
             actor.printError(TranslatableComponent.of("worldedit.restore.not-available"));
             return;
         }
-        session.setSnapshotExperimental(snapshotInfo);
+        session.setSnapshot(snapshotInfo);
         actor.printInfo(TranslatableComponent.of(
             "worldedit.snapshot.use",
             TextComponent.of(snapshotInfo.getDisplayName())
@@ -235,11 +217,6 @@ public class SnapshotCommands {
         LocalConfiguration config = we.getConfiguration();
         checkSnapshotsConfigured(config);
 
-        if (config.snapshotRepo != null) {
-            legacy.before(actor, world, session, date);
-            return;
-        }
-
         SnapshotInfo snapshotInfo;
         try (Stream<SnapshotInfo> snapshotStream = config.snapshotDatabase.getSnapshotInfosNewestFirst(world.getName())) {
             snapshotInfo = snapshotStream
@@ -254,7 +231,7 @@ public class SnapshotCommands {
                 TextComponent.of(dateFormat.withZone(session.getTimeZone()).format(date)))
             );
         } else {
-            session.setSnapshotExperimental(snapshotInfo);
+            session.setSnapshot(snapshotInfo);
             actor.printInfo(TranslatableComponent.of(
                 "worldedit.snapshot.use",
                 TextComponent.of(snapshotInfo.getDisplayName())
@@ -273,11 +250,6 @@ public class SnapshotCommands {
         LocalConfiguration config = we.getConfiguration();
         checkSnapshotsConfigured(config);
 
-        if (config.snapshotRepo != null) {
-            legacy.after(actor, world, session, date);
-            return;
-        }
-
         SnapshotInfo snapshotInfo;
         try (Stream<SnapshotInfo> snapshotStream = config.snapshotDatabase.getSnapshotInfosOldestFirst(world.getName())) {
             snapshotInfo = snapshotStream
@@ -291,7 +263,7 @@ public class SnapshotCommands {
                 TextComponent.of(dateFormat.withZone(session.getTimeZone()).format(date)))
             );
         } else {
-            session.setSnapshotExperimental(snapshotInfo);
+            session.setSnapshot(snapshotInfo);
             actor.printInfo(TranslatableComponent.of(
                 "worldedit.snapshot.use",
                 TextComponent.of(snapshotInfo.getDisplayName())

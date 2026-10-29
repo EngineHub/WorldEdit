@@ -17,38 +17,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.storage;
+package com.sk89q.worldedit.world.snapshot;
 
-import javax.annotation.Nullable;
+import java.util.Comparator;
 
-/**
- * Thrown if the world is missing.
- */
-public class MissingWorldException extends ChunkStoreException {
+public class SnapshotComparator {
 
-    private String worldName;
+    private static final Comparator<Snapshot> COMPARATOR =
+        Comparator.comparing(Snapshot::getInfo);
 
-    public MissingWorldException() {
-        super();
+    public static Comparator<Snapshot> getInstance() {
+        return COMPARATOR;
     }
 
-    public MissingWorldException(String worldName) {
-        super();
-        this.worldName = worldName;
-    }
-
-    public MissingWorldException(String msg, String worldName) {
-        super(msg);
-        this.worldName = worldName;
-    }
-
-    /**
-     * Get name of the world in question. May be null if unknown.
-     *
-     * @return the world name
-     */
-    @Nullable
-    public String getWorldName() {
-        return worldName;
+    private SnapshotComparator() {
     }
 }
