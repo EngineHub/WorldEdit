@@ -31,6 +31,7 @@ import com.sk89q.worldedit.bukkit.adapter.UnsupportedVersionEditException;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
 import com.sk89q.worldedit.math.BlockVector2;
@@ -200,6 +201,10 @@ public class BukkitWorld extends AbstractWorld {
     public boolean regenerate(Region region, Extent extent, RegenOptions options) {
         if (WorldEditPlugin.getInstance().isFolia()) {
             throw new RuntimeException(new RegionOperationException(TranslatableComponent.of("worldedit.bukkit.unsupported-on-folia")));
+        }
+        // The 26.1+ adapters regenerate using Paper-only internals
+        if (!PaperLib.isPaper() && WorldEditPlugin.getInstance().getInternalPlatform().getDataVersion() >= Constants.DATA_VERSION_MC_26_1) {
+            throw new RuntimeException(new RegionOperationException(TranslatableComponent.of("worldedit.bukkit.unsupported-on-non-paper")));
         }
 
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
