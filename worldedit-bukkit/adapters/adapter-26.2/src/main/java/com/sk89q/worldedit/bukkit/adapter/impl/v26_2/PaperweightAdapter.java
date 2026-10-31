@@ -214,7 +214,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
     private final Field serverWorldsField;
     private final Method getChunkFutureMethod;
-    private MethodHandle fromData;
+    private final MethodHandle fromData;
     private final Field chunkProviderExecutorField;
     private final PaperweightDataConverters dataFixer;
     private final Watchdog watchdog;
@@ -281,13 +281,16 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             // It's fine if we couldn't set it
         }
 
+        MethodHandle fromData;
         try {
-            this.fromData = MethodHandles.lookup().unreflect(CraftBlockData.class.getMethod(
+            fromData = MethodHandles.lookup().unreflect(CraftBlockData.class.getMethod(
                 "fromData", net.minecraft.world.level.block.state.BlockState.class
             ));
         } catch (NoSuchMethodException | IllegalAccessException _) {
             // This is purely for Spigot compatibility. It'll fail on Paper.
+            fromData = null;
         }
+        this.fromData = fromData;
     }
 
     @Override
