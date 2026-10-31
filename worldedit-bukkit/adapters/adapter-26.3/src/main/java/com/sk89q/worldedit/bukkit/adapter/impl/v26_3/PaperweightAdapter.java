@@ -180,6 +180,8 @@ import org.enginehub.linbus.tree.LinTagType;
 import org.spigotmc.SpigotConfig;
 import org.spigotmc.WatchdogThread;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -214,7 +216,8 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
     private final Field serverWorldsField;
     private final Method getChunkFutureMethod;
-    private Method asCraftMirror;
+    private final MethodHandle fromData;
+    private final MethodHandle asCraftMirror;
     private final Field chunkProviderExecutorField;
     private final PaperweightDataConverters dataFixer;
     private final Watchdog watchdog;
@@ -281,12 +284,28 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             // It's fine if we couldn't set it
         }
 
+        MethodHandle asCraftMirror;
         try {
-            asCraftMirror = CraftItemStack.class.getMethod("asCraftMirror", ItemStack.class);
-        } catch (NoSuchMethodException _) {
+            asCraftMirror = MethodHandles.lookup().unreflect(CraftItemStack.class.getMethod(
+                "asCraftMirror", ItemStack.class
+            ));
+        } catch (NoSuchMethodException | IllegalAccessException _) {
             // This is purely for Spigot compatibility. It'll fail on Paper.
             asCraftMirror = null;
         }
+        this.asCraftMirror = asCraftMirror;
+
+        MethodHandle fromData;
+        try {
+            fromData = MethodHandles.lookup().unreflect(CraftBlockData.class.getMethod(
+                "fromData", net.minecraft.world.level.block.state.BlockState.class
+            ));
+        } catch (NoSuchMethodException | IllegalAccessException _) {
+            // This is purely for Spigot compatibility. It'll fail on Paper.
+            fromData = null;
+        }
+        this.fromData = fromData;
+
     }
 
     @Override
@@ -357,7 +376,15 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         int internalId = Block.getId(blockState);
         BlockState state = BlockStateIdAccess.getBlockStateById(internalId);
         if (state == null) {
-            state = BukkitAdapter.adapt(CraftBlockData.createData(blockState));
+            if (fromData != null) {
+                try {
+                    state = BukkitAdapter.adapt((CraftBlockData) fromData.invokeExact(blockState));
+                } catch (Throwable e) {
+                    throw new IllegalStateException("Failed to invoke CraftBlockData.fromData", e);
+                }
+            } else {
+                state = BukkitAdapter.adapt(blockState.asBlockData());
+            }
         }
 
         return state;
@@ -705,10 +732,9 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         if (asCraftMirror != null) {
             // Probably Spigot
             try {
-                return (org.bukkit.inventory.ItemStack) asCraftMirror.invoke(null, stack);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                // An issue occurred trying to convert this.
-                throw new RuntimeException(e);
+                return (org.bukkit.inventory.ItemStack) asCraftMirror.invokeExact(stack);
+            } catch (Throwable e) {
+                throw new IllegalStateException("Failed to invoke CraftItemStack.asCraftMirror", e);
             }
         } else {
             return CraftItemStack.asBukkitMirror(stack);
