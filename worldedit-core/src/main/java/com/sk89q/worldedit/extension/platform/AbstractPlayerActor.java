@@ -27,6 +27,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -178,8 +179,16 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
      */
     private boolean isPlayerHarmingBlock(BlockVector3 location) {
         BlockType type = getWorld().getBlock(location).getBlockType();
-        return type.getMaterial().isSolid() || type == BlockTypes.LAVA
-            || BlockCategories.FIRE.contains(type);
+        int dataVersion = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getDataVersion();
+        if (dataVersion < Constants.DATA_VERSION_MC_26_3) {
+            // We support MC versions from before the new tags were added, so use this as a fallback.
+            return type.getMaterial().isSolid() || type == BlockTypes.LAVA
+                    || BlockCategories.FIRE.contains(type);
+        }
+
+        return type == BlockTypes.LAVA
+                || BlockCategories.DANGEROUS_FOR_TELEPORTATION.contains(type)
+                || BlockCategories.CAUSES_SUFFOCATION.contains(type);
     }
 
     /**
@@ -195,8 +204,8 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         if (isPlayerHarmingBlock(location)) {
             return false;
         }
-        return getWorld().getBlock(location.add(0, -1, 0)).getBlockType().getMaterial()
-            .isSolid();
+        BlockType belowBlockType = getWorld().getBlock(location.add(0, -1, 0)).getBlockType();
+        return belowBlockType.getMaterial().isSolid() && !BlockCategories.DANGEROUS_FOR_TELEPORTATION.contains(belowBlockType);
     }
 
     @Override
