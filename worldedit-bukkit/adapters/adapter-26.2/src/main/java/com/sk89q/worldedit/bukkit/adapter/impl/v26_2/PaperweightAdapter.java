@@ -178,6 +178,8 @@ import org.enginehub.linbus.tree.LinTagType;
 import org.spigotmc.SpigotConfig;
 import org.spigotmc.WatchdogThread;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -212,6 +214,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
 
     private final Field serverWorldsField;
     private final Method getChunkFutureMethod;
+    private MethodHandle fromData;
     private final Field chunkProviderExecutorField;
     private final PaperweightDataConverters dataFixer;
     private final Watchdog watchdog;
@@ -276,6 +279,14 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
             SpigotConfig.config.set("world-settings.worldeditregentempworld.verbose", false);
         } catch (ClassNotFoundException _) {
             // It's fine if we couldn't set it
+        }
+
+        try {
+            this.fromData = MethodHandles.lookup().unreflect(CraftBlockData.class.getMethod(
+                "fromData", net.minecraft.world.level.block.state.BlockState.class
+            ));
+        } catch (NoSuchMethodException | IllegalAccessException _) {
+            // This is purely for Spigot compatibility. It'll fail on Paper.
         }
     }
 
@@ -347,7 +358,15 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         int internalId = Block.getId(blockState);
         BlockState state = BlockStateIdAccess.getBlockStateById(internalId);
         if (state == null) {
-            state = BukkitAdapter.adapt(CraftBlockData.createData(blockState));
+            if (fromData != null) {
+                try {
+                    state = BukkitAdapter.adapt((CraftBlockData) fromData.invokeExact(blockState));
+                } catch (Throwable e) {
+                    throw new IllegalStateException("Failed to invoke CraftBlockData.fromData", e);
+                }
+            } else {
+                state = BukkitAdapter.adapt(blockState.asBlockData());
+            }
         }
 
         return state;

@@ -329,7 +329,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter {
         int internalId = Block.getId(blockState);
         BlockState state = BlockStateIdAccess.getBlockStateById(internalId);
         if (state == null) {
-            state = BukkitAdapter.adapt(CraftBlockData.createData(blockState));
+            state = BukkitAdapter.adapt(CraftBlockData.fromData(blockState));
         }
 
         return state;
