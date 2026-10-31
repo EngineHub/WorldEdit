@@ -322,7 +322,7 @@ public interface Player extends Entity, Actor {
      * Sends a fake block to the client.
      *
      * <p>
-     *     This block isn't real.
+     * This change is client-side only and will not actually change the world in any way.
      * </p>
      *
      * @param pos The position of the block

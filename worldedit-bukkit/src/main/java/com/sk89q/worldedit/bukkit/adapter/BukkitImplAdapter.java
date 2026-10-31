@@ -23,6 +23,7 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.blocks.TileEntityBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
@@ -187,9 +188,10 @@ public interface BukkitImplAdapter {
      *
      * @param player The player
      * @param pos The position
+     * @param tileEntityBlock The block-entity block
      * @param nbtData The NBT Data
      */
-    void sendFakeNBT(Player player, BlockVector3 pos, LinCompoundTag nbtData);
+    void sendFakeNBT(Player player, BlockVector3 pos, TileEntityBlock tileEntityBlock, LinCompoundTag nbtData);
 
     /**
      * Make the client think it has operator status.
