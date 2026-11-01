@@ -37,6 +37,7 @@ import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.RegionMaskingFilter;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operations;
+import com.sk89q.worldedit.function.util.ChangeLimitingFilter;
 import com.sk89q.worldedit.function.visitor.RegionVisitor;
 import com.sk89q.worldedit.internal.annotation.Direction;
 import com.sk89q.worldedit.internal.annotation.Selection;
@@ -107,6 +108,13 @@ public class ApplyCommands {
         if (applyMask != null) {
             function = new RegionMaskingFilter(applyMask, function);
         }
+        if (localSession.getMask() != null) {
+            function = new RegionMaskingFilter(localSession.getMask(), function);
+        }
+        if (localSession.getBlockChangeLimit() >= 0) {
+            // Only apply limits if one is set.
+            function = new ChangeLimitingFilter(localSession.getBlockChangeLimit(), function);
+        }
 
         RegionVisitor visitor = new RegionVisitor(region, function);
         Operations.completeLegacy(visitor);
@@ -118,7 +126,7 @@ public class ApplyCommands {
         name = "item",
         desc = "Use an item"
     )
-    @CommandPermissions("worldedit.brush.item")
+    @CommandPermissions("worldedit.region.apply.item")
     @Logging(REGION)
     public int item(CommandParameters parameters, Actor actor, EditSession editSession, LocalSession localSession,
                     @Selection Region region,
