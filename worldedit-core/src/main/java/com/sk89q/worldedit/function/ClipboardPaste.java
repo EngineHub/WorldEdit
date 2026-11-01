@@ -29,6 +29,9 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
 
+/**
+ * A function that pastes a clipboard into a destination extent.
+ */
 public final class ClipboardPaste implements RegionFunction {
 
     private final Extent destination;
@@ -40,6 +43,18 @@ public final class ClipboardPaste implements RegionFunction {
     private final boolean pasteBiomes;
     private final Mask sourceMask;
 
+    /**
+     * Creates a new ClipboardPaste function with the specified parameters.
+     *
+     * @param destination The destination extent where the clipboard will be pasted.
+     * @param holder The clipboard holder containing the clipboard to paste.
+     * @param ignoreAirBlocks Whether to ignore air blocks during the paste operation.
+     * @param ignoreStructureVoidBlocks Whether to ignore structure void blocks during the paste operation.
+     * @param usingOrigin Whether to use the origin of the clipboard for positioning.
+     * @param pasteEntities Whether to paste entities from the clipboard.
+     * @param pasteBiomes Whether to paste biomes from the clipboard.
+     * @param sourceMask The source mask to apply during the paste operation, or null if no source mask is given.
+     */
     public ClipboardPaste(Extent destination, ClipboardHolder holder, boolean ignoreAirBlocks,
                           boolean ignoreStructureVoidBlocks, boolean usingOrigin, boolean pasteEntities,
                           boolean pasteBiomes, Mask sourceMask) {

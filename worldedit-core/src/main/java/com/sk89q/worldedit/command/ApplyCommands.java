@@ -130,7 +130,7 @@ public class ApplyCommands {
         name = "clipboard",
         desc = "Paste the clipboard at every block"
     )
-    @CommandPermissions("worldedit.clipboard.paste")
+    @CommandPermissions("worldedit.region.apply.clipboard.paste")
     @Logging(REGION)
     public int clipboard(CommandParameters parameters, Actor actor, EditSession editSession,
                          LocalSession localSession, @Selection Region region,
