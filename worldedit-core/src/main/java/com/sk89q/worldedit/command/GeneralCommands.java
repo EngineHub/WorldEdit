@@ -542,6 +542,7 @@ public class GeneralCommands {
 
         if (!ALLOWED_KEY_CHARACTERS.matcher(query).matches()) {
             actor.printError(TranslatableComponent.of("worldedit.registry.error.invalid-key"));
+            return;
         }
 
         WorldEditAsyncCommandBuilder.createAndSendMessage(actor, new RegistrySearcher(registry, query, page),
