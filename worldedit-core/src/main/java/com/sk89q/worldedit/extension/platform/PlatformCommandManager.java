@@ -29,6 +29,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.MissingWorldException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.ApplyBrushCommands;
+import com.sk89q.worldedit.command.ApplyCommands;
 import com.sk89q.worldedit.command.BiomeCommands;
 import com.sk89q.worldedit.command.BiomeCommandsRegistration;
 import com.sk89q.worldedit.command.BrushCommands;
@@ -359,6 +360,7 @@ public final class PlatformCommandManager {
             WorldEditCommandsRegistration.builder(),
             new WorldEditCommands(worldEdit)
         );
+        ApplyCommands.register(commandManagerService, commandManager, registration);
         this.registration.register(
             commandManager,
             BiomeCommandsRegistration.builder(),
