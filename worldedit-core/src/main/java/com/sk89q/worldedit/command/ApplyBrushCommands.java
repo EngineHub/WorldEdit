@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
+import com.sk89q.worldedit.command.factory.ClipboardPasteFactory;
 import com.sk89q.worldedit.command.factory.ItemUseFactory;
 import com.sk89q.worldedit.command.factory.ReplaceFactory;
 import com.sk89q.worldedit.command.factory.TreeGeneratorFactory;
@@ -34,10 +35,13 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.factory.ApplyRegion;
+import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.internal.annotation.ClipboardMask;
 import com.sk89q.worldedit.internal.annotation.Direction;
 import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.regions.factory.RegionFactory;
+import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.util.formatting.text.format.TextDecoration;
@@ -48,6 +52,8 @@ import org.enginehub.piston.CommandParameters;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
+import org.enginehub.piston.annotation.param.ArgFlag;
+import org.enginehub.piston.annotation.param.Switch;
 import org.enginehub.piston.inject.Key;
 import org.enginehub.piston.part.CommandArgument;
 import org.enginehub.piston.part.SubCommandPart;
@@ -98,6 +104,38 @@ public class ApplyBrushCommands {
         RegionFactory regionFactory = REGION_FACTORY.value(parameters).asSingle(RegionFactory.class);
         BrushCommands.setOperationBasedBrush(player, localSession, radius,
             new ApplyRegion(generatorFactory), regionFactory, "worldedit.brush.apply");
+    }
+
+    @Command(
+        name = "clipboard",
+        desc = "Paste the clipboard at every block"
+    )
+    @CommandPermissions("worldedit.brush.clipboard")
+    public void clipboard(CommandParameters parameters, Player player, LocalSession localSession,
+                          @Switch(name = 'a', desc = "Don't paste air from the clipboard")
+                              boolean ignoreAir,
+                          @Switch(name = 'v', desc = "Include structure void blocks")
+                              boolean pasteStructureVoid,
+                          @Switch(name = 'o', desc = "Paste starting at each block, instead of centering on it")
+                              boolean usingOrigin,
+                          @Switch(name = 'e', desc = "Paste entities if available")
+                              boolean pasteEntities,
+                          @Switch(name = 'b', desc = "Paste biomes if available")
+                              boolean pasteBiomes,
+                          @ArgFlag(name = 'm', desc = "Only paste clipboard blocks matching this mask")
+                          @ClipboardMask
+                              Mask sourceMask) throws WorldEditException {
+        ClipboardHolder holder = localSession.getClipboard();
+
+        setApplyBrush(parameters, player, localSession, new ClipboardPasteFactory(
+            holder,
+            ignoreAir,
+            !pasteStructureVoid,
+            usingOrigin,
+            pasteEntities,
+            pasteBiomes,
+            sourceMask
+        ));
     }
 
     @Command(
