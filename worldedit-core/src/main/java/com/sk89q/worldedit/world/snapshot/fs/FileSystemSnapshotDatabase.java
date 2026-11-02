@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.snapshot.experimental.fs;
+package com.sk89q.worldedit.world.snapshot.fs;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.net.UrlEscapers;
@@ -31,9 +31,9 @@ import com.sk89q.worldedit.util.io.file.SafeFiles;
 import com.sk89q.worldedit.util.time.FileNameDateTimeParser;
 import com.sk89q.worldedit.util.time.ModificationDateTimeParser;
 import com.sk89q.worldedit.util.time.SnapshotDateTimeParser;
-import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
-import com.sk89q.worldedit.world.snapshot.experimental.SnapshotDatabase;
-import com.sk89q.worldedit.world.snapshot.experimental.SnapshotInfo;
+import com.sk89q.worldedit.world.snapshot.Snapshot;
+import com.sk89q.worldedit.world.snapshot.SnapshotDatabase;
+import com.sk89q.worldedit.world.snapshot.SnapshotInfo;
 
 import java.io.IOException;
 import java.net.URI;

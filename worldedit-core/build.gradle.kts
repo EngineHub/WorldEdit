@@ -25,7 +25,6 @@ dependencies {
     "api"(libs.linBus.tree)
     "api"(libs.linBus.format.snbt)
 
-    "compileOnly"(libs.trueZip)
     "implementation"(libs.rhino)
     "implementation"(libs.snakeyaml)
     "implementation"(libs.guava)

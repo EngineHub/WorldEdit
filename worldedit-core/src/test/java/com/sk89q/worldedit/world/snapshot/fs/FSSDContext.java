@@ -17,13 +17,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.snapshot.experimental.fs;
+package com.sk89q.worldedit.world.snapshot.fs;
 
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.ArchiveDir;
 import com.sk89q.worldedit.util.io.file.ArchiveNioSupport;
-import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
-import com.sk89q.worldedit.world.snapshot.experimental.SnapshotInfo;
+import com.sk89q.worldedit.world.snapshot.Snapshot;
+import com.sk89q.worldedit.world.snapshot.SnapshotInfo;
 
 import java.io.IOException;
 import java.net.URI;

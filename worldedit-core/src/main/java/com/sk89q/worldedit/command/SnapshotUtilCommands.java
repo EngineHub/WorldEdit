@@ -32,9 +32,9 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
-import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
-import com.sk89q.worldedit.world.snapshot.experimental.SnapshotInfo;
-import com.sk89q.worldedit.world.snapshot.experimental.SnapshotRestore;
+import com.sk89q.worldedit.world.snapshot.Snapshot;
+import com.sk89q.worldedit.world.snapshot.SnapshotInfo;
+import com.sk89q.worldedit.world.snapshot.SnapshotRestore;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
@@ -52,11 +52,9 @@ import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
 public class SnapshotUtilCommands {
 
     private final WorldEdit we;
-    private final LegacySnapshotUtilCommands legacy;
 
     public SnapshotUtilCommands(WorldEdit we) {
         this.we = we;
-        this.legacy = new LegacySnapshotUtilCommands(we);
     }
 
     @Command(
@@ -72,11 +70,6 @@ public class SnapshotUtilCommands {
         LocalConfiguration config = we.getConfiguration();
         checkSnapshotsConfigured(config);
 
-        if (config.snapshotRepo != null) {
-            legacy.restore(actor, world, session, editSession, snapshotName);
-            return;
-        }
-
         Region region = session.getSelection(world);
         Snapshot snapshot;
 
@@ -91,7 +84,7 @@ public class SnapshotUtilCommands {
             snapshot = snapOpt.get();
         } else {
             // Get snapshot from session
-            SnapshotInfo snapshotInfo = session.getSnapshotExperimental();
+            SnapshotInfo snapshotInfo = session.getSnapshot();
             if (snapshotInfo != null) {
                 Optional<Snapshot> snapOpt = config.snapshotDatabase.getSnapshot(snapshotInfo);
                 if (snapOpt.isEmpty()) {

@@ -29,8 +29,6 @@ import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.chunk.Chunk;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 import com.sk89q.worldedit.world.storage.MissingChunkException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,10 +41,8 @@ import java.util.Map;
  */
 public class SnapshotRestore {
 
-    private static final Logger LOGGER = LogManager.getLogger();
-
     private final Map<BlockVector2, ArrayList<BlockVector3>> neededChunks = new LinkedHashMap<>();
-    private final ChunkStore chunkStore;
+    private final Snapshot snapshot;
     private final EditSession editSession;
     private ArrayList<BlockVector2> missingChunks;
     private ArrayList<BlockVector2> errorChunks;
@@ -55,12 +51,12 @@ public class SnapshotRestore {
     /**
      * Construct the snapshot restore operation.
      *
-     * @param chunkStore The {@link ChunkStore} to restore from
+     * @param snapshot The {@link Snapshot} to restore from
      * @param editSession The {@link EditSession} to restore to
      * @param region The {@link Region} to restore to
      */
-    public SnapshotRestore(ChunkStore chunkStore, EditSession editSession, Region region) {
-        this.chunkStore = chunkStore;
+    public SnapshotRestore(Snapshot snapshot, EditSession editSession, Region region) {
+        this.snapshot = snapshot;
         this.editSession = editSession;
 
         if (region instanceof CuboidRegion) {
@@ -144,7 +140,8 @@ public class SnapshotRestore {
             Chunk chunk;
 
             try {
-                chunk = chunkStore.getChunk(chunkPos, editSession.getWorld());
+                // This will need to be changed if we start officially supporting 3d snapshots.
+                chunk = snapshot.getChunk(chunkPos.toBlockVector3());
                 // Good, the chunk could be at least loaded
 
                 // Now just copy blocks!
@@ -158,7 +155,6 @@ public class SnapshotRestore {
             } catch (MissingChunkException _) {
                 missingChunks.add(chunkPos);
             } catch (IOException | DataException me) {
-                LOGGER.info(() -> "Failed to load chunk at " + chunkPos, me);
                 errorChunks.add(chunkPos);
                 lastErrorMessage = me.getMessage();
             }

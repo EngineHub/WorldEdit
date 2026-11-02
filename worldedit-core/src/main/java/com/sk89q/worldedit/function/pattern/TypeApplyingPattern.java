@@ -33,22 +33,6 @@ import java.util.Map.Entry;
 public class TypeApplyingPattern extends AbstractExtentPattern {
     private final Pattern pattern;
 
-    // TODO Remove in WorldEdit 8
-    /**
-     * Create a new TypeApplyingPattern that applies the block type from the given block state.
-     *
-     * <p>
-     * As the {@link TypeApplyingPattern#TypeApplyingPattern(Extent, Pattern)} constructor is more flexible,
-     * this constructor will be removed in WorldEdit 8.0.
-     * </p>
-     *
-     * @param extent The extent to work in
-     * @param blockState The block state to get block types from
-     */
-    public TypeApplyingPattern(Extent extent, BlockState blockState) {
-        this(extent, (Pattern) blockState);
-    }
-
     /**
      * Create a new TypeApplyingPattern that applies the block type from the given pattern.
      *

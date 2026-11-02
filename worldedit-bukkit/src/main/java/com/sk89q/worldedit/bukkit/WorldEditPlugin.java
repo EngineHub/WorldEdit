@@ -68,6 +68,7 @@ import net.kyori.adventure.key.Key;
 import org.apache.logging.log4j.Logger;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
+import org.bukkit.Fluid;
 import org.bukkit.Material;
 import org.bukkit.Registry;
 import org.bukkit.Tag;
@@ -267,7 +268,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             String key = itemTag.getKey().toString();
             ItemCategory.REGISTRY.register(key, new ItemCategory(key));
         }
-        for (Tag<Material> fluidTag : Bukkit.getTags(Tag.REGISTRY_FLUIDS, Material.class)) {
+        for (Tag<Fluid> fluidTag : Bukkit.getTags(Tag.REGISTRY_FLUIDS, Fluid.class)) {
             String key = fluidTag.getKey().toString();
             FluidCategory.REGISTRY.register(key, new FluidCategory(key));
         }
