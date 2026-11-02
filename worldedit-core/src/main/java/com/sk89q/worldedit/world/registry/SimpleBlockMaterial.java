@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.world.registry;
 
+import com.sk89q.worldedit.blocks.ShapeType;
+
 class SimpleBlockMaterial implements BlockMaterial {
 
     private boolean isAir;
@@ -51,7 +53,7 @@ class SimpleBlockMaterial implements BlockMaterial {
     }
 
     @Override
-    public boolean isFullCube() {
+    public boolean isFullCube(ShapeType shapeType) {
         return fullCube;
     }
 
