@@ -27,7 +27,6 @@ import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
-import com.sk89q.worldedit.world.registry.ItemMaterial;
 
 import javax.annotation.Nullable;
 
@@ -40,11 +39,6 @@ public class ItemType implements Keyed {
     private final LazyReference<Component> richName = LazyReference.from(() ->
         WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
             .getRegistries().getItemRegistry().getRichName(this)
-    );
-    @SuppressWarnings({"this-escape", "removal"})
-    private final LazyReference<ItemMaterial> itemMaterial = LazyReference.from(() ->
-        WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
-            .getRegistries().getItemRegistry().getMaterial(this)
     );
 
     public ItemType(String id) {
@@ -81,18 +75,6 @@ public class ItemType implements Keyed {
     @Nullable
     public BlockType getBlockType() {
         return BlockTypes.get(this.id);
-    }
-
-    /**
-     * Get the material for this ItemType.
-     *
-     * @return The material
-     * @deprecated Deprecated without alternative
-     */
-    @Deprecated(forRemoval = true)
-    @SuppressWarnings("removal")
-    public ItemMaterial getMaterial() {
-        return itemMaterial.getValue();
     }
 
     @Override

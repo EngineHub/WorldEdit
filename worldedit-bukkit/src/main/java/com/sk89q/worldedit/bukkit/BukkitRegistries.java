@@ -19,10 +19,10 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import com.sk89q.worldedit.world.registry.AbstractRegistries;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
 import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
 import com.sk89q.worldedit.world.registry.BlockRegistry;
-import com.sk89q.worldedit.world.registry.BundledRegistries;
 import com.sk89q.worldedit.world.registry.FluidRegistry;
 import com.sk89q.worldedit.world.registry.ItemCategoryRegistry;
 import com.sk89q.worldedit.world.registry.ItemRegistry;
@@ -30,7 +30,7 @@ import com.sk89q.worldedit.world.registry.ItemRegistry;
 /**
  * World data for the Bukkit platform.
  */
-class BukkitRegistries extends BundledRegistries {
+class BukkitRegistries extends AbstractRegistries {
 
     private static final BukkitRegistries INSTANCE = new BukkitRegistries();
     private final BlockRegistry blockRegistry = new BukkitBlockRegistry();

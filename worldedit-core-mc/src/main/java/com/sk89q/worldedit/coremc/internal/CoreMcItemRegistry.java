@@ -24,10 +24,9 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
 import com.sk89q.worldedit.world.item.ItemType;
-import com.sk89q.worldedit.world.registry.BundledItemRegistry;
+import com.sk89q.worldedit.world.registry.ItemRegistry;
 
-@SuppressWarnings("removal")
-public final class CoreMcItemRegistry extends BundledItemRegistry {
+public final class CoreMcItemRegistry implements ItemRegistry {
 
     private final CoreMcPlatform platform;
 

@@ -19,12 +19,12 @@
 
 package com.sk89q.worldedit.cli;
 
+import com.sk89q.worldedit.world.registry.AbstractRegistries;
 import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
 import com.sk89q.worldedit.world.registry.BlockRegistry;
-import com.sk89q.worldedit.world.registry.BundledRegistries;
 import com.sk89q.worldedit.world.registry.ItemCategoryRegistry;
 
-public class CLIRegistries extends BundledRegistries {
+public class CLIRegistries extends AbstractRegistries {
 
     private static final CLIRegistries INSTANCE = new CLIRegistries();
     private final BlockRegistry blockRegistry = new CLIBlockRegistry();

@@ -19,29 +19,20 @@
 
 package com.sk89q.worldedit.world.registry;
 
-import javax.annotation.Nullable;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.translation.TranslationManager;
+import com.sk89q.worldedit.world.item.ItemType;
 
-import static com.sk89q.worldedit.util.GuavaUtil.firstNonNull;
-
-@Deprecated(forRemoval = true)
-@SuppressWarnings("removal")
-public class PassthroughItemMaterial implements ItemMaterial {
-
-    private static final ItemMaterial DEFAULT_MATERIAL = new SimpleItemMaterial(0, 0);
-
-    private final ItemMaterial itemMaterial;
-
-    public PassthroughItemMaterial(@Nullable ItemMaterial material) {
-        this.itemMaterial = firstNonNull(material, DEFAULT_MATERIAL);
-    }
+/**
+ * An implementation of an item registry that knows nothing.
+ */
+public class NullItemRegistry implements ItemRegistry {
 
     @Override
-    public int maxStackSize() {
-        return itemMaterial.maxStackSize();
-    }
-
-    @Override
-    public int maxDamage() {
-        return itemMaterial.maxDamage();
+    public Component getRichName(ItemType itemType) {
+        return TranslatableComponent.of(
+                TranslationManager.makeTranslationKey("item", itemType.id())
+        );
     }
 }

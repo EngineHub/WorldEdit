@@ -19,10 +19,10 @@
 
 package com.sk89q.worldedit.coremc.internal;
 
+import com.sk89q.worldedit.world.registry.AbstractRegistries;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
 import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
 import com.sk89q.worldedit.world.registry.BlockRegistry;
-import com.sk89q.worldedit.world.registry.BundledRegistries;
 import com.sk89q.worldedit.world.registry.FluidRegistry;
 import com.sk89q.worldedit.world.registry.ItemCategoryRegistry;
 import com.sk89q.worldedit.world.registry.ItemRegistry;
@@ -30,7 +30,7 @@ import com.sk89q.worldedit.world.registry.ItemRegistry;
 /**
  * Registry aggregation for Minecraft platforms sharing native code.
  */
-public final class CoreMcRegistries extends BundledRegistries {
+public final class CoreMcRegistries extends AbstractRegistries {
 
     private final BlockRegistry blockRegistry;
     private final FluidRegistry fluidRegistry;
