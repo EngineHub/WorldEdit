@@ -19,7 +19,6 @@
 
 package com.sk89q.util.yaml;
 
-import com.google.errorprone.annotations.InlineMe;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
@@ -32,7 +31,6 @@ import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.reader.UnicodeReader;
 import org.yaml.snakeyaml.representer.Representer;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -118,30 +116,8 @@ public class YAMLProcessor extends YAMLNode {
         this.path = path;
     }
 
-    /**
-     * Create a new YAML processor.
-     *
-     * @deprecated Use {@link #YAMLProcessor(Path, boolean, YAMLFormat)} instead.
-     */
-    @InlineMe(replacement = "this(file.toPath(), writeDefaults, format)")
-    @Deprecated
-    public YAMLProcessor(File file, boolean writeDefaults, YAMLFormat format) {
-        this(file.toPath(), writeDefaults, format);
-    }
-
     public YAMLProcessor(Path path, boolean writeDefaults) {
         this(path, writeDefaults, YAMLFormat.COMPACT);
-    }
-
-    /**
-     * Create a new YAML processor.
-     *
-     * @deprecated Use {@link #YAMLProcessor(Path, boolean)} instead.
-     */
-    @InlineMe(replacement = "this(file.toPath(), writeDefaults, YAMLFormat.COMPACT)", imports = "com.sk89q.util.yaml.YAMLFormat")
-    @Deprecated
-    public YAMLProcessor(File file, boolean writeDefaults) {
-        this(file.toPath(), writeDefaults, YAMLFormat.COMPACT);
     }
 
     /**
