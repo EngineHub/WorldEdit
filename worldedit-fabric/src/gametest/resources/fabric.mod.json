@@ -1,0 +1,15 @@
+{
+    "schemaVersion": 1,
+    "id": "worldedit-gametest",
+    "version": "1.0.0",
+    "name": "WorldEdit GameTests",
+    "environment": "*",
+    "entrypoints": {
+        "fabric-gametest": [
+            "com.sk89q.worldedit.fabric.gametest.SetCuboidGameTest"
+        ]
+    },
+    "depends": {
+        "worldedit": "*"
+    }
+}
