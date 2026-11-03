@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.util.collection;
 
 import com.sk89q.worldedit.BaseWorldEditTest;
-import com.sk89q.worldedit.registry.Registry;
+import com.sk89q.worldedit.util.test.TestRegistries;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockType;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -33,7 +33,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -49,16 +48,12 @@ class Int2BaseBlockMapTest extends BaseWorldEditTest {
 
     @BeforeAll
     static void setupFakePlatform() {
-        for (String id : new String[]{"minecraft:air", "minecraft:oak_wood", "minecraft:chest"}) {
-            BlockType.REGISTRY.register(id, new BlockType(id));
-        }
+        TestRegistries.registerBlocks();
     }
 
     @AfterAll
-    static void tearDownFakePlatform() throws Exception {
-        Field map = Registry.class.getDeclaredField("map");
-        map.setAccessible(true);
-        ((Map<?, ?>) map.get(BlockType.REGISTRY)).clear();
+    static void tearDownFakePlatform() {
+        TestRegistries.unregisterBlocks();
     }
 
     private static BaseBlock withNbt(BlockType type, String value) {

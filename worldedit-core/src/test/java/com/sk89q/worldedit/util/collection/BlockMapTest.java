@@ -22,10 +22,9 @@ package com.sk89q.worldedit.util.collection;
 import com.google.common.collect.ImmutableMap;
 import com.sk89q.worldedit.BaseWorldEditTest;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.registry.Registry;
+import com.sk89q.worldedit.util.test.TestRegistries;
 import com.sk89q.worldedit.util.test.VariedVectorGenerator;
 import com.sk89q.worldedit.world.block.BaseBlock;
-import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import org.enginehub.linbus.tree.LinCompoundTag;
 import org.junit.jupiter.api.AfterAll;
@@ -40,7 +39,6 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.lang.reflect.Field;
 import java.util.AbstractMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -65,20 +63,12 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 class BlockMapTest extends BaseWorldEditTest {
     @BeforeAll
     static void setupFakePlatform() {
-        registerBlock("minecraft:air");
-        registerBlock("minecraft:oak_wood");
-        registerBlock("minecraft:chest");
+        TestRegistries.registerBlocks();
     }
 
     @AfterAll
-    static void tearDownFakePlatform() throws Exception {
-        Field map = Registry.class.getDeclaredField("map");
-        map.setAccessible(true);
-        ((Map<?, ?>) map.get(BlockType.REGISTRY)).clear();
-    }
-
-    private static void registerBlock(String id) {
-        BlockType.REGISTRY.register(id, new BlockType(id));
+    static void tearDownFakePlatform() {
+        TestRegistries.unregisterBlocks();
     }
 
     @Mock
