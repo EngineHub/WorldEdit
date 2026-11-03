@@ -44,7 +44,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nullable;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * A {@link BlockRegistry} backed by {@code test-blocks.json}, giving core tests blocks that have real
@@ -68,6 +72,8 @@ public class TestBlockRegistry implements BlockRegistry {
     }
 
     private static final DataFile DATA = load();
+
+    private final Map<String, BlockMaterial> materials = new ConcurrentHashMap<>();
 
     private static DataFile load() {
         try (InputStream in = TestBlockRegistry.class.getResourceAsStream(RESOURCE)) {
@@ -108,7 +114,14 @@ public class TestBlockRegistry implements BlockRegistry {
     @Nullable
     @Override
     public BlockMaterial getMaterial(BlockType blockType) {
-        return null;
+        return materials.computeIfAbsent(blockType.id(), id -> {
+            // Only the air/solid distinction is modelled, which is what existence and solidity masks rely on
+            boolean air = id.equals("minecraft:air");
+            BlockMaterial material = mock(BlockMaterial.class);
+            when(material.isAir()).thenReturn(air);
+            when(material.isSolid()).thenReturn(!air);
+            return material;
+        });
     }
 
     @Override

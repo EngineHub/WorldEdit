@@ -55,4 +55,31 @@ class CommandArgParserTest {
             Substring.wrap("b", 2, 3)
         ), argParse("a b"));
     }
+
+    @Test
+    void testQuotedArguments() {
+        assertEquals(ImmutableList.of(
+            Substring.wrap("a b", 1, 4)
+        ), argParse("\"a b\""));
+        assertEquals(ImmutableList.of(
+            Substring.wrap("x", 0, 1),
+            Substring.wrap("a b c", 3, 8),
+            Substring.wrap("y", 10, 11)
+        ), argParse("x \"a b c\" y"));
+        // an unterminated quote swallows the rest of the input, and is still emitted
+        assertEquals(ImmutableList.of(
+            Substring.wrap("a b", 1, 4)
+        ), argParse("\"a b"));
+        assertEquals(ImmutableList.of(
+            Substring.wrap("", 1, 1)
+        ), argParse("\"\""));
+    }
+
+    @Test
+    void testQuotesInTheMiddleOfAnArgumentAreLiteral() {
+        assertEquals(ImmutableList.of(
+            Substring.wrap("a\"b", 0, 3),
+            Substring.wrap("c\"", 4, 6)
+        ), argParse("a\"b c\""));
+    }
 }
