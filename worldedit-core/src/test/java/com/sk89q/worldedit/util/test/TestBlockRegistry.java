@@ -71,7 +71,13 @@ public class TestBlockRegistry implements BlockRegistry {
     private record BlockProperty(List<String> values, String type) {
     }
 
+    private record PropertyKey(String name, BlockProperty property) {
+    }
+
     private static final DataFile DATA = load();
+
+    // Real platforms share one Property per vanilla property (see CoreMcTransmogrifier's propertyCache)
+    private static final Map<PropertyKey, Property<?>> PROPERTIES = new ConcurrentHashMap<>();
 
     private final Map<String, BlockMaterial> materials = new ConcurrentHashMap<>();
 
@@ -132,7 +138,8 @@ public class TestBlockRegistry implements BlockRegistry {
         }
         ImmutableMap.Builder<String, Property<?>> properties = ImmutableMap.builder();
         manifest.properties().forEach((key, value) ->
-            properties.put(key, createProperty(value.type(), key, value.values())));
+            properties.put(key, PROPERTIES.computeIfAbsent(new PropertyKey(key, value),
+                _ -> createProperty(value.type(), key, value.values()))));
         return properties.build();
     }
 

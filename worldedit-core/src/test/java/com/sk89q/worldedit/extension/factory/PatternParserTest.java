@@ -39,7 +39,6 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -159,11 +158,6 @@ class PatternParserTest extends ParserTestBase {
     }
 
     @Test
-    @Disabled("TypeApplyingPattern does not carry states over when the registry creates Property instances per "
-        + "block type (as TestBlockRegistry does): BlockState.with(oldTypeProperty, value) goes through "
-        + "DefaultBlockTypeStateList.updateIndexOrInvalid, which compares properties with == and silently returns "
-        + "the unchanged state. '^oak_fence_gate' applied over oak_stairs[facing=west] yields facing=north (the "
-        + "default) instead of west. Unknown whether real platforms share Property instances across types")
     void typeApplyingPatternKeepsSharedStates() throws WorldEditException {
         Extent extent = newExtent();
         extent.setBlock(ORIGIN, stairs(Direction.WEST));
