@@ -246,6 +246,7 @@
     "worldedit.move.moved": "{0} blocks moved.",
     "worldedit.deform.deformed": "{0} blocks have been deformed.",
     "worldedit.hollow.changed": "{0} blocks have been changed.",
+    "worldedit.hollow.placement-position-outside": "Placement position must be inside selection ({0}).",
     "worldedit.forest.created": "{0} trees created.",
     "worldedit.flora.created": "{0} flora created.",
 
