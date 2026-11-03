@@ -21,57 +21,32 @@ package com.sk89q.worldedit.world.registry;
 
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.translation.TranslationManager;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.OptionalInt;
-import javax.annotation.Nullable;
 
 /**
- * A block registry that uses {@link BundledBlockData} to serve information
- * about blocks.
- *
- * @deprecated Prefer sourcing block information from the normal registries.
+ * An implementation of a block registry that knows nothing.
  */
-@SuppressWarnings({ "deprecation", "removal" })
-@Deprecated(forRemoval = true)
-public class BundledBlockRegistry implements BlockRegistry {
-
+public class NullBlockRegistry implements BlockRegistry {
     @Override
     public Component getRichName(BlockType blockType) {
-        BundledBlockData.BlockEntry blockEntry = BundledBlockData.getInstance().findById(blockType.id());
-        if (blockEntry != null) {
-            // This is more likely to be "right", but not translated
-            // Some vanilla MC blocks have overrides so we need this name here
-            // Most platforms should be overriding this anyways, so it likely doesn't matter
-            // too much!
-            return TextComponent.of(blockEntry.localizedName);
-        }
         return TranslatableComponent.of(
-            TranslationManager.makeTranslationKey("block", blockType.id())
+                TranslationManager.makeTranslationKey("block", blockType.id())
         );
     }
 
-    @Nullable
-    @Override
-    public BlockMaterial getMaterial(BlockState blockState) {
-        return new PassthroughBlockMaterial(BundledBlockData.getInstance().getMaterialById(blockState.getBlockType().id()));
-    }
-
-    @Nullable
     @Override
     public Map<String, ? extends Property<?>> getProperties(BlockType blockType) {
-        return Collections.emptyMap(); // Oof
+        return Map.of();
     }
 
     @Override
     public OptionalInt getInternalBlockStateId(BlockState state) {
         return OptionalInt.empty();
     }
-
 }

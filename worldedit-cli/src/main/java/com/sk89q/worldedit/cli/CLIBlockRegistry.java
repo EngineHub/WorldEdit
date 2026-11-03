@@ -28,15 +28,18 @@ import com.sk89q.worldedit.registry.state.EnumProperty;
 import com.sk89q.worldedit.registry.state.IntegerProperty;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
+import com.sk89q.worldedit.world.registry.BlockRegistry;
 
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 import javax.annotation.Nullable;
 
-@SuppressWarnings("removal")
-public class CLIBlockRegistry extends BundledBlockRegistry {
+public class CLIBlockRegistry implements BlockRegistry {
 
     private Property<?> createProperty(String type, String key, List<String> values) {
         return switch (type) {
@@ -49,6 +52,11 @@ public class CLIBlockRegistry extends BundledBlockRegistry {
         };
     }
 
+    @Override
+    public Component getRichName(BlockType blockType) {
+        return TextComponent.of(blockType.id());
+    }
+
     @Nullable
     @Override
     public Map<String, ? extends Property<?>> getProperties(BlockType blockType) {
@@ -57,5 +65,10 @@ public class CLIBlockRegistry extends BundledBlockRegistry {
         Maps.EntryTransformer<String, DataFile.BlockProperty, Property<?>> entryTransform =
             (key, value) -> createProperty(value.type(), key, value.values());
         return ImmutableMap.copyOf(Maps.transformEntries(properties, entryTransform));
+    }
+
+    @Override
+    public OptionalInt getInternalBlockStateId(BlockState state) {
+        return OptionalInt.empty();
     }
 }

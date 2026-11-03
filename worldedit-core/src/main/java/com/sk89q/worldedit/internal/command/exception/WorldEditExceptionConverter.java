@@ -22,7 +22,6 @@ package com.sk89q.worldedit.internal.command.exception;
 import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.EmptyClipboardException;
 import com.sk89q.worldedit.IncompleteRegionException;
-import com.sk89q.worldedit.InvalidItemException;
 import com.sk89q.worldedit.MaxBrushRadiusException;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.MaxRadiusException;
@@ -95,12 +94,6 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
 
     @ExceptionMatch
     public void convert(NoMatchException e) throws CommandException {
-        throw newCommandException(e.getRichMessage(), e);
-    }
-
-    @Deprecated
-    @ExceptionMatch
-    public void convert(InvalidItemException e) throws CommandException {
         throw newCommandException(e.getRichMessage(), e);
     }
 

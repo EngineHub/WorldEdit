@@ -22,10 +22,9 @@ package com.sk89q.worldedit.bukkit;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.item.ItemType;
-import com.sk89q.worldedit.world.registry.BundledItemRegistry;
+import com.sk89q.worldedit.world.registry.NullItemRegistry;
 
-@SuppressWarnings("removal")
-class BukkitItemRegistry extends BundledItemRegistry {
+class BukkitItemRegistry extends NullItemRegistry {
     @Override
     public Component getRichName(ItemType itemType) {
         if (WorldEditPlugin.getInstance().getBukkitImplAdapter() != null) {

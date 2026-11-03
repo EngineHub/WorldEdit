@@ -17,34 +17,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit;
+package com.sk89q.worldedit.world.registry;
+
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.translation.TranslationManager;
+import com.sk89q.worldedit.world.item.ItemType;
 
 /**
- * Thrown when no item exist by the ID.
- *
- * @deprecated No longer thrown by WorldEdit.
+ * An implementation of an item registry that knows nothing.
  */
-@Deprecated
-public class UnknownItemException extends WorldEditException {
+public class NullItemRegistry implements ItemRegistry {
 
-    private final String type;
-
-    /**
-     * Create a new instance.
-     *
-     * @param type the input that was provided
-     */
-    public UnknownItemException(String type) {
-        this.type = type;
+    @Override
+    public Component getRichName(ItemType itemType) {
+        return TranslatableComponent.of(
+                TranslationManager.makeTranslationKey("item", itemType.id())
+        );
     }
-
-    /**
-     * Get the input.
-     *
-     * @return the input
-     */
-    public String getID() {
-        return type;
-    }
-
 }

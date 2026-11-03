@@ -23,8 +23,6 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.item.ItemType;
 
-import javax.annotation.Nullable;
-
 public interface ItemRegistry {
 
     /**
@@ -45,15 +43,4 @@ public interface ItemRegistry {
         return getRichName(itemStack.getType());
     }
 
-    /**
-     * Get the material for the given item.
-     *
-     * @param itemType the item
-     * @return the material, or null if the material information is not known
-     * @deprecated ItemMaterial is deprecated with no alternative.
-     */
-    @Deprecated(forRemoval = true)
-    @Nullable
-    @SuppressWarnings("removal")
-    ItemMaterial getMaterial(ItemType itemType);
 }

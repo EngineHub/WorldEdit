@@ -24,7 +24,7 @@ import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.Preference;
 import com.sk89q.worldedit.util.test.ResourceLockKeys;
-import com.sk89q.worldedit.world.registry.BundledRegistries;
+import com.sk89q.worldedit.world.registry.AbstractRegistries;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.parallel.ResourceLock;
@@ -43,7 +43,7 @@ public abstract class BaseWorldEditTest {
 
     @BeforeAll
     static void setUpPlatform() {
-        when(MOCKED_PLATFORM.getRegistries()).thenReturn(new BundledRegistries() {
+        when(MOCKED_PLATFORM.getRegistries()).thenReturn(new AbstractRegistries() {
         });
         when(MOCKED_PLATFORM.getCapabilities()).thenReturn(
                 Stream.of(Capability.values())

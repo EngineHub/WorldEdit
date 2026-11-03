@@ -24,15 +24,14 @@ import com.sk89q.worldedit.sponge.internal.ComponentConverter;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
 import com.sk89q.worldedit.world.item.ItemType;
-import com.sk89q.worldedit.world.registry.BundledItemRegistry;
+import com.sk89q.worldedit.world.registry.ItemRegistry;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.registry.RegistryTypes;
 
-@SuppressWarnings("removal")
-public class SpongeItemRegistry extends BundledItemRegistry {
+public class SpongeItemRegistry implements ItemRegistry {
 
     @Override
     public Component getRichName(ItemType itemType) {
