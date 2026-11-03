@@ -6,7 +6,11 @@
     "environment": "*",
     "entrypoints": {
         "fabric-gametest": [
-            "com.sk89q.worldedit.fabric.gametest.SetCuboidGameTest"
+            "com.sk89q.worldedit.fabric.gametest.SetCuboidGameTest",
+            "com.sk89q.worldedit.fabric.gametest.BlockRoundTripGameTest",
+            "com.sk89q.worldedit.fabric.gametest.BlockEntityNbtGameTest",
+            "com.sk89q.worldedit.fabric.gametest.EntityCopyPasteGameTest",
+            "com.sk89q.worldedit.fabric.gametest.SideEffectsGameTest"
         ]
     },
     "depends": {
