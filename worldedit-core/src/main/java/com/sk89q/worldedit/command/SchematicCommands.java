@@ -40,6 +40,7 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.extent.clipboard.io.share.ClipboardShareDestination;
 import com.sk89q.worldedit.extent.clipboard.io.share.ClipboardShareMetadata;
 import com.sk89q.worldedit.internal.annotation.SchematicPath;
+import com.sk89q.worldedit.internal.command.CommandArgParser;
 import com.sk89q.worldedit.internal.schematic.SchematicsManager;
 import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.math.transform.Transform;
@@ -500,7 +501,7 @@ public class SchematicCommands {
                     .content("")
                     .append(TextComponent.of("[L]")
                             .color(TextColor.GOLD)
-                            .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/schem load \"" + path + "\""))
+                            .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/schem load " + CommandArgParser.escape(path)))
                             .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to load"))))
                     .append(TextComponent.space())
                     .append(TextComponent.of(path)
