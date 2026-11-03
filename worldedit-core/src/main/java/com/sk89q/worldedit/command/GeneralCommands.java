@@ -36,6 +36,7 @@ import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Locatable;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.annotation.Offset;
+import com.sk89q.worldedit.internal.command.CommandArgParser;
 import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.internal.cui.ServerCUIHandler;
@@ -497,7 +498,7 @@ public class GeneralCommands {
 
         @Override
         public Component call() throws Exception {
-            String command = "/searchitem " + (blocksOnly ? "-b " : "") + (itemsOnly ? "-i " : "") + "-p %page% " + search;
+            String command = "/searchitem " + (blocksOnly ? "-b " : "") + (itemsOnly ? "-i " : "") + "-p %page% " + CommandArgParser.escape(search);
             Map<String, Component> results = new TreeMap<>();
             String idMatch = search.replace(' ', '_');
             for (ItemType searchType : ItemType.REGISTRY) {
@@ -541,6 +542,7 @@ public class GeneralCommands {
 
         if (!ALLOWED_KEY_CHARACTERS.matcher(query).matches()) {
             actor.printError(TranslatableComponent.of("worldedit.registry.error.invalid-key"));
+            return;
         }
 
         WorldEditAsyncCommandBuilder.createAndSendMessage(actor, new RegistrySearcher(registry, query, page),

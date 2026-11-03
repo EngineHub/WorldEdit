@@ -28,6 +28,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.internal.command.CommandArgParser;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
@@ -286,7 +287,7 @@ public class SnapshotCommands {
             return TextComponent.of(number + 1 + ". ", TextColor.GOLD)
                 .append(TextComponent.builder(displayName, TextColor.LIGHT_PURPLE)
                     .hoverEvent(HoverEvent.showText(TextComponent.of("Click to use")))
-                    .clickEvent(ClickEvent.runCommand("/snap use " + displayName)));
+                    .clickEvent(ClickEvent.runCommand("/snap use " + CommandArgParser.escape(displayName))));
         }
 
         @Override

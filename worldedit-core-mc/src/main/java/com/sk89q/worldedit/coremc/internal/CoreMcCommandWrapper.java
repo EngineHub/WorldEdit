@@ -33,7 +33,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.internal.util.Substring;
+import com.sk89q.worldedit.internal.command.FullStringSuggestion;
 import net.minecraft.commands.CommandSourceStack;
 import org.enginehub.piston.inject.InjectedValueStore;
 import org.enginehub.piston.inject.Key;
@@ -108,23 +108,14 @@ public final class CoreMcCommandWrapper {
             builder.getInput()
         );
         WorldEdit.getInstance().getEventBus().post(event);
-        List<Substring> suggestions = event.getSuggestions();
+        List<FullStringSuggestion> suggestions = event.getSuggestions();
 
-        ImmutableList.Builder<Suggestion> result = ImmutableList.builder();
+        ImmutableList.Builder<Suggestion> result = ImmutableList.builderWithExpectedSize(suggestions.size());
 
-        for (Substring suggestion : suggestions) {
-            String suggestionText = suggestion.getSubstring();
-            // If at end, we are actually suggesting the next argument
-            // Ensure there is a space!
-            if (suggestion.getStart() == suggestion.getEnd()
-                && suggestion.getEnd() == builder.getInput().length()
-                && !builder.getInput().endsWith(" ")
-                && !builder.getInput().endsWith("\"")) {
-                suggestionText = " " + suggestionText;
-            }
+        for (FullStringSuggestion suggestion : suggestions) {
             result.add(new Suggestion(
-                StringRange.between(suggestion.getStart(), suggestion.getEnd()),
-                suggestionText
+                StringRange.between(suggestion.replaceStart(), suggestion.replaceEnd()),
+                suggestion.escapedText()
             ));
         }
 
