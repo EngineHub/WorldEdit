@@ -447,20 +447,6 @@ public final class WorldEdit {
      *
      * @param path the subpath under the working directory
      * @return a working directory
-     * @deprecated Use {@link WorldEdit#getWorkingDirectoryPath(String)} instead
-     */
-    @InlineMe(replacement = "this.getWorkingDirectoryPath(path).toFile()")
-    @Deprecated
-    public File getWorkingDirectoryFile(String path) {
-        return getWorkingDirectoryPath(path).toFile();
-    }
-
-    /**
-     * Get a file relative to the defined working directory. If the specified
-     * path is absolute, then the working directory is not used.
-     *
-     * @param path the subpath under the working directory
-     * @return a working directory
      */
     public Path getWorkingDirectoryPath(String path) {
         Path p = Paths.get(path);

@@ -31,7 +31,6 @@ import com.sk89q.worldedit.world.snapshot.SnapshotDatabase;
 import com.sk89q.worldedit.world.snapshot.fs.FileSystemSnapshotDatabase;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -167,19 +166,6 @@ public abstract class LocalConfiguration {
      * Load the configuration.
      */
     public abstract void load();
-
-    /**
-     * Get the working directory to work from.
-     *
-     * @return a working directory
-     * @deprecated Use {@link LocalConfiguration#getWorkingDirectoryPath()}
-     */
-    // Suppress InlineMeSuggester: This method cannot be made final due to backwards compatibility
-    @SuppressWarnings("InlineMeSuggester")
-    @Deprecated
-    public File getWorkingDirectory() {
-        return getWorkingDirectoryPath().toFile();
-    }
 
     /**
      * Get the working directory to work from.
