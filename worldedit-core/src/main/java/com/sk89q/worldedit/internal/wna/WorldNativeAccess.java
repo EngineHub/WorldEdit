@@ -99,6 +99,15 @@ public interface WorldNativeAccess<NC, NBS, NP> {
         NBS oldData = toNative(previousType);
         NBS newData = getBlockState(chunk, pos);
 
+        if (sideEffectSet.shouldApply(SideEffect.VALIDATION)) {
+            NBS validated = getValidBlockForPosition(newData, pos);
+            if (validated != newData) {
+                setBlockState(chunk, pos, validated);
+                // markAndNotifyBlock bails unless the chunk holds newData, so it must be the validated state
+                newData = validated;
+            }
+        }
+
         if (sideEffectSet.shouldApply(SideEffect.UPDATE)) {
             updateBlock(pos, oldData, newData);
         }
