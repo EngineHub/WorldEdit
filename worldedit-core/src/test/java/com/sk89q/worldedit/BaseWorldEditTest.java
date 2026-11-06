@@ -23,12 +23,25 @@ import com.sk89q.worldedit.event.platform.PlatformsRegisteredEvent;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.Preference;
+import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.test.ResourceLockKeys;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.item.ItemType;
+import com.sk89q.worldedit.world.registry.BlockMaterial;
+import com.sk89q.worldedit.world.registry.BlockRegistry;
 import com.sk89q.worldedit.world.registry.BundledRegistries;
+import com.sk89q.worldedit.world.registry.ItemMaterial;
+import com.sk89q.worldedit.world.registry.ItemRegistry;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
+import java.util.Map;
+import java.util.OptionalInt;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -44,6 +57,46 @@ public abstract class BaseWorldEditTest {
     @BeforeAll
     static void setUpPlatform() {
         when(MOCKED_PLATFORM.getRegistries()).thenReturn(new BundledRegistries() {
+            @Override
+            public BlockRegistry getBlockRegistry() {
+                return new BlockRegistry() {
+                    @Override
+                    public Component getRichName(BlockType blockType) {
+                        return TextComponent.of(blockType.id());
+                    }
+
+                    @Override
+                    public @Nullable BlockMaterial getMaterial(BlockType blockType) {
+                        return null;
+                    }
+
+                    @Override
+                    public Map<String, ? extends Property<?>> getProperties(BlockType blockType) {
+                        return Map.of();
+                    }
+
+                    @Override
+                    public OptionalInt getInternalBlockStateId(BlockState state) {
+                        return OptionalInt.empty();
+                    }
+                };
+            }
+
+            @Override
+            public ItemRegistry getItemRegistry() {
+                return new ItemRegistry() {
+                    @Override
+                    public Component getRichName(ItemType itemType) {
+                        return TextComponent.of(itemType.id());
+                    }
+
+                    @SuppressWarnings("removal")
+                    @Override
+                    public @Nullable ItemMaterial getMaterial(ItemType itemType) {
+                        return null;
+                    }
+                };
+            }
         });
         when(MOCKED_PLATFORM.getCapabilities()).thenReturn(
                 Stream.of(Capability.values())
