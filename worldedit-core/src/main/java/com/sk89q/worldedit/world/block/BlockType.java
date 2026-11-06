@@ -21,7 +21,6 @@ package com.sk89q.worldedit.world.block;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.registry.Keyed;
@@ -57,8 +56,8 @@ public class BlockType implements Keyed {
     private final LazyReference<BlockMaterial> blockMaterial
         = LazyReference.from(() -> WorldEdit.getInstance().getPlatformManager()
         .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getMaterial(this));
-    private final LazyReference<Map<Map<Property<?>, Object>, BlockState>> blockStatesMap
-        = LazyReference.from(() -> BlockState.generateStateMap(this));
+    private final LazyReference<BlockTypeStateList> internalStateList
+        = LazyReference.from(() -> BlockTypeStateList.createFor(this));
 
     @Deprecated
     private final LazyReference<String> name = LazyReference.from(() -> WorldEdit.getInstance().getPlatformManager()
@@ -80,15 +79,15 @@ public class BlockType implements Keyed {
     }
 
     private BlockState computeDefaultState() {
-        BlockState defaultState = Iterables.getFirst(getBlockStatesMap().values(), null);
+        BlockState defaultState = getInternalStateList().get(0);
         if (values != null) {
             defaultState = values.apply(defaultState);
         }
         return defaultState;
     }
 
-    private Map<Map<Property<?>, Object>, BlockState> getBlockStatesMap() {
-        return blockStatesMap.getValue();
+    BlockTypeStateList getInternalStateList() {
+        return internalStateList.getValue();
     }
 
     /**
@@ -172,7 +171,7 @@ public class BlockType implements Keyed {
      * @return All possible states
      */
     public List<BlockState> getAllStates() {
-        return ImmutableList.copyOf(getBlockStatesMap().values());
+        return getInternalStateList();
     }
 
     /**
@@ -181,9 +180,8 @@ public class BlockType implements Keyed {
      * @return The state, if it exists
      */
     public BlockState getState(Map<Property<?>, Object> key) {
-        BlockState state = getBlockStatesMap().get(key);
-        checkArgument(state != null, "%s has no state for %s", this, key);
-        return state;
+        BlockTypeStateList stateList = getInternalStateList();
+        return stateList.get(stateList.calculateIndex(key));
     }
 
     /**

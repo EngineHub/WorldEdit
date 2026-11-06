@@ -21,6 +21,7 @@ package com.sk89q.worldedit.world.block;
 
 import com.sk89q.worldedit.registry.state.Property;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,14 +37,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class FuzzyBlockState extends BlockState {
 
     FuzzyBlockState(BlockType blockType) {
-        super(blockType);
+        super(blockType, Collections.emptyMap(), -1);
     }
 
     private FuzzyBlockState(BlockType blockType, Map<Property<?>, Object> values) {
-        this(blockType);
-        for (Map.Entry<Property<?>, Object> entry : values.entrySet()) {
-            setState(entry.getKey(), entry.getValue());
-        }
+        super(blockType, Collections.unmodifiableMap(new HashMap<>(values)), -1);
     }
 
     /**
