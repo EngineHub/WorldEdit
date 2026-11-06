@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.extension.factory.parser.mask;
 
+import com.google.common.base.CharMatcher;
+import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.NoMatchException;
@@ -28,6 +30,7 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.world.block.BaseBlock;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -36,13 +39,18 @@ import java.util.stream.Stream;
  */
 public class BlocksMaskParser extends InputParser<Mask> {
 
+    private static final CharMatcher LIST_DELIMITER = CharMatcher.is(',');
+
     public BlocksMaskParser(WorldEdit worldEdit) {
         super(worldEdit);
     }
 
     @Override
     public Stream<String> getSuggestions(String input, ParserContext context) {
-        return worldEdit.getBlockFactory().getSuggestions(input, context).stream();
+        List<String> blocks = StringUtil.splitOutsideBrackets(input, LIST_DELIMITER);
+        String token = blocks.get(blocks.size() - 1);
+        String prefix = input.substring(0, input.length() - token.length());
+        return worldEdit.getBlockFactory().getSuggestions(token, context).stream().map(s -> prefix + s);
     }
 
     @Override
