@@ -32,12 +32,14 @@ import com.sk89q.worldedit.world.storage.MissingChunkException;
 import org.enginehub.linbus.stream.LinBinaryIO;
 import org.enginehub.linbus.tree.LinCompoundTag;
 import org.enginehub.linbus.tree.LinRootEntry;
+import org.enginehub.linbus.tree.LinTagType;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
@@ -155,6 +157,34 @@ public class FolderSnapshot implements Snapshot {
             McRegionReader regionReader = new McRegionReader(stream);
             try (var chunkStream = new DataInputStream(regionReader.getChunkInputStream(pos))) {
                 return LinBinaryIO.readUsing(chunkStream, LinRootEntry::readFrom).value();
+            }
+        }
+    }
+
+    @Override
+    public List<LinCompoundTag> getEntityTags(BlockVector3 position) throws DataException, IOException {
+        BlockVector2 pos = position.toBlockVector2();
+        Optional<Path> regFolder = getRegionFolder();
+        if (regFolder.isEmpty()) {
+            // Legacy (pre-region) worlds keep entities inside the chunk
+            return List.of();
+        }
+        // entities are stored in an "entities" folder next to "region"
+        Path entitiesFile = regFolder.get().resolveSibling("entities")
+                .resolve(McRegionChunkStore.getFilename(pos));
+        if (!Files.exists(entitiesFile)) {
+            return List.of();
+        }
+        try (InputStream stream = Files.newInputStream(entitiesFile)) {
+            McRegionReader regionReader = new McRegionReader(stream);
+            if (!regionReader.hasChunk(pos.x() & 31, pos.z() & 31)) {
+                // Chunks without entities are not written to the entities file
+                return List.of();
+            }
+            try (var chunkStream = new DataInputStream(regionReader.getChunkInputStream(pos))) {
+                LinCompoundTag tag = LinBinaryIO.readUsing(chunkStream, LinRootEntry::readFrom).value();
+                var entities = tag.findListTag("Entities", LinTagType.compoundTag());
+                return entities == null ? List.of() : entities.value();
             }
         }
     }
