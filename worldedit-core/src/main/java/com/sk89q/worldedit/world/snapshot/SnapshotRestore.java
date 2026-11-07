@@ -21,14 +21,22 @@ package com.sk89q.worldedit.world.snapshot;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.chunk.Chunk;
+import com.sk89q.worldedit.world.entity.EntityType;
+import com.sk89q.worldedit.world.entity.EntityTypes;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 import com.sk89q.worldedit.world.storage.MissingChunkException;
+import com.sk89q.worldedit.world.storage.NBTConversions;
+import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinTagType;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,6 +52,8 @@ public class SnapshotRestore {
     private final Map<BlockVector2, ArrayList<BlockVector3>> neededChunks = new LinkedHashMap<>();
     private final Snapshot snapshot;
     private final EditSession editSession;
+    private final Region region;
+    private boolean restoreEntities;
     private ArrayList<BlockVector2> missingChunks;
     private ArrayList<BlockVector2> errorChunks;
     private String lastErrorMessage;
@@ -58,6 +68,7 @@ public class SnapshotRestore {
     public SnapshotRestore(Snapshot snapshot, EditSession editSession, Region region) {
         this.snapshot = snapshot;
         this.editSession = editSession;
+        this.region = region;
 
         if (region instanceof CuboidRegion) {
             findNeededCuboidChunks(region);
@@ -116,6 +127,15 @@ public class SnapshotRestore {
     }
 
     /**
+     * Set whether entities stored in the snapshot should also be restored.
+     * Entities that already exist in the region are not removed.
+     * @param restoreEntities true to restore entities
+     */
+    public void setRestoreEntities(boolean restoreEntities) {
+        this.restoreEntities = restoreEntities;
+    }
+
+    /**
      * Get the number of chunks that are needed.
      *
      * @return a number of chunks
@@ -152,12 +172,36 @@ public class SnapshotRestore {
                         // this is a workaround: just ignore for now
                     }
                 }
+
+                if (restoreEntities) {
+                    restoreEntities(chunkPos);
+                }
             } catch (MissingChunkException _) {
                 missingChunks.add(chunkPos);
             } catch (IOException | DataException me) {
                 errorChunks.add(chunkPos);
                 lastErrorMessage = me.getMessage();
             }
+        }
+    }
+
+    private void restoreEntities(BlockVector2 chunkPos) throws DataException, IOException {
+        for (LinCompoundTag tag : snapshot.getEntityTags(chunkPos.toBlockVector3())) {
+            var idTag = tag.findTag("id", LinTagType.stringTag());
+            var posTag = tag.findListTag("Pos", LinTagType.doubleTag());
+            var rotationTag = tag.findListTag("Rotation", LinTagType.floatTag());
+            if (idTag == null || posTag == null || rotationTag == null) {
+                continue;
+            }
+            EntityType entityType = EntityTypes.get(idTag.value());
+            if (entityType == null) {
+                continue;
+            }
+            Location location = NBTConversions.toLocation(editSession, posTag, rotationTag);
+            if (!region.contains(location.toVector().toBlockPoint())) {
+                continue;
+            }
+            editSession.createEntity(location, new BaseEntity(entityType, LazyReference.computed(tag)));
         }
     }
 
