@@ -54,9 +54,11 @@ class BlocksMaskParserTest {
                 Arguments.of("stone,", "bri", "bricks"),
                 Arguments.of("stone,dirt,", "bri", "bricks"),
                 Arguments.of("minecraft:stone,", "minecraft:bri", "minecraft:bricks"),
+                Arguments.of("", "oak_stairs[facing=north,", "oak_stairs[facing=north,half="),
                 Arguments.of("oak_stairs[facing=north,half=bottom],", "bri", "bricks"),
                 Arguments.of("chest{CustomName:'a,b'},", "bri", "bricks"),
                 Arguments.of("stone,", "oak_stairs[facing=north,half=b", "oak_stairs[facing=north,half=bottom]"),
+                Arguments.of("stone,", "oak_stairs[facing=north,", "oak_stairs[facing=north,half="),
                 Arguments.of("stone,", "chest{CustomName:'a,b", "chest{CustomName:'a,b'}"),
                 Arguments.of("stone ,dirt,", "bri", "bricks"),
                 Arguments.of("stone,", "", "bricks")
