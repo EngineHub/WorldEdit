@@ -127,8 +127,8 @@ public class SnapshotRestore {
     }
 
     /**
-     * Set whether entities stored in the snapshot should also be restored.
-     * Entities that already exist in the region are not removed.
+     * Set whether entities stored in the snapshot should also be restored, when supported.
+     *
      * @param restoreEntities true to restore entities
      */
     public void setRestoreEntities(boolean restoreEntities) {
