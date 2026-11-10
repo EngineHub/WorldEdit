@@ -83,7 +83,11 @@ import org.enginehub.piston.annotation.param.ArgFlag;
 import org.enginehub.piston.annotation.param.Switch;
 import org.enginehub.piston.exception.StopExecutionException;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
@@ -699,6 +703,8 @@ public class SelectionCommands {
                           boolean clipboardDistr,
                       @Switch(name = 'd', desc = "Separate blocks by state")
                           boolean separateStates,
+                      @Switch(name = 'n', desc = "List resource key namespaces instead of block counts")
+                          boolean listNamespaces,
                       @ArgFlag(name = 'p', desc = "Gets page from a previous distribution.")
                           Integer page,
                       @ArgFlag(name = 'm', desc = "Only include blocks matching the given mask")
@@ -733,8 +739,23 @@ public class SelectionCommands {
         }
 
         final int finalPage = page;
+        final DistributionResult<?> res;
+        if (listNamespaces) {
+            res = new DistributionResult<>(
+                getNamespaceDistribution(distribution),
+                "Namespace Distribution",
+                "//distr -n -p %page%",
+                namespace -> TextComponent.of(namespace, TextColor.LIGHT_PURPLE)
+            );
+        } else {
+            res = new DistributionResult<>(
+                distribution,
+                "Block Distribution",
+                "//distr -p %page%" + (separateStates ? " -d" : ""),
+                state -> getBlockComponent(state, separateStates)
+            );
+        }
         WorldEditAsyncCommandBuilder.createAndSendMessage(actor, () -> {
-            BlockDistributionResult res = new BlockDistributionResult(distribution, separateStates);
             if (!actor.isPlayer()) {
                 res.formatForConsole();
             }
@@ -803,50 +824,61 @@ public class SelectionCommands {
         session.dispatchCUISelection(actor);
     }
 
-    private static class BlockDistributionResult extends PaginationBox {
+    private static List<Countable<String>> getNamespaceDistribution(List<Countable<BlockState>> distribution) {
+        Map<String, Integer> countsByNamespace = new TreeMap<>();
+        for (Countable<BlockState> count : distribution) {
+            String id = count.getID().getBlockType().id();
+            String namespace = id.substring(0, id.indexOf(':'));
+            countsByNamespace.merge(namespace, count.getAmount(), Integer::sum);
+        }
+        return countsByNamespace.entrySet().stream()
+            .map(entry -> new Countable<>(entry.getKey(), entry.getValue()))
+            .sorted(Comparator.comparingInt(Countable<String>::getAmount).reversed()
+                .thenComparing(Countable::getID))
+            .toList();
+    }
 
-        private final List<Countable<BlockState>> distribution;
+    private static Component getBlockComponent(BlockState state, boolean separateStates) {
+        final BlockType blockType = state.getBlockType();
+        Component blockName = blockType.getRichName().color(TextColor.LIGHT_PURPLE);
+        TextComponent toolTip;
+        if (separateStates && state != blockType.getDefaultState()) {
+            toolTip = TextComponent.of(state.getAsString(), TextColor.GRAY);
+            blockName = blockName.append(TextComponent.of("*", TextColor.LIGHT_PURPLE));
+        } else {
+            toolTip = TextComponent.of(blockType.id(), TextColor.GRAY);
+        }
+        return blockName.hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, toolTip));
+    }
+
+    private static class DistributionResult<T> extends PaginationBox {
+
+        private final List<Countable<T>> distribution;
         private final int totalBlocks;
-        private final boolean separateStates;
+        private final Function<T, Component> componentMapper;
 
-        BlockDistributionResult(List<Countable<BlockState>> distribution, boolean separateStates) {
-            super("Block Distribution", "//distr -p %page%" + (separateStates ? " -d" : ""));
+        DistributionResult(List<Countable<T>> distribution, String title, String pageCommand, Function<T, Component> componentMapper) {
+            super(title, pageCommand);
             this.distribution = distribution;
             // note: doing things like region.getArea is inaccurate for non-cuboids.
             this.totalBlocks = distribution.stream().mapToInt(Countable::getAmount).sum();
-            this.separateStates = separateStates;
+            this.componentMapper = componentMapper;
             setComponentsPerPage(7);
         }
 
         @Override
         public Component getComponent(int number) {
-            Countable<BlockState> c = distribution.get(number);
-            TextComponent.Builder line = TextComponent.builder();
-
-            final int count = c.getAmount();
-
-            final double perc = count / (double) totalBlocks * 100;
-            final int maxDigits = (int) (Math.log10(totalBlocks) + 1);
-            final int curDigits = (int) (Math.log10(count) + 1);
-            line.append(String.format("%s%.3f%%  ", perc < 10 ? "  " : "", perc), TextColor.GOLD);
-            final int space = maxDigits - curDigits;
+            Countable<T> countable = distribution.get(number);
+            int count = countable.getAmount();
+            double perc = count / (double) totalBlocks * 100;
+            int maxDigits = (int) (Math.log10(totalBlocks) + 1);
+            int curDigits = (int) (Math.log10(count) + 1);
+            TextComponent.Builder line = TextComponent.builder()
+                .append(String.format("%s%.3f%%  ", perc < 10 ? "  " : "", perc), TextColor.GOLD);
+            int space = maxDigits - curDigits;
             String pad = " ".repeat(space == 0 ? 2 : 2 * space + 1);
             line.append(String.format("%s%s", count, pad), TextColor.YELLOW);
-
-            final BlockState state = c.getID();
-            final BlockType blockType = state.getBlockType();
-            Component blockName = blockType.getRichName().color(TextColor.LIGHT_PURPLE);
-            TextComponent toolTip;
-            if (separateStates && state != blockType.getDefaultState()) {
-                toolTip = TextComponent.of(state.getAsString(), TextColor.GRAY);
-                blockName = blockName.append(TextComponent.of("*", TextColor.LIGHT_PURPLE));
-            } else {
-                toolTip = TextComponent.of(blockType.id(), TextColor.GRAY);
-            }
-            blockName = blockName.hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, toolTip));
-            line.append(blockName);
-
-            return line.build();
+            return line.append(componentMapper.apply(countable.getID())).build();
         }
 
         @Override
@@ -857,7 +889,7 @@ public class SelectionCommands {
         @Override
         public Component create(int page) throws InvalidComponentException {
             super.getContents().append(TranslatableComponent.of("worldedit.distr.total", TextColor.GRAY, TextComponent.of(totalBlocks)))
-                    .append(TextComponent.newline());
+                .append(TextComponent.newline());
             return super.create(page);
         }
     }
