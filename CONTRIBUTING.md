@@ -5,7 +5,7 @@ Thank you for your interest in contributing to WorldEdit! We appreciate your
 effort, but to make sure that the inclusion of your patch is a smooth process, we
 ask that you make note of the following guidelines.
 
-* **Target Java 21 for source and compilation.** Make sure to mark methods with
+* **Target Java 25 for source and compilation.** Make sure to mark methods with
   ` @Override` that override methods of parent classes, or that implement
   methods of interfaces.
 * **Use only spaces for indentation.** Our indents are 4-spaces long, and tabs
@@ -14,7 +14,8 @@ ask that you make note of the following guidelines.
   and other such tasks easier. Ignore this guideline if it makes the code
   too unreadable.
 * **Write complete Javadocs.** Do so only for public methods, and make sure
-  that your `@param` and `@return` fields are not just blank.
+  that your `@param` and `@return` fields are not just blank. Please also 
+  ensure that your prose is readable and concise.
 * **Don't tag classes with @author.** Some legacy classes may have this tag,
   but we are phasing it out.
 * **Make sure the code is efficient.** One way you can achieve this is to spend
@@ -65,7 +66,7 @@ This is **GOOD:**
         // do things
     }
 
-This is **EXTREMELY BAD:**
+This is **NOT GOOD:**
 
     if(var.func( param1, param2 ))
     {
