@@ -1,0 +1,1203 @@
+{
+  "blocks": {
+    "minecraft:air": {
+      "properties": {}
+    },
+    "minecraft:stone": {
+      "properties": {}
+    },
+    "minecraft:oak_planks": {
+      "properties": {}
+    },
+    "minecraft:glass": {
+      "properties": {}
+    },
+    "minecraft:torch": {
+      "properties": {}
+    },
+    "minecraft:oak_wood": {
+      "properties": {
+        "axis": {
+          "type": "enum",
+          "values": [
+            "x",
+            "y",
+            "z"
+          ]
+        }
+      }
+    },
+    "minecraft:oak_log": {
+      "properties": {
+        "axis": {
+          "type": "enum",
+          "values": [
+            "x",
+            "y",
+            "z"
+          ]
+        }
+      }
+    },
+    "minecraft:stripped_oak_log": {
+      "properties": {
+        "axis": {
+          "type": "enum",
+          "values": [
+            "x",
+            "y",
+            "z"
+          ]
+        }
+      }
+    },
+    "minecraft:quartz_pillar": {
+      "properties": {
+        "axis": {
+          "type": "enum",
+          "values": [
+            "x",
+            "y",
+            "z"
+          ]
+        }
+      }
+    },
+    "minecraft:oak_stairs": {
+      "properties": {
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "south",
+            "west",
+            "east"
+          ]
+        },
+        "half": {
+          "type": "enum",
+          "values": [
+            "top",
+            "bottom"
+          ]
+        },
+        "shape": {
+          "type": "enum",
+          "values": [
+            "straight",
+            "inner_left",
+            "inner_right",
+            "outer_left",
+            "outer_right"
+          ]
+        },
+        "waterlogged": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:stone_stairs": {
+      "properties": {
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "south",
+            "west",
+            "east"
+          ]
+        },
+        "half": {
+          "type": "enum",
+          "values": [
+            "top",
+            "bottom"
+          ]
+        },
+        "shape": {
+          "type": "enum",
+          "values": [
+            "straight",
+            "inner_left",
+            "inner_right",
+            "outer_left",
+            "outer_right"
+          ]
+        },
+        "waterlogged": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:oak_slab": {
+      "properties": {
+        "type": {
+          "type": "enum",
+          "values": [
+            "top",
+            "bottom",
+            "double"
+          ]
+        },
+        "waterlogged": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:oak_door": {
+      "properties": {
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "south",
+            "west",
+            "east"
+          ]
+        },
+        "half": {
+          "type": "enum",
+          "values": [
+            "upper",
+            "lower"
+          ]
+        },
+        "hinge": {
+          "type": "enum",
+          "values": [
+            "left",
+            "right"
+          ]
+        },
+        "open": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "powered": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:oak_trapdoor": {
+      "properties": {
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "south",
+            "west",
+            "east"
+          ]
+        },
+        "half": {
+          "type": "enum",
+          "values": [
+            "top",
+            "bottom"
+          ]
+        },
+        "open": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "powered": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "waterlogged": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:oak_fence": {
+      "properties": {
+        "north": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "south": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "west": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "east": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "waterlogged": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:oak_fence_gate": {
+      "properties": {
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "south",
+            "west",
+            "east"
+          ]
+        },
+        "in_wall": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "open": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "powered": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:glass_pane": {
+      "properties": {
+        "north": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "south": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "west": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "east": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "waterlogged": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:cobblestone_wall": {
+      "properties": {
+        "up": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "north": {
+          "type": "enum",
+          "values": [
+            "none",
+            "low",
+            "tall"
+          ]
+        },
+        "south": {
+          "type": "enum",
+          "values": [
+            "none",
+            "low",
+            "tall"
+          ]
+        },
+        "east": {
+          "type": "enum",
+          "values": [
+            "none",
+            "low",
+            "tall"
+          ]
+        },
+        "west": {
+          "type": "enum",
+          "values": [
+            "none",
+            "low",
+            "tall"
+          ]
+        },
+        "waterlogged": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:vine": {
+      "properties": {
+        "up": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "north": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "south": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "west": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "east": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:chest": {
+      "properties": {
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "south",
+            "west",
+            "east"
+          ]
+        },
+        "type": {
+          "type": "enum",
+          "values": [
+            "single",
+            "left",
+            "right"
+          ]
+        },
+        "waterlogged": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:trapped_chest": {
+      "properties": {
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "south",
+            "west",
+            "east"
+          ]
+        },
+        "type": {
+          "type": "enum",
+          "values": [
+            "single",
+            "left",
+            "right"
+          ]
+        },
+        "waterlogged": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:ender_chest": {
+      "properties": {
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "south",
+            "west",
+            "east"
+          ]
+        },
+        "waterlogged": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:wall_torch": {
+      "properties": {
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "south",
+            "west",
+            "east"
+          ]
+        }
+      }
+    },
+    "minecraft:redstone_torch": {
+      "properties": {
+        "lit": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:redstone_wall_torch": {
+      "properties": {
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "south",
+            "west",
+            "east"
+          ]
+        },
+        "lit": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:rail": {
+      "properties": {
+        "shape": {
+          "type": "enum",
+          "values": [
+            "north_south",
+            "east_west",
+            "ascending_east",
+            "ascending_west",
+            "ascending_north",
+            "ascending_south",
+            "south_east",
+            "south_west",
+            "north_west",
+            "north_east"
+          ]
+        },
+        "waterlogged": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:powered_rail": {
+      "properties": {
+        "powered": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "shape": {
+          "type": "enum",
+          "values": [
+            "north_south",
+            "east_west",
+            "ascending_east",
+            "ascending_west",
+            "ascending_north",
+            "ascending_south"
+          ]
+        },
+        "waterlogged": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:detector_rail": {
+      "properties": {
+        "powered": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "shape": {
+          "type": "enum",
+          "values": [
+            "north_south",
+            "east_west",
+            "ascending_east",
+            "ascending_west",
+            "ascending_north",
+            "ascending_south"
+          ]
+        },
+        "waterlogged": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:activator_rail": {
+      "properties": {
+        "powered": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "shape": {
+          "type": "enum",
+          "values": [
+            "north_south",
+            "east_west",
+            "ascending_east",
+            "ascending_west",
+            "ascending_north",
+            "ascending_south"
+          ]
+        },
+        "waterlogged": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:redstone_wire": {
+      "properties": {
+        "power": {
+          "type": "int",
+          "values": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15"
+          ]
+        },
+        "north": {
+          "type": "enum",
+          "values": [
+            "up",
+            "side",
+            "none"
+          ]
+        },
+        "south": {
+          "type": "enum",
+          "values": [
+            "up",
+            "side",
+            "none"
+          ]
+        },
+        "east": {
+          "type": "enum",
+          "values": [
+            "up",
+            "side",
+            "none"
+          ]
+        },
+        "west": {
+          "type": "enum",
+          "values": [
+            "up",
+            "side",
+            "none"
+          ]
+        }
+      }
+    },
+    "minecraft:repeater": {
+      "properties": {
+        "delay": {
+          "type": "int",
+          "values": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ]
+        },
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "south",
+            "west",
+            "east"
+          ]
+        },
+        "locked": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "powered": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:comparator": {
+      "properties": {
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "south",
+            "west",
+            "east"
+          ]
+        },
+        "mode": {
+          "type": "enum",
+          "values": [
+            "compare",
+            "subtract"
+          ]
+        },
+        "powered": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:lever": {
+      "properties": {
+        "face": {
+          "type": "enum",
+          "values": [
+            "floor",
+            "wall",
+            "ceiling"
+          ]
+        },
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "south",
+            "west",
+            "east"
+          ]
+        },
+        "powered": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:stone_button": {
+      "properties": {
+        "face": {
+          "type": "enum",
+          "values": [
+            "floor",
+            "wall",
+            "ceiling"
+          ]
+        },
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "south",
+            "west",
+            "east"
+          ]
+        },
+        "powered": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:piston": {
+      "properties": {
+        "extended": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "east",
+            "south",
+            "west",
+            "up",
+            "down"
+          ]
+        }
+      }
+    },
+    "minecraft:sticky_piston": {
+      "properties": {
+        "extended": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "east",
+            "south",
+            "west",
+            "up",
+            "down"
+          ]
+        }
+      }
+    },
+    "minecraft:observer": {
+      "properties": {
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "east",
+            "south",
+            "west",
+            "up",
+            "down"
+          ]
+        },
+        "powered": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:dispenser": {
+      "properties": {
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "east",
+            "south",
+            "west",
+            "up",
+            "down"
+          ]
+        },
+        "triggered": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:hopper": {
+      "properties": {
+        "enabled": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "facing": {
+          "type": "direction",
+          "values": [
+            "down",
+            "north",
+            "south",
+            "west",
+            "east"
+          ]
+        }
+      }
+    },
+    "minecraft:barrel": {
+      "properties": {
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "east",
+            "south",
+            "west",
+            "up",
+            "down"
+          ]
+        },
+        "open": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:furnace": {
+      "properties": {
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "south",
+            "west",
+            "east"
+          ]
+        },
+        "lit": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:crafter": {
+      "properties": {
+        "crafting": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "orientation": {
+          "type": "enum",
+          "values": [
+            "down_east",
+            "down_north",
+            "down_south",
+            "down_west",
+            "up_east",
+            "up_north",
+            "up_south",
+            "up_west",
+            "west_up",
+            "east_up",
+            "north_up",
+            "south_up"
+          ]
+        },
+        "triggered": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:oak_sign": {
+      "properties": {
+        "rotation": {
+          "type": "int",
+          "values": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15"
+          ]
+        },
+        "waterlogged": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:oak_wall_sign": {
+      "properties": {
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "south",
+            "west",
+            "east"
+          ]
+        },
+        "waterlogged": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:white_wall_banner": {
+      "properties": {
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "south",
+            "west",
+            "east"
+          ]
+        }
+      }
+    },
+    "minecraft:white_bed": {
+      "properties": {
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "south",
+            "west",
+            "east"
+          ]
+        },
+        "occupied": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "part": {
+          "type": "enum",
+          "values": [
+            "head",
+            "foot"
+          ]
+        }
+      }
+    },
+    "minecraft:ladder": {
+      "properties": {
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "south",
+            "west",
+            "east"
+          ]
+        },
+        "waterlogged": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:tripwire_hook": {
+      "properties": {
+        "attached": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        },
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "south",
+            "west",
+            "east"
+          ]
+        },
+        "powered": {
+          "type": "bool",
+          "values": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    "minecraft:anvil": {
+      "properties": {
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "south",
+            "west",
+            "east"
+          ]
+        }
+      }
+    },
+    "minecraft:white_glazed_terracotta": {
+      "properties": {
+        "facing": {
+          "type": "direction",
+          "values": [
+            "north",
+            "south",
+            "west",
+            "east"
+          ]
+        }
+      }
+    }
+  }
+}

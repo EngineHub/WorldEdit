@@ -1,0 +1,26 @@
+{
+    "schemaVersion": 1,
+    "id": "worldedit-gametest",
+    "version": "1.0.0",
+    "name": "WorldEdit GameTests",
+    "environment": "*",
+    "entrypoints": {
+        "fabric-gametest": [
+            "com.sk89q.worldedit.fabric.gametest.SetCuboidGameTest",
+            "com.sk89q.worldedit.fabric.gametest.BlockRoundTripGameTest",
+            "com.sk89q.worldedit.fabric.gametest.BlockEntityNbtGameTest",
+            "com.sk89q.worldedit.fabric.gametest.EntityCopyPasteGameTest",
+            "com.sk89q.worldedit.fabric.gametest.SideEffectsGameTest",
+            "com.sk89q.worldedit.fabric.gametest.BiomeGameTest",
+            "com.sk89q.worldedit.fabric.gametest.GenerationGameTest",
+            "com.sk89q.worldedit.fabric.gametest.RegenGameTest",
+            "com.sk89q.worldedit.fabric.gametest.SnapshotRestoreGameTest"
+        ],
+        "fabric-client-gametest": [
+            "com.sk89q.worldedit.fabric.gametest.SetCommandClientGameTest"
+        ]
+    },
+    "depends": {
+        "worldedit": "*"
+    }
+}

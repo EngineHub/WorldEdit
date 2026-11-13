@@ -24,7 +24,8 @@ import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.Preference;
 import com.sk89q.worldedit.util.test.ResourceLockKeys;
-import com.sk89q.worldedit.world.registry.AbstractRegistries;
+import com.sk89q.worldedit.util.test.TestRegistries;
+import com.sk89q.worldedit.util.translation.TranslationManager;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.parallel.ResourceLock;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -43,8 +45,7 @@ public abstract class BaseWorldEditTest {
 
     @BeforeAll
     static void setUpPlatform() {
-        when(MOCKED_PLATFORM.getRegistries()).thenReturn(new AbstractRegistries() {
-        });
+        when(MOCKED_PLATFORM.getRegistries()).thenReturn(new TestRegistries());
         when(MOCKED_PLATFORM.getCapabilities()).thenReturn(
                 Stream.of(Capability.values())
                         .collect(Collectors.toMap(Function.identity(), _ -> Preference.NORMAL))
@@ -54,6 +55,10 @@ public abstract class BaseWorldEditTest {
             public void load() {
             }
         });
+        // WorldEditException formats its message through the platform's translations; pass components through
+        TranslationManager translations = mock(TranslationManager.class);
+        when(translations.convertText(any(), any())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(MOCKED_PLATFORM.getTranslationManager()).thenReturn(translations);
         WorldEdit.getInstance().getPlatformManager().register(MOCKED_PLATFORM);
         WorldEdit.getInstance().getEventBus().post(new PlatformsRegisteredEvent());
         assertTrue(WorldEdit.getInstance().getPlatformManager().isInitialized(), "Platform is not initialized");

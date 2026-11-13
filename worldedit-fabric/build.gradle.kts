@@ -29,6 +29,16 @@ repositories {
 
 withCuiProtocolDependsOnCommonRule(libs.cuiProtocol.fabric.get().module)
 
+fabricApi {
+    configureTests {
+        createSourceSet = true
+        modId = "worldedit-gametest"
+        enableGameTests = true
+        enableClientGameTests = true
+        eula = true
+    }
+}
+
 dependencies {
     api(project(":worldedit-core"))
     api(project(":worldedit-core-mc"))
@@ -56,6 +66,10 @@ dependencies {
         include(dep)
         implementation(dep)
     }
+
+    // Only needed by the gametest source set (created by fabricApi.configureTests above)
+    "gametestImplementation"(fabricApi.module("fabric-gametest-api-v1", libs.versions.fabric.api.get()))
+    "gametestImplementation"(fabricApi.module("fabric-client-gametest-api-v1", libs.versions.fabric.api.get()))
 
     // No need for this at runtime
     compileOnly(libs.fabric.permissions.api)

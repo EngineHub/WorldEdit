@@ -265,10 +265,16 @@ public class CLIWorldEdit {
                 .forEach(world -> ((CLIWorld) world).save(force));
     }
 
+    // The prompt is the CLI's user interface, not logging
+    @SuppressWarnings("SystemOut")
+    private static void printPrompt() {
+        System.err.print("> ");
+    }
+
     public void run(InputStream inputStream) {
         try (Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8)) {
             while (true) {
-                System.err.print("> ");
+                printPrompt();
                 if (!scanner.hasNextLine()) {
                     break;
                 }

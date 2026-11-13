@@ -24,6 +24,10 @@ crankcaseJava {
     )
 }
 
+tasks.named<JavaCompile>("compileJava") {
+    (options as ExtensionAware).extensions.getByName("errorprone").withGroovyBuilder { "error"("SystemOut") }
+}
+
 crankcaseCheckstyle {
     suppressionsFile = rootDir.resolve("config/checkstyle/checkstyle-suppression.xml")
 }

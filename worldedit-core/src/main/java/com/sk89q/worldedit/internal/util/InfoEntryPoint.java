@@ -52,6 +52,8 @@ public class InfoEntryPoint {
         return html ? String.format("<a href=\"%1$s\">%1$s</a>", url) : url;
     }
 
+    // Entry point for running the jar directly: the console is the only output
+    @SuppressWarnings("SystemOut")
     public static void main(String[] args) {
         if (System.console() != null) {
             System.err.println(getMessage(false));

@@ -65,9 +65,13 @@ dependencies {
     )
 
     "testRuntimeOnly"(libs.log4j.core)
+    "testImplementation"(libs.archunit)
 }
 
 tasks.test {
+    jvmArgumentProviders.add(objects.newInstance<MainSourcesArgument>().apply {
+        sources.set(layout.projectDirectory.dir("src/main/java"))
+    })
     maxHeapSize = "1G"
 }
 
@@ -123,4 +127,13 @@ configure<PublishingExtension> {
         artifactId = the<BasePluginExtension>().archivesName.get()
         from(components["java"])
     }
+}
+
+// Passes the main sources to tests that scan them, without putting the absolute path in the cache key
+abstract class MainSourcesArgument : CommandLineArgumentProvider {
+    @get:InputDirectory
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val sources: DirectoryProperty
+
+    override fun asArguments() = listOf("-Dworldedit.mainSources=${sources.get().asFile.absolutePath}")
 }

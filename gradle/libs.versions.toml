@@ -82,6 +82,7 @@ junit-jupiter-engine.module = "org.junit.jupiter:junit-jupiter-engine"
 junit-platform-launcher.module = "org.junit.platform:junit-platform-launcher"
 
 jqwik = "net.jqwik:jqwik:1.9.0"
+archunit = "com.tngtech.archunit:archunit:1.5.1"
 
 mockito-bom = "org.mockito:mockito-bom:5.22.0"
 mockito-core.module = "org.mockito:mockito-core"
@@ -91,6 +92,8 @@ commonsCli = "commons-cli:commons-cli:1.4"
 
 # https://repo.papermc.io/service/rest/repository/browse/maven-public/io/papermc/paper/paper-api/
 paperApi = "io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT"
+# Same MC version as paperApi; Spigot keeps the X-R0.1-SNAPSHOT scheme that Paper dropped after 1.21
+spigotApi = "org.spigotmc:spigot-api:1.21.5-R0.1-SNAPSHOT"
 paperLib = "io.papermc:paperlib:1.0.8"
 
 dummypermscompat = "com.sk89q:dummypermscompat:1.10"

@@ -438,6 +438,8 @@ public class BukkitAdapter {
      * @param blockData The Bukkit BlockData
      * @return The WorldEdit BlockState
      */
+    // TODO: log through a class logger instead of printStackTrace()
+    @SuppressWarnings("SystemOut")
     public static BlockState adapt(BlockData blockData) {
         checkNotNull(blockData);
 

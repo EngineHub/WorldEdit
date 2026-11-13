@@ -21,6 +21,14 @@ configurations.named("testImplementation") {
     extendsFrom(localImplementation.get())
 }
 
+val spigotApi = configurations.dependencyScope("spigotApi") {
+    description = "The Spigot API matching the Paper API, to check that only Spigot API is used"
+}
+val spigotApiClasspath = configurations.resolvable("spigotApiClasspath") {
+    extendsFrom(spigotApi.get())
+    isTransitive = false
+}
+
 val adaptersScope = configurations.dependencyScope("adaptersScope") {
     description = "Adapters to include in the JAR"
 }
@@ -48,6 +56,8 @@ val adaptersReobf = configurations.resolvable("adaptersReobf") {
 
 dependencies {
     "api"(project(":worldedit-core"))
+    "spigotApi"(libs.spigotApi)
+    "testImplementation"(libs.archunit)
     "api"(project(":worldedit-libs:bukkit"))
 
     "localImplementation"(libs.paperApi) {
@@ -140,4 +150,14 @@ configure<PublishingExtension> {
     publications.named<MavenPublication>("maven") {
         from(components["java"])
     }
+}
+
+tasks.named<Test>("test") {
+    // -PspigotApiJar=<path> uses a local jar instead of resolving spigot-api
+    val localSpigotJar = providers.gradleProperty("spigotApiJar").orNull
+    val spigotJar = if (localSpigotJar != null) files(localSpigotJar) else files(spigotApiClasspath)
+    inputs.files(spigotJar).withPropertyName("spigotApi").withPathSensitivity(PathSensitivity.NONE)
+    jvmArgumentProviders.add(CommandLineArgumentProvider {
+        listOf("-Dworldedit.spigotApi=${spigotJar.singleFile.absolutePath}")
+    })
 }
