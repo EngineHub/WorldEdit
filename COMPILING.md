@@ -1,8 +1,8 @@
 Compiling
 =========
 
-You can compile WorldEdit as long as you have some version of Java greater than or equal to 21 installed. Gradle will download JDK 21 specifically if needed,
-but it needs some version of Java to bootstrap from.
+You need the JDK version set by `toolchainVersion` in `gradle/gradle-daemon-jvm.properties` installed, since Gradle runs on it.
+Gradle does not download that JDK for you.
 
 The build process uses Gradle, which you do *not* need to download. WorldEdit is a multi-module project with four modules:
 
