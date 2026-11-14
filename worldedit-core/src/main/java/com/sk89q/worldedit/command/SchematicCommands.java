@@ -312,7 +312,7 @@ public class SchematicCommands {
     public void list(Actor actor,
                      @ArgFlag(name = 'p', desc = "Page to view.", def = "1")
                          int page,
-                     @ArgFlag(name = 'f', desc = "Filter", def = "")
+                     @ArgFlag(name = 'f', desc = "Filter to apply to relative schematic paths. Use '?' to match any one character, and '*' to match any characters multiple times. If neither '?' nor '*' are present, '*' is added to both ends.", def = "")
                          String filter,
                      @Switch(name = 'd', desc = "Sort by date, oldest first")
                          boolean oldFirst,
