@@ -429,7 +429,7 @@ public class SelectionCommands {
     public void shift(Actor actor, World world, LocalSession session,
                       @Arg(desc = "Amount to shift the selection by")
                           int amount,
-                      @Arg(desc = "Direction to contract", def = Direction.AIM)
+                      @Arg(desc = "Direction to shift", def = Direction.AIM)
                       @MultiDirection
                           List<BlockVector3> direction) throws WorldEditException {
         try {
