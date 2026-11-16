@@ -27,6 +27,7 @@ import org.enginehub.linbus.tree.LinCompoundTag;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Represents a world snapshot.
@@ -52,6 +53,16 @@ public interface Snapshot extends Closeable {
      */
     default Chunk getChunk(BlockVector3 position) throws DataException, IOException {
         return ChunkStoreHelper.getChunk(getChunkTag(position));
+    }
+
+    /**
+     * Get the entities stored for the chunk at the given position.
+     *
+     * @param position the position of the chunk
+     * @return the tags of the entities in the chunk or an empty list if there are none
+     */
+    default List<LinCompoundTag> getEntityTags(BlockVector3 position) throws DataException, IOException {
+        return List.of();
     }
 
     /**
