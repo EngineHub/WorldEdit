@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.extent.clipboard.io;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -63,18 +62,6 @@ public interface ClipboardFormat {
      * @throws IOException thrown on I/O error
      */
     ClipboardWriter getWriter(OutputStream outputStream) throws IOException;
-
-    /**
-     * Return whether the given file is of this format.
-     *
-     * @param file the file
-     * @return true if the given file is of this format
-     * @deprecated Use {@link #isFormat(Path)} instead
-     */
-    @Deprecated
-    default boolean isFormat(File file) {
-        return isFormat(file.toPath());
-    }
 
     /**
      * Return whether the given path is of this format.

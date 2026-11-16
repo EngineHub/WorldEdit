@@ -21,7 +21,6 @@
 
 package com.sk89q.worldedit.util;
 
-import com.google.errorprone.annotations.InlineMe;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
@@ -30,12 +29,11 @@ import com.sk89q.worldedit.util.report.Unreported;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -65,21 +63,9 @@ public class PropertiesConfiguration extends LocalConfiguration {
         properties = new Properties();
     }
 
-    /**
-     * Construct the object. The configuration isn't loaded yet.
-     *
-     * @param path the path to the configuration
-     * @deprecated Use {@link PropertiesConfiguration#PropertiesConfiguration(Path)}
-     */
-    @InlineMe(replacement = "this(path.toPath())")
-    @Deprecated
-    public PropertiesConfiguration(File path) {
-        this(path.toPath());
-    }
-
     @Override
     public void load() {
-        try (InputStream stream = new FileInputStream(path)) {
+        try (InputStream stream = Files.newInputStream(path.toPath())) {
             properties.load(stream);
         } catch (FileNotFoundException _) {
             // We expect to not find the file the first time
@@ -134,9 +120,15 @@ public class PropertiesConfiguration extends LocalConfiguration {
         String snapshotsDir = getString("snapshots-dir", "");
         initializeSnapshotConfiguration(snapshotsDir);
 
-        path.getParentFile().mkdirs();
-        try (OutputStream output = new FileOutputStream(path)) {
-            properties.store(output, "Don't put comments; they get removed");
+        try {
+            Path nioPath = path.toPath();
+            Path parent = nioPath.getParent();
+            if (parent != null) {
+                Files.createDirectories(parent);
+            }
+            try (OutputStream output = Files.newOutputStream(nioPath)) {
+                properties.store(output, "Don't put comments; they get removed");
+            }
         } catch (IOException e) {
             LOGGER.warn("Failed to write configuration", e);
         }

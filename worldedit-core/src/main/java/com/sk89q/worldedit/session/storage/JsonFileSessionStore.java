@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.session.storage;
 
-import com.google.errorprone.annotations.InlineMe;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
@@ -29,7 +28,6 @@ import com.sk89q.worldedit.internal.util.LogManagerCompat;
 import com.sk89q.worldedit.util.gson.GsonUtil;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -49,18 +47,6 @@ public class JsonFileSessionStore implements SessionStore {
     private static final Logger LOGGER = LogManagerCompat.getLogger();
     private final Gson gson;
     private final Path dir;
-
-    /**
-     * Create a new session store.
-     *
-     * @param dir the directory
-     * @deprecated Use {@link #JsonFileSessionStore(Path)}
-     */
-    @InlineMe(replacement = "this(dir.toPath())")
-    @Deprecated
-    public JsonFileSessionStore(File dir) {
-        this(dir.toPath());
-    }
 
     /**
      * Create a new session store.

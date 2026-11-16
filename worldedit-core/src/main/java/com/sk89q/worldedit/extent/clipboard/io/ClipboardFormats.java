@@ -24,7 +24,6 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.sk89q.worldedit.WorldEdit;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -80,21 +79,6 @@ public class ClipboardFormats {
     public static ClipboardFormat findByAlias(String alias) {
         checkNotNull(alias);
         return aliasMap.get(alias.toLowerCase(Locale.ROOT).trim());
-    }
-
-    /**
-     * Detect the format of a given file.
-     *
-     * @param file the file
-     * @return the format, otherwise null if one cannot be detected
-     * @deprecated Use {@link #findByPath(Path)} instead.
-     */
-    @Deprecated
-    @Nullable
-    public static ClipboardFormat findByFile(File file) {
-        checkNotNull(file);
-
-        return findByPath(file.toPath());
     }
 
     /**
