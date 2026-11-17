@@ -80,6 +80,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -312,6 +313,8 @@ public class SchematicCommands {
     public void list(Actor actor,
                      @ArgFlag(name = 'p', desc = "Page to view.", def = "1")
                          int page,
+                     @ArgFlag(name = 'f', desc = "Filter to apply to relative schematic paths. Use '?' to match any one character, and '*' to match any characters multiple times. If neither '?' nor '*' are present, '*' is added to both ends.", def = "")
+                         String filter,
                      @Switch(name = 'd', desc = "Sort by date, oldest first")
                          boolean oldFirst,
                      @Switch(name = 'n', desc = "Sort by date, newest first")
@@ -331,11 +334,14 @@ public class SchematicCommands {
             pathComparator = Comparator.naturalOrder();
             flag = "";
         }
+        if (filter != null && !filter.isEmpty()) {
+            flag += " -f \"" + filter + "\"";
+        }
         final String pageCommand = actor.isPlayer()
                 ? "//schem list -p %page%" + flag : null;
 
         WorldEditAsyncCommandBuilder.createAndSendMessage(actor,
-                new SchematicListTask(pathComparator, page, pageCommand),
+                new SchematicListTask(pathComparator, page, filter, pageCommand),
                 SubtleFormat.wrap("(Please wait... gathering schematic list.)"));
     }
 
@@ -444,11 +450,23 @@ public class SchematicCommands {
     private static class SchematicListTask implements Callable<Component> {
         private final Comparator<Path> pathComparator;
         private final int page;
+        private final Pattern filter;
         private final String pageCommand;
 
-        SchematicListTask(Comparator<Path> pathComparator, int page, String pageCommand) {
+        SchematicListTask(Comparator<Path> pathComparator, int page, String filter, String pageCommand) {
             this.pathComparator = pathComparator;
             this.page = page;
+            if (filter == null || filter.isEmpty()) {
+                this.filter = null;
+            } else {
+                String matcherQuery = filter;
+                if (!matcherQuery.contains("*") && !matcherQuery.contains("?")) {
+                    matcherQuery = "*" + matcherQuery + "*";
+                }
+                this.filter = Pattern.compile(Pattern.quote(matcherQuery)
+                        .replace("*", "\\E.*\\Q")
+                        .replace("?", "\\E.\\Q"));
+            }
             this.pageCommand = pageCommand;
         }
 
@@ -457,6 +475,10 @@ public class SchematicCommands {
             SchematicsManager schematicsManager = WorldEdit.getInstance().getSchematicsManager();
             // Copy this to a mutable list, we're sorting it below.
             List<Path> fileList = new ArrayList<>(schematicsManager.getSchematicPaths());
+            if (filter != null) {
+                Path root = schematicsManager.getRoot();
+                fileList.removeIf(path -> !filter.matcher(root.relativize(path).toString()).matches());
+            }
 
             if (fileList.isEmpty()) {
                 return ErrorFormat.wrap("No schematics found.");
